@@ -89,6 +89,7 @@ interface AssignEventStore {
 
   convertResponsesToTodos: (responses: ReassignEventResponse[]) => string[];
   getResponsesByEventId: (eventId: string) => Promise<ReassignEventResponse[]>;
+  fetchUsersByTaskId: 
 }
 
 const useAssignEventStore = (): AssignEventStore => {
@@ -96,6 +97,7 @@ const useAssignEventStore = (): AssignEventStore => {
   const assignedEvents: Record<string, ExtendedCalendarEvent[]> = {};
   const assignedTodos: Record<string, string[]> = {};
   const reassignUser: Record<string, ReassignEventResponse[]> = {};
+
   const baseStore = useAssignBaseStore();
 
   const updateEventStatus = (eventId: string, status: string) => {

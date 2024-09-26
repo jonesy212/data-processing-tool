@@ -126,11 +126,6 @@ function findCorrectSnapshotStore(
   return snapshotStores.find((store) => store.category === snapshot.category);
 }
 
-function isSnapshot<T extends BaseData, K extends BaseData>(
-  obj: any
-): obj is Snapshot<T, K> {
-  return obj && typeof obj.id === "string" && obj.data instanceof Map;
-}
 
 // Type guard to check if data is SnapshotWithCriteria<T, BaseData>
 function isSnapshotWithCriteria<T extends BaseData, K extends BaseData>(
@@ -233,7 +228,6 @@ export const addSnapshotHandler = (
 };
 
 export {
-  isSnapshot,
   isSnapshotStoreBaseData,
   isSnapshotStoreConfig,
   findCorrectSnapshotStore,

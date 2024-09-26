@@ -147,6 +147,7 @@ export interface UserData {
   _id?: string;
   id?: string | number | undefined;
   datasets?: string;
+  username?: string
   tasks?: Task[];
   questionnaireResponses?: any;
   chatSettings?: ChatSettings;

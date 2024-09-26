@@ -5,9 +5,11 @@ import { BaseMetadataConfig, BaseRetryConfig, BaseCacheConfig, } from "./Configu
 // Combine the base interfaces into a single interface
 interface BaseConfig extends BaseRetryConfig, BaseCacheConfig, BaseMetadataConfig {
   apiEndpoint: string;
-  apiKey: string;
+  apiKey: string | undefined;
   timeout: number;
   retryAttempts: number;
+  name: string;
+  description?: string
 }
 // Specific configuration for project management features
 interface ProjectManagementConfig extends BaseConfig {

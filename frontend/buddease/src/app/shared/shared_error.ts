@@ -4,6 +4,9 @@
 import 'shared_error_handling';
 
 export class NamingConventionsError extends Error {
+ 
+  errorType: string; // Declare the errorType property
+
   constructor(errorType: string, details: string) {
     super(details);
     this.name = 'NamingConventionsError';

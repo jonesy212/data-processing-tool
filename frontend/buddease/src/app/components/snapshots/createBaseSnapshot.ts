@@ -690,7 +690,7 @@ function createBaseSnapshot<T extends Data, K extends Data>(
                       ) => null,
                       subscribers: [],
                       onError: undefined,
-                      getSnapshotId: (data: SnapshotData<T, K>) => "",
+                      getSnapshotId: (key: string | U, snapshot: Snapshot<U, U>) => "",
                       snapshot: async (
                         id, snapshotId, snapshotData, category, categoryProperties, callback,
                         snapshotContainer, snapshotStoreConfig

@@ -3,7 +3,7 @@
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder"
 
 import { Data } from "../models/data/Data"
-import { SnapshotContainer, SubscriberCollection } from "."
+import { SnapshotContainer, SnapshotOperation, SubscriberCollection } from "."
 import { SnapshotManager } from "../hooks/useSnapshotManager"
 import { Category } from "../libraries/categories/generateCategoryProperties"
 import { BaseData } from "../models/data/Data"
@@ -15,6 +15,10 @@ import SnapshotStore from "./SnapshotStore"
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig"
 import { Subscriber } from "../users/Subscriber"
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType"
+import Version from "../versions/Version"
+import { convertSnapshotContainerToStore } from "../typings/YourSpecificSnapshotType"
+import { createVersionInfo } from "../versions/createVersionInfo"
+import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore"
 
 
 
@@ -81,13 +85,13 @@ export const mapSnapshots = async (
 
 
 export const getSnapshotById = (
-    fetchSnapshot: (id: string) => Promise<{ 
-        category: Category; 
+    fetchSnapshot: (id: string) => Promise<{
+        category: Category;
         timestamp: string | number | Date | undefined;
         id: string | number | undefined;
         snapshotStore: SnapshotStore<Data, BaseData>;
         data: Data;
-    }> | undefined,
+    } | undefined>,
     id: string,
     snapshotProvider: (data: {
         id: string | number | undefined;
@@ -130,10 +134,6 @@ export const getSnapshotById = (
 };
 
 
-
-
-
-
 export const handleSnapshot = (
     id: string,
     snapshotId: string,
@@ -144,8 +144,8 @@ export const handleSnapshot = (
     snapshots: SnapshotsArray<any>,
     type: string,
     event: Event,
-    snapshotContainer?: Data | undefined,
-    snapshotStoreConfig?: SnapshotStoreConfig<Data, BaseData> | undefined
+    snapshotContainer?: SnapshotContainer<Data, BaseData> | undefined,
+    snapshotStoreConfig?: SnapshotStoreConfig<Data, BaseData> | null
 ): Promise<Snapshot<Data, BaseData> | null> => {
 
     try {
@@ -155,57 +155,142 @@ export const handleSnapshot = (
 
         // Ensure snapshotStore is a SnapshotStore<Data, BaseData>
         let snapshotStore: SnapshotStore<Data, BaseData>;
-        
+
         if (snapshotContainer) {
             // Ensure snapshotContainer is of the correct type, otherwise use a default instance
-            snapshotStore = snapshotContainer as SnapshotStore<Data, BaseData>;
-        } else if (snapshotStoreConfig) {
+            snapshotStore = convertSnapshotContainerToStore(snapshotContainer);
+
+        } else if (snapshotStoreConfig && snapshotStoreConfig.config !== null) {
+            const versionInfo = createVersionInfo(snapshotStoreConfig.version || '0.0.0');
+
             // Create a new SnapshotStore with provided configuration
             snapshotStore = new SnapshotStore<Data, BaseData>(
                 snapshotStoreConfig.storeId,
-                snapshotStoreConfig.name ?? undefined,
-                snapshotStoreConfig.version,
+                snapshotStoreConfig.name || '',
+                versionInfo,
                 snapshotStoreConfig.schema,
                 snapshotStoreConfig.options,
                 snapshotStoreConfig.category,
                 snapshotStoreConfig.config,
-                snapshotStoreConfig.operation,
+                snapshotStoreConfig.operation
             );
         } else {
             // Fallback to a default or empty instance
-            snapshotStore = {} as SnapshotStore<Data, BaseData>;
+            snapshotStore = new SnapshotStore<Data, BaseData>(
+                0,
+                '',
+                createVersionInfo('0.0.0'),
+                {},
+                {},
+                undefined,
+                {} as SnapshotStoreConfig<Data, BaseData>,
+                {} as SnapshotOperation
+            );
         }
 
         // Create an object that conforms to the Snapshot interface
         const processedSnapshot: Snapshot<Data, BaseData> = {
             id,
-
             category: category ?? undefined,
             timestamp: new Date(),
             snapshotStore,
-            data: snapshotData
+            data: snapshotData,
+            initialState: snapshotData,
+            isCore: false,
+            initialConfig: "",
+            removeSubscriber: () => {},
+            onInitialize: () => {},
+            onError: () => {},
+            taskIdToAssign: "",
+            schema: {},
+            currentCategory: "",
+            mappedSnapshotData: new Map(),
+            applyStoreConfig: () => {},
+            generateId: () => "",
+            snapshotData: (id: string, snapshotData: Data,
+                category: Category | undefined, categoryProperties: CategoryProperties | undefined,
+                dataStoreMethods: DataStore<Data, BaseData>
+            ): Promise<SnapshotStore<Data, BaseData>> => { 
+                return Promise.resolve(snapshotStore);
+            },
+            getSnapshotItems: () => [],
+
+            snapshot: (
+                id, 
+                snapshotId, 
+                snapshotData, 
+                category, 
+                categoryProperties, 
+                callback, 
+                dataStoreMethods,
+                snapshotStoreConfigData, 
+                snapshotContainer
+            ) => {
+                // Check if all required parameters are provided
+                if (!id || !snapshotId || !snapshotData || !category) {
+                    throw new Error('Required parameters missing');
+                }
+        
+                // Process the snapshot data, this could include fetching data from the store
+                const snapshot = {
+                    id: id.toString(),
+                    snapshotId: snapshotId,
+                    data: snapshotData,
+                    category,
+                    properties: categoryProperties || {}, // Use default empty object if properties are undefined
+                    createdAt: new Date(),
+                    updatedAt: new Date()
+                };
+        
+                // Store the snapshot using the callback method (or do something else with the snapshot)
+                if (callback) {
+                    callback({ 
+                        snapshot: snapshot, 
+                        dataStoreMethods, 
+                        snapshotStoreConfigData 
+                    });
+                }
+        
+                // Return the newly created snapshot
+                return Promise.resolve({
+                    snapshot: snapshot
+                });
+            },
+            setCategory: (category: Category) => {
+                if (!category) {
+                    throw new Error('Category is required to set');
+                }
+        
+                // Logic to update the category
+                processedSnapshot.category = category;
+        
+                // Update any other references related to the category if needed
+                console.log('Category set to:', category);
+        
+                // Optionally, trigger some update or callback after setting the category
+            },
+
         };
 
-        return processedSnapshot;
+        return Promise.resolve(processedSnapshot);
     } catch (error) {
-        return null;
+        return Promise.resolve(null);
     }
+}
 
-
-
-};
 
 export const validateSnapshot = (snapshot: Snapshot<Data, BaseData>): boolean => {
     return snapshot.id !== undefined && snapshot.data !== undefined;
-}};
+}
 
 
 
-export const getSnapshot = (snapshot: (id: string) => Promise<{ 
-    category: any; timestamp: any; 
+export const getSnapshot = (snapshot: (id: string) => Promise<{
+    category: any; timestamp: any;
     id: any; snapshot: Snapshot<Data, BaseData>;
-     data: Data; }> | undefined
-    ): Promise<Snapshot<Data, BaseData>> => {
+    data: Data;
+}> | undefined
+): Promise<Snapshot<Data, BaseData>> => {
     throw new Error("Function not implemented.");
 },
 
@@ -243,7 +328,7 @@ export const updateSnapshot = (
         newData,
         payload,
         store
-      );
+    );
 };
 
 export const getSnapshots = (category: string, data: Snapshots<Data>): Snapshots<Data> => {
@@ -262,7 +347,7 @@ export const getSnapshotItems = async (
 
 
 export const getSnapshotContainer = <T extends Data, K extends BaseData>(
-    id: string | number, 
+    id: string | number,
     snapshotFetcher: (id: string | number) => Promise<{
         category: string;
         timestamp: string;
@@ -352,7 +437,7 @@ export const getSnapshotContainer = <T extends Data, K extends BaseData>(
         addData: (data: Data) => void;
         stores: any[];
         getStore: (id: string) => any | undefined;
-        addStore: (storId: number) => SnapshotStore<T,K>
+        addStore: (storId: number) => SnapshotStore<T, K>
     }>
 ): Promise<{
     category: string;
@@ -441,7 +526,7 @@ export const getSnapshotContainer = <T extends Data, K extends BaseData>(
     stores: any[];
     getStore: (id: string) => any | undefined;
     addStore: (storeId: number) => SnapshotStore<T, K>
-}>  => {
+}> => {
     // Your implementation here
     return snapshotFetcher(id).then(snapshotContainer => {
         return {
@@ -560,37 +645,37 @@ export const configureSnapshot = <T extends Data, K extends BaseData>(
 ): Snapshot<T, K> | null => {
     // Validate required parameters
     if (!id || !snapshotData) {
-      console.error("Invalid ID or SnapshotData");
-      return null;
+        console.error("Invalid ID or SnapshotData");
+        return null;
     }
 
     // Step 1: Handle category assignment
     if (category) {
-      if (typeof category === "string") {
-        snapshotData.category = category;
-      } else if (typeof category === "object") {
-        snapshotData.category = category.name; // Assuming category object has a name property
-      }
+        if (typeof category === "string") {
+            snapshotData.category = category;
+        } else if (typeof category === "object") {
+            snapshotData.category = category.name; // Assuming category object has a name property
+        }
     }
 
     // Step 2: Configure snapshot store if provided
     if (snapshotDataStore && snapshotStoreConfig) {
-      try {
-        // Add snapshot to the store with snapshotId and subscribers
-        snapshotDataStore.addSnapshot(snapshotData, id, subscribers);
-      } catch (error) {
-        console.error("Failed to add snapshot to store:", error);
-        return null;
-      }
+        try {
+            // Add snapshot to the store with snapshotId and subscribers
+            snapshotDataStore.addSnapshot(snapshotData, id, subscribers);
+        } catch (error) {
+            console.error("Failed to add snapshot to store:", error);
+            return null;
+        }
     }
 
     // Step 3: Execute callback if provided
     if (callback) {
-      try {
-        callback(snapshotData);
-      } catch (error) {
-        console.error("Callback execution failed:", error);
-      }
+        try {
+            callback(snapshotData);
+        } catch (error) {
+            console.error("Callback execution failed:", error);
+        }
     }
 
     // Step 4: Return the configured snapshot

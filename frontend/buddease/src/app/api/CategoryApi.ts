@@ -13,7 +13,6 @@ interface CategoryApiResponse {
   // Add more properties as needed
 }
 
-
 export const fetchCategoryByName = async (categoryName: string): Promise<CategoryProperties | undefined> => {
     try {
       const endpoint = `${API_BASE_URL}/categories/${categoryName}`; // Adjust the endpoint path as per your API design
@@ -24,4 +23,3 @@ export const fetchCategoryByName = async (categoryName: string): Promise<Categor
       throw error;
     }
   };
-  

@@ -9,15 +9,16 @@ import SnapshotStore  from '@/app/components/snapshots/SnapshotStore';
 import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Data } from '../models/data/Data';
+
 import { processExchangeData } from '../models/data/fetchExchangeData';
 import { RealtimeData, RealtimeDataItem } from '../models/realtime/RealtimeData';
-import { createOptions, Snapshot, UpdateSnapshotPayload } from "./../snapshots/LocalStorageSnapshotStore";
+import { createSnapshotOptions, UpdateSnapshotPayload } from "./../snapshots/LocalStorageSnapshotStore";
 import { ExchangeEnum, DEXEnum } from "./../crypto/exchangeIntegration";
-import { BaseData } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
  import * as snapshotApi from '../../api/SnapshotApi'
 import { StatusType } from '../models/data/StatusType';
 import { updateSnapshot } from '../snapshots';
+import { K, T } from '../models/data/dataStoreMethods';
 // Define the price comparison component or function
 interface PriceComparisonProps {
   // Define your component props here
@@ -37,11 +38,11 @@ const RealTimePriceComparison: React.FC<PriceComparisonProps> = ({ key }) => {
   ];
 
   // Define a custom update callback function to process fetched data
-  const updateCallback: RealtimeUpdateCallback<RealtimeData> = async (
+  const updateCallback: RealtimeUpdateCallback<RealtimeData, Data> = async (
     id: string,
-    data: SnapshotStore<T, K>,
+    data: SnapshotStore<RealtimeData, Data>,
     events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<T, K>,
+    snapshotStore: SnapshotStore<RealtimeData, Data>,
     dataItems: RealtimeData[]
   ) => {
     // Example: Log received data
@@ -52,12 +53,26 @@ const RealTimePriceComparison: React.FC<PriceComparisonProps> = ({ key }) => {
       console.log(`Received events for ${key}:`, events[key]);
     });
 
-    const snapshotId = snapshotStore.getSnapshotId();
-    const storeId = snapshotApi.getSnapshotStoreId(Number(snapshotId));
-    // Wait for the snapshot to be available before accessing its data
-    const snapshot = (await createOptions(params)).dataStoreMethods.data?.get(id.toString())
+    const snapshotId = snapshotStore.getSnapshotId(key);
+    const storeId = snapshotApi.getSnapshotStoreId(String(snapshotId));
+    const snapshot = snapshotApi.getSnapshot(String(snapshotId), Number(storeId))
+    const snapshotObj = await snapshotStore.getSnapshot(snapshot)
+    if (snapshotObj === undefined){
+      // No snapshot
+      return "no snapshot object found"
+    }
 
-    const newData = snapshot.data;
+    if (snapshot === undefined) {
+      return "no snapshot available"
+    }
+
+    
+
+
+    // Wait for the snapshot to be available before accessing its data
+    const createdSnapshot = (await createSnapshotOptions(snapshotObj, snapshot)).dataStoreMethods.data?.get(id.toString())
+
+    const newData = createdSnapshot.data;
 
     // Example: Define payload as needed
     const payload: UpdateSnapshotPayload<BaseData> = {

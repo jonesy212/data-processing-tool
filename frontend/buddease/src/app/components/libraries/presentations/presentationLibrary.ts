@@ -5,6 +5,17 @@ import { Presentation, Slide } from "../../documents/Presentation";
 import { NotificationType, NotificationTypeEnum } from "../../support/NotificationContext";
 import { generatePresentationJSON } from "./generatePresentationJSON";
 
+
+enum PresentationType {
+  BUSINESS = 'business',
+  EDUCATIONAL = 'educational',
+  MARKETING = 'marketing',
+  PERSONAL = 'personal',
+  TECHNICAL = 'technical',
+  CREATIVE = 'creative'
+}
+
+
 // Function to create a new presentation
 function createPresentation(title: string, slides: Slide[]): Presentation {
   // Generate a unique ID for the presentation
@@ -22,11 +33,12 @@ function createPresentation(title: string, slides: Slide[]): Presentation {
     // Add other properties as needed
   };
 
-  id = UniqueIDGenerator.generateID(
+  id = UniqueIDGenerator.generatePresentationID(
     // Prefix for presentation IDs
-    "created Presentation",
+    "pres",
     presentationName,
     NotificationTypeEnum.PresentationID,
+    "created Presentation",
     "Presentation ID generated for " + presentationName,
     "presentation" as NotificationType,
     {} as DataDetails
@@ -47,11 +59,21 @@ function createPresentation(title: string, slides: Slide[]): Presentation {
 // Function to add a new slide to a presentation
 function addSlideToPresentation(
   presentation: Presentation,
-  content: string
+  content: string,
+  type: PresentationType // Use the enum here
 ): Presentation {
   // Generate a unique ID for the slide
+  
   const presentationName = presentation.title;
-  const id = UniqueIDGenerator.generatePresentationID(presentationName);
+  const id = UniqueIDGenerator.generatePresentationID(
+    "slide",
+    presentationName,
+    NotificationTypeEnum.SlideID,
+    "created Slide",
+    "Slide ID generated for " + presentationName,
+    "slide" as NotificationType,
+    {} as DataDetails
+  );
   // Create the slide object
   const slide: Slide = {
     id,
@@ -63,7 +85,6 @@ function addSlideToPresentation(
   presentation.slides.push(slide);
   return presentation;
 }
-
 // Function to remove a slide from a presentation
 function removeSlideFromPresentation(
   presentation: Presentation,

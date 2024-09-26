@@ -116,12 +116,12 @@ export const getCurrentSnapshotConfigOptions= <T extends Data, K extends Data>(
       snapshotId: string,
       category: symbol | string | Category | undefined,
       categoryProperties: CategoryProperties | undefined,
-      snapshot: Snapshot<Data, K>,
+      snapshot: Snapshot<T, K>,
       timestamp: string | number | Date | undefined,
       type: string,
       event: Event,
       id: number,
-      snapshotStore: SnapshotStore<Data, K>,
+      snapshotStore: SnapshotStore<T, K>,
       data: Data
     ): Promise<SnapshotsArray<T>> => {
       return new Promise<SnapshotsArray<T>>((resolve, reject) => {
@@ -149,7 +149,7 @@ export const getCurrentSnapshotConfigOptions= <T extends Data, K extends Data>(
           }
   
           // Handle different possible types for snapshotStoreData
-          const snapshotArray: SnapshotsArray<Snapshot<any, BaseData>> = Array.isArray(snapshotStoreData)
+          const snapshotArray: SnapshotsArray<BaseData> = Array.isArray(snapshotStoreData)
             ? snapshotStoreData // Already an array of snapshots
             : typeof snapshotStoreData === 'object' && Object.values(snapshotStoreData)[0] instanceof SnapshotStore
             ? Object.values(snapshotStoreData).flatMap(store => store.getSnapshotArray())

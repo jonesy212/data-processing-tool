@@ -3,10 +3,17 @@ import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import getAppPath from "appPath";
 import * as path from "path";
 import { AppStructureItem } from "../appStructure/AppStructure";
-import { VersionHistory } from "@/app/components/versions/VersionData";
+import { VersionData, VersionHistory } from "@/app/components/versions/VersionData";
 import { hashString } from "@/app/generators/HashUtils";
+import { DataVersions } from "../DataVersionsConfig";
 
 export default class FrontendStructure implements AppStructureItem {
+  versions: DataVersions = {
+    backend: Promise.resolve(''), // Replace with actual logic
+    frontend: Promise.resolve('')  // Replace with actual logic
+  
+  }
+  versionData: VersionData[] = []; // Changed to VersionData[] to match AppStructureItem
 
   id: string;
   name: string;
@@ -24,7 +31,8 @@ export default class FrontendStructure implements AppStructureItem {
   items?: Record<string, AppStructureItem>;
 
   private structure?: Record<string, AppStructureItem> | undefined = {};
-  
+  private structureHash: string = '';
+
   constructor(projectPath: string) {
     this.id = "";
     this.name = "";
@@ -108,6 +116,11 @@ export default class FrontendStructure implements AppStructureItem {
     return items;
   }
 
+  // Getter for structureHash
+  public getStructureHash(): Promise<string> {
+    return Promise.resolve(this.structureHash);
+  }
+  
   getStructure(): Promise<Record<string, AppStructureItem>> {
     return new Promise((resolve, reject) => {
 
@@ -124,7 +137,6 @@ export default class FrontendStructure implements AppStructureItem {
       });
     });
   }
-
 
   async frontendVersions(): Promise<VersionHistory[]> {
     const { versionNumber, appVersion } = getCurrentAppInfo();
@@ -148,15 +160,11 @@ export default class FrontendStructure implements AppStructureItem {
     });
     return frontendStructureItemsWithVersions;
   }
-  // public async getStructure(): Promise<Record<string, AppStructureItem>> { 
-  //   return this.structure || {};
-  // }
+
 
   public async getStructureAsArray(): Promise<AppStructureItem[]> {
     return Object.values(this.structure || {});
   }
-
-
 
   // New method to calculate and return the checksum of the structure
   public async getStructureChecksum(): Promise<string> {
@@ -180,7 +188,6 @@ export default class FrontendStructure implements AppStructureItem {
     }
   }
   
-
 
   public async traverseDirectoryPublic?(
     dir: string,
@@ -214,6 +221,7 @@ async function initializeFrontend() {
     getStructureAsArray: frontendStructure.getStructureAsArray.bind(frontendStructure),
     traverseDirectoryPublic: frontendStructure.traverseDirectoryPublic?.bind(frontendStructure),
     getStructure: () => frontendStructure.getStructure(), // Accessing structure via frontendStructure instance
+    getStructureHash: () => frontendStructure.getStructureHash()
   };
 }
 

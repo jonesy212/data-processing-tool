@@ -7,7 +7,7 @@ interface DataVersionsProps {
 }
 
 interface DataVersions {
-  backend: IHydrateResult<number> | Promise<string>
+  backend: Promise<string | undefined>
   frontend: IHydrateResult<number> | Promise<string>; // Updated to use 'IHydrateResult<number>' or Promise<number>
 }
 
@@ -89,8 +89,8 @@ const DataVersionsComponent: React.FC<DataVersionsProps> = ({
   );
 };
 export const dataVersions = {
+  frontend: useDataStore().getFrontendVersion(),
   backend: useDataStore().getBackendVersion(),
-  frontend: useDataStore().getFrontendVersion()
 }
 export default DataVersionsComponent;
 export type { DataVersions, DataVersionsProps };

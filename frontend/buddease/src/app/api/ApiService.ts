@@ -21,6 +21,7 @@ import { CacheData, realtimeData } from "../generators/GenerateCache";
 import { handleApiErrorAndNotify } from "./ApiData";
 import { endpoints } from "./ApiEndpoints";
 import axiosInstance from "./axiosInstance";
+import FileData from "../components/models/data/FileData";
 
 // Define the API base URL
 const API_BASE_URL = endpoints.data; // Assuming 'endpoints' has a property 'data' for the base URL
@@ -166,6 +167,29 @@ class ApiService {
       return response.data;
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, `Failed to call ${endpointPath}`);
+      throw error;
+    }
+  }
+
+   // Define sendFileChangeEvent method to send file change data
+   public async sendFileChangeEvent(file: FileData): Promise<void> {
+    try {
+      const endpointPath = '/file/change-event';  // Define your endpoint path
+      const requestData = {
+        fileName: file.fileName,
+        fileSize: file.fileSize,
+        fileType: file.fileType,
+        filePath: file.filePath,
+        uploader: file.uploader,
+        uploadDate: file.uploadDate,
+        attachments: file.attachments,
+        imageData: file.imageData,
+      };
+
+      // Call the post method to send file change event
+      await this.post(endpointPath, requestData);
+    } catch (error) {
+      console.error('Error in sendFileChangeEvent:', error);
       throw error;
     }
   }

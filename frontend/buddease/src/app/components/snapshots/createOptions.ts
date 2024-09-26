@@ -22,7 +22,7 @@ import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreMethod } from "./SnapshotStoreMethod";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { Callback } from "./subscribeToSnapshotsImplementation";
+import { Callback, MultipleEventsCallbacks } from "./subscribeToSnapshotsImplementation";
 
 // createOptions.ts
 function createOptions<T extends Data, K extends Data>(params: {
@@ -35,7 +35,7 @@ function createOptions<T extends Data, K extends Data>(params: {
 	staleWhileRevalidate: boolean;
 	metadata: MetaDataOptions
 	criteria: CriteriaType;
-	callbacks: CallbacksType;
+	callbacks: MultipleEventsCallbacks<Snapshot<T, K>>;
 	
 	initialState: SnapshotStore<T, K> | null;
 	date: string | Date;

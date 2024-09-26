@@ -22,8 +22,14 @@ import { CustomEventExtension } from "./BaseCustomEvent";
 
 
 interface CustomMouseEvent<T = Element>
-  extends BaseSyntheticEvent<MouseEvent, EventTarget & T, EventTarget> {
-  initCustomEvent: (type: string, bubbles: boolean, cancelable: boolean, details: any) => void;
+  extends BaseSyntheticEvent<MouseEvent, EventTarget & T, EventTarget>,
+  CustomEventExtension {
+  initCustomEvent: (
+    type: string,
+    bubbles?: boolean | undefined,
+    cancelable?: boolean | undefined,
+    detail?: any
+  ) => void;
   getAttribute: (name: string) => string | null; // Define the getAttribute method
   _shouldPersist: boolean;
   // Properties related to the custom event
@@ -231,7 +237,7 @@ export const createCustomEvent = (
 
   // Add dispatchEvent method
   customEvent.dispatchEvent = function (event: Event): boolean {
-    // Implementation for dispatchEvent
+    // Implementation for dispatchEve nt
     if (event.isTrusted) {
       console.log("Event has been dispatched.");
       // Here you can put your logic for handling dispatched events
@@ -554,10 +560,12 @@ const customEvent = createCustomEvent(
 const event1: CustomMouseEvent = {
   initCustomEvent(
     type: string,
-    bubbles: boolean,
-    cancelable: boolean,
-    details: CustomEventInit
+    bubbles?: boolean, // Optional, can be undefined
+    cancelable?: boolean, // Optional, can be undefined
+    detail?: CustomEventInit
+
   ): void { },
+
   id: "event1",
   title: "Event 1",
   description: "Event Description 1",
@@ -768,6 +776,7 @@ const event1: CustomMouseEvent = {
 };
 
 // Create a custom event using the createCustomEvent function
+
 const event2 = createCustomEvent(
   "event2",
   "Event 2",

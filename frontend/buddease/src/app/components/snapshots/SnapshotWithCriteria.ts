@@ -442,7 +442,11 @@ const exampleSnapshotStore: SnapshotStore<BaseData, BaseData> = {
   ): void {
     throw new Error("Function not implemented.");
   },
-  fetchSnapshotFailure: function (payload: { error: Error; }): void {
+  fetchSnapshotFailure: function (snapshotId: string,
+    snapshotManager: SnapshotManager<T, K>,
+    snapshot: Snapshot<T, K>,
+    date: Date | undefined,
+    payload: { error: Error }): void {
     throw new Error("Function not implemented.");
   },
   getSnapshots: function (category: string, data: Snapshots<BaseData>): void {

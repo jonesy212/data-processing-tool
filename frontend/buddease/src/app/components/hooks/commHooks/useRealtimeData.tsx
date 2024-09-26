@@ -6,24 +6,22 @@ import socketIOClient, { Socket } from 'socket.io-client';
 import { Data } from "../../models/data/Data";
 import { RealtimeData, RealtimeDataItem } from "../../models/realtime/RealtimeData";
 import axiosInstance from "../../security/csrfToken";
-import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
+import SnapshotStore  from "../../snapshots/SnapshotStore";
 import { CalendarEvent } from "../../state/stores/CalendarEvent";
-
-
 
 export const ENDPOINT = endpoints.backend
 
-export type RealtimeUpdateCallback<T extends RealtimeData> = (
-
-  data: SnapshotStore<Snapshot<Data>>,
+export type RealtimeUpdateCallback<T extends RealtimeData, K extends Data> = (
+  id: string,
+  data: SnapshotStore<T, K>,
   events: Record<string, CalendarEvent[]>,
-  snapshotStore: SnapshotStore<Snapshot<Data>>,
+  snapshotStore: SnapshotStore<T, K>,
   dataItems: T[]
 ) => void;
 
 const useRealtimeData = (
   initialData: RealtimeDataItem[],
-  updateCallback: RealtimeUpdateCallback<RealtimeDataItem>
+  updateCallback: RealtimeUpdateCallback<RealtimeDataItem, Data>
 ) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [realtimeData, setRealtimeData] = useState<RealtimeDataItem[]>(initialData);
@@ -51,12 +49,13 @@ const useRealtimeData = (
     socket.on(
       "updateData",
       (
-        data: SnapshotStore<Snapshot<Data>>,
+        id: string,
+        data: SnapshotStore<RealtimeDataItem, Data>,
         events: Record<string, CalendarEvent[]>,
-        snapshotStore: SnapshotStore<Snapshot<Data>>,
+        snapshotStore: SnapshotStore<RealtimeDataItem, Data>, // Also fix type here
         dataItems: RealtimeDataItem[]
       ) => {
-        updateCallback(data, events, snapshotStore, dataItems);
+        updateCallback(id, data, events, snapshotStore, dataItems);
         setRealtimeData(dataItems);
         socket.emit("realtimeUpdate", data);
       }

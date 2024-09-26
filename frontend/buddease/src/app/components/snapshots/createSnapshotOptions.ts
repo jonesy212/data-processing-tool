@@ -1,17 +1,19 @@
 // createSnapshotOptions.ts
 
+import { SnapshotData, SnapshotWithCriteria } from ".";
 import { SnapshotStoreOptions } from "../hooks/useSnapshotManager";
 import { Category, getOrSetCategoryForSnapshot } from "../libraries/categories/generateCategoryProperties";
-import { BaseData } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 import { displayToast } from "../models/display/ShowToast";
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { addToSnapshotList } from "../utils/snapshotUtils";
 import { getCurrentSnapshotConfigOptions } from "./getCurrentSnapshotConfigOptions";
 import { handleSnapshotOperation } from "./handleSnapshotOperation";
 import handleSnapshotStoreOperation from "./handleSnapshotStoreOperation";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import SnapshotStore from "./SnapshotStore";
-import { snapshotStoreConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { subscribeToSnapshotImpl } from "./subscribeToSnapshotsImplementation";
 
 interface SimulatedDataSource {
@@ -29,9 +31,10 @@ function createSnapshotOptions<T extends BaseData, K extends BaseData>(
       snapshotData: Snapshot<T, K>,
       category: symbol | string | Category | undefined,
       callback: (snapshot: Snapshot<T, K>) => void,
-      snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
-      snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
-    ) => Promise<Snapshot<T, K>>,
+    //   snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
+    snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>,
+    snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
+    ) => Promise<SnapshotData<T, K>>,
     simulatedDataSource?: SimulatedDataSource // Optional parameter for SimulatedDataSource
 
 ): SnapshotStoreOptions<T, K> {
@@ -40,6 +43,7 @@ function createSnapshotOptions<T extends BaseData, K extends BaseData>(
     const snapshotId = snapshotObj.id ? snapshotObj.id.toString() : '';
     dataMap.set(snapshotId, snapshotObj);
 
+    const snapshotStoreConfig = useDataStore().snapshotStoreConfig as SnapshotStoreConfig<any, any>
 
     const defaultSimulatedDataSource: SimulatedDataSource = {
         data: snapshotStoreConfig,

@@ -77,7 +77,7 @@ interface Payload {
   
   
   interface UpdateSnapshotPayload<T> {
-    snapshotId: Promise<string | undefined>;
+    snapshotId: Promise<string | number | undefined> | null;
     title: string;
     description: string;
     newData: T;

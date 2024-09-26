@@ -31,6 +31,7 @@ import { Label } from "@/app/components/projects/branding/BrandingSettings";
 import { Content } from "@/app/components/models/content/AddContent";
 import { ContentItem } from "../../stores/ContentStore";
 import FileData from "@/app/components/models/data/FileData";
+import { updateFileMetadata } from "@/app/components/utils/fileUtils";
 
 interface Guide {
   id: string;               // Unique identifier for the guide

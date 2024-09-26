@@ -9,7 +9,7 @@ import { StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore, InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SnapshotData, SnapshotStoreConfig } from '../snapshots';
+import { SnapshotContainer, SnapshotData, SnapshotStoreConfig } from '../snapshots';
 import { Snapshot, Snapshots, SnapshotsArray } from "../snapshots/LocalStorageSnapshotStore";
 import { retrieveSnapshotData } from "../snapshots/RetrieveSnapshotData";
 import { ConfigureSnapshotStorePayload, K } from "../snapshots/SnapshotConfig";
@@ -795,12 +795,13 @@ const snapshotStoreType = <T extends BaseData, K extends BaseData>(  snapshotSto
   newSnapshotStore.value = snapshotStore.value || 0;
   newSnapshotStore.key = snapshotStore.key || "";
   newSnapshotStore.subscription = snapshotStore.subscription || null;
-  newSnapshotStore.config = snapshotStore.config || null;
+  newSnapshotStore.config = snapshotStore.getConfig() || null;
   newSnapshotStore.status = snapshotStore.status || undefined;
   newSnapshotStore.metadata = snapshotStore.metadata || {
     metadataEntries: {}
   };
-  newSnapshotStore.delegate = snapshotStore.getDelegate(context)
+
+  newSnapshotStore.delegate = (await snapshotStore.getDelegate(context))
     ? snapshotStore.getDelegate(snapshotStoreDelegate).map((delegateConfig: any) => ({
       ...delegateConfig,
       data: delegateConfig.data as T,
@@ -810,6 +811,15 @@ const snapshotStoreType = <T extends BaseData, K extends BaseData>(  snapshotSto
   newSnapshotStore.state = snapshotStore.state
   newSnapshotStore.todoSnapshotId = snapshotStore.todoSnapshotId || "";
   newSnapshotStore.initialState = snapshotStore.initialState;
+  newSnapshotStore.safeCastSnapshotStore = snapshotStore.safeCastSnapshotStore(snapshotStore),
+  newSnapshotStore.getFirstDelegate = snapshotStore.getFirstDelegate(),
+  newSnapshotStore.getInitialDelegate = snapshotStore.getInitialDelegate(),
+  newSnapshotStore.transformInitialState = snapshotStore.transformInitialState(),
+ 
+
+
+
+
   return newSnapshotStore;
 };
 
@@ -1756,6 +1766,34 @@ function convertSnapshotToMap<T extends Data, K extends Data>(
 }
 
 
+const convertSnapshotContainerToStore = <T extends Data, K extends Data>(
+  snapshotContainer: SnapshotContainer<T, K>
+): SnapshotStore<Data, BaseData> => {
+  return {
+    storeId: snapshotContainer.storeId || '', // Or use a default/fallback value
+    name: snapshotContainer.name || '',
+    version: snapshotContainer.version || new Version('0.0.0'),
+    schema: snapshotContainer.schema || {},
+    options: snapshotContainer.options || {},
+    category: snapshotContainer.category || '',
+    config: snapshotContainer.config || {},
+    operation: snapshotContainer.operation || 'defaultOperation',
+    id, key, keys, topic,
+    date, title, categoryProperties, message,
+    timestamp, createdBy, eventRecords, type,
+    subscribers, createdAt, store, stores,
+    snapshots, snapshotConfig, meta, snapshotMethods,
+    getSnapshotsBySubscriber, getSnapshotsBySubscriberSuccess, getSnapshotsByTopic, getSnapshotsByTopicSuccess,
+    getSnapshotsByCategory, getSnapshotsByCategorySuccess, getSnapshotsByKey, getSnapshotsByKeySuccess,
+    getSnapshotsByPriority, getSnapshotsByPrioritySuccess, getStoreData, updateStoreData,
+    updateDelegate, getSnapshotContainer, getSnapshotVersions, createSnapshot,
+    
+    // Map other propertiwes as needed
+  } as SnapshotStore<Data, BaseData>;
+};
+
+
+
 export {
   convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData,
   convertSnapshotContent,
@@ -1768,6 +1806,7 @@ export {
   createSnapshotStoreConfig,
   createSnapshotStoreOptions,
   isSnapshot,
-  isSnapshotStore, snapshotType
+  isSnapshotStore, snapshotType,
+  convertSnapshotContainerToStore 
 };
 

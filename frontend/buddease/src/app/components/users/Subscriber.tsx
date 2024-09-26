@@ -551,11 +551,14 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
         };
       }
     },
+
+
     createSnapshot: (
       id: string,
-      snapshotData: Snapshot<T, K>,
-      category?: string | CategoryProperties,
-      callback?: (snapshot: Snapshot<T, K>) => void,
+      snapshotData: Snapshot<SnapshotWithCriteria<any, BaseData>, K>,
+      category?: string | Category,
+      categoryProperties?: string | CategoryProperties,
+      callback?: (snapshot: Snapshot<SnapshotWithCriteria<any, BaseData>, K>) => void,
       snapshotDataStore?: SnapshotStore<T, K>,
       snapshotStoreConfig?: SnapshotStoreConfig<
         SnapshotWithCriteria<any, BaseData>,
@@ -1328,7 +1331,7 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     return this.snapshotIds;
   }
 
-  getData(): Partial<SnapshotStore<T, K>> | null {
+  getData(): Partial<Snapshot<T, K>> | null {
     return this.data;
   }
 
@@ -1930,7 +1933,11 @@ class Subscriber<T extends BaseData, K extends BaseData> {
       callback(data);
     }
     subscribers.forEach((subscriber) => {
-      subscriber.triggerOnSnapshot(data);
+      subscriber.triggerOnSnapshot({
+        ...data, // Ensuring the data remains intact
+        timestamp: new Date().toISOString(), // Add a timestamp
+        category: data.category ?? 'General', // Ensure category is included
+      });
     });
     if (typeof sendNotification === "function") {
       (sendNotification as (type: NotificationTypeEnum) => void)(
@@ -1939,6 +1946,7 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     }
     return subscribers;
   }
+  
 
   static createSubscriber<T extends Data, K extends Data>(
     id: string,

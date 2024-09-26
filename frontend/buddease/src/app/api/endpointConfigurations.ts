@@ -21,10 +21,22 @@ interface NewsEndpoints {
   unpublish: (newsId: number) => EndpointConfig;
 }
 
+
+interface NotesEndpoints {
+  list: EndpointConfig;
+  single: (noteId: number) => EndpointConfig;
+ 
+}
+
 interface EndpointConfigurations {
   apiWebBase: {
     login: EndpointConfig;
     logout: EndpointConfig;
+  };
+  comments: {
+    list: EndpointConfig;
+    single: (commentId: number) => EndpointConfig;
+    
   };
   content: { // Add the content property here
     fetchContent: EndpointConfig;
@@ -166,7 +178,15 @@ interface EndpointConfigurations {
     backend: EndpointConfig;
     frontend: EndpointConfig
   };
-  news: NewsEndpoints; // Add the news property here
+  
+  news: NewsEndpoints;
+
+  notes: NotesEndpoints
+  projects: {
+    list: EndpointConfig;
+    single: (projectId: number) => EndpointConfig;
+    
+  };
 
   searching: {
     searchMessages: EndpointConfig;
@@ -258,6 +278,10 @@ const endpointConfigurations: EndpointConfigurations = {
   },
 
 
+  comments: {
+    list: { path: "/api/comments/list", method: "GET" },
+    single: (commentId: number) => ({ path: `/note/${commentId}`, method: "GET" }),
+  },
   content: {
     fetchContent: { path: "/api/content/fetch", method: "GET" },
     createContent: { path: "/api/content/create", method: "POST" },
@@ -464,12 +488,6 @@ const endpointConfigurations: EndpointConfigurations = {
     delete: (delegateId: number) => ({ path: `/api/delegates/${delegateId}/delete`, method: "DELETE" }),
     fetchById: (delegateId: number) => ({ path: `/api/delegates/${delegateId}/fetchById`, method: "GET" }),
   },
-  
-  sorting: {
-    sortEvents: { path: "/api/sorting/events", method: "POST" },
-    sortMessages: { path: "/api/sorting/messages", method: "POST" },
-    snapshots: { path: "/api/sorting/snapshots", method: "POST" },
-  },
   filtering: {
     filterTasks: { path: "/api/filtering/tasks", method: "POST" },
   },
@@ -491,6 +509,22 @@ const endpointConfigurations: EndpointConfigurations = {
     search: { path: "/news/search", method: "POST" },
     publish: (newsId: number) => ({ path: `/news/${newsId}/publish`, method: "PUT" }),
     unpublish: (newsId: number) => ({ path: `/news/${newsId}/unpublish`, method: "PUT" }),
+  },
+  notes: {
+    list: { path: "/notes", method: "GET" },
+    single: (notesId: number) => ({ path: `/note/${notesId}`, method: "GET" }),
+   
+  },
+  projects: {
+    list: { path: "/news", method: "GET" },
+    single: (projectId: number) => ({ path: `/projects/${projectId}`, method: "GET" }),
+   
+  },
+  
+  sorting: {
+    sortEvents: { path: "/api/sorting/events", method: "POST" },
+    sortMessages: { path: "/api/sorting/messages", method: "POST" },
+    snapshots: { path: "/api/sorting/snapshots", method: "POST" },
   },
   searching: {
     searchMessages: { path: "/api/searching/messages", method: "POST" },
@@ -690,6 +724,18 @@ const updatedEndpoints = {
     unpublish: (newsId: number) => generateEndpointUrl("news", `unpublish/${newsId}`),
   }),
 
+  projects: mergeConfigurations(endpointConfigurations.projects, {
+    list: generateEndpointUrl("projects", "list"),
+    single: (projectId: number) => generateEndpointUrl("projects", `single/${projectId}`),
+   
+  }),
+
+
+  comments: mergeConfigurations(endpointConfigurations.comments, {
+    list: generateEndpointUrl("comments", "list"),
+    single: (commentId: number) => generateEndpointUrl("comments", `single/${commentId}`),
+   
+  }),
 
 
   documents: mergeConfigurations(endpointConfigurations.documents, {
@@ -856,3 +902,4 @@ const updatedEndpoints = {
 export const endpoints = updatedEndpoints;
 export default endpointConfigurations;
 export { updatedEndpoints };
+export type {EndpointConfig}

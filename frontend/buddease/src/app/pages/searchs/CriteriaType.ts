@@ -19,6 +19,8 @@ import { FilterState } from "@/app/components/state/redux/slices/FilterSlice";
 // Define CriteriaType incorporating FilterCriteria
 export type CriteriaType = {
     startDate?: Date;
+    filterBy?: string;
+    value?: string
     endDate?: Date;
     status?: StatusType | null;
     priority?: PriorityTypeEnum | null;

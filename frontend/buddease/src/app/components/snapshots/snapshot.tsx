@@ -273,9 +273,6 @@ const plainDataObject: Record<string, Data> = {
         id: "",
         name: "",
         phases: [],
-
-
-
         trackFileChanges: (file: FileData): FileData => {
           // Example: Log the change and update a last modified timestamp
           console.log(`File ${file.name} has changed.`);
@@ -286,7 +283,7 @@ const plainDataObject: Record<string, Data> = {
           });
       
           // Trigger any other necessary updates, like refreshing the UI
-          refreshUIForFile(file.id);
+          refreshUIForFile(Number(file.id));
       
           // Return the file to satisfy the FileData return type
           return file;
@@ -573,7 +570,7 @@ const plainDataObject: Record<string, Data> = {
             notificationTypes: 'priceAlerts', // Use NotificationTypeString here
           },
           portfolioView: 'overview', // View mode for the crypto portfolio
-          transactionHistory: "",
+          // transactionHistory: "",
           RetentionportfolioView: '30days', // Retention period for transaction history
         
         }

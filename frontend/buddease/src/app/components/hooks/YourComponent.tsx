@@ -11,7 +11,7 @@ import { BaseData, Data, DataDetails } from "../models/data/Data";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import LoadingSpinner from "../models/tracker/LoadingSpinner";
 import ProgressBar, { ProgressPhase } from "../models/tracker/ProgressBar";
-import { Tracker } from "../models/tracker/Tracker";
+import { TrackerProps } from "../models/tracker/Tracker";
 import { NotificationManagerServiceProps } from "../notifications/NotificationService";
 import useNotificationManagerServiceProps from "../notifications/useNotificationManagerServiceProps";
 import { PromptPageProps } from "../prompts/PromptPage";
@@ -24,14 +24,15 @@ import { useSecureUserId } from "../utils/useSecureUserId";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
 import useIdleTimeout from "./idleTimeoutHooks";
-import { T, K, UpdateSnapshotPayload } from "../snapshots";
+import {  UpdateSnapshotPayload, SnapshotStoreProps, SnapshotOperationType } from "../snapshots";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import appTreeApiService from "@/app/api/appTreeApi";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
 import ExampleComponent from '../models/tracker/ExampleComponent';
 import { headersConfig } from '../shared/SharedHeaders';
 import { StatusType } from '../models/data/StatusType';
-import SnapshotStoreOptions from './SnapshotStoreOptions';
+import { SnapshotStoreOptions } from './SnapshotStoreOptions';
+import { K, T } from '../models/data/dataStoreMethods';
 
 
 interface HooksObject {
@@ -104,6 +105,142 @@ export interface YourComponentProps {
   children: React.ReactNode;
   apiConfig: ApiConfig;
 }
+
+
+
+
+
+// Initialize storeProps with meaningful values
+const storeProps: SnapshotStoreProps<T, K> = {
+  storeId: 1, // Provide a valid storeId
+  name: "MySnapshotStore", // Provide a valid name
+  version: {
+    id: 1,
+    versionNumber: '1.0.0',
+    major: 1,
+    minor: 0,
+    patch: 0,
+    appVersion: '1.0.0',
+    name: 'Initial version',
+    url: '/versions/1',
+    documentId: 'doc123',
+    draft: false,
+    userId: 'user1',
+    content: 'Version content',
+    metadata: {
+      author: 'Author Name',
+      timestamp: new Date(),
+    },
+    versions: null,
+    checksum: 'abc123',
+    isLatest: true,
+    isPublished: true,
+    publishedAt: new Date(),
+    source: 'initial',
+    status: 'active',
+    workspaceId: 'workspace1',
+    workspaceName: 'Main Workspace',
+    workspaceType: 'document',
+    workspaceUrl: '/workspace/1',
+    workspaceViewers: ['viewer1', 'viewer2'],
+    workspaceAdmins: ['admin1'],
+    workspaceMembers: ['member1', 'member2'],
+    data: [],
+    versionHistory: {
+      versionData: {}
+    },
+    _structure: {}, // Structure of the version
+    versionData: {
+      id: 1, // Required property
+      name: "Version Name", // Add required property
+      url: "/version-url", // Add required property
+      versionNumber: "1.0.0", // Add required property
+      documentId: "document1", // Add required property
+      draft: false, // Add required property
+      userId: "user1", // Add required property
+      
+      content: "Version content goes here.", // Add required property
+      metadata: {
+        author: "Author Name", // Provide a valid author name
+        timestamp: new Date(), // Provide a valid timestamp; can be Date, string, or number
+        revisionNotes: "Initial version created.", // Optional property
+      }, // Add required property
+      versionData: [], // Adjust as per actual type or requirement
+      major: 1, // Add required property
+      minor: 0, // Add required property
+      patch: 0, // Add required property
+      checksum: "checksum123", // Add required property
+      parentId: null, // or provide a valid ID
+      parentType: "document", // or whatever type it should be
+      parentVersion: "1.0.0", // Required property
+      parentTitle: "Parent Document Title", // Required property
+      parentContent: "Content of the parent document.", // Required property
+      parentName: "Parent Document", // Required property
+      parentUrl: "/parent-document", // Required property
+      parentChecksum: "abc123", // Required property
+      parentAppVersion: "1.0.0", // Required property
+      parentVersionNumber: "1.0.0", // Required property
+      isLatest: true, // Required property
+      isPublished: false, // Required property
+      publishedAt: null, // or a valid Date
+      source: "initial", // Required property
+      status: "active", // Required property
+      version: "1.0.0", // Required property
+      timestamp: new Date(), // Required property
+      user: "user1", // Required property
+      changes: [], // Required property
+      comments: [], // Required property
+      workspaceId: "workspace1", // Required property
+      workspaceName: "Main Workspace", // Required property
+      workspaceType: "document", // Required property
+      workspaceUrl: "/workspace/1", // Required property
+      workspaceViewers: ["viewer1", "viewer2"], // Required property
+      workspaceAdmins: ["admin1"], // Required property
+      workspaceMembers: ["member1", "member2"], // Required property
+      createdAt: new Date(), // Optional property
+      updatedAt: new Date(), // Optional property
+      _structure: {}, // Optional property, adjust as needed
+      frontendStructure: Promise.resolve([]), // Optional property, adjust as needed
+      backendStructure: Promise.resolve([]), // Optional property, adjust as needed
+      data: undefined, // Adjust as per actual usage
+      backend: undefined, // Adjust as per actual usage
+      frontend: undefined, // Adjust as per actual usage
+    },
+    description: "Version description", // Description of the version
+    buildNumber: "1", // Build number
+    parentId: null, // Parent ID of the version
+    parentType: "document", // Type of the parent document
+    parentVersion: "1.0.0", // Parent version number
+    parentTitle: "Parent Document Title", // Title of the parent version
+    parentContent: "Content of the parent document.", // Content of the parent version
+    parentName: "Parent Document", // Name of the parent
+    parentUrl: "/parent-document", // URL of the parent
+    parentChecksum: "parent-checksum", // Checksum of the parent
+    parentAppVersion: "1.0.0", // App version of the parent
+    parentVersionNumber: "1.0.0", // Version number of the parent
+    getVersionNumber: () => ""
+  }, // Example version
+  schema: {}, // Provide a valid schema or mock
+  options: {}, // Provide valid options
+  category: undefined, // or specify a valid category
+  config: null, // Set a valid config or null
+  operation: {
+    operationType: SnapshotOperationType.CreateSnapshot
+  }, // Example operation
+  id: "someId",
+  snapshots: [], // Optional snapshots array
+  timestamp: new Date(), // Optional timestamp
+  message: "Some message", // Optional message
+  state: null, // Optional state
+  eventRecords: null // Optional event records
+};
+
+const {storeId, name, version, schema, options, category, config, operation, state } = storeProps
+const snapshotId = storeProps.state?.[0]?.id 
+  ? getSnapshotId(storeProps.state[0].id) 
+  : null;
+
+
 
 const YourComponent: React.FC<YourComponentProps> = ({
   apiConfig,
@@ -183,7 +320,6 @@ const YourComponent: React.FC<YourComponentProps> = ({
 
   // Example usage of updateSnapshot
   const handleUpdateSnapshot = async () => {
-    const snapshotId = getSnapshotId(snapshot.id);
     const baseURL = "https://example.com";
     const enabled = true;
     const maxRetries = 3;
@@ -204,11 +340,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
     };
 
     
-    const storeId = snapshotApi.getSnapshotStoreId(Number(snapshotId));
-    const events: Record<string, CalendarEvent<T, K>[]> = {};
-    const options = snapshotApi.getOptions
-    const category = 
-    const snapshotStore = new SnapshotStore<BaseData, K>(await storeId, options, category, config, operation);
+    const snapshotStore = new SnapshotStore<BaseData, K>({storeId, name, version, schema, options, category, config, operation});
     const dataItems: RealtimeDataItem[] = [];
 
 
@@ -257,7 +389,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
         startDate: new Date(), // Set the start date
         endDate: new Date(), // Set the end date
         shared: <div>Shared</div>, // Define the shared content
-        details: {} as DetailsItem, // Define the details item
+        details: {} as DetailsItem<T>, // Define the details item
         bulkEdit: false, // Set bulkEdit flag
         recurring: false, // Set recurring flag
         customEventNotifications: "Custom notifications", // Define custom notifications
@@ -357,7 +489,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
       <button onClick={() => resetIdleTimeout()}>Reset Idle Timeout</button>
 
       {/* Example usage of removeTracker */}
-      <button onClick={() => removeTracker(tracker.id as unknown as Tracker)}>
+      <button onClick={() => removeTracker(tracker.id as unknown as TrackerProps)}>
         Remove Tracker
       </button>
 
@@ -391,13 +523,16 @@ export default YourComponent;
 
 
 
+
+
+
 // Example:
 
-const snapshotId = getSnapshotId(snapshot.id)
-const storeId = snapshotApi.getSnapshotStoreId(Number(snapshotId));
+
+// const storeId = snapshotApi.getSnapshotStoreId(String(snapshotId));
 const events: Record<string, CalendarEvent<T, K>[]> = {};
-const data = new SnapshotStore<T, K>(await storeId, options, config, operation);
-const snapshotStore = new SnapshotStore<BaseData, K>(storeId, snapshotStoreOptions, config, operation);
+const data = new SnapshotStore<T, K>({ storeId, name, version, schema, options, category, config, operation});
+const snapshotStore = new SnapshotStore<BaseData, K>({ storeId, name, version, schema, options, category, config, operation});
 const dataItems: RealtimeDataItem[] = [];
 const newData: Data = {
   timestamp: undefined
@@ -418,7 +553,7 @@ const payload: UpdateSnapshotPayload<Data> = {
   description: "",
   createdAt: undefined,
   updatedAt: undefined,
-  status: "active",
+  status: StatusType.Active,
   category: ""
 };
 

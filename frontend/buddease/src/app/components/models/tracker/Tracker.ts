@@ -2,7 +2,7 @@
 import path from "path";
 import { useAuth } from "../../auth/AuthContext";
 import { Phase } from "../../phases/Phase";
-import { User } from "../../users/User";
+import { User, UserData } from "../../users/User";
 import {
   fetchUsersSuccess,
   updateBio,
@@ -13,25 +13,38 @@ import {
 import FileData from "../data/FileData";
 import { Stroke } from "../../state/redux/slices/DrawingSlice";
 import { Payment } from "../../subscriptions/SubscriptionPlan";
+import FolderData from "../data/FolderData";
+import { NotificationData } from "../../support/NofiticationsSlice";
+import { useDispatch } from "react-redux";
 
 
 // Define a common interface for tracker properties
 interface CommonTrackerProps {
-  id: string;
-  name: string;
-  phases: Phase[];
-  trackFileChanges: (file: FileData) => FileData;
-  stroke: {
-    width: number;
-    color: string;
-  };
-  strokeWidth: number;
-  fillColor: string;
-  flippedX: boolean;
-  flippedY: boolean;
-  x: number;
-  y: number;
-  updateAppearance:
+  id?: string;  // Optional
+  name?: string;  // Optional
+  phases?: Phase[];  // Optional
+  trackFileChanges?: (file: FileData) => void;  // Optional
+  trackFolderChanges?: (folder: FolderData) => void;  // Optional
+  updateUserProfile?: (userData: User) => void;  // Optional
+  sendNotification?: (notification: NotificationData, userData: User) => void;  // Optional
+  stroke?: Stroke;
+  strokeWidth?: number;
+  fillColor?: string;
+  flippedX?: boolean;
+  flippedY?: boolean;
+  x?: number;
+  y?: number;
+  updateAppearance?: (
+    updates: {
+      stroke: {
+        width: number;
+        color: string;
+      },
+    },
+
+    newStroke: { width: number; color: string },
+    newFillColor: string
+  ) => void;
 }
 
 interface TrackerProps extends CommonTrackerProps {
@@ -88,6 +101,7 @@ class TrackerClass implements TrackerProps {
     console.log("Content changes:", contentChanges);
     console.log("Metadata changes:", metadataChanges);
     console.log("Access history:", accessHistory);
+
   }
 
   detectContentChanges(file: FileData): string {
@@ -103,7 +117,7 @@ class TrackerClass implements TrackerProps {
   }
 
   // Function to track changes for a folder
-  async trackFolderChanges(fileLoader: FileData): Promise<void> {
+  async trackFolderChanges(fileLoader: FolderData): Promise<void> {
     try {
       // Make a fetch request to the folder URL to get its contents
       const folderPathUrl = new URL(fileLoader.folderPath, 'file://');
@@ -280,21 +294,33 @@ class TrackerClass implements TrackerProps {
     // Access dispatch function from AuthContext
     const { dispatch } = useAuth();
 
+    // Access Redux dispatch for userManagerSlice actions
+    const reduxDispatch = useDispatch();
+
     // Dispatch action to update user profile
     dispatch({
       type: "LOGIN_WITH_ROLES",
       payload: { user: userData, authToken: "YOUR_AUTH_TOKEN" },
     });
     console.log("Updating user profile:", userData);
+
+
+     // Preprocess fullName - check for empty string and handle it
+    const fullNameToDispatch = userData.fullName && userData.fullName.trim() !== "" 
+    ? userData.fullName 
+    : null; // Replace empty string with null or any default value
+
     //  Dispatch update actions using userManagerSlice.actions
     // For example:
     // todo 
-    // dispatch(updateFullName(userData.fullName));
-    // dispatch(updateBio(userData.bio));
-    // dispatch(updateProfilePicture(userData.profilePicture));
+    if (userData.fullName !== null) {
+      reduxDispatch(updateFullName(fullNameToDispatch));
+      reduxDispatch(updateBio(userData.bio));
+      reduxDispatch(updateProfilePicture(userData.profilePicture));
+    }
   }
 
-  sendNotification(notification: string, userData: User): void {
+  sendNotification(notification: NotificationData, userData: User): void {
     // Access dispatch function from AuthContext
     const { dispatch } = useAuth();
 
@@ -305,6 +331,27 @@ class TrackerClass implements TrackerProps {
     });
 
     console.log("Sending notification:", notification);
+  }
+
+  // Implementation of updateAppearance method
+  updateAppearance(
+    updates: {
+      stroke?: {
+        width?: number;
+        color?: string;
+      };
+    },
+    newStroke: {width: number, color: string},
+    newFillColor: string
+  ): void {
+    // Update the stroke property based on newStroke or updates
+    this.stroke.width = updates.stroke?.width ?? newStroke.width; // Use updates if available, otherwise newStroke
+    this.stroke.color = updates.stroke?.color ?? newStroke.color; // Use updates if available, otherwise newStroke
+
+    // Update the fill color
+    this.fillColor = newFillColor;
+
+    console.log(`Appearance updated to stroke: ${this.stroke.width}px, color: ${this.stroke.color}, fill color: ${newFillColor}`);
   }
 }
 

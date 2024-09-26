@@ -13,6 +13,7 @@ import { Attachment } from "../documents/Attachment/attachment";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Member } from "../models/teams/TeamMembers";
 import DocumentPermissions from "../documents/DocumentPermissions";
+import { fluenceApiKey } from "../web3/dAppAdapter/DAppAdapterConfig";
 
 interface ExtendedVersion extends Version {
   name: string;
@@ -25,6 +26,9 @@ interface ExtendedVersion extends Version {
 
 class Version {
   versionData: VersionData;
+  major: number;
+  minor: number;
+  patch: number;
   name: string;
   url: string;
   versionNumber: string;
@@ -118,6 +122,9 @@ class Version {
 
   constructor(versionInfo: {
     id: number;
+    major: number;
+    minor: number;
+    patch: number;
     versionNumber: string;
     appVersion: string;
     description: string;
@@ -161,11 +168,11 @@ class Version {
 
 
     isDeleted: boolean,
- 
+
     publishedBy: User['username'] | null,
     lastModifiedBy: User['username'] | null,
     lastModifiedAt: string | Date | null,
- 
+
     rootId: string | null;
     branchId: string | null;
     isLocked: boolean;
@@ -201,6 +208,9 @@ class Version {
     this.versionNumber = versionInfo.versionNumber;
     this.appVersion = versionInfo.appVersion;
     this.versions = versionInfo.versions;
+    this.major = versionInfo.major;
+    this.minor = versionInfo.minor;
+    this.patch = versionInfo.patch;
     this.metadata = versionInfo.metadata;
     this.description = versionInfo.description;
     this.buildNumber = versionInfo.buildNumber;
@@ -209,22 +219,22 @@ class Version {
     this.data = versionInfo.data;
     this.name = versionInfo.name;
     this.url = versionInfo.url;
-     // Initialize versionData with default values
-     this.versionHistory = versionInfo.versionHistory;
-     this.draft = versionInfo.draft;
-     this.userId = versionInfo.userId;
-     this.documentId = versionInfo.documentId;
-     this.parentId = versionInfo.parentId ? versionInfo.parentId : null;
-     this.parentType = versionInfo.parentType;
-     this.parentVersion = versionInfo.parentVersion;
-     this.parentTitle = versionInfo.parentTitle;
-     this.parentContent = versionInfo.parentContent;
-     this.parentName = versionInfo.parentName;
-     this.parentUrl = versionInfo.parentUrl;
-     this.parentChecksum = versionInfo.parentChecksum;
-     this.parentMetadata = versionInfo.parentMetadata;
-     this.parentAppVersion = versionInfo.parentAppVersion;
-     this.parentVersionNumber = versionInfo.parentVersionNumber;
+    // Initialize versionData with default values
+    this.versionHistory = versionInfo.versionHistory;
+    this.draft = versionInfo.draft;
+    this.userId = versionInfo.userId;
+    this.documentId = versionInfo.documentId;
+    this.parentId = versionInfo.parentId ? versionInfo.parentId : null;
+    this.parentType = versionInfo.parentType;
+    this.parentVersion = versionInfo.parentVersion;
+    this.parentTitle = versionInfo.parentTitle;
+    this.parentContent = versionInfo.parentContent;
+    this.parentName = versionInfo.parentName;
+    this.parentUrl = versionInfo.parentUrl;
+    this.parentChecksum = versionInfo.parentChecksum;
+    this.parentMetadata = versionInfo.parentMetadata;
+    this.parentAppVersion = versionInfo.parentAppVersion;
+    this.parentVersionNumber = versionInfo.parentVersionNumber;
     this.createdAt = versionInfo.createdAt;
     this.updatedAt = versionInfo.updatedAt;
     this.deletedAt = versionInfo.deletedAt;
@@ -240,56 +250,61 @@ class Version {
     this.workspaceViewers = versionInfo.workspaceViewers;
     this.workspaceAdmins = versionInfo.workspaceAdmins;
     this.workspaceMembers = versionInfo.workspaceMembers;
-    
+
     this.versionData = {
-     id: versionInfo.id,
-     parentId: versionInfo.parentId ?? null, // Handle null parentId
-     name: versionInfo.name ?? '',
-     url: versionInfo.url ?? '',
-     versionNumber: versionInfo.versionNumber ?? '',
-     documentId: versionInfo.documentId ?? '',
-     draft: versionInfo.draft ?? false,
-     userId: versionInfo.userId ?? '',
-     content: versionInfo.content ?? '',
-     metadata: versionInfo.metadata ?? { author: '', timestamp: undefined },
-     versionData: versionInfo.versionData ?? null,
-     checksum: versionInfo.checksum ?? '',
-     parentType: versionInfo.parentType ?? '',
-     parentVersion: versionInfo.parentVersion ?? '',
-     parentTitle: versionInfo.parentTitle ?? '',
-     parentContent: versionInfo.parentContent ?? '',
-     parentName: versionInfo.parentName ?? '',
-     parentUrl: versionInfo.parentUrl ?? '',
-     parentChecksum: versionInfo.parentChecksum ?? '',
-     parentMetadata: versionInfo.parentMetadata ?? {},
-     parentAppVersion: versionInfo.parentAppVersion ?? '',
-     parentVersionNumber: versionInfo.parentVersionNumber ?? '',
-     isLatest: versionInfo.isLatest ?? true,
-     isPublished: versionInfo.isPublished ?? false,
-     publishedAt: versionInfo.publishedAt ?? null,
-     source: versionInfo.source ?? 'initial',
-     status: versionInfo.status ?? 'active',
-     version: versionInfo.versionNumber ?? '',
-     timestamp: versionInfo.metadata?.timestamp ?? new Date(),
-     user: 'unknown', // Replace with actual user if available
-     changes: versionInfo.changes ?? [],
-     comments: versionInfo.comments ?? [],
-     workspaceId: versionInfo.workspaceId ?? '',
-     workspaceName: versionInfo.workspaceName ?? '',
-     workspaceType: versionInfo.workspaceType ?? '',
-     workspaceUrl: versionInfo.workspaceUrl ?? '',
-     workspaceViewers: versionInfo.workspaceViewers ?? [],
-     workspaceAdmins: versionInfo.workspaceAdmins ?? [],
-     workspaceMembers: versionInfo.workspaceMembers ?? [],
-     createdAt: versionInfo.metadata?.timestamp ?? new Date(),
-     updatedAt: new Date(),
-     _structure: versionInfo._structure,
-     frontendStructure: versionInfo.frontendStructure,
-     backendStructure: versionInfo.backendStructure ?? Promise.resolve([]),
-     data: versionInfo.data ?? [],
-     backend: versionInfo.versions?.backend ?? undefined,
-     frontend: versionInfo.versions?.frontend ?? undefined
-   };
+      id: versionInfo.id,
+      parentId: versionInfo.parentId ?? null, // Handle null parentId
+      name: versionInfo.name ?? '',
+      url: versionInfo.url ?? '',
+      versionNumber: versionInfo.versionNumber ?? '',
+
+      documentId: versionInfo.documentId ?? '',
+      draft: versionInfo.draft ?? false,
+      userId: versionInfo.userId ?? '',
+      content: versionInfo.content ?? '',
+      metadata: versionInfo.metadata ?? { author: '', timestamp: undefined },
+      versionData: versionInfo.versionData ?? null,
+      major: versionInfo.major ?? null,
+      minor: versionInfo.minor ?? null,
+      patch: versionInfo.patch ?? null,
+
+      checksum: versionInfo.checksum ?? '',
+      parentType: versionInfo.parentType ?? '',
+      parentVersion: versionInfo.parentVersion ?? '',
+      parentTitle: versionInfo.parentTitle ?? '',
+      parentContent: versionInfo.parentContent ?? '',
+      parentName: versionInfo.parentName ?? '',
+      parentUrl: versionInfo.parentUrl ?? '',
+      parentChecksum: versionInfo.parentChecksum ?? '',
+      parentMetadata: versionInfo.parentMetadata ?? {},
+      parentAppVersion: versionInfo.parentAppVersion ?? '',
+      parentVersionNumber: versionInfo.parentVersionNumber ?? '',
+      isLatest: versionInfo.isLatest ?? true,
+      isPublished: versionInfo.isPublished ?? false,
+      publishedAt: versionInfo.publishedAt ?? null,
+      source: versionInfo.source ?? 'initial',
+      status: versionInfo.status ?? 'active',
+      version: versionInfo.versionNumber ?? '',
+      timestamp: versionInfo.metadata?.timestamp ?? new Date(),
+      user: 'unknown', // Replace with actual user if available
+      changes: versionInfo.changes ?? [],
+      comments: versionInfo.comments ?? [],
+      workspaceId: versionInfo.workspaceId ?? '',
+      workspaceName: versionInfo.workspaceName ?? '',
+      workspaceType: versionInfo.workspaceType ?? '',
+      workspaceUrl: versionInfo.workspaceUrl ?? '',
+      workspaceViewers: versionInfo.workspaceViewers ?? [],
+      workspaceAdmins: versionInfo.workspaceAdmins ?? [],
+      workspaceMembers: versionInfo.workspaceMembers ?? [],
+      createdAt: versionInfo.metadata?.timestamp ?? new Date(),
+      updatedAt: new Date(),
+      _structure: versionInfo._structure,
+      frontendStructure: versionInfo.frontendStructure,
+      backendStructure: versionInfo.backendStructure ?? Promise.resolve([]),
+      data: versionInfo.data ?? [],
+      backend: versionInfo.versions?.backend ?? undefined,
+      frontend: versionInfo.versions?.frontend ?? undefined
+    };
 
     this.getVersion = async (): Promise<string | null> => {
       // Access getStructure using optional chaining
@@ -319,6 +334,8 @@ class Version {
     );
     this.backendStructure = Promise.resolve(backendStructureInstance.getStructureAsArray());
   }
+
+
 
   private async generateStructureHash?(): Promise<string> {
     // Wait for the resolution of the promise
@@ -369,6 +386,9 @@ class Version {
   static create(versionInfo: {
     id: number;
     versionNumber: string;
+    major: number;
+    minor: number;
+    patch: number;
     buildNumber: string;
     appVersion: string;
     limit: number;
@@ -384,7 +404,7 @@ class Version {
     };
     metadata: {
       author: string;
-      timestamp: string | Date  | undefined
+      timestamp: string | Date | undefined
     };
     url: string;
     versionHistory: VersionHistory;
@@ -416,7 +436,7 @@ class Version {
     workspaceMembers: string[];
     createdAt: Date;
     versionData: VersionData[];
-    deletedAt:  Date | undefined,
+    deletedAt: Date | undefined,
     isDeleted: boolean,
     publishedBy: string,
     lastModifiedBy: string,
@@ -427,7 +447,7 @@ class Version {
     lockedBy: string,
     lockedAt: Date | null,
     isArchived: boolean,
-    
+
     archivedBy: string,
     archivedAt: Date | null,
     tags: TagsRecord,
@@ -453,6 +473,8 @@ class Version {
     // Assuming you have a fileOrFolderId variable
     const fileOrFolderId = "fileOrFolderId";
     const metadata: StructuredMetadata = {
+      name: "",
+      description: "",
       metadataEntries: {
         [fileOrFolderId]: {
           originalPath: "",
@@ -461,7 +483,6 @@ class Version {
           timestamp: new Date(),
           fileType: "",
           title: "",
-          description: "",
           keywords: [],
           authors: [],
           contributors: [],
@@ -471,7 +492,11 @@ class Version {
           links: [],
           tags: [],
         },
-      }
+      },
+      apiEndpoint: "",
+      apiKey: fluenceApiKey ? fluenceApiKey : undefined,
+      timeout: 10000,
+      retryAttempts: 0,
     };
 
     // Function to create a Version object from ExtendedVersion data
@@ -484,6 +509,9 @@ class Version {
         description,
         buildNumber,
         versions,
+        major,
+        minor,
+        patch,
         id,
         parentId,
         parentType,
@@ -525,6 +553,9 @@ class Version {
         appVersion,
         description,
         buildNumber,
+        major,
+        minor,
+        patch,
         versions,
         versionData: [],
         id,
@@ -562,29 +593,29 @@ class Version {
         documentId: "", // Set appropriately based on your application logic
         draft: false, // Set appropriately based on your application logic
         userId: "", // Set appropriately based on your application logic
-        isDeleted:false,
-        publishedBy:"publisher",
+        isDeleted: false,
+        publishedBy: "publisher",
         lastModifiedBy: "modified by",
-       
+
         deletedAt: new Date(),
         lastModifiedAt: new Date(),
-        rootId:"",
-        branchId:"",
+        rootId: "",
+        branchId: "",
         isLocked: false,
-       
-        lockedBy:"",
-        lockedAt:new Date(),
+
+        lockedBy: "",
+        lockedAt: new Date(),
         isArchived: false,
         archivedBy: "",
-       
-        archivedAt:new Date,
+
+        archivedAt: new Date,
         tags: {},
-        categories:[],
+        categories: [],
         permissions: docPermissions,
-        collaborators:[],
-        comments:[],
-        reactions:[],
-        attachments:[],
+        collaborators: [],
+        comments: [],
+        reactions: [],
+        attachments: [],
         changes: []
       });
 
@@ -597,7 +628,12 @@ class Version {
 
   // Method to update version history
   updateVersionHistory?(newVersionData: VersionData): void {
-    this.versionHistory.versionData.push(newVersionData);
+    if (Array.isArray(this.versionHistory.versionData)) {
+      this.versionHistory.versionData.push(newVersionData);
+    } else {
+      // Handle the case where it's not an array (initialize as an array)
+      this.versionHistory.versionData = [newVersionData];
+    }
   }
 
   // Method to generate checksum
@@ -716,6 +752,10 @@ const data: VersionData = {
     revisionNotes: undefined, // Adjust as per your application logic
   },
   versionData: [],
+  major: 0,
+  minor: 0,
+  patch: 0,
+
   data: [],
   version: "",
   timestamp: "",

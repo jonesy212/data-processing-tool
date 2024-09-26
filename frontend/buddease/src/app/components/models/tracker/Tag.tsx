@@ -17,7 +17,7 @@ interface TagOptions {
   description: string;
   enabled: boolean;
   type: string;
-   tags?: TagsRecord | string[] | undefined; 
+  ags?: TagsRecord | string[] | undefined; 
   createdAt?: Date;
   updatedAt?: Date;
   createdBy: string;

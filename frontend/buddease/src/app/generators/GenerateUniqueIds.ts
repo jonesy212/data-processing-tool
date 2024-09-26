@@ -39,17 +39,17 @@ class UniqueIDGenerator {
 
   static generateSnapshotID(): string {
     return UniqueIDGenerator.generateID(
-      "SNP", 
+      "SNP",
       "snapshot_id",
       NotificationTypeEnum.GeneratedID
     );
   }
 
-  static generateTrackerID( 
+  static generateTrackerID(
     name: string,
     type: NotificationTypeEnum,
     id?: string,
-  ): string{
+  ): string {
     return UniqueIDGenerator.generateID(
       "TRK",
       name,
@@ -59,8 +59,8 @@ class UniqueIDGenerator {
     );
   }
 
-   // New static method for generating snapshot data key
-   static generateSnapshotDataKey(documentId: string, userId: string): string {
+  // New static method for generating snapshot data key
+  static generateSnapshotDataKey(documentId: string, userId: string): string {
     // Generate a unique key for snapshot data using documentId and userId
     return `documents.${userId}.${documentId}`;
   }
@@ -72,9 +72,8 @@ class UniqueIDGenerator {
     completionMessageLog: NotificationData,
     callback?: () => void
   ): string {
-    const notificationID = `${notificationType}_${
-      notification.message
-    }_${date.getTime()}`;
+    const notificationID = `${notificationType}_${notification.message
+      }_${date.getTime()}`;
     const message = `Generated notification ID: ${notificationID}`;
     const content = {
       notificationID: notificationID,
@@ -173,6 +172,30 @@ class UniqueIDGenerator {
     return `location_${Date.now()}`;
   }
 
+
+  static generatePresentationID(
+    prefix: string,
+    name: string,
+    type: NotificationTypeEnum,
+    id?: string,
+    title?: string,
+    notificationType?: NotificationType,
+    dataDetails?: DataDetails
+  ): string {
+    const generatedID = `${prefix || 'presentation'}_${name}_${type}_${Date.now()}`;
+
+    // Optionally append additional data if provided
+    if (id) {
+      return `${generatedID}_${id}`;
+    }
+    if (title) {
+      return `${generatedID}_${title}`;
+    }
+    // You can also use dataDetails if needed for the ID generation
+    return generatedID;
+  }
+
+
   static generateCouponCode(): string {
     return `coupon_${Date.now()}`;
   }
@@ -230,7 +253,7 @@ class UniqueIDGenerator {
   static generateSnapshotByID(snapshotID: string): string {
     return `snapshot_${snapshotID}`;
   }
-  
+
   // Method for handling snapshot logic
   static handleSnapshot(snapshotID: string): string {
     // Example logic for handling snapshot
@@ -247,7 +270,6 @@ class UniqueIDGenerator {
     // Example logic for clearing snapshot failure
     return `cleared_failure_${snapshotID}`;
   }
-
 
   static generateID(
     prefix: string,
@@ -312,9 +334,21 @@ class UniqueIDGenerator {
         return UniqueIDGenerator.generateAnalyticsID();
       case NotificationTypeEnum.AppStructureID:
         return UniqueIDGenerator.generateAppStructureID();
+
       case NotificationTypeEnum.SnapshotID:
         return UniqueIDGenerator.generateSnapshotID();
-       
+
+      case NotificationTypeEnum.PresentationID:
+        return UniqueIDGenerator.generatePresentationID(
+          prefix,
+          name,
+          type,
+          id,
+          title,
+          type,
+          dataDetails,
+        );
+
       case NotificationTypeEnum.ChatMessageID:
         return UniqueIDGenerator.generateChatMessageID(
           String(chatThreadId)

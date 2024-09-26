@@ -32,11 +32,11 @@ import { Tag } from "../../models/tracker/Tag";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Project } from "../../projects/Project";
-import { TagsRecord } from "../../snapshots";
+import { SnapshotConfig, SnapshotDataType, SnapshotStoreProps, TagsRecord } from "../../snapshots";
 import { Snapshot, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
 import { SnapshotOperation, SnapshotOperationType } from "../../snapshots/SnapshotActions";
-import { snapshotStoreConfig, SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
-import { snapshot } from "../../snapshots/snapshot";
+import {  InitializedConfig, SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
+
 import { AllTypes } from "../../typings/PropTypes";
 import { createSnapshotStoreOptions } from "../../typings/YourSpecificSnapshotType";
 const { notify } = useNotification();
@@ -54,12 +54,14 @@ export type AllStatus =
 // Define a generic interface for details
 // isActive
 
-interface DetailsItem<T extends SnapshotUnion> {
+interface DetailsItem<T extends Data> {
   _id?: string;
   id: string | number;
   title?: string;
   type?: AllTypes;
   status?: AllStatus;
+  communication?: CommunicationActionTypes;
+  teammembers?: Array<TeamMember>
   description?: string | null | undefined;
   startDate?: Date;
   endDate?: Date;
@@ -190,9 +192,12 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
 
-  constructor() {
+  constructor( 
+    storeProps: SnapshotStoreProps<T, K>,
+    snapConfig: SnapshotConfig<T, K>
+  ) {
     makeAutoObservable(this);
-    this.initSnapshotStore();
+    this.initSnapshotStore(storeProps, snapConfig);
   }
 
   
@@ -204,21 +209,494 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
     return "";
   }
 
-    // Updated initSnapshotStore method
-    private async initSnapshotStore() {
-      const initialState = null; // or undefined, depending on your default handling
-      const snapshotConfig: SnapshotStoreConfig<T, K>[] = [];  // Example empty array
+  private async initSnapshotStore(storeProps: SnapshotStoreProps<T, K>, snapConfig: SnapshotConfig<T, K>) {
+    const initialState = null;
+    const snapshotStoreProps: SnapshotStoreProps<T, K> = {
+      id: storeProps.storeId.toString(), // Assuming ID needs to be a string
+      storeId: storeProps.storeId,
+      name: storeProps.name, // Assuming this relates to the store's name
+      state: storeProps.snapshots || initialState, // Handle snapshots appropriately
+      category: storeProps.category || 'default-category', // Default category
+      timestamp: storeProps.timestamp || new Date(), // Default timestamp
+      message: storeProps.message || '', // Default message
+      eventRecords: [], // Default event records
+      version: storeProps.version,
+      schema: storeProps.schema,
+      options: storeProps.options,
+      config: storeProps.config,
+      operation: storeProps.operation,
+    }
+    
+    // Initialize the snapshot store using snapshotStoreProps
+    this.snapshotStore = new SnapshotStore<T, K>({
+      storeId: snapshotStoreProps.storeId,
+      name: snapshotStoreProps.name,
+      version: snapshotStoreProps.version,
+      schema: snapshotStoreProps.schema,
+      options: snapshotStoreProps.options,
+      category: snapConfig.category,
+      config: snapshotStoreProps.config,
+      operation: snapshotStoreProps.operation,
+    });
+
+    const snapshotConfig: SnapshotConfig<T, K> = {
+        id: snapConfig?.id || 'default-id', // Default or generate an ID
+        store: snapConfig?.store || undefined, // Initialize appropriately
+        state: snapConfig?.state || initialState, // Initialize state as needed
+        category: snapConfig?.category || 'default-category', // Default or computed category
+        timestamp: snapConfig?.timestamp || new Date(), // Default timestamp
+        message: snapConfig?.message || '', // Default message
+        eventRecords: {}, // Default event records
+    
+        // Other properties you want to default or initialize
+        initialState: snapConfig?.initialState || undefined,
+        isCore: snapConfig?.isCore || false,
+        initialConfig: snapConfig?.initialConfig || undefined,
+        removeSubscriber: snapConfig?.removeSubscriber || (() => {}),
+        onInitialize: snapConfig?.onInitialize || (() => {}),
+        onError: snapConfig?.onError || (() => {}),
+        taskIdToAssign: snapConfig?.taskIdToAssign || undefined,
+        schema: snapConfig?.schema || undefined,
+        currentCategory: snapConfig?.currentCategory || undefined,
+        mappedSnapshotData: snapConfig?.mappedSnapshotData || new Map(),
+        storeId: snapConfig?.storeId || 0,
+        snapshot: snapConfig?.snapshot || (() => undefined), // Provide a fallback
+        setCategory: snapConfig?.setCategory || (() => {}),
+        applyStoreConfig: snapConfig?.applyStoreConfig || (() => {}),
+        generateId: snapConfig?.generateId || (() => 'default-generated-id'),
+        snapshotData: snapConfig?.snapshotData || (() => ({} as SnapshotDataType<T, K>)),
+        getSnapshotItems: snapConfig?.getSnapshotItems || (() => []),
+
+
+
+         // New additional properties
+         criteria: snapConfig?.criteria,
+         storeConfig: snapConfig?.storeConfig,
+         additionalData: snapConfig?.additionalData,
+         
+        defaultSubscribeToSnapshots: snapConfig?.defaultSubscribeToSnapshots,
+        notify: snapConfig?.notify,
+        notifySubscribers: snapConfig?.notifySubscribers,
+        getAllSnapshots: snapConfig?.getAllSnapshots,
+        getSubscribers: snapConfig?.getSubscribers,
+        versionInfo: snapConfig?.versionInfo,
+        transformSubscriber: snapConfig?.transformSubscriber,
+        transformDelegate: snapConfig?.transformDelegate,
+        initializedState: snapConfig?.initializedState,
+        getAllKeys: snapConfig?.getAllKeys,
+        getAllValues: snapConfig?.getAllValues,
+        getAllItems: snapConfig?.getAllItems,
+        getSnapshotEntries: snapConfig?.getSnapshotEntries,
+        getAllSnapshotEntries: snapConfig?.getAllSnapshotEntries,
+        addDataStatus: snapConfig?.addDataStatus,
+        removeData: snapConfig?.removeData,
+        updateData: snapConfig?.updateData,
+        updateDataTitle: snapConfig?.updateDataTitle,
+        updateDataDescription: snapConfig?.updateDataDescription,
+        updateDataStatus: snapConfig?.updateDataStatus,
+        addDataSuccess: snapConfig?.addDataSuccess,
+        getDataVersions: snapConfig?.getDataVersions,
+        updateDataVersions: snapConfig?.updateDataVersions,
+        getBackendVersion: snapConfig?.getBackendVersion,
+        getFrontendVersion: snapConfig?.getFrontendVersion,
+        fetchData: snapConfig?.fetchData,
+        defaultSubscribeToSnapshot: snapConfig?.defaultSubscribeToSnapshot,
+        handleSubscribeToSnapshot: snapConfig?.handleSubscribeToSnapshot,
+        removeItem: snapConfig?.removeItem,
+        getSnapshot: snapConfig?.getSnapshot,
+        getSnapshotSuccess: snapConfig?.getSnapshotSuccess,
+        setItem: snapConfig?.setItem,
+        getItem: snapConfig?.getItem,
+        getDataStore: snapConfig?.getDataStore,
+        getDataStoreMap: snapConfig?.getDataStoreMap,
+        addSnapshotSuccess: snapConfig?.addSnapshotSuccess,
+        deepCompare: snapConfig?.deepCompare,
+        shallowCompare: snapConfig?.shallowCompare,
+        getDataStoreMethods: snapConfig?.getDataStoreMethods,
+        getDelegate: snapConfig?.getDelegate,
+        determineCategory: snapConfig?.determineCategory,
+        determinePrefix: snapConfig?.determinePrefix,
+        removeSnapshot: snapConfig?.removeSnapshot,
+        addSnapshotItem: snapConfig?.addSnapshotItem,
+        addNestedStore: snapConfig?.addNestedStore,
+        clearSnapshots: snapConfig?.clearSnapshots,
+        addSnapshot: snapConfig?.addSnapshot,
+        emit: snapConfig?.emit,
+        createSnapshot: snapConfig?.createSnapshot,
+        createInitSnapshot: snapConfig?.createInitSnapshot,
+        addStoreConfig: snapConfig?.addStoreConfig,
+        handleSnapshotConfig: snapConfig?.handleSnapshotConfig,
+        getSnapshotConfig: snapConfig?.getSnapshotConfig,
+        getSnapshotListByCriteria: snapConfig?.getSnapshotListByCriteria,
+        setSnapshotSuccess: snapConfig?.setSnapshotSuccess,
+        setSnapshotFailure: snapConfig?.setSnapshotFailure,
+        updateSnapshots: snapConfig?.updateSnapshots,
+        updateSnapshotsSuccess: snapConfig?.updateSnapshotsSuccess,
+        updateSnapshotsFailure: snapConfig?.updateSnapshotsFailure,
+        initSnapshot: snapConfig?.initSnapshot,
+        takeSnapshot: snapConfig?.takeSnapshot,
+        takeSnapshotSuccess: snapConfig?.takeSnapshotSuccess,
+        takeSnapshotsSuccess: snapConfig?.takeSnapshotsSuccess,
+        flatMap: snapConfig?.flatMap,
+        getState: snapConfig?.getState,
+        setState: snapConfig?.setState,
+        validateSnapshot: snapConfig?.validateSnapshot,
+        handleActions: snapConfig?.handleActions,
+        setSnapshot: snapConfig?.setSnapshot,
+        transformSnapshotConfig: snapConfig?.transformSnapshotConfig,
+        setSnapshots: snapConfig?.setSnapshots,
+        clearSnapshot: snapConfig?.clearSnapshot,
+        mergeSnapshots: snapConfig?.mergeSnapshots,
+        reduceSnapshots: snapConfig?.reduceSnapshots,
+        sortSnapshots: snapConfig?.sortSnapshots,
+        filterSnapshots: snapConfig?.filterSnapshots,
+        findSnapshot: snapConfig?.findSnapshot,
+        mapSnapshots: snapConfig?.mapSnapshots,
+        takeLatestSnapshot: snapConfig?.takeLatestSnapshot,
+        updateSnapshot: snapConfig?.updateSnapshot,
+        addSnapshotSubscriber: snapConfig?.addSnapshotSubscriber,
+        removeSnapshotSubscriber: snapConfig?.removeSnapshotSubscriber,
+        getSnapshotConfigItems: snapConfig?.getSnapshotConfigItems,
+        subscribeToSnapshots: snapConfig?.subscribeToSnapshots,
+        executeSnapshotAction: snapConfig?.executeSnapshotAction,
+        subscribeToSnapshot: snapConfig?.subscribeToSnapshot,
+        unsubscribeFromSnapshot: snapConfig?.unsubscribeFromSnapshot,
+        subscribeToSnapshotsSuccess: snapConfig?.subscribeToSnapshotsSuccess,
+        unsubscribeFromSnapshots: snapConfig?.unsubscribeFromSnapshots,
+        getSnapshotItemsSuccess: snapConfig?.getSnapshotItemsSuccess,
+        getSnapshotItemSuccess: snapConfig?.getSnapshotItemSuccess,
+        getSnapshotKeys: snapConfig?.getSnapshotKeys,
+        getSnapshotIdSuccess: snapConfig?.getSnapshotIdSuccess,
+        getSnapshotValuesSuccess: snapConfig?.getSnapshotValuesSuccess,
+        getSnapshotWithCriteria: snapConfig?.getSnapshotWithCriteria,
+        reduceSnapshotItems: snapConfig?.reduceSnapshotItems,
+        subscribeToSnapshotList: snapConfig?.subscribeToSnapshotList,
+        config: snapConfig?.config,
+        data: snapConfig?.data as T,
+        label: snapConfig?.label,
+        events: snapConfig?.events,
+        restoreSnapshot: snapConfig?.restoreSnapshot,
+        handleSnapshot: snapConfig?.handleSnapshot,
+        subscribe: snapConfig?.subscribe,
+        meta: snapConfig?.meta,
+        items: snapConfig?.items,
+        subscribers: snapConfig?.subscribers,
+        snapshotStore: snapConfig?.snapshotStore,
+        setSnapshotCategory: snapConfig?.setSnapshotCategory,
+        getSnapshotCategory: snapConfig?.getSnapshotCategory,
+        getSnapshotData: snapConfig?.getSnapshotData,
+        deleteSnapshot: snapConfig?.deleteSnapshot,
+        getSnapshots: snapConfig?.getSnapshots,
+        compareSnapshots: snapConfig?.compareSnapshots,
+        compareSnapshotItems: snapConfig?.compareSnapshotItems,
+        batchTakeSnapshot: snapConfig?.batchTakeSnapshot,
+        batchFetchSnapshots: snapConfig?.batchFetchSnapshots,
+        batchTakeSnapshotsRequest: snapConfig?.batchTakeSnapshotsRequest,
+        batchUpdateSnapshotsRequest: snapConfig?.batchUpdateSnapshotsRequest,
+        filterSnapshotsByStatus: snapConfig?.filterSnapshotsByStatus,
+        filterSnapshotsByCategory: snapConfig?.filterSnapshotsByCategory,
+        filterSnapshotsByTag: snapConfig?.filterSnapshotsByTag,
+        batchFetchSnapshotsSuccess: snapConfig?.batchFetchSnapshotsSuccess,
+        batchFetchSnapshotsFailure: snapConfig?.batchFetchSnapshotsFailure,
+        batchUpdateSnapshotsSuccess: snapConfig?.batchUpdateSnapshotsSuccess,
+        batchUpdateSnapshotsFailure: snapConfig?.batchUpdateSnapshotsFailure,
+        handleSnapshotSuccess: snapConfig?.handleSnapshotSuccess,
+        getSnapshotId: snapConfig?.getSnapshotId,
+        compareSnapshotState: snapConfig?.compareSnapshotState,
+      
+
+
+
+        payload: snapConfig?.payload,
+        dataItems: snapConfig?.dataItems,
+       
+        newData: snapConfig?.newData,
+        getInitialState: snapConfig?.getInitialState,
+        getConfigOption: snapConfig?.getConfigOption,
+        getTimestamp: snapConfig?.getTimestamp,
+       
+        getStores: snapConfig?.getStores,
+        getData: snapConfig?.getData,
+        setData: snapConfig?.setData,
+        addData: snapConfig?.addData,
+       
+        stores: snapConfig?.stores,
+        getStore: snapConfig?.getStore,
+        addStore: snapConfig?.addStore,
+        mapSnapshot: snapConfig?.mapSnapshot,
+        mapSnapshotWithDetails: snapConfig?.mapSnapshotWithDetails,
+        removeStore: snapConfig?.removeStore,
+        unsubscribe: snapConfig?.unsubscribe,
+        fetchSnapshot: snapConfig?.fetchSnapshot,
+        
+        fetchSnapshotSuccess: snapConfig?.fetchSnapshotSuccess,
+        updateSnapshotFailure: snapConfig?.updateSnapshotFailure,
+        fetchSnapshotFailure: snapConfig?.fetchSnapshotFailure,
+        addSnapshotFailure: snapConfig?.addSnapshotFailure,
+       
+        configureSnapshotStore: snapConfig?.configureSnapshotStore,
+        updateSnapshotSuccess: snapConfig?.updateSnapshotSuccess,
+        createSnapshotFailure: snapConfig?.createSnapshotFailure,
+        createSnapshotSuccess: snapConfig?.createSnapshotSuccess,
+       
+        createSnapshots: snapConfig?.createSnapshots,
+        snapConfig: snapConfig?.snapConfig,
+        onSnapshot: snapConfig?.onSnapshot,
+        onSnapshots: snapConfig?.onSnapshots,
+        childIds: snapConfig?.childIds,
+        getParentId: snapConfig?.getParentId,
+        getChildIds: snapConfig?.getChildIds,
+        addChild: snapConfig?.addChild,
+       
+        removeChild: snapConfig?.removeChild,
+        getChildren: snapConfig?.getChildren,
+        hasChildren: snapConfig?.hasChildren,
+        isDescendantOf: snapConfig?.isDescendantOf,
+        getSnapshotById: snapConfig?.getSnapshotById,
+     
+      };
+
 
       // Ensure delegate is correctly typed as Snapshot<T, K>
       const delegateSnapshot: Snapshot<T, K> = {
         // Provide appropriate default values for the snapshot
-        id: "", // Default or generate an ID
-        store: null, // Initialize appropriately
-        state: [], // Initialize state as needed
-        category: "", // Default or computed category
-        timestamp: new Date(), // Default timestamp
-        message: "", // Default message
+        id: snapshotConfig.id, // Default or generate an ID
+        store: snapshotConfig.store, // Initialize appropriately
+        state: snapshotConfig.state, // Initialize state as needed
+        category: snapshotConfig.category, // Default or computed category
+        timestamp: snapshotConfig.timestamp, // Default timestamp
+        message: snapshotConfig.message, // Default message
         eventRecords: {}, // Default event records
+
+        criteria: snapshotConfig.criteria,
+        initialState: snapshotConfig.initialState,
+        isCore: snapshotConfig.isCore,
+        initialConfig: snapshotConfig.initialConfig,
+        removeSubscriber: snapshotConfig.removeSubscriber,
+       
+        onInitialize: snapshotConfig.onInitialize,
+        onError: snapshotConfig.onError,
+        taskIdToAssign: snapshotConfig.taskIdToAssign,
+        schema: snapshotConfig.schema,
+       
+        currentCategory: snapshotConfig.currentCategory,
+        mappedSnapshotData: snapshotConfig.mappedSnapshotData,
+        storeId: snapshotConfig.storeId,
+        snapshot: snapshotConfig.snapshot,
+       
+        setCategory: snapshotConfig.setCategory,
+        applyStoreConfig: snapshotConfig.applyStoreConfig,
+        generateId: snapshotConfig.generateId,
+        snapshotData: snapshotConfig.snapshotData,
+       
+        getSnapshotItems: snapshotConfig.getSnapshotItems,
+        defaultSubscribeToSnapshots: snapshotConfig.defaultSubscribeToSnapshots,
+        notify: snapshotConfig.notify,
+        notifySubscribers: snapshotConfig.notifySubscribers,
+       
+        getAllSnapshots: snapshotConfig.getAllSnapshots,
+        getSubscribers: snapshotConfig.getSubscribers,
+        versionInfo: snapshotConfig.versionInfo,
+        transformSubscriber: snapshotConfig.transformSubscriber,
+        
+        transformDelegate: snapshotConfig.transformDelegate,
+        initializedState: snapshotConfig.initializedState,
+        getAllKeys: snapshotConfig.getAllKeys,
+        getAllValues: snapshotConfig.getAllValues,
+       
+        getAllItems: snapshotConfig.getAllItems,
+        getSnapshotEntries: snapshotConfig.getSnapshotEntries,
+        getAllSnapshotEntries: snapshotConfig.getAllSnapshotEntries,
+        addDataStatus: snapshotConfig.addDataStatus,
+       
+        removeData: snapshotConfig.removeData,
+        updateData: snapshotConfig.updateData,
+        updateDataTitle: snapshotConfig.updateDataTitle,
+        updateDataDescription: snapshotConfig.updateDataDescription,
+        
+        updateDataStatus: snapshotConfig.updateDataStatus,
+        addDataSuccess: snapshotConfig.addDataSuccess,
+        getDataVersions: snapshotConfig.getDataVersions,
+        updateDataVersions: snapshotConfig.updateDataVersions,
+       
+        getBackendVersion: snapshotConfig.getBackendVersion,
+        getFrontendVersion: snapshotConfig.getFrontendVersion,
+        fetchData: snapshotConfig.fetchData,
+        defaultSubscribeToSnapshot: snapshotConfig.defaultSubscribeToSnapshot,
+       
+        handleSubscribeToSnapshot: snapshotConfig.handleSubscribeToSnapshot,
+        removeItem: snapshotConfig.removeItem,
+        getSnapshot: snapshotConfig.getSnapshot,
+        getSnapshotSuccess: snapshotConfig.getSnapshotSuccess,
+       
+        setItem: snapshotConfig.setItem,
+        getItem: snapshotConfig.getItem,
+        getDataStore: snapshotConfig.getDataStore,
+        getDataStoreMap: snapshotConfig.getDataStoreMap,
+       
+        addSnapshotSuccess: snapshotConfig.addSnapshotSuccess,
+        deepCompare: snapshotConfig.deepCompare,
+        shallowCompare: snapshotConfig.shallowCompare,
+        getDataStoreMethods: snapshotConfig.getDataStoreMethods,
+        
+        getDelegate: snapshotConfig.getDelegate,
+        determineCategory: snapshotConfig.determineCategory,
+        determinePrefix: snapshotConfig.determinePrefix,
+        removeSnapshot: snapshotConfig.removeSnapshot,
+        
+        addSnapshotItem: snapshotConfig.addSnapshotItem,
+        addNestedStore: snapshotConfig.addNestedStore,
+        clearSnapshots: snapshotConfig.clearSnapshots,
+        addSnapshot: snapshotConfig.addSnapshot,
+       
+        emit: snapshotConfig.emit,
+        createSnapshot: snapshotConfig.createSnapshot,
+        createInitSnapshot: snapshotConfig.createInitSnapshot,
+        addStoreConfig: snapshotConfig.addStoreConfig,
+       
+        handleSnapshotConfig: snapshotConfig.handleSnapshotConfig,
+        getSnapshotConfig: snapshotConfig.getSnapshotConfig,
+        getSnapshotListByCriteria: snapshotConfig.getSnapshotListByCriteria,
+        setSnapshotSuccess: snapshotConfig.setSnapshotSuccess,
+       
+        setSnapshotFailure: snapshotConfig.setSnapshotFailure,
+        updateSnapshots: snapshotConfig.updateSnapshots,
+        updateSnapshotsSuccess: snapshotConfig.updateSnapshotsSuccess,
+        updateSnapshotsFailure: snapshotConfig.updateSnapshotsFailure,
+       
+        initSnapshot: snapshotConfig.initSnapshot,
+        takeSnapshot: snapshotConfig.takeSnapshot,
+        takeSnapshotSuccess: snapshotConfig.takeSnapshotSuccess,
+        takeSnapshotsSuccess: snapshotConfig.takeSnapshotsSuccess,
+       
+        flatMap: snapshotConfig.flatMap,
+        getState: snapshotConfig.getState,
+        setState: snapshotConfig.setState,
+        validateSnapshot: snapshotConfig.validateSnapshot,
+        
+        handleActions: snapshotConfig.handleActions,
+        setSnapshot: snapshotConfig.setSnapshot,
+        transformSnapshotConfig: snapshotConfig.transformSnapshotConfig,
+        setSnapshots: snapshotConfig.setSnapshots,
+        
+        clearSnapshot: snapshotConfig.clearSnapshot,
+        mergeSnapshots: snapshotConfig.mergeSnapshots,
+        reduceSnapshots: snapshotConfig.reduceSnapshots,
+        sortSnapshots: snapshotConfig.sortSnapshots,
+       
+        filterSnapshots: snapshotConfig.filterSnapshots,
+        findSnapshot: snapshotConfig.findSnapshot,
+        mapSnapshots: snapshotConfig.mapSnapshots,
+        takeLatestSnapshot: snapshotConfig.takeLatestSnapshot,
+        
+        updateSnapshot: snapshotConfig.updateSnapshot,
+        addSnapshotSubscriber: snapshotConfig.addSnapshotSubscriber,
+        removeSnapshotSubscriber: snapshotConfig.removeSnapshotSubscriber,
+        getSnapshotConfigItems: snapshotConfig.getSnapshotConfigItems,
+       
+        subscribeToSnapshots: snapshotConfig.subscribeToSnapshots,
+        executeSnapshotAction: snapshotConfig.executeSnapshotAction,
+        subscribeToSnapshot: snapshotConfig.subscribeToSnapshot,
+        unsubscribeFromSnapshot: snapshotConfig.unsubscribeFromSnapshot,
+       
+        subscribeToSnapshotsSuccess: snapshotConfig.subscribeToSnapshotsSuccess,
+        unsubscribeFromSnapshots: snapshotConfig.unsubscribeFromSnapshots,
+        getSnapshotItemsSuccess: snapshotConfig.getSnapshotItemsSuccess,
+        getSnapshotItemSuccess: snapshotConfig.getSnapshotItemSuccess,
+       
+        getSnapshotKeys: snapshotConfig.getSnapshotKeys,
+        getSnapshotIdSuccess: snapshotConfig.getSnapshotIdSuccess,
+        getSnapshotValuesSuccess: snapshotConfig.getSnapshotValuesSuccess,
+        getSnapshotWithCriteria: snapshotConfig.getSnapshotWithCriteria,
+       
+        reduceSnapshotItems: snapshotConfig.reduceSnapshotItems,
+        subscribeToSnapshotList: snapshotConfig.subscribeToSnapshotList,
+        config: snapshotConfig.config,
+        data: snapshotConfig.data,
+       
+        label: snapshotConfig.label,
+        events: snapshotConfig.events,
+        restoreSnapshot: snapshotConfig.restoreSnapshot,
+        handleSnapshot: snapshotConfig.handleSnapshot,
+       
+        subscribe: snapshotConfig.subscribe,
+        meta: snapshotConfig.meta,
+        items: snapshotConfig.items,
+        subscribers: snapshotConfig.subscribers,
+       
+        snapshotStore: snapshotConfig.snapshotStore,
+        setSnapshotCategory: snapshotConfig.setSnapshotCategory,
+        getSnapshotCategory: snapshotConfig.getSnapshotCategory,
+        getSnapshotData: snapshotConfig.getSnapshotData,
+        
+        deleteSnapshot: snapshotConfig.deleteSnapshot,
+        getSnapshots: snapshotConfig.getSnapshots,
+        compareSnapshots: snapshotConfig.compareSnapshots,
+        compareSnapshotItems: snapshotConfig.compareSnapshotItems,
+       
+        batchTakeSnapshot: snapshotConfig.batchTakeSnapshot,
+        batchFetchSnapshots: snapshotConfig.batchFetchSnapshots,
+        batchTakeSnapshotsRequest: snapshotConfig.batchTakeSnapshotsRequest,
+        batchUpdateSnapshotsRequest: snapshotConfig.batchUpdateSnapshotsRequest,
+       
+        filterSnapshotsByStatus: snapshotConfig.filterSnapshotsByStatus,
+        filterSnapshotsByCategory: snapshotConfig.filterSnapshotsByCategory,
+        filterSnapshotsByTag: snapshotConfig.filterSnapshotsByTag,
+        batchFetchSnapshotsSuccess: snapshotConfig.batchFetchSnapshotsSuccess,
+       
+        batchFetchSnapshotsFailure: snapshotConfig.batchFetchSnapshotsFailure,
+        batchUpdateSnapshotsSuccess: snapshotConfig.batchUpdateSnapshotsSuccess,
+        batchUpdateSnapshotsFailure: snapshotConfig.batchUpdateSnapshotsFailure,
+        handleSnapshotSuccess: snapshotConfig.handleSnapshotSuccess,
+       
+        getSnapshotId: snapshotConfig.getSnapshotId,
+        compareSnapshotState: snapshotConfig.compareSnapshotState,
+        payload: snapshotConfig.payload,
+        dataItems: snapshotConfig.dataItems,
+       
+        newData: snapshotConfig.newData,
+        getInitialState: snapshotConfig.getInitialState,
+        getConfigOption: snapshotConfig.getConfigOption,
+        getTimestamp: snapshotConfig.getTimestamp,
+       
+        getStores: snapshotConfig.getStores,
+        getData: snapshotConfig.getData,
+        setData: snapshotConfig.setData,
+        addData: snapshotConfig.addData,
+       
+        stores: snapshotConfig.stores,
+        getStore: snapshotConfig.getStore,
+        addStore: snapshotConfig.addStore,
+        mapSnapshot: snapshotConfig.mapSnapshot,
+        mapSnapshotWithDetails: snapshotConfig.mapSnapshotWithDetails,
+        removeStore: snapshotConfig.removeStore,
+        unsubscribe: snapshotConfig.unsubscribe,
+        fetchSnapshot: snapshotConfig.fetchSnapshot,
+        
+        fetchSnapshotSuccess: snapshotConfig.fetchSnapshotSuccess,
+        updateSnapshotFailure: snapshotConfig.updateSnapshotFailure,
+        fetchSnapshotFailure: snapshotConfig.fetchSnapshotFailure,
+        addSnapshotFailure: snapshotConfig.addSnapshotFailure,
+       
+        configureSnapshotStore: snapshotConfig.configureSnapshotStore,
+        updateSnapshotSuccess: snapshotConfig.updateSnapshotSuccess,
+        createSnapshotFailure: snapshotConfig.createSnapshotFailure,
+        createSnapshotSuccess: snapshotConfig.createSnapshotSuccess,
+       
+        createSnapshots: snapshotConfig.createSnapshots,
+        snapConfig: snapshotConfig.snapConfig,
+        onSnapshot: snapshotConfig.onSnapshot,
+        onSnapshots: snapshotConfig.onSnapshots,
+        childIds: snapshotConfig.childIds,
+        getParentId: snapshotConfig.getParentId,
+        getChildIds: snapshotConfig.getChildIds,
+        addChild: snapshotConfig.addChild,
+       
+        removeChild: snapshotConfig.removeChild,
+        getChildren: snapshotConfig.getChildren,
+        hasChildren: snapshotConfig.hasChildren,
+        isDescendantOf: snapshotConfig.isDescendantOf,
+        getSnapshotById: snapshotConfig.getSnapshotById,
         // Add all other necessary properties with default values
       };
 
@@ -234,11 +712,34 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
 
       const options = createSnapshotStoreOptions<T, K>({
         initialState,
-        snapshotId: "", // Provide appropriate snapshotId
+        snapshotId: "snapshot_123", // Example snapshot ID, replace with actual ID
         category: category as unknown as CategoryProperties,
         categoryProperties: {
-          // Provide appropriate category properties
-          name, description, icon, color
+          name: "Snapshot Store Management",  // Name specific to managing snapshots
+          description: "Category for managing snapshot stores and their operations.",  // Clear description of the category's purpose
+          icon: "snapshot-store-icon.svg",  // Icon related to snapshots
+          color: "#2E8B57",  // A relevant color for the snapshot store category (e.g., green for success or management)
+          iconColor: "#FFFFFF",  // White icon color for contrast
+          isActive: true,  // The category is currently active and in use
+          isPublic: false,  // This category is private, not accessible to general users
+          isSystem: true,  // System category, important for managing internal operations
+          isDefault: false,  // Not the default category for snapshots, could be customized
+          isHidden: false,  // Visible in the UI
+          isHiddenInList: false,  // Shown in list views
+          UserInterface: ["SnapshotListComponent", "SnapshotDetailsComponent"],  // Components related to displaying snapshots in the UI
+          DataVisualization: ["SnapshotHistoryChart", "StoreUsageGraph"],  // Data visualization specific to snapshots
+          Forms: {
+            snapshotConfigForm: "Form for configuring snapshot settings",  // Form related to snapshot configuration
+            snapshotStoreSettings: "Settings for managing snapshot stores"  // Form related to store settings
+          },
+          Analysis: ["SnapshotAnalysisComponent", "StoreDataInsights"],  // Tools for analyzing snapshot data
+          Communication: ["SnapshotNotificationSystem"],  // Related communication components for notifying users about snapshot events
+          TaskManagement: ["SnapshotTaskScheduler", "SnapshotReminder"],  // Task management components for snapshot-related tasks
+          Crypto: [],  // No crypto components relevant in this context, left empty
+          brandName: "Snapshot Manager",  // Brand name specific to snapshot management
+          brandLogo: "snapshot-brand-logo.svg",  // Path to the logo associated with the snapshot manager brand
+          brandColor: "#4B0082",  // Brand color for the snapshot manager (e.g., Indigo)
+          brandMessage: "Manage your snapshots efficiently with our state-of-the-art snapshot store."  // Custom message relevant to the snapshot manager's purpose
         },
         dataStoreMethods: {
           // Provide appropriate dataStoreMethods
@@ -246,19 +747,21 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
 
       });
 
-
-
-      const snapshotId: string | number | undefined = snapshot?.store?.snapshotId ?? undefined;
-      const storeId = await snapshotApi.getSnapshotStoreId(Number(snapshotId));
-      const config: SnapshotStoreConfig<T, K> = snapshotStoreConfig;
+      const {
+        storeId,
+        name,
+        version,
+        schema,
+        config,
+        operation,
+      } = storeProps;
     
-      const operation: SnapshotOperation = {
-        // Provide the required operation details
-        operationType: SnapshotOperationType.FindSnapshot
-      };
+      // Check for missing required fields
+      if (!name || !version || !operation) {
+        throw new Error("Name, operation and version are required for SnapshotStore");
+      }
 
-
-      this.snapshotStore = new SnapshotStore<T, K>(storeId, options, category, config, operation);
+      this.snapshotStore = new SnapshotStore<T, K>({storeId, name, version, schema, options, category, config, operation});
     }
 
   updateDetailsTitle(id: string, newTitle: string): void {
@@ -519,8 +1022,8 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
   }
 }
 
-const useDetailsListStore = (): DetailsListStore => {
-  return new DetailsListStoreClass();
+const useDetailsListStore = <T extends Data, K extends Data>(storeProps: SnapshotStoreProps<T, K>, snapConfig: SnapshotConfig<T, K>): DetailsListStore<T,K> => {
+  return new DetailsListStoreClass(storeProps, snapConfig);
 };
 
 export { useDetailsListStore };

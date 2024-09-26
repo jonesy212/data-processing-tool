@@ -27,6 +27,7 @@ import { snapshotStoreConfigInstance } from '../../snapshots/snapshotStoreConfig
 interface CommonEvent extends Data {
   title: string;
 
+  
   // Shared date properties
   date: Date | undefined;
 

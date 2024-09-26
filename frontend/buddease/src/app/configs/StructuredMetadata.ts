@@ -11,9 +11,11 @@ import useErrorHandling from '../components/hooks/useErrorHandling';
 import { Data } from '../components/models/data/Data';
 import determineFileType from './DetermineFileType';
 import { BaseConfig } from './BaseConfig';
+import { TagsRecord } from '../components/snapshots';
 
 // Define interfaces for metadata structures
 interface StructuredMetadata extends BaseConfig {
+  description: string; // Must match BaseMetaDataOptions
   metadataEntries: {
     [fileOrFolderId: string]: {
       originalPath: string;
@@ -22,7 +24,6 @@ interface StructuredMetadata extends BaseConfig {
       timestamp: Date | undefined;
       fileType: string;
       title: string;
-      description: string;
       keywords: string[];
       authors: string[];
       contributors: string[];
@@ -37,17 +38,24 @@ interface StructuredMetadata extends BaseConfig {
 
 
 interface VideoMetadata {
+  title: string;
+  url: string
   duration: number;
   resolution: string;
   sizeInBytes: number;
   format: string;
   uploadDate: Date;
   uploader: string;
-  tags: string[];
+  tags?: TagsRecord | string[] | undefined; 
   categories: string[];
   language: LanguageEnum;
   location: string;
+  views: number;
+  likes: number;
+  comments: number;
+  
   data: Data; // Assuming Data is a custom data type
+  
 }
 
 interface ProjectMetadata {
@@ -143,6 +151,8 @@ const useUndoRedo = <T>(initialState: T) => {
 
 // Example usage
 const initialState: StructuredMetadata = {
+  name: 'metadata',
+  description: 'Metadata description',
   metadataEntries: {},
   apiEndpoint: '',
   apiKey: '',
@@ -171,6 +181,8 @@ const readMetadata = (filename: string): StructuredMetadata => {
     const { handleError } = useErrorHandling(); // Use useErrorHandling hook
     handleError(`Error reading metadata file: ${error.message}`); // Handle error
     return {
+      name: 'metadata',
+      description: 'Metadata file',
       metadataEntries: {},
       apiEndpoint: '',
       apiKey: '',
@@ -221,7 +233,6 @@ const trackStructureChanges = (
           alternatePaths: [],
           fileType: (fileType as string) || "Unknown",
           title: "",
-          description: "",
           keywords: [],
           authors: [],
           contributors: [],

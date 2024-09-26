@@ -8,7 +8,7 @@ import { getCurrentAppInfo } from "./VersionGenerator";
 interface VersionHistory {
   // Define the structure of the version history
   // Each element represents a version of the data
-  versionData: VersionData[]; 
+  versionData: VersionData[] | {}; 
 }
 
 
@@ -27,7 +27,10 @@ interface ExtendedVersionData {
     revisionNotes?: string;
     // Add other metadata fields as needed
   };
-  versionData:  VersionData[] | null;
+  versionData: VersionData[] | null;
+  major: number;
+  minor: number;
+  patch: number;
   published?: boolean;
   checksum: string;
 }

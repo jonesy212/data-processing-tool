@@ -84,12 +84,23 @@ interface SnapshotEvents<T extends Data, K extends Data> {
   ) => void;
   removeAllListeners: (event?: string) => void;
   subscribe: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
-  unsubscribe: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
+  unsubscribe: (
+    unsubscribeDetails: {
+      userId: string; snapshotId: string;
+      unsubscribeType: string;
+      unsubscribeDate: Date;
+      unsubscribeReason: string;
+      unsubscribeData: any;
+    },
+    event: string, callback: (snapshot: Snapshot<T, K>) => void
+  ) => void;
   trigger: (
-    event: string,
+    event: string | SnapshotEvents<T, K>,
     snapshot: Snapshot<T, K>,
     snapshotId: string,
-    subscribers: SubscriberCollection<T, K>
+    subscribers: SubscriberCollection<T, K>,
+    type: string,
+    snapshotData: Snapshot<T, K>,
   ) => void;
   eventsDetails?: CalendarManagerStoreClass<T, K>[] | undefined;
 }

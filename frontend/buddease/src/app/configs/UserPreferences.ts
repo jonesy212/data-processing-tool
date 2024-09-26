@@ -1,9 +1,13 @@
+import { apiService } from "../api/ApiDetails";
 import { LanguageEnum } from "../components/communications/LanguageEnum";
 import { NotificationPreferences } from "../components/communications/chat/ChatSettingsModal";
 import FileData from "../components/models/data/FileData";
+import FolderData from "../components/models/data/FolderData";
 import { CommonTrackerProps } from "../components/models/tracker/Tracker";
 import { CryptoNotificationTypes } from "../components/settings/NotificationChannels";
 import { PrivacySettings } from "../components/settings/PrivacySettings";
+import { NotificationData } from "../components/support/NofiticationsSlice";
+import { User } from "../components/users/User";
 
 type NotificationTypeString = 'priceAlerts' | 'tradeConfirmation' | 'marketNews';
 
@@ -19,7 +23,7 @@ interface CryptoPreferences {
 
 
 
-interface UserPreferences extends CommonTrackerProps {
+interface UserPreferences extends Partial<CommonTrackerProps> {
   // General Preferences
   theme?: 'light' | 'dark'; // Example of a theme preference
   language?: LanguageEnum; // Preferred language
@@ -38,7 +42,7 @@ interface UserPreferences extends CommonTrackerProps {
     customNotifications?: any; // Placeholder for custom notification preferences
   };
   notificationPreferences?: NotificationPreferences; // Detailed notification preferences
-  
+
   // Crypto Preferences
   cryptoPreferences?: CryptoPreferences;
 
@@ -67,7 +71,7 @@ interface UserPreferences extends CommonTrackerProps {
     dataAnalysisPhaseEnabled?: boolean; // Whether the data analysis phase is enabled
   };
 
- 
+
 
   // Accessibility Preferences
   accessibility?: {
@@ -129,7 +133,7 @@ export type ModuleType =
   | "taskTracking"
   | "communication"
   | "inteigents"
-  | "animations" 
+  | "animations"
   | "auth"
   | "calendar"
   | "cards"
@@ -162,14 +166,56 @@ export type ModuleType =
   | "tasks"
   | "teams"
   | "todos";
+
 // userPreferences.ts
 const userPreferences = {
   modules: "modules" as ModuleType,
   actions: [],
   reducers: [],
-    // ... other userPreferences content
-  };
+  trackFileChanges: (file: FileData) => {
+    // Log file changes
+    console.log(`File changed: ${file.fileName}`);
+    console.log(`File size: ${file.fileSize} bytes`);
+    console.log(`Last modified: ${new Date(file.lastModified).toLocaleString()}`);
   
+    // Perform additional logic like sending data to a server or updating the UI
+    // e.g., send file change event to a backend
+    apiService.sendFileChangeEvent(file);
+  },
+  updateAppearance: (
+    updates: {
+      stroke: {
+        width: number;
+        color: string;
+      },
+    },
+    fillColor: string,
+    newStroke: { width: number; color: string },
+    newFillColor: string
+  ) => {
+    // Log the appearance updates
+    console.log('Updating appearance:');
+    console.log('Current Stroke:', updates.stroke);
+    console.log('New Stroke:', newStroke);
+    console.log('Current Fill Color:', fillColor);
+    console.log('New Fill Color:', newFillColor);
+  
+    // Assume we are updating a canvas or DOM element with the new styles
+    const element = document.getElementById('elementId'); // Replace with actual element logic
+    
+    if (element) {
+      // Update stroke width and color
+      element.style.borderWidth = `${newStroke.width}px`;
+      element.style.borderColor = newStroke.color;
+  
+      // Update fill color
+      element.style.backgroundColor = newFillColor;
+    }
+  
+    // Additional logic can be added to handle the UI refresh or updating any state
+  }  
+  };
+
 
 
 // Function to simulate fetching user preferences from an asynchronous source (e.g., API call)
@@ -190,6 +236,11 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
           fontFamily: '', // Define a default font family if needed
           fontSize: 16 // Define a default font size if needed
         },
+
+        // User preference methods
+        trackFolderChanges: (folder: FolderData) => { },
+        updateUserProfile: (userData: User) => { },
+        sendNotification: (notification: NotificationData, userData: User) => { },
 
         // Notifications Preferences
         notifications: {
@@ -360,20 +411,36 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
 
         // Other Preferences
         otherPreferences: {},
-      
+
+        // Method to track file changes and return updated file data
         trackFileChanges: function (file: FileData): FileData {
-          throw new Error("Function not implemented.");
+          // Implement logic to track file changes here, for example:
+          file.lastModified = new Date(); // Update the last modified time
+          console.log(`File changes tracked for: ${file.name}`);
+          return file; // Return updated file data
         },
+
         stroke: {
-          width: 0,
-          color: ""
+          width: 3,
+          color: "#333333",
+
         },
-        strokeWidth: 0,
-        fillColor: "",
+        strokeWidth: 3,
+        fillColor: "#FFFFFF",
         flippedX: false,
         flippedY: false,
         x: 0,
-        y: 0
+        y: 0,
+        // Method to update appearance by modifying stroke width/color and fill color
+        updateAppearance: function (updates, newStroke, newFillColor) {
+          if (this.stroke!) {
+            this.stroke.width = newStroke.width;
+            this.stroke.color = newStroke.color;
+            this.fillColor = newFillColor; // Assigning a string value
+        
+            console.log(`Appearance updated: stroke ${newStroke.width}px ${newStroke.color}, fill ${newFillColor}`);
+          }
+        },
       };
       resolve(userPreferences);
     }, 1000); // Simulate 1 second delay
@@ -391,7 +458,49 @@ getUserPreferences()
     console.error("Error fetching user preferences:", error);
     // Handle errors
   });
-  export default userPreferences;
+export default userPreferences;
 export { getUserPreferences };
-export type { UserPreferences, CryptoPreferences  };
+export type { UserPreferences, CryptoPreferences };
 
+
+
+
+
+  
+  
+  
+  
+  
+  
+  
+// #Review
+
+// Sample usage
+// Tracking file changes
+const file: FileData = {
+  name: "sample.txt",
+  size: 1024,
+  type: "text/plain",
+  lastModified: new Date("2024-01-01"),
+  fileSize: 0,
+  fileType: "",
+  filePath: "",
+  uploader: undefined,
+  fileName: "",
+  uploadDate: undefined,
+  id: "",
+  title: "",
+  description: "",
+  scheduledDate: undefined,
+  createdBy: ""
+};
+
+userPreferences.trackFileChanges(file); // Updates lastModified and logs changes
+
+// Updating appearance
+userPreferences.updateAppearance(
+  { stroke: { width: 5, color: "#FF0000" } }, // updates (stroke object)
+  "#00FF00", // fillColor
+  { width: 3, color: "#0000FF" }, // newStroke
+  "#FFFF00" // newFillColor
+);

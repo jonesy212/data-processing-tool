@@ -26,12 +26,15 @@ const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
     config: snapshotConfig.config,
     isCore: snapshotConfig.isCore,
 
+
+    
+    
     // Category Management
     currentCategory: snapshotConfig.currentCategory,
     setSnapshotCategory: snapshotConfig.setSnapshotCategory,
     getSnapshotCategory: snapshotConfig.getSnapshotCategory,
-
-
+    
+    
     // Events Management
     addSnapshotSubscriber: snapshotConfig.addSnapshotSubscriber,
     removeSnapshotSubscriber: snapshotConfig.removeSnapshotSubscriber,
@@ -41,7 +44,7 @@ const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
     unsubscribeFromSnapshot: snapshotConfig.unsubscribeFromSnapshot,
     subscribeToSnapshotsSuccess: snapshotConfig.subscribeToSnapshotsSuccess,
     unsubscribeFromSnapshots: snapshotConfig.unsubscribeFromSnapshots,
-
+    
     events: {
       eventRecords: item.events?.eventRecords ?? {},
       callbacks: item.events?.callbacks ?? {},
@@ -64,7 +67,7 @@ const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
       unsubscribe: item.events?.unsubscribe ?? (() => { }),
       trigger: item.events?.trigger ?? (() => { }),
     },
-
+    
     // Configuration & State Management
     initialConfig: item.events?.initialConfig,
     removeSubscriber: item.snapshotStoreConfig?.removeSubscriber,
@@ -98,8 +101,9 @@ const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
     getBackendVersion: snapshotConfig.getBackendVersion,
     getFrontendVersion: snapshotConfig.getFrontendVersion,
     fetchData: snapshotConfig.fetchData,
-
-
+    getSnapshotById: snapshotConfig.getSnapshotById,
+    
+    
     getSnapshotSuccess: snapshotConfig.getSnapshotSuccess,
     takeLatestSnapshot: snapshotConfig.takeLatestSnapshot,
     executeSnapshotAction: snapshotConfig.executeSnapshotAction,
@@ -108,8 +112,8 @@ const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
     compareSnapshotItems: snapshotConfig.compareSnapshotItems,
     reduceSnapshotItems: snapshotConfig.reduceSnapshotItems,
     mapSnapshotWithDetails: snapshotConfig.mapSnapshotWithDetails,
-
-
+    
+    
     // Snapshot Data Management
     mappedSnapshotData: snapshotConfig.mappedSnapshotData,
     getSnapshotData: snapshotConfig.getSnapshotData,
@@ -122,7 +126,7 @@ const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
     getSnapshotItemSuccess: snapshotConfig.getSnapshotItemSuccess,
     getAllValues: snapshotConfig.getAllValues,
     getSnapshotConfigItems: snapshotConfig.getSnapshotConfigItems,
-
+    
     // Snapshot Identification
     getSnapshotIdSuccess: snapshotConfig.getSnapshotIdSuccess,
 
@@ -188,7 +192,7 @@ const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
     getSnapshots: snapshotConfig.getSnapshots,
     getAllSnapshots: snapshotConfig.getAllSnapshots,
     generateId: snapshotConfig.generateId,
-
+    
     // Batch Operations
     batchFetchSnapshots: snapshotConfig.batchFetchSnapshots,
     batchTakeSnapshotsRequest: snapshotConfig.batchTakeSnapshotsRequest,
@@ -202,13 +206,15 @@ const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
     batchUpdateSnapshotsFailure: snapshotConfig.batchUpdateSnapshotsFailure,
     batchTakeSnapshot: snapshotConfig.batchTakeSnapshot,
     handleSnapshotSuccess: snapshotConfig.handleSnapshotSuccess,
-
+    
     // Snapshot Identification & Comparison
     getSnapshotId: snapshotConfig.getSnapshotId,
     compareSnapshotState: snapshotConfig.compareSnapshotState,
     eventRecords: snapshotConfig.eventRecords,
     snapshotStore: snapshotConfig.snapshotStore,
-
+    schema: snapshotConfig.schema,
+    items: snapshotConfig.items,
+    
     // Hierarchical Management
     getParentId: snapshotConfig.getParentId,
     getChildIds: snapshotConfig.getChildIds,

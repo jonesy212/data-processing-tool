@@ -3,6 +3,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import getAppPath from '../../../../appPath';
 import { AppStructureItem } from '../appStructure/AppStructure';
+import { backend, backendStructure } from '../appStructure/BackendStructure';
+import { frontend } from '../appStructure/FrontendStructure';
 
 
 // Usage example (if using API client)
@@ -37,6 +39,11 @@ const traverseFrontendDirectory = async (
           share: true,
           execute: true,
         },
+        versions: {
+          backend: backend.getStructureHash(),
+          frontend: frontend.getStructureHash()
+        }, 
+        versionData: []
       };
       // Handle how you want to store or process the appStructureItem
       result.push(appStructureItem);

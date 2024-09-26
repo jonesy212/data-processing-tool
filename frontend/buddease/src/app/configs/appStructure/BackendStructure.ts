@@ -54,8 +54,6 @@ export default class BackendStructure {
     this.structureHash = hash;
   }
 
-
-
   public async updateStructureHash(): Promise<void> {
     try {
       const structureArray = this.getStructureAsArray();

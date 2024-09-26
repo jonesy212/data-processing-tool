@@ -15,7 +15,7 @@ import { ProjectFeedback } from "../support/ProjectFeedback";
 import { BlockchainAsset } from "./BlockchainAsset";
 import { BlockchainPermissions } from "./BlockchainPermissions";
 import { Address, Education, Employment, SocialLinks, User, UserData } from "./User";
-import { K, Snapshots, SnapshotStoreConfig, SnapshotWithCriteria, T, TagsRecord } from "../snapshots";
+import { Snapshots, SnapshotStoreConfig, SnapshotWithCriteria, TagsRecord } from "../snapshots";
 import TodoImpl, { Todo } from "../todos/Todo";
 import { BaseData, Data } from "../models/data/Data";
 import { Phase } from "../phases/Phase";
@@ -25,6 +25,8 @@ import { DetailsItem } from "../state/stores/DetailsListStore";
 import { VideoData } from "../video/Video";
 import { Member } from "../models/teams/TeamMembers";
 import SnapshotStore from "../snapshots/SnapshotStore";
+import { NotificationSettings } from "../support/NotificationSettings";
+import { T} from "../models/data/dataStoreMethods";
 
 
 interface ActivityLogEntry {
@@ -37,9 +39,9 @@ interface ActivityLogEntry {
 
 export interface UserManagerState {
   users: User[];
-  fullName: string;
-  bio: string;
-  profilePicture: string;
+  fullName: string | null;
+  bio: string | null;
+  profilePicture: string | null;
   notification: { message: string; recipient: string; snapshot: string; } | string;
   data: UserData;
   uploadQuota: number;
@@ -55,6 +57,7 @@ const initialState: UserManagerState = {
   profilePicture: "",
   notification: "",
   data: {
+    storeId: 0,
     role: {
       role: '',
       responsibilities: [],
@@ -95,17 +98,17 @@ export const userManagerSlice = createSlice({
   name: "userManager",
   initialState,
   reducers: {
-    updateFullName: (state, action: PayloadAction<string>) => {
+    updateFullName: (state, action: PayloadAction<string | null>) => {
       state.fullName = action.payload;
       return state;
     },
 
-    updateBio: (state, action: PayloadAction<string>) => {
+    updateBio: (state, action: PayloadAction<string | null>) => {
       state.bio = action.payload;
       return state;
     },
 
-    updateProfilePicture: (state, action: PayloadAction<string>) => {
+    updateProfilePicture: (state, action: PayloadAction<string | null>) => {
       state.profilePicture = action.payload;
       return state;
     },
@@ -417,7 +420,6 @@ export const userManagerSlice = createSlice({
             followers: task.followers as WritableDraft<User>[] | undefined,
             snapshotStores: task.snapshotStores as WritableDraft<SnapshotStore<BaseData, BaseData>>[] | undefined,
             snapshots: task.snapshots as WritableDraft<Snapshots<BaseData> | undefined> | undefined,
-
             // Add other properties here
           }));
         }

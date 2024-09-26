@@ -67,6 +67,7 @@ import { SnapshotWithCriteria } from "../../snapshots/SnapshotWithCriteria";
 import { Document, DocumentStore } from "./DocumentStore";
 import { MobXRootState } from "./RootStores";
 import { getCurrentSnapshotConfigOptions } from "../../snapshots/getCurrentSnapshotConfigOptions";
+import { getCategoryProperties } from "../../libraries/categories/CategoryManager";
 
 
 const dispatch = useDispatch()
@@ -290,12 +291,15 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
           return;
         }
 
-        const snapshot = getCurrentSnapshot()
+        const snapshot = snapshotApi.getCurrentSnapshot(snapshotId, storeId)
         const criteria =  snapshotApi.extractCriteria(snapshot, properties)
-        const snapshotIdNumber = parseInt(snapshotId, 10);
+        const categoryProperties = getCategoryProperties(this.category);
+        // const snapshotId = snapshotApi.getSnapshotId(snapshot, snapshotId);
         const snapshotContainer = await snapshotApi.getSnapshotContainer<T, K>(snapshotId, storeId);
+        
+        const delegate = snapshotApi.c<T, K>(snapshotId, storeId);
         const config = snapshotApi.getSnapshotConfig<T, K>(
-          snapshotIdNumber,
+          snapshotId,
           snapshotContainer,
           criteria,
           this.category ? this.category : undefined,
@@ -401,7 +405,7 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
     );
 
     const snapshotId = await snapshotApi.getSnapshotId(criteria);
-    const config = await snapshotApi.getSnapshotStoreConfig(Number(snapshotId),
+    const config = await snapshotApi.getSnapshotStoreConfig(String(snapshotId),
       snapshotContainer,
       criteria,
       storeId
@@ -443,7 +447,7 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
     snapshotStore: string | SnapshotStoreConfig<T, K> | null | undefined
   ) => void;
   openCalendarSettingsPage: () => void;
-  getSnapshotDataKey: (documentId: string, eventId: number, userId: string) => string;
+  getSnapshotDataKey: (documentId: number, eventId: number, userId: string) => string;
   getData: (id: string) => Promise<Snapshot<T, K>> = (id: string) => {
     return new Promise((resolve, reject) => {
       try {

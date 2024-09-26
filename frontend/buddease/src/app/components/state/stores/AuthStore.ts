@@ -9,6 +9,7 @@ import { UserRoleEnum } from "../../users/UserRoles";
 import { verifyTokenScopes } from "../../database/JwtPayload";
 import { Scope } from "./Scopes";
 import { hasTokenExpired } from "../../database/hasTokenExpired";
+import { SubscriptionPlan } from "../../subscriptions/SubscriptionPlan";
 
 interface UserContactInfo {
   phone: string;

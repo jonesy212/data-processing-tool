@@ -16,7 +16,6 @@ import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType"
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import { InitializedState } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot, Snapshots } from "../../snapshots/LocalStorageSnapshotStore";
-import { T } from "../../snapshots/SnapshotConfig";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
 import {
@@ -42,6 +41,9 @@ import {
   StatusType,
   SubscriptionTypeEnum,
 } from "./StatusType";
+import FileData from "./FileData";
+import { T } from "./dataStoreMethods";
+
 
 // Define the interface for DataDetails
 interface DataDetails extends CommonData {
@@ -127,7 +129,7 @@ interface BaseData {
   phaseType?: ProjectPhaseTypeEnum;
   key?: string;
 
-  value?: number | string | Snapshot<BaseData, BaseData> | undefined;
+  value?: number | string | Snapshot<BaseData, BaseData> | null;
   initialState?: InitializedState<BaseData, BaseData>;
   dueDate?: Date | null;
   priority?: string | AllStatus;
@@ -190,8 +192,13 @@ interface Data extends BaseData {
 // Define the UserDetails component
 
 const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => {
-  const getTagNames = (tags: TagsRecord): string[] => {
-    return Object.values(tags).map((tag) => tag.name);
+  
+  const getTagNames = (tags: TagsRecord | string[]): string[] => {
+    if (Array.isArray(tags)) {
+      return tags; // If it's an array, return it directly
+    }
+
+    return Object.values(tags).map((tag) => tag.name); // If it's a TagsRecord
   };
 
   return (
@@ -210,7 +217,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => {
         description: data.description,
         phase: data.phase,
         isActive: data.isActive,
-        tags: data.tags ? getTagNames(data.tags) : [],
+        tags: data.tags ? getTagNames(data.tags) : [], // Now tags is a string array
         status: data.status,
         type: data.type,
         analysisType: data.analysisType,
@@ -401,7 +408,47 @@ const coreData: Data = {
     blockedUsers: [],
     persona: new Persona(PersonaTypeEnum.Default),
     followers: [],
-    preferences: {},
+    preferences: {
+      id:"",
+      name:"",
+      phases: [],
+      trackFileChanges: (file: FileData): FileData => {
+        return {
+          id: file.id,
+          title: file.title,
+          fileName: file.fileName,
+          description: file.description,
+          fileSize: file.fileSize,
+          fileType: file.fileType,
+          filePath: file.filePath,
+          uploader: file.uploader,
+          uploadDate: file.uploadDate,
+          scheduledDate: file.scheduledDate,
+          createdBy: file.createdBy,
+        }
+      },
+      stroke: {
+        width: 0,
+        color: "black",
+      },
+      strokeWidth: 0,
+      fillColor: "",
+      flippedX: false,
+      flippedY: false,
+      x: 0,
+      y: 0,
+         // Update the method signature to match the expected type
+      updateAppearance: (
+        updates: { stroke: { width: number; color: string; } },
+        newStroke: { width: number; color: string; },
+        newFillColor: string
+      ) => {
+      // Implement your logic here
+      // Example implementation (adjust as necessary):
+      (this as typeof coreData.preferences).stroke = newStroke; 
+      (this as typeof coreData.preferences).fillColor = newFillColor; 
+      },
+    },
 
     settings: {
       id: "0",
@@ -566,6 +613,7 @@ const coreData: Data = {
     activityStatus: "Online",
     isAuthorized: true,
     notificationPreferences: {
+      cryptoPreferences: {},
       emailNotifications: true,
       pushNotifications: true,
       enableNotifications: true,

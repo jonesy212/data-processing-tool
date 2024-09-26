@@ -5,6 +5,7 @@ import { NFT } from "../nft/NFT";
 import { AuthStore, UserContactInfo, UserNotificationPreferences, UserSession, useAuthStore } from "../state/stores/AuthStore";
 import { User } from "../users/User";
 import { LanguageEnum } from "../communications/LanguageEnum";
+import { SubscriptionPlan } from "../subscriptions/SubscriptionPlan";
 //todo update roles to use UserRole type
 // Define the types for the context and state
 interface AuthState {
@@ -65,10 +66,11 @@ interface AuthContextProps {
 
 interface AuthAction {
   type:
-    | "LOGIN"
-    | "LOGOUT"
-    | "LOGIN_WITH_ROLES"
-    | "INTEGRATE_AUTHENTICATION_PROVIDERS"; // New action type
+  | "LOGIN"
+  | "LOGOUT"
+  | "LOGIN_WITH_ROLES"
+  | "INTEGRATE_AUTHENTICATION_PROVIDERS" // New action type
+  | "UPDATE_USER";
   payload?: {
     user: User;
     roles?: string[];

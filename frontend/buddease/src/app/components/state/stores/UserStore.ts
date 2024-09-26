@@ -24,6 +24,7 @@ import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { useSecureUserId } from "../../utils/useSecureUserId";
 import { getTasksByUserId } from "@/app/api/TasksApi";
+import { useUndoRedoStore } from "./UndoRedoStore";
 type EventStoreSubset = Pick<
   ReturnType<typeof useAssignEventStore>,
   | "assignedUsers"
@@ -410,6 +411,19 @@ const userManagerStore = (): UserStore => {
       useAssignBaseStore().assignBoardAutomationToTeam,
     assignBoardCustomFieldToTeam:
       useAssignBaseStore().assignBoardCustomFieldToTeam,
+    
+    
+      getAuthStore: useAssignBaseStore().getAuthStore,
+    
+    
+    batchFetchUserSnapshotsSuccess,
+    batchFetchUserSnapshotsRequest,
+    batchFetchUndoRedoSnapshotsRequest: useUndoRedoStore().batchFetchUndoRedoSnapshotsRequest,
+    fetchUsersByTaskId,
+   
+    convertResponsesToTodos: useAssignEventStore().convertResponsesToTodos,
+    getResponsesByEventId:  useAssignEventStore().getResponsesByEventId,
+   
   });
 
   return userStore;

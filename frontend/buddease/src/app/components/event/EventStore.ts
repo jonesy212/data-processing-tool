@@ -111,7 +111,14 @@ export type EventStore<T extends Data, K extends Data> = {
       callback: (snapshot: Snapshot<T, K>) => void
     ) => void;
   
-    unsubscribe: (
+  unsubscribe: (
+    unsubscribeDetails: {
+      userId: string; snapshotId: string;
+      unsubscribeType: string;
+      unsubscribeDate: Date;
+      unsubscribeReason: string;
+      unsubscribeData: any;
+    },
       event: string,
       callback: (snapshot: Snapshot<T, K>) => void
     ) => void;
@@ -154,7 +161,15 @@ const defaultEventStore = <T extends Data, K extends Data>(): EventStore<T, K> =
   addRecord: () => { /* default implementation */ },
   removeAllListeners: () => { /* default implementation */ },
   subscribe: () => { /* default implementation */ },
-  unsubscribe: () => { /* default implementation */ },
+  unsubscribe: (unsubscribeDetails: {
+    userId: string; snapshotId: string;
+    unsubscribeType: string;
+    unsubscribeDate: Date;
+    unsubscribeReason: string;
+    unsubscribeData: any;
+  },
+
+  event: string, callback: (snapshot: Snapshot<T, K>) => void) => { /* default implementation */ },
   trigger: () => { /* default implementation */ },
   eventsDetails: [], // or undefined if you don't have a default value
 });

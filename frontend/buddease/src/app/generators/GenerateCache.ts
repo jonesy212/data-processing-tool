@@ -1,5 +1,6 @@
 // generateCache.ts
-import FileApiService from "../api/ApiFiles";
+ import { FileTypeEnum } from "../components/documents/FileType";
+import FileApiService from "../components/event/FileApiService";
 import {
   useBrainstormingPhase,
   useMeetingsPhase,
@@ -71,7 +72,7 @@ export interface CacheData extends Data {
   generalCommunicationFeaturesPhaseHook: typeof generalCommunicationFeaturesPhaseHook;
   
   // Add more top-level cache properties as needed
-  fileType: FileApiService;
+  fileType: FileTypeEnum;
   calendarEvent: CalendarEvent; 
   data: any;
 }

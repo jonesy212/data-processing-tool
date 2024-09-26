@@ -50,8 +50,6 @@ interface RetrievedSnapshot<T extends Data, K extends Data>
 
 
 
-// Define a function to convert RetrievedSnapshot<SnapshotDataResponse> to SnapshotStore<Snapshot<Data>>
-
 // Define a nction to convert RetrievedSnapshot<SnapshotDataResponse> to SnapshotStore<Snapshot<Data>>
 const converSnapshotStore = <T extends Data, K extends Data>(
   retrievedSnapshot: RetrievedSnapshot<T, K>,
@@ -226,12 +224,23 @@ const converSnapshotStore = <T extends Data, K extends Data>(
     parentId: retrievedSnapshot.parentId,
     label: retrievedSnapshot.label,
     timestamp: retrievedSnapshot.timestamp,
-  
+    schema: retrievedSnapshot.schema,
+    currentCategory: retrievedSnapshot.currentCategory,
+    mappedSnapshotData: retrievedSnapshot.mappedSnapshotData,
+    config: retrievedSnapshot.config,
+   
+    items: retrievedSnapshot.items,
+    payload: retrievedSnapshot.payload,
+    updateSnapshotFailure: retrievedSnapshot.updateSnapshotFailure,
+    
+    getSnapshotById: retrievedSnapshot.getSnapshotById,
+    
+    
     // Category
     category: retrievedSnapshot.category,
     setCategory: retrievedSnapshot.setCategory,
     determineCategory: retrievedSnapshot.determineCategory,
-  
+    
     // Data
     data: retrievedSnapshot.data as T | Map<string, Snapshot<T, K>> | null | undefined,
     newData: retrievedSnapshot.newData,
@@ -297,7 +306,7 @@ const converSnapshotStore = <T extends Data, K extends Data>(
     filterSnapshotsByCategory: retrievedSnapshot.filterSnapshotsByCategory,
     filterSnapshotsByTag: retrievedSnapshot.filterSnapshotsByTag,
     findSnapshot: retrievedSnapshot.findSnapshot,
-  
+    
     // Snapshot Config
     initialConfig: retrievedSnapshot.initialConfig,
     handleSnapshotConfig: retrievedSnapshot.handleSnapshotConfig,
@@ -306,7 +315,7 @@ const converSnapshotStore = <T extends Data, K extends Data>(
     getSnapshotConfigItems: retrievedSnapshot.getSnapshotConfigItems,
     getConfigOption: retrievedSnapshot.getConfigOption,
     handleSnapshot: retrievedSnapshot.handleSnapshot,
-  
+    
     // Snapshot State Management
     getState: retrievedSnapshot.getState,
     setState: retrievedSnapshot.setState,
@@ -317,7 +326,7 @@ const converSnapshotStore = <T extends Data, K extends Data>(
     getDataStoreMap: retrievedSnapshot.getDataStoreMap,
     getDataStore: retrievedSnapshot.getDataStore,
     getDataStoreMethods: retrievedSnapshot.getDataStoreMethods,
-  
+    
     // Subscriptions
     subscribers: retrievedSnapshot.subscribers,
     subscribeToSnapshots: retrievedSnapshot.subscribeToSnapshots,
@@ -334,7 +343,7 @@ const converSnapshotStore = <T extends Data, K extends Data>(
     getSubscribers: retrievedSnapshot.getSubscribers,
     notify: retrievedSnapshot.notify,
     notifySubscribers: retrievedSnapshot.notifySubscribers,
-  
+    
     // Snapshot Processing
     deepCompare: retrievedSnapshot.deepCompare,
     shallowCompare: retrievedSnapshot.shallowCompare,
@@ -370,6 +379,8 @@ const converSnapshotStore = <T extends Data, K extends Data>(
     getSnapshotIdSuccess: retrievedSnapshot.getSnapshotIdSuccess,
     getSnapshotValuesSuccess: retrievedSnapshot.getSnapshotValuesSuccess,
     setSnapshotFailure: retrievedSnapshot.setSnapshotFailure,
+    fetchSnapshotSuccess: retrievedSnapshot.fetchSnapshotSuccess,
+    fetchSnapshotFailure: retrievedSnapshot.fetchSnapshotFailure,
     setSnapshotSuccess: retrievedSnapshot.setSnapshotSuccess,
 
     takeSnapshotSuccess: retrievedSnapshot.takeSnapshotSuccess,
@@ -425,7 +436,8 @@ const converSnapshotStore = <T extends Data, K extends Data>(
     getItem: retrievedSnapshot.getItem,
     getDelegate: retrievedSnapshot.getDelegate,
    
-    determinePrefix, getSnapshotListByCriteria: retrievedSnapshot.getSnapshotListByCriteria,
+    determinePrefix: retrievedSnapshot.determinePrefix,
+    getSnapshotListByCriteria: retrievedSnapshot.getSnapshotListByCriteria,
     handleActions: retrievedSnapshot.handleActions,
     setSnapshot: retrievedSnapshot.setSnapshot,
    
@@ -584,7 +596,7 @@ const converSnapshotStore = <T extends Data, K extends Data>(
       updateSnapshotSuccess: (
         snapshotId: number, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload?: { data?: any; } | undefined
       ) => void;
-      batchUpdateSnapshotsSuccess: (snapshots: Snapshot<T, K>[]) => void;
+      batchUpdateSnapshotsSuccess: (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T>) => void;
       batchUpdateSnapshotsFailure: (
         date: Date, 
         snapshotId: number, 
@@ -1144,7 +1156,13 @@ const converSnapshotStore = <T extends Data, K extends Data>(
     unsubscribe: () => {},
     fetchSnapshot: () => {},
     fetchSnapshotSuccess: () => {},
-    fetchSnapshotFailure: () => {},
+    fetchSnapshotFailure: (
+      snapshotId: string,
+      snapshotManager: SnapshotManager<T, K>,
+      snapshot: Snapshot<T, K>,
+      date: Date | undefined,
+      payload: { error: Error }
+    ) => {},
     getSnapshots: () => [],
     getAllSnapshots: () => [],
     getSnapshotStoreData: () => ({}),

@@ -13,7 +13,10 @@ import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import SnapshotStore from "./SnapshotStore";
 
-
+function convertBaseDataToK<T, K>(snapshot: Snapshot<T, BaseData>): Snapshot<T, K> {
+  // Assuming you can safely convert properties
+  return snapshot as unknown as Snapshot<T, K>;
+}
 
 function convertSnapshot<T extends BaseData, K extends BaseData>(
   snapshot: Snapshot<T, K>,
@@ -21,7 +24,7 @@ function convertSnapshot<T extends BaseData, K extends BaseData>(
     useSimulatedDataSource: boolean;
     simulatedDataSource: SnapshotStoreConfig<T, K>[];
   }
-  ): Promise<Snapshot<T, K>> {
+): Promise<Snapshot<T, K>> {
   return new Promise((resolve, reject) => {
     try {
       if (!snapshot.store) {
@@ -40,7 +43,7 @@ function convertSnapshot<T extends BaseData, K extends BaseData>(
             snapshotId: string | null,
             snapshotData: Snapshot<T, K>,
             category: Category | undefined,
-            categoryProprties: CategoryProperties | undefined,
+            categoryProperties: CategoryProperties | undefined,
             callback: (snapshotStore: SnapshotStore<T, K>) => void,
             dataStoreMethods: DataStore<T, K>,
             snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
@@ -51,7 +54,7 @@ function convertSnapshot<T extends BaseData, K extends BaseData>(
               snapshotId,
               convertSnapshotData<T, K>(snapshotData),
               category,
-              categoryProprties,
+              categoryProperties,
               callback,
               dataStoreMethods,
               snapshotStoreConfigData,
@@ -117,7 +120,7 @@ function convertSnapshot<T extends BaseData, K extends BaseData>(
       });
 
       const snapshotConfig = snapshotApi.getSnapshotConfig(
-        snapshot.store.snapshotId ? Number(snapshot.store.snapshotId )||  null : null,  // Return null instead of undefined
+        snapshot.store.snapshotId ? String(snapshot.store.snapshotId) || null : null,  // Return null instead of undefined
         snapshot.store.getSnapshotContainer(),
         snapshot.store.criteria,
         snapshot.store.category,
@@ -127,7 +130,8 @@ function convertSnapshot<T extends BaseData, K extends BaseData>(
       );
       const snapshotId = snapshot.store.snapshotId;
       const category = snapshot.store.category;
-      snapshotApi.getSnapshotStoreId(snapshotId !== null ? Number(snapshotId) : null).then(async (storeId) => {
+      try {
+        const storeId = await snapshotApi.getSnapshotStoreId(snapshotId !== null ? String(snapshotId) : null);
         const config: SnapshotStoreConfig<T, K> = await Promise.resolve(snapshotConfig);
 
         const operation: SnapshotOperation = {
@@ -135,18 +139,22 @@ function convertSnapshot<T extends BaseData, K extends BaseData>(
         };
 
         // Create newStore
-        const newStore = new SnapshotStore<T, K>(storeId, options, category, config, operation);
+        const newStore = new SnapshotStore<T, K>(storeId, name, version, schema, options, category, config, operation);
 
         resolve({
           ...snapshot,
           store: newStore,
           initialState: snapshot.initialState,
         });
-      });    } catch (error) {
+      } catch (error) {
+        reject(error);
+      }
+    } catch (error) {
       reject(error);
     }
-  });
+  })
 }
 
 
 export default convertSnapshot;
+export { convertBaseDataToK };

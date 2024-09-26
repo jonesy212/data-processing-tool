@@ -32,6 +32,7 @@ import { getCurrentAppInfo } from "../components/versions/VersionGenerator";
 import UniqueIDGenerator from "../generators/GenerateUniqueIds";
 import { id_ID } from "@faker-js/faker";
 import { TrackerProps } from "../components/models/tracker/Tracker";
+import userPreferences from "@/app/configs/UserPreferences";
 
 
 const handleFileChanges = (file: FileData): FileData => file; // Handles file change logic

@@ -657,3 +657,4 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
 function callback() {
   throw new Error("Function not implemented.");
 }
+export {versionData}

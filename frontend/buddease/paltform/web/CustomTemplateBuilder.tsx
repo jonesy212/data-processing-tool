@@ -8,6 +8,7 @@ import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import RichTextEditor from "@/app/components/documents/RichTextEditor";
 import {
   ToolbarOptions,
+  ToolbarOptionsComponent,
   ToolbarOptionsProps,
 } from "@/app/components/documents/ToolbarOptions";
 import { getTextBetweenOffsets } from "@/app/components/documents/getTextBetweenOffsets";
@@ -118,7 +119,7 @@ const CustomTemplateBuilder: React.FC<TemplateDataProps> = ({
   const handleCreateButtonClick = async () => {
     const userOptions: ToolbarOptionsProps = {
       isDocumentEditor: true,
-      fontSize: true,
+      fontSize: "16px",
       bold: true,
       italic: true,
       underline: true,
@@ -182,9 +183,9 @@ const CustomTemplateBuilder: React.FC<TemplateDataProps> = ({
           // Add more props as needed (e.g., handleKeyCommand, handleCopy, handlePaste)
         />
         <button onClick={handleSaveTemplate}>Save Template</button>
-        <ToolbarOptions
+        < ToolbarOptionsComponent
           isDocumentEditor={true}
-          fontSize={true}
+          fontSize={"16px"}
           bold={true}
           italic={true}
           underline={true}

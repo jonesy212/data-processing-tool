@@ -8,6 +8,7 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotStoreMethod } from "@/app/components/snapshots/SnapshotStoreMethod";
 import { DataStore } from "./DataStore";
 
+
 interface DataStoreWithSnapshotMethods<T extends BaseData, K extends BaseData> extends DataStore<T, K> {
   snapshotMethods: SnapshotStoreMethod<T, K>[] | undefined;
 
@@ -67,7 +68,7 @@ extends DataStoreWithSnapshotMethods<T, K> {
       | undefined
   ) => Promise<Snapshot<T, K> | undefined>;
   
-  getSnapshotSuccess: (snapshot: T, subscribers: Subscriber<T, K>[]) => void;
+  getSnapshotSuccess: (snapshot: Snapshot<T, K>, subscribers: Subscriber<T, K>[]) => void;
   getSnapshotsBySubscriber: (subscriber: string) => Promise<T[]>;
   getSnapshotsBySubscriberSuccess: (snapshots: Snapshots<T>) => void;
   getSnapshotsByTopic: (topic: string) => Promise<Snapshots<T>>;
@@ -79,7 +80,7 @@ extends DataStoreWithSnapshotMethods<T, K> {
   getSnapshotsByPriority: (priority: string) => Promise<Snapshots<T>>;
   getSnapshotsByPrioritySuccess: (snapshots: Snapshots<T>) => void;
 
-  snapshotMethods: SnapshotStoreMethod<T, K>[];
+  snapshotMethods: SnapshotStoreMethod<T, K>[] | undefined;
 }
 
 export type { DataStoreWithSnapshotMethods };

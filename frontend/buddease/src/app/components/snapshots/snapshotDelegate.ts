@@ -72,7 +72,7 @@ const snapshotDelegate = <T extends Data, K extends Data>(
              snapshot: Snapshot<T, K>,
               payload?: { data?: any; } | undefined
             ) => void;
-          batchUpdateSnapshotsSuccess: (snapshots: Snapshot<T, K>[]) => void;
+          batchUpdateSnapshotsSuccess: (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T>) => void;
           batchUpdateSnapshotsFailure: (
             date: Date,
             snapshotId: number, 

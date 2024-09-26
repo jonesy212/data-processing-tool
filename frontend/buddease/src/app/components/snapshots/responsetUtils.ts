@@ -8,6 +8,9 @@ import { Snapshot } from './LocalStorageSnapshotStore';
 import { SnapshotData } from './SnapshotData';
 import SnapshotStore from './SnapshotStore';
 import { SnapshotStoreDataResponse } from './SnapshotStoreDataResponse';
+import { SnapshotDataType } from './SnapshotContainer';
+import { SnapshotStoreConfig } from './SnapshotStoreConfig';
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 
 
 
@@ -211,7 +214,7 @@ export const returnsSnapshotStore = async (
 ): Promise<SnapshotStore<any, any> | null> => {
   try {
     // Fetch snapshot data from the API or use the provided snapshotData
-    const fetchedData = await fetchSnapshotById(id) || snapshotData;
+    const fetchedData = await Promise.resolve(fetchSnapshotById(id)) || snapshotData;
 
     // Initialize required properties
     const stateArray = snapshotData.state || [];
@@ -250,7 +253,26 @@ export const returnsSnapshotStore = async (
         console.error('Snapshot error:', error);
       },
       taskIdToAssign: '',
-      snapshot: {},
+      snapshot: async (
+        id: string | number | undefined,
+        snapshotId: string | null,
+        snapshotData: SnapshotDataType<any, any>,
+        category: Category,
+        categoryProperties: CategoryProperties | undefined,
+        callback: (snapshotStore: SnapshotStore<any, any>) => void,
+        dataStoreMethods: DataStore<any, any>[],
+        metadata: UnifiedMetaDataOptions,
+        subscriberId: string, // Add subscriberId here
+        endpointCategory: string | number ,// Add endpointCategory here
+        snapshotStoreConfigData?: SnapshotStoreConfig<any, any>,
+        snapshotContainer?: Snapshot<any, any> | null
+      ) => {
+        // Implement the snapshot function here
+        // This is a placeholder implementation
+        const result = await Promise.resolve({} as SnapshotStore<any, any>);
+        callback(result);
+        return result;
+      },
       setCategory: () => {},
       applyStoreConfig: () => {},
       generateId: () => 'generatedId',

@@ -1,5 +1,4 @@
-// //snapshots/SnapshotActions.ts
-
+//snapshots/SnapshotActions.ts
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import { BaseData, Data } from '../models/data/Data';
@@ -43,6 +42,7 @@ export enum SnapshotOperationType {
   CalendarSnapshot = 'calendarEvent',
   NewSnapshotResult = 'newSnapshotResult',
   TaskSnapshotReference = 'taskSnapshotReference',
+  CategorizeSnapshots = 'categorizeSnapshot'
 }
 
 

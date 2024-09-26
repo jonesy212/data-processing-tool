@@ -1,3 +1,4 @@
+import { MetaDataOptions } from '@/app/components/hooks/SnapshotStoreOptions';
 import ProjectMetadata, { StructuredMetadata } from '../../../app/configs/StructuredMetadata';
  
 
@@ -5,7 +6,7 @@ import ProjectMetadata, { StructuredMetadata } from '../../../app/configs/Struct
   interface BaseMetaDataOptions extends StructuredMetadata {
     id?: string;
     title?: string;
-    description : string;
+    description: string;
     createdBy?: string;
     createdAt?: Date;
     updatedBy?: string;
@@ -15,10 +16,6 @@ import ProjectMetadata, { StructuredMetadata } from '../../../app/configs/Struct
   }
 
 
-         
-interface SnapshotMetaDataOptions extends StructuredMetadata, BaseMetaDataOptions {
-  simulatedDataSource?: Record<string, any>;
-}
 
 // Define extended interfaces
 interface SnapshotMetaDataOptions extends StructuredMetadata, BaseMetaDataOptions {

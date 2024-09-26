@@ -13,7 +13,7 @@ import { BaseData, Data } from "../models/data/Data";
 import { displayToast } from '../models/display/ShowToast';
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStore, useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { CustomSnapshotData, SnapshotConfig, SnapshotContainer, SnapshotWithCriteria, SubscriberCollection } from '../snapshots';
 import {
   Snapshot,
@@ -33,6 +33,7 @@ import SnapshotStoreOptions from './SnapshotStoreOptions';
 import { LibraryAsyncHook } from "./useAsyncHookLinker";
 import { VersionHistory } from '../versions/VersionData';
 import DocumentPermissions from '../documents/DocumentPermissions';
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 const { notify } = useNotification();
 
 
@@ -283,10 +284,11 @@ const createSnapshotStore = <T extends BaseData, K extends BaseData>(
     snapshotStores: snapshotConfig.snapshotStores || snapshotData.snapshotStores,
     name: snapshotConfig.name || snapshotData.name,
     schema: snapshotConfig.schema || snapshotData.schema,
-    snapshotItems: snapshotConfig.snapshotItems || snapshotData.schema,,
-    nestedStores: snapshotConfig.nestedStores || snapshotData.schema,,
-    snapshotIds: snapshotConfig.snapshotIds || snapshotData.schema,,
-   
+    snapshotItems: snapshotConfig.snapshotItems || snapshotData.snapshotItems,
+    nestedStores: snapshotConfig.nestedStores || snapshotData.nestedStores,
+    snapshotIds: snapshotConfig.snapshotIds || snapshotData.snapshotIds,
+    dataStoreMethods, delegate, getConfig, setConfig,
+
   };
 
   // Step 3: Apply any necessary configurations or transformations
@@ -324,7 +326,7 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
     data: {} as T,
     initialState: null,
     handleSnapshot: (
-      id: string,
+      id: number,
       snapshotId: string,
       snapshot: T | null,
       snapshotData: T,
@@ -351,6 +353,7 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
             category: category,
             timestamp: new Date(),
             snapshotStore: snapshotStoreConfig,
+            
           } as Snapshot<T, K>);
         } else {
           console.log(`No snapshot to handle for ID: ${snapshotId}`);
@@ -393,8 +396,15 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
       category: symbol | string | Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: Snapshot<T, K> | null) => void,
-      snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null | undefined,
+      dataStoreMethods: DataStore<T, K>[],
+      // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
+      metadata: UnifiedMetaDataOptions,
+      subscriberId: string, // Add subscriberId here
+      endpointCategory: string | number ,// Add endpointCategory here
+      storeProps: SnapshotStoreProps<T, K>,
       snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
+      snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null,
+    
     ): Promise<{ snapshot: Snapshot<T, K> | null }> => {
     
       // Check if snapshotData is not null
@@ -437,7 +447,7 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
               description: 'Initial Version',
               content: 'Version content here',
               checksum: 'someChecksumValue',
-              versionData: [], // Populate this as per your requirements
+              versionData: {}, // Populate this as per your requirements
               data: [], // Populate this as per your requirements
               name: 'VersionName',
               url: 'http://example.com',

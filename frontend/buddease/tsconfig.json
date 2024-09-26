@@ -71,6 +71,14 @@
   "**/*.ts",
   "**/*.tsx",
   ".next/types/**/*.ts",
+
+  "src/global.d.ts",
+  "src/shared-error-handling.d.ts",
+  "src/drawing-library.d.ts",
+  "src/presentations-library.d.ts",
+  "src/excel4node.d.ts",
+  "src/react-speech-recognition.d.ts",
+
   "src/app/screenFunctionality/shortcut_keys.js",
   "subscriptions/Subscription.tsx",
   "src/app/components/calendar/CalendarEvent.jsx",
@@ -80,6 +88,7 @@
   "src/app/components/web3/dAppAdapter/remove",
   "src/app/components/state/mobx/reactions.tsx",
   "src/app/components/phases/collaborationPhase/CollaborationContext.js",
+  "src/app/documents/**/*",
   "src/app/utils/EmojiPickerUtils.jsx",
   "src/app/components/libraries/ui/UILibrary.tsx",
   "src/app/pages/dashboards/DashboardOverview.jsx",

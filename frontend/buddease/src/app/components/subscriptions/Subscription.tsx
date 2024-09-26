@@ -16,7 +16,8 @@ import { getSnapshotId } from "@/app/api/SnapshotApi";
 
 import { Data } from "../models/data/Data";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { Callback, snapshotContainer } from "../snapshots";
+import { Callback, snapshotContainer, SnapshotWithCriteria } from "../snapshots";
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 
 
 type FetchSnapshotByIdCallback = {
@@ -39,6 +40,8 @@ type Subscription<T extends Data, K extends Data> = {
       unsubscribeReason: string;
       unsubscribeData: any;
     },
+    callback: Callback<Snapshot<T, K>> | null
+ 
   ) => void;
   portfolioUpdates: (
     { userId, snapshotId }: {
@@ -108,6 +111,7 @@ const SubscriptionComponent = (
   const [unsubscribeDate, setUnsubscribeDate] = useState<Date>(new Date()); // Initialize with current date
   const [unsubscribeReason, setUnsubscribeReason] = useState<string>(""); // Initialize with empty string
   const [unsubscribeData, setUnsubscribeData] = useState<any>({}); // Initialize with empty object
+  const [snapshot, setSnapshot] = useState<Snapshot<any, any> | null>(null); // Add state for snapshot
 
   const data = useRealtimeData(initialData, updateCallback);
 
@@ -115,76 +119,88 @@ const SubscriptionComponent = (
     // Subscribe to the data service
     const subscription = subscriptionService;
 
-    const callback: Callback<Snapshot<any>> = (snapshot) => {
+    const callback: Callback<Snapshot<any, any>> = (snapshot) => {
       // Perform actions based on the snapshot provided to the callback
       console.log("Unsubscribed successfully");
       console.log("Snapshot ID:", snapshot.id);
       console.log("Snapshot Data:", snapshot.data);
       console.log("Snapshot Timestamp:", snapshot.timestamp);
-    
+  
       // Additional logic after unsubscribing
       if (snapshot.data) {
         // Example: Perform some cleanup or state updates
         console.log("Performing cleanup based on snapshot data...");
         // Add your custom logic here based on the snapshot data
       }
-    
+  
       // Further actions can be added here if needed
     };
     // Your subscription usage
-    const subscriptionUsage: Subscription<T, K> | undefined = subscription.subscribe(
-      hookName,
-      async (data: RealtimeDataItem) => {
-        if (data.type === "snapshot" && data.data && data.data.subscriberId === hookName) {
-          const snapshot = data.data as Snapshot<any>;
-          const snapshotStore = await useSnapshotStore(addToSnapshotList);
-          const subscriptionData: Subscription<T, K> | null = snapshot.data ? {
-            unsubscribe: () => {},
-            portfolioUpdates: () => {},
-            tradeExecutions: () => {},
-            marketUpdates: () => {},
-            triggerIncentives: () => {},
-            communityEngagement: () => {},
-            determineCategory: snapshotStore.determineCategory,
-            portfolioUpdatesLastUpdated: {} as ModifiedDate,
-            ...snapshot.data
-          } : null;
-          setSubscriptionData(subscriptionData);
+    const subscribeToData = async () => {
+  
+      const subscriptionUsage: Subscription<T, K> | undefined = subscription.subscribe(
+        hookName,
+        async (data: RealtimeDataItem) => {
+          if (data.type === "snapshot" && data.data && data.data.subscriberId === hookName) {
+            const snapshot = data.data as Snapshot<any, any>;
+            const snapshotData = data.data as Snapshot<any, any>;
+      
+            setSnapshot(snapshotData); // Update snapshot state
+         
+            const snapshotStore = await useSnapshotStore(addToSnapshotList);
+            const subscriptionData: Subscription<T, K> | null = snapshot.data ? {
+              unsubscribe: () => { },
+              portfolioUpdates: () => { },
+              tradeExecutions: () => { },
+              marketUpdates: () => { },
+              triggerIncentives: () => { },
+              communityEngagement: () => { },
+              determineCategory: snapshotStore.determineCategory,
+              portfolioUpdatesLastUpdated: {} as ModifiedDate,
+              ...snapshot.data
+            } : null;
+            setSubscriptionData(subscriptionData);
+          }
         }
+      ) as Subscription<T, K> | undefined;
+      
+      
+      // Ensure subscriptionUsage is defined before accessing unsubscribe
+      if (subscriptionUsage) {
+        async function fetchCriteria() {
+          const snapshotContainerResult = await snapshotContainer(snapshotId, storeId);
+          const criteria: CriteriaType = await snapshotApi.getSnapshotCriteria(
+            snapshotContainerResult,
+            snapshot
+          );
+          const snapshotId = getSnapshotId(criteria).toString();
+      
+          // Cleanup: Unsubscribe when the component unmounts
+          return () => {
+            // Make sure to pass the correct parameters to unsubscribe
+            subscriptionUsage?.unsubscribe({
+              userId: String(userId),
+              snapshotId,
+              unsubscribeType,
+              unsubscribeDate,
+              unsubscribeReason,
+              unsubscribeData
+            },
+              callback
+            );
+          };
+        }
+        fetchCriteria();
       }
-    ) as Subscription<T, K> | undefined;
-
-    // Ensure subscriptionUsage is defined before accessing unsubscribe
-    if (subscriptionUsage) {
-      const criteria = snapshotApi.getSnapshotCriteria(
-        await snapshotContainer(snapshotId, storeId), snapshot
-      );
-      const snapshotId = getSnapshotId(criteria).toString()
-      // Cleanup: Unsubscribe when the component unmounts
-      return () => {
-        // Make sure to pass the correct parameters to unsubscribe
-        subscriptionUsage.unsubscribe({
-          userId: String(userId),
-          snapshotId,
-          unsubscribeType,
-          unsubscribeDate,
-          unsubscribeReason,
-          unsubscribeData
-        },
-          callback
-        );
-      };
+      subscribeToData();
+      // If subscriptionUsage is undefined, return a no-op function
+      return () => {};
     }
-
-    // If subscriptionUsage is undefined, return a no-op function
-    return () => {};
-
   }, [hookName, unsubscribeType, unsubscribeDate, unsubscribeReason, unsubscribeData]); // Depend on relevant variables
 
   const addToSnapshotList = async (
     snapshot: Snapshot<T, K>) => {
-    console.log("Snapshot added to snapshot list: ", snapshot);
-    setSubscriptionData(snapshot.data? {
+    console.log("Snapshot added to snapshot list: ", snapshot);    setSubscriptionData(snapshot.data? {
       unsubscribe: () => {},
       portfolioUpdates: () => {},
       tradeExecutions: () => {},
@@ -234,10 +250,11 @@ const handleSubscriptionCallback = async (data: RealtimeDataItem) => {
             unsubscribeDate: Date;
             unsubscribeReason: string;
             unsubscribeData: any;
-          }
+          },
+          callback: Callback<Snapshot<T, K>> | null
         ) => {
           if (data.data?.unsubscribe) {
-            data.data.unsubscribe(unsubscribeDetails);
+            data.data.unsubscribe(unsubscribeDetails, callback);
           }
         },
         determineCategory: (await useSnapshotStore(addToSnapshotList)).determineCategory

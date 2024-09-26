@@ -8,6 +8,10 @@ type CategoryIdentifier = string | symbol;
 type Category = CategoryIdentifier | CategoryProperties | undefined;
 
 
+// Type Guard to check if category is CategoryProperties
+function isCategoryProperties(category: Category): category is CategoryProperties {
+  return (category as CategoryProperties)?.name !== undefined;
+}
 // generateCategoryProperties.ts
 function generateCategoryProperties(area: string): CategoryProperties {
   switch (area) {
@@ -176,16 +180,6 @@ function getOrSetCategoryForSnapshot<T extends BaseData, K extends BaseData>(
   return snapshot.categoryProperties;
 }
 
-export {getOrSetCategoryForSnapshot, getCategoryLabelForSnapshot};
+export {generateCategoryProperties, getOrSetCategoryForSnapshot, getCategoryLabelForSnapshot, isCategoryProperties};
 
 export type {Category, CategoryIdentifier};
-
-
-
-
-
-
-
-
-
-

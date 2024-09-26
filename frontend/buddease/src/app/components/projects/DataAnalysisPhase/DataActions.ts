@@ -29,7 +29,7 @@ export const DataActions = <T extends Data, K extends Data>() => ({  // Actions 
    fetchDataSuccess: createAction<{ data: T[] }>("fetchDataSuccess"),
    fetchDataFailure: createAction<{ error: string }>("fetchDataFailure"),
  
-   addData: createAction<T>("addData"),
+   addData: createAction<Snapshot<T, K>>("addData"),
    addDataSuccess: createAction<{ data: T }>("addDataSuccess"),
    addDataFailure: createAction<{ error: string }>("addDataFailure"),
    updateData: createAction<{id: number, newData: Snapshot<T, K>}>("updateData"),

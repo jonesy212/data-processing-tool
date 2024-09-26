@@ -83,7 +83,7 @@ export const initSnapshot: T = {
 // ) => Subscribers<T, K>
 
 
-const snapshotSubscribers: Map<string, Set<Subscriber<BaseData, Snapshot<BaseData, BaseData>>>> = new Map();
+const snapshotSubscribers: Map<string, Set<Subscriber<BaseData, K>>> = new Map();
 
 
 
@@ -133,7 +133,7 @@ export const subscribeToSnapshot = <T extends BaseData, K extends BaseData>(
 
 
 // Create a function to initialize the snapshot store
-export const initializeSnapshotStore = async (
+const initializeSnapshotStore = async (
   id: string,
   snapshotStoreData: SnapshotStoreConfig<T, K>[],
   // category: symbol | string | Category | undefined,
@@ -575,7 +575,13 @@ async function createSnapshotStore<T extends BaseData, K extends BaseData>(
     findSnapshot: () => ({} as Snapshot<T, K>),
     subscribe: () => { },
     unsubscribe: () => { },
-    fetchSnapshotFailure: () => { },
+    fetchSnapshotFailure: (
+      snapshotId: string,
+      snapshotManager: SnapshotManager<T, K>,
+      snapshot: Snapshot<T, K>,
+      date: Date | undefined,
+      payload: { error: Error }
+    ) => { },
     generateId: () => "",
     [Symbol.iterator]: () => ({} as IterableIterator<Snapshot<T, K>>),
     [Symbol.asyncIterator]: () => ({} as AsyncIterableIterator<T>),
@@ -1071,17 +1077,17 @@ export const addSnapshotSuccess = async <T extends Data, K extends Data>(
 
 
 
-export const updateSnapshot = <T extends BaseData, K extends BaseData>(
-  snapshotId: string,
-  snapshot: Snapshot<T, K>
-) => {
-  const subscribers = snapshotSubscribers.get(snapshotId);
-  if (subscribers) {
-    subscribers.forEach((subscriber) => {
-      subscriber.callback(snapshot);
-    });
-  }
-};
+// export const updateSnapshot = <T extends BaseData, K extends BaseData>(
+//   snapshotId: string,
+//   snapshot: Snapshot<T, K>
+// ) => {
+//   const subscribers = snapshotSubscribers.get(snapshotId);
+//   if (subscribers) {
+//     subscribers.forEach((subscriber) => {
+//       subscriber.callback(snapshot);
+//     });
+//   }
+// };
 
 
 const updateSnapshot = async <T extends { data: any }, K extends CustomSnapshotData>(

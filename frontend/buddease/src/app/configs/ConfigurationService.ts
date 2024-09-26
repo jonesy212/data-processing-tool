@@ -17,6 +17,8 @@ import LazyLoadScriptConfigImpl from "./LazyLoadScriptConfig";
 import userPreferences, { ModuleType } from "./UserPreferences";
 import userSettings from "./UserSettings";
 import { VersionHistory } from '../components/versions/VersionData';
+import CalendarManagerStoreClass from '../components/state/stores/CalendarEvent';
+import { K, T } from '../components/models/data/dataStoreMethods';
 
 
 interface BaseRetryConfig {
@@ -25,12 +27,14 @@ interface BaseRetryConfig {
 }
 
 interface BaseCacheConfig {
-  maxAge?: number;
+  maxAge?: string | number;
   staleWhileRevalidate?: number;
 }
 
 interface BaseMetadataConfig {
   enableSnapshot?: boolean;
+  eventRecords?: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
+  
 }
 
 

@@ -90,7 +90,8 @@ export enum NotificationTypeEnum {
   SystemUpdateInProgress = "SystemUpdateInProgress",
   TaskLogged = "TaskLogged",
   TaskBoardID = "TaskBoardID",
-  SnapshotID = "SnapshotID"
+  SlideID = "SlideID",
+  SnapshotID = "SnapshotID",
   TeamJoinApproved = "TeamJoinApproved",
   TeamJoinRequest = "TeamJoinRequest",
   TeamID = "TeamID",

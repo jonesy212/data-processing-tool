@@ -1,12 +1,12 @@
 import { CategoryProperties } from "./../../pages/personas/ScenarioBuilder";
 import { BaseData } from "../models/data/Data";
- import { Snapshot, SnapshotsArray, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
+ import { Snapshot, SnapshotsArray, SnapshotUnion, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { Subscriber } from "../users/Subscriber";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import CalendarEvent from "../state/stores/CalendarEvent";
 import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
-import { SnapshotStoreConfig, SnapshotWithCriteria } from "../snapshots";
+import { SnapshotDataType, SnapshotStoreConfig, SnapshotWithCriteria } from "../snapshots";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 
@@ -54,16 +54,17 @@ function createSnapshotStore<T extends BaseData, K extends BaseData>(
     deleteSnapshot: () => { /* Implement deletion logic */ },
     
     restoreSnapshot: (
+      id: string,
       snapshot: Snapshot<T, K>,
-      snapshotId: number,
-      snapshotData: T,
+      snapshotId: string,
+      snapshotData: SnapshotUnion<T>,
       category: Category | undefined,
       callback: (snapshot: T) => void,
       snapshots: SnapshotsArray<T>,
       type: string,
       event: Event,
       snapshotContainer?: T,
-      snapshotStoreConfig?: SnapshotStoreConfig<T, K>
+      snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData>, T> | undefined
         ) => {
           // Step 1: Handle `this.id` being potentially undefined
           if (!snapshot.id) {
