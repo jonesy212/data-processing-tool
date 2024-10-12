@@ -3,13 +3,15 @@ import AppTreeService from "@/app/services/AppTreeService";
 import fuzzysort from "fuzzysort";
 import { useAuth } from "../auth/AuthContext";
 import { processTextWithSpaCy } from "../intelligence/AutoGPTSpaCyIntegration";
+import { AllTypes } from "../typings/PropTypes";
 
 // Define a type for your entities
 interface Entity {
-  id: string;
-  name: string;
-  type: string;
-  // Add more properties as needed
+  id: string | number;
+  name: string | undefined;
+  description?: string | null | undefined;
+  source?: string;
+  type?: AllTypes;  // Add more properties as needed
 }
 
 // Function to perform fuzzy matching with spaCy processing
@@ -54,12 +56,10 @@ export const fuzzyMatchEntities = async (
   }
 };
 
-// Assuming you have a list of entities
 const entities: Entity[] = [
-  { id: "1", name: "Apple Inc.", type: "company" },
-  { id: "2", name: "Microsoft Corporation", type: "company" },
-  { id: "3", name: "Project X", type: "project" },
-  // Add more entities as needed
+  { id: 1, name: "Apple Inc.", description: "Tech company", source: "local", type: "company" },
+  { id: 2, name: "Microsoft Corporation", description: "Tech company", source: "global", type: "company" },
+  { id: 3, name: "Project X", description: "Development project", source: "local", type: "project" },
 ];
 
 // Query for fuzzy matching with NLP processing

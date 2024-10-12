@@ -1,9 +1,9 @@
 // Version.ts
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
-import BackendStructure, { backend, backendStructure } from "@/app/configs/appStructure/BackendStructure";
-import FrontendStructure, { frontend, frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
+import BackendStructure, {  backendStructure } from "@/app/configs/appStructure/BackendStructure";
+import FrontendStructure, {  frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
 import crypto from "crypto";
+import { createHash } from 'node:crypto';
 import getAppPath from "../../../../appPath";
 import { Data } from "../models/data/Data";
 import { VersionData, VersionHistory } from "./VersionData";
@@ -14,6 +14,8 @@ import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Member } from "../models/teams/TeamMembers";
 import DocumentPermissions from "../documents/DocumentPermissions";
 import { fluenceApiKey } from "../web3/dAppAdapter/DAppAdapterConfig";
+import { dataVersions } from "@/app/configs/DocumentBuilderConfig";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 interface ExtendedVersion extends Version {
   name: string;
@@ -24,8 +26,130 @@ interface ExtendedVersion extends Version {
   userId: string;
 }
 
-class Version {
-  versionData: VersionData;
+
+interface BuildVersion {
+  data: Data | undefined,
+  backend: BackendStructure | undefined,
+  frontend: FrontendStructure | undefined
+}
+
+
+interface Version {
+  id: number;
+  versionData?: VersionData | null; // Adjust based on actual type
+  buildVersions?: BuildVersion | undefined; // Adjust based on actual type
+  isActive: boolean;
+  releaseDate: string;
+  major: number;
+  minor: number;
+  patch: number;
+  name: string;
+  url: string;
+  versionNumber: string;
+  documentId: string;
+  draft: boolean;
+  userId: string;
+  content: string;
+  description: string;
+  buildNumber: string;
+  metadata?: any; // Adjust based on actual type
+  versions: any | null; // Adjust based on actual type
+  appVersion: string;
+  checksum: string;
+  parentId: string | null;
+  parentType: string;
+  parentVersion: string;
+  parentTitle: string;
+  parentContent: string;
+  parentName: string;
+  parentUrl: string;
+  parentChecksum: string;
+  parentAppVersion: string;
+  parentVersionNumber: string;
+  parentMetadata?: {} | undefined;
+  createdAt?: string | Date | undefined;
+  updatedAt?: string | Date | undefined;
+  deletedAt?: string | Date | undefined;
+  isLatest: boolean;
+  isPublished: boolean;
+  publishedAt: Date | null;
+  source: string;
+  status: string;
+  workspaceId: string;
+  workspaceName: string;
+  workspaceType: string;
+  workspaceUrl: string;
+  workspaceViewers: any[]; // Adjust based on actual type
+  workspaceAdmins: any[]; // Adjust based on actual type
+  workspaceMembers: any[]; // Adjust based on actual type
+  data: any[]; // Adjust based on actual type
+  _structure: Record<string, AppStructureItem[]>;
+  versionHistory: {
+    versionData: any; // Adjust based on actual type
+  };
+  getVersionNumber: (() => string) | undefined;
+  updateStructureHash(): Promise<void>;
+  setStructureData(newData: string): void;
+  hash(value: string): string;
+
+
+  currentHash: string; // Property to hold the current hash value
+  structureData: string; // Property to hold the structure data
+  calculateHash(): string; // Method to calculate the hash
+}
+
+
+// DevVersion: Extends BaseVersion and adds development-specific properties
+interface DevVersion extends Version {
+  buildDate: string;
+  commitHash: string;
+  commitDate: string;
+  commitMessage: string;
+  commitAuthor: string;
+  commitAuthorEmail: string;
+  commitCommitter: string;
+  commitCommitterEmail: string;
+  branch: string;
+  tag: string;
+  remoteOrigin: string;
+  remoteOriginURL: string;
+  isRelease: boolean;
+  isBeta: boolean;
+  isAlpha: boolean;
+  isCandidate: boolean;
+  isSnapshot: boolean;
+  isPullRequest: boolean;
+  pullRequestNumber: string;
+  pullRequestUrl: string;
+  pullRequestAuthor: string;
+  pullRequestAuthorEmail: string;
+  pullRequestCommit: string;
+  pullRequestCommitUrl: string;
+  pullRequestCommitMessage: string;
+  pullRequestCommitDate: string;
+  pullRequestCommitAuthor: string;
+  pullRequestCommitAuthorEmail: string;
+  pullRequestCommitCommitter: string;
+  pullRequestCommitCommitterEmail: string;
+  pullRequestBranch: string;
+  pullRequestBaseBranch: string;
+  pullRequestMergeBranch: string;
+  pullRequestMergeCommit: string;
+  pullRequestMergeCommitUrl: string;
+  pullRequestMergeCommitMessage: string;
+  pullRequestMergeCommitDate: string;
+  pullRequestMergeCommitAuthor: string;
+  pullRequestMergeCommitAuthorEmail: string;
+  pullRequestMergeCommitCommitter: string;
+  pullRequestMergeCommitCommitterEmail: string;
+}
+
+
+
+
+class VersionImpl implements Version {
+  versionData?: VersionData | null | undefined;
+  buildVersions?: BuildVersion | undefined;
   major: number;
   minor: number;
   patch: number;
@@ -66,8 +190,10 @@ class Version {
   parentAppVersion: string;
   parentVersionNumber: string;
   isLatest: boolean;
+  isActive: boolean;
   isPublished: boolean;
   publishedAt: Date | null;
+  releaseDate: string
   source: string;
   status: string;
   workspaceId: string;
@@ -77,9 +203,9 @@ class Version {
   workspaceViewers: string[];
   workspaceAdmins: string[];
   workspaceMembers: string[];
-  createdAt?: Date | undefined;
-  updatedAt?: Date | undefined;
-  deletedAt?: Date | undefined;
+  createdAt?: string | Date | undefined;
+  updatedAt?: string | Date | undefined;
+  deletedAt?: string | Date | undefined;
   frontendStructure?: Promise<AppStructureItem[]>;
   backendStructure?: Promise<AppStructureItem[]>;
   data: Data[];
@@ -88,6 +214,11 @@ class Version {
 
   _structure: Record<string, AppStructureItem[]> = {}; // Define private property _structure
   versionHistory: VersionHistory; // Add version history property
+
+
+
+  currentHash: string;
+  structureData: string; // Data to be hashed
 
   // Method to set structure (private)
   private setStructure?(structure: Record<string, AppStructureItem[]>): void {
@@ -126,11 +257,14 @@ class Version {
     minor: number;
     patch: number;
     versionNumber: string;
+    structureData: string;
+    buildVersions: BuildVersion;
     appVersion: string;
     description: string;
     content: string;
     checksum: string;
     versionData: VersionData[];
+
     data: Data[];
     name: string;
     url: string;
@@ -158,14 +292,15 @@ class Version {
     parentMetadata: {} | undefined;
     parentAppVersion: string;
     parentVersionNumber: string;
-    createdAt: Date | undefined;
-    updatedAt: Date | undefined;
-    deletedAt: Date | undefined;
+    createdAt: string | Date | undefined
+    updatedAt: string | Date | undefined
+    deletedAt: string | Date | undefined
     draft: boolean;
+    isActive: boolean;
     isLatest: boolean;
     isPublished: boolean;
     publishedAt: Date | null;
-
+    releaseDate: string,
 
     isDeleted: boolean,
 
@@ -200,11 +335,16 @@ class Version {
     workspaceAdmins: string[];
     workspaceMembers: string[];
 
-    _structure?: any; // Added here
+
+    _structure?: Record<string, AppStructureItem[]>; // Added here
     frontendStructure?: Promise<AppStructureItem[]>; // Added here
     backendStructure?: Promise<AppStructureItem[]>; // Added here
-  }) {
+  }
+  ) {
+    this.structureData = versionInfo.structureData;
+    this.currentHash = '';
     this.id = versionInfo.id;
+    this.buildVersions = versionInfo.buildVersions;
     this.versionNumber = versionInfo.versionNumber;
     this.appVersion = versionInfo.appVersion;
     this.versions = versionInfo.versions;
@@ -239,7 +379,9 @@ class Version {
     this.updatedAt = versionInfo.updatedAt;
     this.deletedAt = versionInfo.deletedAt;
     this.isLatest = versionInfo.isLatest;
+    this.isActive = versionInfo.isActive;
     this.isPublished = versionInfo.isPublished;
+    this.releaseDate = versionInfo.releaseDate;
     this.publishedAt = versionInfo.publishedAt;
     this.source = versionInfo.source;
     this.status = versionInfo.status;
@@ -257,7 +399,9 @@ class Version {
       name: versionInfo.name ?? '',
       url: versionInfo.url ?? '',
       versionNumber: versionInfo.versionNumber ?? '',
-
+      isActive: versionInfo.isArchived,
+      releaseDate: versionInfo.releaseDate ?? '',
+      buildVersions: versionInfo.buildVersions,
       documentId: versionInfo.documentId ?? '',
       draft: versionInfo.draft ?? false,
       userId: versionInfo.userId ?? '',
@@ -324,6 +468,8 @@ class Version {
       return null;
     };
 
+
+
     const frontendStructureInstance = new FrontendStructure(
       getAppPath(this.versionNumber, this.appVersion)
     );
@@ -347,6 +493,18 @@ class Version {
       .digest("hex");
   }
 
+  private transformToStructureItems(data: any): AppStructureItem[] {
+    // Transform the input data to AppStructureItem format
+    // Assuming data is an array of objects or a tree structure
+    return data.map((item: any) => ({
+      id: item.id,
+      name: item.name,
+      children: item.children ? this.transformToStructureItems(item.children) : undefined,
+    }));
+  }
+
+
+
   public async setFrontendAndBackendStructure?(): Promise<void> {
     const mergedStructure = this.getStructure
       ? this.getStructure()
@@ -358,6 +516,27 @@ class Version {
       });
     }
   }
+
+
+  public async getStructure(): Promise<AppStructureItem[]> {
+    return new Promise((resolve, reject) => {
+      try {
+        // Step 1: Parse the structureData
+        const parsedData = JSON.parse(this.structureData);
+
+        // Step 2: Transform the parsed data into AppStructureItem array
+        const structureItems: AppStructureItem[] = this.transformToStructureItems(parsedData);
+
+        // Step 3: Resolve the promise with the transformed data
+        resolve(structureItems);
+      } catch (error: any) {
+        // Reject the promise in case of error
+        reject(new Error(`Failed to get structure: ${error.message}`));
+      }
+    });
+  }
+
+
 
   // Inside the Version class
   public mergeAndHashStructures?(
@@ -436,6 +615,8 @@ class Version {
     workspaceMembers: string[];
     createdAt: Date;
     versionData: VersionData[];
+    structureData: string;
+    buildVersions: BuildVersion;
     deletedAt: Date | undefined,
     isDeleted: boolean,
     publishedBy: string,
@@ -447,7 +628,8 @@ class Version {
     lockedBy: string,
     lockedAt: Date | null,
     isArchived: boolean,
-
+    isActive: boolean;
+    releaseDate: string;
     archivedBy: string,
     archivedAt: Date | null,
     tags: TagsRecord,
@@ -460,7 +642,7 @@ class Version {
     attachments: Attachment[],
     updatedAt: Date | undefined;
   }): Version {
-    return new Version(versionInfo);
+    return new VersionImpl(versionInfo);
   }
   // Method to get version data
   getVersionData?(): VersionData | undefined {
@@ -483,6 +665,7 @@ class Version {
           timestamp: new Date(),
           fileType: "",
           title: "",
+          description: "",
           keywords: [],
           authors: [],
           contributors: [],
@@ -500,7 +683,7 @@ class Version {
     };
 
     // Function to create a Version object from ExtendedVersion data
-    const createVersion = (versionData: ExtendedVersion): Version => {
+    const createVersion = (versionData: ExtendedVersion): VersionImpl => {
       const {
         content,
         metadata,
@@ -526,6 +709,8 @@ class Version {
         parentVersionNumber,
         isLatest,
         isPublished,
+        isActive,
+        releaseDate,
         publishedAt,
         source,
         status,
@@ -546,13 +731,14 @@ class Version {
 
       const docPermissions = new DocumentPermissions(true, false);
 
-      const version: Version = new Version({
+      const version: VersionImpl = new VersionImpl({
         content,
         metadata,
         checksum,
         appVersion,
         description,
         buildNumber,
+        structureData: this.structureData,
         major,
         minor,
         patch,
@@ -572,6 +758,8 @@ class Version {
         parentVersionNumber,
         isLatest,
         isPublished,
+        isActive,
+        releaseDate,
         publishedAt,
         source,
         status,
@@ -616,14 +804,19 @@ class Version {
         comments: [],
         reactions: [],
         attachments: [],
-        changes: []
+        changes: [],
+        buildVersions: {
+          data: dataVersions,
+          backend: backendStructure,
+          frontend: frontendStructure,
+        }
       });
 
       return version;
     };
 
     // Return or use 'data' as needed
-    return data;
+    return versionData;
   }
 
   // Method to update version history
@@ -689,6 +882,41 @@ class Version {
       .digest("hex");
   }
 
+
+
+  // Calculate the hash of the structure data
+  calculateHash(): string {
+    // Logic to calculate and return the hash
+    this.currentHash = this.hash(this.structureData);
+    return this.currentHash;
+  }
+
+
+  // Method to update the structure hash
+  async updateStructureHash(): Promise<void> {
+    try {
+      // Re-calculate the hash based on the current structure data
+      const newHash = this.calculateHash();
+
+      // Update the current hash if it has changed
+      if (this.currentHash !== newHash) {
+        this.currentHash = newHash;
+        console.log(`Structure hash updated to: ${this.currentHash}`);
+      } else {
+        console.log('No changes detected; structure hash remains the same.');
+      }
+    } catch (error) {
+      console.error('Error updating structure hash:', error);
+      // Handle error appropriately, possibly rethrow or log
+    }
+  }
+
+  setStructureData(newData: string) {
+    this.structureData = newData;
+    // Optionally call updateStructureHash() here if needed
+  }
+
+
   // Method to get structure hash
   async getStructureHash?(): Promise<string> {
     return this.generateStructureHash && (await this.generateStructureHash())
@@ -705,21 +933,24 @@ class Version {
   setContent?(content: string): void {
     this.content = content;
   }
-  getStructure?: () => Record<string, AppStructureItem[]>;
+
+  hash(value: string): string {
+    return crypto.createHash("sha256").update(value).digest("hex");
+  }
 }
 
 export default Version;
 
 
 
-
-
-const data: VersionData = {
-  id: 0,
-  name: "",
+const versionData: VersionData = {
+id: 0,
+name: "",
   url: "",
   versionNumber: "",
   documentId: "",
+  isActive: false,
+  releaseDate: '',  
   draft: false,
   userId: "",
   parentId: "", // Provide appropriate values based on your application logic
@@ -763,7 +994,120 @@ const data: VersionData = {
   comments: [],
   backend: backendStructure,
   frontend: frontendStructure,
-  changes: []
+  changes: [],
+  buildVersions: {
+    data: dataVersions,
+    backend: backendStructure,
+    frontend: frontendStructure
+  }
 };
 
-export { data };
+
+
+// Example of using DevVersion for development-specific contexts
+const devVersion: DevVersion = {
+  id: 1,
+  isActive: true,
+  releaseDate: '2024-10-10',
+  major: 1,
+  minor: 0,
+  patch: 3,
+  name: 'Release 1.0.3',
+  url: 'https://example.com/download/1.0.3',
+  versionNumber: '1.0.3',
+  documentId: 'abc123',
+  draft: false,
+  userId: 'user123',
+  content: 'Content of the version',
+  description: 'Description of the version',
+  buildNumber: '12345',
+  appVersion: '1.0.3',
+  versions: [],
+  checksum: 'abc123checksum',
+  parentId: null,
+  parentType: 'document',
+  parentVersion: '1.0.2',
+  parentTitle: 'Parent Version Title',
+  parentContent: 'Parent Content',
+  parentName: 'Parent Name',
+  parentUrl: 'https://example.com/download/1.0.2',
+  parentChecksum: 'parentchecksum',
+  parentAppVersion: '1.0.2',
+  parentVersionNumber: '1.0.2',
+  isLatest: true,
+  isPublished: true,
+  publishedAt: null,
+  source: 'local',
+  status: 'released',
+  workspaceId: 'workspace123',
+  workspaceName: 'Development Workspace',
+  workspaceType: 'team',
+  workspaceUrl: 'https://example.com/workspace/123',
+  workspaceViewers: [],
+  workspaceAdmins: [],
+  workspaceMembers: [],
+  data: [],
+  _structure: {},
+  versionHistory: {
+    versionData: {},
+  },
+  getVersionNumber: undefined,
+  updateStructureHash: async () => {},
+  setStructureData: (newData: string) => {},
+  hash: (value: string) => 'hashedvalue',
+  currentHash: 'currenthash',
+  structureData: 'structureData',
+  calculateHash: () => 'calculatedhash',
+  buildDate: '2024-10-01',
+  commitHash: 'abc123commit',
+  commitDate: '2024-09-30',
+  commitMessage: 'Initial release',
+  commitAuthor: 'John Doe',
+  commitAuthorEmail: 'john.doe@example.com',
+  commitCommitter: 'Jane Doe',
+  commitCommitterEmail: 'jane.doe@example.com',
+  branch: 'main',
+  tag: 'v1.0.3',
+  remoteOrigin: 'origin',
+  remoteOriginURL: 'https://github.com/example/repo',
+  isRelease: true,
+  isBeta: false,
+  isAlpha: false,
+  isCandidate: false,
+  isSnapshot: false,
+  isPullRequest: false,
+  pullRequestNumber: '',
+  pullRequestUrl: '',
+  pullRequestAuthor: '',
+  pullRequestAuthorEmail: '',
+  pullRequestCommit: '',
+  pullRequestCommitUrl: '',
+  pullRequestCommitMessage: '',
+  pullRequestCommitDate: '',
+  pullRequestCommitAuthor: '',
+  pullRequestCommitAuthorEmail: '',
+  pullRequestCommitCommitter: '',
+  pullRequestCommitCommitterEmail: '',
+  pullRequestBranch: '',
+  pullRequestBaseBranch: '',
+  pullRequestMergeBranch: '',
+  pullRequestMergeCommit: '',
+  pullRequestMergeCommitUrl: '',
+  pullRequestMergeCommitMessage: '',
+  pullRequestMergeCommitDate: '',
+  pullRequestMergeCommitAuthor: '',
+  pullRequestMergeCommitAuthorEmail: '',
+  pullRequestMergeCommitCommitter: '',
+  pullRequestMergeCommitCommitterEmail: '',
+};
+
+export { versionData };
+export type { BuildVersion, VersionImpl }
+
+
+
+
+
+
+
+

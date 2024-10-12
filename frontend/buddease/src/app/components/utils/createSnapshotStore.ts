@@ -1,20 +1,20 @@
-import { CategoryProperties } from "./../../pages/personas/ScenarioBuilder";
-import { BaseData } from "../models/data/Data";
- import { Snapshot, SnapshotsArray, SnapshotUnion, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
-import SnapshotStore from "../snapshots/SnapshotStore";
-import { Subscriber } from "../users/Subscriber";
-import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import CalendarEvent from "../state/stores/CalendarEvent";
-import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
-import { SnapshotDataType, SnapshotStoreConfig, SnapshotWithCriteria } from "../snapshots";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
 import { Category } from "../libraries/categories/generateCategoryProperties";
+import { BaseData } from "../models/data/Data";
+import { RealtimeDataItem } from "../models/realtime/RealtimeData";
+import { SnapshotStoreConfig, SubscriberCollection } from "../snapshots";
+import { Snapshot, SnapshotsArray, SnapshotUnion, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
+import { SnapshotEvents } from "../snapshots/SnapshotEvents";
+import SnapshotStore from "../snapshots/SnapshotStore";
+import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
+import { Subscriber } from "../users/Subscriber";
+import { CategoryProperties } from "./../../pages/personas/ScenarioBuilder";
 
 // createSnapshotStore.ts
 function createSnapshotStore<T extends BaseData, K extends BaseData>(
   id: string,
   snapshotData: SnapshotStoreConfig<T, K>,
-  category?: string | CategoryProperties,
+  category?: string | symbol | Category,
   callback?: (snapshotStore: SnapshotStore<T, K>) => void,
   snapshotDataConfig?: SnapshotStoreConfig<T, K> 
 ): Snapshot<T, K> | null {
@@ -62,7 +62,8 @@ function createSnapshotStore<T extends BaseData, K extends BaseData>(
       callback: (snapshot: T) => void,
       snapshots: SnapshotsArray<T>,
       type: string,
-      event: Event,
+      event: string | SnapshotEvents<T, K>,
+      subscribers: SubscriberCollection<T, K>,
       snapshotContainer?: T,
       snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData>, T> | undefined
         ) => {

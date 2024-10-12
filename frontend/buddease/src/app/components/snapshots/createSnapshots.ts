@@ -1,4 +1,3 @@
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { Data } from "../models/data/Data";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
@@ -14,7 +13,7 @@ const createSnapshots = <T extends Data, K extends Data = T>(
     payload: CreateSnapshotStoresPayload<T, K>,
     callback: (snapshots: Snapshot<T, K>[]) => void | null,
     snapshotDataConfig?: SnapshotConfig<T, K>[],
-    category?: string | CategoryProperties
+    category?: string | symbol | Category
   ): Snapshot<T, K>[] | null => {
     const { data, events, dataItems, newData } = payload;
     

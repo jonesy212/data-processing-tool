@@ -5,7 +5,7 @@ import { makeAutoObservable } from "mobx";
 import { MutableRefObject, useRef, useState } from "react";
 import {useSnapshotManager} from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
-import SnapshotStore from "../../snapshots/SnapshotStore";
+import SnapshotStore, { SubscriberCollection } from "../../snapshots/SnapshotStore";
 import useSnapshotStore from "../../snapshots/SnapshotStore";
 import {
   NotificationTypeEnum,
@@ -15,8 +15,14 @@ import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { Todo } from "../../todos/Todo";
 import { todoService } from "../../todos/TodoService";
 import { Snapshot, Snapshots } from '../../snapshots/LocalStorageSnapshotStore';
+import useSecureStoreId from '../../utils/useSecureStoreId';
+import { Subscriber } from '../../users/Subscriber';
 
 const { notify } = useNotification();
+
+interface TodoManagerStoreProps {
+  initialTodos?: Record<string, Todo>; // Optional initial todos
+}
 export interface TodoManagerStore {
   dispatch: (action: any) => void;
   todos: Record<string, Todo>;
@@ -24,7 +30,7 @@ export interface TodoManagerStore {
   toggleTodo: (id: string) => void;
   addTodo: (todo: Todo) => void;
   loading: MutableRefObject<boolean>;
-  error: MutableRefObject<string>;
+  error: string | null;
   addTodos: (
     newTodos: Todo[],
     data: SnapshotStore<Snapshot<any, any>>
@@ -54,8 +60,9 @@ export interface TodoManagerStore {
   batchFetchTodoSnapshotsRequest: (payload: Record<string, Todo[]>) => void;
 }
 
-const useTodoManagerStore = (props: P): TodoManagerStore<Todo> => {
-  const [todos, setTodos] = useState<Record<string, Todo>>({});
+const useTodoManagerStore = <T extends Data, K extends Data = T>(
+  props: TodoManagerStoreProps): TodoManagerStore => {
+  const [todos, setTodos] = useState<Record<string, Todo>>(props.initialTodos || {});
   const [subscriptions, setSubscriptions] = useState<
     Record<string, () => void>
     >({});
@@ -91,8 +98,12 @@ const useTodoManagerStore = (props: P): TodoManagerStore<Todo> => {
 
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>("");
 
+  const storeId = useSecureStoreId()
+  if(!storeId){
+    throw new Error("Store ID is required in order to create notification todo store");
+  }
   // Inside useTodoManagerStore function
-  const snapshotStore = useSnapshotManager();
+  const snapshotStore = useSnapshotManager(storeId);
   // Initialize SnapshotStore
   const onSnapshotCallbacks: ((snapshot: Snapshot<Todo>) => void)[] = [];
 
@@ -142,7 +153,8 @@ const useTodoManagerStore = (props: P): TodoManagerStore<Todo> => {
 
   const addTodos = (
     newTodos: Todo[],
-    data: SnapshotStore<Snapshot<Todo>>
+    data: SnapshotStore<Todo>,
+    subscribers?: SubscriberCollection<T, K>
   ): void => {
     setTodos((prevTodos: Record<string, Todo>) => {
       const updatedTodos = { ...prevTodos };
@@ -153,16 +165,22 @@ const useTodoManagerStore = (props: P): TodoManagerStore<Todo> => {
         // Take snapshot for each todo
         if (data) {
           // Convert todo to snapshot format
-          const snapshot: Snapshot<Todo> = {
+          const snapshot: Snapshot<Todo, Todo> = {
             todoSnapshotId: generateSnapshotId,
             initialState: todo,
             category: "todo",
             timestamp: new Date(),
             // Other properties specific to Snapshot<Todo> if needed
           };
+
+
+          if(!subscribers){
+            throw new Error("No subscribers")
+          }
   
           // Take the snapshot
           data.takeSnapshot(snapshot, subscribers);
+
         }
       });
   
@@ -627,3 +645,4 @@ const useTodoManagerStore = (props: P): TodoManagerStore<Todo> => {
 };
 export default useTodoManagerStore;
 
+export type {TodoManagerStoreProps}

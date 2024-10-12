@@ -46,7 +46,7 @@ import { T } from "./dataStoreMethods";
 
 
 // Define the interface for DataDetails
-interface DataDetails extends CommonData {
+interface DataDetails extends CommonData<T> {
   _id?: string;
   title?: string;
   description?: string | null;
@@ -62,7 +62,7 @@ interface DataDetails extends CommonData {
   isActive?: boolean;
   status?: AllStatus;
   uploadedAt?: Date | undefined; //
-  phase?: Phase | null;
+  phase?: Phase<T> | null;
   fakeData?: FakeData;
   comments?: (Comment | CustomComment)[] | undefined;
   todos?: Todo[];
@@ -114,25 +114,26 @@ interface BaseData {
   id?: string | number | undefined;
   title?: string;
   data?: any;
+  size?: number;
   description?: string | null;
   startDate?: Date;
   label?: string | Label | null;
   endDate?: Date;
   scheduled?: boolean;
-  status?: AllStatus;
+  status?: AllStatus | null;
   timestamp?: string | number | Date | undefined;
   isActive?: boolean;
   tags?: TagsRecord | string[] | undefined; // Update as needed based on your schema
 
   // | Tag[];
-  phase?: Phase | null;
+  phase?: Phase<BaseData> | null;
   phaseType?: ProjectPhaseTypeEnum;
   key?: string;
 
   value?: number | string | Snapshot<BaseData, BaseData> | null;
   initialState?: InitializedState<BaseData, BaseData>;
   dueDate?: Date | null;
-  priority?: string | AllStatus;
+  priority?: string | AllStatus | null;
   assignee?: UserAssignee | null;
   collaborators?: string[];
   comments?: (Comment | CustomComment)[] | undefined;
@@ -149,7 +150,7 @@ interface BaseData {
   isBeingDeleted?: boolean;
   isBeingCompleted?: boolean;
   isBeingReassigned?: boolean;
-  analysisType?: AnalysisTypeEnum;
+  analysisType?: AnalysisTypeEnum | null;
   analysisResults?: DataAnalysisResult[] | string;
 
   audioUrl?: string;

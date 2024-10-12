@@ -60,14 +60,17 @@ import {
   SnapshotOperation,
   SnapshotOperationType,
 } from "../../snapshots/SnapshotActions";
-import { K, T } from "../../snapshots/SnapshotConfig";
+
 import SnapshotManagerOptions from "../../snapshots/SnapshotManagerOptions";
 import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "../../snapshots/SnapshotWithCriteria";
 import { Document, DocumentStore } from "./DocumentStore";
 import { MobXRootState } from "./RootStores";
 import { getCurrentSnapshotConfigOptions } from "../../snapshots/getCurrentSnapshotConfigOptions";
-import { getCategoryProperties } from "../../libraries/categories/CategoryManager";
+import { CategoryKeys, getCategoryProperties } from "../../libraries/categories/CategoryManager";
+import { FilterState } from "../redux/slices/FilterSlice";
+import { allCategories } from "../../models/data/DataStructureCategories";
+import { SnapshotConfigProps } from "../../snapshots/SnapshotConfigProps";
 
 
 const dispatch = useDispatch()
@@ -212,7 +215,8 @@ export interface CalendarManagerStore<
     string 
     | SnapshotStoreConfig<T, K> 
     | null
-    | undefined
+    | undefined,
+    properties: Array<keyof FilterState>
   ) => void;
   getSnapshotDataKey: (
     documenttId: string,
@@ -242,14 +246,22 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
   assignedEventStore: AssignEventStore;
   
-  private documentManager: DocumentStore;
-  
+  private documentManager: DocumentStore<T>;
+  private eventListeners: ((data: Snapshot<T, K>) => void)[]; // Listeners for data changes
+
+  // Method to notify all listeners
+  private notifyListeners(data: Snapshot<T, K>) {
+    for (const listener of this.eventListeners) {
+      listener(data); // Call each listener with the new data
+    }
+  }
   // public action: CalendarActionType;
   public timestamp: Date;
 
   constructor(category: symbol | string | Category | undefined, documentManager: DocumentStore) {
     this.timestamp = new Date(); // Initialize default value
     this.category = category;
+    this.eventListeners = [],
     this.entities = {
       events: [],
       participants: [],
@@ -279,7 +291,9 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
         | string
         | SnapshotStoreConfig<T, K>
         | null
-        | undefined
+        | undefined,
+      properties: Array<keyof FilterState>,
+      snapshotConfigProps?: SnapshotConfigProps<T, K>
     ) => {
       try {
         const key = this.getSnapshotDataKey(documentId, eventId, userId)
@@ -291,22 +305,57 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
           return;
         }
 
-        const snapshot = snapshotApi.getCurrentSnapshot(snapshotId, storeId)
-        const criteria =  snapshotApi.extractCriteria(snapshot, properties)
-        const categoryProperties = getCategoryProperties(this.category);
-        // const snapshotId = snapshotApi.getSnapshotId(snapshot, snapshotId);
-        const snapshotContainer = await snapshotApi.getSnapshotContainer<T, K>(snapshotId, storeId);
         
-        const delegate = snapshotApi.c<T, K>(snapshotId, storeId);
-        const config = snapshotApi.getSnapshotConfig<T, K>(
-          snapshotId,
+        const snapshot = snapshotApi.getCurrentSnapshot(snapshotId, storeId)
+        if (!snapshot) {
+          console.error("Snapshot not found for ID:", snapshotId);
+          return;
+        }
+
+        if (!this.category) {
+          throw Error("Category not found")
+        }
+
+
+        if (!this.category || !allCategories.hasOwnProperty(this.category)) {
+          throw new Error("Invalid category");
+      }
+        
+        const criteria =  snapshotApi.extractCriteria(snapshot, properties)
+        const categoryProperties = getCategoryProperties(this.category as CategoryKeys);
+        
+        const {
+          subscriberId,
+          dataStoreMethods, 
+          metadata, 
+          endpointCategory,
+          storeProps, 
+          snapshotConfigData, 
+          snapshotStoreConfigData, 
           snapshotContainer,
+        } = snapshotConfigProps
+        // const snapshotId = snapshotApi.getSnapshotId(snapshot, snapshotId);
+        const snapshotContainer = snapshotApi.getSnapshotContainer<T, K>(snapshotId, storeId);
+        
+        const delegate = snapshotApi.getSnapshotContainer<T, K>(snapshotId, storeId);
+        const config = snapshotApi.getSnapshotConfig<T, K>(
+          id,
+          snapshotId,
           criteria,
           this.category ? this.category : undefined,
           categoryProperties,
+          subscriberId,
           delegate,
-          snapshot
-          
+          convertedSnapshot,
+          snapshotData, 
+          this.callback, 
+          dataStoreMethods, 
+          metadata, 
+          endpointCategory,
+          storeProps, 
+          snapshotConfigData, 
+          snapshotStoreConfigData, 
+          snapshotContainer,
         );
 
         const options = getCurrentSnapshotConfigOptions(
@@ -349,6 +398,59 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
     this.openScheduleEventModal = useModalFunctions().setModalContent;
     this.useRealtimeDataInstance = useRealtimeData(this.events, updateCallback);
     makeAutoObservable(this);
+  }
+
+
+  // Define the handleEvent method
+  handleEvent(eventId: string, eventData: T): void {
+    console.log(`Handling event with ID: ${eventId}`);
+
+    // Logic to handle the event (e.g., creating or updating a snapshot)
+    const snapshotId = eventId; // Assuming the eventId is used as the snapshotId
+    const snapshotContent = this.createSnapshotContent(eventData); // Create snapshot content from event data
+
+    // Check if a snapshot with the given ID already exists
+    if (!this.data.has(snapshotId)) {
+      const newSnapshot = {
+        ...snapshotContent,
+        id: snapshotId,
+      };
+      this.data.set(snapshotId, newSnapshot);
+      console.log(`Created new snapshot with ID ${snapshotId}:`, newSnapshot);
+    }
+
+    // Notify listeners about the new snapshot
+    this.notifyListeners(eventData);
+  }
+
+  // Method to create snapshot content from event data
+  private createSnapshotContent(eventData: T): Snapshot<T, K> {
+    return {
+      // Convert eventData to the format required for a snapshot
+      ...eventData,
+      // Add any additional properties needed for the snapshot
+    };
+  }
+
+
+
+  handleData(data: Snapshot<T, K>) {
+    console.log("Handling data:", data);
+    
+    // Add or update the data in the dataStore
+    if (data.id) {
+      this.dataStore.set(data.id, data);
+    } else {
+      console.error("Data must have an 'id' property.");
+    }
+
+    // Notify all registered listeners about the new data
+    this.notifyListeners(data);
+  }
+
+  // Method to add an event listener
+  addListener(listener: (data: Snapshot<T, K>) => void) {
+    this.eventListeners.push(listener);
   }
 
   // Method to handle various actions
@@ -444,10 +546,12 @@ class CalendarManagerStoreClass<T extends Data, K extends Data>
     eventId: number,
     userId: string,
     events: Record<string, CalendarEvent<T, K>[]>,
-    snapshotStore: string | SnapshotStoreConfig<T, K> | null | undefined
+    snapshotStore: string | SnapshotStoreConfig<T, K> | null | undefined,
+    properties: Array<keyof FilterState>
+
   ) => void;
   openCalendarSettingsPage: () => void;
-  getSnapshotDataKey: (documentId: number, eventId: number, userId: string) => string;
+  getSnapshotDataKey: (documentId: string | number, eventId: number, userId: string) => string;
   getData: (id: string) => Promise<Snapshot<T, K>> = (id: string) => {
     return new Promise((resolve, reject) => {
       try {

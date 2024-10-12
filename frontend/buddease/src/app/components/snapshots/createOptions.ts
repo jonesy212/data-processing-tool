@@ -128,7 +128,7 @@ function createOptions<T extends Data, K extends Data>(params: {
 		createSnapshot: (
 			id: string,
 			snapshotData: Snapshot<T, K>,
-			category?: string | CategoryProperties,
+			category?: string | symbol | Category,
 			callback?: (snapshot: Snapshot<T, K>) => void,
 			snapshotDataStore?: SnapshotStore<T, K>,
 			snapshotStoreConfig?: SnapshotStoreConfig<T, K>
@@ -138,7 +138,7 @@ function createOptions<T extends Data, K extends Data>(params: {
 			id: string,
 			snapshotId: number,
 			snapshotStoreData: Snapshots<T>,
-			category?: string | CategoryProperties,
+			category?: string | symbol | Category,
 			callback?: (snapshotStore: SnapshotStore<T, K>) => void,
 			snapshotDataConfig?: SnapshotStoreConfig<T, K>[]
 		) => SnapshotStore<T, K> | null,
@@ -147,7 +147,7 @@ function createOptions<T extends Data, K extends Data>(params: {
 			id: string,
 			snapshotId: number,
 			snapshotData: Snapshot<T, K>,
-			category?: string | CategoryProperties,
+			category?: string | symbol | Category,
 			callback?: (snapshot: Snapshot<T, K>) => void,
 			snapshotDataStore?: SnapshotStore<T, K>,
 			snapshotStoreConfig?: SnapshotStoreConfig<T, K>

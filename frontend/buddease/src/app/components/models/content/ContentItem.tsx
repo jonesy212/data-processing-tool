@@ -13,19 +13,19 @@ function isTagObject(tag: string | Tag): tag is Tag {
 // Define the type for the content item
 interface ContentItem {
   then?(arg0: (newContent: any) => void): unknown;
-  id: string;
   _id?: string;
-  updatedAt: Date | undefined;
-  title: string;
-  body: string | undefined;
-  heading: React.ReactNode;
-  subheading?: React.ReactNode;
-  description?: string | null | undefined;
-  type: FileType;
-  footer?: React.ReactNode;
-  status: StatusType | undefined;
-  userId: string | undefined;
-  data: T
+  id: string; // Unique ID of the update
+  title: string; // Title of the update (e.g., "Task Status Updated")
+  body?: string; // Description or body of the update (e.g., details on what was changed)
+  heading: React.ReactNode; // Main heading for UI rendering
+  subheading?: React.ReactNode; // Optional subheading for more context
+  description?: string | null | undefined; // Description for additional information
+  type: FileType; // Type of content item (e.g., a text update, file attachment, etc.)
+  footer?: React.ReactNode; // Footer, such as the user who made the update or the update date
+  status: StatusType | undefined; // Status of the task after this update (e.g., "In Progress", "Completed")
+  userId: string | undefined; // ID of the user who created this update
+  updatedAt: Date | undefined; // The date and time when the update was made
+  
   // Add more properties as needed
 }
 
@@ -97,3 +97,8 @@ const ContentItemComponent: React.FC<ContentItemProps> = ({
 export default ContentItemComponent;
 export type { ContentItem };
 export {isTagObject}
+
+
+
+
+

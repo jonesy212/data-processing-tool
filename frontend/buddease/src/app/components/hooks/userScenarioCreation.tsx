@@ -98,3 +98,6 @@ const documents = useDocumentManagerSlice().documentBuilder({
     console.log("User scenarios and user journey mapped successfully.");
   
 }
+
+
+export {documentOptions}

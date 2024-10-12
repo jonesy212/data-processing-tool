@@ -19,6 +19,7 @@ declare global {
 
     updateWithSnapshot: (snapshotId: string, snapshot: Snapshot<any, any>) => void;
     
+    searchResults?: SearchResultWithQuery<any>[]; // Add searchResults to the Window interface
   }
 }
 

@@ -124,13 +124,29 @@ export const fetchAnalysisResults = (): Promise<any> => {
       // Destructure analysisResults safely
       const { description, phase, priority, sentiment, sentimentAnalysis, ...rest } = analysisResults;
 
-      // Return processed data
+      if(analysisResults.snapshotStores === undefined && analysisResults?.snapshotStores![0] === undefined) {
+          return Promise.reject(new Error("No snapshots available"));
+        }
+        // Return processed data
       return {
         // General Properties
         ...rest,
         description: description ?? undefined,
         phase: phase ?? undefined,
         priority: priority as PriorityTypeEnum | undefined,
+
+
+
+        schema: analysisResults.snapshotStores[0].getSchema(),
+        storeId: analysisResults.snapshotStores[0].storeId,
+        criteria: analysisResults.snapshotStores[0].criteria,
+        snapshotContainer: analysisResults.snapshotStores[0].getSnapshotContainer(),
+       
+        snapConfig: analysisResults.snapConfig,
+        snapshotCategory: analysisResults.snapshotCategory,
+        snapshotSubscriberId: analysisResults.snapshotSubscriberId,
+       
+
 
         // Data Analysis
         data: analysisResults.data,

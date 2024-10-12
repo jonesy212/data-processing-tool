@@ -177,34 +177,61 @@ const fetchDocumentById = createAsyncThunk<DocumentObject, number>(
 );
 
 
+
+/
+// Function to convert documentData to WritableDraft<DocumentObject>
+const createDraftDocument = (data: any): WritableDraft<DocumentObject> => {
+  return {
+    ...data,
+    // Ensure all properties are mutable and adjust types as necessary
+    artwork: data.artwork ? [...data.artwork] : [], // Example for handling 'artwork'
+    // Add other properties as necessary to ensure compatibility
+  };
+};
+
+// Function to convert WritableDraft<DocumentObject> back to DocumentObject
+const convertToDocumentObject = (draft: WritableDraft<DocumentObject>): DocumentObject => {
+  return {
+    ...draft,
+    // Convert or clean up any properties as necessary to ensure strict type compatibility
+    // For example, you may need to strip away references or reset certain properties
+    artwork: draft.artwork, // Ensure artwork is in the right format
+    // Ensure other properties are converted as necessary
+  };
+};
+
 // Mock API function for fetching a document by ID
-async function fetchDocumentByIdAPI(
+const fetchDocumentByIdAPI = (
   documentId: number,
   updateDocument: (data: WritableDraft<DocumentObject>) => void
-): Promise<DocumentObject> {
-  try {
-    // Simulate an API call to fetch a document by its ID
-    const response = await fetch(`/api/documents/${documentId}`);
-    if (!response.ok) {
-      throw new Error(`Error fetching document with ID ${documentId}`);
+): Promise<DocumentObject> => {
+  return new Promise(async (resolve, reject) => {  // Wrap in a new Promise
+    try {
+      // Use axios to fetch the document by ID
+      const response = await axiosInstance.get(`/api/documents/${documentId}`);
+      
+      // Parse the document data from the response
+      const documentData: DocumentObject = response.data;
+
+      // Create a draft document for updates
+      const draftDocument: WritableDraft<DocumentObject> = createDraftDocument(documentData);
+      updateDocument(draftDocument);
+
+      // Convert draftDocument back to DocumentObject before resolving
+      const finalDocument: DocumentObject = convertToDocumentObject(draftDocument);
+      
+      // Resolve the promise with the updated document data
+      resolve(finalDocument);
+    } catch (error: any) {
+      console.error("Error in fetchDocumentByIdAPI:", error);
+      const errorMessage = `Failed to fetch document with ID ${documentId}`;
+      handleDocumentApiErrorAndNotify(error, errorMessage, "FETCH_DOCUMENT_ERROR");
+      
+      // Reject the promise with an error
+      reject(new Error(errorMessage));
     }
-
-    // Parse the document data from the response
-    const documentData: DocumentObject = await response.json();
-
-    // Apply any updates to the document using the provided callback
-    const draftDocument = { ...documentData };
-    updateDocument(draftDocument);
-
-    // Return the updated document data
-    return draftDocument;
-  } catch (error) {
-    console.error("Error in fetchDocumentByIdAPI:", error);
-    throw error;
-  }
-}
-
-
+  });
+};
 
 const fetchJsonDocumentByIdAPI = async (documentId: string,
   config: DatabaseConfig,

@@ -625,6 +625,8 @@ function isSnapshot<T extends BaseData, K extends BaseData>(
     obj &&
     typeof obj === "object" &&       // Check if obj is an object
     typeof obj.id === "string" &&    // Check if 'id' is a string
+    typeof obj === 'object' && 'state' in obj &&
+    // 'isCore' in obj.isCore &&
     obj.data instanceof Map &&       // Check if 'data' is a Map
     'type' in obj &&                 // Ensure 'type' property exists
     'timestamp' in obj               // Ensure 'timestamp' property exists
@@ -640,11 +642,24 @@ function isSnapshotsArray<T extends BaseData>(
 
 
 
+
 // Renamed function to avoid conflict
 const isSnapshotArrayState = <T extends Data, K extends Data>(state: any): state is Snapshot<T, K>[] => {
   // Logic to determine if it's a Snapshot array
   return Array.isArray(state) && state.every((item: any) => isSnapshot(item));
 };
+
+
+function isCompatibleSnapshot<T extends BaseData, K extends BaseData>(
+  snapshot: Snapshot<T, K>
+): snapshot is Snapshot<SnapshotData<BaseData, K> & BaseData, K> {
+  return (
+    'storeConfig' in snapshot &&
+    'tempData' in snapshot.storeConfig &&
+    // You can add more checks if necessary to ensure compatibility
+    typeof snapshot.storeConfig.tempData !== 'undefined'
+  );
+}
 
 
 export {
@@ -655,4 +670,5 @@ export {
   getCurrentSnapshotStoreOptions,
   convertToArray,
   isSnapshotArrayState,
+  isCompatibleSnapshot
 }

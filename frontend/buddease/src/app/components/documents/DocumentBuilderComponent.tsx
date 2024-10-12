@@ -1,9 +1,12 @@
 // DocumentBuilderComponent.tsx
-
+import React from 'react'
 import { DocumentObject } from "../state/redux/slices/DocumentSlice";
 import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
-import DocumentBuilder from "./DocumentBuilder";
+import DocumentBuilder, { saveDocument } from "./DocumentBuilder";
 import { getDefaultDocumentOptions } from "./DocumentOptions";
+import { useDispatch } from 'react-redux'
+
+const dispatch = useDispatch()
 
 function formatDocument(
   documentObject: DocumentObject,
@@ -53,7 +56,11 @@ const buildDocument = async (
     console.log("Document type applied:", validDocumentType);
 
     // Step 4: Save the document (or trigger any external processing)
-    const saveResult = await saveDocument(formattedDocument);
+    const saveResult = await dispatch(
+      saveDocument({ documentData: formattedDocument, content: JSON.stringify(formattedDocument) })
+    ).unwrap() as { success: boolean }; // Explicitly specify the type here
+
+
     if (!saveResult.success) {
       throw new Error("Document saving failed.");
     }

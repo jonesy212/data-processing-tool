@@ -1,17 +1,68 @@
 import { Data } from '@/app/components/models/data/Data';
-import { Snapshot, SnapshotConfig, SnapshotWithCriteria, UpdateSnapshotPayload } from '@/app/components/snapshots';
+import { Callback, Snapshot, SnapshotConfig, SnapshotWithCriteria, UpdateSnapshotPayload } from '@/app/components/snapshots';
 import SnapshotStore, { SubscriberCollection } from '@/app/components/snapshots/SnapshotStore';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import CalendarManagerStoreClass from '../state/stores/CalendarEvent';
-// Step 1: Define the common SnapshotEvents interface
-interface SnapshotEvents<T extends Data, K extends Data> {
+import { EventRecord } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
+
+// Step 1: Base Interface for Shared Properties
+interface BaseSnapshotEvents<T extends Data, K extends Data> {
   initialConfig: SnapshotConfig<T, K>;
-  eventRecords: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
   callbacks: Record<string, Array<(snapshot: Snapshot<T, K>) => void>>;
-  subscribers: SubscriberCollection<T, K>; // Ensure this is correct
+  subscribers: SubscriberCollection<T, K>;
+  eventRecords: Record<string, EventRecord<T, K>[]> | null; // Store events and their callbacks
+  records: Record<string, CalendarManagerStoreClass<T, K>[]> | null; // Store calendar records
   eventIds: string[];
   onInitialize: () => void;
+  trigger: (
+    event: string | SnapshotEvents<T, K>,
+    snapshot: Snapshot<T, K>,
+    snapshotId: string,
+    subscribers: SubscriberCollection<T, K>,
+    type: string,
+    snapshotData: Snapshot<T, K>,
+  ) => void;
+  on: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
+  off: (event: string,
+    callback: Callback<Snapshot<T, K>>,
+    unsubscribeDetails?: {
+      userId: string;
+      snapshotId: string;
+      unsubscribeType: string;
+      unsubscribeDate: Date;
+      unsubscribeReason: string;
+      unsubscribeData: any;
+    },
+  ) => void;
+  emit: (
+    event: string,
+    snapshot: Snapshot<T, K>,
+    snapshotId: string,
+    subscribers: SubscriberCollection<T, K>,
+    snapshotStore: SnapshotStore<T, K>,
+    dataItems: RealtimeDataItem[],
+    criteria: SnapshotWithCriteria<T, K>,
+    category: Category
+  ) => void;
+  subscribe: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
+  
+  event: string,
+  unsubscribeDetails: {
+    userId: string;
+    snapshotId: string;
+    unsubscribeType: string;
+    unsubscribeDate: Date;
+    unsubscribeReason: string;
+    unsubscribeData: any;
+  },
+  callback: Callback<Snapshot<T, K>>
+  eventsDetails?: CalendarManagerStoreClass<T, K>[] | undefined;
+}
+
+// Step 2:  Define the common SnapshotEvents interface
+interface SnapshotEvents<T extends Data, K extends Data> extends BaseSnapshotEvents<T, K> {
+  key: string;
   onSnapshotAdded: (
     event: string,
     snapshot: Snapshot<T, K>,
@@ -28,15 +79,6 @@ interface SnapshotEvents<T extends Data, K extends Data> {
     snapshot: Snapshot<T, K>,
     snapshotId: string,
     subscribers: SubscriberCollection<T, K>,
-    snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
-    criteria: SnapshotWithCriteria<T, K>,
-    category: Category
-  ) => void;
-  removeSubscriber: (
-    event: string,
-    snapshotId: string,
-    snapshot: Snapshot<T, K>,
     snapshotStore: SnapshotStore<T, K>,
     dataItems: RealtimeDataItem[],
     criteria: SnapshotWithCriteria<T, K>,
@@ -64,8 +106,6 @@ interface SnapshotEvents<T extends Data, K extends Data> {
     payload: UpdateSnapshotPayload<T>,
     store: SnapshotStore<any, K>
   ) => void;
-  on: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
-  off: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
   emit: (
     event: string,
     snapshot: Snapshot<T, K>,
@@ -82,27 +122,18 @@ interface SnapshotEvents<T extends Data, K extends Data> {
     record: CalendarManagerStoreClass<T, K>,
     callback: (snapshot: CalendarManagerStoreClass<T, K>) => void
   ) => void;
-  removeAllListeners: (event?: string) => void;
-  subscribe: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
-  unsubscribe: (
-    unsubscribeDetails: {
-      userId: string; snapshotId: string;
-      unsubscribeType: string;
-      unsubscribeDate: Date;
-      unsubscribeReason: string;
-      unsubscribeData: any;
-    },
-    event: string, callback: (snapshot: Snapshot<T, K>) => void
-  ) => void;
-  trigger: (
-    event: string | SnapshotEvents<T, K>,
-    snapshot: Snapshot<T, K>,
+  removeSubscriber: (
+    event: string,
     snapshotId: string,
-    subscribers: SubscriberCollection<T, K>,
-    type: string,
-    snapshotData: Snapshot<T, K>,
+    snapshot: Snapshot<T, K>,
+    snapshotStore: SnapshotStore<T, K>,
+    dataItems: RealtimeDataItem[],
+    criteria: SnapshotWithCriteria<T, K>,
+    category: Category
   ) => void;
-  eventsDetails?: CalendarManagerStoreClass<T, K>[] | undefined;
+  removeAllListeners: (event?: string) => void
 }
 
-export type {SnapshotEvents}
+
+
+export type { BaseSnapshotEvents, SnapshotEvents };

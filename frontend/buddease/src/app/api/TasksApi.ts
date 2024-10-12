@@ -92,7 +92,7 @@ const handleTaskApiErrorAndNotify = (
 
 
 
-export const fetchTasks = async (): Promise<Task[]> => {
+const fetchTasks = async (): Promise<Task[]> => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}`);
     return response.data.tasks;
@@ -108,7 +108,7 @@ export const fetchTasks = async (): Promise<Task[]> => {
 };
 
 
-export const updateTaskPositionSuccess = (task: Task) => {
+const updateTaskPositionSuccess = (task: Task) => {
   return {
     type: 'UPDATE_TASK_POSITION_SUCCESS',
     payload: {
@@ -118,7 +118,7 @@ export const updateTaskPositionSuccess = (task: Task) => {
 };
 
 
-export const updateTaskPosition = async (taskId: string, newPosition: number, dispatch: Dispatch, notify: () => void): Promise<void> => {
+const updateTaskPosition = async (taskId: string, newPosition: number, dispatch: Dispatch, notify: () => void): Promise<void> => {
   try {
     const updateTaskEndpoint = `${API_BASE_URL}/updatePosition`; // Adjust the API endpoint according to your project's API structure
     const response: AxiosResponse<Task> = await axiosInstance.post(updateTaskEndpoint, { task: taskId, position: newPosition });
@@ -154,7 +154,7 @@ export const updateTaskPosition = async (taskId: string, newPosition: number, di
   }
 };
 
-export const addTask = async (newTask: Omit<Task, 'id'>): Promise<void> => {
+const addTask = async (newTask: Omit<Task, 'id'>): Promise<void> => {
   try {
     const addTaskEndpoint = `${API_BASE_URL}.add`;
     const response = await axiosInstance.post(addTaskEndpoint, newTask);
@@ -175,7 +175,7 @@ export const addTask = async (newTask: Omit<Task, 'id'>): Promise<void> => {
     throw error;
   }
 };
-export const removeTask = async (taskId: number): Promise<void> => {
+const removeTask = async (taskId: number): Promise<void> => {
   try {
     const removeTaskEndpoint = `${API_BASE_URL}.remove.${taskId}`;
     const response = await axiosInstance.delete(removeTaskEndpoint);
@@ -196,7 +196,7 @@ export const removeTask = async (taskId: number): Promise<void> => {
   }
 };
 
-export const toggleTask =  (taskId: number): Promise<Task | void> => {
+const toggleTask = (taskId: number): Promise<Task | void> => {
   return new Promise<Task | void>(async (resolve, reject) => {
     try {
       const toggleTaskEndpoint = `${API_BASE_URL}.toggle.${taskId}`;
@@ -217,8 +217,8 @@ export const toggleTask =  (taskId: number): Promise<Task | void> => {
   })
 };
 
-export const updateTask = (taskId: number, newTitle: string): Promise<Task| void> => {
-  return new Promise<Task | void>( async (resolve, reject) => {
+const updateTask = (taskId: number, newTitle: string): Promise<Task | void> => {
+  return new Promise<Task | void>(async (resolve, reject) => {
     try {
       const updateTaskEndpoint = `${API_BASE_URL}.update.${taskId}`;
       const response = await axiosInstance.put(updateTaskEndpoint, { title: newTitle });
@@ -240,7 +240,7 @@ export const updateTask = (taskId: number, newTitle: string): Promise<Task| void
   })
 };
 
-export const completeAllTasks = async (): Promise<void> => {
+const completeAllTasks = async (): Promise<void> => {
   try {
     const completeAllTasksEndpoint = `${API_BASE_URL}.completeAll`;
     await axiosInstance.post(completeAllTasksEndpoint);
@@ -255,7 +255,7 @@ export const completeAllTasks = async (): Promise<void> => {
   }
 };
 
-export const assignTaskToTeam = async (taskId: number, teamId: number): Promise<void> => {
+const assignTaskToTeam = async (taskId: number, teamId: number): Promise<void> => {
   try {
     const assignTaskToTeamEndpoint = `${API_BASE_URL}.assign.${taskId}.${teamId}`;
     await axiosInstance.post(assignTaskToTeamEndpoint);
@@ -272,7 +272,7 @@ export const assignTaskToTeam = async (taskId: number, teamId: number): Promise<
 
 
 // Assuming getTaskHistoryFromDatabase is a function to fetch task history from the database
-export const getTaskHistoryFromDatabase = async (taskId: string) => {
+const getTaskHistoryFromDatabase = async (taskId: string) => {
   try {
     // Call your API endpoint to fetch task history based on taskId
     const response = await fetch(`/api/tasks/${taskId}/history`);
@@ -288,7 +288,7 @@ export const getTaskHistoryFromDatabase = async (taskId: string) => {
   }
 };
 
-export const unassignTask = async (taskId: number): Promise<void> => {
+const unassignTask = async (taskId: number): Promise<void> => {
   try {
     const unassignTaskEndpoint = `${API_BASE_URL}.unassign.${taskId}`;
     await axiosInstance.post(unassignTaskEndpoint);
@@ -304,7 +304,7 @@ export const unassignTask = async (taskId: number): Promise<void> => {
 };
 
 
-export const fetchTaskData = (taskId: number): Promise<Task | void> => {
+const fetchTaskData = (taskId: number): Promise<Task | void> => {
   return new Promise<Task | void>(async (resolve, reject) => {
     try {
       const fetchTaskEndpoint = `${API_BASE_URL}.get.${taskId}`;
@@ -326,14 +326,14 @@ export const fetchTaskData = (taskId: number): Promise<Task | void> => {
 };
 
 
-export const createTask = (newTask: Task): Promise<Task | void> => { 
+const createTask = (newTask: Task): Promise<Task | void> => {
   return new Promise<Task | void>(async (resolve, reject) => {
-  
+
     try {
       const createTaskEndpoint = `${API_BASE_URL}.add`;
       const response = await axiosInstance.post(createTaskEndpoint, newTask);
 
-      response.data ? resolve(response.data) : resolve(); 
+      response.data ? resolve(response.data) : resolve();
 
       return response.data;
     } catch (error) {
@@ -351,7 +351,7 @@ export const createTask = (newTask: Task): Promise<Task | void> => {
 }
 
 
-export const deleteTask = async (taskId: number): Promise<void> => {
+const deleteTask = async (taskId: number): Promise<void> => {
   try {
     const deleteTaskEndpoint = `${API_BASE_URL}.delete.${taskId}`;
     await axiosInstance.delete(deleteTaskEndpoint);
@@ -366,7 +366,7 @@ export const deleteTask = async (taskId: number): Promise<void> => {
   }
 };
 
-export const bulkAssignTasks = async (taskIds: number[], teamId: number): Promise<void> => {
+const bulkAssignTasks = async (taskIds: number[], teamId: number): Promise<void> => {
   try {
     const bulkAssignTasksEndpoint = `${API_BASE_URL}.bulkAssign`;
     await axiosInstance.post(bulkAssignTasksEndpoint, { taskIds, teamId });
@@ -381,7 +381,7 @@ export const bulkAssignTasks = async (taskIds: number[], teamId: number): Promis
   }
 };
 
-export const bulkUnassignTasks = async (taskIds: number[]): Promise<void> => {
+const bulkUnassignTasks = async (taskIds: number[]): Promise<void> => {
   try {
     const bulkUnassignTasksEndpoint = `${API_BASE_URL}.bulkUnassign`;
     await axiosInstance.post(bulkUnassignTasksEndpoint, { taskIds });
@@ -397,7 +397,7 @@ export const bulkUnassignTasks = async (taskIds: number[]): Promise<void> => {
 };
 
 // For todos
-export const bulkAssignTodos = async (todoIds: number[], teamId: number): Promise<void> => {
+const bulkAssignTodos = async (todoIds: number[], teamId: number): Promise<void> => {
   try {
     const bulkAssignTodosEndpoint = `${API_BASE_URL}.bulkAssignTodos`;
     await axiosInstance.post(bulkAssignTodosEndpoint, { todoIds, teamId });
@@ -412,7 +412,7 @@ export const bulkAssignTodos = async (todoIds: number[], teamId: number): Promis
   }
 };
 
-export const bulkUnassignTodos = async (todoIds: number[]): Promise<void> => {
+const bulkUnassignTodos = async (todoIds: number[]): Promise<void> => {
   try {
     const bulkUnassignTodosEndpoint = `${API_BASE_URL}.bulkUnassignTodos`;
     await axiosInstance.post(bulkUnassignTodosEndpoint, { todoIds });
@@ -427,7 +427,7 @@ export const bulkUnassignTodos = async (todoIds: number[]): Promise<void> => {
   }
 };
 
-export const getTasksByUserId = async (userId: number): Promise<Task[]> => {
+const getTasksByUserId = async (userId: number): Promise<Task[]> => {
   try {
     const getTasksByUserIdEndpoint = `${API_BASE_URL}.getByUser.${userId}`;
     const response = await axiosInstance.get<Task[]>(getTasksByUserIdEndpoint);
@@ -443,7 +443,7 @@ export const getTasksByUserId = async (userId: number): Promise<Task[]> => {
   }
 }
 
-export const getTaskHistory = async (taskId: string): Promise<TaskHistoryEntry[]> => {
+const getTaskHistory = async (taskId: string): Promise<TaskHistoryEntry[]> => {
   try {
     // Call the corresponding method from TaskHistoryStore to fetch task history entries
     const taskHistoryStoreInstance = historyManagerStore();
@@ -459,4 +459,38 @@ export const getTaskHistory = async (taskId: string): Promise<TaskHistoryEntry[]
   }
 };
 
-export { handleTaskApiErrorAndNotify };
+const fetchUsersByTaskApi = async (taskId: string): Promise<string[]> => {
+  // Simulate an API call to fetch users by task ID
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      // Example response: simulate fetching user IDs
+      const userIds = ['user1', 'user2', 'user3']; // Replace with actual logic
+      resolve(userIds);
+    }, 1000); // Simulate 1 second delay
+  });
+};
+
+export {
+  handleTaskApiErrorAndNotify,
+  fetchTasks,
+  updateTaskPositionSuccess,
+  updateTaskPosition,
+  addTask,
+  removeTask,
+  toggleTask,
+  updateTask,
+  completeAllTasks,
+  assignTaskToTeam,
+  getTaskHistoryFromDatabase,
+  unassignTask,
+  fetchTaskData,
+  createTask,
+  deleteTask,
+  bulkAssignTasks,
+  bulkUnassignTasks,
+  bulkAssignTodos,
+  bulkUnassignTodos,
+  getTasksByUserId,
+  getTaskHistory,
+  fetchUsersByTaskApi
+};

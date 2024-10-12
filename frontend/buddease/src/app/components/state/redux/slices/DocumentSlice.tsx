@@ -17,7 +17,7 @@ import {
   useNotification,
 } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import Version, { data } from "@/app/components/versions/Version";
+import Version from "@/app/components/versions/Version";
 import { VersionData } from "@/app/components/versions/VersionData";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import FrontendStructure, { frontend, frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
@@ -32,9 +32,13 @@ import BackendStructure, { backend, backendStructure } from "@/app/configs/appSt
 import { DocumentSize } from "@/app/components/models/data/StatusType";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import { Document } from "../../stores/DocumentStore";
-import getAppPath from "../../appPath";
+
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import DocumentPermissions from "@/app/components/documents/DocumentPermissions";
+import TodoImpl, { Todo } from "@/app/components/todos/Todo";
+import getAppPath from "appPath";
+import { result } from "lodash";
+import { Data } from "@/app/components/models/data/Data";
 
 
 const {versionNumber, appVersion} = getCurrentAppInfo()
@@ -51,7 +55,7 @@ interface DocumentSliceState {
   documentBuilder?: typeof DocumentBuilder;
 }
 
-const initialDocumentSliceState: DocumentSliceState = {
+const initialDocumentSliceState: DocumentSliceState<Data> = {
   documentList: [],
   selectedDocument: null,
   filteredDocuments: [],
@@ -62,12 +66,23 @@ const initialDocumentSliceState: DocumentSliceState = {
   documentBuilder: undefined,
 };
 
-interface DocumentObject extends Document, DocumentData, DocumentSliceState {
+interface DocumentObject<T extends Data> extends Document, DocumentData, DocumentSliceState {
   // Optionally add additional fields here if needed
   description?: string | null; // Reintroduce with the original name
   createdBy: string | undefined; // Reintroduce with the original name
   alinkColor: string
   subtasks?: WritableDraft<TodoImpl<Todo, any>>[];
+  artwork?: {
+    url: string; // URL of the artwork
+    title: string; // Title of the artwork
+    description?: string; // Optional description of the artwork
+    creator?: string; // Optional creator or artist name
+    dimensions?: {
+      width: number; // Width of the artwork
+      height: number; // Height of the artwork
+    };
+    type?: 'image' | 'video' | '3D' | 'audio'; // Type of artwork (e.g., image, video, etc.)
+  }
 }
 
 interface ViewTransition {
@@ -106,8 +121,8 @@ const initialState: DocumentObject = {
   keywords: [],
   options: {} as DocumentOptions,
   folderPath: "",
-  previousMetadata: {} as WritableDraft<StructuredMetadata>,
-  currentMetadata: {} as WritableDraft<StructuredMetadata>,
+  previousMetadata: {} as StructuredMetadata,
+  currentMetadata: {} as StructuredMetadata,
   accessHistory: [],
   folders: [],
   lastModifiedDate: {} as WritableDraft<ModifiedDate>,
@@ -198,7 +213,7 @@ const initialState: DocumentObject = {
           timestamp: undefined,
           revisionNotes: undefined
         },
-        versions: {
+        buildVersions: {  // Renamed from 'versions' to 'buildVersions'
           data: undefined,
           backend: undefined,
           frontend: undefined
@@ -209,38 +224,8 @@ const initialState: DocumentObject = {
         user: "",
         comments: []
       },
-      backend: {
-        getStructure: function (): Promise<Record<string, AppStructureItem>> {
-          throw new Error("Function not implemented.");
-        },
-        getStructureAsArray: function (): AppStructureItem[] {
-          throw new Error("Function not implemented.");
-        },
-        traverseDirectoryPublic: function (dir: string, fs: typeof import("fs")): Promise<AppStructureItem[]> {
-          throw new Error("Function not implemented.");
-        }
-      },
-      frontend: {
-        id: "",
-        name: "",
-        type: "",
-        path: "",
-        content: "",
-        draft: false,
-        permissions: {
-          read: false,
-          write: false,
-          delete: false,
-          share: false,
-          execute: false
-        },
-        getStructure: function (): Record<string, AppStructureItem> {
-          throw new Error("Function not implemented.")
-        },
-        getStructureAsArray: function (): Promise<AppStructureItem[]> {
-          throw new Error("Function not implemented.");
-        }
-      },
+      backend: backendStructure,
+      frontend: frontendStructure,
     },
     _structure: {},
     metadata: {
@@ -632,6 +617,9 @@ function createNewDocument(documentId: string): DocumentObject {
           getStructureAsArray: backendStructure.getStructureAsArray.bind(backendStructure),
           traverseDirectoryPublic: backendStructure.traverseDirectoryPublic?.bind(backendStructure),
           getStructure: () => backendStructure.getStructure(),
+          structureHash, globalState, setDatabaseSchema, getDatabaseSchema,
+          setServices, getServices, getStructureHash, setStructureHash,
+          updateStructureHash, getStructureHashAndUpdateIfNeeded, backendVersions,
         } as BackendStructure, // Version of the backend
         frontend: {
           id: "frontend",

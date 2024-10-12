@@ -9,7 +9,7 @@ import { FileTypeEnum } from "../documents/FileType";
 import FormatEnum from "../form/FormatEnum";
 import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
 import { SearchLogger } from "../logging/Logger";
-import  { BookmarkStatus, CalendarStatus, DataStatus, DevelopmentPhaseEnum, NotificationStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "../models/data/StatusType";
+import  { BookmarkStatus, CalendarStatus, DataStatus, DevelopmentPhaseEnum, DocumentSize, NotificationStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "../models/data/StatusType";
 import { ContentManagementPhaseEnum } from "../phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "../phases/FeedbackPhase";
 import { TaskPhaseEnum } from "../phases/TaskProcess";
@@ -21,14 +21,30 @@ import { NotificationTypeEnum } from "../support/NotificationContext";
 import { userService } from "../users/ApiUser";
 import { IdeaCreationPhaseEnum } from "../users/userJourney/IdeaCreationPhase";
 import { Entity, fuzzyMatchEntities } from "./FuzzyMatch";
-import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
-import { BaseData } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
+import LoadingSpinner from "../models/tracker/LoadingSpinner";
+import { searchDocuments } from "@/app/api/ApiDocument";
+import SearchComponent from "@/app/pages/searchs/SearchComponent";
+import useSearchOptions from "@/app/pages/searchs/useSearchOptions";
+import { error } from "console";
+import { sanitizeInput } from "../security/SanitizationFunctions";
+import { setLoading, clearError } from "../state/stores/UISlice";
+import SearchResult from "./SearchResult";
+import useErrorHandling from "../hooks/useErrorHandling";
+import useSearchPagination from "../hooks/commHooks/useSearchPagination";
+import { selectEventLoading } from "../state/redux/slices/EventSlice";
+import { DocumentData } from "../documents/DocumentBuilder";
+import { SupportedData } from "../models/CommonData";
+import { User } from "../users/User";
+import { Progress } from "../models/tracker/ProgressBar";
+import { Team } from "../models/teams/Team";
+import { Project } from "../projects/Project";
 
 interface SearchCriteria extends BaseData {
   startDate?: Date;
   endDate?: Date;
   status?: StatusType | null;
-  priority?: PriorityTypeEnum | null;
+  priority?: string | PriorityTypeEnum | null;
   assignedUser?: string | null;
   notificationType?: NotificationTypeEnum | null;
   todoStatus?: TodoStatus | null;
@@ -60,6 +76,36 @@ interface SearchCriteria extends BaseData {
   messageType?: MessageType | null;
 }
 
+
+
+
+// Extending the DocumentData interface
+interface SupportedSearchResult<T extends Data> extends Entity, DocumentData<T> {
+  // Now you can access all properties from both Entity and DocumentData
+}
+
+
+
+// You can also make SupportedData extend SearchResult
+type EnhancedSupportedData<T extends Data = Data> = SupportedData<T> & SupportedSearchResult<T>;
+
+
+
+// Example usage
+const exampleData: EnhancedSupportedData = {
+  id: '123',
+  name: 'Sample Document',
+  createdAt: new Date(),
+  createdBy: 'user@example.com',
+  updatedBy: 'admin@example.com',
+  filePathOrUrl: 'http://example.com/document.pdf',
+  // Include any other properties from SupportedData
+  type: 'exampleType', // Example type
+  additionalProperty: 'someValue' // Other custom properties
+};
+
+
+
 const SearchCriteriaComponent: React.FC<{
   onUpdateCriteria: (criteria: string) => void;
 }> = ({ onUpdateCriteria }) => {
@@ -68,9 +114,47 @@ const SearchCriteriaComponent: React.FC<{
   const [searchResults, setSearchResults] = useState<Entity[]>([]);
   const dispatch = useDispatch();
   const entities = useSelector((state: RootState) => state.entityManager);
+  const { searchOptions, handleFilterTasks, handleSortTasks } = useSearchOptions();
+  const { currentPage, nextPage, previousPage, pageSize, changePageSize } = useSearchPagination();
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const { handleError } = useErrorHandling()
+
+  const loading = useSelector(selectEventLoading);
 
   // Function to perform fuzzy search with debounce
   const { userId } = useParams()
+
+  setEffect(() => {
+    if (searchQuery) {
+      performSearch(searchQuery);
+    }
+  }, [searchQuery, currentPage]);
+
+  const performSearch = async (query: string) => {
+    try {
+      setLoading(true);
+      const sanitizedQuery = sanitizeInput(query);
+      const results = await searchDocuments(sanitizedQuery);
+      setSearchResults(results);
+      setLoading(false);
+      SearchLogger.logSearchResults(query, results.length, String(userId));
+      clearError();
+    } catch (error: any) {
+      handleError("Failed to fetch search results. Please try again.");
+      SearchLogger.logSearchError(query, error.message, String(userId));
+      setLoading(false);
+    }
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    SearchLogger.logSearch(query, userId);
+  };
+
+  const handleCriteriaUpdate = (criteria: string) => {
+    setSearchQuery(criteria);
+  };
+
 
   const debouncedSearch = debounce(async (term: string) => {
     try {
@@ -123,6 +207,7 @@ const SearchCriteriaComponent: React.FC<{
 
   const handleCriteriaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCriteria(e.target.value);
+    onUpdateCriteria(e.target.value);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -134,25 +219,21 @@ const SearchCriteriaComponent: React.FC<{
   const handleDispatchExample = () => {
     dispatch({ type: "EXAMPLE_ACTION" });
   };
-
   return (
     <div>
-      <div>
+      {/* Search Input */}
+      <div className="search-container">
         <input
           type="text"
+          id="searchInput"
+          placeholder="Search..."
           value={searchTerm}
           onChange={handleSearchTermChange}
-          placeholder="Search..."
         />
-        <div>
-          {/* Render dynamic search results */}
-          <ul>
-            {searchResults.map((entity) => (
-              <li key={entity.id}>{entity.name}</li>
-            ))}
-          </ul>
-        </div>
+        <button onClick={() => handleSearch(searchTerm)}>Search</button>
       </div>
+
+      {/* Search Criteria Form */}
       <h2>Search Criteria</h2>
       <form onSubmit={handleSubmit}>
         <label htmlFor="criteria">Enter Search Criteria:</label>
@@ -166,10 +247,10 @@ const SearchCriteriaComponent: React.FC<{
         />
         <button type="submit">Search</button>
       </form>
-      {/* Additional features specific to project management app */}
+
+      {/* Additional Filters */}
       <div>
         <h3>Additional Filters:</h3>
-        {/* Filter by project phase */}
         <select>
           <option value="">All Phases</option>
           <option value="ideation">Ideation</option>
@@ -178,26 +259,186 @@ const SearchCriteriaComponent: React.FC<{
           <option value="product-launch">Product Launch</option>
           <option value="data-analysis">Data Analysis</option>
         </select>
-        {/* Filter by team members */}
         <input type="text" placeholder="Filter by Team Member..." />
-        {/* Filter by tags or categories */}
         <input type="text" placeholder="Filter by Tags or Categories..." />
-        {/* Add more filters as needed */}
-
-        {/* Use searchTerm and searchResults here */}
-        <div>
-          <p>Search Term: {searchTerm}</p>
-          <p>Search Results: {searchResults.length}</p>
-        </div>
       </div>
 
-      {/* Utilize handleDispatchExample */}
+      {/* Loading and Error Handling */}
+      <LoadingSpinner loading={loading} />
+      {error && <div>Error: {error}</div>}
+
+      {/* Search Results */}
+      <div className="search-results">
+        {searchResults.map((result, index) => (
+          <SearchResult key={index} result={result} />
+        ))}
+        <SearchComponent
+          componentSpecificData={searchResults
+            .filter((result) => result.source === "local")
+            .map((result) => ({
+              id: result.id !== undefined && result.id !== null ? Number(result.id) : 0, // Ensure id is a number
+              title: result.name !== undefined && result.name  !== null ? result.name.toString() : "",  // Map 'name' to 'title'
+              description: result.description !== undefined && result.description !== null ? result.description.toString(): "",
+              source: result.source !== undefined && result.source !== null ? result.source.toString(): "",
+            }))}
+            documentData={searchResults
+              .filter((result) => result.source === "global")
+              .map((result) => ({
+
+                createdAt: result.createdAt || new Date(), // Use the actual value or default to now
+                createdBy: result.createdBy || "", // Default to an empty string if not available
+                updatedBy: result.updatedBy || "", // Default to an empty string if not available
+                filePathOrUrl: result.filePathOrUrl || "", // Default to an empty string if not available
+                uploadedBy: '', // Assuming these are already defined elsewhere
+                tagsOrCategories: '', // Assuming these are already defined elsewhere
+                format: "", // Assuming these are already defined elsewhere
+                uploadedByTeamId: 0, // Assuming these are already defined elsewhere
+                uploadedByTeam: {
+                  team: { 
+                    id: "",
+                     current: 0,
+                     name: "",
+                     color: null,
+                     max: 0,
+                     min: 0,
+                     label: "",
+                     percentage: 0,
+                     value: 0,
+                     description: "",
+                     done: false
+                   },
+                  
+                  _id: "",
+                  id: "",
+                  color: "",
+                  teamName: "",
+                   
+                  projects: [],
+                  creationDate: new Date(),
+                  isActive: false,
+                   
+                  leader: {} as User,
+                  progress: {} as Progress,
+                  percentage: 0,
+                  assignedProjects: [],
+                   
+                  reassignedProjects: [],
+                  assignProject: (team: Team, project: Project, assignedDate: Date) => { },
+                  reassignProject: (team: Team, project: Project, previousTeam: Team, reassignmentDate: Date) => { },
+                  unassignProject: "",
+                  updateProgress: "",
+                  }, 
+                
+                selectedDocument: {} as DocumentData<Data>,
+                id: result.id,  // Assuming this can be a number or string
+                _id: result.id.toString(), // Assuming you convert it to string
+                // Map 'name' to 'title'
+                title: result.name !== undefined && result.name !== null ? result.name.toString() : "",
+                content: "", // Provide a default or fetch appropriate content
+                documents: [], // Default to empty array or map documents if available
+                permissions: undefined, // Or assign based on your logic
+                topics: [], // Default to empty array or fetch topics if available
+                highlights: [], // Default to empty array or fetch highlights if available
+                keywords: [], // Default to empty array or fetch keywords if available
+                load: undefined, // Provide implementation if needed
+                file: undefined, // Assign if available
+                files: [], // Default to empty array or map files if available
+                folder: undefined, // Assign if available
+                folders: [], // Default to empty array or map folders if available
+                filePath: undefined, // Assign if available
+                status: undefined, // Assign based on your logic
+                type: undefined, // Assign based on your logic
+                locked: false, // Default value
+                category: undefined, // Assign based on your logic
+                changes: false, // Default value
+                timestamp: new Date(), // Default to now or fetch actual timestamp
+                source: result.source,
+                report: undefined, // Assign if available
+                options: undefined, // Assign if available
+                folderPath: "", // Provide a default or fetch appropriate folder path
+                previousContent: undefined, // Assign if available
+                currentContent: undefined, // Assign if available
+                previousMetadata: undefined, // Assign if available
+                currentMetadata: undefined, // Assign if available
+                accessHistory: [], // Default to empty array or fetch access history if available
+                documentPhase: undefined, // Assign if available
+                version: undefined, // Assign if available
+                versionData: undefined, // Assign if available
+                visibility: undefined, // Assign based on your logic
+                url: undefined, // Assign if available
+                updatedDocument: undefined, // Assign if available
+                documentSize: DocumentSize.A4, // Provide appropriate structure
+                lastModifiedDate: undefined, // Assign if available
+                lastModifiedBy: "", // Default value
+                lastModifiedByTeamId: null, // Default value
+                lastModifiedByTeam: undefined, // Assign if available
+                name: result.name, // Keep name
+                descriptionRenamed: null, // Default or assign if available
+                createdByRenamed: "", // Default value
+                createdDate: new Date(), // Default to now or fetch actual created date
+                documentType: "", // Default value or assign as needed
+                documentData: undefined, // Assign if available
+                document: undefined, // Assign if available
+                _rev: undefined, // Assign if available
+                _attachments: undefined, // Assign if available
+                _links: undefined, // Assign if available
+                _etag: undefined, // Assign if available
+                _local: false, // Default value
+                _revs: [], // Default to empty array
+                _source: undefined, // Assign if available
+                _shards: undefined, // Assign if available
+                _size: undefined, // Assign if available
+                _version: undefined, // Assign if available
+                _version_conflicts: 0, // Default value
+                _seq_no: undefined, // Assign if available
+                _primary_term: undefined, // Assign if available
+                _routing: undefined, // Assign if available
+                _parent: undefined, // Assign if available
+                _parent_as_child: false, // Default value
+                _slices: [], // Default to empty array
+                _highlight: undefined, // Assign if available
+                _highlight_inner_hits: undefined, // Assign if available
+                _source_as_doc: false, // Default value
+                _source_includes: [], // Default to empty array
+                _routing_keys: [], // Default to empty array
+                _routing_values: [], // Default to empty array
+                _routing_values_as_array: [], // Default to empty array
+                _routing_values_as_array_of_objects: [], // Default to empty array
+                _routing_values_as_array_of_objects_with_key: [], // Default to empty array
+                _routing_values_as_array_of_objects_with_key_and_value: [], // Default to empty array
+                _routing_values_as_array_of_objects_with_key_and_value_and_value: [], // Default to empty array
+              }))}
+          searchQuery={searchQuery}
+        />
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="pagination-controls">
+        <button onClick={previousPage} disabled={currentPage === 1}>
+          Previous
+        </button>
+        <button onClick={nextPage}>Next</button>
+        <span>Page: {currentPage}</span>
+      </div>
+
+      {/* Dispatch Example Action */}
       <button onClick={handleDispatchExample}>Dispatch Example Action</button>
+
+      {/* Summary of Search */}
+      <div>
+        <p>Search Term: {searchTerm}</p>
+        <p>Search Results: {searchResults.length}</p>
+      </div>
     </div>
   );
-  };
+};
 
 
 
 export default SearchCriteriaComponent;
 export type { SearchCriteria };
+  
+  function setEffect(arg0: () => void, arg1: (string | number)[]) {
+    // TODO: Implement setEffect function
+  }
+

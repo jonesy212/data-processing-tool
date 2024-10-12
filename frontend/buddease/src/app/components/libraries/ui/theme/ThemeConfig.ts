@@ -1,4 +1,5 @@
 import { AliasToken } from "antd/es/theme/internal";
+import { ThemeEnum } from "./Theme";
 
 
 
@@ -40,6 +41,7 @@ type ComponentsConfig = {
 
 // Update the ThemeConfig interface
 interface ThemeConfig {
+  theme: ThemeEnum;
   primaryColor?: string;
   secondaryColor?: string;
   fontSize?: string;
@@ -80,6 +82,7 @@ interface ThemeConfig {
 }
 
 const themeSettings: ThemeConfig = {
+  theme: ThemeEnum.LIGHT,
   primaryColor: validateHexColor("#1890ff"),
   secondaryColor: validateHexColor("#2db7f5"),
   fontSize: "16px",
@@ -101,6 +104,7 @@ const themeSettings: ThemeConfig = {
 const themeSettingsWithOptions: ThemeConfig = {
   // Other theme settings...
   infoColor: "",
+  theme: ThemeEnum.LIGHT,
   algorithm: [
     {
       name: "Algorithm 1",
@@ -134,4 +138,4 @@ export function validateHexColor(color: string): string {
 
 export default themeSettings;
 export type { ThemeConfig };
-export {DEFAULT_COLOR}
+export {DEFAULT_COLOR, themeSettingsWithOptions}

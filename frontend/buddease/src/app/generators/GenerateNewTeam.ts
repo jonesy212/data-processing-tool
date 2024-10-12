@@ -30,7 +30,7 @@ export const generateNewTeam = (): Team => {
     progress: null,
     assignedProjects: [],
     reassignedProjects: [],
-    assignProject: (team: Team, project: Project) => {},
+    assignProject: (team: Team, project: Project, assignedDate: Date) => {},
     reassignProject: (
       team: Team,
       project: Project,

@@ -8,17 +8,21 @@ import { Member } from "../models/teams/TeamMembers";
 import { Progress } from "../models/tracker/ProgressBar";
 import { TagsRecord } from "../snapshots";
 import { DetailsItem } from "../state/stores/DetailsListStore";
+import { Data } from "../models/data/Data";
+import { T } from "../models/data/dataStoreMethods";
 
 // Define a type for a phase
-export interface Phase extends CommonData {
+export interface Phase<T extends Data>
+  extends CommonData<T> {
   id: string;
   index?: number;
   name: string;
+  description: string | undefined
   startDate: Date | undefined;
   endDate: Date | undefined;
-  subPhases: string[] | Phase[];
+  subPhases: string[] | Phase<T>[];
   component?: FC<any>; // Adjust to accept any props
-  hooks?: CustomPhaseHooks;
+  hooks?: CustomPhaseHooks<T>;
   data?: any;
   lessons?: Lesson[];
   duration?: number;
@@ -33,14 +37,14 @@ export interface Phase extends CommonData {
   __typename?: "Phase";
 }
 
-export class PhaseImpl implements Phase {
+export class PhaseImpl <T extends Data> implements Phase<T> {
   id: string = "";
   name: string = "";
   startDate: Date = new Date();
   endDate: Date = new Date();
-  subPhases: Phase[] = [];
+  subPhases: Phase<T>[] = [];
   // component: React.FC = () => <div>Phase Component</div>,
-  hooks: CustomPhaseHooks = {
+  hooks: CustomPhaseHooks<T> = {
     // Initialize hooks object
     resetIdleTimeout: async () => {}, // Example implementation, you can adjust as needed
     isActive: false,
@@ -57,9 +61,9 @@ export class PhaseImpl implements Phase {
     name: string,
     startDate: Date,
     endDate: Date,
-    subPhases: Phase[],
+    subPhases: Phase<T>[],
     component: React.FC,
-    hooks: CustomPhaseHooks,
+    hooks: CustomPhaseHooks<T>,
     data: any,
     description: string,
     title: string
@@ -79,7 +83,8 @@ export class PhaseImpl implements Phase {
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[] | undefined;
   metadata?: StructuredMetadata | undefined;
-  details?: DetailsItem<any> | undefined;  tags?: TagsRecord | string[] | undefined;
+  details?: DetailsItem<any> | undefined; 
+  tags?: TagsRecord | string[] | undefined;
   categories?: string[] | undefined;
   documentType?: string | undefined;
   documentStatus?: string | undefined;
@@ -95,10 +100,10 @@ export class PhaseImpl implements Phase {
   documentBackup?: string | undefined;
 }
 
-export interface CustomPhaseHooks {
+export interface CustomPhaseHooks <T extends Data> {
   [x: string]: any;
-  canTransitionTo?: (nextPhase: Phase) => boolean;
-  handleTransitionTo?: (nextPhase: Phase) => void;
+  canTransitionTo?: (nextPhase: Phase<T>) => boolean;
+  handleTransitionTo?: (nextPhase: Phase<T>) => void;
   resetIdleTimeout: () => Promise<void>;
   isActive: boolean;
   progress: Progress | null;
@@ -107,11 +112,11 @@ export interface CustomPhaseHooks {
 }
 
 export const customPhaseHooks = {
-  canTransitionTo: (nextPhase: Phase) => {
+  canTransitionTo: (nextPhase: Phase<T>) => {
     // custom transition logic
     return true;
   },
-  handleTransitionTo: async (nextPhase: Phase) => {
+  handleTransitionTo: async (nextPhase: Phase<T>) => {
     // custom transition handling
     await Promise.resolve();
   },

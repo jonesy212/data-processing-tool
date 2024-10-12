@@ -19,7 +19,7 @@ import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 //CalendarEvent.t
 interface CalendarEvent<T extends Data = BaseData, K extends Data = BaseData>
   extends CommonEvent,
-    CommonData {
+    CommonData<T> {
   id: string;
   title: string;
   content: string;
@@ -32,7 +32,7 @@ interface CalendarEvent<T extends Data = BaseData, K extends Data = BaseData>
   action?: string;
   changes?: string[];
   date: Date | undefined;
-  tags?: TagsRecord | string[] | undefined; // Update as needed based on your schema
+  tags?: TagsRecord | string[] | undefined; 
   meta: Data | undefined;
 
   options?: {
@@ -42,7 +42,7 @@ interface CalendarEvent<T extends Data = BaseData, K extends Data = BaseData>
     additionalOptionsLabel?: string;
     // ...
   };
-  documentPhase?: WritableDraft<Phase>;
+  documentPhase?: WritableDraft<Phase<T>>;
   // Add more properties if needed
   status?: AllStatus;
   rsvpStatus: "yes" | "no" | "maybe" | "notResponded";

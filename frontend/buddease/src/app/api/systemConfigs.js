@@ -11,12 +11,12 @@ exports.SystemConfigs = {
         retryDelay: 1000,
     },
     // Add more configurations as needed
-    aquaConfig: {}, // Example addition for AquaConfig
-    storeConfig: {}, // Example addition for StoreConfig
-    dataVersions: {}, // Example addition for DataVersions
+    aquaConfig: {},
+    storeConfig: {},
+    dataVersions: {},
     frontendStructure: {},
     frontendDocumentConfig: {},
     backendStructure: {},
     backendDocumentConfig: {},
-    lazyLoadScriptConfig: {}, // Example addition for LazyLoadScriptConfig
+    lazyLoadScriptConfig: {},
 };

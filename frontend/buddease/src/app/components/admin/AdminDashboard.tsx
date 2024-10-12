@@ -74,7 +74,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const [config, setConfig] = useState(apiConfig);
   const { dynamicConfig } = useDynamicComponents();
-  const { isActive, resetIdleTimeout } = useIdleTimeout(defaultIdleTimeoutProps); // Pass defaultIdleTimeoutProps directly
+  const { isActive, resetIdleTimeout } = useIdleTimeout("idleTimeout", defaultIdleTimeoutProps); // Pass defaultIdleTimeoutProps directly
 
 
   const { sendPushNotification } = useNotificationManagerService();
@@ -120,7 +120,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
 const AdminDashboardWithDynamicNaming: React.FC<AdminDashboardWithDynamicNamingProps> = () => {
   const { dynamicConfig } = useDynamicComponents();
-  const { isActive, resetIdleTimeout } = useIdleTimeout(defaultIdleTimeoutProps); // Pass defaultIdleTimeoutProps directly
+  const { isActive, resetIdleTimeout } = useIdleTimeout("idleTimeout", defaultIdleTimeoutProps); // Pass defaultIdleTimeoutProps directly
 
   const { notifications, sendPushNotification } = useNotificationManagerService();
 

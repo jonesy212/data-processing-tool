@@ -2,7 +2,7 @@ import { NestedEndpoints } from "@/app/api/ApiEndpoints";
 import { DefaultCalendarEvent } from "../actions/CalendarEventActions";
 import { Highlight } from "../documents/NoteData";
 import CustomFile from "../documents/File";
-import { K, Snapshot, T } from "../snapshots";
+import {  Snapshot} from "../snapshots";
 
 interface LogData {
   date: Date | string | number;

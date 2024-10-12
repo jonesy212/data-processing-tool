@@ -9,15 +9,22 @@ import getAppPath from "../../../../appPath";
 import { AppStructureItem } from "./AppStructure";
 import { VersionHistory } from "@/app/components/versions/VersionData";
 import { hashString } from "@/app/generators/HashUtils";
+import { frontend } from "./FrontendStructure";
 
 // structureHash, setStructureHash, updateStructureHash, getStructureHashAndUpdateIfNeeded, backendVersions
 
 
 export default class BackendStructure {
   private structure?: Record<string, AppStructureItem> = {};
-  private structureHash: string = '';
+  private structureHash: Promise<string> = Promise.resolve('');
+  public globalState: any; // Add globalState property
 
-  constructor(projectPath: string) {
+  private databaseSchema?: Record<string, any> = {};
+  private services?: Record<string, any> = {};
+
+  constructor(projectPath: string, globalState?: any) {
+
+    this.globalState = globalState;
     this.traverseDirectory!(projectPath).then((items) => {
       items.forEach((item) => {
         if (this.structure) {
@@ -25,6 +32,25 @@ export default class BackendStructure {
         }
       });
     });
+  }
+
+
+  // Methods to manage and interact with databaseSchema
+  public setDatabaseSchema(schema: Record<string, any>): void {
+    this.databaseSchema = schema;
+  }
+
+  public getDatabaseSchema(): Record<string, any> | undefined {
+    return this.databaseSchema;
+  }
+
+  // Methods to manage and interact with services
+  public setServices(services: Record<string, any>): void {
+    this.services = services;
+  }
+
+  public getServices(): Record<string, any> | undefined {
+    return this.services;
   }
 
   public async getStructure(): Promise<Record<string, AppStructureItem>> {
@@ -50,7 +76,7 @@ export default class BackendStructure {
   }
 
   // Setter for structureHash
-  private setStructureHash(hash: string): void {
+  public setStructureHash(hash: Promise<string>): void {
     this.structureHash = hash;
   }
 
@@ -61,7 +87,7 @@ export default class BackendStructure {
       const newStructureHash = hashString(structureString);
       
       // Update the private structureHash
-      this.setStructureHash(newStructureHash);
+      this.setStructureHash(Promise.resolve(newStructureHash));
       
       // Generate or obtain a uniqueID
       const uniqueID = UniqueIDGenerator.generateID('structureHashUpdate', newStructureHash, NotificationTypeEnum.OperationUpdate);
@@ -94,6 +120,18 @@ export default class BackendStructure {
 
     try {
       const files = await fs.readdir(dir);
+      const result: AppStructureItem[] = [];
+
+      for (const file of files) {
+        // You can add logic here to process each file and convert it into AppStructureItem as needed.
+        // For now, we are assuming `fetchFilesInDirectory` gives the necessary data for each file.
+        // You can expand this part as per your specific requirements.
+      }
+
+
+      // Access backend and frontend structures
+      const backendStructureArray = backend.getStructureAsArray();
+      const frontendStructureArray = frontend.getStructureAsArray();
 
       for (const file of files) {
         const filePath = path.join(dir, file);
@@ -139,6 +177,12 @@ export default class BackendStructure {
         }
       }
 
+
+      // Add backend and frontend structures to the result
+      result.push(...backendStructureArray);
+      result.push(...await frontendStructureArray);
+
+
       return result;
     } catch (error) {
       console.error("Error during directory traversal:", error);
@@ -183,4 +227,8 @@ export const backend = {
   traverseDirectoryPublic: backendStructure.traverseDirectoryPublic?.bind(backendStructure),
   getStructure: () => backendStructure.getStructure(),
   getStructureHash: backendStructure.getStructureHash.bind(backendStructure), // Bind the getStructureHash method
+  getDatabaseSchema: backendStructure.getDatabaseSchema.bind(backendStructure), // Expose databaseSchema methods
+  setDatabaseSchema: backendStructure.setDatabaseSchema.bind(backendStructure),
+  getServices: backendStructure.getServices.bind(backendStructure), // Expose services methods
+  setServices: backendStructure.setServices.bind(backendStructure)
 }

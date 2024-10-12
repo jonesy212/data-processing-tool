@@ -1,15 +1,13 @@
+import * as snapshotApi from '@/app/api/SnapshotApi';
 import { SnapshotConfig } from '@/app/components/snapshots';
-import { SnapshotUnion } from '@/app/components/snapshots/LocalStorageSnapshotStore';
-import { K, Snapshot, snapshot, snapshotContainer, SnapshotOperation, SnapshotOperationType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotWithCriteria, subscribeToSnapshot, subscribeToSnapshots, T } from ".";
-import * as snapshotApi from '@/app/api/SnapshotApi'
-import SnapshotStore from "./SnapshotStore";
-import { SnapshotManager, useSnapshotManager } from "../hooks/useSnapshotManager";
-import SnapshotManagerOptions from "./SnapshotManagerOptions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { K, Snapshot, snapshot, snapshotContainer, SnapshotOperation, SnapshotOperationType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotWithCriteria, subscribeToSnapshot, subscribeToSnapshots, T } from ".";
 import { CreateSnapshotStoresPayload } from "../database/Payload";
+import { SnapshotManager, useSnapshotManager } from "../hooks/useSnapshotManager";
 import { BaseData, Data } from "../models/data/Data";
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { snapshotStoreConfigInstance } from "./snapshotStoreConfigInstance";
+import SnapshotManagerOptions from "./SnapshotManagerOptions";
+import SnapshotStore from "./SnapshotStore";
 
 
 
@@ -24,7 +22,7 @@ export const createSnapshotStores = async <T extends Data, K extends Data>(
   payload: CreateSnapshotStoresPayload<T, K>,
   callback: (snapshotStore: SnapshotStore<T, K>[]) => void | null,
   snapshotStoreData?: SnapshotStore<T, K>[],
-  category?: string | CategoryProperties,
+  category?: string | symbol | Category,
   snapshotStoreDataConfig?: SnapshotStoreConfig<T, K> | undefined,
 ) => {
   const snapshotStoreConfigData = snapshotStoreDataConfig || undefined;

@@ -4,8 +4,9 @@ import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import { DocumentOptions, getDefaultDocumentOptions } from "@/app/components/documents/DocumentOptions";
 import React, { useEffect, useState } from "react";
 import { useSearch } from "./SearchContext";
+import { Data } from "@/app/components/models/data/Data";
 
-type DocumentDataPartial = Partial<DocumentData>;
+type DocumentDataPartial = Partial<DocumentData<Data>>;
 
 // Simulated data for global search results (replace with actual data)
 const globalSearchData = [
@@ -26,7 +27,7 @@ const globalSearchData = [
   // Add more data as needed
 ];
 
-const globalDocumentData: DocumentData[] = [
+const globalDocumentData: DocumentData<Data>[] = [
   {
     ...getDefaultDocumentOptions(),
     id: 1,
@@ -82,6 +83,8 @@ const globalDocumentData: DocumentData[] = [
     lastModifiedDate: {
       value: new Date(),
       isModified: false,
+      toDateString, toTimeString, toLocaleDateString, toLocaleTimeString,
+      
     },
     version: {
       name: "",
@@ -138,9 +141,9 @@ const globalDocumentData: DocumentData[] = [
 
 export interface SearchComponentProps {
   searchQuery: string;
-  documentData: DocumentData[];
+  documentData: DocumentData<Data>[];
   componentSpecificData: {
-    id: number;
+    id: string | number;
     title: string;
     description: string;
     source: string; // a 'source' property to indicate the origin
@@ -203,7 +206,7 @@ const SearchComponent: React.FC<SearchComponentProps> = ({
       source: string;
       highlights: string[];
     }[]>([]);
-    const [documentSearchResults, setDocumentSearchResults] = useState<DocumentData[]>([]); // Add state for document search results
+    const [documentSearchResults, setDocumentSearchResults] = useState<DocumentData<Data>[]>([]); // Add state for document search results
 
 
   useEffect(() => {

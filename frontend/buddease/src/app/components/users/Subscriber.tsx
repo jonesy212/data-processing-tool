@@ -23,6 +23,7 @@ import {
   Callback,
   CustomSnapshotData,
   K,
+  SnapshotConfig,
   SnapshotItem,
   SnapshotStoreConfig,
   SnapshotWithCriteria,
@@ -71,6 +72,8 @@ import {
 import { isSnapshotStoreConfig } from "../utils/snapshotUtils";
 import { sendNotification } from "./UserSlice";
 import apiNotificationsService from "@/app/api/NotificationsService";
+import SnapshotStoreSubset from "../snapshots/SnapshotStoreSubset";
+import { SnapshotStorePublicMethods } from "../snapshots/SnapshotStorePublicMethods";
 
 type SnapshotStoreDelegate<T extends BaseData, K extends BaseData> = (
   snapshot: Snapshot<T, K>,
@@ -322,7 +325,11 @@ function convertSnapshotItem<T extends BaseData, K extends BaseData>(
     // Add additional properties or conversions if needed
   } as Snapshot<T, K>;
 }
-function convertSnapshotStore<T extends BaseData, K extends BaseData = T>(
+
+
+
+
+function convertSnapshotStore<T extends Data, K extends Data = T>(
   store: SnapshotStore<T, K>
 ): SnapshotStorePublicMethods<T, K> {
   // Get the snapshot items array using the public method
@@ -331,13 +338,14 @@ function convertSnapshotStore<T extends BaseData, K extends BaseData = T>(
   // Convert items in the snapshot items array
   const newSnapshotItems = snapshotItems.map((item) => {
     if (isSnapshotStoreConfig(item)) {
+      // Use a type assertion here if you're sure about the types
       return convertSnapshotStoreConfig(
-        item as SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>
+          item as unknown as SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>
       );
-    } else {
-      return item as unknown as Snapshot<T, K>;
-    }
-  });
+      } else {
+        return item as unknown as Snapshot<T, K>;
+      }
+    });
 
   // Construct and return the public methods object
   return {
@@ -367,7 +375,7 @@ function convertSnapshotStore<T extends BaseData, K extends BaseData = T>(
     createSnapshotStores: store.createSnapshotStores.bind(store),
     subscribeToSnapshots: store.subscribeToSnapshots.bind(store),
     transformSubscriber: store.transformedSubscriber.bind(store),
-    transformDelegate: store.transformedDelegate.bind(store),
+    transformDelegate: store.transformedDelegate,
     initializedState: store.initializedState,
     transformedDelegate: store.transformedDelegate,
     getAllKeys: store.getAllKeys.bind(store),
@@ -560,7 +568,8 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
       categoryProperties?: string | CategoryProperties,
       callback?: (snapshot: Snapshot<SnapshotWithCriteria<any, BaseData>, K>) => void,
       snapshotDataStore?: SnapshotStore<T, K>,
-      snapshotStoreConfig?: SnapshotStoreConfig<
+      snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
+      snapshotStoreConfigSearch?: SnapshotStoreConfig<
         SnapshotWithCriteria<any, BaseData>,
         K
       >
@@ -574,9 +583,12 @@ const createSnapshotConfig = <T extends BaseData, K extends BaseData>(
         meta: new Map<string, Snapshot<T, K>>(),
         events: {} as CombinedEvents<T, K>,
         snapshotStoreConfig: snapshotStoreConfig || null,
+        snapshotStoreConfigSearch: snapshotStoreConfigSearch || null,
         getSnapshotItems: () => [],
         defaultSubscribeToSnapshots: () => {},
-        transformSubscriber: () => {},
+        transformSubscriber: (sub: Subscriber<T, K>): Subscriber<T, K> => {
+          
+        },
         // Add other required properties and methods here
       };
 
@@ -608,7 +620,7 @@ interface SubscriberCallback<T extends BaseData, K extends BaseData> {
   snapshotCallback: (data: Snapshot<T, K>) => void; // Ensure this is a function type
 }
 
-class Subscriber<T extends BaseData, K extends BaseData> {
+class Subscriber<T extends Data, K extends Data> {
   public data: Partial<SnapshotStore<T, K>> | null = {};
   // public callback: Callback<Snapshot<T, K>>,
   private _id: string | undefined;
@@ -639,13 +651,15 @@ class Subscriber<T extends BaseData, K extends BaseData> {
   private tags: string[] = [];
   private snapshotIds: string[] = [];
   private readonly payload: T | undefined;
-  getTransformSubscriber: any;
+  
+  
+  get getTransformSubscriber: (event, snapshotId, snapshot, snapshotStore, dataItems, criteria, category) => {}
   private async fetchSnapshotIds(): Promise<string[]> {
     // Simulate an asynchronous operation to fetch snapshot IDs
     return new Promise<string[]>((resolve, reject) => {
       setTimeout(async () => {
         // Example: Fetching snapshot IDs from an API or database
-        const fetchedSnapshotIds = await snapshotApi.fetchSnapshotIds(this.id!);
+        const fetchedSnapshotIds = await snapshotApi.fetchSnapshotIds(this.getUniqueId!);
 
         // Resolve with fetched snapshot IDs
         resolve(fetchedSnapshotIds);
@@ -653,7 +667,7 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     });
   }
 
-  private callback: (data: Snapshot<T, K>) => void = (data: Snapshot<T, K>) => {
+  private callback?: (data: Snapshot<T, K>) => void = (data: Snapshot<T, K>) => {
     if (data.data instanceof Map) {
       // Handle the case where data.data is a Map
       console.error("Unexpected data type: Map");
@@ -940,6 +954,71 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     console.log(`Internal store updated for ID: ${id}`);
   }
 
+
+    /**
+   * Public method to check if the data is of type T.
+   *
+   * @param data - The data to check.
+   * @returns - True if the data is of type T, false otherwise.
+   */
+    public getIsDataType(data: any): data is T {
+      return this.isDataType(data);
+    }
+  
+
+
+
+    /**
+   * Public method to update internal store with processed data.
+   *
+   * @param data - The processed data to store.
+   */
+    public getUpdateInternalStore(data: T): void {
+      // Call the private method to update the internal data structure
+      this.updateInternalStore(data);
+    }
+
+
+  
+  /**
+   * Public method to process the data.
+   *
+   * @param data - The data to process.
+   */
+  public getProcessData(data: T | Map<string, Snapshot<T, K>> | null | undefined): void {
+    this.processData(data);
+  }
+
+  /**
+   * Public method to validate the data.
+   *
+   * @param data - The data to validate.
+   * @returns - True if data is valid, false otherwise.
+   */
+  public getValidateData(data: T | Map<string, Snapshot<T, K>>): boolean {
+    return this.validateData(data);
+  }
+
+  /**
+   * Public method to transform the data.
+   *
+   * @param data - The data to transform.
+   * @returns - The transformed data.
+   */
+  public getTransformData(data: T): T {
+    return this.transformData(data);
+  }
+
+  /**
+   * Public method to trigger actions based on processed data.
+   *
+   * @param data - The processed data.
+   */
+  public getTriggerActions(data: T): Promise<void> {
+    return this.triggerActions(data);
+  }
+
+  
   /**
    * Retrieves data from the internal cache based on the ID.
    *
@@ -1016,6 +1095,10 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     return this._id;
   }
 
+  set setUniqueId(key: string) {
+    this.setUniqueId = key
+  }
+
   set id(value: string | undefined) {
     this.id = value;
   }
@@ -1031,9 +1114,19 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     return this.tags;
   }
 
+  get getInternalState(): Map<string, Snapshot<T, K>> { 
+    return this.internalState
+  }
+
+  get getInternalCache(): Map<string, T> {
+    return this.internalCache
+  }
+    
+
   get getCallback(): ((data: Snapshot<T, K>) => void) | undefined {
     return this.callbackFunction;
   }
+
 
   get defaultSubscribeToSnapshots(): string[] {
     return this.snapshotIds;
@@ -1116,14 +1209,15 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     return this.payload;
   }
 
-  handleSnapshot(data: T): void {
+  handleSnapshot(data: Snapshot<T, K>): void {
     if (typeof this.callbackFunction === "function") {
       this.callbackFunction(data);
     }
-    this.onSnapshotCallbacks.forEach((callback) => callback(data));
-    if (typeof this.triggerIncentives === "function") {
-      this.triggerIncentives(data);
-    }
+    this.onSnapshotCallbacks.forEach((callback) => {
+      if (typeof callback.handleCallback === "function") {
+        callback.handleCallback(data); // Call the handleCallback function
+      }
+    });
     if (typeof this.logActivity === "function") {
       this.logActivity(data);
     }
@@ -1176,11 +1270,11 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     >;
 
     transformedSub.subscribersById = sub.getSubscribersById?.() ?? {};
-    transformedSub.subscribers = sub.getSubscribers?.() ?? [];
-    transformedSub.onSnapshotCallbacks = sub.getOnSnapshotCallbacks?.() ?? [];
-    transformedSub.onErrorCallbacks = sub.getOnErrorCallbacks?.() ?? [];
+    transformedSub.subscribers = sub.getSubscribers ?? [];
+    transformedSub.onSnapshotCallbacks = sub.getOnSnapshotCallbacks ?? [];
+    transformedSub.onErrorCallbacks = sub.getOnErrorCallbacks ?? [];
     transformedSub.onUnsubscribeCallbacks =
-      sub.getOnUnsubscribeCallbacks?.() ?? [];
+      sub.getOnUnsubscribeCallbacks ?? [];
     transformedSub.notifyEventSystem = sub.notifyEventSystem;
     transformedSub.updateProjectState = sub.updateProjectState;
     transformedSub.logActivity = sub.getLogActivity?.() || undefined;
@@ -1193,18 +1287,18 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     transformedSub.tags = [];
     transformedSub.snapshotIds = [];
     transformedSub.payload = sub.payload;
-    transformedSub.getTransformSubscriber = sub.getTransformSubscriber;
+    transformedSub.transformSubscriber = sub.getTransformSubscriber;
     transformedSub.fetchSnapshotIds = sub.getFetchSnapshotIds;
     transformedSub.getId = sub.getId;
-    transformedSub.get_Id = sub.getUniqueId?.();
+    transformedSub._id = sub.getUniqueId;
     transformedSub.id = sub.id;
-    transformedSub.getEnabled = sub.getEnabled;
-    transformedSub.getTags = sub.getTags;
+    transformedSub.enabled = sub.getEnabled;
+    transformedSub.tags = sub.getTags;
     transformedSub.defaultSubscribeToSnapshots =
       sub.defaultSubscribeToSnapshots;
     transformedSub.subscribeToSnapshots = sub.subscribeToSnapshots;
-    transformedSub.getSubscribers = sub.getSubscribers;
-    transformedSub.transformSubscribers = sub.transformSubscribers;
+    transformedSub.subscribers = sub.getSubscribers;
+    transformedSub.transformSubscribers = sub.getTransformSubscribers;
     transformedSub.setSubscribers = sub.setSubscribers;
     transformedSub.getOnSnapshotCallbacks = sub.getOnSnapshotCallbacks;
     transformedSub.setOnSnapshotCallbacks = sub.setOnSnapshotCallbacks;
@@ -1219,7 +1313,7 @@ class Subscriber<T extends BaseData, K extends BaseData> {
     transformedSub.setOptionalData = sub.setOptionalData;
     transformedSub.setEmail = sub.setEmail;
     transformedSub.setSnapshotIds = sub.setSnapshotIds;
-    transformedSub.getPayload = sub.getPayload;
+    transformedSub.payload = sub.getPayload;
     transformedSub.handleCallback = sub.handleCallback;
     transformedSub.snapshotCallback = sub.snapshotCallback;
     transformedSub.getEmail = sub.getEmail;
@@ -1615,12 +1709,12 @@ class Subscriber<T extends BaseData, K extends BaseData> {
         updateSnapshot: updateSnapshot as (
           snapshotId: string,
           data: SnapshotStore<T, K>,
-          events: Record<string, CalendarEvent[]>,
+          events: Record<string, CalendarManagerStoreClass<T, K>[]>,
           snapshotStore: SnapshotStore<T, K>,
           dataItems: RealtimeDataItem[],
           newData: T | Data,
           payload: UpdateSnapshotPayload<any>
-        ) => Promise<{ snapshot: Snapshot<any, Data> }>,
+        ) => Promise<{ snapshot: SnapshotStore<T, K>[] }>,
         removeSnapshot: removeSnapshot,
         clearSnapshots: clearSnapshots,
         createInitSnapshot: createInitSnapshot,

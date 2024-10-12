@@ -1,6 +1,5 @@
 import { IHydrateResult } from "mobx-persist";
 import { Data } from "ws";
-import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
 import * as snapshotApi from '../../api/SnapshotApi';
 import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { BaseData } from "../models/data/Data";
@@ -446,7 +445,7 @@ export const defaultSubscribeToSnapshots = <T extends BaseData, K extends BaseDa
           createSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void | null {
             throw new Error("Function not implemented.");
           },
-          createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<T, K>, snapshotManager: SnapshotManager<T, K>, payload: CreateSnapshotsPayload<T, K>, callback: (snapshots: Snapshot<T, K>[]) => void | null, snapshotDataConfig?: SnapshotConfig<T, K>[] | undefined, category?: string | CategoryProperties): Snapshot<T, K>[] | null {
+          createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<T, K>, snapshotManager: SnapshotManager<T, K>, payload: CreateSnapshotsPayload<T, K>, callback: (snapshots: Snapshot<T, K>[]) => void | null, snapshotDataConfig?: SnapshotConfig<T, K>[] | undefined, category?: string | symbol | Category): Snapshot<T, K>[] | null {
             throw new Error("Function not implemented.");
           },
           onSnapshot: function (snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event, callback: (snapshot: Snapshot<T, K>) => void): void {

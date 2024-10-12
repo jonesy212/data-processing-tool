@@ -65,6 +65,19 @@ class UniqueIDGenerator {
     return `documents.${userId}.${documentId}`;
   }
 
+  // New static method for generating a snapshot ID with a category
+  static generateSnapshotIDWithCategory(category: string): string {
+    const timestamp = Date.now(); // Get the current timestamp
+    const uniqueID = UniqueIDGenerator.generateID(
+      "SNP", 
+      category, 
+      NotificationTypeEnum.GeneratedID
+    );
+
+    // Combine the category and unique ID with a timestamp for uniqueness
+    return `${category}_${uniqueID}_${timestamp}`;
+  }
+
   static generateNotificationID(
     notification: NotificationData,
     date: Date,
@@ -93,6 +106,8 @@ class UniqueIDGenerator {
   static generateTeamID(name: string): string {
     return `team_${name}`;
   }
+
+
 
   static generateTaskID(
     name: string,
@@ -222,6 +237,16 @@ class UniqueIDGenerator {
 
   static generateChatThreadID(chatThreadName: string): string {
     return `chatThread_${chatThreadName}`;
+  }
+
+  // Static method to generate a unique payment ID
+  static generatePaymentId(): string {
+    const prefix = 'payment';
+    const timestamp = Date.now(); // Get current timestamp in milliseconds
+    const randomComponent = Math.floor(Math.random() * 1000000); // Generate a random number between 0 and 999999
+
+    // Construct the payment ID by combining the prefix, timestamp, and random component
+    return `${prefix}_${timestamp}_${randomComponent}`;
   }
 
 

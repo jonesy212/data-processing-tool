@@ -35,7 +35,7 @@ function convertAccessHistoryToRecord(history: AccessHistory): AccessRecord {
 }
 
 
-export {convertAccessRecordToHistory, convertAccessHistoryToRecord} 
+export { convertAccessRecordToHistory, convertAccessHistoryToRecord} 
 
 // Example usage:
 const accessRecord1 = new AccessHistory('1234', new Date(), "Login");

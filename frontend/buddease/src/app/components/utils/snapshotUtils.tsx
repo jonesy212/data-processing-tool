@@ -10,7 +10,7 @@ import {
   SnapshotUnion,
 } from "../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../snapshots/SnapshotStore";
-import { useSnapshotStore } from "../snapshots/useSnapshotStore";
+import { SnapshotStoreProps, useSnapshotStore } from "../snapshots/useSnapshotStore";
 import { Subscription } from "../subscriptions/Subscription";
 import { useNotification } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
@@ -18,12 +18,13 @@ import { SnapshotStoreConfig } from "../snapshots/SnapshotStoreConfig";
 import { SnapshotConfig, SnapshotWithCriteria } from "../snapshots";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { IHydrateResult } from "mobx-persist";
+import { Category } from "../libraries/categories/generateCategoryProperties";
 
 function isHydrateResult<T>(result: any): result is IHydrateResult<T> {
   return (result as IHydrateResult<T>).then !== undefined;
 }
 
-function isSnapshotConfig<T, K>(config: any): config is SnapshotConfig<T, K> {
+function isSnapshotConfig<T extends Data, K extends Data>(config: any): config is SnapshotConfig<T, K> {
   return config && 'storeConfig' in config && 'additionalData' in config;
 }
 
@@ -54,15 +55,17 @@ const isSnapshotUnionBaseData = (
   return isSnapshotBaseData(value) || isSnapshotWithCriteriaBaseData(value);
 };
 
-// Implement the logic to verify SnapshotBaseData
+// Type guard to check if a value is a Snapshot<BaseData, any>
 const isSnapshotBaseData = (value: any): value is Snapshot<BaseData, any> => {
-  // Implement checks for properties that are specific to Snapshot<BaseData, any>
   return (
     value &&
-    typeof value.snapshot === "function" &&
-    typeof value.setCategory === "function"
+    typeof value.data !== "undefined" && // Check if the snapshot has `data`
+    typeof value.snapshot === "function" && // Ensures the presence of the `snapshot` method
+    typeof value.setCategory === "function" && // Ensures the presence of `setCategory`
+    typeof value.getSnapshotData === "function" // Ensures the presence of `getSnapshotData`
   );
 };
+
 
 // Implement the logic to verify SnapshotWithCriteriaBaseData
 const isSnapshotWithCriteriaBaseData = (
@@ -85,31 +88,112 @@ function convertToSnapshotArray<T extends BaseData>(
   return Array.isArray(data) ? data : Object.values(data);
 }
 
-function convertToSnapshotWithCriteria(
-  snapshot: Snapshot<Data, Data>
-): SnapshotWithCriteria<any, BaseData> | null {
-  const { id, snapshotData, category,  description, categoryProperties, dataStoreMethods } =
-    snapshot;
+function convertToSnapshotWithCriteria<T extends Data, K extends BaseData>(
+  snapshot: Snapshot<T, K>
+): SnapshotWithCriteria<T, K> | null {
+  const { id, snapshotData, category, description, categoryProperties, dataStoreMethods } = snapshot;
 
-  // Use category as the criteria for conversion
   if (category) {
-    const criteriaSnapshot: SnapshotWithCriteria<any, BaseData> = {
-      ...snapshot, // Spread the existing snapshot properties
+    const criteriaSnapshot: SnapshotWithCriteria<T, K> = {
+      ...snapshot,
       criteria: {
-        categoryCriteria: category, // Use category as a specific field in the criteria
-        description: description
-        // Add more criteria fields if needed
+        categoryCriteria: category,
+        description: description || null
       },
-      // Modify or extend other properties if necessary
+      handleSnapshot: (
+        id: string,
+        snapshotId: string | number,
+        snapshot: Snapshot<T, K> | null,
+        snapshotData: T,
+        category: Category,
+        categoryProperties: CategoryProperties | undefined,
+        callback: (snapshotData: T) => void,
+        snapshots: SnapshotsArray<T>,
+        type: string,
+        event: Event,
+        snapshotContainer?: T,
+        snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null
+      ): Promise<Snapshot<T, K> | null> => {
+        // Step 1: Check if snapshot already exists
+        if (!snapshot) {
+          // If there's no snapshot, create one if the type suggests a creation action
+          if (type === 'create') {
+            const newSnapshot: Snapshot<T, K> = {
+              id: snapshotId,
+              data: snapshotData,
+              category: category,
+              properties: categoryProperties || {},
+              storeConfig: undefined 
+              // Add other necessary properties/methods for the snapshot
+            } as Snapshot<T, K>;
+      
+            // Call the callback with the new snapshot data
+            callback(snapshotData);
+      
+            // Add the new snapshot to the snapshots array
+            snapshots.push(newSnapshot as unknown as Snapshot<T, BaseData>);  
+           
+            return new Promise((resolve) => resolve(newSnapshot));
+          } else {
+            // If no snapshot exists and the type is not 'create', return null
+            return new Promise((resolve) => resolve(null));
+          }
+        } else {
+          // Step 2: Update or handle the snapshot if it exists
+      
+          // Handle updates based on the type of event or action
+          switch (type) {
+            case 'update':
+              // Update snapshot data if needed
+              snapshot.data = { ...snapshot.data, ...snapshotData };
+      
+              // Update category properties if provided
+              if (categoryProperties) {
+                snapshot.properties = { ...snapshot.properties, ...categoryProperties };
+              }
+      
+              // Call the callback with updated snapshot data
+              callback(snapshot.data);
+      
+              // If a snapshot container is provided, update or associate the snapshot with it
+              if (snapshotContainer) {
+                // Handle the snapshot container logic (e.g., associating snapshots)
+                // For example, add the snapshot to the container's list of snapshots
+              }
+      
+              return new Promise((resolve) => resolve(snapshot));
+      
+            case 'delete':
+              // Find the snapshot in the snapshots array and remove it
+              const snapshotIndex = snapshots.findIndex(s => s.id === snapshotId);
+              if (snapshotIndex > -1) {
+                snapshots.splice(snapshotIndex, 1);
+              }
+      
+              // Optionally trigger other delete actions here
+              return new Promise((resolve) => resolve(null));
+      
+            case 'event':
+              // If an event is provided, handle it (e.g., triggering custom snapshot logic)
+              if (event) {
+                // Implement event-based logic for snapshots (if necessary)
+                // For example, categorize the snapshot or trigger a custom action
+              }
+      
+              return new Promise((resolve) => resolve(snapshot));
+      
+            default:
+              return new Promise((resolve) => resolve(snapshot));
+          }
+        }
+      }      
     };
 
     return criteriaSnapshot;
   }
 
-  // If category is undefined or does not meet criteria, return null
   return null;
 }
-
 function isSnapshotOfType<T extends Data, K extends BaseData>(
   snapshot: Snapshot<T, K>,
   typeCheck: (snapshot: Snapshot<T, K>) => snapshot is Snapshot<T, K>
@@ -139,10 +223,11 @@ function isSnapshotWithCriteria<T extends BaseData, K extends BaseData>(
   );
 }
 
-// Type guard function to check if item is SnapshotStoreConfig
+
+
 function isSnapshotStoreConfig<T extends Data, K extends Data>(
   item: any
-): item is SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[] {
+): item is SnapshotStoreConfig<T, K>[] {
   return (
     Array.isArray(item) &&
     item.every(
@@ -151,17 +236,22 @@ function isSnapshotStoreConfig<T extends Data, K extends Data>(
   );
 }
 
+
 export const addToSnapshotList = async <T extends BaseData, K extends BaseData>(
   snapshot: Snapshot<T, K>,
-  subscribers: Subscriber<T, K>[]
+  subscribers: Subscriber<T, K>[],
+  storeProps?: SnapshotStoreProps<T, K>
 ): Promise<Subscription<T, K> | null> => {
   console.log("Snapshot added to snapshot list: ", snapshot);
-
-  const snapshotStore = await useSnapshotStore(addToSnapshotList);
+  if (!storeProps) {
+    throw new Error("Snapshot properties not available")
+  }
+  const snapshotStore = await useSnapshotStore(addToSnapshotList, storeProps);
 
   const subscriptionData: Subscription<T, K> | null = snapshot.data
     ? {
         name: snapshot.name ? snapshot.name : undefined,
+        subscribers: [],
         unsubscribe: (): void => {},
         portfolioUpdates: (): void => {},
         tradeExecutions: (): void => {},
@@ -179,7 +269,7 @@ export const addToSnapshotList = async <T extends BaseData, K extends BaseData>(
             return data;
           }
           // Ensure snapshotStore.determineCategory returns CategoryProperties
-          return snapshotStore.determineCategory(data) as CategoryProperties; // Casting to ensure type compatibility
+          return snapshotStore.determineCategory(data)
         },
         portfolioUpdatesLastUpdated: {} as ModifiedDate,
         ...snapshot.data,
@@ -235,6 +325,8 @@ export {
   isSnapshotWithCriteria,
   isSnapshotOfType,
   isHydrateResult,
+  isSnapshotConfig,
+  isSnapshotUnionBaseData
 };
 export const generateSnapshotId = UniqueIDGenerator.generateSnapshotID();
 export const notify = useNotification();

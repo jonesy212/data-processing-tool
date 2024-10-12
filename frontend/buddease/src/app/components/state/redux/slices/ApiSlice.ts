@@ -15,6 +15,7 @@ import { WritableDraft } from "../ReducerGenerator";
 import { addTask } from "./TaskSlice";
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
+import { Payment, Revenue, SubscriptionPlan } from "@/app/components/subscriptions/SubscriptionPlan";
 
 interface CommunityEvent {
   id: string;
@@ -208,7 +209,7 @@ export const useApiManagerSlice = createSlice({
         startDate: undefined,
         endDate: undefined,
         isActive: false,
-        tags: [],
+        tags: {},
         [Symbol.iterator]: function (): Iterator<any, any, undefined> {
           throw new Error("Function not implemented.");
         },
@@ -259,7 +260,7 @@ export const useApiManagerSlice = createSlice({
       state,
       action: PayloadAction<{
         phaseId: string;
-        details: WritableDraft<DetailsItem<WritableDraft<Data>>>;
+        details: WritableDraft<DetailsItem<Data>>;
       }>
     ) => {
       const { phaseId, details } = action.payload;
@@ -683,7 +684,7 @@ export const markTaskAsComplete = (taskId: string, title: string) => async (disp
     startDate: undefined,
     endDate: undefined,
     isActive: false,
-    tags: [],
+    tags: {},
   }));
 };
 
@@ -706,7 +707,7 @@ export const markTodoAsComplete = (todoId: string, title: string) => async (disp
     startDate: undefined,
     endDate: undefined,
     isActive: false,
-    tags: [],
+    tags: {},
   }));
 };
 

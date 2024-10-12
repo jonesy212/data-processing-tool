@@ -8,29 +8,33 @@ import { Category } from "../components/libraries/categories/generateCategoryPro
 import { Content } from "../components/models/content/AddContent";
 import { BaseData, Data } from "../components/models/data/Data";
 import {
-  PriorityTypeEnum,
-  ProjectStateEnum
+    PriorityTypeEnum,
+    ProjectStateEnum
 } from "../components/models/data/StatusType";
 import { RealtimeDataItem } from '../components/models/realtime/RealtimeData';
 import { Member } from "../components/models/teams/TeamMembers";
+import { DataStoreMethods } from '../components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { DataStore } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { sendToAnalytics } from '../components/projects/DataAnalysisPhase/sendToAnalytics';
 import { ProjectType } from "../components/projects/Project";
 import { ConfigureSnapshotStorePayload, SnapshotConfig, SnapshotData, SnapshotDataType, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteria, useSnapshotStore } from "../components/snapshots";
 import {
-  Snapshot,
-  Snapshots
+    Snapshot,
+    Snapshots
 } from "../components/snapshots/LocalStorageSnapshotStore";
-import { SnapshotContainer } from "../components/snapshots/SnapshotContainer";
+import { SnapshotConfigProps } from '../components/snapshots/SnapshotConfigProps';
+import { SnapshotContainer, SnapshotContainerData } from "../components/snapshots/SnapshotContainer";
 import SnapshotList from "../components/snapshots/SnapshotList";
 import SnapshotStore from "../components/snapshots/SnapshotStore";
+import { isSnapshot } from '../components/snapshots/createSnapshotStoreOptions';
 import { isValidFileCategory } from "../components/snapshots/isValidFileCategory";
 import { updateUIWithSnapshotStore } from '../components/snapshots/updateUIWithSnapshotStore';
 import { FilterState } from "../components/state/redux/slices/FilterSlice";
 import CalendarManagerStoreClass from '../components/state/stores/CalendarEvent';
+import { Subscription } from '../components/subscriptions/Subscription';
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "../components/support/NotificationContext";
 import { Subscriber } from '../components/users/Subscriber';
 import { addToSnapshotList } from "../components/utils/snapshotUtils";
@@ -45,8 +49,8 @@ import { constructTarget, Target } from "./EndpointConstructor";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
 import {
-  AuthenticationHeaders,
-  createAuthenticationHeaders,
+    AuthenticationHeaders,
+    createAuthenticationHeaders,
 } from "./headers/authenticationHeaders";
 import createCacheHeaders from "./headers/cacheHeaders";
 import createContentHeaders from "./headers/contentHeaders";
@@ -170,28 +174,10 @@ const apiCall = <T extends Data, K extends Data>(
   });
 };
 
-
-const getSnapshot = <T extends Data, K extends Data>(
-  snapshotId: string | number,
-  storeId: number,
-  additionalHeaders?: Record<string, string>
-): Promise<Snapshot<T, K>> => {
-  return new Promise((resolve, reject) => {
-    // synchronous logic here
-    const snapshot: Snapshot<T, K> = {/* logic to fetch snapshot */} as Snapshot<T, K>;
-    if (snapshot) {
-      resolve(snapshot);
-    } else {
-      reject('Snapshot not found');
-    }
-  });
-};
-
-// Get snapshot data with proper type handling
 function getSnapshotData<T extends Data, K extends Data>(
   snapshotId: string | number,
   additionalHeaders?: Record<string, string>
-): Promise<Snapshot<T, K> | undefined> {
+): Promise<SnapshotDataType<T, K> | undefined> {
   return apiCall<T, K>(
     `${API_BASE_URL}/snapshot/${snapshotId}`,
     'GET',
@@ -202,10 +188,11 @@ function getSnapshotData<T extends Data, K extends Data>(
       if (response) {
         let categoryName: string | undefined;
 
+        // Determine categoryName from the response data
         if (typeof response.data === 'string') {
           categoryName = response.data;
         } else if (response.data instanceof Map) {
-          categoryName = Array.from(response.data.keys())[0];
+          categoryName = Array.from(response.data.keys())[0]; // Use the first key as the category
         } else if (response.data && typeof response.data === 'object') {
           categoryName = (response.data as any).category;
         }
@@ -222,17 +209,41 @@ function getSnapshotData<T extends Data, K extends Data>(
           // Process the snapshot data by category (if relevant)
           const processedSnapshot = processSnapshotsByCategory(response, category);
 
-          return processedSnapshot; // Ensure the type matches Snapshot<T, K>
+          // Ensure processedSnapshot conforms to Snapshot<T, K>
+          if (isSnapshot(processedSnapshot)) { // Create this type guard function to check if processedSnapshot is of type Snapshot<T, K>
+            return processedSnapshot
+          } else {
+            console.warn('Processed snapshot is not a valid Snapshot<T, K>', processedSnapshot);
+            return undefined;
+          }
         }
       }
-
       return undefined;
     })
     .catch((error) => {
       console.error('Error fetching snapshot data:', error);
       return undefined;
-    });
+    }) as Promise<Snapshot<T, K> | undefined>
 }
+
+
+const getSnapshot = <T extends Data, K extends Data>(
+  snapshotId: string | number,
+  storeId: number,
+  additionalHeaders?: Record<string, string>
+): Promise<Snapshot<T, K>> => {
+  return new Promise((resolve, reject) => {
+    // synchronous logic here
+    const snapshot: Snapshot<T, K> = {/* logic to fetch snapshot */ } as Snapshot<T, K>;
+    if (snapshot) {
+      resolve(snapshot);
+    } else {
+      reject('Snapshot not found');
+    }
+  });
+};
+
+
 
 
 const findSubscriberById = async  <T extends BaseData, K extends BaseData>(
@@ -301,7 +312,7 @@ const findSnapshotsBySubscriber = async <T extends BaseData, K extends BaseData>
     endpointCategory,
     `${endpoints.snapshots.list}?subscriberId=${subscriberId}&category=${String(category)}`
   );
-  
+
   const headers: Record<string, any> = createRequestHeaders(String(target.url));
 
   if (!target.url) {
@@ -319,10 +330,10 @@ const findSnapshotsBySubscriber = async <T extends BaseData, K extends BaseData>
 
     // Map the API response to the Snapshot<T, K> type
     const snapshots: Snapshot<T, K>[] = snapshotsData.flatMap((snapshotData) => {
-      if (!snapshotData) {
+      if (!snapshotData && snapshotData === undefined) {
         throw new Error("Snapshot data is undefined");
       }
-    
+
       // Check if snapshotData is a Map
       if (snapshotData instanceof Map) {
         // If it's a Map, handle the map entries
@@ -336,11 +347,27 @@ const findSnapshotsBySubscriber = async <T extends BaseData, K extends BaseData>
           initialConfig: entry.initialConfig,
 
 
+
+
+
+          isSubscribed: entry.isSubscribed, 
+          clearSnapshotSuccess: entry.clearSnapshotSuccess, 
+          addToSnapshotList: entry.addToSnapshotList, 
+          getSnapshotsBySubscriberSuccess: entry.getSnapshotsBySubscriberSuccess, 
+          isExpired: entry.isExpired,
+
+
+
+
           criteria: entry.criteria,
           snapshotContainer: entry.snapshotContainer,
           snapshotCategory: entry.snapshotCategory,
           snapshotSubscriberId: entry.snapshotSubscriberId,
-         
+
+          initializeWithData: entry.initializeWithData ? entry.initializeWithData : () => {},
+          hasSnapshots: entry.hasSnapshots ?? (() => false), // Default to a function that returns false if undefined
+    
+
           removeSubscriber: entry.removeSubscriber,
           onInitialize: entry.onInitialize,
           onError: entry.onError,
@@ -355,6 +382,8 @@ const findSnapshotsBySubscriber = async <T extends BaseData, K extends BaseData>
           snapshotData: entry.snapshotData,
           getSnapshotItems: entry.getSnapshotItems,
           defaultSubscribeToSnapshots: entry.defaultSubscribeToSnapshots,
+          getSnapshotsBySubscriber: entry.getSnapshotsBySubscriber,
+
           notify: entry.notify,
           notifySubscribers: entry.notifySubscribers,
           getAllSnapshots: entry.getAllSnapshots,
@@ -373,11 +402,11 @@ const findSnapshotsBySubscriber = async <T extends BaseData, K extends BaseData>
           updateData: entry.updateData,
           storeId: entry.storeId,
           snapConfig: entry.snapConfig,
-         
+
           updateDataTitle: entry.updateDataTitle,
           updateDataDescription: entry.updateDataDescription,
           updateDataStatus: entry.updateDataStatus,
-         
+
           addDataSuccess: entry.addDataSuccess,
           getDataVersions: entry.getDataVersions,
           updateDataVersions: entry.updateDataVersions,
@@ -386,6 +415,8 @@ const findSnapshotsBySubscriber = async <T extends BaseData, K extends BaseData>
           fetchData: entry.fetchData,
           defaultSubscribeToSnapshot: entry.defaultSubscribeToSnapshot,
           handleSubscribeToSnapshot: entry.handleSubscribeToSnapshot,
+
+
           removeItem: entry.removeItem,
           getSnapshot: entry.getSnapshot,
           getSnapshotSuccess: entry.getSnapshotSuccess,
@@ -405,37 +436,44 @@ const findSnapshotsBySubscriber = async <T extends BaseData, K extends BaseData>
           addNestedStore: entry.addNestedStore,
           clearSnapshots: entry.clearSnapshots,
           addSnapshot: entry.addSnapshot,
-         
+
           emit: entry.emit,
           snapshot: entry.snapshot,
-          createSnapshot: entry.createSnapshot,
-          createInitSnapshot: entry.createInitSnapshot,
+
+
+
+          updateSnapshots: entry.updateSnapshots ?? (() => null),
+          takeSnapshot: entry.takeSnapshot ?? (() => null),
+          validateSnapshot: entry.validateSnapshot ?? (() => false),
+          handleActions: entry.handleActions ?? (() => null),
+          setSnapshot: entry.setSnapshot ?? (() => null),
+          clearSnapshot: entry.clearSnapshot ?? (() => null),
+          mergeSnapshots: entry.mergeSnapshots ?? (() => null),
+          
+          createSnapshot: entry.createSnapshot ?? (() => null),
+          createInitSnapshot: entry.createInitSnapshot ?? (() => null),
           addStoreConfig: entry.addStoreConfig,
           handleSnapshotConfig: entry.handleSnapshotConfig,
           getSnapshotConfig: entry.getSnapshotConfig,
           getSnapshotListByCriteria: entry.getSnapshotListByCriteria,
           setSnapshotSuccess: entry.setSnapshotSuccess,
           setSnapshotFailure: entry.setSnapshotFailure,
-          updateSnapshots: entry.updateSnapshots,
           updateSnapshotsSuccess: entry.updateSnapshotsSuccess,
           updateSnapshotsFailure: entry.updateSnapshotsFailure,
           initSnapshot: entry.initSnapshot,
-          takeSnapshot: entry.takeSnapshot,
           takeSnapshotSuccess: entry.takeSnapshotSuccess,
           takeSnapshotsSuccess: entry.takeSnapshotsSuccess,
           flatMap: entry.flatMap,
           getState: entry.getState,
           setState: entry.setState,
-          validateSnapshot: entry.validateSnapshot,
-          handleActions: entry.handleActions,
-          setSnapshot: entry.setSnapshot,
+          
           transformSnapshotConfig: entry.transformSnapshotConfig,
           setSnapshots: entry.setSnapshots,
-          clearSnapshot: entry.clearSnapshot,
-          mergeSnapshots: entry.mergeSnapshots,
+          
           reduceSnapshots: entry.reduceSnapshots,
           sortSnapshots: entry.sortSnapshots,
           filterSnapshots: entry.filterSnapshots,
+
           findSnapshot: entry.findSnapshot,
           mapSnapshots: entry.mapSnapshots,
           takeLatestSnapshot: entry.takeLatestSnapshot,
@@ -467,6 +505,7 @@ const findSnapshotsBySubscriber = async <T extends BaseData, K extends BaseData>
           meta: entry.meta,
           items: entry.items,
           subscribers: entry.subscribers,
+
           snapshotStore: entry.snapshotStore,
           setSnapshotCategory: entry.setSnapshotCategory,
           getSnapshotCategory: entry.getSnapshotCategory,
@@ -486,7 +525,10 @@ const findSnapshotsBySubscriber = async <T extends BaseData, K extends BaseData>
           batchFetchSnapshotsFailure: entry.batchFetchSnapshotsFailure,
           batchUpdateSnapshotsSuccess: entry.batchUpdateSnapshotsSuccess,
           batchUpdateSnapshotsFailure: entry.batchUpdateSnapshotsFailure,
+
+
           handleSnapshotSuccess: entry.handleSnapshotSuccess,
+          handleSnapshotFailure: entry.handleSnapshotFailure,
           getSnapshotId: entry.getSnapshotId,
           compareSnapshotState: entry.compareSnapshotState,
           payload: entry.payload,
@@ -507,6 +549,9 @@ const findSnapshotsBySubscriber = async <T extends BaseData, K extends BaseData>
           removeStore: entry.removeStore,
           unsubscribe: entry.unsubscribe,
           fetchSnapshot: entry.fetchSnapshot,
+          fetchStoreData: entry.fetchStoreData,
+          snapshotMethods: entry.snapshotMethods,
+
           fetchSnapshotSuccess: entry.fetchSnapshotSuccess,
           updateSnapshotFailure: entry.updateSnapshotFailure,
           fetchSnapshotFailure: entry.fetchSnapshotFailure,
@@ -524,248 +569,308 @@ const findSnapshotsBySubscriber = async <T extends BaseData, K extends BaseData>
           addChild: entry.addChild,
           removeChild: entry.removeChild,
           getChildren: entry.getChildren,
-           hasChildren: entry.hasChildren,
+          hasChildren: entry.hasChildren,
           isDescendantOf: entry.isDescendantOf,
           getSnapshotById: entry.getSnapshotById,
         }));
       }
-    
+
       // Otherwise, assume it's SnapshotData<T, K> and access its properties
       return {
+        // Basic Snapshot Information
         id: snapshotData.id,
         data: snapshotData.data,
         metadata: snapshotData.metadata,
         initialState: snapshotData.data as T,  // Provide default value or mapping
         isCore: true,  // Set default value if not available
-        initialConfig: snapshotData.snapConfig.initialConfig,  // Provide or map to default config
+        initialConfig: snapshotData.snapConfig!.initialConfig ?? {},  // Provide or map to default config
 
-        criteria: snapshotData.snapConfig.criteria,
-        snapshotContainer: snapshotData.snapConfig.snapshotContainer,
-        snapshotCategory: snapshotData.snapConfig.snapshotCategory,
-        snapshotSubscriberId: snapshotData.snapConfig.snapshotSubscriberId,
 
+        // Snapshot Configuration
+        snapConfig: snapshotData.snapConfig ?? undefined,
+        criteria: snapshotData.snapConfig!.criteria ?? undefined,
+        snapshotContainer: snapshotData.snapConfig!.snapshotContainer,
+        snapshotCategory: snapshotData.snapConfig!.snapshotCategory,
+        snapshotSubscriberId: snapshotData.snapConfig!.snapshotSubscriberId,
+        initializeWithData: snapshotData.snapConfig?.initializeWithData
+        ? snapshotData.snapConfig?.initializeWithData
+        : () => {},  
+        hasSnapshots: snapshotData.snapConfig!.hasSnapshots ?? (() => false), // Provide default if undefined
+      
         storeId: snapshotData.storeId,
-        snapConfig: snapshotData.snapConfig,
+
+        // Snapshot Operations
+        createSnapshot: snapshotData.snapConfig!.createSnapshot ?? null,
+        // createSnapshot: snapshotData.snapConfig!.createSnapshot ?? (() => null),
+       
+        createInitSnapshot: snapshotData.snapConfig!.createInitSnapshot ?? (() => null),
+        updateSnapshots: snapshotData.snapConfig!.updateSnapshots ?? (() => null),
+        takeSnapshot: snapshotData.snapConfig!.takeSnapshot ?? (() => null),
+        validateSnapshot: snapshotData.snapConfig!.validateSnapshot ?? (() => false),
+        handleActions: snapshotData.snapConfig!.handleActions ?? (() => null),
+        setSnapshot: snapshotData.snapConfig!.setSnapshot ?? (() => null),
+        clearSnapshot: snapshotData.snapConfig!.clearSnapshot ?? (() => null),
+        mergeSnapshots: snapshotData.snapConfig!.mergeSnapshots ?? (() => null),
+
+
+
+
+        isSubscribed: snapshotData.subscriberManagement!.isSubscribed, 
+        clearSnapshotSuccess: snapshotData.subscriberManagement!.clearSnapshotSuccess, 
+        addToSnapshotList: snapshotData.subscriberManagement!.addToSnapshotList, 
+        getSnapshotsBySubscriberSuccess: snapshotData.subscriberManagement!.getSnapshotsBySubscriberSuccess, 
+        isExpired: snapshotData.isExpired,
+
+
+
+        // Snapshot Management
+        getSnapshotListByCriteria: snapshotData.snapConfig!.getSnapshotListByCriteria,
+        setSnapshotSuccess: snapshotData.snapConfig!.setSnapshotSuccess,
+        setSnapshotFailure: snapshotData.snapConfig!.setSnapshotFailure,
+        initSnapshot: snapshotData.snapConfig!.initSnapshot,
+        takeSnapshotSuccess: snapshotData.snapConfig!.takeSnapshotSuccess,
+        takeSnapshotsSuccess: snapshotData.snapConfig!.takeSnapshotsSuccess,
         snapshot: snapshotData.snapshot,
-        emit: snapshotData.snapConfig.emit, 
-        createSnapshot: snapshotData.snapConfig.createSnapshot ?? null, 
-        createInitSnapshot: snapshotData.snapConfig.createInitSnapshot, 
-        addStoreConfig: snapshotData.snapConfig.addStoreConfig, 
-        handleSnapshotConfig: snapshotData.snapConfig.handleSnapshotConfig, 
-        getSnapshotConfig: snapshotData.snapConfig.getSnapshotConfig,
+        addSnapshot: snapshotData.snapConfig!.addSnapshot,
+        updateSnapshot: snapshotData.snapConfig!.updateSnapshot,
+        deleteSnapshot: snapshotData.deleteSnapshot,
+        getSnapshot: snapshotData.snapConfig!.getSnapshot,
+        getSnapshots: snapshotData.getSnapshots,
+        restoreSnapshot: snapshotData.snapConfig!.restoreSnapshot,
+        transformSnapshotConfig: snapshotData.snapConfig!.transformSnapshotConfig,
+        createSnapshots: snapshotData.createSnapshots,
+        takeLatestSnapshot: snapshotData.snapConfig!.takeLatestSnapshot,
+        getSnapshotById: snapshotData.snapConfig!.getSnapshotById,
+        snapshotMethods: snapshotData.snapConfig!.snapshotMethods,
 
-        getSnapshotListByCriteria: snapshotData.snapConfig.getSnapshotListByCriteria, 
-        setSnapshotSuccess: snapshotData.snapConfig.setSnapshotSuccess, 
-        setSnapshotFailure: snapshotData.snapConfig.setSnapshotFailure,
 
-        updateSnapshots: snapshotData.snapConfig.updateSnapshots, 
-        updateSnapshotsSuccess: snapshotData.snapConfig.updateSnapshotsSuccess, 
-        updateSnapshotsFailure: snapshotData.snapConfig.updateSnapshotsFailure,
+        // Snapshot Filtering and Mapping
+        filterSnapshotsByStatus: snapshotData.filterSnapshotsByStatus,
+        filterSnapshotsByCategory: snapshotData.filterSnapshotsByCategory,
+        filterSnapshotsByTag: snapshotData.filterSnapshotsByTag,
+        sortSnapshots: snapshotData.snapConfig!.sortSnapshots,
+        mapSnapshots: snapshotData.snapConfig!.mapSnapshots,
+        reduceSnapshots: snapshotData.snapConfig!.reduceSnapshots,
 
-        initSnapshot: snapshotData.snapConfig.initSnapshot, 
-        takeSnapshot: snapshotData.snapConfig.takeSnapshot, 
-        takeSnapshotSuccess: snapshotData.snapConfig.takeSnapshotSuccess,
+        // Subscriptions
+        subscribeToSnapshots: snapshotData.subscriberManagement!.subscribeToSnapshots,
+        unsubscribeFromSnapshot: snapshotData.subscriberManagement!.unsubscribeFromSnapshot,
+        addSnapshotSubscriber: snapshotData.subscriberManagement!.addSnapshotSubscriber,
+        removeSnapshotSubscriber: snapshotData.subscriberManagement!.removeSnapshotSubscriber,
 
-        takeSnapshotsSuccess: snapshotData.snapConfig.takeSnapshotsSuccess, 
-        flatMap: snapshotData.snapConfig.flatMap, 
-        getState: snapshotData.snapConfig.getState,
+        // Subscription Management
+        subscribeToSnapshot: snapshotData.subscriberManagement!.subscribeToSnapshot,
+        unsubscribeFromSnapshots: snapshotData.subscriberManagement!.unsubscribeFromSnapshots,
+        subscribeToSnapshotsSuccess: snapshotData.subscriberManagement!.subscribeToSnapshotsSuccess,
+        defaultSubscribeToSnapshots: snapshotData.subscriberManagement!.defaultSubscribeToSnapshots,
+        fetchStoreData: snapshotData.snapConfig!.fetchStoreData,
+        subscribeToSnapshotList: snapshotData.subscriberManagement!.subscribeToSnapshotList,
+        getSubscribers: snapshotData.subscriberManagement!.getSubscribers,
 
-        setState: snapshotData.snapConfig.setState, 
-        validateSnapshot: snapshotData.snapConfig.validateSnapshot, 
-        handleActions: snapshotData.snapConfig.handleActions,
+        // Snapshot Retrieval and Comparison
+        getSnapshotItemsSuccess: snapshotData.snapConfig!.getSnapshotItemsSuccess,
+        getSnapshotItemSuccess: snapshotData.snapConfig!.getSnapshotItemSuccess,
+        getSnapshotIdSuccess: snapshotData.snapConfig!.getSnapshotIdSuccess,
+        compareSnapshots: snapshotData.compareSnapshots,
+        compareSnapshotItems: snapshotData.compareSnapshotItems,
 
-        setSnapshot: snapshotData.snapConfig.setSnapshot, 
-        transformSnapshotConfig: snapshotData.snapConfig.transformSnapshotConfig, 
-        setSnapshots: snapshotData.snapConfig.setSnapshots,
+        // Batch Operations
+        batchFetchSnapshots: snapshotData.batchFetchSnapshots,
+        batchTakeSnapshotsRequest: snapshotData.batchTakeSnapshotsRequest,
+        batchUpdateSnapshotsRequest: snapshotData.batchUpdateSnapshotsRequest,
+        batchFetchSnapshotsSuccess: snapshotData.batchFetchSnapshotsSuccess,
+        batchFetchSnapshotsFailure: snapshotData.batchFetchSnapshotsFailure,
+        batchUpdateSnapshotsSuccess: snapshotData.batchUpdateSnapshotsSuccess,
+        batchUpdateSnapshotsFailure: snapshotData.batchUpdateSnapshotsFailure,
 
-        clearSnapshot: snapshotData.snapConfig.clearSnapshot, 
-        mergeSnapshots: snapshotData.snapConfig.mergeSnapshots, 
-        reduceSnapshots: snapshotData.snapConfig.reduceSnapshots,
+        // State Management
+        getState: snapshotData.snapConfig!.getState,
+        setState: snapshotData.snapConfig!.setState,
+        getSnapshotData: snapshotData.getSnapshotData,
 
-        sortSnapshots: snapshotData.snapConfig.sortSnapshots, 
-        filterSnapshots: snapshotData.snapConfig.filterSnapshots, 
-        findSnapshot: snapshotData.snapConfig.findSnapshot,
+        // Events and Notifications
+        events: snapshotData.events,
+        notify: snapshotData.subscriberManagement!.notify,
+        notifySubscribers: snapshotData.subscriberManagement!.notifySubscribers,
 
-        mapSnapshots: snapshotData.snapConfig.mapSnapshots, 
-        takeLatestSnapshot: snapshotData.snapConfig.takeLatestSnapshot, 
-        updateSnapshot: snapshotData.snapConfig.updateSnapshot,
+        // Data Management
+        addData: snapshotData.addData,
+        removeData: snapshotData.removeData,
+        updateData: snapshotData.updateData,
 
-        addSnapshotSubscriber: snapshotData.snapConfig.addSnapshotSubscriber, 
-        removeSnapshotSubscriber: snapshotData.snapConfig.removeSnapshotSubscriber, 
-        getSnapshotConfigItems: snapshotData.snapConfig.getSnapshotConfigItems,
+        // Metadata and Versioning
+        versionInfo: snapshotData.snapConfig!.versionInfo,
+        getBackendVersion: snapshotData.snapConfig!.getBackendVersion,
+        getFrontendVersion: snapshotData.snapConfig!.getFrontendVersion,
 
-        subscribeToSnapshots: snapshotData.snapConfig.subscribeToSnapshots, 
-        executeSnapshotAction: snapshotData.snapConfig.executeSnapshotAction, 
-        subscribeToSnapshot: snapshotData.snapConfig.subscribeToSnapshot,
+        // Miscellaneous
+        childIds: snapshotData.snapConfig!.childIds,
+        getParentId: snapshotData.snapConfig!.getParentId,
+        getChildIds: snapshotData.snapConfig!.getChildIds,
+        schema: snapshotData.snapConfig!.schema,
+        currentCategory: snapshotData.snapConfig!.currentCategory,
+        timestamp: snapshotData.snapConfig!.timestamp,
+        label: snapshotData.snapConfig!.label,
 
-        unsubscribeFromSnapshot: snapshotData.snapConfig.unsubscribeFromSnapshot, 
-        subscribeToSnapshotsSuccess: snapshotData.snapConfig.subscribeToSnapshotsSuccess, 
-        unsubscribeFromSnapshots: snapshotData.snapConfig.unsubscribeFromSnapshots,
+        // Configuration
+        config: snapshotData.snapConfig!.config,
+        handleSnapshotConfig: snapshotData.snapConfig!.handleSnapshotConfig,
+        applyStoreConfig: snapshotData.snapConfig!.applyStoreConfig,
+        addStoreConfig: snapshotData.snapConfig!.addStoreConfig,
+        getSnapshotConfig: snapshotData.snapConfig!.getSnapshotConfig,
+        configureSnapshotStore: snapshotData.configureSnapshotStore,
+        initializeStore: snapshotData.snapConfig!.onInitialize,
 
-        getSnapshotItemsSuccess: snapshotData.snapConfig.getSnapshotItemsSuccess, 
-        getSnapshotItemSuccess: snapshotData.snapConfig.getSnapshotItemSuccess, 
-        getSnapshotKeys: snapshotData.snapConfig.getSnapshotKeys, 
+        // Custom Functions
+        generateId: snapshotData.generateId,
+        deepCompare: snapshotData.snapConfig!.deepCompare,
+        shallowCompare: snapshotData.snapConfig!.shallowCompare,
+        fetchSnapshot: snapshotData.fetchSnapshot,
+        fetchSnapshotSuccess: snapshotData.fetchSnapshotSuccess,
+        fetchSnapshotFailure: snapshotData.fetchSnapshotFailure,
+        getAllSnapshots: snapshotData.getAllSnapshots,
+        getAllKeys: snapshotData.snapConfig!.getAllKeys,
+        getAllValues: snapshotData.snapConfig!.getAllValues,
+        getAllItems: snapshotData.snapConfig!.getAllItems,
+        getSnapshotEntries: snapshotData.snapConfig!.getSnapshotEntries,
+        getAllSnapshotEntries: snapshotData.snapConfig!.getAllSnapshotEntries,
+        getSnapshotWithCriteria: snapshotData.snapConfig!.getSnapshotWithCriteria,
 
-        getSnapshotIdSuccess: snapshotData.snapConfig.getSnapshotIdSuccess, 
-        getSnapshotValuesSuccess: snapshotData.snapConfig.getSnapshotValuesSuccess, 
-        getSnapshotWithCriteria: snapshotData.snapConfig.getSnapshotWithCriteria,
+        // Cleanup and Management
+        removeSnapshot: snapshotData.snapConfig!.removeSnapshot,
+        clearSnapshots: snapshotData.snapConfig!.clearSnapshots,
+        addSnapshotItem: snapshotData.snapConfig!.addSnapshotItem,
 
-        reduceSnapshotItems: snapshotData.snapConfig.reduceSnapshotItems, 
-        subscribeToSnapshotList: snapshotData.snapConfig.subscribeToSnapshotList, 
-        config: snapshotData.snapConfig.config,
+        // Data Handling
+        items: snapshotData.items,
+        dataItems: snapshotData.dataItems,
+        newData: snapshotData.newData,
+        getData: snapshotData.getData,
+        setData: snapshotData.setData,
+        getDataVersions: snapshotData.getDataVersions,
+        updateDataVersions: snapshotData.updateDataVersions,
+        fetchData: snapshotData.snapConfig!.fetchData,
+        getDataStore: snapshotData.snapConfig!.getDataStore,
+        getDataStoreMap: snapshotData.snapConfig!.getDataStoreMap,
+        getDataStoreMethods: snapshotData.snapConfig!.getDataStoreMethods,
 
-        timestamp: snapshotData.snapConfig.timestamp, 
-        label: snapshotData.snapConfig.label, 
-        events: snapshotData.events, 
-        restoreSnapshot: snapshotData.snapConfig.restoreSnapshot, 
-        handleSnapshot: snapshotData.snapConfig.handleSnapshot, 
-        subscribe: snapshotData.snapConfig.subscribe,
+        // Error Handling
+        handleSnapshotFailure: snapshotData.handleSnapshotFailure,
+        createSnapshotFailure: snapshotData.createSnapshotFailure,
+        updateSnapshotFailure: snapshotData.updateSnapshotFailure,
+        addSnapshotFailure: snapshotData.addSnapshotFailure,
+        updateSnapshotsFailure: snapshotData.snapConfig!.updateSnapshotsFailure,
+        updateSnapshotsSuccess: snapshotData.snapConfig!.updateSnapshotsSuccess,
+        onError: snapshotData.snapConfig!.onError,
 
-        meta: snapshotData.snapConfig.meta, 
-        items: snapshotData.items, 
-        subscribers: snapshotData.subscribers, 
-        snapshotStore: snapshotData.snapshotStore, 
-        setSnapshotCategory: snapshotData.setSnapshotCategory, 
+        // Metadata & Utilities
+        meta: snapshotData.snapConfig!.meta,
+        payload: snapshotData.payload,
+        snapshotStore: snapshotData.snapshotStore,
+        getSnapshotKeys: snapshotData.snapConfig!.getSnapshotKeys,
+        getSnapshotValuesSuccess: snapshotData.snapConfig!.getSnapshotValuesSuccess,
+        compareSnapshotState: snapshotData.compareSnapshotState,
+        determineCategory: snapshotData.snapConfig!.determineCategory,
+
+        // Additional Methods
+        addChild: snapshotData.snapConfig!.addChild,
+        removeChild: snapshotData.snapConfig!.removeChild,
+        getChildren: snapshotData.snapConfig!.getChildren,
+        hasChildren: snapshotData.snapConfig!.hasChildren,
+        isDescendantOf: snapshotData.snapConfig!.isDescendantOf,
+        getSnapshotConfigItems: snapshotData.snapConfig!.getSnapshotConfigItems,
+        transformDelegate: snapshotData.snapConfig!.transformDelegate,
+        setCategory: snapshotData.snapConfig!.setCategory,
+        initialize: snapshotData.snapConfig!.initializedState,
+        taskIdToAssign: snapshotData.snapConfig!.taskIdToAssign,
+        removeSubscriber: snapshotData.subscriberManagement!.removeSubscriber,
+        transformSubscriber: snapshotData.subscriberManagement!.transformSubscriber,
+        getSnapshotsBySubscriber: snapshotData.subscriberManagement!.getSnapshotsBySubscriber,
+
+        // Mapping
+        flatMap: snapshotData.snapConfig!.flatMap,
+        mapSnapshot: snapshotData.mapSnapshot,
+        mapSnapshotWithDetails: snapshotData.mapSnapshotWithDetails,
+        reduceSnapshotItems: snapshotData.snapConfig!.reduceSnapshotItems,
+
+        // Additional actions
+        handleSnapshotSuccess: snapshotData.handleSnapshotSuccess,
+        executeSnapshotAction: snapshotData.snapConfig!.executeSnapshotAction,
+        onSnapshot: snapshotData.onSnapshot,
+        onSnapshots: snapshotData.onSnapshots,
+
+        emit: snapshotData.snapConfig!.emit,
+
+        setSnapshots: snapshotData.snapConfig!.setSnapshots,
+
+        filterSnapshots: snapshotData.snapConfig!.filterSnapshots,
+        findSnapshot: snapshotData.snapConfig!.findSnapshot,
+
+        handleSnapshot: snapshotData.snapConfig!.handleSnapshot,
+        subscribe: snapshotData.snapConfig!.subscribe,
+
+
+        subscribers: snapshotData.subscribers,
+
+        setSnapshotCategory: snapshotData.setSnapshotCategory,
         getSnapshotCategory: snapshotData.getSnapshotCategory,
 
-        getSnapshotData: snapshotData.getSnapshotData, 
-        deleteSnapshot: snapshotData.deleteSnapshot, 
-        getSnapshots: snapshotData.getSnapshots, 
-        compareSnapshots: snapshotData.compareSnapshots, 
-        compareSnapshotItems: snapshotData.compareSnapshotItems, 
+
         batchTakeSnapshot: snapshotData.batchTakeSnapshot,
 
-        batchFetchSnapshots: snapshotData.batchFetchSnapshots, 
-        batchTakeSnapshotsRequest: snapshotData.batchTakeSnapshotsRequest, 
-        batchUpdateSnapshotsRequest: snapshotData.batchUpdateSnapshotsRequest,
 
-        filterSnapshotsByStatus: snapshotData.filterSnapshotsByStatus, 
-        filterSnapshotsByCategory: snapshotData.filterSnapshotsByCategory, 
-        filterSnapshotsByTag: snapshotData.filterSnapshotsByTag, 
 
-        batchFetchSnapshotsSuccess: snapshotData.batchFetchSnapshotsSuccess, 
-        batchFetchSnapshotsFailure: snapshotData.batchFetchSnapshotsFailure, 
-        batchUpdateSnapshotsSuccess: snapshotData.batchUpdateSnapshotsSuccess,
-
-        batchUpdateSnapshotsFailure: snapshotData.batchUpdateSnapshotsFailure, 
-        handleSnapshotSuccess: snapshotData.handleSnapshotSuccess, 
         getSnapshotId: snapshotData.getSnapshotId,
 
-        compareSnapshotState: snapshotData.compareSnapshotState, 
-        payload: snapshotData.payload, 
-        dataItems: snapshotData.dataItems, 
-        newData: snapshotData.newData, 
-        getInitialState: snapshotData.getInitialState, 
+
+        getInitialState: snapshotData.getInitialState,
         getConfigOption: snapshotData.getConfigOption,
 
-        getTimestamp: snapshotData.getTimestamp, 
-        getStores: snapshotData.getStores, 
-        getData: snapshotData.getData, 
-         setData: snapshotData.setData, 
-        addData: snapshotData.addData, 
+        getTimestamp: snapshotData.getTimestamp,
+        getStores: snapshotData.getStores,
+
+
         stores: snapshotData.stores,
 
-        getStore: snapshotData.getStore, 
-        addStore: snapshotData.addStore, 
-        mapSnapshot: snapshotData.mapSnapshot, 
-        mapSnapshotWithDetails: snapshotData.mapSnapshotWithDetails, 
-        removeStore: snapshotData.removeStore, 
-        unsubscribe: snapshotData.unsubscribe, 
+        getStore: snapshotData.getStore,
+        addStore: snapshotData.addStore,
+        removeStore: snapshotData.removeStore,
+        unsubscribe: snapshotData.unsubscribe,
 
-        fetchSnapshot: snapshotData.fetchSnapshot, 
-        fetchSnapshotSuccess: snapshotData.fetchSnapshotSuccess, 
-        updateSnapshotFailure: snapshotData.updateSnapshotFailure,
-
-        fetchSnapshotFailure: snapshotData.fetchSnapshotFailure, 
-        addSnapshotFailure: snapshotData.addSnapshotFailure, 
-        configureSnapshotStore: snapshotData.configureSnapshotStore, 
-
-        updateSnapshotSuccess: snapshotData.updateSnapshotSuccess, 
-        createSnapshotFailure: snapshotData.createSnapshotFailure, 
+        updateSnapshotSuccess: snapshotData.updateSnapshotSuccess,
         createSnapshotSuccess: snapshotData.createSnapshotSuccess,
+        onInitialize: snapshotData.snapConfig!.onInitialize,
 
-        createSnapshots: snapshotData.createSnapshots, 
-        onSnapshot: snapshotData.onSnapshot, 
-        onSnapshots: snapshotData.onSnapshots, 
-        childIds: snapshotData.snapConfig.childIds, 
-        getParentId: snapshotData.snapConfig.getParentId, 
-        getChildIds: snapshotData.snapConfig.getChildIds,
+        mappedSnapshotData: snapshotData.snapConfig!.mappedSnapshotData,
 
-        addChild: snapshotData.snapConfig.addChild, 
-        removeChild: snapshotData.snapConfig.removeChild, 
-        getChildren: snapshotData.snapConfig.getChildren, 
-        hasChildren: snapshotData.snapConfig.hasChildren, 
-        isDescendantOf: snapshotData.snapConfig.isDescendantOf, 
-        getSnapshotById: snapshotData.snapConfig.getSnapshotById,
 
-        removeSubscriber: snapshotData.snapConfig.removeSubscriber,
-        onInitialize: snapshotData.snapConfig.onInitialize,
-        onError: snapshotData.snapConfig.onError,
-        taskIdToAssign: snapshotData.snapConfig.taskIdToAssign,
-        schema: snapshotData.snapConfig.schema,
-        currentCategory: snapshotData.snapConfig.currentCategory,
-        mappedSnapshotData: snapshotData.snapConfig.mappedSnapshotData,
-        
-        setCategory: snapshotData.snapConfig.setCategory,
-        applyStoreConfig: snapshotData.snapConfig.applyStoreConfig,
-        generateId: snapshotData.generateId,
-        snapshotData: snapshotData.snapConfig.snapshotData,
-        getSnapshotItems: snapshotData.snapConfig.getSnapshotItems,
-        defaultSubscribeToSnapshots: snapshotData.snapConfig.defaultSubscribeToSnapshots,
-        notify: snapshotData.notify,
-        notifySubscribers: snapshotData.notifySubscribers,
-        getAllSnapshots: snapshotData.getAllSnapshots,
-        getSubscribers: snapshotData.snapConfig.getSubscribers,
-        versionInfo: snapshotData.snapConfig.versionInfo,
-        transformSubscriber: snapshotData.snapConfig.transformSubscriber,
-        transformDelegate: snapshotData.snapConfig.transformDelegate,
-        initializedState: snapshotData.snapConfig.initializedState,
-        getAllKeys: snapshotData.snapConfig.getAllKeys,
-        getAllValues: snapshotData.snapConfig.getAllValues,
-        getAllItems: snapshotData.snapConfig.getAllItems,
-        getSnapshotEntries: snapshotData.snapConfig.getSnapshotEntries,
-        getAllSnapshotEntries: snapshotData.snapConfig.getAllSnapshotEntries,
-        
-        addDataStatus: snapshotData.snapConfig.addDataStatus,
-        removeData: snapshotData.snapConfig.removeData,
-        updateData: snapshotData.snapConfig.updateData,
 
-        updateDataTitle: snapshotData.snapConfig.updateDataTitle,
-        updateDataDescription: snapshotData.snapConfig.updateDataDescription,
-        updateDataStatus: snapshotData.snapConfig.updateDataStatus,
-        addDataSuccess: snapshotData.snapConfig.addDataSuccess,
-        getDataVersions: snapshotData.snapConfig.getDataVersions,
-        updateDataVersions: snapshotData.snapConfig.updateDataVersions,
+        snapshotData: snapshotData.snapConfig!.snapshotData,
+        getSnapshotItems: snapshotData.snapConfig!.getSnapshotItems,
 
-        getBackendVersion: snapshotData.snapConfig.getBackendVersion,
-        getFrontendVersion: snapshotData.snapConfig.getFrontendVersion,
-        fetchData: snapshotData.snapConfig.fetchData,
-        defaultSubscribeToSnapshot: snapshotData.snapConfig.defaultSubscribeToSnapshot,
-        handleSubscribeToSnapshot: snapshotData.snapConfig.handleSubscribeToSnapshot,
-        removeItem: snapshotData.snapConfig.removeItem,
-        getSnapshot: snapshotData.snapConfig.getSnapshot,
-        getSnapshotSuccess: snapshotData.snapConfig.getSnapshotSuccess,
-        setItem: snapshotData.snapConfig.setItem,
-        getItem: snapshotData.snapConfig.getItem,
-        getDataStore: snapshotData.snapConfig.getDataStore,
-        getDataStoreMap: snapshotData.snapConfig.getDataStoreMap,
-        addSnapshotSuccess: snapshotData.snapConfig.addSnapshotSuccess,
-        deepCompare: snapshotData.snapConfig.deepCompare,
-        shallowCompare: snapshotData.snapConfig.shallowCompare,
-        getDataStoreMethods: snapshotData.snapConfig.getDataStoreMethods,
-        getDelegate: snapshotData.snapConfig.getDelegate,
-        determineCategory: snapshotData.snapConfig.determineCategory,
+        initializedState: snapshotData.snapConfig!.initializedState,
 
-        determinePrefix: snapshotData.snapConfig.determinePrefix,
-        removeSnapshot: snapshotData.snapConfig.removeSnapshot,
-        addSnapshotItem: snapshotData.snapConfig.addSnapshotItem,
-        addNestedStore: snapshotData.snapConfig.addNestedStore,
-        clearSnapshots: snapshotData.snapConfig.clearSnapshots,
-        addSnapshot: snapshotData.snapConfig.addSnapshot,
+        addDataStatus: snapshotData.snapConfig!.addDataStatus,
 
+        updateDataTitle: snapshotData.snapConfig!.updateDataTitle,
+        updateDataDescription: snapshotData.snapConfig!.updateDataDescription,
+        updateDataStatus: snapshotData.snapConfig!.updateDataStatus,
+        addDataSuccess: snapshotData.snapConfig!.addDataSuccess,
+
+        defaultSubscribeToSnapshot: snapshotData.snapConfig!.defaultSubscribeToSnapshot,
+        handleSubscribeToSnapshot: snapshotData.snapConfig!.handleSubscribeToSnapshot,
+        removeItem: snapshotData.snapConfig!.removeItem,
+        getSnapshotSuccess: snapshotData.snapConfig!.getSnapshotSuccess,
+        setItem: snapshotData.snapConfig!.setItem,
+        getItem: snapshotData.snapConfig!.getItem,
+        addSnapshotSuccess: snapshotData.snapConfig!.addSnapshotSuccess,
+        getDelegate: snapshotData.snapConfig!.getDelegate,
+
+        determinePrefix: snapshotData.snapConfig!.determinePrefix,
+        addNestedStore: snapshotData.snapConfig!.addNestedStore,
       };
     });
-    
+
 
     return snapshots;
   } catch (error) {
@@ -1239,7 +1344,7 @@ const fetchSnapshotStoreData = async  <T extends Data, K extends Data>(
 };
 
 const takeSnapshot = <T extends Data, K extends Data>(
-  target: SnapshotList<T, K> | Content<T>,
+  target: SnapshotList<T, K> | Content<T, K>,
   date?: Date,
   projectType?: ProjectType,
   projectId?: string,
@@ -1482,44 +1587,109 @@ function getCurrentSnapshot<T extends Data, K extends Data>(
 }
 
 function getSnapshotContainer<T extends Data, K extends Data>(
-  snapshotId: string,
-  storeId: number
+  snapshotId: string | number | undefined,
+  storeId: number,
+  additionalHeaders?: Record<string, string>,
+  snapshotConfigProps?: SnapshotConfigProps<T, K>,
+  category?: string | symbol | Category, // Optional category
+  snapshotStore?: SnapshotStore<T, K> // Optional store to retrieve from
 ): Promise<SnapshotContainer<T, K>> {
   return new Promise(async (resolve, reject) => {
     try {
-      const data = await fetchSnapshotContainerData(snapshotId);
+      if (typeof snapshotId !== 'string') {
+        throw new Error('snapshotId must be a string');
+      }
 
-      // Organize properties in logical groups
+      if (!snapshotConfigProps) {
+        throw new Error("snapshotConfigProps is required");
+      }
+
+      const {
+        id,
+        criteria,
+        category,
+        categoryProperties,
+        subscriberId,
+        delegate,
+        snapshot,
+        events,
+        dataItems,
+        newData,
+        payload,
+        store,
+        callback,
+        storeProps,
+        endpointCategory
+      } = snapshotConfigProps
+
+      const data = snapshotApi.getSnapshotData<T, K>(snapshotId, additionalHeaders)
+
+      if (data instanceof Map && snapshot !== undefined) {
+      const snapshotConfig: Promise<SnapshotConfig<T, K>> = snapshotApi.getSnapshotConfig<T, K>(
+        id,
+        snapshotId,
+        criteria,
+        category,
+        categoryProperties,
+        subscriberId,
+        delegate,
+        snapshot,
+        data,
+        events,
+        dataItems,
+        newData,
+        payload,
+        store,
+        callback,
+        storeProps,
+        endpointCategory,
+      );
+        
       const snapshotContainer: SnapshotContainer<T, K> = {
+        ...data,
+        ...snapshotConfig,
+        content: typeof snapshotConfig.content === 'string' ? snapshotConfig.content :
+          (snapshotConfig.content as Content<T>),
+        snapshotId:
+          typeof snapshotConfig.snapshotId === 'string' ? snapshotConfig.snapshotId : 
+          (snapshotConfig.snapshotId as string),
+        
         id: data.id,
-        /**  Snapshot Data */
         data: data.data,
         items: data.items,
         config: data.config,
+        timestamp: data.timestamp,
+        currentCategory: data.currentCategory,
+
+        mappedSnapshotData: new Map<string, Snapshot<T, K>>(),
+        criteria: {},
+        snapshotCategory: undefined,
+        snapshotSubscriberId: undefined,
+        taskIdToAssign: undefined,
+        initialConfig: {},
+        removeSubscriber: () => {},
+        onInitialize: () => {},
+        onError: (error: any) => console.error(error),
+        
+        initialState: data.snapshotData?.initialState,
         isCore: data.isCore,
         storeId: data.storeId,
 
+        isExpired: data.isExpired,
 
-        criteria: data.criteria,
-        content: data.content,
-        snapshotCategory: data.snapshotCategory,
-        snapshotSubscriberId: data.snapshotSubscriberId,
-       
-
+        updateData: data.updateData,
+        removeData: data.removeData,
 
         getSnapshots: data.getSnapshots,
         getAllSnapshots: data.getAllSnapshots,
         handleSnapshotSuccess: data.handleSnapshotSuccess,
         unsubscribe: data.unsubscribe,
+        handleSnapshotFailure: data.handleSnapshotFailure,
+        getDataVersions: data.getDataVersions,
+        updateDataVersions: data.updateDataVersions,
         createSnapshots: data.createSnapshots,
 
-        initialConfig: data.initialConfig,
-        removeSubscriber: data.removeSubscriber,
-        onInitialize: data.onInitialize,
-        onError: data.onError,
-       
-        /** Snapshot Management **/
-        snapshotStore: data.snapshotStore,
+        snapshotStore: data.snapshotStore || null,
         snapshotData: data.snapshotData,
         snapConfig: data.snapConfig,
         getSnapshotData: data.getSnapshotData,
@@ -1533,9 +1703,8 @@ function getSnapshotContainer<T extends Data, K extends Data>(
         updateSnapshotFailure: data.updateSnapshotFailure,
         addSnapshotFailure: data.addSnapshotFailure,
         getSnapshotById: data.getSnapshotById,
-        getSnapshotId,
+        getSnapshotId: data.getSnapshotId,
 
-        /** Batch Operations **/
         batchTakeSnapshot: data.batchTakeSnapshot,
         batchFetchSnapshots: data.batchFetchSnapshots,
         batchTakeSnapshotsRequest: data.batchTakeSnapshotsRequest,
@@ -1545,12 +1714,10 @@ function getSnapshotContainer<T extends Data, K extends Data>(
         batchUpdateSnapshotsSuccess: data.batchUpdateSnapshotsSuccess,
         batchUpdateSnapshotsFailure: data.batchUpdateSnapshotsFailure,
 
-        /** Snapshot Filters **/
         filterSnapshotsByStatus: data.filterSnapshotsByStatus,
         filterSnapshotsByCategory: data.filterSnapshotsByCategory,
         filterSnapshotsByTag: data.filterSnapshotsByTag,
 
-        /** Store Management **/
         stores: data.stores,
         getStores: data.getStores,
         getStore: data.getStore,
@@ -1558,14 +1725,12 @@ function getSnapshotContainer<T extends Data, K extends Data>(
         removeStore: data.removeStore,
         configureSnapshotStore: data.configureSnapshotStore,
 
-        /** Data Management **/
         getData: data.getData,
         setData: data.setData,
         addData: data.addData,
         dataItems: data.dataItems,
         newData: data.newData,
 
-        /** Notification and Subscribers **/
         notify: data.notify,
         notifySubscribers: data.notifySubscribers,
         subscribers: data.subscribers,
@@ -1573,7 +1738,6 @@ function getSnapshotContainer<T extends Data, K extends Data>(
         onSnapshots: data.onSnapshots,
         events: data.events,
 
-        /** Children Management **/
         childIds: data.childIds,
         getParentId: data.getParentId,
         getChildIds: data.getChildIds,
@@ -1583,17 +1747,13 @@ function getSnapshotContainer<T extends Data, K extends Data>(
         hasChildren: data.hasChildren,
         isDescendantOf: data.isDescendantOf,
 
-        /** Utility and Miscellaneous **/
-        timestamp: data.timestamp || new Date(),
-        currentCategory: data.currentCategory || undefined,
-        mappedSnapshotData: new Map<string, Snapshot<T, K>>(),
         setSnapshotCategory: data.setSnapshotCategory || ((id: string, newCategory: string | Category) => {
           // Implementation for setting the category
         }),
 
         getSnapshotCategory: data.getSnapshotCategory || ((id: string): Category | undefined => {
           // Implementation for getting the category
-          return undefined; // Modify as needed
+          return undefined;
         }),
         compareSnapshots: data.compareSnapshots,
         compareSnapshotItems: data.compareSnapshotItems,
@@ -1604,39 +1764,116 @@ function getSnapshotContainer<T extends Data, K extends Data>(
         getTimestamp: data.getTimestamp,
         generateId: data.generateId,
 
-        /** Snapshot Mapping **/
         mapSnapshot: data.mapSnapshot,
         mapSnapshotWithDetails: data.mapSnapshotWithDetails,
 
-        /** Snapshot Function **/
         snapshot: data.snapshot || (async (
           id: string | number | undefined,
           snapshotId: number,
           snapshotData: SnapshotDataType<T, K>,
           category: symbol | string | Category | undefined,
           categoryProperties: CategoryProperties | undefined,
-          dataStoreMethods: DataStore<T, K>[],
+          dataStore: DataStore<T, K>,
+dataStoreMethods: DataStoreMethods<T, K>,
           metadata: UnifiedMetaDataOptions
         ): Promise<{ snapshot: Snapshot<T, K> }> => {
-          // Implementation for creating or fetching a snapshot
           return { snapshot: {} as Snapshot<T, K> };
         }),
       };
 
+      console.log(snapshotContainer.id);
+      console.log(snapshotContainer.mappedSnapshotData);
+      console.log(snapshotContainer.currentCategory);
+
       resolve(snapshotContainer);
+      } else {
+        // Handle other possible types, e.g., SnapshotData<T, K> or undefined
+        throw new Error("Unexpected data type returned from getSnapshotData");
+      }
     } catch (error) {
       console.error("Error retrieving SnapshotContainer:", error);
       reject(error);
     }
   });
 }
-
-// Example placeholder function to simulate fetching data
-async function fetchSnapshotContainerData(snapshotId: string): Promise<any> {
+  
+  
+  async function fetchSnapshotContainerData<T extends Data, K extends Data>(
+  snapshotId: string
+): Promise<SnapshotContainerData<T, K>> {
   // Simulate fetching data, e.g., from an API or database
+
+  const currentConfig = snapshotApi.getSnapshotStoreConfig<T, K>(snapshotId, snapshotContainer, criteria, storeId)
+  
+  if(currentConfig === null){
+    throw new Error("currentConfig is not properly configurated")
+  }
   return {
+    id: snapshotId,
+    data: {} as T, // Replace with actual data fetching logic
+    items: [] as K[], // Replace with actual data fetching logic
+    config: currentConfig, // Replace with actual config fetching logic
     timestamp: new Date(),
     currentCategory: "defaultCategory" // Example default value
+  };
+}
+
+
+
+
+
+
+function createSnapshotContainer<T extends Data, K extends Data>(
+  data: SnapshotContainerData<T, K>
+): SnapshotContainer<T, K> {
+  return {
+
+    snapshotCategory, snapshotSubscriberId, initialConfig, removeSubscriber,
+    onInitialize, onError, items, config, isExpired, subscribers, getSnapshotData, deleteSnapshot,
+
+
+
+    id: data.id,
+    mappedSnapshotData: new Map(), // Initialize as needed
+    timestamp: data.timestamp,
+    criteria: {} as CriteriaType, // Set appropriate criteria
+    currentCategory: data.currentCategory,
+    setSnapshotCategory: (id: string, newCategory: string | Category) => {
+      // Update logic here
+    },
+    getSnapshotCategory: (id: string) => {
+      // Fetch logic here
+      return undefined;
+    },
+    snapshotId: 0, // Replace with the actual snapshot ID
+    snapshot: (
+      id: string | number | undefined,
+      snapshotId: string | null,
+      snapshotData: SnapshotDataType<T, K>,
+      category: symbol | string | Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
+      callback: (snapshotStore: SnapshotStore<T, K>) => void,
+      dataStore: DataStore<T, K>,
+      dataStoreMethods: DataStoreMethods<T, K>,
+      metadata: UnifiedMetaDataOptions,
+      subscriberId: string,
+      endpointCategory: string | number,
+      storeProps: SnapshotStoreProps<T, K>,
+      snapshotConfigData: SnapshotConfig<T, K>,
+      subscription: Subscription<T, K>,
+      snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
+      snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
+    ) => {
+      // Logic to return a Snapshot
+      return {} as Snapshot<T, K>; // Placeholder
+    },
+    snapshotStore: null,
+    snapshotData: {} as SnapshotDataType<T, K>,
+    data: data.data,
+    snapshotsArray: [], // Replace with actual snapshots array if applicable
+    snapshotsObject: {}, // Replace with actual snapshots object if applicable
+
+    // Additional properties from SnapshotData and SnapshotRelationships, if needed
   };
 }
 
@@ -1751,40 +1988,43 @@ const getSnapshotStoreId = async (
   }
 };
 
-
-
-
 const getSnapshotConfig = <T extends Data, K extends Data>(
+  id: string | number,
   snapshotId: string | null,
-  snapshotContainer: SnapshotContainer<T, K>,
   criteria: CriteriaType,
   category: symbol | string | Category | undefined,
   categoryProperties: CategoryProperties | undefined,
+  subscriberId: string | undefined,
   delegate: any,
   snapshot: (
     id: string | number | undefined,
     snapshotId: string | null,
-    snapshotData: SnapshotDataType<T, K>,
+    snapshotData: SnapshotDataType<T, K>, // Type updated here
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
-    callback: (snapshotStore: SnapshotStore<T, K>) => void,
-    dataStoreMethods: DataStore<T, K>,
+    callback: (snapshotStore: SnapshotStore<T, K> | null) => void,
+    dataStore: DataStore<T, K>,
+    dataStoreMethods: DataStoreMethods<T, K>,
+    // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
     metadata: UnifiedMetaDataOptions,
     subscriberId: string, // Add subscriberId here
-    endpointCategory: string | number ,// Add endpointCategory here
+    endpointCategory: string | number,// Add endpointCategory here
     storeProps: SnapshotStoreProps<T, K>,
+    snapshotConfigData: SnapshotConfig<T, K>,
+    subscription: Subscription<T, K>,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
     snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null,
-  ) => Promise<Snapshot<T, K>>,
-    data: Map<string, Snapshot<T, K>>, // Added prop
+  ) => Promise<{ snapshot: Snapshot<T, K>; }>,
+  data: Map<string, Snapshot<T, K>>, 
   events: Record<string, CalendarManagerStoreClass<T, K>[]>, // Added prop
   dataItems: RealtimeDataItem[], // Added prop
   newData: Snapshot<T, K>, // Added prop
   payload: ConfigureSnapshotStorePayload<T, K>, // Added prop
   store: SnapshotStore<any, K>, // Added prop
-  callback: (snapshotStore: SnapshotStore<T, K>) => void, // Added prop
+  callback: (snapshot: SnapshotStore<T, K>) => void, // Added prop
   storeProps: SnapshotStoreProps<T, K>,
-  endpointCategory: string | number
+  endpointCategory: string | number,
+  snapshotContainer?: SnapshotContainer<T, K>,
 ): Promise<SnapshotConfig<T, K>> => {
   return new Promise<SnapshotConfig<T, K>>((resolve, reject) => {
     const fetchSnapshotConfig = async () => {
@@ -1823,44 +2063,55 @@ const getSnapshotConfig = <T extends Data, K extends Data>(
 
         const snapshotConfigData = response.data;
 
+        if(!snapshotContainer){
+          throw new Error("SnapshotContainer is undefined");
+        }
         // Handle the snapshot if snapshotId is not null
-        if (snapshotId !== null) {
+        if (id !== null && snapshotId !== null && snapshot !== null) {
           snapshot(
-            
+            id,
             `${snapshotId}`,
-            snapshotId,
             snapshotContainer.snapshotData ?? snapshotContainer.snapshotData,
             category,
             categoryProperties,
-            async (snapshotStore: SnapshotStore<T, K>) => {
+            async (snapshot: Snapshot<T, K> | null) => {
               // Handle the snapshotStore as needed
               const shouldUpdateState = true; // Replace with actual condition
               const shouldLog = true; // Replace with actual condition
               const shouldUpdateUI = false; // Replace with actual condition
 
-              if (shouldUpdateState) {
-                // Update the state with the snapshotStore
-                dispatch((await useSnapshotStore(addToSnapshotList, storeProps)).updateSnapshotStore(snapshotStore, snapshotId, data, events, dataItems, newData, payload, store, callback));
-              }
+              if (snapshotContainer.snapshotData && !(snapshotContainer.snapshotData instanceof Map)) {
+                const { storeId } = snapshotContainer.snapshotData;
+                
+                // Use storeId as needed
+                const snapshotStore = snapshotApi.getSnapshotStore(storeId, snapshotContainer, criteria)
+                if (shouldUpdateState) {
+                  // Update the state with the snapshotStore
+                  dispatch((await useSnapshotStore(addToSnapshotList, storeProps)).updateSnapshotStore(await snapshotStore, snapshotId, data, events, dataItems, newData, payload, store, callback));
+                }
 
-              if (shouldLog) {
-                // Log the snapshotStore data
-                console.log('Snapshot store updated:', snapshotStore);
-                // or send it to an analytics service
-                sendToAnalytics('snapshotStoreUpdated', snapshotStore);
-              }
+                if (shouldLog) {
+                  if(!snapshot){
+                    throw Error("Snapshot is null");
+                  }
+                  // Log the snapshotStore data
+                  console.log('Snapshot store updated:', snapshot);
+                  // or send it to an analytics service
+                  sendToAnalytics('snapshotStoreUpdated', {}, snapshot);
+                }
 
-              if (shouldUpdateUI) {
-                // Update the UI with the snapshotStore
-                updateUIWithSnapshotStore(snapshotStore);
+                if (shouldUpdateUI) {
+                  // Update the UI with the snapshotStore
+                  updateUIWithSnapshotStore(snapshot);
+                }
               }
             },
             {} as DataStore<T, K>,
-            snapshotContainer.metadata ?? ({} as UnifiedMetaDataOptions),
-            endpointCategory,
+            {} as UnifiedMetaDataOptions,
+            `${subscriberId}`,
+            `${endpointCategory}`,
             storeProps,
-            snapshotConfigData.snapshotStoreConfig ?? undefined,// Use the snapshotStoreConfig from the response or undefined if null
-            snapshotContainer
+            snapshotConfigData,// Use the snapshotStoreConfig from the response or undefined if null
           );
         }
 
@@ -2076,7 +2327,7 @@ const getSnapshotStore = <T extends Data, K extends Data>(
 
 //     // Parse the response data
 //     const data: Snapshot<T, K>[] = await response.json();
-    
+
 //     // Return the snapshots
 //     return data;
 
@@ -2089,12 +2340,12 @@ const getSnapshotStore = <T extends Data, K extends Data>(
 
 
 export {
-  addSnapshot,
-  addSnapshotSuccess, apiCall, createSnapshot, extractCriteria, fetchAllSnapshots, fetchSnapshotById,
-  fetchSnapshotIds, fetchSnapshotStoreData, findSnapshotsBySubscriber, findSubscriberById, getCurrentSnapshot, getSnapshot, getSnapshotConfig, getSnapshotConfigData, getSnapshotContainer, getSnapshotCriteria, getSnapshotData,
-  getSnapshotId, getSnapshots, getSnapshotStore,
-  getSnapshotStoreConfig, getSnapshotStoreConfigData, getSnapshotStoreId, getSortedList,
-  handleOtherApplicationLogic, handleOtherStatusCodes, handleSpecificStatusCode,
-  mergeSnapshots, removeSnapshot, saveSnapshotToDatabase, snapshotContainer, takeSnapshot
+    addSnapshot,
+    addSnapshotSuccess, apiCall, createSnapshot, extractCriteria, fetchAllSnapshots, fetchSnapshotById,
+    fetchSnapshotIds, fetchSnapshotStoreData, findSnapshotsBySubscriber, findSubscriberById, getCurrentSnapshot, getSnapshot, getSnapshotConfig, getSnapshotConfigData, getSnapshotContainer, getSnapshotCriteria, getSnapshotData,
+    getSnapshotId, getSnapshots, getSnapshotStore,
+    getSnapshotStoreConfig, getSnapshotStoreConfigData, getSnapshotStoreId, getSortedList,
+    handleOtherApplicationLogic, handleOtherStatusCodes, handleSpecificStatusCode,
+    mergeSnapshots, removeSnapshot, saveSnapshotToDatabase, snapshotContainer, takeSnapshot
 };
 

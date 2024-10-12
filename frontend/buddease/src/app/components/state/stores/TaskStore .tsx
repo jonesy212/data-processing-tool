@@ -6,7 +6,7 @@ import { title } from 'process';
 import { useState } from "react";
 import FilterTasksRequest from "../../../pages/searchs/FilterTasksRequest";
 import useApiManager from "../../hooks/dynamicHooks/useApiManager";
-import useSnapshotManager from "../../hooks/useSnapshotManager";
+import {useSnapshotManager} from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { PriorityTypeEnum, TaskStatus } from "../../models/data/StatusType";
 import { Task, tasksDataSource } from "../../models/tasks/Task";

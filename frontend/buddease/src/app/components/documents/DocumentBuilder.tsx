@@ -78,6 +78,7 @@ import {
 import { ToolbarOptionsComponent, ToolbarOptionsProps } from "./ToolbarOptions";
 import { ResearchReport, TechnicalReport } from "./documentation/report/Report";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
+import { TagsRecord } from "../snapshots";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 
@@ -92,12 +93,14 @@ const checksum = computeChecksum(versionData);
 type ContentStructuredMetadata = StructuredMetadata & ContentState;
 // DocumentData.tsx
 
-export interface DocumentData extends DocumentBase, CommonData, DatasetModel {
+export interface DocumentData<T extends Data> extends DocumentBase<T>, 
+CommonData<T>, 
+DatasetModel<T> {
   id: string | number;
   _id: string;
   title: string;
   content: string;
-  documents: WritableDraft<DocumentObject>[];
+  documents: WritableDraft<DocumentObject<T>>[];
   permissions: DocumentPermissions | undefined;
   topics?: string[] | undefined;
   highlights?: string[] | undefined;
@@ -151,7 +154,7 @@ export interface DocumentData extends DocumentBase, CommonData, DatasetModel {
   versionData: VersionData | undefined;
   visibility: AllTypes;
   url?: string;
-  updatedDocument?: DocumentData;
+  updatedDocument?: DocumentData<T>;
   documentSize: DocumentSize;
   lastModifiedDate: ModifiedDate | undefined;
   lastModifiedBy: string;
@@ -162,8 +165,8 @@ export interface DocumentData extends DocumentBase, CommonData, DatasetModel {
   createdByRenamed: string | undefined;
   createdDate: string | Date | undefined
   documentType: string | DocumentTypeEnum;
-  documentData?: DocumentData;
-  document: DocumentObject | undefined;
+  documentData?: DocumentData<T>;
+  document: DocumentObject<T> | undefined;
   _rev: string | undefined;
   _attachments?: Record<string, any> | undefined;
   _links?: Record<string, any> | undefined;
@@ -203,6 +206,7 @@ interface RevisionOptions {
   enabled: boolean;
   author: string;
   dataFormat: string;
+  allow: boolean;
 }
 
 // Now, we can use RevisionOptions as the type for revisions
@@ -210,6 +214,7 @@ const defaultRevisionOptions: RevisionOptions = {
   enabled: true,
   author: "default-author",
   dataFormat: "DD-MM-YYYY",
+  allow: false,
 };
 
 // Define a custom type/interface that extends ProjectPhaseTypeEnum and includes additional properties
@@ -330,7 +335,7 @@ const initialOptions: DocumentOptions = {
   highlightColor: "",
   customSettings: undefined,
   documents: [],
-  includeType: "all",
+  includeType: { enabled: false,  format: "all" },
   footnote: false,
   defaultZoomLevel: 0,
   customProperties: undefined,
@@ -364,7 +369,7 @@ const initialOptions: DocumentOptions = {
     },
   },
   setDocumentPhase: (
-    phase: string | Phase | undefined,
+    phase: string | Phase<T>| undefined,
     phaseType: DocumentPhaseTypeEnum
   ) => {
     return { phase, phaseType };
@@ -450,6 +455,12 @@ const getMetadataForContentState = (
 ): StructuredMetadata => {
   // Replace this with your actual logic to extract or retrieve metadata based on contentState
   return {
+    description: "",
+    apiEndpoint: "",
+    apiKey: "",
+    timeout: "",
+   
+
     metadataEntries: {
       fileOrFolderId1: {
         originalPath: "path1",
@@ -458,7 +469,7 @@ const getMetadataForContentState = (
         timestamp: new Date(),
         fileType: "fileType1",
         title: "title1",
-        description: "description1",
+        description: "description2",
         keywords: ["keyword1", "keyword2"],
         authors: ["author1", "author2"],
         contributors: ["contributor1", "contributor2"],
@@ -505,13 +516,13 @@ interface ThunkAPI {
 export const saveDocument = createAsyncThunk(
   'document/saveDocument',
   async (
-    { documentData, content }: { documentData: DocumentData; content: string }, 
+    { documentData, content, }: { documentData: DocumentData; content: string }, 
     { rejectWithValue }: ThunkAPI
   ) => {
     try {
       // API call to save the document
       const response = await saveDocumentToDatabase(documentData, content);
-      return response;
+      return { success: true, data: response };
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -1107,7 +1118,7 @@ const documentBuilderProps: DocumentBuilderProps = {
   _routing_values_as_array_of_objects_with_key_and_value: [],
   _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
   filePathOrUrl: "",
-  uploadedBy: 0,
+  uploadedBy: '',
   uploadedAt: "",
   tagsOrCategories: "",
   format: "",
@@ -1296,7 +1307,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 
       // Permissions & Access Control
       permissions: undefined, // Permissions related to the document
-      uploadedBy: 0, // ID of the user who uploaded the document
+      uploadedBy: '', // ID of the user who uploaded the document
       uploadedByTeamId: null, // ID of the team that uploaded the document
       uploadedByTeam: null, // Team that uploaded the document
 
@@ -1344,7 +1355,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       updatedBy: "",
       selectedDocument: null,
       filePathOrUrl: "",
-      uploadedBy: 0,
+      uploadedBy: '',
       tagsOrCategories: "",
       format: "",
       uploadedByTeamId: null,

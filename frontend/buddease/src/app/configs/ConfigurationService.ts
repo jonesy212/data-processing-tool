@@ -19,6 +19,7 @@ import userSettings from "./UserSettings";
 import { VersionHistory } from '../components/versions/VersionData';
 import CalendarManagerStoreClass from '../components/state/stores/CalendarEvent';
 import { K, T } from '../components/models/data/dataStoreMethods';
+import { EventRecord } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
 
 
 interface BaseRetryConfig {
@@ -33,7 +34,7 @@ interface BaseCacheConfig {
 
 interface BaseMetadataConfig {
   enableSnapshot?: boolean;
-  eventRecords?: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
+  eventRecords?: EventRecord<T, K>[] | []
   
 }
 

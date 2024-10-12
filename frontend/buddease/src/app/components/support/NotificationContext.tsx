@@ -32,7 +32,8 @@ export enum NotificationTypeEnum {
   ContentItem = "ContentItem",
   CouponCode = "CouponCode",
   CreationSuccess = "CreationSuccess",
-
+  CacheSuccess = "CacheSuccess",
+  CacheError = "CacheError",
   CustomNotification1 = "CustomNotification1",
   CustomNotification2 = "CustomNotification2",
   DataLimitApproaching = "DataLimitApproaching",

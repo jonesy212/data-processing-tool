@@ -4,7 +4,7 @@ import { IHydrateResult } from "mobx-persist";
 import { FC } from "react";
 import { DayOfWeekProps } from "../calendar/DayOfWeek";
 import { Month } from "../calendar/Month";
-import { CreateSnapshotsPayload, FetchSnapshotPayload } from "../database/Payload";
+import { CreateSnapshotsPayload } from "../database/Payload";
 import { Attachment } from "../documents/Attachment/attachment";
 import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
@@ -21,7 +21,7 @@ import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ 
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Callback, SnapshotConfig, SnapshotData, SnapshotItem, SnapshotStoreConfig, SnapshotWithCriteria, SubscriberCollection, TagsRecord } from "../snapshots";
 import { LocalStorageSnapshotStore, Payload, Snapshot, Snapshots, SnapshotsArray, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
-import { ConfigureSnapshotStorePayload, T } from "../snapshots/SnapshotConfig";
+import { ConfigureSnapshotStorePayload } from "../snapshots/SnapshotConfig";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { CustomComment } from "../state/redux/slices/BlogSlice";
 import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
@@ -40,9 +40,9 @@ export interface Todo {
   done: boolean;
   status?: StatusType;
   priorityStatus?: PriorityTypeEnum | undefined;
-  todos: Todo[];
+  todos: Todo<T>[];
   title: string;
-  selectedTodo?: Todo;
+  selectedTodo?: Todo<T>;
   progress?: Progress;
   description: string;
   dueDate: Date | null | undefined;
@@ -62,10 +62,10 @@ export interface Todo {
   elapsedTime?: number;
   timeEstimate?: number;
   timeSpent?: number;
-  dependencies?: Todo[];
+  dependencies?: Todo<T>[];
   recurring?: null | undefined;
-  // subtasks?: Todo[];
-  entities?: Todo[];
+  // subtasks?: Todo<T>[];
+  entities?: Todo<T>[];
   projectId?: string;
   milestoneId?: string;
   phaseId?: string;
@@ -77,8 +77,7 @@ export interface Todo {
   createdAt?: Date;
   updatedAt?: Date;
   isActive?: boolean;
-  tags?: TagsRecord
-
+  tags?: TagsRecord | string[] | undefined; 
 
   ideas?: Idea[] 
   videoUrl?: string
@@ -130,10 +129,10 @@ export interface Todo {
 }
 
 export interface TodoManagerState<T extends Data, K extends Data> {
-  entities: Record<string, Todo>;
+  entities: Record<string, Todo<T>>;
 }
 
-class TodoImpl<T extends Todo, K extends Todo> implements Todo {
+class TodoImpl<T extends Todo<T>, K extends Todo<T>> implements Todo<T> {
   _id: string = "";
   id: string = "";
   category?: string = ""
@@ -150,7 +149,7 @@ class TodoImpl<T extends Todo, K extends Todo> implements Todo {
   elapsedTime?: number | undefined;
   timeEstimate?: number | undefined;
   timeSpent?: number | undefined;
-  dependencies?: Todo[] | undefined;
+  dependencies?: Todo<T>[] | undefined;
   recurring?: null | undefined;
   projectId?: string | undefined;
   milestoneId?: string | undefined;
@@ -165,7 +164,7 @@ class TodoImpl<T extends Todo, K extends Todo> implements Todo {
   done: boolean = false;
   priorityStatus?: PriorityTypeEnum | undefined;
   text?: string
-  todos: Todo[] = [];
+  todos: Todo<T>[] = [];
   description: string = "";
   dueDate: Date | null | undefined = null;
   priority: PriorityTypeEnum | undefined = undefined;
@@ -181,7 +180,7 @@ class TodoImpl<T extends Todo, K extends Todo> implements Todo {
   attachments: Attachment[] = [];
   subtasks: TodoImpl<T, K>[] = [];
 
-  entities: Todo[] = [];
+  entities: Todo<T>[] = [];
 
   isDeleted: boolean = false;
   isArchived: boolean = false;

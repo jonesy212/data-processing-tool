@@ -147,7 +147,7 @@ interface Team extends Data {
     previousTeam: Team;
     reassignmentDate: Date;
   }[];
-  assignProject(team: Team, project: Project): void;
+  assignProject(team: Team, project: Project, assignedDate: Date): void;
   reassignProject(
     team: Team,
     project: Project,

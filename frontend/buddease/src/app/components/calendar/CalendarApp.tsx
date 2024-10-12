@@ -20,7 +20,7 @@ import {
   useDataStore,
 } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Project, ProjectType } from "../projects/Project";
-import { SnapshotContainer, SnapshotWithCriteria } from "../snapshots";
+import { SnapshotContainer, SnapshotData, SnapshotWithCriteria } from "../snapshots";
 import {
   Snapshot,
   SnapshotsArray,
@@ -222,8 +222,7 @@ const CalendarApp = async <T extends Data, K extends Data>() => {
     getBackendVersion: () => Promise.resolve(""),
     getFrontendVersion: () => Promise.resolve(""),
     fetchData: (id: number) => Promise.resolve({} as SnapshotStore<T, K>),
-
-    getItem: (key: string): Promise<Snapshot<T, K> | undefined> => {
+    getItem: (key:  string): Promise<Snapshot<T, K> | undefined> => {
       return new Promise((resolve, reject) => {
         if (storage) {
           const item = storage.getItem(key);

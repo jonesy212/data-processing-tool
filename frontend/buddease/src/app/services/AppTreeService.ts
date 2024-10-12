@@ -1,12 +1,14 @@
+import { fetchUserIdsFromDatabase } from "../api/ApiDatabase";
 import { getUserData, getUsersData } from "../api/UsersApi";
-import { fetchUserIdsFromDatabase } from "../api/DatabaseApi"; // Example function to fetch user IDs
+import { useTaskManagerStore } from "../components/state/stores/TaskStore ";
 
 class AppTreeService {
   // Function to fetch user IDs from the database
   static async getUserIds(): Promise<string[]> {
     try {
+      const taskId = useTaskManagerStore().taskId
       // Fetch user IDs from the database
-      const userIds = await fetchUserIdsFromDatabase();
+      const userIds = await fetchUserIdsFromDatabase(String(taskId));
       return userIds;
     } catch (error) {
       console.error("Error fetching user IDs:", error);

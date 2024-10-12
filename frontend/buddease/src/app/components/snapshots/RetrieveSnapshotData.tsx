@@ -5,6 +5,7 @@ import { SnapshotData } from './SnapshotData';
 import { RetrievedSnapshot } from '@/app/utils/retrieveSnapshotData';
 import axiosInstance from '../security/csrfToken';
 import { Data } from '../models/data/Data';
+import SnapshotStoreComponent from './SnapshotStoreComponent';
 
 
 // // Define the API endpoint for retrieving snapshot data
@@ -22,7 +23,7 @@ interface SnapshotDataResponse<T extends Data,K extends Data> extends Snapshot<a
 }
 
 // Define the function to retrieve snapshot data
-export const retrieveSnapshotData = (): Promise<Snapshot<SnapshotDataResponse<T, K>> | null> => {
+export const retrieveSnapshotData = <T extends Data, K extends Data>(): Promise<Snapshot<SnapshotDataResponse<T, K>> | null> => {
   return new Promise(async (resolve, reject) => {
     // Define a function to convert RetrievedSnapshot<SnapshotDataResponse> to SnapshotStore<Snapshot<Data>>
     const convertToSnapshotStore = async (retrievedSnapshot: RetrievedSnapshot<SnapshotDataResponse, any>) => {
@@ -205,7 +206,7 @@ export const retrieveSnapshotData = (): Promise<Snapshot<SnapshotDataResponse<T,
           batchUpdateSnapshotsFailure: response.data.batchUpdateSnapshotsFailure,
           batchTakeSnapshot: response.data.batchTakeSnapshot,
           handleSnapshotSuccess: response.data.handleSnapshotSuccess,
-          [Symbol.iterator]: function* (): IterableIterator<Snapshot<SnapshotDataResponse>> {
+          [Symbol.iterator]: function* (): IterableIterator<Snapshot<SnapshotDataResponse<T, K>>> {
             yield this;
           },
         };

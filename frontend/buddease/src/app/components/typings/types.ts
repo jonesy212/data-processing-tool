@@ -16,15 +16,53 @@ import { TaskManagerStore } from "../state/stores/TaskStore ";
 import { TodoManagerStore } from "../state/stores/TodoStore";
 import { TrackerStore } from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
+import { K, T } from "../models/data/dataStoreMethods";
+import { Snapshot, SnapshotStoreUnion } from "../snapshots";
+import SnapshotStore from "../snapshots/SnapshotStore";
+import { User, UserData } from "../users/User";
+import { Settings } from "../state/stores/SettingsStore";
+
+
+interface BaseResponseType {
+  calendarEvents: CalendarEvent[];
+  todos: Todo[];
+  tasks: Task[];
+  snapshotStores: SnapshotStore<SnapshotStoreUnion<T>, K>[];
+  currentPhase: Phase | null;
+  comment: string;
+  securityStamp?: string | null | undefined
+  
+
+    // Add any other shared properties
+}
+
+
+interface YourSettingsResponseType extends Settings, YourResponseType
+    //, 
+// Omit<YourResponseType, 'calendarEvents' | 'todos' | 'tasks' | 'snapshotStores'> 
+{
+    // Additional properties specific to YourSettingsResponseType
+    // calendarEvents: CalendarEventType[];
+    // todos: TodoType[];
+    // tasks: TaskType[];
+    // snapshotStores: SnapshotStoreType[];
+}
+
+
+type UserDataResponseType = User & BaseResponseType & YourSettingsResponseType
+
+
 
 // Define the structure of YourResponseType based on the actual response from the backend
-interface YourResponseType extends DataWithComment,SearchNotesResponse {
+interface YourResponseType extends BaseResponseType, DataWithComment, SearchNotesResponse {
+  id?: string;
   forEach?: (arg0: (notification: import("../support/NofiticationsSlice").NotificationData) => void) => void;
   length?: number;
-
+  // pageNumber: number
   calendarEvents: CalendarEvent[]; // Assuming CalendarEvent is a type/interface for calendar events
   todos: Todo[]; // Assuming Todo is a type/interface for todos
   tasks: Task[]; // Assuming Task is a type/interface for tasks
+  snapshotStores: SnapshotStore<SnapshotStoreUnion<T>, K>[]
   currentPhase: Phase | null; // Assuming a string representing the current project phase
   comment: string; // Additional comment field
 
@@ -40,7 +78,6 @@ interface YourResponseType extends DataWithComment,SearchNotesResponse {
   endpoints: NestedEndpoints;
   highlights: HighlightEvent[];
   data?: {
-   
     id: number;
     projectName: Project["name"];
     description: Project["description"];
@@ -70,4 +107,4 @@ interface YourResponseType extends DataWithComment,SearchNotesResponse {
   // Add other properties if necessary
 }
 
-export type { YourResponseType };
+export type { YourResponseType, BaseResponseType, UserDataResponseType, YourSettingsResponseType };

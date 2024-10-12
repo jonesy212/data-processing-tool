@@ -1,6 +1,7 @@
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
+import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
 import CalendarEvent from "../state/stores/CalendarEvent";
 import { NotificationType } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
@@ -10,6 +11,7 @@ import { CustomSnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 
 // // SnapshotStoreSubset.ts
 interface SnapshotStoreSubset<T extends Data, K extends Data> {
@@ -20,7 +22,10 @@ interface SnapshotStoreSubset<T extends Data, K extends Data> {
   addSnapshot: (snapshot: Omit<Snapshot<T, K>, "id">, subscribers: Subscriber<T, K>[]) => void;
 
   // Handles snapshot configuration with a snapshot and a list of configurations.
-  onSnapshot: (snapshot: Snapshot<T, K>, config: SnapshotStoreConfig<T, K>[]) => void;
+  onSnapshot: (snapshot: Snapshot<T, K>,
+    config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[]
+      
+  ) => void;
 
   // Called when a snapshot is successfully added.
   addSnapshotSuccess: (snapshot: Snapshot<T, K>, subscribers: Subscriber<T, K>[]) => void;
@@ -29,12 +34,12 @@ interface SnapshotStoreSubset<T extends Data, K extends Data> {
   updateSnapshot: (
     snapshotId: string,
     data: SnapshotStore<T, K>,
-    events: Record<string, CalendarEvent<T, K>[]>,
+    events: Record<string, CalendarManagerStoreClass<T, K>[]>,
     snapshotStore: SnapshotStore<T, K>,
     dataItems: RealtimeDataItem[],
-    newData: T,
+    newData: T | Data,
     payload: UpdateSnapshotPayload<T>
-  ) => void;
+  ) => Promise<{ snapshot: SnapshotStore<T, K>[] }>;
 
   // Removes a snapshot by ID.
   removeSnapshot: (snapshotId: string) => void;

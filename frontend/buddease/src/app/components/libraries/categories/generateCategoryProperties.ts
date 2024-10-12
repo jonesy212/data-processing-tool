@@ -2,6 +2,8 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { BaseData } from "../../models/data/Data";
 import { Snapshot } from "../../snapshots";
 import { CategoryKeys } from "./CategoryManager";
+import SnapshotStore from "../../snapshots/SnapshotStore";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 
 
 type CategoryIdentifier = string | symbol;
@@ -180,6 +182,29 @@ function getOrSetCategoryForSnapshot<T extends BaseData, K extends BaseData>(
   return snapshot.categoryProperties;
 }
 
-export {generateCategoryProperties, getOrSetCategoryForSnapshot, getCategoryLabelForSnapshot, isCategoryProperties};
+
+
+
+// Update the logic to handle ID assignment and verification
+function generateOrVerifySnapshotId<T extends BaseData, K extends BaseData>(
+  id: string | number | undefined,
+  snapshotData: SnapshotStore<T, K>,
+  category: Category
+): string {
+  if (typeof id === 'number') {
+    // Convert number to string
+    return id.toString();
+  } else if (id === undefined) {
+    // Provide a default string value based on category or label
+    const categoryLabel = getCategoryLabelForSnapshot(category.name) || 'default-id';
+    return UniqueIDGenerator.generateSnapshotIDWithCategory(categoryLabel);
+  } else {
+    // Return the id if it's already a string
+    return id;
+  }
+}
+
+
+export {generateCategoryProperties, getOrSetCategoryForSnapshot, getCategoryLabelForSnapshot, isCategoryProperties, generateOrVerifySnapshotId};
 
 export type {Category, CategoryIdentifier};

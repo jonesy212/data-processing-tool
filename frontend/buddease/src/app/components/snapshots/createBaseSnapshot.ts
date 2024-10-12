@@ -521,7 +521,7 @@ function createBaseSnapshot<T extends Data, K extends Data>(
                 setItem: function (key: T, value: T): Promise<void> {
                   throw new Error("Function not implemented.");
                 },
-                getDataStore: (): Promise<DataStore<T, K>> => {
+                getDataStore: (): Promise<InitializedDataStore> => {
                   throw new Error("Function not implemented.");
                 },
                 addSnapshotSuccess: function (snapshot: BaseData, subscribers: Subscriber<T, K>[]): void {
@@ -1059,7 +1059,7 @@ function createBaseSnapshot<T extends Data, K extends Data>(
                 createSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<BaseData, BaseData>, snapshot: Snapshot<BaseData, BaseData>, payload: { error: Error; }): void | null {
                   throw new Error("Function not implemented.");
                 },
-                createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<BaseData, BaseData>, snapshotManager: SnapshotManager<BaseData, BaseData>, payload: CreateSnapshotsPayload<BaseData, BaseData>, callback: (snapshots: Snapshot<BaseData, BaseData>[]) => void | null, snapshotDataConfig?: SnapshotConfig<BaseData, BaseData>[] | undefined, category?: string | CategoryProperties): Snapshot<BaseData, BaseData>[] | null {
+                createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<BaseData, BaseData>, snapshotManager: SnapshotManager<BaseData, BaseData>, payload: CreateSnapshotsPayload<BaseData, BaseData>, callback: (snapshots: Snapshot<BaseData, BaseData>[]) => void | null, snapshotDataConfig?: SnapshotConfig<BaseData, BaseData>[] | undefined, category?: string | symbol | Category): Snapshot<BaseData, BaseData>[] | null {
                   throw new Error("Function not implemented.");
                 },
                 onSnapshot: function (snapshotId: string, snapshot: Snapshot<BaseData, BaseData>, type: string, event: Event, callback: (snapshot: Snapshot<BaseData, BaseData>) => void): void {
@@ -1484,7 +1484,7 @@ function createBaseSnapshot<T extends Data, K extends Data>(
                   createSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<BaseData, BaseData>, snapshot: Snapshot<BaseData, BaseData>, payload: { error: Error; }): void | null {
                     throw new Error("Function not implemented.");
                   },
-                  createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<BaseData, BaseData>, snapshotManager: SnapshotManager<BaseData, BaseData>, payload: CreateSnapshotsPayload<BaseData, BaseData>, callback: (snapshots: Snapshot<BaseData, BaseData>[]) => void | null, snapshotDataConfig?: SnapshotConfig<BaseData, BaseData>[] | undefined, category?: string | CategoryProperties): Snapshot<BaseData, BaseData>[] | null {
+                  createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<BaseData, BaseData>, snapshotManager: SnapshotManager<BaseData, BaseData>, payload: CreateSnapshotsPayload<BaseData, BaseData>, callback: (snapshots: Snapshot<BaseData, BaseData>[]) => void | null, snapshotDataConfig?: SnapshotConfig<BaseData, BaseData>[] | undefined, category?: string | symbol | Category): Snapshot<BaseData, BaseData>[] | null {
                     throw new Error("Function not implemented.");
                   },
                   onSnapshot: function (snapshotId: string, snapshot: Snapshot<BaseData, BaseData>, type: string, event: Event, callback: (snapshot: Snapshot<BaseData, BaseData>) => void): void {

@@ -22,6 +22,4 @@ export default class SettingsAPI {
             throw error;
         }
     }
-
-    // Add other settings-related methods as needed
 }

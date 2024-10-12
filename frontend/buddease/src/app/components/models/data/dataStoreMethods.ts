@@ -7,7 +7,7 @@ import { DataStore } from "../../projects/DataAnalysisPhase/DataProcessing/DataS
 import { SnapshotConfig, SnapshotItem, SnapshotOperationType } from '../../snapshots';
 import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
 
-import { SnapshotContainer } from "../../snapshots/SnapshotContainer";
+import { SnapshotContainer, SnapshotDataType } from "../../snapshots/SnapshotContainer";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "../../snapshots/SnapshotWithCriteria";
@@ -1224,13 +1224,13 @@ updateDelegate: function (config: SnapshotStoreConfig<Data, any>[]): Promise<Sna
   throw new Error("Function not implemented.");
 },
 getSnapshot: function (
-  snapshot: (id: string) =>
+  snapshot: (id: string | number) =>
     | Promise<{
       snapshotId: number;
-        snapshotData: T;
+        snapshotData: SnapshotDataType<T, K>;
         category: Category | undefined;
-        categoryProperties: CategoryProperties;
-        dataStoreMethods: DataStore<T, K>;
+        categoryProperties: CategoryProperties | undefined;
+        dataStoreMethods: DataStore<T, K> | null;
         timestamp: string | number | Date | undefined;
         id: string | number | undefined;
         snapshot: Snapshot<T, K>;

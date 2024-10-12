@@ -19,6 +19,10 @@ export interface CryptoData {
 
 // Define a generic interface for parsed data to handle various data types
 export interface ParsedData<T extends object> {
+  id: "",
+ filter: "",
+//  appName: "",
+
   data: T; // Generic field to hold different types of data
   pageNumber: number; // Optional field to store page number from PDF
   pdfContent?: string; // Optional field to store PDF content
@@ -47,6 +51,8 @@ export const parseData = <T extends object>(
       pageNumber,
       pdfContent: '',
       docxContent: '',
+      id: '', 
+      filter: ''
     };
 
     // Push the parsed item to the parsed data array

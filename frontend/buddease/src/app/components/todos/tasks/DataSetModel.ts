@@ -2,6 +2,8 @@
 import { ModifiedDate } from "../../documents/DocType";
 import { DocumentData } from "../../documents/DocumentBuilder";
 import { DocumentPath } from "../../documents/DocumentGenerator";
+import { Content } from "../../models/content/AddContent";
+import { BaseData, Data } from "../../models/data/Data";
 import { Team } from "../../models/teams/Team";
 import { Tag } from "../../models/tracker/Tag";
 import { TagsRecord } from "../../snapshots";
@@ -10,12 +12,12 @@ import { DocumentObject } from "../../state/redux/slices/DocumentSlice";
 import { DocumentBase } from "../../state/stores/DocumentStore";
 import { AllTypes } from "../../typings/PropTypes";
 
-interface DatasetModel extends DocumentBase {
+interface DatasetModel<T extends Data> extends DocumentBase<T> {
   id: string | number;
   name: string | undefined;
   description?: string | null;
   filePathOrUrl: string;
-  uploadedBy: number; // Assuming this is the user ID
+  uploadedBy: string; // Assuming this is the user ID
   uploadedAt?: string; // Assuming the date is sent as a string
   tagsOrCategories: string; // Comma-separated list or JSON array
   format: string;
@@ -32,24 +34,26 @@ interface DatasetModel extends DocumentBase {
   lastModifiedByTeamId?: number | null; // Assuming this is the team ID
   lastModifiedByTeam?: Team | null;
   filePath?: DocumentPath;
-  tags?: TagsRecord
+  tags?: TagsRecord | string[] | undefined; 
   createdBy: string | undefined;
   updatedBy: string;
-  documents: WritableDraft<DocumentObject>[];
+  documents: WritableDraft<DocumentObject<T>>[];
   createdAt: string | Date | undefined;
   updatedAt?: string | Date; 
-  selectedDocument: DocumentData | null;
-  selectedDocuments?: DocumentData[];
+  selectedDocument: DocumentData<T> | null;
+  selectedDocuments?: DocumentData<T>[];
+  content: Content<T, BaseData>
   // Optional: Add other relationships as needed
 }
 
 // Example usage:
-const dataset: DatasetModel = {
+const dataset: DatasetModel<Data> = {
   id: 1,
   name: "Example Dataset",
+  title: "Example Dataset",
   description: "An example dataset",
   filePathOrUrl: "/datasets/example.csv",
-  uploadedBy: 1,
+  uploadedBy: '1',
   uploadedAt: "2023-01-01T12:00:00Z",
   tagsOrCategories: "tag1, tag2",
   format: "csv",
@@ -70,8 +74,18 @@ const dataset: DatasetModel = {
   all: null,
   documents: [],
   createdAt: undefined,
-  title: "",
-  content: ""
+  content: {
+    id: undefined,
+    title: "",
+    description: "",
+    subscriberId: "",
+    category: undefined,
+    categoryProperties: undefined,
+    timestamp: "",
+    length: 0,
+    items: [],
+    data: undefined
+  }
 };
 
 export { dataset };

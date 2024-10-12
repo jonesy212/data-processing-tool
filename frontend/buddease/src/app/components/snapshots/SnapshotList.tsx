@@ -7,13 +7,15 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Label } from "../projects/branding/BrandingSettings";
 import { User } from "../users/User";
 import { Category } from "../libraries/categories/generateCategoryProperties";
+import { ContentItem } from "../cards/DummyCardLoader";
  
 
-interface SnapshotItem<T extends Data, K extends Data> extends  Snapshot<T, K> {
+interface SnapshotItem<T extends Data, K extends Data> extends Snapshot<T, K> {
   message?: string | undefined;
-  content?: string | Content<T>;
-  data: T | Map<string, Snapshot<T, K>> | null | undefined;
+  itemContent?: ContentItem; 
+  data: T | Map<string, Snapshot<T, K>> | null | undefined; // Data associated with the snapshot
 }
+
 
 class SnapshotList<T extends Data, K extends Data> {
   private snapshots: SnapshotItem<T, K>[];

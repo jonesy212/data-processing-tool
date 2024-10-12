@@ -15,7 +15,7 @@ import { TagsRecord } from '../components/snapshots';
 
 // Define interfaces for metadata structures
 interface StructuredMetadata extends BaseConfig {
-  description: string; // Must match BaseMetaDataOptions
+  description: string | undefined; // Must match BaseMetaDataOptions
   metadataEntries: {
     [fileOrFolderId: string]: {
       originalPath: string;
@@ -24,6 +24,7 @@ interface StructuredMetadata extends BaseConfig {
       timestamp: Date | undefined;
       fileType: string;
       title: string;
+      description: string;
       keywords: string[];
       authors: string[];
       contributors: string[];
@@ -36,17 +37,16 @@ interface StructuredMetadata extends BaseConfig {
   };
 }
 
-
 interface VideoMetadata {
   title: string;
-  url: string
+  url: string;
   duration: number;
   resolution: string;
   sizeInBytes: number;
   format: string;
   uploadDate: Date;
   uploader: string;
-  tags?: TagsRecord | string[] | undefined; 
+  tags?: TagsRecord | string[] | undefined;
   categories: string[];
   language: LanguageEnum;
   location: string;
@@ -55,7 +55,6 @@ interface VideoMetadata {
   comments: number;
   
   data: Data; // Assuming Data is a custom data type
-  
 }
 
 interface ProjectMetadata {
@@ -63,20 +62,17 @@ interface ProjectMetadata {
   endDate: Date;
   budget: number;
   status: string;
-  description: string;
+  description: string | undefined;
   teamMembers: string[];
   tasks: string[];
   milestones: string[];
   videos: VideoMetadata[];
 }
 
-
-
 function transformProjectToStructured(projectMetadata: ProjectMetadata): StructuredMetadata {
   // Perform transformation here
   return {} as StructuredMetadata;
 }
-
 
 const projectMetadata: ProjectMetadata = {
   startDate: new Date(),
@@ -90,14 +86,10 @@ const projectMetadata: ProjectMetadata = {
   videos: []
 };
 
-
-
 // Define function to get structure metadata path
 const getStructureMetadataPath = (filename: string): string => {
-  // Assuming __dirname is defined in your environment
   return path.join(__dirname, filename);
 };
-
 
 // Define the initial state for undo and redo operations
 const initialUndoRedoState = {
@@ -112,7 +104,6 @@ const useUndoRedo = <T>(initialState: T) => {
   const [history, setHistory] = useState(initialUndoRedoState);
 
   const undo = () => {
-    // Move the present state to the future
     const { past, present, future } = history;
     if (past.length === 0) return;
 
@@ -129,7 +120,6 @@ const useUndoRedo = <T>(initialState: T) => {
   };
 
   const redo = () => {
-    // Move the present state to the past
     const { past, present, future } = history;
     if (future.length === 0) return;
 
@@ -148,123 +138,6 @@ const useUndoRedo = <T>(initialState: T) => {
   return { state, setState, undo, redo };
 };
 
-
-// Example usage
-const initialState: StructuredMetadata = {
-  name: 'metadata',
-  description: 'Metadata description',
-  metadataEntries: {},
-  apiEndpoint: '',
-  apiKey: '',
-  timeout: 0,
-  retryAttempts: 0
-};
-
-// Initial state for metadata structure
-const { state, setState, undo, redo } = useUndoRedo(initialState);
-
-// Define your metadata structure using 'state' and update it using 'setState'
-
-// Add undo and redo handlers to the metadata structure
-(state as any).undo = undo;
-
-
-
-
-// Define function to read metadata from file
-const readMetadata = (filename: string): StructuredMetadata => {
-  try {
-    const structureMetadataPath = getStructureMetadataPath(filename);
-    const data = fs.readFileSync(structureMetadataPath, 'utf-8');
-    return JSON.parse(data);
-  } catch (error: any) {
-    const { handleError } = useErrorHandling(); // Use useErrorHandling hook
-    handleError(`Error reading metadata file: ${error.message}`); // Handle error
-    return {
-      name: 'metadata',
-      description: 'Metadata file',
-      metadataEntries: {},
-      apiEndpoint: '',
-      apiKey: '',
-      timeout: 0,
-      retryAttempts: 0
-    };
-  }
-};
-// Define function to write metadata to file
-const writeMetadata = (filename: string, metadata: StructuredMetadata): void => {
-  try {
-    const structureMetadataPath = getStructureMetadataPath(filename);
-    const data = JSON.stringify(metadata, null, 2);
-    fs.writeFileSync(structureMetadataPath, data, 'utf-8');
-  } catch (error: any) {
-    const { handleError } = useErrorHandling(); // Use useErrorHandling hook
-    handleError(`Error writing metadata file: ${error.message}`); // Handle error
-  }
-};
-
-// Define function to track structure changes
-const trackStructureChanges = (
-  basePath: string,
-  filename: string,
-  cacheStructure: any // Define type for cacheStructure if possible
-): void => {
-  let metadata = readMetadata(filename);
-
-
-  const traverseDirectory = (dir: string) => {
-    const files = fs.readdirSync(dir);
-
-    for (const file of files) {
-      const filePath = path.join(dir, file);
-      const isDirectory = fs.statSync(filePath).isDirectory();
-      const fileOrFolderId = Buffer.from(filePath).toString("base64");
-
-      if (!metadata.metadataEntries[fileOrFolderId]) {
-        const filePath = path.join(dir, file);
-        const isDirectory = fs.statSync(filePath).isDirectory();
-        const fileOrFolderId = Buffer.from(filePath).toString("base64");
-        const fileType = determineFileType({ filePath });
-
-        metadata.metadataEntries[fileOrFolderId] = {
-          author: "",
-          timestamp: new Date(),
-          originalPath: filePath,
-          alternatePaths: [],
-          fileType: (fileType as string) || "Unknown",
-          title: "",
-          keywords: [],
-          authors: [],
-          contributors: [],
-          publisher: "",
-          copyright: "",
-          license: "",
-          links: [],
-          tags: [],
-        };
-      }
-
-      if (isDirectory) {
-        traverseDirectory(filePath);
-      }
-
-      if (metadata.metadataEntries[fileOrFolderId].originalPath !== filePath) {
-        metadata.metadataEntries[fileOrFolderId].alternatePaths.push(filePath);
-      }
-    }
-  };
-  traverseDirectory(basePath);
-  writeMetadata(filename, metadata);
-};
-
-
-// Example usage
-const metadataFilePath = 'structure-metadata.json';
-const basePath = path.resolve(__dirname, 'src'); // Set your base path
-trackStructureChanges(basePath, metadataFilePath, {}); // Pass an empty object as cacheStructure
-
+// Export types and constants
 export type { ProjectMetadata, StructuredMetadata, VideoMetadata };
-
-export default ProjectMetadata;
-export { projectMetadata, state, transformProjectToStructured };
-
+export { projectMetadata, getStructureMetadataPath, transformProjectToStructured, useUndoRedo };

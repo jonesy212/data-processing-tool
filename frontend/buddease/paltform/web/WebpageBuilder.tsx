@@ -1,7 +1,7 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import {
-  ToolbarOptions,
+  ToolbarOptionsComponent,
   ToolbarOptionsProps,
 } from "@/app/components/documents/ToolbarOptions";
 import { getTextBetweenOffsets } from "@/app/components/documents/getTextBetweenOffsets";
@@ -111,7 +111,7 @@ const WebpageBuilder: React.FC = () => {
   const handleCreateButtonClick = async () => {
     const userOptions: ToolbarOptionsProps = {
       isDocumentEditor: true,
-      fontSize: true,
+      fontSize: "16px",
       bold: true,
       italic: true,
       underline: true,
@@ -161,12 +161,13 @@ const WebpageBuilder: React.FC = () => {
 
   const panelContent: string[] = ["Panel 1", "Panel 2", "Panel 3"];
 
+  const currentFontSize = "16px";
   return (
     <div>
       <div>
-        <ToolbarOptions
+        <ToolbarOptionsComponent
           isDocumentEditor={true}
-          fontSize={true}
+          fontSize={currentFontSize}
           bold={true}
           italic={true}
           underline={true}

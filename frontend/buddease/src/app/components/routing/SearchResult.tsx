@@ -7,6 +7,8 @@ import { DocumentOptions } from '../documents/DocumentOptions';
 import FolderData from '../models/data/FolderData';
 import SearchHistory from '../versions/SearchHistory';
 import Version from '../versions/Version';
+import { Entity } from './FuzzyMatch';
+import { DocumentData } from '../documents/DocumentBuilder';
 
 
 // Define the SearchResultWithQuery interface that extends SearchResult
@@ -22,7 +24,7 @@ interface SearchResultProps<T> {
 }
 
 
-interface SearchResult<T> {
+interface SearchResult<T> extends Entity, DocumentData {
   items: T[];
   totalCount: number;
   id: number;

@@ -99,7 +99,7 @@
 //               removeStore: (storeId: number, store: SnapshotStore<BaseData, K>, snapshotId: string, snapshot: Snapshot<BaseData, K>, type: string, event: Event) => {
 //                 throw new Error("Function not implemented.");
 //               },
-//               createSnapshots: (id: string, snapshotId: string, snapshot: Snapshot<BaseData, K>, snapshotManager: SnapshotManager<BaseData, K>, payload: CreateSnapshotsPayload<BaseData, K>, callback: (snapshots: Snapshot<BaseData, K>[]) => void | null, snapshotDataConfig?: SnapshotConfig<BaseData, K>[], category?: string | CategoryProperties) => {
+//               createSnapshots: (id: string, snapshotId: string, snapshot: Snapshot<BaseData, K>, snapshotManager: SnapshotManager<BaseData, K>, payload: CreateSnapshotsPayload<BaseData, K>, callback: (snapshots: Snapshot<BaseData, K>[]) => void | null, snapshotDataConfig?: SnapshotConfig<BaseData, K>[], category?: string | symbol | Category) => {
 //                 // Implement the function logic here
 //                 return null;
 //               },

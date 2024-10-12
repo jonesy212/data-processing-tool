@@ -1,9 +1,9 @@
-import { snapshotStoreConfig } from '.';
+import { snapshotStoreConfig, SnapshotStoreProps } from '.';
 // SnapshotStoreContainer.ts
 
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
-import SnapshotStoreOptions from "../hooks/SnapshotStoreOptions";
+import { SnapshotStoreOptions } from "../hooks/SnapshotStoreOptions";
 import { Category, generateCategoryProperties } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
 import { SnapshotContainer } from "./SnapshotContainer";
@@ -39,8 +39,23 @@ interface SnapshotStoreContainer<T extends Data, K extends Data> {
   }
   
   export const snapshotStoreContainer = <T extends BaseData, K extends BaseData>(
-    storeId: number
+    storeId: number,
+    storeProps?: SnapshotStoreProps<T, K>
   ): SnapshotStoreContainer<T, K> => {
+    if(!storeProps){
+      throw new Error("storeProps is undefined");
+    }
+    const {
+      name,
+      version,
+      schema,
+      options,
+      category,
+      config,
+      operation,
+      expirationDate
+     }
+      = storeProps
     const snapshotStoreContainer: SnapshotStoreContainer<T, K> = {
       storeId,
       snapshotStore: null,
@@ -113,6 +128,7 @@ interface SnapshotStoreContainer<T extends Data, K extends Data> {
           maxRetries: 3,
           data: snapshotData,
           metadata: {
+            description: 'Default Description',
             metadataEntries: {
               fileOrFolderId1: {
                 originalPath: '/path/to/file',
@@ -121,7 +137,6 @@ interface SnapshotStoreContainer<T extends Data, K extends Data> {
                 timestamp: new Date(),
                 fileType: 'txt',
                 title: 'Default Title',
-                description: 'Default Description',
                 keywords: ['default', 'keyword'],
                 authors: ['Author 1', 'Author 2'],
                 contributors: ['Contributor 1', 'Contributor 2'],
@@ -192,44 +207,49 @@ interface SnapshotStoreContainer<T extends Data, K extends Data> {
         };
       
         const config: SnapshotStoreConfig<T, K> = {
-          snapshots: [],
+          snapshots: {},
         };
 
+
+
         if (id === undefined) {
-          snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K>(
-            snapshotStoreContainer.storeId,
-            "default",
-            {},
+          snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K>({
+            storeId,
+            name,
+            version,
             schema,
             options,
             category,
             config,
-            'create'
-          );
+            operation,
+            expirationDate
+          });
         } else {
-          snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K>(
-            snapshotStoreContainer.storeId,
-            String(id),
-            "1.0.0",
+          snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K>({
+            storeId,
+            name,
+            version,
             schema,
             options,
             category,
             config,
-            'create'
-          );
+            operation,
+            expirationDate
+          });
         }
        
         const name = (await getSnapshotContainer(id ?? "default", snapshotFetcher)).snapshot.name;
-        snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K>(
-          snapshotStoreContainer.storeId,
+        snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K>({
+          storeId,
           name,
           version,
           schema,
           options,
           category,
           config,
-          'create'
-        );
+          operation,
+          expirationDate
+        });
       },      
       
       addSnapshotContainer: (snapshotId: string, container: SnapshotContainer<T, K>) => {

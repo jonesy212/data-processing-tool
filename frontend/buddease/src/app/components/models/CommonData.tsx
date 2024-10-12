@@ -34,20 +34,29 @@ import TeamData from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
 import { Tag } from "./tracker/Tag";
 import AccessHistory from "../versions/AccessHistory";
-import { T, TagsRecord } from "../snapshots";
+import { TagsRecord } from "../snapshots";
+import { CombinedEvents } from "../hooks/useSnapshotManager";
+import { StatusType } from "./data/StatusType";
 
 // Define a generic type for data
-interface CommonData {
+interface CommonData<T extends Data> {
   _id?: string;
   id?: string | number | undefined;
   title?: string;
   type?: AllTypes;
 
+  timestamp?: string | number | Date | undefined;
+  blockNumber?: number | undefined
+  transactionHash?: string | undefined
+  event?: string;
+  signature?: string;
   email?: string;
   username?: string;
   name?: string
   description?: string | null | undefined;
   startDate?: Date;
+  value?: any
+  eventId?: string | null | undefined;
   endDate?: Date;
   status?: AllStatus;
   collaborationOptions?: CollaborationOptions[] | undefined;
@@ -99,18 +108,15 @@ interface Customizations<T> {
 
 
 
-
-
-
 export type DataType = NotificationType | string | DocumentTypeEnum | AnimationTypeEnum;
 export type TaskType = "addTask" | "removeTask" | "bug" | "feature" | "epic" | "story" | "task";
 
 // Define a union type for the supported data types
-type SupportedData = UserData &
+type SupportedData<T extends Data> = UserData &
   Data &
   Todo &
   Task &
-  TaskType & 
+  // TaskType & 
   CommunityData &
   DocumentData &
   ProjectData &
@@ -123,7 +129,7 @@ type SupportedData = UserData &
   DataDetails &
   DataType &
   TradeData &
-  CommonData &
+  CommonData<T> &
   // BugType & 
   FakeData & {
   [key: string]: any
@@ -132,7 +138,7 @@ type SupportedData = UserData &
 
 // Define the DetailsProps interface with the generic CommonData type
 
-const CommonDetails = <T extends SupportedData>({
+const CommonDetails = <T extends SupportedData<T>>({
   data,
   details,
   customizations,
@@ -224,15 +230,19 @@ const CommonDetails = <T extends SupportedData>({
 
       {/* Include RealtimeData component */}
       <RealtimeDataComponent
-        id={data?._id || ""}
-        name={data?.username || ""}
-        date={data?.startDate || new Date()}
-        userId={userId}
-        dispatch={dispatch}
-        value={""}
-        eventId={"realtimeId"}
-        type={"realtimeType"}
-        timestamp={timestamp}
+         id={data?.id ? data?.id.toString() : ""} // Updated from `_id` to `id` to match the property (`BaseRealtimeData.id: string`)
+         name={data?.name || ""} // Match `RealtimeDataItem.name: string`
+         date={data?.date ? new Date(data.date).toString() : new Date().toString()} // Handles both `string` and `Date`
+         userId={userId}
+         dispatch={dispatch}
+         value={data?.value || ""} // Match `RealtimeDataItem.value: string`
+         eventId={data?.eventId || ""} // Match `EventData.eventId: string`
+         type={data?.type || {} as AllTypes} // Correct `AllTypes` type assignment
+         timestamp={data?.timestamp ? new Date(data.timestamp).toString() : new Date().toString()} // Handles both `string` and `Date`
+         blockNumber={data?.blockNumber != null ? data.blockNumber.toString() : ""} // Convert `string | number | bigint | undefined` to `string`
+         transactionHash={data?.transactionHash || ""} // Add fallback value `""` if `transactionHash` is `undefined`
+         event={data?.event || ""} // Add fallback value `""` if `event` is `undefined`
+         signature={data?.signature || ""} // Add fallback value `""` if `signature` is `undefined`
       />
     </div>
   );

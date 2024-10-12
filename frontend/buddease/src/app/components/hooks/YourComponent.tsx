@@ -24,7 +24,7 @@ import { useSecureUserId } from "../utils/useSecureUserId";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
 import useIdleTimeout from "./idleTimeoutHooks";
-import {  UpdateSnapshotPayload, SnapshotStoreProps, SnapshotOperationType } from "../snapshots";
+import {  UpdateSnapshotPayload, SnapshotStoreProps, SnapshotOperationType, SnapshotsArray, SnapshotStoreConfig, Snapshot, SnapshotOperation } from "../snapshots";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import appTreeApiService from "@/app/api/appTreeApi";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
@@ -33,6 +33,7 @@ import { headersConfig } from '../shared/SharedHeaders';
 import { StatusType } from '../models/data/StatusType';
 import { SnapshotStoreOptions } from './SnapshotStoreOptions';
 import { K, T } from '../models/data/dataStoreMethods';
+import { Category } from '../libraries/categories/generateCategoryProperties';
 
 
 interface HooksObject {
@@ -112,9 +113,21 @@ export interface YourComponentProps {
 
 // Initialize storeProps with meaningful values
 const storeProps: SnapshotStoreProps<T, K> = {
-  storeId: 1, // Provide a valid storeId
+  storeId: "yourStoreId",
   name: "MySnapshotStore", // Provide a valid name
   version: {
+
+    isActive: true,
+    releaseDate: "2023-07-20",
+    updateStructureHash: async () => {},
+    setStructureData: (newData: string) => { },
+   
+    hash: (value: string) => "",
+    currentHash: "",
+    structureData: "",
+    calculateHash: () => "",
+   
+
     id: 1,
     versionNumber: '1.0.0',
     major: 1,
@@ -205,6 +218,8 @@ const storeProps: SnapshotStoreProps<T, K> = {
       data: undefined, // Adjust as per actual usage
       backend: undefined, // Adjust as per actual usage
       frontend: undefined, // Adjust as per actual usage
+      isActive: true, // Optional property
+      releaseDate: "2023-01-01", // Optional property
     },
     description: "Version description", // Description of the version
     buildNumber: "1", // Build number
@@ -221,8 +236,183 @@ const storeProps: SnapshotStoreProps<T, K> = {
     getVersionNumber: () => ""
   }, // Example version
   schema: {}, // Provide a valid schema or mock
-  options: {}, // Provide valid options
-  category: undefined, // or specify a valid category
+  options: {
+    storeId: 0,
+    baseURL: "https://example.com",
+    enabled: true,
+    maxRetries: 3,
+    retryDelay: 1000,
+    maxAge: 0,
+    staleWhileRevalidate: 1000,
+    cacheKey: "exampleCacheKey",
+    
+    initialState: {},
+    eventRecords: {},
+    records: [],
+    category: "",
+   
+    date: new Date(),
+    type: "",
+    snapshotId: "",
+    snapshotStoreConfig: undefined,
+    criteria: {},
+    callbacks: {},
+    subscribeToSnapshots: (
+      snapshot,
+      snapshotId,
+      snapshotData,
+      category,
+      snapshotConfig,
+      callback,
+      snapshots
+    ) => {
+      // Implement your logic here
+      return snapshots; // or modify the snapshots as needed
+    },
+    subscribeToSnapshot: (snapshotId, callback, snapshot) => {
+      // Implement your logic here
+      return null; // or return a Subscriber if necessary
+    },
+    unsubscribeToSnapshots: (snapshotId, snapshot, type, event, callback) => {
+      // Implement your logic here
+    },
+    unsubscribeToSnapshot: (snapshotId, snapshot, type, event, callback) => {
+      // Implement your logic here
+    },
+    delegate: null,
+    getDelegate: (context) => {
+      // Implement your logic here
+      return []; // or your logic to return an array of SnapshotStoreConfig<T, K>
+    },
+    getCategory: (snapshotId, snapshot, type, event) => {
+      // Implement your logic here
+      return undefined; // or return the appropriate CategoryProperties
+    },
+    initSnapshot: (
+      snapshot,
+      snapshotId,
+      snapshotData,
+      category,
+      snapshotConfig,
+      callback
+    ) => {
+      // Implement your logic here
+    },
+    createSnapshot: (
+      id,
+      snapshotData,
+      category,
+      categoryProperties,
+      callback,
+      snapshotStore,
+      snapshotStoreConfig
+    ) => {
+      // Implement your logic here
+      return null; // or return the created Snapshot
+    },
+    createSnapshotStore: async (
+      id,
+      storeId,
+      snapshotId,
+      snapshotStoreData,
+      category,
+      categoryProperties,
+      callback,
+      snapshotDataConfig
+    ) => {
+      // Implement your logic here
+      return null; // or return the created SnapshotStore
+    },
+    configureSnapshot: (
+      id,
+      storeId,
+      snapshotId,
+      snapshotData,
+      categoryProperties,
+      callback,
+      snapshotDataStore,
+      snapshotStoreConfig
+    ) => {
+      // Implement your logic here
+      return null; // or return { snapshot, config }
+    },
+    configureSnapshotStore: (
+      snapshotStore,
+      snapshotId,
+      data,
+      events,
+      dataItems,
+      newData,
+      payload,
+      store,
+      callback
+    ) => {
+      // Implement your logic here
+      return { snapshotStore, storeConfig: {} as SnapshotStoreConfig<T, K> }; // Update as necessary
+    },
+    getDataStoreMethods: (
+      snapshotStoreConfig,
+      dataStoreMethods
+    ) => {
+      // Implement your logic here
+      return {}; // or the appropriate Partial<DataStoreWithSnapshotMethods<T, K>>
+    },
+    // Array of SnapshotStoreMethod<T, K>
+    snapshotMethods: [],
+    handleSnapshotOperation: (
+      snapshot: Snapshot<Data, Data>,
+      data: SnapshotStoreConfig<Data, Data>,
+      operation: SnapshotOperation, // Ensure you use this in your logic
+      operationType: SnapshotOperationType
+    ): Promise<Snapshot<Data, Data> | null> => {
+      return new Promise((resolve) => {
+        // Check if data is valid
+        if (!data || !data.records) {
+          resolve(null); // Resolve with null if data is invalid
+          return; // Exit the function early
+        }
+        // Example logic to process the snapshot
+        const isValidSnapshot = /* logic to determine if the snapshot is valid */;
+        
+        if (isValidSnapshot) {
+          const newSnapshot: Snapshot<Data, Data> = /* logic to create or obtain a valid Snapshot */;
+          resolve(newSnapshot); // Resolve with the new valid snapshot
+        } else {
+          resolve(null); // Resolve with null if the snapshot is invalid
+        }
+      });
+    },
+    
+    handleSnapshotStoreOperation: (
+      snapshotId,
+      snapshotStore,
+      snapshot,
+      operation,
+      operationType,
+      callback
+    ) => {
+      // Implement your logic here
+    },
+    displayToast: (message, type, duration, onClose) => {
+      // Implement your logic here
+    },
+    addToSnapshotList: (snapshot, subscribers) => {
+      // Implement your logic here
+    },
+    isAutoDismiss: false,
+    isAutoDismissable: false,
+    isAutoDismissOnNavigation: false,
+    isAutoDismissOnAction: false,
+    isAutoDismissOnTimeout: false,
+    isAutoDismissOnTap: false,
+    isClickable: true,
+    isClosable: true,
+    optionalData: {},
+    useSimulatedDataSource: false,
+    simulatedDataSource: [], // Update as per your requirements
+   
+  }, 
+  
   config: null, // Set a valid config or null
   operation: {
     operationType: SnapshotOperationType.CreateSnapshot
@@ -235,7 +425,7 @@ const storeProps: SnapshotStoreProps<T, K> = {
   eventRecords: null // Optional event records
 };
 
-const {storeId, name, version, schema, options, category, config, operation, state } = storeProps
+const {storeId, name, version, schema, options, category, config, operation, state, expirationDate } = storeProps
 const snapshotId = storeProps.state?.[0]?.id 
   ? getSnapshotId(storeProps.state[0].id) 
   : null;
@@ -253,7 +443,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
     updateCallback
   );
   const { isActive, toggleActivation, resetIdleTimeout } =
-    useIdleTimeout(undefined); // Destructure the idle timeout properties
+    useIdleTimeout(undefined, props); // Destructure the idle timeout properties
   const dataFrameAPI = DataFrameAPI; // Initialize the dataframe API class
   const { calendarData, updateCalendarData } = useCalendarContext();
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -520,7 +710,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
 };
 
 export default YourComponent;
-
+export {storeProps}
 
 
 
@@ -529,9 +719,8 @@ export default YourComponent;
 // Example:
 
 
-// const storeId = snapshotApi.getSnapshotStoreId(String(snapshotId));
 const events: Record<string, CalendarEvent<T, K>[]> = {};
-const data = new SnapshotStore<T, K>({ storeId, name, version, schema, options, category, config, operation});
+const data = new SnapshotStore<T, K>({ storeId, name, version, schema, options, category, config, operation, expirationDate});
 const snapshotStore = new SnapshotStore<BaseData, K>({ storeId, name, version, schema, options, category, config, operation});
 const dataItems: RealtimeDataItem[] = [];
 const newData: Data = {

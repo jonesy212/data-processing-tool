@@ -39,7 +39,8 @@ const handleFileChanges = (file: FileData): FileData => file; // Handles file ch
 
   // Access API configurations from Redux state
   const apiConfigsFromRedux = useSelector(selectApiConfigs);
-
+  const [filePath, setFilePath] = useState<string>('');
+  const [apiConfigs, setApiConfigs] = 
   const { versionNumber, appVersion } = getCurrentAppInfo();
   const projectPath = getAppPath(versionNumber, appVersion);
   const frontendStructure = new FrontendStructure(projectPath);

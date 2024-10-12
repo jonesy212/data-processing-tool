@@ -46,13 +46,13 @@ import { CriteriaType } from "./CriteriaType";
 
 
 interface FilterCriteria {
-  description: string | null | undefined;
+  description?: string | null | undefined;
   startDate?: Date;
   endDate?: Date;
   status?: StatusType | null | null;
-  priority?: PriorityTypeEnum | null;
+  priority?: string | PriorityTypeEnum | null;
   assignedUser?: string | null;
-  notificationType?: NotificationTypeEnum;
+  notificationType?: NotificationTypeEnum | null;
   todoStatus?: TodoStatus | null; // Filter by todo status
   taskStatus?: TaskStatus | null; // Filter by task status
   teamStatus?: TeamStatus | null; // Filter by team status
@@ -652,7 +652,7 @@ const filterCriteria: FilterCriteria = {
   taskPhaseType: TaskPhaseEnum.EXECUTION, // Updated to enum value
   animationType: AnimationTypeEnum.TwoD, // Updated to enum value
   languageType: LanguageEnum.English, // Updated to enum value
-  codingLanguageType: CodingLanguageEnum.JavaScript, // Updated to enum value
+  codingLanguageType: CodingLanguageEnum.Javascript, // Updated to enum value
   formatType: FormatEnum.JSON, // Updated to enum value
   privacySettingsType: PrivacySettingEnum.Public, // Updated to enum value
   messageType: MessageType.Email, // Updated to enum value

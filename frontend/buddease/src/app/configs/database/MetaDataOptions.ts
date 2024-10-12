@@ -4,15 +4,15 @@ import ProjectMetadata, { StructuredMetadata } from '../../../app/configs/Struct
 
   // Define the base interface
   interface BaseMetaDataOptions extends StructuredMetadata {
-    id?: string;
+    id?: string | number;
     title?: string;
-    description: string;
+    description: string | undefined;
     createdBy?: string;
-    createdAt?: Date;
+    createdAt?: string | Date;
     updatedBy?: string;
-    updatedAt?: Date;
+    updatedAt?: string | Date;
     maxAge?: number | string;
-    timestamp?: Date;
+    timestamp?: string | number | Date;
   }
 
 

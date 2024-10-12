@@ -12,22 +12,30 @@ export type UserStatus = {
 };
 
 
-export const isUserLoggedIn = (): UserStatus => {
-  const accessToken = localStorage.getItem("token");
-  const isLoggedIn = !!accessToken;
+export const isUserLoggedIn = (): Promise<UserStatus> => {
+  return new Promise<UserStatus>((resolve) => {
+    const accessToken = localStorage.getItem("token");
+    const isLoggedIn = !!accessToken;
 
-  if (isLoggedIn) {
-    // User is logged in, retrieve their dashboard configuration
-    const dashboardConfigString = localStorage.getItem("dashboardConfig");
-    const dashboardConfig = dashboardConfigString ? JSON.parse(dashboardConfigString) : null;
-    // Add logic to use the dashboardConfig as needed
+    if (isLoggedIn) {
+      // User is logged in, retrieve their dashboard configuration
+      const dashboardConfigString = localStorage.getItem("dashboardConfig");
+      const dashboardConfig = dashboardConfigString ? JSON.parse(dashboardConfigString) : null;
+      // Add logic to use the dashboardConfig as needed
 
-    return { isLoggedIn, dashboardConfig };
-
-  }
-
-  return {isLoggedIn}
-};
+      resolve({
+        isLoggedIn,
+        dashboardConfig,
+        then: (callback: (userStatus: UserStatus) => boolean) => Promise.resolve(callback({ isLoggedIn, dashboardConfig, then: () => Promise.resolve(false) }))
+      });
+      
+    } else {
+      resolve({
+        isLoggedIn,
+        then: (callback: (userStatus: UserStatus) => boolean) => Promise.resolve(callback({ isLoggedIn, then: () => Promise.resolve(false) }))
+      });
+    }
+  });};
 
 export const performLogin = async (
   username: string,

@@ -16,7 +16,13 @@ interface DocumentFormattingOptions extends BaseFormattingOptions {
   bold?: boolean;
   italic?: boolean;
   underline?: boolean;
-  // Add more formatting options as needed
+  pageSize?: number;
+  margins?: number | {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };  // Add more formatting options as needed
 }
 
 interface DocumentFormattingOptionsComponentProps {

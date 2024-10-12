@@ -25,8 +25,13 @@ import { AlignmentOptions, ToolbarState } from "./toolbarSlice";
 import { TrackerManagerState } from "./TrackerSlice";
 import { VersionState } from "./VersionSlice";
 import { VideoState } from "./VideoSlice";
+import { ThemeEnum } from "@/app/components/libraries/ui/theme/Theme";
+import { UserProfile, userService } from "@/app/components/users/ApiUser";
+import { useSecureUserId } from "@/app/components/utils/useSecureUserId";
+import { User } from "@/app/components/users/User";
 
 interface AppState {
+    user: UserProfile,
     currentPage: null,
     currentLayout: null,
     currentTheme: null,
@@ -83,9 +88,15 @@ interface AppState {
   // Add other state properties here if needed
 }
 
+const userId = useSecureUserId()
+const user = await userService.fetchUserProfile(String(userId))
 const initialState: AppState = {
+  user: user,
   progress: 0,
   toolbarManager: {
+    themeType: ThemeEnum.LIGHT,
+    x:0,
+    y: 0,
     isFeatureEnabled: false,
     isToolbarOpen: false,
     selectedTool: null,
@@ -225,10 +236,15 @@ const initialState: AppState = {
   },
   selectedToolBar: null,
 }
+
 export const useAppManagerSlice = createSlice({
   name: "app",
   initialState,
   reducers: {
+    resetState: (state) => {
+      // Resetting state to initial state
+      return initialState;
+    },
     // Define reducers specific to the app state here, if any
     // You can also use reducers from the VideoSlice if needed
   },
@@ -241,7 +257,7 @@ export const useAppManagerSlice = createSlice({
   }
 });
 
-export const { /* Extract action creators if needed */ } = useAppManagerSlice.actions;
+export const {resetState } = useAppManagerSlice.actions;
 
 export default useAppManagerSlice.reducer;
 export type { AppState };

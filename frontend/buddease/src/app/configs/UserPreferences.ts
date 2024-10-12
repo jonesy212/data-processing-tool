@@ -122,7 +122,7 @@ interface UserPreferences extends Partial<CommonTrackerProps> {
     teamIncentivesEnabled?: boolean; // Whether team incentives are enabled
     revenueContributionEnabled?: boolean; // Whether revenue contribution is enabled
   };
-
+  refreshUI: () => void,
   // Other Preferences
   otherPreferences?: any; // Placeholder for any other preferences
 }
@@ -241,7 +241,7 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
         trackFolderChanges: (folder: FolderData) => { },
         updateUserProfile: (userData: User) => { },
         sendNotification: (notification: NotificationData, userData: User) => { },
-
+        refreshUI: () => {},
         // Notifications Preferences
         notifications: {
           email: false,
@@ -327,8 +327,26 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
             users: [],
             accessControlEnabled: false,
             accessControlType: 'whitelist',
-            accessControlList: [] // Define a list of allowed users if needed
-          } // Or other access control settings
+            accessControlList: [], // Define a list of allowed users if needed
+          },// Or other access control settings
+          isDataSharingEnabled: false,
+          dataSharing: {
+            sharingLevel: 'public', // Or other sharing levels if needed
+            sharingScope: 'team', // Or other sharing scopes if needed
+            sharingOptions: [], // Define sharing options if needed
+            allowSharing: true,
+            allowSharingWith: [], // Define users or groups if needed
+            allowSharingWithTeams: [], // Define teams if needed
+            allowSharingWithGroups: [], // Define groups if needed
+            allowSharingWithPublic: false, // Or other sharing options if needed
+            allowSharingWithTeamsAndGroups: false, // Or other sharing options if needed
+            allowSharingWithPublicAndTeams: false, // Or other sharing options if needed
+            allowSharingWithPublicAndGroups: false, // Or other sharing options if needed
+            allowSharingWithPublicAndTeamsAndGroups: false, // Or other sharing options if needed
+            allowSharingWithPublicAndTeamsAndGroupsAndPublic: false, // Or other sharing options if needed
+            allowSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: false, // Or other sharing options if needed
+          },
+          thirdPartyTracking: false
         },
 
         // Project Management Preferences

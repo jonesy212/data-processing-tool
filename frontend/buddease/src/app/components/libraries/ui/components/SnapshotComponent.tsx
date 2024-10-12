@@ -1,57 +1,100 @@
-import React, { useEffect, useState } from "react";
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
-import { BaseData, Data } from "@/app/components/models/data/Data";
+import { Data } from "@/app/components/models/data/Data";
+import { DataStore } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { CustomSnapshotData, SnapshotConfig, SnapshotContainer, SnapshotDataType, SnapshotStoreConfig, SnapshotStoreProps } from "@/app/components/snapshots";
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
-import { SnapshotStoreConfig, SnapshotWithCriteria } from "@/app/components/snapshots";
+import { isSnapshot } from "@/app/components/typings/YourSpecificSnapshotType";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { T, K } from "../../snapshots/SnapshotConfig";
+import React, { useEffect, useState } from "react";
 
-// Define props interface
-type CreateSnapshotType = (additionalData: any) => Data | null | undefined;
 
-interface SnapshotProps {
-  snapshotConfig: SnapshotStoreConfig<Data, Data>;
+type CreateSnapshotType<T extends Data, K extends Data> = (
+  additionalData: CustomSnapshotData
+) => SnapshotContainer<T, K> | null | undefined;
+
+interface SnapshotProps<T extends Data, K extends Data> {
+  snapshotConfig: SnapshotStoreConfig<T, K>;
   id: string | number | null;
-  snapshotData: Snapshot<T, Data>;
-  snapshotStoreData: SnapshotStore<Data, BaseData>;
+  snapshotData: SnapshotDataType<T, K>;
+  snapshotStoreData: SnapshotStore<T, K>;
   categoryProperties: CategoryProperties;
   category: string;
   callback: (snapshot: Snapshot<T, any> | null) => void;
-  createSnapshot: CreateSnapshotType | null | undefined;
+  createSnapshot: CreateSnapshotType<T, K> | null | undefined;
+  
+   // Add the missing props here
+   dataStore: DataStore<T, K>,
+dataStoreMethods: DataStoreMethods<T, K>;          
+   metadata: UnifiedMetaDataOptions;             
+   subscriberId: string;                         
+   endpointCategory: string | number;           
+   storeProps: SnapshotStoreProps<T, K>;         
+   snapshotConfigData: SnapshotConfig<T, K>;      
+   snapshotStoreConfigData?: SnapshotStoreConfig<T, K>; 
+ 
 }
 
-const SnapshotComponent: React.FC<SnapshotProps> = ({
-  snapshotConfig,
-  id,
-  snapshotData,
-  category,
-  categoryProperties,
-  callback,
-  createSnapshot,
-}) => {
-  const [snapshots, setSnapshots] = useState<Snapshot<Data, BaseData>[]>([]);
+const SnapshotComponent  = <T extends Data, K extends Data>(
+  snapshotProps: SnapshotProps<T, K>
+): JSX.Element => {
+  const {
+    snapshotConfig,
+    id,
+    snapshotData,
+    category,
+    categoryProperties,
+    callback,
+    createSnapshot,
+    dataStoreMethods,
+    metadata,
+    subscriberId,
+    endpointCategory,
+    storeProps,
+    snapshotConfigData,
+    snapshotStoreConfigData,
+  } = snapshotProps
+
+
+
+
+  const [snapshots, setSnapshots] = useState<Snapshot<T, K>[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { error, handleError, clearError } = useErrorHandling();
 
   useEffect(() => {
     const fetchSnapshot = async () => {
       try {
-        const snapshotId = snapshotData?.id ? String(snapshotData.id) : id !== null ? String(id) : null;
+        
+        if(snapshotData === undefined){
+          throw new Error("Snapshot data is undefined");
+        }
+
+        const snapshotId = 'id' in snapshotData && snapshotData.id ? String(snapshotData.id) : id !== null ? String(id) : null;
         
         // Invoke createSnapshot if it's defined, and pass the result to snapshotConfig.snapshot
         const snapshotContainer = createSnapshot ? createSnapshot({}) : null;
-
+        if(snapshotContainer === null){
+          throw new Error("Snapshot container is null");
+        }
         const newSnapshot = await snapshotConfig.snapshot(
-          String(id),
-          snapshotId,
-          snapshotData,
-          category,
-          categoryProperties,
-          callback,
-          snapshotContainer // Pass the result of createSnapshot here
+          String(id),                           // id
+          snapshotId,                           // snapshotId
+          snapshotData,                         // snapshotData
+          category,                             // category
+          categoryProperties,                   // categoryProperties
+          callback,                             // callback
+          dataStoreMethods,                     // dataStoreMethods (make sure this is defined)
+          metadata,                             // metadata (make sure this is defined)
+          subscriberId,                         // subscriberId (make sure this is defined)
+          endpointCategory,                     // endpointCategory (make sure this is defined)
+          storeProps,                           // storeProps (make sure this is defined)
+          snapshotConfigData,                   // snapshotConfigData (make sure this is defined)
+          snapshotStoreConfigData,              // snapshotStoreConfigData (optional)
+          snapshotContainer                      // snapshotContainer (optional)
         );
-
+        
         const snapshotArray = Array.isArray(newSnapshot)
           ? newSnapshot
           : [newSnapshot.snapshotData];
@@ -63,26 +106,82 @@ const SnapshotComponent: React.FC<SnapshotProps> = ({
       } catch (error: any) {
         const errorMessage = "Failed to fetch snapshot";
         handleError(errorMessage, { componentStack: error.stack });
+
+        // Set a timer to clear the error after 5 seconds
+        const timer = setTimeout(() => {
+          clearError(); 
+        }, 5000); 
+
+        
+        return () => clearTimeout(timer);
       } finally {
         setLoading(false);
       }
-    };
 
+    };
     fetchSnapshot();
 
     return () => {
       // Perform cleanup if necessary
     };
-  }, [snapshotConfig, id, snapshotData, category, categoryProperties, callback, createSnapshot, handleError]);
+  }, [snapshotConfig, id, snapshotData, category, categoryProperties, callback, createSnapshot,
+    dataStoreMethods,
+    metadata,
+    subscriberId,
+    endpointCategory,
+    storeProps,
+    snapshotConfigData,
+    snapshotStoreConfigData,
+    handleError,
+    clearError,
+  ]);
 
   const handleCreateSnapshot = () => {
-    const additionalData = { /* Any additional data for the snapshot */ };
-
+    const additionalData = {
+      // Any additional data for the snapshot, such as metadata or custom properties
+      customField: 'exampleData',
+    };
+  
     if (createSnapshot) {
-      const newSnapshot = createSnapshot(additionalData);
-      // Handle the created snapshot as needed
+      try {
+        const newSnapshot = createSnapshot(additionalData);
+          // Check if the newSnapshot is valid
+          if (newSnapshot && isSnapshot(newSnapshot)) {
+            setSnapshots((prevSnapshots) => {
+              const newData = newSnapshot.snapshotData;
+          
+              // Create a new array of Snapshots to add
+              let snapshotsToAdd: Snapshot<T, K>[] = [];
+          
+              // If newData is a Map, extract values and ensure they're of type Snapshot<T, K>
+              if (newData instanceof Map) {
+                snapshotsToAdd = Array.from(newData.values()).filter(isSnapshot);
+              } else if (newData && isSnapshot(newData)) {
+                snapshotsToAdd = [newData as Snapshot<T, K>];
+              }
+          
+              // Return the updated array of Snapshots
+              return [...prevSnapshots, ...snapshotsToAdd];
+            });
+        } else {
+          throw new Error("Failed to create a new snapshot");
+        }        
+      } catch (error: any) {
+        handleError("An error occurred while creating a snapshot", {
+          componentStack: error.stack,
+        });
+  
+        // Set a timer to clear the error after 5 seconds
+        const timer = setTimeout(() => {
+          clearError();
+        }, 5000);
+  
+        // Cleanup to avoid memory leaks
+        return () => clearTimeout(timer);
+      }
     }
   };
+  
 
   if (loading) {
     return <div>Loading...</div>;

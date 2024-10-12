@@ -13,12 +13,15 @@ import { CoreSnapshot, Snapshot, SnapshotsArray, SnapshotUnion } from "./LocalSt
 import { SnapshotMethods } from "./SnapshotMethods";
 import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
+import { TagsRecord } from "./SnapshotWithCriteria";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { ContentItem } from "../cards/DummyCardLoader";
 import { SnapshotConfig } from "./SnapshotConfig";
 import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
+import { InitializedData } from "../hooks/SnapshotStoreOptions";
+import { SnapshotBase } from "./SnapshotContainer";
 
 interface CustomSnapshotData extends Data {
   timestamp?: string | number | Date | undefined
@@ -33,8 +36,8 @@ interface SnapshotRelationships<T extends Data, K extends Data = T> {
   childIds: string[] | null;
   getParentId(id: string, snapshot: Snapshot<SnapshotUnion<BaseData>, T>): string | null;
   getChildIds(id: string, childSnapshot: Snapshot<BaseData, K>): (string | number | undefined)[]
-  snapshotCategory: SnapshotCategory, 
-  snapshotSubscriberId: string | null;
+  snapshotCategory: SnapshotCategory<T, K> | undefined, 
+  snapshotSubscriberId: string | undefined;
   addChild(parentId: string, childId: string, childSnapshot: Snapshot<T, K>): void;
   removeChild(childId: string,
     parentId: string, parentSnapshot: Snapshot<Data, Data>,
@@ -54,11 +57,11 @@ interface SnapshotRelationships<T extends Data, K extends Data = T> {
 }
 
 
-interface SnapshotData<T extends Data, K extends Data = T> extends SnapshotMethods<T, K> {
-  id: string | number | undefined
+interface SnapshotData<T extends Data, K extends Data = T> extends SnapshotBase<T, K>,
+  SnapshotMethods<T, K> {
   _id?: string;
+  storeId: number;
   snapshotIds?: string[];
-  items: ContentItem[];
   title?: string;
   description?: string | null;
   tags?: TagsRecord | string[] | undefined
@@ -73,17 +76,17 @@ interface SnapshotData<T extends Data, K extends Data = T> extends SnapshotMetho
     | null;
   priority?: string | PriorityTypeEnum;
   subscription?: Subscription<T, K> | null;
-  version?: Version 
+  version?: number | Version 
   versionHistory?: VersionHistory
   config: SnapshotStoreConfig<T, K>| null
   metadata?: UnifiedMetaDataOptions | {};
-  isExpired?: boolean;
+  isExpired: () => boolean | undefined
   isCompressed?: boolean;
   isEncrypted?: boolean;
   isSigned?: boolean;
   expirationDate?: Date | string;
   auditTrail?: AuditRecord[];
-  subscribers: SubscriberCollection<T, K>;
+  subscribers: SubscriberCollection<T, K>[];
   delegate?: SnapshotStoreConfig<T, K>[];
   value?: string | number | Snapshot<T, K> |  null | undefined;
   todoSnapshotId?: string;
@@ -92,8 +95,9 @@ interface SnapshotData<T extends Data, K extends Data = T> extends SnapshotMetho
   updatedAt?: string | Date;
   snapshotStore: SnapshotStore<T, K> | null;
   status?: StatusType | undefined
-  data: T | Map<string, Snapshot<T, K>> | null | undefined;
+  data: InitializedData | null | undefined
   category?: Category
+  categoryProperties?: CategoryProperties | undefined
   timestamp: string | number | Date | undefined;
   setSnapshotCategory: (id: string, newCategory: Category) => void;
   getSnapshotCategory: (id: string) => Category | undefined;

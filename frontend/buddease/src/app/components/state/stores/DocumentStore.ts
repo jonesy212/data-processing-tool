@@ -6,7 +6,7 @@ import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";
 import { DocumentData } from "../../documents/DocumentBuilder";
 import { DocumentPath } from "../../documents/DocumentGenerator";
-import { Comment } from "../../models/data/Data";
+import { Comment, Data } from "../../models/data/Data";
 import axiosInstance from "../../security/csrfToken";
 import { TagsRecord } from "../../snapshots";
 import { NotificationTypeEnum } from "../../support/NotificationContext";
@@ -14,6 +14,8 @@ import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { AllTypes } from "../../typings/PropTypes";
 import { userService } from "../../users/ApiUser";
 import { UserRoleEnum } from "../../users/UserRoles";
+import { Content } from "../../models/content/AddContent";
+import { K, T } from "../../models/data/dataStoreMethods";
 
 
 
@@ -24,22 +26,22 @@ interface DocumentContent {
   // Add more properties as needed
 }
 
-interface DocumentBase {
+interface DocumentBase<T extends Data> {
   id: string | number;
   title: string;
   content: string;
   description?: string | null | undefined;
-   tags?: TagsRecord | string[] | undefined; 
+  tags?: TagsRecord | string[] | undefined; 
   createdAt: string | Date | undefined;
   updatedAt?: string | Date;
   createdBy: string | undefined;
   updatedBy: string;
   visibility: AllTypes;
 
-  documentData?: DocumentData;
+  documentData?: DocumentData<T>;
   comments?: Comment[];
-  // selectedDocument: DocumentData | null;
-  selectedDocuments?: DocumentData[];
+  // selectedDocument: DocumentData<T> | null;
+  selectedDocuments?: DocumentData<T>[];
   
 }
 
@@ -68,14 +70,14 @@ interface DocumentStatus {
   visibilityState?: string;
 }
 
-interface DocumentAdditionalProps {
+interface DocumentAdditionalProps <T extends Data> {
   URL: string;
   bgColor: string;
   documentURI: string;
   currentScript: string | null;
   defaultView: Window | null;
   doctype: DocumentType | null;
-  ownerDocument: Document | null;
+  ownerDocument: Document<T> | null;
   scrollingElement: Element | null;
   readyState: string;
   timeline: DocumentTimeline | undefined;
@@ -91,13 +93,13 @@ interface DocumentAdditionalProps {
   implementation?: DOMImplementation;
   links?: any;
   location?: Location;
-  onfullscreenchange?: ((this: Document, ev: Event) => any) | null;
-  onfullscreenerror?: ((this: Document, ev: Event) => any) | null;
+  onfullscreenchange?: ((this: Document<T>, ev: Event) => any) | null;
+  onfullscreenerror?: ((this: Document<T>, ev: Event) => any) | null;
 
-  onpointerlockerror?: ((this: Document, ev: Event) => any) | null;
-  onpointerlockchange?: ((this: Document, ev: Event) => any) | null
-  onreadystatechange?: ((this: Document, ev: Event) => any) | null;
-  onvisibilitychange?: ((this: Document, ev: Event) => any) | null;
+  onpointerlockerror?: ((this: Document<T>, ev: Event) => any) | null;
+  onpointerlockchange?: ((this: Document<T>, ev: Event) => any) | null
+  onreadystatechange?: ((this: Document<T>, ev: Event) => any) | null;
+  onvisibilitychange?: ((this: Document<T>, ev: Event) => any) | null;
   pictureInPictureEnabled?: boolean;
 
   plugins?: any;
@@ -111,19 +113,19 @@ interface DocumentAdditionalProps {
 
 
 
-  interface Document extends DocumentBase, DocumentMetadata, DocumentStatus, DocumentAdditionalProps  {
+  interface Document<T extends Data> extends DocumentBase<T>, DocumentMetadata, DocumentStatus, DocumentAdditionalProps<T>  {
   // name: string | undefined;
   bgColor: string;
   documentURI: string;
   currentScript: string | null;
   defaultView: Window | null;
   doctype: DocumentType | null;
-  ownerDocument: Document | null;
+  ownerDocument: Document<T> | null;
   scrollingElement: Element | null;
   requiredRole?: UserRoleEnum;
   timeline: DocumentTimeline | undefined;
   filePath?: DocumentPath;
-  documentData?: DocumentData;
+  documentData?: DocumentData<T>;
   isPrivate?: boolean;
   _rev: string | undefined;
   _attachments?: Record<string, any> | undefined;
@@ -159,24 +161,24 @@ interface DocumentAdditionalProps {
 }
 
   
-export interface DocumentStore {
-  documents: Record<string, Document>;
+export interface DocumentStore <T extends Data> {
+  documents: Record<string, Document<T>>;
   fetchDocuments: () => void;
   getSnapshotDataKey: (documentId: string, eventId: number, userId: string) => string;
   updateDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
-  getData: (id: string) => Document | undefined;
-  addDocument: (document: Document) => void;
+  getData: (id: string) => Document<T> | undefined;
+  addDocument: (document: Document<T>, content: Content<T, K>) => void;
   setDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
-  updateDocument: (id: number, updatedDocument: Document) => void;
+  updateDocument: (id: number, updatedDocument: Document<T>) => void;
   deleteDocument: (id: number) => void;
   updateDocumentTags: (id: number, newTags: string[]) => void;
-  selectedDocument: Document | undefined;
-  selectedDocuments: Document[] | undefined;
+  selectedDocument: Document<T> | undefined;
+  selectedDocuments: Document<T>[] | undefined;
   // Add more methods as needed
 }
 
-const useDocumentStore = (): DocumentStore => {
-  const [documents, setDocuments] = useState<Record<string, Document>>({});
+const useDocumentStore = <T extends Data>(): DocumentStore<T> => {
+  const [documents, setDocuments] = useState<Record<string, Document<T>>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { notify } = useNotification();
@@ -200,7 +202,7 @@ const useDocumentStore = (): DocumentStore => {
     }
   };
 
-  const addDocument = (document: Document) => {
+  const addDocument = (document: Document<T>) => {
     setDocuments((prevDocuments) => ({
       ...prevDocuments,
       [document.id]: document,
@@ -281,7 +283,7 @@ const useDocumentStore = (): DocumentStore => {
     }
   };
 
-  const updateDocument = (id: number, updatedDocument: Document) => {
+  const updateDocument = (id: number, updatedDocument: Document<T>) => {
     setDocuments((prevDocuments) => ({
       ...prevDocuments,
       [id]: updatedDocument,
@@ -396,7 +398,7 @@ const useDocumentStore = (): DocumentStore => {
     }
   };
 
-  const store: DocumentStore = makeAutoObservable({
+  const store: DocumentStore<T, K> = makeAutoObservable({
     documents,
     isLoading,
     error,
@@ -420,5 +422,5 @@ const useDocumentStore = (): DocumentStore => {
 };
 
 export default useDocumentStore;
-export type { Document, DocumentBase };
+export type { Document, DocumentBase};
 

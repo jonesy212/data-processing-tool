@@ -11,12 +11,16 @@ import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
+import { AllTypes } from "../../typings/PropTypes";
 
 interface BaseRealtimeData {
   id: string;
   name: string;
   value: string;
-  type: string;
+  type: AllTypes
+
+
+  
   // Add other common properties shared by RealtimeDataItem and RealtimeData here
 }
 

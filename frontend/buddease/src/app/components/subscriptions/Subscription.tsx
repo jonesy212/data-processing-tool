@@ -7,20 +7,20 @@ import { subscriptionService } from "../hooks/dynamicHooks/dynamicHooks";
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
-import { K, T } from "../snapshots/SnapshotConfig";
 
-import { useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
+
 import { TriggerIncentivesParams } from "../utils/applicationUtils";
 import { userId } from "../users/ApiUser";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
 
 import { Data } from "../models/data/Data";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { Callback, snapshotContainer, SnapshotWithCriteria } from "../snapshots";
+import { Callback, snapshotContainer, SnapshotWithCriteria, SubscriberCollection, useSnapshotStore } from "../snapshots";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
 
 
-type FetchSnapshotByIdCallback = {
+type FetchSnapshotByIdCallback<T extends Data, K extends Data>  = {
   onSuccess: (snapshot: Snapshot<T, K>) => void;
   onError: (error: any) => void;
 };
@@ -31,15 +31,10 @@ type Subscription<T extends Data, K extends Data> = {
   subscriptionId?: string;
   subscriberType?: SubscriberTypeEnum;
   subscriptionType?: SubscriptionTypeEnum;
+  subscribers: SubscriberCollection<T, K>
   unsubscribe: (
-    unsubscribeDetails: {
-      userId: string;
-      snapshotId: string;
-      unsubscribeType: string;
-      unsubscribeDate: Date;
-      unsubscribeReason: string;
-      unsubscribeData: any;
-    },
+    snapshotId: number, 
+    unsubscribe: UnsubscribeDetails, 
     callback: Callback<Snapshot<T, K>> | null
  
   ) => void;
@@ -80,7 +75,7 @@ type Subscription<T extends Data, K extends Data> = {
   ) => SubscriberTypeEnum;
   portfolioUpdatesLastUpdated:number | ModifiedDate | null;
   getId?: () => string;
-  determineCategory: (data: Snapshot<T, K>) => string | CategoryProperties;
+  determineCategory: (data: Snapshot<T, K>) => string | CategoryProperties | null;
   category?: Category | null;
   categoryProperties?: CategoryProperties | null;
   fetchSnapshotById?: (
@@ -94,14 +89,14 @@ type Subscription<T extends Data, K extends Data> = {
       userId: string;
       snapshotId: string;
     },
-    callback: FetchSnapshotByIdCallback
+    callback: FetchSnapshotByIdCallback<T, K>
   ) => void; // Adjust this type according to the actual implementation
 
 };
 
 const SubscriptionComponent = (
   initialData: RealtimeDataItem[],
-  updateCallback: RealtimeUpdateCallback<RealtimeDataItem>,
+  updateCallback: RealtimeUpdateCallback<RealtimeDataItem, K>,
   hookName: string
 ) => {
   const [subscriptionData, setSubscriptionData] = useState<Subscription<T, K> | null>(

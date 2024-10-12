@@ -27,6 +27,8 @@ import { Member } from "../models/teams/TeamMembers";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { NotificationSettings } from "../support/NotificationSettings";
 import { T} from "../models/data/dataStoreMethods";
+import { BaseResponseType } from "../typings/types";
+
 
 
 interface ActivityLogEntry {
@@ -43,7 +45,7 @@ export interface UserManagerState {
   bio: string | null;
   profilePicture: string | null;
   notification: { message: string; recipient: string; snapshot: string; } | string;
-  data: UserData;
+  data: BaseResponseType;
   uploadQuota: number;
   nftCollection: NFT[];
   userSupportFeedbackPreferences: ProjectFeedback[];
@@ -98,6 +100,13 @@ export const userManagerSlice = createSlice({
   name: "userManager",
   initialState,
   reducers: {
+
+
+    // Action to set the entire user state
+    setUser: (state, action: PayloadAction<UserManagerState>) => {
+      return { ...state, ...action.payload };
+    },
+    
     updateFullName: (state, action: PayloadAction<string | null>) => {
       state.fullName = action.payload;
       return state;
@@ -255,7 +264,7 @@ export const userManagerSlice = createSlice({
 
     updateUserSettings: (
       state,
-      action: PayloadAction<{ userId: string; settings: UserSettings }>
+      action: PayloadAction<{ userId: string; settings: WritableDraft<UserSettings> }>
     ) => {
       const { userId, settings } = action.payload;
       const userIndex = state.users.findIndex((user) => user.id === userId);

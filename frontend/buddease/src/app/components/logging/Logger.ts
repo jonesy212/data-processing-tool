@@ -13,7 +13,7 @@ import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
-import { DataDetails } from "@/app/components/models/data/Data";
+import { Data, DataDetails } from "@/app/components/models/data/Data";
 import { team, Team } from "@/app/components/models/teams/Team";
 import TeamData from "@/app/components/models/teams/TeamData";
 import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
@@ -24,6 +24,9 @@ const API_BASE_URL = endpoints.logging;
 // Import the encryptData function
   import { Theme } from '../libraries/ui/theme/Theme';
 import { encryptData } from "../security/encryptedData";
+import { DefaultCalendarEvent } from '../actions/CalendarEventActions';
+import { T, K } from '../models/data/dataStoreMethods';
+import { Snapshot } from '../snapshots';
   
 const { notify } = useNotification();
 
@@ -291,13 +294,13 @@ class SearchLogger extends Logger {
 }
 
 class TeamLogger extends Logger {
-  static async logTeamCreation(teamId: string, team: Team): Promise<void> {
+  static async logTeamCreation(teamId: string, team: Team, storeId: number,  color?: string | null, ): Promise<void> {
     try {
       // Convert teamId to a number if necessary
       const numericTeamId = parseInt(teamId, 10);
 
       await this.logEvent("createTeam", "Creating team", numericTeamId, team);
-      await this.logTeamEvent(teamId, "Team created", team);
+      await this.logTeamEvent(teamId, "Team created", team, storeId, color);
     } catch (error) {
       console.error("Error logging team creation:", error);
       throw error;
@@ -306,23 +309,34 @@ class TeamLogger extends Logger {
 
   static async logTeamUpdate(
     teamId: string | number,
-    updatedTeam: Team
+    updatedTeam: Team,
+    storeId?: number,
+    color?: string | null,
   ): Promise<void> {
     try {
-      await this.logEvent(
-        "updateTeam",
-        "Updating team",
-        teamId as number,
-        updatedTeam
-      );
-      await this.logTeamEvent(teamId as string, "Team updated", updatedTeam);
+
+      if (storeId !== undefined) {
+        storeId = parseInt(storeId.toString(), 10);
+
+        await this.logEvent(
+          "updateTeam",
+          "Updating team",
+          teamId as number,
+          updatedTeam
+        );
+        await this.logTeamEvent(teamId as string, "Team updated", updatedTeam, storeId, color);
+      }
     } catch (error) {
       console.error("Error logging team update:", error);
       throw error;
     }
   }
 
-  static async logTeamDeletion(teamId: number | string): Promise<void> {
+  static async logTeamDeletion(
+    teamId: number | string,
+    color?: string | null,
+    storeId?: number,
+  ): Promise<void> {
     try {
       await this.logEvent("deleteTeam", "Deleting team", teamId as number);
       // Instantiate a Team object and pass it to logTeamEvent
@@ -331,6 +345,8 @@ class TeamLogger extends Logger {
         teamId as string,
         "Team deleted",
         team,
+        storeId,
+        null,
         new Date()
       );
     } catch (error) {
@@ -382,15 +398,20 @@ class TeamLogger extends Logger {
     teamId: string,
     message: string,
     team: Team,
-    data?: any
+    storeId?: number,
+    color?: string | null,
+    data?: any,
   ): Promise<void> {
     try {
       // Convert teamId to a number using the utility method
 
-      const teamData: TeamData | null = (await useTeamManagerStore()).getTeamData(
-        teamId,
-        team
-      );
+      if(storeId !== undefined && color !== undefined){
+        const teamData: TeamData | null = (await useTeamManagerStore(storeId)).getTeamData(
+          teamId,
+          team,
+          color
+        )
+      
 
       if (!teamData) {
         throw new Error("Team data is null");
@@ -421,6 +442,7 @@ class TeamLogger extends Logger {
           "Content-Type": "application/json",
         },
       });
+    }
     } catch (error) {
       console.error(`Error logging team event for team ${teamId}:`, error);
       throw error;
@@ -443,6 +465,8 @@ class TeamLogger extends Logger {
     return logUrl;
   }
 }
+
+
 class UILogger extends Logger {
   static logInterfaceContentFetch(userId: string) {
     this.logWithOptions("UI", `Fetched interface content for user ID: ${userId}`, userId);
@@ -566,7 +590,7 @@ class AnimationLogger extends Logger {
     prefix: string,
     name: string,
     type: NotificationType,
-    dataDetails?: DataDetails<any, any>
+    dataDetails?: DataDetails 
   ): string {
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 10);
@@ -1040,7 +1064,23 @@ class TaskLogger extends Logger {
       user: null, // Optional: Include user information if available, set to null for now
       createdAt: new Date(), // Ensure createdAt is always defined as a Date
       date: new Date(), // Ensure date is always defined as a Date
-      // Add additional fields as needed based on the LogData interface
+      sent: new Date(),
+      isSent: true,
+      isDelivered: true,
+      responded: false,
+      delivered: new Date(),
+     
+      opened: new Date(),
+      clicked: new Date(),
+      responseTime: new Date(),
+     
+      eventData: {} as DefaultCalendarEvent,
+      topics: [],
+      highlights: [],
+      files: [],
+      meta: {} as Map<string, Snapshot<T, K>> & Data,
+     
+
     };
 
     if (completionMessageLog.createdAt) {
@@ -1813,6 +1853,8 @@ class ThemeLogger extends Logger {
 export default Logger;
 
 export {
+  createErrorNotificationContent,
+  errorLogger,
   AnalyticsLogger,
   AnimationLogger, AssignBaseStoreLogger, AudioLogger,
   BugLogger,

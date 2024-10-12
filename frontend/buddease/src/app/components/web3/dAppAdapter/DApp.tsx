@@ -1,3 +1,4 @@
+import {generateAllHeaders} from '@/app/api/generateAllHeaders'
 import appTreeApiService from "@/app/api/appTreeApi";
 import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
 import YourClass from "@/app/utils/YourClass";
@@ -31,6 +32,7 @@ interface CustomApp {
   name: string;
   description: string;
   authToken: string;
+  apiKey: string
   // Add any other properties as needed
 }
 
@@ -45,6 +47,8 @@ class CustomDAppAdapter<T extends DappProps> extends YourClass {
   private config: DAppAdapterConfig<T>;
   private database = new FluenceConnection();
   private databaseConnections: Map<DatabaseType, any>; // Use Map to store different database connections
+  private _appData?: CustomApp; // Private variable to hold appData
+  private _apiKey?: string; // Private variable to hold apiKey
 
   constructor(config: DAppAdapterConfig<T>) {
     super();
@@ -52,6 +56,7 @@ class CustomDAppAdapter<T extends DappProps> extends YourClass {
     this.databaseConnections = new Map(); // Initialize databaseConnections as a new Map
     this.initDatabaseConnections();
     this.implementAnalytics();
+    
     interface AdapterProps extends DAppAdapterProps {
       appName: string;
       appVersion: string;
@@ -105,6 +110,7 @@ class CustomDAppAdapter<T extends DappProps> extends YourClass {
   }
 
 
+
   private initDatabaseConnections(): void {
     // Initialize connections to different databases
     this.databaseConnections = new Map<DatabaseType, any>();
@@ -151,8 +157,37 @@ class CustomDAppAdapter<T extends DappProps> extends YourClass {
   }
 
 
+  // Getter for appData
+  public get appData(): CustomApp | undefined {
+    return this._appData;
+  }
+
+  // Setter for appData
+  public set appData(data: CustomApp) {
+    if (!data.id || !data.name || !data.description) {
+      throw new Error("Incomplete app data. Please provide id, name, and description.");
+    }
+    this._appData = data;
+
+    // Set apiKey when appData is set
+    this._apiKey = data.apiKey;
+  }
+
+
+
+  // Getter for apiKey to be used elsewhere
+  public get apiKey(): string | undefined {
+    return this._apiKey;
+  }
+
+
+
   createCustomApp(appData: CustomApp, errorMessage: string): YourClass {
     try {
+
+       // Use setter to assign appData, which also sets the apiKey
+       this.appData = appData;
+
       // Validate appData
       if (!appData.id || !appData.name || !appData.description) {
         throw new Error(
@@ -166,7 +201,15 @@ class CustomDAppAdapter<T extends DappProps> extends YourClass {
       if (!isValidAuthToken(authToken)) {
         throw new Error("Invalid authentication token.");
       }
+      // Generate headers with the authToken
+      const options = {
+        apiKey: appData.apiKey, // Assuming `appData` has an apiKey property
+        token: authToken,
+      };
+
+      const additionalHeaders = generateAllHeaders(options, authToken);
   
+     
       // Simulate saving the app data to a database
       const yourClassInstance = new YourClass();
       yourClassInstance.saveAppDataToDatabase(appTreeApiService); // Assuming this method exists
@@ -195,11 +238,17 @@ class CustomDAppAdapter<T extends DappProps> extends YourClass {
     } catch (error) {
       console.error("Error retrieving custom app:", error);
     }
+
+    if(!this.appData){
+      throw new Error("appData is not defined");
+    }
+    
     return {
       id: appId,
       name: "Custom App",
       description: "This is a custom app.",
       authToken: authToken,
+      apiKey: this.appData.apiKey,
     };
   }
 

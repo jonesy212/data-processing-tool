@@ -870,7 +870,7 @@
 //         payload: CreateSnapshotsPayload<Task, K>,
 //         callback: (snapshots: Snapshot<Task, K>[]) => void | null,
 //         snapshotDataConfig?: SnapshotConfig<SnapshotWithCriteria<Task, BaseData>, K>[],
-//         category?: string | CategoryProperties
+//         category?: string | symbol | Category
 //       ): Snapshot<Task, K>[] | null => {
 //         console.log('Creating snapshots');
       

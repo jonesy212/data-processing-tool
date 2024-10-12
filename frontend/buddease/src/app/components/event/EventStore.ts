@@ -1,13 +1,13 @@
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Data } from "../models/data/Data";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { Snapshot, SubscriberCollection, SnapshotConfig, SnapshotWithCriteria, UpdateSnapshotPayload } from "../snapshots";
+import { Snapshot, SnapshotConfig, SnapshotWithCriteria, SubscriberCollection, UpdateSnapshotPayload } from "../snapshots";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
 
 // EventStore.ts
 export type EventStore<T extends Data, K extends Data> = {
-    eventRecords: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
+    eventRecords: Record<string, EventRecord<T, K>[]> | null;;
     callbacks: Record<string, Array<(snapshot: Snapshot<T, K>) => void>>;
     subscribers: SubscriberCollection<T, K>;
     eventIds: string[];
@@ -175,4 +175,4 @@ const defaultEventStore = <T extends Data, K extends Data>(): EventStore<T, K> =
 });
 
 
-export { defaultEventStore }
+export { defaultEventStore };

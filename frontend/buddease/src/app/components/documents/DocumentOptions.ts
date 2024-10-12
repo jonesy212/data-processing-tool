@@ -29,6 +29,7 @@ import { DocumentTypeEnum } from "./DocumentGenerator";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 import { NoteAnimationOptions, NoteOptions } from "./NoteData";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
+import { CustomStyle } from '@/app/api/ApiService';
 
 export interface CustomDocument extends docx.Document {
   createSection(): docx.SectionProperties;
@@ -235,7 +236,7 @@ export interface DocumentOptions {
   };
   footer: string;
   watermark: {
-    enabled: false;
+    enabled: boolean;
     text: string;
     color: string;
     opacity: number;
@@ -311,16 +312,16 @@ export interface DocumentOptions {
     value: number;
     levels: [
       {
-        name: "100%";
-        value: 1;
+        name: string
+        value: number
       },
       {
-        name: "125%";
-        value: 1.25;
+        name: string
+        value: number
       },
       {
-        name: "150%";
-        value: 3;
+        name: string
+        value: number
       }
     ];
   };
@@ -336,7 +337,6 @@ export interface DocumentOptions {
     left: number;
     right: number;
   };
-
   visibility: AllTypes;
   updatedDocument?: DocumentData;
   fontSize: number;
@@ -411,6 +411,7 @@ export interface DocumentOptions {
   | string
   | {
     enabled: boolean;
+    allow: boolean;
   };
   links: LinksType;
   embeddedContent:
@@ -467,7 +468,7 @@ export interface DocumentOptions {
     allow: boolean;
   };
   styles: {
-    [key: string]: Style;
+    [key: string]: CustomStyle;
   };
   previousMetadata: StructuredMetadata | undefined;
   currentMetadata: StructuredMetadata | undefined;
@@ -482,10 +483,26 @@ export interface DocumentOptions {
     alignment: "left";
     borders:
     | {
-      top: BorderStyle;
-      bottom: BorderStyle;
-      left: BorderStyle;
-      right: BorderStyle;
+      top: {
+        style: BorderStyle;
+        width: number;
+        color: string;
+      };
+      bottom: {
+        style: BorderStyle;
+        width: number;
+        color: string;
+      };
+      left: {
+        style: BorderStyle;
+        width: number;
+        color: string;
+      };
+      right: {
+        style: BorderStyle;
+        width: number;
+        color: string;
+      };
     }
     | undefined;
   };
@@ -499,6 +516,13 @@ export interface DocumentOptions {
   tableColumns: number | [];
   codeBlock: boolean | [] | { enabled: boolean };
   tableStyles?: {
+    header: {
+      fontWeight?: string,
+      root?: {},
+      prepForXml: () => {},
+      addChildElement: () => {},
+      rootKey?: string,
+    };
     backgroundColor?: string;
     borderColor?: string;
     borderWidth?: string;
@@ -542,7 +566,7 @@ export interface DocumentOptions {
   highlightColor: string;
   customSettings: Record<string, any> | undefined;
   documents: DocumentData[];
-  includeType: "all" | "selected" | "none";
+  includeType: { enabled: boolean, format: "all" | "selected" | "none" }
   footnote:
   | boolean
   | {
@@ -576,7 +600,7 @@ export interface DocumentOptions {
 export const getDefaultDocumentOptions = (): DocumentOptions => {
   return {
     documentOptions: {
-      
+
       uniqueIdentifier: "",
       documentType: "default",
       userIdea: undefined,
@@ -715,7 +739,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       highlightColor: '',
       customSettings: undefined,
       documents: [],
-      includeType: 'all',
+      includeType: { enabled: false, format: 'all'},
       footnote: false,
       defaultZoomLevel: 0,
       customProperties: undefined,
@@ -806,13 +830,21 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       versionData: [],
       backend: undefined,
       frontend: undefined,
-    
+
       checksum: "",
       version: "1.0.0",
       timestamp: new Date().toISOString(),
       user: "Buddease",
       comments: [],
-      changes: []
+      changes: [],
+      buildVersions: {
+        data: undefined,
+        frontend: undefined,
+        backend: undefined,
+      },
+      major: 1,
+      minor: 1,
+      patch: 1,
     },
     lastModifiedDate: {
       value: undefined,
@@ -934,7 +966,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     highlightColor: "#FFFF00",
     customSettings: undefined,
     documents: [],
-    includeType: "all",
+    includeType:{enabled: true, format: "all"},
     footnote: false,
     defaultZoomLevel: 100,
     customProperties: undefined,
@@ -954,7 +986,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     backendStructure: undefined,
     frontendStructure: undefined,
     revisionOptions: undefined,
-    additionalOptionsLabel: "", 
+    additionalOptionsLabel: "",
   };
 };
 // Extend DocumentOptions to include additional properties

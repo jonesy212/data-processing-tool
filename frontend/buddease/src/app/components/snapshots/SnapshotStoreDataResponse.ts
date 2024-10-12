@@ -6,7 +6,7 @@ import { SnapshotItem } from "./SnapshotList";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends SnapshotDataResponse<T, K> {
-  id: number;
+  id: string | number;
   timestamp: Date;
   category: string;
   topic?: string;
@@ -175,7 +175,7 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
   createSnapshotStoreSuccess?: boolean;
   clearStore?: () => void;
   fetchSnapshotStoreData?: () => void; // Adjust type if known
-  storeId?: string;
+  storeId: number;
   snapshotStoreId?: string;
   storeType?: string;
   snapshotStoreConfig?: any; // Adjust to specific type if known

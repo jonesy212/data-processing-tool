@@ -15,9 +15,16 @@ const useAuthentication = () => {
 
   const logout = () => {
     // Logic to handle user logout
+
+    // Clear user session or token from local storage
+    localStorage.removeItem('userToken'); // Adjust based on your authentication method
+
     setUser(null);
     setIsLoggedIn(false);
     EventActions.userLoggedOut({ payload: null });
+
+    window.location.href = '/login'; // Change to your login page URL
+
   };
 
   useEffect(() => {

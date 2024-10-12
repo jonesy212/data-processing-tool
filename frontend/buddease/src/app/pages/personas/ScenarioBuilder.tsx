@@ -20,6 +20,7 @@ import DocumentPermissions from "@/app/components/documents/DocumentPermissions"
 import { allCategories, AllCategoryValues } from "@/app/components/models/data/DataStructureCategories";
 import { Phase } from "@/app/components/phases/Phase";
 import { DocumentObject } from '@/app/components/state/redux/slices/DocumentSlice';
+import { buildDocument } from '@/app/components/documents/DocumentBuilderComponent';
 
 
 

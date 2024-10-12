@@ -207,7 +207,7 @@ const additionalPhaseNames = [
   "Additional Phase 2",
 ];
 
-const additionalPhaseHooks: { [key: string]: CustomPhaseHooks } = {};
+const additionalPhaseHooks: { [key: string]: CustomPhaseHooks<T> } = {};
 
 // First block of code
 additionalPhaseNames.forEach(([phaseName, duration]) => {

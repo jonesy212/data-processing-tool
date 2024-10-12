@@ -1,12 +1,13 @@
 // createSnapshotOptions.ts
 
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { SnapshotData, SnapshotWithCriteria } from ".";
 import { SnapshotStoreOptions } from "../hooks/useSnapshotManager";
 import { Category, getOrSetCategoryForSnapshot } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
 import { displayToast } from "../models/display/ShowToast";
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { InitializedState, initializeState, useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { addToSnapshotList } from "../utils/snapshotUtils";
 import { getCurrentSnapshotConfigOptions } from "./getCurrentSnapshotConfigOptions";
 import { handleSnapshotOperation } from "./handleSnapshotOperation";
@@ -23,17 +24,24 @@ interface SimulatedDataSource {
     // You can add more properties if needed
 }
 
+function getDefaultInitializedState<T extends BaseData, K extends BaseData>(): InitializedState<T, K> {
+    // Create a valid default state that fits InitializedState<T, K>
+    // This can be an empty snapshot store, map, or another valid state based on your app's requirements.
+    return {} as InitializedState<T, K>; // Adjust this to match your app's logic for default state
+  }
+
 function createSnapshotOptions<T extends BaseData, K extends BaseData>(
     snapshotObj: Snapshot<T, K>,
     snapshot: (
-      id: string | number | undefined,
-      snapshotId: string | null,
-      snapshotData: Snapshot<T, K>,
-      category: symbol | string | Category | undefined,
-      callback: (snapshot: Snapshot<T, K>) => void,
-    //   snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
-    snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>,
-    snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
+        id: string | number | undefined,
+        snapshotId: string | null,
+        snapshotData: SnapshotData<Data, Data>,
+        category: symbol | string | Category | undefined,
+        callback: (snapshot: Snapshot<T, K>) => void,
+        criteria: CriteriaType,
+        //   snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
+        snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>,
+        snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
     ) => Promise<SnapshotData<T, K>>,
     simulatedDataSource?: SimulatedDataSource // Optional parameter for SimulatedDataSource
 
@@ -52,9 +60,20 @@ function createSnapshotOptions<T extends BaseData, K extends BaseData>(
         },
     };
 
+    let initialState: InitializedState<{} | T, K>;
+
+    // Check if snapshotObj.initialState is valid
+    if (snapshotObj.initialState) {
+      initialState = initializeState(snapshotObj.initialState); // Use the existing `initializeState` function
+    } else {
+      // Handle the case when initialState is null or undefined by providing a valid InitializedState
+      initialState = getDefaultInitializedState<T, K>(); // Return a valid default for InitializedState
+    }
+  
+
     return {
         data: dataMap,
-        initialState: snapshotObj.initialState || null,
+        initialState: snapshotObj.initialState ? initializeState(snapshotObj.initialState) : {} as InitializedState<T, K>,
         snapshotId: snapshotObj.id ? snapshotObj.id.toString() : "",
         category: {
             name:
@@ -105,6 +124,6 @@ function createSnapshotOptions<T extends BaseData, K extends BaseData>(
         getCategory: getOrSetCategoryForSnapshot,
         getSnapshotConfig: getCurrentSnapshotConfigOptions,
     };
-}
-export default createSnapshotOptions;
+
+}export default createSnapshotOptions;
 export type { SimulatedDataSource };

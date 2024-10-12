@@ -29,6 +29,7 @@ import ContentItemComponent, {
 } from "../../components/models/content/ContentItem";
 import responsiveDesignStore from "../../components/styling/ResponsiveDesign";
 import { useLayout } from "./LayoutContext";
+
 interface ClickableListItem {
   id: number;
   label: string;
@@ -136,7 +137,12 @@ const AnimatedDashboard: React.FC<ClickableListItem> = ({
 
   const toggleAnimatedComponent = () =>
     animatedComponentRef.current?.toggleActivation();
-  const toggleNotificationBar = () => notificationBarHook.toggleActivation();
+
+  const toggleNotificationBar = async () => {
+    const hook = await notificationBarHook;
+    hook.toggleActivation();
+  };
+
   const toggleDarkModeToggle = () => darkModeToggleHook.toggleActivation();
 
   // Button generator configurations

@@ -1,25 +1,40 @@
 // snapshot
+import { addTodo, completeAllTodos, completeAllTodosFailure, completeAllTodosSuccess, fetchTodosFailure, fetchTodosSuccess, removeTodo, toggleTodo, updateTodoTitle } from '@/app/api/ApiTodo';
 import * as snapshotApi from '@/app/api/SnapshotApi';
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { Signature } from "ethers";
 import { LanguageEnum } from "../communications/LanguageEnum";
 import { CustomTransaction } from "../crypto/SmartContractInteraction";
-import { defaultEventStore } from "../event/EventStore";
 import { createCustomTransaction } from "../hooks/dynamicHooks/createCustomTransaction";
+import { CombinedEvents, SnapshotManager } from '../hooks/useSnapshotManager';
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from "../models/data/Data";
+import { ThemeEnum } from '../libraries/ui/theme/Theme';
+import { BaseData, Data, DataDetails } from "../models/data/Data";
 import FileData from '../models/data/FileData';
-import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
+import { ProjectPhaseTypeEnum, StatusType } from "../models/data/StatusType";
+import { DataStore, EventManager, EventRecord } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Settings } from "../state/stores/SettingsStore";
 import { Subscriber } from "../users/Subscriber";
 import { User } from "../users/User";
 import UserRoles from "../users/UserRoles";
 import { updateFileMetadata } from '../utils/fileUtils';
 import { createBaseSnapshot } from "./createBaseSnapshot";
+import { getCurrentSnapshotStoreOptions, isSnapshot, isSnapshotsArray } from './createSnapshotStoreOptions';
 import {
-  Snapshot
+  CoreSnapshot,
+  Payload,
+  Snapshot,
+  Snapshots,
+  SnapshotsArray,
+  SnapshotUnion,
+  UpdateSnapshotPayload
 } from "./LocalStorageSnapshotStore";
+import { refreshUI, refreshUIForFile } from './refreshUI';
+import { SnapshotConfigProps } from './SnapshotConfigProps';
 import {
   defaultAddDataStatus,
   defaultAddDataSuccess,
@@ -30,11 +45,59 @@ import {
   defaultUpdateDataStatus,
   defaultUpdateDataTitle,
 } from "./snapshotDefaults";
-import SnapshotStore from "./SnapshotStore";
+import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
+import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 import { snapshotStoreConfigInstance } from "./snapshotStoreConfigInstance";
-import {refreshUIForFile} from './refreshUI'
-// // import { K, T , SnapshotConfig} from "./SnapshotConfig";
+ 
+import { action } from 'mobx';
+import { IHydrateResult } from 'mobx-persist';
+import { any } from 'prop-types';
+import { SnapshotData } from '.';
+import { SnapshotWithData } from '../calendar/CalendarApp';
+import useDocumentManagement from '../documents/useDocumentManagement';
+import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
+import exportTasksToCSV from '../hooks/dataHooks/exportTasksToCSV';
+import { InitializedDataStore } from '../hooks/SnapshotStoreOptions';
+import { RealtimeDataItem } from '../models/realtime/RealtimeData';
+import { getTrackers } from '../models/tasks/GetTracker';
+import { DataStoreMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import { updateTaskAssignee, updateTaskDescription, updateTaskDueDate, updateTaskPriority, updateTaskTitle } from '../state/redux/slices/ContentSlice';
+import { updateTaskStatus } from '../state/redux/slices/TaskSlice';
+import { addTracker, removeTracker } from '../state/redux/slices/TrackerSlice';
+import CalendarManagerStoreClass from '../state/stores/CalendarEvent';
+import { Subscription } from '../subscriptions/Subscription';
+import { NotificationTypeEnum } from '../support/NotificationContext';
+import { SnapshotActionType } from './SnapshotActionType';
+import { SnapshotConfig } from './SnapshotConfig';
+import { SnapshotContainer, SnapshotDataType } from './SnapshotContainer';
+import { SnapshotEvents } from './SnapshotEvents';
+import { SnapshotItem } from './SnapshotList';
+import { SnapshotWithCriteria } from './SnapshotWithCriteria';
+import { Callback } from './subscribeToSnapshotsImplementation';
+import { SnapshotStoreProps } from './useSnapshotStore';
 
+
+// A type guard to check if an object is of type CombinedEvents<T, K>
+function isCombinedEvents<T extends Data, K extends Data>(events: any): events is CombinedEvents<T, K> {
+  return (
+    typeof events === "object" &&
+    'records' in events &&
+    'event' in events &&
+    'unsubscribeDetails' in events &&
+    'callback' in events
+  );
+}
+
+function isSnapshotStoreConfig<T extends Data, K extends Data>(
+  obj: any
+): obj is SnapshotStoreConfig<T, K> {
+  return (
+    obj &&
+    typeof obj === "object" &&
+    'tempData' in obj &&
+    'configProperty' in obj // You can add any necessary checks for properties here
+  );
+}
 
 
 // Define T as a generic type parameter
@@ -63,11 +126,16 @@ function processSnapshot<T extends Data, K extends Data>(snapshot: Snapshot<T, K
     metadata: snapshot.metadata || {},
     data: snapshot.data || new Map<string, Snapshot<T, K>>(),
     initialState: snapshot.initialState || null,
-    events: snapshot.events || defaultEventStore<T, K>(),
+    events: snapshot.events && isCombinedEvents(snapshot.events) 
+    ? snapshot.events 
+    : undefined, // or use a default value that fits `CombinedEvents<T, K>`
+    
     // Snapshot interface with type guard
-    snapshotStoreConfig: snapshot.snapshotStoreConfig 
-    ? snapshot.snapshotStoreConfig 
-    : (snapshotStoreConfigInstance.length > 0 ? snapshotStoreConfigInstance[0] : null),
+    snapshotStoreConfig: isSnapshotStoreConfig<T, K>(snapshot.snapshotStoreConfig)
+    ? snapshot.snapshotStoreConfig
+    : (Array.isArray(snapshotStoreConfigInstance) && snapshotStoreConfigInstance.length > 0 && isSnapshotStoreConfig<T, K>(snapshotStoreConfigInstance[0])
+        ? snapshotStoreConfigInstance[0]
+        : null),
     getSnapshotItems: snapshot.getSnapshotItems || (() => []), // Replace with actual function
     defaultSubscribeToSnapshots: snapshot.defaultSubscribeToSnapshots || (() => {}), // Replace with actual function
     transformSubscriber: snapshot.transformSubscriber || ((sub: Subscriber<T, K>) => {
@@ -112,10 +180,10 @@ const plainDataObject: Record<string, Data> = {
       status: "Pending",
       tags: {
         "1": {
-        id: "1",
-        name: "Sample tag",
-        color: "#000000",
-        relatedTags: ["Important"]
+          id: "1",
+          name: "Sample tag",
+          color: "#000000",
+          relatedTags: ["Important"]
         }
       },
 
@@ -290,10 +358,10 @@ const plainDataObject: Record<string, Data> = {
         },
       
         // Define initial values for stroke, strokeWidth, etc.
-        stroke:{
+        stroke: {
           width: 1,
           color: "#000000"
-        }, 
+        },
         strokeWidth: 1, // Default stroke width (1px)
         fillColor: "#FFFFFF", // Default fill color (white)
         flippedX: false, // Indicates if the element is flipped horizontally
@@ -337,8 +405,8 @@ const plainDataObject: Record<string, Data> = {
             this.y = updates.y;
           }
       
-          // Optionally trigger a UI refresh or further processing
-          this.refreshUI();
+          // Trigger a UI refresh or further processing
+          refreshUI(updates);
         },
       
         // A placeholder function to refresh UI or re-render the affected elements
@@ -351,7 +419,7 @@ const plainDataObject: Record<string, Data> = {
           console.log(`FlippedY: ${this.flippedY}`);
           console.log(`Position (X, Y): (${this.x}, ${this.y})`);
         }
-      },      
+      },
       persona: new Persona(PersonaTypeEnum.Default),
       settings: {
         id: "",
@@ -366,6 +434,58 @@ const plainDataObject: Record<string, Data> = {
         enableGroupManagement: true,
         enableTeamManagement: true,
         idleTimeout: undefined,
+
+        calendarEvents: [],
+        todos: [],
+        tasks: [],
+        snapshotStores: [],
+        
+        currentPhase: "",
+        comment: "",
+        browserCheckStore: {
+          browserKey:"",
+          dispatch:"",
+          init:"",
+          testDispatch:"",
+         
+        },
+        trackerStore: {
+          trackers, addTracker, getTracker, getTrackers, 
+          removeTracker, dispatch, removeTodo, assignTodoToUser, updateTodoTitle, fetchTodosSuccess, 
+        },
+        
+        todoStore: {
+          dispatch, todos, todoList, toggleTodo,
+          addTodo, loading, error, addTodos,
+          removeTodo, assignTodoToUser, updateTodoTitle, fetchTodosSuccess, 
+          fetchTodosFailure, openTodoSettingsPage, getTodoId, getTeamId,
+          fetchTodosRequest, completeAllTodosSuccess, completeAllTodos, completeAllTodosFailure,
+
+        },
+        taskManagerStore: {
+          tasks, taskTitle, taskDescription, taskStatus,
+          assignedTaskStore, updateTaskTitle, updateTaskDescription, updateTaskStatus, 
+          updateTaskDueDate, updateTaskPriority, filterTasksByStatus, getTaskCountByStatus,
+          clearAllTasks, archiveCompletedTasks, updateTaskAssignee, getTasksByAssignee,
+          getTaskById, sortByDueDate, exportTasksToCSV, dispatch, 
+        },
+        iconStore: {
+          dispatch
+        },
+        calendarStore: {
+          openScheduleEventModal, openCalendarSettingsPage, getData, updateDocumentReleaseStatus,
+          getState, action, events, eventTitle, eventDescription, eventStatus, assignedEventStore, snapshotStore,
+        },
+        
+        endpoints: {},
+        highlights: [],
+        results: [],
+        totalCount: 0,
+        searchData: {
+          results, totalCount,
+        },
+       
+
         startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
           // Example implementation
           setTimeout(onTimeout, timeoutDuration);
@@ -387,7 +507,7 @@ const plainDataObject: Record<string, Data> = {
         securityFeaturesEnabled: true,
         collaborationPreference1: "Option 1",
         collaborationPreference2: "Option 2",
-        theme: "light",
+        theme: ThemeEnum.LIGHT,
         language: LanguageEnum.English, // Example language
         fontSize: 14,
         darkMode: false,
@@ -465,16 +585,32 @@ const plainDataObject: Record<string, Data> = {
         enableIncognitoMode: false,
         restrictContentSharingToContacts: false,
         restrictContentSharingToGroups: false,
+        isDataSharingEnabled: true,
+        thirdPartyTracking: false,
+        dataSharing: {
+          sharingLevel: "", sharingScope: "", sharingOptions: [], allowSharing: true,
+          allowSharingWith: [], allowSharingWithTeams: [], 
+          allowSharingWithGroups: [],
+          allowSharingWithPublic: false,
+          allowSharingWithTeamsAndGroups: false,
+          allowSharingWithPublicAndTeams: false,
+          allowSharingWithPublicAndGroups: false,
+          allowSharingWithPublicAndTeamsAndGroups: false,
+          
+          allowSharingWithPublicAndTeamsAndGroupsAndPublic: false,
+          allowSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: false,
+         
+        },
       },
       notifications: {
         channels: {
           email: true,
           push: true,
-          sms: true, 
+          sms: true,
           
           chat: true,
-          calendar: true,  
-          audioCall: false, 
+          calendar: true,
+          audioCall: false,
           videoCall: false,
           screenShare: false,
         
@@ -571,309 +707,309 @@ const plainDataObject: Record<string, Data> = {
           },
           portfolioView: 'overview', // View mode for the crypto portfolio
           // transactionHistory: "",
-          RetentionportfolioView: '30days', // Retention period for transaction history
-        
+          transactionHistoryRetention: '30days'
         }
       },
-      securitySettings: {
-        securityQuestions: ["What is your pet's name?"],
-        twoFactorAuthentication: false,
-        passwordPolicy: "StandardPolicy",
-        passwordExpirationDays: 90,
-        passwordStrength: "Strong",
-        passwordComplexityRequirements: {
-          minLength: 8,
-          requireUppercase: true,
-          requireLowercase: true,
-          requireDigits: true,
-          requireSpecialCharacters: false,
+        securitySettings: {
+          securityQuestions: ["What is your pet's name?"],
+          twoFactorAuthentication: false,
+          passwordPolicy: "StandardPolicy",
+          passwordExpirationDays: 90,
+          passwordStrength: "Strong",
+          passwordComplexityRequirements: {
+            minLength: 8,
+            requireUppercase: true,
+            requireLowercase: true,
+            requireDigits: true,
+            requireSpecialCharacters: false,
+          },
+          accountLockoutPolicy: {
+            enabled: true,
+            maxFailedAttempts: 5,
+            lockoutDurationMinutes: 15,
+          },
+          accountLockoutThreshold: 50, //todo create way reset threshod
         },
-        accountLockoutPolicy: {
-          enabled: true,
-          maxFailedAttempts: 5,
-          lockoutDurationMinutes: 15,
-        },
-        accountLockoutThreshold: 50, //todo create way reset threshod
-      },
-      emailVerificationStatus: true,
-      phoneVerificationStatus: true,
-      walletAddress: "0x123456789abcdef",
-      transactionHistory: [
-        createCustomTransaction({
-          id: "tx1",
-          amount: 100,
-          date: new Date(),
-          description: "Sample transaction",
-          type: null,
-          typeName: null,
-          to: null,
-          nonce: 0,
-          gasLimit: BigInt(0),
-          gasPrice: null,
-          maxPriorityFeePerGas: null,
-          maxFeePerGas: null,
-          data: "",
-          value: BigInt(0),
-          chainId: BigInt(0),
-          signature: null,
-          accessList: [],
-          maxFeePerBlobGas: null,
-          blobVersionedHashes: null,
-          hash: null,
-          unsignedHash: "",
-          from: null,
-          fromPublicKey: null,
-          isSigned(): boolean {
-            return !!(
-              this.type &&
-              this.typeName &&
-              this.from &&
-              this.signature
-            );
-          },
-          serialized: "",
-          unsignedSerialized: "",
-          inferType(): number {
-            if (this.type !== null && this.type !== undefined) {
-              return this.type;
-            }
-            return 0;
-          },
-          inferTypes(): number[] {
-            const types: number[] = [];
-            if (this.type !== null && this.type !== undefined) {
-              types.push(this.type);
-            }
-            if (this.maxFeePerGas !== null &&
-              this.maxPriorityFeePerGas !== null) {
-              types.push(2);
-            }
-            if (types.length === 0) {
-              types.push(0);
-            }
-            return types;
-          },
-          isLegacy() {
-            return this.type === 0 && this.gasPrice !== null;
-          },
-          isBerlin() {
-            return (
-              this.type === 1 &&
-              this.gasPrice !== null &&
-              this.accessList !== null
-            );
-          },
-          isLondon() {
-            return (
-              this.type === 2 &&
-              this.accessList !== null &&
-              this.maxFeePerGas !== null &&
-              this.maxPriorityFeePerGas !== null
-            );
-          },
-          isCancun() {
-            return (
-              this.type === 3 &&
-              this.to !== null &&
-              this.accessList !== null &&
-              this.maxFeePerGas !== null &&
-              this.maxPriorityFeePerGas !== null &&
-              this.maxFeePerBlobGas !== null &&
-              this.blobVersionedHashes !== null
-            );
-          },
-          clone(): CustomTransaction {
-            const clonedData: CustomTransaction = {
-              _id: this._id as string,
-              id: this.id as string,
-              amount: this.amount,
-              date: this.date as Date,
-              title: this.title as string,
-              value: this.value as bigint,
-              description: this.description || "",
-              startDate: this.startDate ? new Date(this.startDate) : undefined,
-              endDate: this.endDate ? new Date(this.endDate) : undefined,
-              isSigned: typeof this.isSigned === "function"
-                ? this.isSigned.bind(this)
-                : this.isSigned,
-              serialized: this.serialized,
-              unsignedSerialized: this.unsignedSerialized,
-              nonce: this.nonce as number,
-              gasLimit: this.gasLimit as bigint,
-              chainId: this.chainId,
-              hash: this.hash,
-              type: this.type as number,
-              typeName: this.typeName || "",
-              data: this.data || "",
-              unsignedHash: this.unsignedHash || "",
-              to: this.to,
-              gasPrice: this.gasPrice as bigint,
-              maxFeePerGas: this.maxFeePerGas as bigint,
-              maxPriorityFeePerGas: this.maxPriorityFeePerGas as bigint,
-              signature: this.signature as Signature,
-              accessList: this.accessList,
-              maxFeePerBlobGas: this.maxFeePerBlobGas as bigint,
-              blobVersionedHashes: this.blobVersionedHashes as string,
-              from: this.from as string,
-              fromPublicKey: this.fromPublicKey,
-              isLegacy: typeof this.isLegacy === "function"
-                ? this.isLegacy.bind(this)
-                : this.isLegacy,
-              isBerlin: typeof this.isBerlin === "function"
-                ? this.isBerlin.bind(this)
-                : this.isBerlin,
-              isLondon: typeof this.isLondon === "function"
-                ? this.isLondon.bind(this)
-                : this.isLondon,
-              isCancun: typeof this.isCancun === "function"
-                ? this.isCancun.bind(this)
-                : this.isCancun,
-              inferType: typeof this.inferType === "function"
-                ? this.inferType.bind(this)
-                : this.inferType,
-              inferTypes: typeof this.inferTypes === "function"
-                ? this.inferTypes.bind(this)
-                : this.inferTypes,
-              clone: typeof this.clone === "function" ? this.clone : this.clone,
+        emailVerificationStatus: true,
+        phoneVerificationStatus: true,
+        walletAddress: "0x123456789abcdef",
+        transactionHistory: [
+          createCustomTransaction({
+            id: "tx1",
+            amount: 100,
+            date: new Date(),
+            description: "Sample transaction",
+            type: null,
+            typeName: null,
+            to: null,
+            nonce: 0,
+            gasLimit: BigInt(0),
+            gasPrice: null,
+            maxPriorityFeePerGas: null,
+            maxFeePerGas: null,
+            data: "",
+            value: BigInt(0),
+            chainId: BigInt(0),
+            signature: null,
+            accessList: [],
+            maxFeePerBlobGas: null,
+            blobVersionedHashes: null,
+            hash: null,
+            unsignedHash: "",
+            from: null,
+            fromPublicKey: null,
+            isSigned(): boolean {
+              return !!(
+                this.type &&
+                this.typeName &&
+                this.from &&
+                this.signature
+              );
+            },
+            serialized: "",
+            unsignedSerialized: "",
+            inferType(): number {
+              if (this.type !== null && this.type !== undefined) {
+                return this.type;
+              }
+              return 0;
+            },
+            inferTypes(): number[] {
+              const types: number[] = [];
+              if (this.type !== null && this.type !== undefined) {
+                types.push(this.type);
+              }
+              if (this.maxFeePerGas !== null &&
+                this.maxPriorityFeePerGas !== null) {
+                types.push(2);
+              }
+              if (types.length === 0) {
+                types.push(0);
+              }
+              return types;
+            },
+            isLegacy() {
+              return this.type === 0 && this.gasPrice !== null;
+            },
+            isBerlin() {
+              return (
+                this.type === 1 &&
+                this.gasPrice !== null &&
+                this.accessList !== null
+              );
+            },
+            isLondon() {
+              return (
+                this.type === 2 &&
+                this.accessList !== null &&
+                this.maxFeePerGas !== null &&
+                this.maxPriorityFeePerGas !== null
+              );
+            },
+            isCancun() {
+              return (
+                this.type === 3 &&
+                this.to !== null &&
+                this.accessList !== null &&
+                this.maxFeePerGas !== null &&
+                this.maxPriorityFeePerGas !== null &&
+                this.maxFeePerBlobGas !== null &&
+                this.blobVersionedHashes !== null
+              );
+            },
+            clone(): CustomTransaction {
+              const clonedData: CustomTransaction = {
+                _id: this._id as string,
+                id: this.id as string,
+                amount: this.amount,
+                date: this.date as Date,
+                title: this.title as string,
+                value: this.value as bigint,
+                description: this.description || "",
+                startDate: this.startDate ? new Date(this.startDate) : undefined,
+                endDate: this.endDate ? new Date(this.endDate) : undefined,
+                isSigned: typeof this.isSigned === "function"
+                  ? this.isSigned.bind(this)
+                  : this.isSigned,
+                serialized: this.serialized,
+                unsignedSerialized: this.unsignedSerialized,
+                nonce: this.nonce as number,
+                gasLimit: this.gasLimit as bigint,
+                chainId: this.chainId,
+                hash: this.hash,
+                type: this.type as number,
+                typeName: this.typeName || "",
+                data: this.data || "",
+                unsignedHash: this.unsignedHash || "",
+                to: this.to,
+                gasPrice: this.gasPrice as bigint,
+                maxFeePerGas: this.maxFeePerGas as bigint,
+                maxPriorityFeePerGas: this.maxPriorityFeePerGas as bigint,
+                signature: this.signature as Signature,
+                accessList: this.accessList,
+                maxFeePerBlobGas: this.maxFeePerBlobGas as bigint,
+                blobVersionedHashes: this.blobVersionedHashes as string,
+                from: this.from as string,
+                fromPublicKey: this.fromPublicKey,
+                isLegacy: typeof this.isLegacy === "function"
+                  ? this.isLegacy.bind(this)
+                  : this.isLegacy,
+                isBerlin: typeof this.isBerlin === "function"
+                  ? this.isBerlin.bind(this)
+                  : this.isBerlin,
+                isLondon: typeof this.isLondon === "function"
+                  ? this.isLondon.bind(this)
+                  : this.isLondon,
+                isCancun: typeof this.isCancun === "function"
+                  ? this.isCancun.bind(this)
+                  : this.isCancun,
+                inferType: typeof this.inferType === "function"
+                  ? this.inferType.bind(this)
+                  : this.inferType,
+                inferTypes: typeof this.inferTypes === "function"
+                  ? this.inferTypes.bind(this)
+                  : this.inferTypes,
+                clone: typeof this.clone === "function" ? this.clone : this.clone,
 
-              equals: function (
-                this: CustomTransaction,
-                data: CustomTransaction
-              ): boolean {
-                return (
-                  this.id === data.id &&
-                  this._id === data._id &&
-                  this.title === data.title &&
-                  this.amount === data.amount &&
-                  this.date?.getTime() === data.date?.getTime() &&
-                  this.description === data.description &&
-                  this.startDate?.getTime() === data.startDate?.getTime() &&
-                  this.endDate?.getTime() === data.endDate?.getTime() &&
-                  this.serialized === data.serialized &&
-                  this.unsignedSerialized === data.unsignedSerialized &&
-                  this.accessList === data.accessList &&
-                  this.to === data.to &&
-                  this.nonce === data.nonce &&
-                  this.gasLimit === data.gasLimit &&
-                  this.gasPrice === data.gasPrice &&
-                  this.maxPriorityFeePerGas === data.maxPriorityFeePerGas &&
-                  this.maxFeePerGas === data.maxFeePerGas &&
-                  this.type === data.type &&
-                  this.data === data.data &&
-                  this.value === data.value &&
-                  this.chainId === data.chainId &&
-                  this.signature === data.signature &&
-                  this.maxFeePerBlobGas === data.maxFeePerBlobGas &&
-                  this.blobVersionedHashes === data.blobVersionedHashes &&
-                  this.hash === data.hash &&
-                  this.unsignedHash === data.unsignedHash &&
-                  this.from === data.from &&
-                  this.fromPublicKey === data.fromPublicKey
-                  //if ther eare any new props ensure to add && above after the ast value
-                  // Check other properties as needed
-                  // Add checks for other properties here
-                );
-              },
-              getSubscriptionLevel: function (this: CustomTransaction) {
-                return "Pro";
-              },
-              getRecentActivity: function (this: CustomTransaction) {
-                return [
+                equals: function (
+                  this: CustomTransaction,
+                  data: CustomTransaction
+                ): boolean {
+                  return (
+                    this.id === data.id &&
+                    this._id === data._id &&
+                    this.title === data.title &&
+                    this.amount === data.amount &&
+                    this.date?.getTime() === data.date?.getTime() &&
+                    this.description === data.description &&
+                    this.startDate?.getTime() === data.startDate?.getTime() &&
+                    this.endDate?.getTime() === data.endDate?.getTime() &&
+                    this.serialized === data.serialized &&
+                    this.unsignedSerialized === data.unsignedSerialized &&
+                    this.accessList === data.accessList &&
+                    this.to === data.to &&
+                    this.nonce === data.nonce &&
+                    this.gasLimit === data.gasLimit &&
+                    this.gasPrice === data.gasPrice &&
+                    this.maxPriorityFeePerGas === data.maxPriorityFeePerGas &&
+                    this.maxFeePerGas === data.maxFeePerGas &&
+                    this.type === data.type &&
+                    this.data === data.data &&
+                    this.value === data.value &&
+                    this.chainId === data.chainId &&
+                    this.signature === data.signature &&
+                    this.maxFeePerBlobGas === data.maxFeePerBlobGas &&
+                    this.blobVersionedHashes === data.blobVersionedHashes &&
+                    this.hash === data.hash &&
+                    this.unsignedHash === data.unsignedHash &&
+                    this.from === data.from &&
+                    this.fromPublicKey === data.fromPublicKey
+                    //if ther eare any new props ensure to add && above after the ast value
+                    // Check other properties as needed
+                    // Add checks for other properties here
+                  );
+                },
+                getSubscriptionLevel: function (this: CustomTransaction) {
+                  return "Pro";
+                },
+                getRecentActivity: function (this: CustomTransaction) {
+                  return [
+                    { action: "Created snapshot", timestamp: new Date() },
+                    { action: "Edited snapshot", timestamp: new Date() },
+                  ];
+                },
+                notificationsEnabled: true,
+                recentActivity: [
                   { action: "Created snapshot", timestamp: new Date() },
                   { action: "Edited snapshot", timestamp: new Date() },
-                ];
-              },
-              notificationsEnabled: true,
-              recentActivity: [
-                { action: "Created snapshot", timestamp: new Date() },
-                { action: "Edited snapshot", timestamp: new Date() },
-              ],
-            };
-            return clonedData;
-          },
-          equals(data: CustomTransaction) {
-            const isSigned = typeof this.isSigned === "function"
-              ? this.isSigned()
-              : this.isSigned;
-            const dataIsSigned = typeof data.isSigned === "function"
-              ? data.isSigned()
-              : data.isSigned;
-            const isCancun = typeof this.isCancun === "function"
-              ? this.isCancun()
-              : this.isCancun;
-            const dataIsCancun = typeof data.isCancun === "function"
-              ? data.isCancun()
-              : data.isCancun;
-            const isLegacy = typeof this.isLegacy === "function"
-              ? this.isLegacy()
-              : this.isLegacy;
-            const dataIsLegacy = typeof data.isLegacy === "function"
-              ? data.isLegacy()
-              : data.isLegacy;
-            const isBerlin = typeof this.isBerlin === "function"
-              ? this.isBerlin()
-              : this.isBerlin;
-            const dataIsBerlin = typeof data.isBerlin === "function"
-              ? data.isBerlin()
-              : data.isBerlin;
-            const isLondon = typeof this.isLondon === "function"
-              ? this.isLondon()
-              : this.isLondon;
-            const dataIsLondon = typeof data.isLondon === "function"
-              ? data.isLondon()
-              : data.isLondon;
+                ],
+              };
+              return clonedData;
+            },
+            equals(data: CustomTransaction) {
+              const isSigned = typeof this.isSigned === "function"
+                ? this.isSigned()
+                : this.isSigned;
+              const dataIsSigned = typeof data.isSigned === "function"
+                ? data.isSigned()
+                : data.isSigned;
+              const isCancun = typeof this.isCancun === "function"
+                ? this.isCancun()
+                : this.isCancun;
+              const dataIsCancun = typeof data.isCancun === "function"
+                ? data.isCancun()
+                : data.isCancun;
+              const isLegacy = typeof this.isLegacy === "function"
+                ? this.isLegacy()
+                : this.isLegacy;
+              const dataIsLegacy = typeof data.isLegacy === "function"
+                ? data.isLegacy()
+                : data.isLegacy;
+              const isBerlin = typeof this.isBerlin === "function"
+                ? this.isBerlin()
+                : this.isBerlin;
+              const dataIsBerlin = typeof data.isBerlin === "function"
+                ? data.isBerlin()
+                : data.isBerlin;
+              const isLondon = typeof this.isLondon === "function"
+                ? this.isLondon()
+                : this.isLondon;
+              const dataIsLondon = typeof data.isLondon === "function"
+                ? data.isLondon()
+                : data.isLondon;
 
-            return (
-              this.id === data.id &&
-              this.amount === data.amount &&
-              this.date?.getTime() === data.date?.getTime() &&
-              this.description === data.description &&
-              this.nonce === data.nonce &&
-              this.gasLimit === data.gasLimit &&
-              this.gasPrice === data.gasPrice &&
-              this.maxPriorityFeePerGas === data.maxPriorityFeePerGas &&
-              this.maxFeePerGas === data.maxFeePerGas &&
-              this.data === data.data &&
-              this.value === data.value &&
-              this.chainId === data.chainId &&
-              this.from === data.from &&
-              this.fromPublicKey === data.fromPublicKey &&
-              this.to === data.to &&
-              this.type === data.type &&
-              this.typeName === data.typeName &&
-              this.serialized === data.serialized &&
-              this.unsignedSerialized === data.unsignedSerialized &&
-              this.accessList?.length === data.accessList?.length &&
-              this.maxFeePerBlobGas === data.maxFeePerBlobGas &&
-              this.blobVersionedHashes === data.blobVersionedHashes &&
-              (isSigned ?? false) === (dataIsSigned ?? false) &&
-              (isCancun ?? false) === (dataIsCancun ?? false) &&
-              (isLegacy ?? false) === (dataIsLegacy ?? false) &&
-              (isBerlin ?? false) === (dataIsBerlin ?? false) &&
-              (isLondon ?? false) === (dataIsLondon ?? false)
-            );
-          },
-          recentActivity: [
-            {
-              action: "Logged in",
-              timestamp: new Date(),
+              return (
+                this.id === data.id &&
+                this.amount === data.amount &&
+                this.date?.getTime() === data.date?.getTime() &&
+                this.description === data.description &&
+                this.nonce === data.nonce &&
+                this.gasLimit === data.gasLimit &&
+                this.gasPrice === data.gasPrice &&
+                this.maxPriorityFeePerGas === data.maxPriorityFeePerGas &&
+                this.maxFeePerGas === data.maxFeePerGas &&
+                this.data === data.data &&
+                this.value === data.value &&
+                this.chainId === data.chainId &&
+                this.from === data.from &&
+                this.fromPublicKey === data.fromPublicKey &&
+                this.to === data.to &&
+                this.type === data.type &&
+                this.typeName === data.typeName &&
+                this.serialized === data.serialized &&
+                this.unsignedSerialized === data.unsignedSerialized &&
+                this.accessList?.length === data.accessList?.length &&
+                this.maxFeePerBlobGas === data.maxFeePerBlobGas &&
+                this.blobVersionedHashes === data.blobVersionedHashes &&
+                (isSigned ?? false) === (dataIsSigned ?? false) &&
+                (isCancun ?? false) === (dataIsCancun ?? false) &&
+                (isLegacy ?? false) === (dataIsLegacy ?? false) &&
+                (isBerlin ?? false) === (dataIsBerlin ?? false) &&
+                (isLondon ?? false) === (dataIsLondon ?? false)
+              );
             },
-            {
-              action: "Updated profile",
-              timestamp: new Date(),
-            },
-          ],
-        }),
-      ],
+            recentActivity: [
+              {
+                action: "Logged in",
+                timestamp: new Date(),
+              },
+              {
+                action: "Updated profile",
+                timestamp: new Date(),
+              },
+            ],
+          }),
+        ],
     },
-  },
+  }
 }
 
 
+const category = "yourCategory"; // Define as necessary
+const documentManager = useDocumentManagement()
 
 
-
-const config = {
+const config: { events: EventManager<BaseData, BaseData> } = {
   id: "snapshot1",
   category: "example category",
   timestamp: new Date(),
@@ -889,22 +1025,30 @@ const config = {
   initialState: undefined,
   meta: new Map<string, Snapshot<BaseData, BaseData>>(),
   events: {
-    eventRecords: [
-     {
-        action: "Created snapshot",
-        timestamp: new Date(),
-        id: "",
-        title: "",
-        // Add other BaseData properties if needed
-      },
-      {
-        action: "Updated snapshot",
-        timestamp: new Date(),
-        id: "",
-        title: "",
-        // Add other BaseData properties if needed
-      },
-    ],
+    eventRecords: {
+      "created": [
+        {
+          action: "Created snapshot",
+          timestamp: new Date(),
+          record: new CalendarManagerStoreClass<BaseData, BaseData>(category, documentManager),
+          callback: (snapshot: Snapshot<BaseData, BaseData>) => {
+            console.log("Snapshot created:", snapshot);
+          },
+          // Add other BaseData properties if needed
+        },
+      ],
+      "updated": [
+        {
+          action: "Updated snapshot",
+          timestamp: new Date(),
+          record: new CalendarManagerStoreClass<BaseData, BaseData>(category, documentManager),
+          callback: (snapshot: Snapshot<BaseData, BaseData>) => {
+            console.log("Snapshot updated:", snapshot);
+          },
+          // Add other BaseData properties if needed
+        },
+      ],
+    },
   },
 
 
@@ -919,32 +1063,44 @@ const config = {
       this.description === data.description &&
       this.tags.length === (data.tags?.length ?? 0) &&
       this.metadata === data.metadata &&
-
       ('id' in this.data && data.data && 'id' in data.data ? this.data.id === data.data.id : true) &&
       ('title' in this.data && data.data && 'title' in data.data ? this.data.title === data.data.title : true) &&
       this.initialState === data.initialState &&
-
       (this.meta instanceof Map && data.meta instanceof Map ? this.meta.size === data.meta.size : true) &&
-
-      (this.events && data.events &&
-      'eventRecords' in this.events && 'eventRecords' in data.events &&
-      Array.isArray(this.events.eventRecords) && Array.isArray(data.events.eventRecords) &&
-      this.events.eventRecords.length === data.events.eventRecords.length &&
-        ((this.events?.eventRecords?.every((record, index) => {
-          const dataRecord = data.events?.eventRecords?.[index];
-
-          if (!dataRecord) return false;
-          
-          const isActionEqual = record.action === dataRecord.action;
-          const isTimestampEqual = (record.timestamp instanceof Date && dataRecord.timestamp instanceof Date)
-            ? record.timestamp.getTime() === dataRecord.timestamp.getTime()
-            : record.timestamp === dataRecord.timestamp;
-          
-          return isActionEqual && isTimestampEqual;
-       })
-        )
-      )));
+      (
+        this.events &&
+        data.events &&
+        this.events.eventRecords &&
+        data.events.eventRecords &&
+        typeof this.events.eventRecords === 'object' &&
+        typeof data.events.eventRecords === 'object' &&
+        Object.keys(this.events.eventRecords).length === Object.keys(data.events.eventRecords).length &&
+        Object.keys(this.events.eventRecords).every((key: string) => {
+          const thisRecords = this.events!.eventRecords![key]
+          const dataRecords = data.events!.eventRecords![key]
+  
+          if (!dataRecords || thisRecords.length !== dataRecords.length) {
+            return false;
+          }
+  
+          return thisRecords.every((record: EventRecord<BaseData, BaseData>, index: number) => {
+            const dataRecord = dataRecords[index];
+            if (!dataRecord) return false;
+  
+            const isActionEqual = record.action === dataRecord.action;
+            const isTimestampEqual = (record.timestamp instanceof Date && dataRecord.timestamp instanceof Date)
+              ? record.timestamp.getTime() === dataRecord.timestamp.getTime()
+              : record.timestamp === dataRecord.timestamp;
+  
+            return isActionEqual && isTimestampEqual;
+          });
+        })
+      )
+    );
   },
+  
+  
+
   recentActivity: [
     {
       action: "Logged in",
@@ -996,6 +1152,9 @@ async function createDataObject(
 
 const getCurrentSnapshot = <T extends Data, K extends Data>(
   snapshotId: string, // ID of the snapshot to retrieve
+  storeId: number,
+  additionalHeaders?: Record<string, string>,
+  snapshotConfigProps?: SnapshotConfigProps<T, K>,
   category?: string | symbol | Category, // Optional category
   snapshotStore?: SnapshotStore<T, K> // Optional store to retrieve from
 ): Promise<Snapshot<T, K> | null> => {
@@ -1004,7 +1163,7 @@ const getCurrentSnapshot = <T extends Data, K extends Data>(
       // Fetch the SnapshotContainer if not provided
       const snapshotContainer = snapshotStore 
         ? snapshotStore.getSnapshotContainer(snapshotId)
-        : snapshotApi.getSnapshotContainer(snapshotId);
+        : snapshotApi.getSnapshotContainer(snapshotId, storeId, additionalHeaders);
 
       // If category is provided, look for the current snapshot by category
       if (category) {
@@ -1032,6 +1191,1191 @@ const getCurrentSnapshot = <T extends Data, K extends Data>(
 };
 
 // // Usage example
+
+
+const createSnapshotInstance = <T extends BaseData, K extends BaseData>(
+  snapshotId: string | null,
+  data: T,
+  category: symbol | string | Category | undefined,
+  snapshotStore: SnapshotStore<T, K> | null,
+  snapshotStoreConfig: SnapshotStoreConfig<T, K> | null
+): Snapshot<T, K> => {
+  const subscribed: boolean = false; // Replace with actual logic
+  
+  return {
+    id: snapshotId,
+    data: data,
+    category: category,
+    timestamp: new Date(),
+    snapshotStore: snapshotStore,
+    initialState: null,  
+    isCore: false,       
+    initialConfig: {},   
+    onInitialize: () => {},  
+    onError: "",
+    taskIdToAssign: "",
+    schema: {},
+    currentCategory: "",
+   
+    mappedSnapshotData: new Map<string, Snapshot<T, K>>(), // Properly initializing as Map
+    storeId: 0,
+    versionInfo: {
+      name: "",
+      url: "",
+      versionNumber: "0",
+      documentId: "",
+      draft: false,
+      userId: "",
+      content: "",
+      metadata: {
+        author: "",
+        timestamp: "",
+      },
+     
+      releaseDate: "",
+      major: 0,
+      minor: 0,
+      patch: 0,
+      checksum: "",
+     
+     
+      // snapshotId,
+      // snapshotContainer: "",
+      // mappedSnapshotData: new Map<string, Snapshot<T, K>>(),
+      // storeId: 0,
+    },
+    initializedState: "",
+   
+    criteria: "",
+    snapshot: (
+      id: string | number | undefined,
+      snapshotId: string | null,
+      snapshotData: SnapshotDataType<T, K>,
+      category: symbol | string | Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
+      callback: (snapshotStore: SnapshotStore<T, K>) => void,
+      dataStore: DataStore<T, K>,
+      dataStoreMethods: DataStoreMethods<T, K>,
+      metadata: UnifiedMetaDataOptions,
+      subscriberId: string, // Add subscriberId here
+      endpointCategory: string | number,// Add endpointCategory here
+      storeProps: SnapshotStoreProps<T, K>,
+      snapshotConfigData: SnapshotConfig<T, K>,
+      subscription: Subscription<T, K>,
+      snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
+      snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null,
+    ): Snapshot<T, K> | Promise<{ snapshot: Snapshot<T, K>; }> => {
+       // Example implementation logic
+        if (!snapshotId) {
+          throw new Error("Snapshot ID cannot be null.");
+        }
+
+        // Logic for creating a snapshot based on input parameters
+        const newSnapshot: Snapshot<T, K> = {
+          id: snapshotId,
+          data, // Assigning the provided data
+          category,
+          // Add any other relevant fields needed for the snapshot
+        };
+
+        // Optionally invoke the callback if provided
+        if (callback) {
+          callback(snapshotStore as SnapshotStore<T, K>);
+        }
+
+        // Handle async logic if necessary (this part is optional)
+        return Promise.resolve({ snapshot: newSnapshot }); // Always return a value
+      },
+    setCategory: (category: Category) => {},
+    applyStoreConfig: (
+      snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData>, K> | undefined
+    ) => { },
+    generateId: (
+      prefix: string,
+      name: string,
+      type: NotificationTypeEnum,
+      id?: string,
+      title?: string,
+      chatThreadName?: string,
+      chatMessageId?: string,
+      chatThreadId?: string,
+      dataDetails?: DataDetails,
+      generatorType?: string
+    ) => "",
+    snapshotData: (
+      id: string,
+      snapshotData: Data,
+      category: Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
+      dataStoreMethods: DataStoreMethods<T, K>
+    ): Promise<SnapshotStore<T, K>> => {
+       // Your logic to handle snapshot data and return a SnapshotStore
+      // This is a placeholder; replace it with your actual implementation
+      const result: SnapshotStore<T, K> = await dataStoreMethods.addData(id, snapshotData, category, categoryProperties);
+      return result; // Ensure to return a value
+  
+    },
+    snapshotContainer: {} as SnapshotContainer<T, K>,
+    getSnapshotItems: (): (SnapshotStoreConfig<T, K> | SnapshotItem<T, K> | undefined)[] => {
+      // Initialize an array to hold the snapshot items
+      const snapshotItems: (SnapshotStoreConfig<T, K> | SnapshotItem<T, K> | undefined)[] = [];
+    
+      // If a snapshotStoreConfig is provided, retrieve the items from it
+      if (snapshotStoreConfig) {
+        // Assuming snapshotStoreConfig has a method or property that allows you to get items
+        const storeItems = snapshotStoreConfig.content.items; // Replace with actual method to retrieve items
+    
+        // Process each item in the storeItems and add them to snapshotItems
+        if (Array.isArray(storeItems)) {
+          for (const item of storeItems) {
+            if (isSnapshot(item)) {
+              // If it's a valid snapshot, add it to the array
+              snapshotItems.push(item);
+            } else if (isSnapshotsArray(item)) {
+              // If it's an array of snapshots, you might want to flatten or handle accordingly
+              snapshotItems.push(...item);
+            } else {
+              // Optionally handle undefined or incompatible items
+              snapshotItems.push(undefined);
+            }
+          }
+        }
+      }
+    
+      // Optionally, you could also return any other snapshot-related items from other sources if needed
+      // For instance, if you maintain a list of snapshots somewhere
+      const additionalSnapshots = getCurrentSnapshotStoreOptions(); // Example function call
+      snapshotItems.push(...additionalSnapshots);
+    
+      // Return the constructed array of snapshot items
+      return snapshotItems;
+    },       
+    defaultSubscribeToSnapshots: (
+      snapshotId: string, 
+      callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null, 
+    snapshot: Snapshot<T, K> | null
+    ) =>{},
+    getAllSnapshots: (
+      storeId: number,
+      snapshotId: string,
+      snapshotData: T,
+      timestamp: string,
+      type: string,
+      event: Event,
+      id: number,
+      snapshotStore: SnapshotStore<T, K>,
+      category: symbol | string | Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
+      dataStoreMethods: DataStore<T, K>,
+      data: T,
+      dataCallback?: (
+        subscribers: Subscriber<T, K>[],
+        snapshots: Snapshots<T>
+      ) => Promise<SnapshotUnion<T>[]>
+    ): Promise<Snapshot<T, K>[]> =>{},
+    getSubscribers: (
+      subscribers: Subscriber<T, K>[], 
+        snapshots: Snapshots<T>
+      ): Promise<{
+        subscribers: Subscriber<T, K>[]; 
+        snapshots: Snapshots<T>;
+      }> => {},
+    transformDelegate: (): SnapshotStoreConfig<T, K>[] => {},
+   
+    getAllKeys: (
+      storeId: number,
+      snapshotId: string,
+      category: symbol | string | Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
+      snapshot: Snapshot<SnapshotUnion<BaseData>, K> | null,
+      timestamp: string | number | Date | undefined,
+      type: string,
+      event: Event,
+      id: number,
+      snapshotStore: SnapshotStore<SnapshotUnion<BaseData>, K>,
+      data: T
+    ): Promise<string[] | undefined> | undefined => {},
+    getAllValues: (): SnapshotsArray<T> => {},
+    getAllItems: (): Promise<Snapshot<T, K>[] | undefined> => { },
+    getSnapshotEntries: (snapshotId: string): Map<string, T> | undefined => {},
+   
+    getAllSnapshotEntries: (): Map<string, T>[] => {},
+    addDataStatus: (id: number, status: StatusType | undefined) => { },
+    removeData: (id: number) => { },
+    updateData: (id: number, newData: Snapshot<T, K>) => {},
+   
+    updateDataTitle: (id: number, title: string) => "",
+    updateDataDescription: (id: number, description: string) => {},
+    updateDataStatus: (id: number, status: StatusType | undefined) => {},
+    addDataSuccess: (payload: { data: Snapshot<T, K>[]; }) => {},
+   
+    getDataVersions: (id: number): Promise<Snapshot<T, K>[] | undefined> => {},
+    updateDataVersions: (id: number, versions: Snapshot<T, K>[]) => {},
+    getBackendVersion: (): IHydrateResult<number> | Promise<string> | undefined => {},
+    getFrontendVersion:  (): IHydrateResult<number> | Promise<string> | undefined => {},
+   
+    fetchStoreData: (id: number): Promise<SnapshotStore<T, K>[]> => {},
+    fetchData: (endpoint: string, id: number): Promise<SnapshotStore<T, K>> => {},
+    defaultSubscribeToSnapshot: (snapshotId: string, callback: Callback<Snapshot<T, K>>, snapshot: Snapshot<T, K>) => "",
+    handleSubscribeToSnapshot: (snapshotId: string, callback: Callback<Snapshot<T, K>>, snapshot: Snapshot<T, K>) => {},
+    
+    removeItem:  (key: string | number): Promise<void> => {},
+    getSnapshot: (
+      snapshot: (id: string | number) => Promise<{
+        snapshotId: number;
+        snapshotData: SnapshotDataType<T, K>
+        category: Category | undefined;
+        categoryProperties: CategoryProperties;
+        dataStoreMethods: DataStore<T, K>
+        timestamp: string | number | Date | undefined;
+        id: string | number | undefined;
+        snapshot: Snapshot<T, K>;
+        snapshotStore: SnapshotStore<T, K>;
+        data: T;
+      }> | undefined
+    ): Promise<Snapshot<T, K> | undefined> => {},
+    getSnapshotSuccess: (
+      snapshot: Snapshot<SnapshotUnion<BaseData>, K>,
+      subscribers: Subscriber<T, K>[]
+    ): Promise<SnapshotStore<T, K>> => {},
+    setItem: (key: T, value: T): Promise<void> => { },
+    
+    getItem: (key: T): Promise<Snapshot<T, K> | undefined> => {},
+    getDataStore: (): Promise<InitializedDataStore> => {},
+    getDataStoreMap: (): Promise<Map<string, DataStore<T, K>>> => {},
+    addSnapshotSuccess: (snapshot: Snapshot<T, K>, subscribers: Subscriber<T, K>[]) => { },
+   
+    deepCompare: (objA: any, objB: any): boolean => { return objA.id === objB.id; },
+    shallowCompare: (objA: any, objB: any): boolean => { return objA.id === objB.id; },
+    getDataStoreMethods: (): DataStoreMethods<T, K> => {},
+    getDelegate: (context: {
+      useSimulatedDataSource: boolean;
+      simulatedDataSource: SnapshotStoreConfig<T, K>[];
+    }): Promise<DataStore<T, K>[]> => {},
+   
+    determineCategory: (snapshot: Snapshot<T, K> | null | undefined) => "",
+    determinePrefix: (snapshot: T | null | undefined, category: string) =>  "",
+    removeSnapshot: (snapshotToRemove: Snapshot<T, K>) => { },
+    addSnapshotItem: (item: SnapshotStoreConfig<T, K> | Snapshot<T, K>) => { },
+    
+    addNestedStore: (store: SnapshotStore<T, K>, item: SnapshotStoreConfig<T, K> | Snapshot<T, K>) => { },
+    clearSnapshots: () => { },
+    addSnapshot: ( snapshot: Snapshot<T, K>,
+      snapshotId: string,
+      subscribers: SubscriberCollection<T, K>
+    ): Promise<Snapshot<T, K> | undefined> => {},
+    emit: (
+      event: string,
+      snapshot: Snapshot<T, K>,
+      snapshotId: string, 
+      subscribers: SubscriberCollection<T, K>,
+      snapshotStore: SnapshotStore<T, K>, 
+      dataItems: RealtimeDataItem[],
+      criteria: SnapshotWithCriteria<T, K>,
+      category: Category
+    ) => {},
+    
+    createSnapshot: (
+      id: string,
+      snapshotData: Snapshot<T, K>,
+      category?: string | symbol | Category,
+      callback?: (snapshot: Snapshot<Data, K>) => void,
+      snapshotDataStore?: SnapshotStore<T, K>,
+      snapshotStoreConfig?: SnapshotStoreConfig<Data, K>
+    ): Snapshot<T, K> | null => {},
+    createInitSnapshot: (
+      id: string,
+      initialData: T, 
+      snapshotData: SnapshotStoreConfig<any, K>,
+      snapshotStoreConfig: SnapshotStoreConfig<SnapshotUnion<any>, K>,
+      category: symbol | string | Category | undefined,
+    ): Promise<SnapshotWithCriteria<T, K>> => {},
+    addStoreConfig: (config: SnapshotStoreConfig<T, K>) => { },
+    handleSnapshotConfig: (config: SnapshotStoreConfig<T, K>) => void,
+    
+    getSnapshotConfig:  (
+      snapshotId: string | null, 
+      snapshotContainer: SnapshotContainer<T, K>,
+      criteria: CriteriaType,
+      category: Category,
+      categoryProperties: CategoryProperties | undefined,
+      delegate: any, snapshotData: SnapshotStore<T, K>,
+      snapshot: (id: string, snapshotId: string | null, 
+        snapshotData: Snapshot<T, K>, 
+        category: Category,
+        ) => void
+    ): SnapshotStoreConfig<T, K>[] | undefined => {},
+    getSnapshotListByCriteria: (
+      criteria: SnapshotStoreConfig<T, K>
+    ): Promise<Snapshot<T, K>[]> => { };
+
+    setSnapshotSuccess: (
+      snapshotData: SnapshotStore<T, K>,
+      subscribers: SubscriberCollection<T, K>
+    ): void => {};
+    setSnapshotFailure: (error: Error) => {},
+   
+    updateSnapshots: () => {},
+    updateSnapshotsSuccess: (
+      snapshotData: (
+        subscribers: Subscriber<T, K>[], 
+        snapshot: Snapshots<T>
+      ) => void
+    ) => {},
+    updateSnapshotsFailure: (error: Payload) => {},
+    initSnapshot: (
+      snapshot: SnapshotStore<T, K> | Snapshot<T, K> | null,
+      snapshotId: number,
+      snapshotData: SnapshotStore<T, K>,
+      category: Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
+      snapshotConfig: SnapshotStoreConfig<T, K>,
+      callback: (snapshotStore: SnapshotStore<any, any>) => void,
+      snapshotStoreConfig: SnapshotStoreConfig<
+        SnapshotWithCriteria<any, K>,
+        K
+      >,
+    ) => { },
+   
+    takeSnapshot: (
+      snapshot: Snapshot<T, K>, 
+      subscribers: Subscriber<T, K>[]
+    ): Promise<{ snapshot: Snapshot<T, K>; }> => {},
+    takeSnapshotSuccess: (snapshot: Snapshot<T, K>) => {},
+    takeSnapshotsSuccess: (snapshots: T[]) => { },
+    flatMap: <T extends Iterable<any>>(
+      callback: (
+        value: SnapshotStoreConfig<T, K>, 
+        index: number, 
+        array: SnapshotStoreConfig<T, K>[]
+      ) => T
+    ) => T extends (infer I)[] ? I[] : T[],
+   
+    getState: () => any;
+    setState: (state: any) => {},
+
+    validateSnapshot: (
+      snapshotId: string,
+      snapshot: Snapshot<T, K>
+    ): boolean => { },
+    handleActions: (action: (selectedText: string) => void) => {},
+   
+    setSnapshot: (snapshot: Snapshot<T, K>) => {},
+    transformSnapshotConfig: <T extends BaseData>(
+      config: SnapshotConfig<T, T>
+    ): SnapshotConfig<T, T> => {},
+    setSnapshots: (snapshots: SnapshotStore<T, K>[]) => { },
+    clearSnapshot: () => void,
+   
+    mergeSnapshots: (
+      snapshots: Snapshots<T>, 
+      category: string
+    ) => {},
+    reduceSnapshots: <T extends BaseData>(
+      callback: (
+        acc: T,
+        snapshot: Snapshot<T, T>) => T,
+      initialValue: T
+    ): T | undefined => { },
+    sortSnapshots: () => {},
+    filterSnapshots: () => {},
+
+    findSnapshot: (
+      predicate: (snapshot: Snapshot<T, K>) => boolean
+    ): Snapshot<T, K> | undefined => {};
+
+    mapSnapshots: <U, V>(
+      storeIds: number[],
+      snapshotId: string,
+      category: symbol | string | Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
+      snapshot: Snapshot<T, K>,
+      timestamp: string | number | Date | undefined,
+      type: string,
+      event: Event,
+      id: number,
+      snapshotStore: SnapshotStore<T, K>,
+      data: K,
+      callback: (
+        storeIds: number[],
+        snapshotId: string,
+        category: symbol | string | Category | undefined,
+        categoryProperties: CategoryProperties | undefined,
+        snapshot: Snapshot<T, K>,
+        timestamp: string | number | Date | undefined,
+        type: string,
+        event: Event,
+        id: number,
+        snapshotStore: SnapshotStore<T, K>,
+        data: V, // Use V for the callback data type
+        index: number
+      ) => U  // Return type of the callback
+    ) => U[],
+    takeLatestSnapshot: (): Snapshot<T, K> | undefined => { },
+    updateSnapshot: (
+      snapshotId: string,
+      data: Map<string, Snapshot<T, K>>,
+      events: Record<string, CalendarManagerStoreClass<T, K>[]>,
+      snapshotStore: SnapshotStore<T, K>,
+      dataItems: RealtimeDataItem[],
+      newData: Snapshot<T, K>,
+      payload: UpdateSnapshotPayload<T>,
+      store: SnapshotStore<any, K>
+    ) => {};
+
+    getSnapshotConfigItems: (): SnapshotStoreConfig<T, K>[] => {},
+    subscribeToSnapshots: (
+      snapshotStore: SnapshotStore<T, K>,
+      snapshotId: string,
+      snapshotData: SnapshotStore<T, K>,
+      category: Category | undefined,
+      snapshotConfig: SnapshotStoreConfig<T, K>,
+      callback: (snapshotStore: SnapshotStore<any, any>) => Subscriber<T, K> | null,
+      snapshots: SnapshotsArray<T>,
+      unsubscribe?: UnsubscribeDetails, 
+    ): [] | SnapshotsArray<T> => {},
+    executeSnapshotAction: (
+      actionType: SnapshotActionType,
+      actionData: any
+    ): Promise<void> => { };
+
+    subscribeToSnapshot: (
+      snapshotId: string,
+      callback: Callback<Snapshot<T, K>>,
+      snapshot: Snapshot<T, K>
+    ): Snapshot<T, K> => {},
+   
+    unsubscribeFromSnapshot: (
+      snapshotId: string,
+      callback: (snapshot: Snapshot<T, K>) => void
+    ): void => {},
+
+    subscribeToSnapshotsSuccess: (
+      callback: (snapshots: Snapshots<T>) => void
+    ): string => {},
+
+    unsubscribeFromSnapshots: (
+      callback: (snapshots: Snapshots<T>) => void
+    ): void => {},
+
+    getSnapshotId: (key: string | SnapshotData<T, K>, snapshot: Snapshot<T, K>): unknown => {},
+    getSnapshotItemsSuccess: (): SnapshotItem<Data, any>[] | undefined => {},
+    getSnapshotItemSuccess: (): SnapshotItem<Data, any> | undefined => {},
+
+    getSnapshotKeys: (): string[] | undefined => {},
+    getSnapshotIdSuccess: (): string | undefined => {},
+
+    getSnapshotValuesSuccess: (): SnapshotItem<Data, any>[] | undefined => {},
+    
+    getSnapshotWithCriteria: (
+      criteria: SnapshotStoreConfig<T, K>
+    ): SnapshotStoreConfig<T, K> => {},
+
+    reduceSnapshotItems: (
+      callback: (acc: any, snapshot: Snapshot<T, K>) => any, 
+      initialValue: any
+    ): any => {},
+
+    subscribeToSnapshotList: (
+      snapshotId: string, 
+      callback: (snapshots: Snapshot<T, K>) => void
+    ): void => {},
+    config: {} as SnapshotStoreConfig<T, K>,
+   
+    label: {
+      // "1": {}
+      text, color, localeCompare
+    },
+    events: {} as CombinedEvents<T, K>,
+    restoreSnapshot: (
+      id: string,
+      snapshot: Snapshot<T, K>,
+      snapshotId: string,
+      snapshotData: Snapshot<T, K>,
+      category: Category | undefined,
+      callback: (snapshot: T) => void,
+      snapshots: SnapshotsArray<T>,
+      type: string,
+      event: string | SnapshotEvents<T, K>,
+      subscribers: SubscriberCollection<T, K>,
+      snapshotContainer?: T,
+      snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData>, K> | undefined,
+    ) => {
+      // Implement logic to restore snapshot
+    },
+    
+    handleSnapshot: async (
+      id: string,
+      snapshotId: string | number,
+      snapshot: Snapshot<T, K> | null, 
+      snapshotData: T,
+      category: Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
+      callback: (snapshot: T) => void,
+      snapshots: SnapshotsArray<T>,
+      type: string,
+      event: Event,
+      snapshotContainer?: T,
+      snapshotStoreConfig?: SnapshotStoreConfig<T, K> | null,
+      storeConfigs?: SnapshotStoreConfig<T, K>[]
+    ): Promise<Snapshot<T, K> | null> => {
+      
+      // Step 1: Validate required inputs
+      if (!snapshotId || !snapshotData || !category) {
+        console.error("Missing required parameters.");
+        return null;
+      }
+    
+      // Step 2: Initialize or retrieve the snapshot
+      const currentSnapshot: Snapshot<T, K> | null = snapshot || null;  // Ensuring currentSnapshot is either a Snapshot or null
+    
+      // Step 3: Handle different event types
+      switch (type) {
+        case 'create': {
+          // Handle snapshot creation logic
+          const newSnapshot: Snapshot<T, K> = {
+            id: snapshotId,
+            data: snapshotData,
+            category: category,
+            timestamp: new Date(),
+            ...snapshotStoreConfig,
+          };
+          snapshots.push(newSnapshot);  // Add to the snapshots array
+          return newSnapshot;
+        }
+        case 'update': {
+          // Handle snapshot update logic
+          if (currentSnapshot) {
+            currentSnapshot.data = snapshotData;
+            currentSnapshot.timestamp = new Date(); // Update timestamp
+          } else {
+            console.error("Snapshot not found for update.");
+            return null;
+          }
+          break;
+        }
+        case 'delete': {
+          // Handle snapshot deletion logic
+          const index = snapshots.findIndex(s => s.id === snapshotId);
+          if (index !== -1) {
+            snapshots.splice(index, 1); // Remove snapshot from array
+          } else {
+            console.error("Snapshot not found for deletion.");
+            return null;
+          }
+          break;
+        }
+        default: {
+          console.error(`Unhandled event type: ${type}`);
+          return null;
+        }
+      }
+    
+      // Step 4: Update snapshotContainer if provided
+      if (snapshotContainer) {
+        snapshotContainer = currentSnapshot ? currentSnapshot.data : null;
+      }
+    
+      // Step 5: Execute the callback function
+      if (currentSnapshot) {
+        callback(currentSnapshot.data);
+      }
+    
+      // Step 6: Return the updated or processed snapshot
+      return currentSnapshot;
+    },
+    
+    subscribe: (
+      snapshotId: string | number,
+      unsubscribe: UnsubscribeDetails,
+      subscriber: Subscriber<T, K> | null,
+      data: T,
+      event: Event,
+      callback: Callback<Snapshot<T, K>>,
+      value: T,
+    ): [] | SnapshotsArray<T> => {},
+    meta: {},
+    snapshotMethods: {
+      snapshot: this.createSnapshotInstance()
+    },
+    getSnapshotsBySubscriber: (subscriber: string): Promise<T[]> => {},
+   
+    isExpired: (): boolean | undefined => {
+    // Logic to determine if the snapshot is expired
+    // Ensure this logic returns only `boolean` or `undefined`
+    const expirationTimestamp = /* logic to calculate expiration timestamp */;
+    if (!expirationTimestamp) {
+      return undefined; // No expiration timestamp, so return undefined
+      }
+      const currentTime = Date.now(); // Get the current timestamp
+      return currentTime > expirationTimestamp; // Return true if expired, false if not
+    },
+    subscribers: [],
+    setSnapshotCategory: (id: string, newCategory: Category): void => {},
+    getSnapshotCategory: (id: string) => Category,
+    getSnapshotData: (
+      id: string | number | undefined,
+      snapshotId: number,
+      snapshotData: T,
+      category: Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
+      dataStoreMethods: DataStore<T, K>
+    ): Map<string, Snapshot<T, K>> | null | undefined => {},
+    deleteSnapshot: (id: string): string => {},
+    items: [],
+    snapConfig: {} as SnapshotConfig<T, K>,
+    
+    getSnapshots: (category: string, data: Snapshots<T>): void => {},
+    
+    // Correct implementation for compareSnapshots
+    compareSnapshots: (
+      snap1: Snapshot<T, K>, 
+      snap2: Snapshot<T, K>
+    ) => {
+      // Compare logic
+      const differences: Record<string, { snapshot1: any; snapshot2: any }> = {};
+
+      for (const key in snap1.data) {
+        if (snap1.data[key] !== snap2.data[key]) {
+          differences[key] = {
+            snapshot1: snap1.data[key],
+            snapshot2: snap2.data[key],
+          };
+        }
+      }
+
+      return {
+        snapshot1: snap1,
+        snapshot2: snap2,
+        differences,
+        versionHistory: {
+          snapshot1Version: snap1.version,
+          snapshot2Version: snap2.version,
+        },
+      };
+    },
+
+    compareSnapshotItems: (
+      snap1: Snapshot<T, K>,
+      snap2: Snapshot<T, K>,
+      keys: (keyof Snapshot<T, K>)[]
+    ) => {
+      const itemDifferences: Record<string, {
+        snapshot1: any;
+        snapshot2: any;
+        differences: {
+          [key: string]: { value1: any; value2: any };
+        };
+      }> = {};
+
+      keys.forEach((key) => {
+        const value1 = snap1[key];
+        const value2 = snap2[key];
+        if (value1 !== value2) {
+          itemDifferences[String(key)] = {
+            snapshot1: value1,
+            snapshot2: value2,
+            differences: {
+              [String(key)]: { value1, value2 }
+            }
+          };
+        }
+      });
+
+      return Object.keys(itemDifferences).length > 0 ? { itemDifferences } : null;
+    },
+
+    // batchTakeSnapshot takes a batch of snapshots and returns them as a promise
+    batchTakeSnapshot: async (
+      id: number,
+      snapshotId: string,
+      snapshotStore: SnapshotStore<T, K>,
+      snapshots: Snapshots<T>
+    ): Promise<{ snapshots: Snapshots<T> }> => {
+      // Logic to process batch taking snapshot
+      const newSnapshot: Snapshot<T, K> = {
+        id: snapshotId,
+        data,
+        category: category as Category,
+        timestamp: new Date(),
+        ...snapshotStoreConfig
+      };
+
+      // Add the new snapshot to the snapshots array
+      snapshots.push(newSnapshot);
+
+      return { snapshots };
+    },
+
+    // batchFetchSnapshots fetches snapshots based on criteria and returns a promise with the data
+    batchFetchSnapshots: async (
+      criteria: CriteriaType,
+      snapshotData: (
+        snapshotIds: string[],
+        subscribers: SubscriberCollection<T, K>,
+        snapshots: Snapshots<T>
+      ) => Promise<{
+        subscribers: SubscriberCollection<T, K>;
+        snapshots: Snapshots<T>;
+      }>
+    ): Promise<Snapshot<T, K>[]> => {
+      // Logic to fetch and return snapshots based on criteria
+      const snapshotIds: string[] = []; // Placeholder for actual logic to get snapshot IDs
+      const subscribers: SubscriberCollection<T, K> = {}; // Placeholder for actual subscribers
+
+      const { snapshots } = await snapshotData(snapshotIds, subscribers, []);
+
+      return snapshots;
+    },
+
+   // Implementing batchTakeSnapshotsRequest with proper parameter and return type
+    batchTakeSnapshotsRequest: async (
+      criteria: CriteriaType,
+      snapshotData: (
+        snapshotIds: string[],
+        snapshots: Snapshots<T>,
+        subscribers: Subscriber<T, K>[]
+      ) => Promise<{ subscribers: Subscriber<T, K>[] }>
+    ): Promise<void> => {
+      // Your logic for taking snapshots
+    },
+
+    // Implementing batchUpdateSnapshotsRequest
+    batchUpdateSnapshotsRequest: async (
+      snapshotData: (
+        subscribers: SubscriberCollection<T, K>
+      ) => Promise<{ subscribers: SubscriberCollection<T, K>; snapshots: Snapshots<T> }>,
+      snapshotManager: SnapshotManager<T, K>
+    ): Promise<void> => {
+      // Your logic for updating snapshots
+    },
+
+    // Implementing filterSnapshotsByStatus
+    filterSnapshotsByStatus: (status: string): Snapshots<T> => {
+      // Your logic for filtering by status
+      return []; // Placeholder, return appropriate Snapshots<T>
+    },
+
+    // Implementing filterSnapshotsByCategory
+    filterSnapshotsByCategory: (category: string): Snapshots<T> => {
+      // Your logic for filtering by category
+      return []; // Placeholder
+    },
+
+    // Implementing filterSnapshotsByTag
+    filterSnapshotsByTag: (tag: string): Snapshots<T> => {
+      // Your logic for filtering by tag
+      return []; // Placeholder
+    },
+
+    // Implementing batchFetchSnapshotsSuccess
+    batchFetchSnapshotsSuccess: (
+      subscribers: SubscriberCollection<T, K>[],
+      snapshots: Snapshots<T>
+    ): void => {
+      // Your logic for handling success
+    },
+
+    // Implementing batchFetchSnapshotsFailure
+    batchFetchSnapshotsFailure: (
+      date: Date,
+      snapshotManager: SnapshotManager<T, K>,
+      snapshot: Snapshot<T, K>,
+      payload: { error: Error }
+    ): void => {
+      // Your logic for handling failure
+    },
+
+    // Implementing batchUpdateSnapshotsSuccess
+    batchUpdateSnapshotsSuccess: (
+      subscribers: SubscriberCollection<T, K>,
+      snapshots: Snapshots<T>
+    ): void => {
+      // Your logic for handling update success
+    },
+
+    // Implementing batchUpdateSnapshotsFailure
+    batchUpdateSnapshotsFailure: (
+      date: Date,
+      snapshotId: string,
+      snapshotManager: SnapshotManager<T, K>,
+      snapshot: Snapshot<T, K>,
+      payload: { error: Error }
+    ): void => {
+      // Your logic for handling update failure
+    },
+    handleSnapshotSuccess: (message: string, snapshot: Snapshot<T, K> | null, snapshotId: string) => {
+      // Implement this function
+    },
+    handleSnapshotFailure: (error: Error, snapshotId: string) => {
+      // Implement this function
+    },
+   
+    compareSnapshotState: (snapshot1: Snapshot<T, K>, snapshot2: Snapshot<T, K>) => {
+      // Implement logic
+      return true;
+    },
+    
+    compareSnapshotState: (snapshot1: Snapshot<T, K>, snapshot2: Snapshot<T, K>) => {
+      // Implement logic
+      return true;
+    },
+    payload: undefined,
+    dataItems: null,    
+    newData: null,
+    getInitialState: () => null,
+    getConfigOption: (optionKey: string) => {
+      // Logic for getting config option
+    },
+    getTimestamp: () => undefined,
+   
+    getStores: (
+      storeId: number,
+      snapshotStores: SnapshotStore<T, K>[],
+      snapshotStoreConfigs: SnapshotStoreConfig<T, K>[]
+    ) => {
+      return [];
+    },
+    getData: (id: number | string, snapshotStore: SnapshotStore<T, K>) => {
+      return null;
+    },
+    setData: (id: string, data: Map<string, Snapshot<T, K>>) => {
+      // Logic to set data
+    },
+    addData: (id: string, data: Partial<Snapshot<T, K>>) => {
+      // Logic to add data
+    },
+    stores: null, // Initially, stores is null, can be updated later
+
+    getStore: (
+      storeId: number,
+      snapshotId: string | null,
+      snapshot: Snapshot<T, K>,
+      snapshotStoreConfig: SnapshotStoreConfig<T, K>,
+      type: string,
+      event: Event
+    ): SnapshotStore<T, K> | null => {
+      // Logic to get store based on parameters
+      return null; // Placeholder logic
+    },
+
+    addStore: (
+      storeId: number,
+      snapshotId: string,
+      snapshotStore: SnapshotStore<T, K>,
+      snapshot: Snapshot<T, K>,
+      type: string,
+      event: Event
+    ): SnapshotStore<T, K> | null => {
+      // Logic to add store
+      return null; // Placeholder logic
+    },
+
+    mapSnapshot: (
+      id: number,
+      storeId: number,
+      snapshotStore: SnapshotStore<T, K>,
+      snapshotContainer: SnapshotContainer<T, K>,
+      snapshotId: string,
+      criteria: CriteriaType,
+      snapshot: Snapshot<T, K>,
+      type: string,
+      event: Event,
+      callback: (snapshot: Snapshot<T, K>) => void,
+      mapFn: (item: T) => T
+    ): Snapshot<T, K> | null => {
+      // Logic to map snapshot
+      return null; // Placeholder logic
+    },
+
+    mapSnapshotWithDetails: (
+      storeId: number,
+      snapshotStore: SnapshotStore<T, K>,
+      snapshotId: string,
+      snapshot: Snapshot<T, K>,
+      type: string,
+      event: Event,
+      callback: (snapshot: Snapshot<T, K>) => void
+    ): SnapshotWithData<T, K> | null => {
+      // Logic to map snapshot with details
+      return null; // Placeholder logic
+    },
+
+    removeStore: (
+      storeId: number,
+      store: SnapshotStore<T, K>,
+      snapshotId: string,
+      snapshot: Snapshot<T, K>,
+      type: string,
+      event: Event
+    ) => {
+      // Logic to remove store
+    },
+
+    unsubscribe: (
+      unsubscribeDetails: {
+        userId: string;
+        snapshotId: string;
+        unsubscribeType: string;
+        unsubscribeDate: Date;
+        unsubscribeReason: string;
+        unsubscribeData: any;
+      },
+      callback: Callback<Snapshot<T, K>> | null
+    ) => {
+      // Logic to unsubscribe
+      if (callback) callback(null as unknown as Snapshot<T, K>); // Placeholder logic for the callback
+    },
+
+ setData: (id: string, data: Map<string, Snapshot<T, K>>) => {
+      // Logic to set data
+    },
+    addData: (id: string, data: Partial<Snapshot<T, K>>) => {
+      // Logic to add data
+    },
+    stores: null, // Initially, stores is null, can be updated later
+
+    getStore: (
+      storeId: number,
+      snapshotId: string | null,
+      snapshot: Snapshot<T, K>,
+      snapshotStoreConfig: SnapshotStoreConfig<T, K>,
+      type: string,
+      event: Event
+    ): SnapshotStore<T, K> | null => {
+      // Logic to get store based on parameters
+      return null; // Placeholder logic
+    },
+
+    addStore: (
+      storeId: number,
+      snapshotId: string,
+      snapshotStore: SnapshotStore<T, K>,
+      snapshot: Snapshot<T, K>,
+      type: string,
+      event: Event
+    ): SnapshotStore<T, K> | null => {
+      // Logic to add store
+      return null; // Placeholder logic
+    },
+
+    mapSnapshot: (
+      id: number,
+      storeId: number,
+      snapshotStore: SnapshotStore<T, K>,
+      snapshotContainer: SnapshotContainer<T, K>,
+      snapshotId: string,
+      criteria: CriteriaType,
+      snapshot: Snapshot<T, K>,
+      type: string,
+      event: Event,
+      callback: (snapshot: Snapshot<T, K>) => void,
+      mapFn: (item: T) => T
+    ): Snapshot<T, K> | null => {
+      // Logic to map snapshot
+      return null; // Placeholder logic
+    },
+
+    mapSnapshotWithDetails: (
+      storeId: number,
+      snapshotStore: SnapshotStore<T, K>,
+      snapshotId: string,
+      snapshot: Snapshot<T, K>,
+      type: string,
+      event: Event,
+      callback: (snapshot: Snapshot<T, K>) => void
+    ): SnapshotWithData<T, K> | null => {
+      // Logic to map snapshot with details
+      return null; // Placeholder logic
+    },
+
+    removeStore: (
+      storeId: number,
+      store: SnapshotStore<T, K>,
+      snapshotId: string,
+      snapshot: Snapshot<T, K>,
+      type: string,
+      event: Event
+    ) => {
+      // Logic to remove store
+    },
+
+    unsubscribe: (
+      unsubscribeDetails: {
+        userId: string;
+        snapshotId: string;
+        unsubscribeType: string;
+        unsubscribeDate: Date;
+        unsubscribeReason: string;
+        unsubscribeData: any;
+      },
+      callback: Callback<Snapshot<T, K>> | null
+    ) => {
+      // Logic to unsubscribe
+      if (callback) callback(null as unknown as Snapshot<T, K>); // Placeholder logic for the callback
+    },
+       
+    fetchSnapshot: async (callback) => {
+      // Placeholder: Implement your logic for fetchSnapshot
+      return {
+        id: snapshotId || '',
+        category: category,
+        categoryProperties: {} as CategoryProperties,
+        timestamp: new Date(),
+        snapshot: {} as Snapshot<T, K>,
+        data: data,
+        delegate: [],
+      };
+    },
+
+    fetchSnapshotSuccess: (id, snapshotId, snapshotStore, payload, snapshot, data, delegate, snapshotData) => {
+      // Placeholder: Implement your logic for fetchSnapshotSuccess
+      return [];
+    },
+
+    updateSnapshotFailure: (snapshotId, snapshotManager, snapshot, date, payload) => {
+      // Placeholder: Implement your logic for updateSnapshotFailure
+    },
+
+    fetchSnapshotFailure: (snapshotId, snapshotManager, snapshot, date, payload) => {
+      // Placeholder: Implement your logic for fetchSnapshotFailure
+    },
+
+    addSnapshotFailure: (date, snapshotManager, snapshot, payload) => {
+      // Placeholder: Implement your logic for addSnapshotFailure
+    },
+
+    configureSnapshotStore: (
+      snapshotStore, storeId, data, events, dataItems, newData, payload, store, callback, config
+    ) => {
+      // Placeholder: Implement your logic for configureSnapshotStore
+    },
+
+    updateSnapshotSuccess: (snapshotId, snapshotManager, snapshot, payload) => {
+      // Placeholder: Implement your logic for updateSnapshotSuccess
+    },
+
+    createSnapshotFailure: (date, snapshotId, snapshotManager, snapshot, payload) => {
+      // Placeholder: Implement your logic for createSnapshotFailure
+    },
+
+    createSnapshotSuccess: (snapshotId, snapshotManager, snapshot, payload) => {
+      // Placeholder: Implement your logic for createSnapshotSuccess
+    },
+
+    createSnapshots: (
+      id, snapshotId, snapshots, snapshotManager, payload, callback, snapshotDataConfig, category, categoryProperties
+    ) => {
+      // Placeholder: Implement your logic for createSnapshots
+      return snapshots;
+    },
+
+    onSnapshot: (snapshotId, snapshot, type, event, callback) => {
+      // Placeholder: Implement your logic for onSnapshot
+    },
+
+    onSnapshots: (snapshotId, snapshots, type, event, callback) => {
+      // Placeholder: Implement your logic for onSnapshots
+    },
+    childIds: null, // Initially null or can be an empty array based on your logic
+
+    getParentId: (id: string, snapshot: Snapshot<SnapshotUnion<BaseData>, T>) => {
+      // Logic to return parent ID
+      return snapshot.parentId || null;
+    },
+
+    getChildIds: (id: string, childSnapshot: Snapshot<BaseData, K>) => {
+      // Logic to return child IDs
+      return childSnapshot.childIds || [];
+    },
+
+    snapshotCategory: undefined, // Define the category or fetch it dynamically as needed
+
+    snapshotSubscriberId: undefined,
+   
+    addChild: (parentId: string, childId: string, childSnapshot: Snapshot<T, K>) => {
+      // Logic to add a child to the parent snapshot
+      if (!childSnapshot.children) childSnapshot.children = [];
+      childSnapshot.children.push(childSnapshot);
+    },
+
+    removeChild: (childId: string, parentId: string, parentSnapshot: Snapshot<Data, Data>, childSnapshot: Snapshot<Data, Data>) => {
+      // Logic to remove a child from the parent snapshot
+      if (parentSnapshot.children) {
+        parentSnapshot.children = parentSnapshot.children.filter(child => child.id !== childId);
+      }
+    },
+
+    getChildren: (id: string, childSnapshot: Snapshot<T, K>) => {
+      return (childSnapshot.children || []) as CoreSnapshot<Data, BaseData>[];
+    },
+
+    hasChildren: (id: string) => {
+      // Logic to determine if a snapshot has children
+      return !!(id && snapshotStore?.get(id)?.children?.length);
+    },
+
+    
+    isDescendantOf: (childId: string, parentId: string, parentSnapshot: Snapshot<T, K>, childSnapshot: Snapshot<T, K>) => {
+      // Logic to check if a child is a descendant of the parent
+      return !!(parentSnapshot.children && parentSnapshot.children.some(child => child.id === childId));
+    },
+
+    getSnapshotById: (id: string) => {
+      // Logic to fetch snapshot by ID, for example, from the snapshotStore
+      return snapshotStore?.get(id) || null;
+    },
+
+    // Other properties and methods from Snapshot<T, K> can follow similar structure
+    initializeWithData: (data: SnapshotUnion<T>[]): void | undefined => {
+      // Logic to initialize the snapshot with data
+    },
+
+    hasSnapshots: (): boolean => {
+      // Logic to determine if there are any snapshots available
+    },
+   
+    isSubscribed: subscribed,
+
+    notifySubscribers: (): Subscriber<T, K>[] => {
+      // Logic to notify all subscribers of updates
+    },
+
+    notify: () => {
+      // General notification logic
+    },
+
+    clearSnapshotSuccess: () => {
+      // Logic to clear the success state of the snapshot
+    },
+   
+    addToSnapshotList: (snapshot: Snapshot<T, K>) => {
+      // Logic to add this snapshot to a list (e.g., inside a snapshot store)
+    },
+
+    removeSubscriber: (subscriberId: string) => {
+      // Logic to remove a subscriber from this snapshot
+    },
+
+    addSnapshotSubscriber: (subscriberId: string) => {
+      // Logic to add a subscriber to this snapshot
+    },
+
+    removeSnapshotSubscriber: (subscriberId: string) => {
+      // Logic to remove a subscriber from this snapshot
+    },
+
+    transformSubscriber: (subscriberId: string, sub: Subscriber<T, K>): Subscriber<T, K> => {
+      // Logic to transform a subscriber, if needed
+    },
+    // Include all other properties required for Snapshot<T, K>
+  } as Snapshot<T, K>;
+};
+
+
+
+
+
 // createDataObject(plainDataObject, baseData, baseMeta).then((dataObject) => {
 //   console.log(dataObject);
 // });
@@ -1303,7 +2647,7 @@ const getCurrentSnapshot = <T extends Data, K extends Data>(
 //     callback: (
 //       snapshotStore: SnapshotStore<BaseData, BaseData>[]
 //     ) => void | null,
-//     snapshotStoreData?: SnapshotStore<BaseData, BaseData>[] | undefined, category?: string | CategoryProperties, snapshotDataConfig?: SnapshotStoreConfig<BaseData, BaseData>[] | undefined): SnapshotStore<BaseData, BaseData>[] | null {
+//     snapshotStoreData?: SnapshotStore<BaseData, BaseData>[] | undefined, category?: string | symbol | Category, snapshotDataConfig?: SnapshotStoreConfig<BaseData, BaseData>[] | undefined): SnapshotStore<BaseData, BaseData>[] | null {
 //     throw new Error("Function not implemented.");
 //   },
 //   handleSnapshot: function (
@@ -1399,6 +2743,7 @@ const getCurrentSnapshot = <T extends Data, K extends Data>(
 //     })
 //   }
 // };
+
 
 
 // // const sampleSnapshot: Snapshot<BaseData, any> = {
@@ -1728,7 +3073,7 @@ const getCurrentSnapshot = <T extends Data, K extends Data>(
 // //   createSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<BaseData, any>, snapshot: Snapshot<BaseData, any>, payload: { error: Error; }): void | null {
 // //     throw new Error("Function not implemented.");
 // //   },
-// //   createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<BaseData, any>, snapshotManager: SnapshotManager<BaseData, any>, payload: CreateSnapshotsPayload<BaseData, any>, callback: (snapshots: Snapshot<BaseData, any>[]) => void | null, snapshotDataConfig?: SnapshotConfig<BaseData, any>[] | undefined, category?: string | CategoryProperties): Snapshot<BaseData, any>[] | null {
+// //   createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<BaseData, any>, snapshotManager: SnapshotManager<BaseData, any>, payload: CreateSnapshotsPayload<BaseData, any>, callback: (snapshots: Snapshot<BaseData, any>[]) => void | null, snapshotDataConfig?: SnapshotConfig<BaseData, any>[] | undefined, category?: string | symbol | Category): Snapshot<BaseData, any>[] | null {
 // //     throw new Error("Function not implemented.");
 // //   },
 // //   onSnapshot: function (snapshotId: string, snapshot: Snapshot<BaseData, any>, type: string, event: Event, callback: (snapshot: Snapshot<BaseData, any>) => void): void {
@@ -1755,3 +3100,6 @@ const getCurrentSnapshot = <T extends Data, K extends Data>(
 //     // sampleSnapshot, 
 //     snapshot
 // };
+
+
+export { createSnapshotInstance };

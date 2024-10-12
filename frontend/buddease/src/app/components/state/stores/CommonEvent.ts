@@ -12,13 +12,13 @@ import { Category } from '../../libraries/categories/generateCategoryProperties'
 import { BaseData, Data } from "../../models/data/Data";
 import { Member } from "../../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
-import { SnapshotStoreConfig } from '../../snapshots';
+import { SnapshotData, SnapshotStoreConfig } from '../../snapshots';
 import { FetchSnapshotPayload } from '../../snapshots/FetchSnapshotPayload';
 import { Snapshot, SnapshotsArray, SnapshotUnion } from '../../snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '../../snapshots/SnapshotStore';
 import { SnapshotWithCriteria, TagsRecord } from '../../snapshots/SnapshotWithCriteria';
 import { Callback } from '../../snapshots/subscribeToSnapshotsImplementation';
-import { convertToDataSnapshot } from '../../typings/YourSpecificSnapshotType';
+import { convertToDataSnapshot, isSnapshot } from '../../typings/YourSpecificSnapshotType';
 import { Subscriber } from '../../users/Subscriber';
 import { ExtendedVersionData } from '../../versions/VersionData';
 import { VideoData } from "../../video/Video";
@@ -92,7 +92,7 @@ export function implementThen<T extends BaseData, K extends BaseData>(
     events: {} as EventStore<T, K>,
     meta: {},
     // Corrected getSnapshotId implementation
-    getSnapshotId: function (key: string | T, snapshot: Snapshot<T, K>): unknown {
+    getSnapshotId: function (key: string | SnapshotData<T, K>, snapshot: Snapshot<T, K>): unknown {
       // If the key is a string, you can use it directly
       if (typeof key === 'string') {
         return snapshot.id; // or some logic to derive the ID
@@ -184,10 +184,11 @@ export function implementThen<T extends BaseData, K extends BaseData>(
     defaultSubscribeToSnapshots: () => { },
     versionInfo: {} as ExtendedVersionData,
    
+
     handleSnapshot: function (
       id: string,
-      snapshotId: number,
-      snapshot: Snapshot<T, K> | null,  // <-- Change the type here
+      snapshotId: string,
+      snapshot: T extends SnapshotData<T, K> ? Snapshot<T, K> : null,  // Use conditional type to ensure properties exist
       snapshotData: T,
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
@@ -199,12 +200,14 @@ export function implementThen<T extends BaseData, K extends BaseData>(
       snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
     ): Promise<Snapshot<T, K> | null> {
      
-      const snapshotInstance = snapshot;
-      if (snapshotInstance) {
-        snapshotInstance.state = snapshots,
-          snapshotInstance.event = event;
-        snapshotInstance.type = type;
-      }
+      if (snapshot && isSnapshot<T, K>(snapshot)) {
+        // Now TypeScript knows that `snapshot` is of type `Snapshot<T, K>`
+        snapshot.state = snapshots;
+        snapshot.event = event;
+        snapshot.type = type;
+    
+        return Promise.resolve(snapshot);
+      }    
       return Promise.resolve(null)
     },
     subscribe: function (

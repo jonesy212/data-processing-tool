@@ -9,16 +9,16 @@ import LoadingSpinner from "../models/tracker/LoadingSpinner";
 import { userId } from "../users/ApiUser";
 import SearchResult from "./SearchResult";
 import { sanitizeInput } from "../security/SanitizationFunctions";
+import { Entity } from "./FuzzyMatch";
 
 const SearchPage: React.FC<SearchComponentProps> = ({
   componentSpecificData,
   documentData,
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<Entity[]>([]);
   const [loading, setLoading] = useState(false);
   const { error, handleError, clearError } = useErrorHandling();
-
   useEffect(() => {
     if (searchQuery) {
       performSearch(searchQuery);

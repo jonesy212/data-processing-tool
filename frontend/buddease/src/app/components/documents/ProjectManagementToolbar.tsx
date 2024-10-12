@@ -1,3 +1,4 @@
+import * as snapshotApi from '@/app/api/SnapshotApi';
 import ProjectEventEmitter from "@/app/ts/EventEmitter";
 import React from "react";
 import { Task } from "../models/tasks/Task";
@@ -8,11 +9,11 @@ import {
 import { rootStores } from "../state/stores/RootStores";
 import { useTaskManagerStore } from "../state/stores/TaskStore ";
 import { useTeamManagerStore } from "../state/stores/TeamStore";
-import useTodoManagerStore from "../state/stores/TodoStore";
+import useTodoManagerStore, { TodoManagerStoreProps } from "../state/stores/TodoStore";
 import useTrackerStore from "../state/stores/TrackerStore";
 import TodoImpl, { Todo } from "../todos/Todo";
 import ToolbarItem from "./ToolbarItem";
-import { showModalOrNotification } from "../hooks/idleTimeoutHooks";
+import { showModalOrNotification } from "../hooks/commHooks/idleTimeoutUtils";
 
 const ProjectManagementToolbar: React.FC<{ task: Task }> = ({ task }) => {
   const toolbarOptions = {
@@ -37,12 +38,18 @@ const ProjectManagementToolbar: React.FC<{ task: Task }> = ({ task }) => {
     );
   }
 
-  const handleOptionClick = async (option: string, task: Task) => {
+  const handleOptionClick = async (option: string, index: number, task: Task, props?: TodoManagerStoreProps) => {
     // Logic to handle option click based on the active dashboard
     console.log(`Clicked ${option} in Project Management dashboard`);
+
     const rootStore = rootStores
     const trackerStore = useTrackerStore(rootStore);
 
+
+    const initialStoreId = await snapshotApi.
+    if(!props){
+      throw Error("props is undefined")
+    }
     const events: Record<string, CalendarEvent[]> = {}; // Initialize an empty object
     switch (option) {
       case "Task List":
@@ -83,17 +90,17 @@ const ProjectManagementToolbar: React.FC<{ task: Task }> = ({ task }) => {
         break;
       case "View Todos":
         // Call MobX action to fetch todos
-        useTodoManagerStore().fetchTodosRequest();
+        useTodoManagerStore(props).fetchTodosRequest();
         break;
       case "Add Todo":
           const todo: Todo = new TodoImpl(); // Initialize todo with a new Todo object
-          useTodoManagerStore().addTodo(todo);
+          useTodoManagerStore(props).addTodo(todo);
         break;
       case "Manage Todos":
-        const todoId = (await useTodoManagerStore()).getTodoId
-        const teamId = (await useTeamManagerStore()).getTeamId
+        const todoId = (await useTodoManagerStore(props)).getTodoId
+        const teamId = (await useTeamManagerStore(initialStoreId)).getTeamId
         // Call MobX action to manage todo settings or preferences
-        useTodoManagerStore().openTodoSettingsPage(todoId as unknown as number, teamId as unknown as number);
+        useTodoManagerStore(props).openTodoSettingsPage(todoId as unknown as number, teamId as unknown as number);
         break;
       case "Issue Tracker":
         const issueTracker = trackerStore.getTrackers({
@@ -143,7 +150,7 @@ const ProjectManagementToolbar: React.FC<{ task: Task }> = ({ task }) => {
             <ToolbarItem
               id={`project-management-toolbar-item-${index}`}
               label={option}
-              onClick={() => handleOptionClick(option, task)}
+              onClick={() => handleOptionClick(option, index, task)}
             />
           </li>
         ))}

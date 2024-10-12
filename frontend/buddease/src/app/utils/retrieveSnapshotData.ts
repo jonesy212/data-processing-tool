@@ -1,6 +1,7 @@
 import { Snapshot, Snapshots, SnapshotsObject, SnapshotUnion } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 import axiosInstance from '../api/axiosInstance';
 import { CreateSnapshotsPayload, CreateSnapshotStoresPayload } from '../components/database/Payload';
+import { InitializedDataStore } from '../components/hooks/SnapshotStoreOptions';
 import { CombinedEvents, SnapshotManager } from '../components/hooks/useSnapshotManager';
 import { Category } from "../components/libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../components/models/data/Data";
@@ -29,7 +30,7 @@ type SnapshotData<T extends Data, K extends Data> = T | Map<string, Snapshot<T, 
 // Define the type for the response data
 interface SnapshotDataResponse<T extends Data, K extends Data>
   extends Snapshot<T, K> {
-  id: string
+  id: string | number;
   timestamp: Date
   videoData: VideoData
   category: string
@@ -47,7 +48,6 @@ interface RetrievedSnapshot<T extends Data, K extends Data>
   data: T | Map<string, Snapshot<T, K>> | null | undefined;
   callbacks: Record<string, Array<(snapshot: Snapshot<T, K>) => void>>;
 }
-
 
 
 // Define a nction to convert RetrievedSnapshot<SnapshotDataResponse> to SnapshotStore<Snapshot<Data>>
@@ -572,7 +572,7 @@ const converSnapshotStore = <T extends Data, K extends Data>(
       snapshots: Snapshots<T>;
       subscribers: Subscriber<T, K>[];
       data: T;
-      newData: T;
+      newData: Snapshot<T, K>;
       unsubscribe: () => void;
       addSnapshotFailure: (
         date: Date,
@@ -581,25 +581,25 @@ const converSnapshotStore = <T extends Data, K extends Data>(
         payload: { error: Error; }
       ) => void;
       createSnapshotSuccess: (
-        snapshotId: number,
+        snapshotId: string,
         snapshotManager: SnapshotManager<T, K>,
         snapshot: Snapshot<T, K>,
         payload?: { data?: any } 
       ) => void;
       createSnapshotFailure: (
         date: Date,
-        snapshotId: number, 
+        snapshotId: string, 
         snapshotManager: SnapshotManager<T, K>,
         snapshot: Snapshot<T, K>, 
         payload: { error: Error; }
       ) => void;
       updateSnapshotSuccess: (
-        snapshotId: number, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload?: { data?: any; } | undefined
+        snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload?: { data?: any; } | undefined
       ) => void;
       batchUpdateSnapshotsSuccess: (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T>) => void;
       batchUpdateSnapshotsFailure: (
         date: Date, 
-        snapshotId: number, 
+        snapshotId: string, 
         snapshotManager: SnapshotManager<T, K>,
          snapshot: Snapshot<T, K>,
           payload: { error: Error; }
@@ -607,7 +607,7 @@ const converSnapshotStore = <T extends Data, K extends Data>(
       batchUpdateSnapshotsRequest: (snapshots: Snapshots<T>) => Promise<void>;
       createSnapshots: (
         id: string,
-        snapshotId: number,
+        snapshotId: string,
         snapshots: Snapshots<T>,
         snapshotManager: SnapshotManager<T, K>,
         payload: CreateSnapshotsPayload<T, K>,
@@ -645,7 +645,7 @@ const converSnapshotStore = <T extends Data, K extends Data>(
   
       getSnapshotData: (
         id: string | number | undefined,
-        snapshotId: number,
+        snapshotId: string,
         snapshotData: T,
         category: Category | undefined,
         categoryProperties: CategoryProperties | undefined,
@@ -691,14 +691,14 @@ const converSnapshotStore = <T extends Data, K extends Data>(
       configureSnapshotStore: (config: any) => void;
   
       onSnapshot: (
-        snapshotId: number, 
+        snapshotId: string, 
         snapshot: Snapshot<T, K>, 
         type: string,
          event: Event, 
          callback: (snapshot: Snapshot<T, K>) => void
       ) => void;
       onSnapshots: (
-        snapshotId: number, snapshots: Snapshots<T>, 
+        snapshotId: string, snapshots: Snapshots<T>, 
         type: string,
         event: Event,
          callback: (snapshots: Snapshots<T>) => void
@@ -884,7 +884,7 @@ const converSnapshotStore = <T extends Data, K extends Data>(
     deleteSnapshot: () => { },
     snapshotStoreConfig: {} as SnapshotStoreConfig<T, K>,
     getSnapshotItems: (): (SnapshotStoreConfig<T, K> | SnapshotItem<T, K>)[] => [],
-    dataStore: {} as T | DataStore<T, K> | null | undefined,
+    dataStore: {} as  InitializedDataStore,
     mapDataStore: {} as T | Map<string, DataStore<T, K>> | null | undefined,
     initialState: {} as Snapshot<T, K>,
     snapshotItems: [],
@@ -915,7 +915,7 @@ const converSnapshotStore = <T extends Data, K extends Data>(
     getStore: () => {},
     addStore: (
       storeId: number, 
-      snapshotId: number, 
+      snapshotId: string, 
       snapshotStore: SnapshotStore<T, K>, 
       snapshot: Snapshot<T, K>,
       type: string, 
@@ -944,7 +944,7 @@ const converSnapshotStore = <T extends Data, K extends Data>(
       payload: CreateSnapshotStoresPayload<T, K>,
       callback: (snapshotStores: SnapshotStore<T, K>[]) => void | null,
       snapshotStoreData?: SnapshotStore<T, K>[],
-      category?: string | CategoryProperties,
+      category?: string | symbol | Category,
       snapshotDataConfig?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[]
     ): SnapshotStore<T, K>[] | null => {
       try {
@@ -1281,18 +1281,27 @@ const retrieveData = async () => {
 };
 
 
-export const retrieveSnapshotData = <T extends Data, K extends Data>(id: string): Promise<RetrievedSnapshot<SnapshotDataResponse> | null> => {
-  return new Promise<RetrievedSnapshot<SnapshotDataResponse<T,K>, K> | null>(async (resolve, reject) => {
+export const retrieveSnapshotData = <T extends Data, K extends Data>(id: string): Promise<RetrievedSnapshot<SnapshotDataResponse<T, K>, K> | null> => {
+  return new Promise<RetrievedSnapshot<SnapshotDataResponse<T, K>, K> | null>(async (resolve, reject) => {
     try {
-      const response = await axiosInstance.get<SnapshotDataResponse<T,K>>(`${SNAPSHOT_DATA_API_URL}/${id}`);
+      const response = await axiosInstance.get<SnapshotDataResponse<T, K>>(`${SNAPSHOT_DATA_API_URL}/${id}`);
 
-      const snapshotData: RetrievedSnapshot<SnapshotDataResponse<T,K>, K> = {
-        id: response.data.id.toString(),
+      // Ensure response.data is of type SnapshotDataResponse<T, K>
+      const snapshotData: RetrievedSnapshot<SnapshotDataResponse<T, K>, K> = {
         timestamp: new Date(response.data.timestamp),
         category: response.data.category,
         data: null, // Adjust this as per your data structure
-        snapshotStoreConfig, getSnapshotItems, defaultSubscribeToSnapshots,
+        snapshotStoreConfig: response.data.snapshotStoreConfig,
+        getSnapshotItems: response.data.getSnapshotItems,
+        defaultSubscribeToSnapshots: response.data.defaultSubscribeToSnapshots,
+       
         transformSubscriber: response.data.transformSubcriber,
+        responseData: response.data.responseData,
+        callbacks: response.data.callbacks,
+        initialState: response.data.initialState,
+        isCore: response.data.isCore,
+       
+
       };
 
       resolve(snapshotData);

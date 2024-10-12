@@ -8,8 +8,21 @@ import { DocumentTypeEnum } from "../documents/DocumentGenerator";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import { VersionData } from "./VersionData";
 
-// Define the AppVersion interface
-interface AppVersion {
+
+interface Versionable {
+  getVersionString: () => string;
+  getVersionNumber?: () => string; // Optional, if not needed in all implementations
+  getVersionStringWithBuildNumber: (buildNumber: number) => string;
+  releaseDate: string;
+  releaseNotes: string[];
+  addReleaseNotes: (notes: string) => void;
+  getReleaseDate: () => string;
+  getReleaseNotes: () => string[];
+}
+
+
+// Extend the common interface in the AppVersion interface
+interface AppVersion extends Versionable {
   appName: string;
   major: number;
   minor: number;
@@ -17,14 +30,6 @@ interface AppVersion {
   prerelease: boolean;
   build: number;
   isDevBuild: boolean;
-  getVersionString: () => string;
-  getVersionNumber: (() => string) | undefined;
-  getVersionStringWithBuildNumber: (buildNumber: number) => string;
-  releaseDate: string;
-  releaseNotes: string[];
-  addReleaseNotes: (notes: string) => void;
-  getReleaseDate: () => string;
-  getReleaseNotes: () => string[];
   updateAppName: (name: string) => void;
   getAppName: () => string;
 }
@@ -36,7 +41,7 @@ export const selectDatabaseVersion = (state: RootState) =>
   state.versionManager.databaseVersion;
 
 // Implement the AppVersion interface
-class AppVersionImpl extends Version implements AppVersion {
+class AppVersionImpl implements AppVersion, Versionable {
   appName: string = "";
   releaseDate: string = "2023-04-20"; // Ensure releaseDate is typed as a string
   releaseNotes: string[] = [];
@@ -47,6 +52,11 @@ class AppVersionImpl extends Version implements AppVersion {
   prerelease: boolean = true;
   build: number = 0;
   isDevBuild: boolean = false;
+
+
+
+  frontendStructure: Promise<FrontendStructure>;
+  backendStructure: Promise<BackendStructure>;
 
   constructor(versionInfo: {
     id: number;
@@ -67,18 +77,18 @@ class AppVersionImpl extends Version implements AppVersion {
     versionHistory: any;
     draft: boolean;
     userId: string;
-    documentId: string; // Add documentId property
-    parentId: string; // Add parentId property
-    parentType: string; // Add parentType property
-    parentVersion: string; // Add parentVersion property
-    parentTitle: string; // Add parentTitle property
-    parentContent: string; // Add parentContent property
-    parentName: string; // Add parentName property
-    parentUrl: string; // Add parentUrl property
-    parentChecksum: string; // Add parentChecksum property
-    parentMetadata: {}; // Add parentMetadata property
-    parentAppVersion: string; // Add parentAppVersion property
-    parentVersionNumber: string; // Add parentVersionNumber property
+    documentId: string;
+    parentId: string;
+    parentType: string;
+    parentVersion: string;
+    parentTitle: string;
+    parentContent: string;
+    parentName: string;
+    parentUrl: string;
+    parentChecksum: string;
+    parentMetadata: {};
+    parentAppVersion: string;
+    parentVersionNumber: string;
     documentType: DocumentTypeEnum;
     documentName: string;
     documentDescription: string;
@@ -129,10 +139,30 @@ class AppVersionImpl extends Version implements AppVersion {
       backend: BackendStructure;
     };
   }) {
-    super(versionInfo);
-    this.appName = versionInfo.appName ? versionInfo.appName : ""; // Ensure appName is typed as a string
-    this.releaseDate = versionInfo.releaseDate; // Ensure releaseDate remains a string
+    this.appName = versionInfo.appName ? versionInfo.appName : "";
+    this.releaseDate = versionInfo.releaseDate;
     this.releaseNotes = versionInfo.releaseNotes;
+     this.frontendStructure = this.getFrontendStructure();
+     this.backendStructure = this.getBackendStructure();
+  
+  }
+
+  // Example function to retrieve FrontendStructure (returns a promise)
+  private getFrontendStructure(): Promise<FrontendStructure> {
+    return Promise.resolve({
+      components: ["Header", "Footer", "Sidebar"],
+      layout: "Grid",
+      version: "1.0.0"
+    });
+  }
+
+  // Example function to retrieve BackendStructure (returns a promise)
+  private getBackendStructure(): Promise<BackendStructure> {
+    return Promise.resolve({
+      services: ["UserService", "AuthService"],
+      databaseSchema: "v1.2",
+      version: "1.0.0"
+    });
   }
 
   getAppName(): string {

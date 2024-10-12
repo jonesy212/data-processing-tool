@@ -2,7 +2,6 @@
 
 import { IHydrateResult } from "mobx-persist";
 import { string } from "prop-types";
-import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { BaseData, Data } from "../models/data/Data";
 import { NotificationPosition, StatusType } from "../models/data/StatusType";
@@ -13,13 +12,12 @@ import CalendarEvent from "../state/stores/CalendarEvent";
 import { NotificationType } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 import { CoreSnapshot } from "./CoreSnapshot";
-import { SubscribeToSnapshotsPayload } from "./FetchSnapshotPayload";
-import { CreateSnapshotsPayload, FetchSnapshotPayload, Payload, Snapshot, Snapshots, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
-import { SnapshotConfig } from "./snapshot";
-import { ConfigureSnapshotStorePayload, K, T } from "./SnapshotConfig";
+import { Payload, Snapshot, Snapshots, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
+
+import { K, T } from "../models/data/dataStoreMethods";
+import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";
 import { SnapshotData } from "./SnapshotData";
 import { SnapshotItem } from "./SnapshotList";
-import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
@@ -45,9 +43,10 @@ export const defaultUnsubscribeFromSnapshots = (
 };
 
 
-export const defaultSubscribeToSnapshot = (
+export const defaultSubscribeToSnapshot = <T extends BaseData, K extends BaseData = T>(
   snapshotId: string,
-  callback: (snapshot: Snapshot<T, K>) => void
+  callback: (snapshot: Snapshot<T, K>) => void,
+  snapshot: Snapshot<T, K>
 ): void => {
   // Dummy implementation of subscribing to a single snapshot
   console.log(`Subscribed to single snapshot with ID: ${snapshotId}`);
@@ -120,11 +119,42 @@ export const defaultSubscribeToSnapshot = (
               },
               data: new Map<string, Data>(),
               meta: new Map<string, Snapshot<T, K>>(),
-              subscribers: new Map<string, Subscriber<T, K>>(),
+              subscribers: {} as Subscriber<T, K>[],
               subscribersCount: 0,
               retentionPolicy: RetentionPolicy.None,
               retentionPeriod: 0,
               retentionPeriodUnit: RetentionPeriodUnit.Days,
+              find, initialState, storeId, operation, 
+              createdAt, snapshotId, snapshotStore, dataStoreMethods,
+              criteria, content, config, snapshotCategory, 
+              snapshotSubscriberId, snapshotContent, snapshots, delegate,
+              getParentId, getChildIds, clearSnapshotFailure, mapSnapshots, 
+              state, getSnapshotById, handleSnapshot, getSnapshotId, 
+              snapshot, createSnapshot, createSnapshotStore, updateSnapshotStore,
+              configureSnapshot, configureSnapshotStore, createSnapshotSuccess, createSnapshotFailure,
+              batchTakeSnapshot, onSnapshot, onSnapshots, onSnapshotStore,
+              snapshotData, mapSnapshot, createSnapshotStores, initSnapshot,
+              subscribeToSnapshots, clearSnapshot, clearSnapshotSuccess, handleSnapshotOperation, 
+              displayToast, addToSnapshotList, addToSnapshotStoreList, fetchInitialSnapshotData, 
+              updateSnapshot, getSnapshots, getSnapshotItems, takeSnapshot, 
+              takeSnapshotStore, addSnapshotSuccess, removeSnapshot, getSubscribers,
+              addSubscriber, validateSnapshot, getSnapshot, getSnapshotContainer,
+              getSnapshotVersions, fetchData, versionedSnapshot, getAllSnapshots,
+              getSnapshotStoreData, takeSnapshotSuccess, updateSnapshotFailure, takeSnapshotsSuccess,
+              fetchSnapshot, addSnapshotToStore, getSnapshotSuccess, setSnapshotSuccess, 
+              setSnapshotFailure, updateSnapshotSuccess, updateSnapshotsSuccess, fetchSnapshotSuccess,
+              updateSnapshotForSubscriber, updateMainSnapshots, batchProcessSnapshots, batchUpdateSnapshots,
+              batchFetchSnapshotsRequest, batchTakeSnapshotsRequest, batchUpdateSnapshotsRequest, batchFetchSnapshots,
+              getData, batchFetchSnapshotsSuccess, batchFetchSnapshotsFailure, batchUpdateSnapshotsFailure,
+              notifySubscribers, notify, getCategory, schema, updateSnapshots, updateSnapshotsFailure, flatMap, setData,
+              getState, setState, handleActions, setSnapshots, mergeSnapshots, reduceSnapshots, sortSnapshots, filterSnapshots,
+              findSnapshot, subscribe, unsubscribe, fetchSnapshotFailure, generateId, useSimulatedDataSource, simulatedDataSource,
+              maxRetries, retryDelay, baseURL, enabled, maxAge, staleWhileRevalidate, cacheKey, eventRecords, 
+              date, type, snapshotStoreConfig, callbacks, subscribeToSnapshot, unsubscribeToSnapshots, unsubscribeToSnapshot, 
+              getDelegate, getDataStoreMethods, snapshotMethods, handleSnapshotStoreOperation,
+              
+              [Symbol.iterator], [Symbol.asyncIterator], 
+
             } as SnapshotStoreConfig<any, any>, // Explicitly typing the object
 
             {
@@ -135,6 +165,10 @@ export const defaultSubscribeToSnapshot = (
               value: "a sample value",
               label: " Sample Snapshot Item",
               description: "Sample description",
+
+
+
+
               timestamp: new Date(),
               category: "Sample category",
               startDate: new Date(),
@@ -155,7 +189,7 @@ export const defaultSubscribeToSnapshot = (
               },
               data: new Map<string, Data>(),
               meta: new Map<string, Snapshot<T, K>>(),
-              subscribers: new Map<string, Subscriber<T, K>>(),
+              subscribers: {} as Subscriber<T, K>[],
               subscribersCount: 0,
               retentionPolicy: RetentionPolicy.None,
               retentionPeriod: 0,
@@ -730,7 +764,7 @@ export const defaultSubscribeToSnapshot = (
         createSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<any, any>, snapshot: Snapshot<any, any>, payload: { error: Error; }): void | null {
           throw new Error("Function not implemented.");
         },
-        createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<any, any>, snapshotManager: SnapshotManager<any, any>, payload: CreateSnapshotsPayload<any, any>, callback: (snapshots: Snapshot<any, any>[]) => void | null, snapshotDataConfig?: SnapshotConfig<any, any>[] | undefined, category?: string | CategoryProperties): Snapshot<any, any>[] | null {
+        createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<any, any>, snapshotManager: SnapshotManager<any, any>, payload: CreateSnapshotsPayload<any, any>, callback: (snapshots: Snapshot<any, any>[]) => void | null, snapshotDataConfig?: SnapshotConfig<any, any>[] | undefined, category?: string | symbol | Category): Snapshot<any, any>[] | null {
           throw new Error("Function not implemented.");
         },
         onSnapshot: function (snapshotId: string, snapshot: Snapshot<any, any>, type: string, event: Event, callback: (snapshot: Snapshot<any, any>) => void): void {

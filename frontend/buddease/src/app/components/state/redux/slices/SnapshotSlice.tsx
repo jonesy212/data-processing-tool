@@ -14,7 +14,6 @@ import { NotificationType } from "@/app/components/support/NotificationContext";
 import { Subscriber } from "@/app/components/users/Subscriber";
 import { sendNotification } from "@/app/components/users/UserSlice";
 import { findCorrectSnapshotStore, isSnapshot } from "@/app/components/utils/snapshotUtils";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IHydrateResult } from "mobx-persist";
 import { FC } from "react";
@@ -531,7 +530,7 @@ export const useSnapshotSlice = createSlice({
           createSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<BaseData, BaseData>, snapshot: Snapshot<BaseData, BaseData>, payload: { error: Error; }): void | null {
             throw new Error("Function not implemented.");
           },
-          createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<BaseData, BaseData>, snapshotManager: SnapshotManager<BaseData, BaseData>, payload: CreateSnapshotsPayload<BaseData, BaseData>, callback: (snapshots: Snapshot<BaseData, BaseData>[]) => void | null, snapshotDataConfig?: SnapshotConfig<BaseData, BaseData>[] | undefined, category?: string | CategoryProperties): Snapshot<BaseData, BaseData>[] | null {
+          createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<BaseData, BaseData>, snapshotManager: SnapshotManager<BaseData, BaseData>, payload: CreateSnapshotsPayload<BaseData, BaseData>, callback: (snapshots: Snapshot<BaseData, BaseData>[]) => void | null, snapshotDataConfig?: SnapshotConfig<BaseData, BaseData>[] | undefined, category?: string | symbol | Category): Snapshot<BaseData, BaseData>[] | null {
             throw new Error("Function not implemented.");
           },
           onSnapshot: function (snapshotId: string, snapshot: Snapshot<BaseData, BaseData>, type: string, event: Event, callback: (snapshot: Snapshot<BaseData, BaseData>) => void): void {

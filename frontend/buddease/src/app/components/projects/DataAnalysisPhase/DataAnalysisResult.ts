@@ -1,5 +1,7 @@
 import { Data } from "../../models/data/Data";
+import { DataStatus } from "../../models/data/StatusType";
 import { Phase } from "../../phases/Phase";
+import { Snapshot } from "../../snapshots";
 import { AllStatus } from "../../state/stores/DetailsListStore";
 import { AnalysisTypeEnum } from "./AnalysisType";
 
@@ -16,6 +18,7 @@ export interface DataAnalysisResult extends Data {
   status: AllStatus
   createdAt: Date,
   updatedAt: Date | undefined,
+  sentiment: number,
   recommendations: string[]; // Array of recommendations based on the analysis
   sentimentAnalysis: boolean;
   metrics: {

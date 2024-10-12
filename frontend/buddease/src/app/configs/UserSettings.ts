@@ -1,8 +1,39 @@
 import { object } from "prop-types";
+import { TodoManagerStore } from "@/app/components/state/stores/TodoStore";
+import { Idea } from "@/app/components/users/Ideas";
+import { Phase } from "../components/phases/Phase";
+import HighlightEvent from "../components/documents/screenFunctionality/HighlightEvent";
 import { CodingLanguageEnum, LanguageEnum } from "../components/communications/LanguageEnum";
 import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
 import useAuthentication from "../components/hooks/useAuthentication";
-import { Settings } from "../components/state/stores/SettingsStore";
+import { PrivacySettings, selectedSettings } from "../components/settings/PrivacySettings";
+import useSettingManagerStore, { Settings } from "../components/state/stores/SettingsStore";
+import { ThemeEnum } from "../components/libraries/ui/theme/Theme";
+import { NotificationData } from "../components/support/NofiticationsSlice";
+import { SnapshotStoreConfig, SnapshotStoreUnion } from "../components/snapshots";
+import TodoImpl, { Todo, UserAssignee} from "../components/todos/Todo";
+import { Task } from "@/app/components/models/tasks/Task";
+import { DataAnalysisResult } from "../components/projects/DataAnalysisPhase/DataAnalysisResult";
+import { store } from "../components/state/stores/useAppDispatch";
+import { resetState, useAppManagerSlice } from "../components/state/redux/slices/AppSlice";
+import { Data, BaseData } from "../components/models/data/Data";
+import { VideoData } from "../components/video/Video";
+import BrowserCheckStore from "../components/state/stores/BrowserCheckStore";
+import { Category } from "../components/libraries/categories/generateCategoryProperties";
+import { CategoryProperties } from "../pages/personas/ScenarioBuilder";
+import { Attachment } from "../components/documents/Attachment/attachment";
+import { CollaborationOptions } from "../components/interfaces/options/CollaborationOptions";
+import { NestedEndpoints } from "../api/ApiEndpoints";
+import { CalendarEvent } from "../components/calendar/CalendarEvent";
+import { CalendarManagerStore } from "../components/state/stores/CalendarEvent";
+import { CustomComment } from "../components/state/redux/slices/BlogSlice";
+import { DetailsItem } from "../components/state/stores/DetailsListStore";
+import { TrackerStore } from "../components/state/stores/TrackerStore";
+import { IconStore } from "../components/state/stores/IconStore";
+import SnapshotStore from "../components/snapshots/SnapshotStore";
+import { InitializedState } from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { NotificationSettings } from "../components/support/NotificationSettings";
+import { Member } from "../components/models/teams/TeamMembers";
 
 const logoutUser = useAuthentication().logout;
 
@@ -10,7 +41,7 @@ const onTimeout = () => {
   // Handle timeout event
   console.log("User idle timeout occurred.");
 
-  // Log the timeout event and perform necessary actions
+  // Perform actions upon timeout
   logoutUser();
   showModal(
     "Session Timeout",
@@ -19,17 +50,57 @@ const onTimeout = () => {
   resetAppState();
 };
 
+
 // Show modal function
-const showModal = (title: any, message: any) => {
+const showModal = (title: string, message: string) => {
   // Display a modal with provided title and message
   console.log(`Showing modal with title: ${title} and message: ${message}`);
+  
+  // Implement your modal display logic here
+  // Example: Using a library like Bootstrap or a custom modal
+  const modal = document.createElement('div');
+  modal.className = 'modal'; // Add appropriate classes for styling
+  modal.innerHTML = `
+    <div class="modal-content">
+      <h2>${title}</h2>
+      <p>${message}</p>
+      <button id="closeModal">Close</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  
+  // Add close functionality
+  document.getElementById('closeModal')?.addEventListener('click', () => {
+    document.body.removeChild(modal);
+  });
 };
 
 // Reset application state function
+// Assume this is determined elsewhere in your application
+const isUsingRedux = true; // Set to false if using MobX
+
 const resetAppState = () => {
-  // Reset the application state
+  // Logic to reset the application state
   console.log("Resetting application state...");
+  
+  if (isUsingRedux) {
+    // Reset Redux store
+    store.dispatch(resetState()); // Use the appropriate reset action for Redux
+  } else {
+    // Reset MobX store
+    useSettingManagerStore().reset(); // Reset settings using the SettingManager store
+  }
+
+  // Clear any user-related data
+  localStorage.clear(); // Or clear specific keys
+  
+  // Additional state reset logic can go here
 };
+
+
+// Example of using the onTimeout function
+setTimeout(onTimeout, 300000); // Simulate user idle timeout after 5 minutes
+
 
 type IdleTimeoutType = {
   intervalId: number | undefined;
@@ -41,9 +112,10 @@ type IdleTimeoutType = {
   idleTimeoutId: NodeJS.Timeout | null;
   startIdleTimeout: (
     timeoutDuration: number,
-    onTimeout: () => void | undefined
+    onTimeout: () => void | undefined,
   ) => void | undefined;
   toggleActivation: () => Promise<boolean>;
+  idleTimeoutDuration: number; // Add this property
 };
 
 export interface UserSettings extends Settings {
@@ -52,8 +124,38 @@ export interface UserSettings extends Settings {
     | number
     | NodeJS.Timeout
     | boolean
+    | Date
     | string[]
     | IdleTimeoutType
+    | PrivacySettings
+    | NotificationData[]
+    | BrowserCheckStore
+    | VideoData
+    | UserAssignee
+    | DataAnalysisResult[]
+    | Category
+    | CategoryProperties
+    | Attachment[]
+    | CollaborationOptions[]
+    | NestedEndpoints
+    | (Comment | CustomComment)[]
+    | DetailsItem<Data>
+    | TrackerStore
+    | IconStore
+    | Phase<BaseData> 
+    | HighlightEvent[]
+    | Idea[]
+    | SnapshotStore<SnapshotStoreUnion<Data>, Data>[]
+    | InitializedState<BaseData, BaseData>
+    | Member[]
+    | NotificationSettings
+    | Todo[]
+    | Task[]
+    | TodoManagerStore
+    | TodoImpl<Todo, any>[]
+    | CalendarEvent<BaseData, BaseData>[]
+    | CalendarManagerStore<BaseData, BaseData>
+    | SnapshotStoreConfig<Data, Data>[]
     | Record<string, string>
     | undefined
     | NodeJS.Timeout
@@ -63,7 +165,7 @@ export interface UserSettings extends Settings {
     | undefined;
 
   userId: number;
-  userSettings: NodeJS.Timeout;
+  sessionTimeout?: number;
   communicationMode: string;
   enableRealTimeUpdates: boolean;
   defaultFileType: string;
@@ -89,7 +191,7 @@ export interface UserSettings extends Settings {
   securityFeaturesEnabled: boolean;
   collaborationPreference1?: any;
   collaborationPreference2?: any;
-  theme: string;
+  theme: ThemeEnum | undefined;
   language: LanguageEnum | CodingLanguageEnum;
   fontSize: number;
   darkMode: boolean;
@@ -109,7 +211,7 @@ export interface UserSettings extends Settings {
   teamViewSettings: any[];
   defaultTeamDashboard: string;
   passwordExpirationDays: number;
-  privacySettings: any[]; // Update with PrivacySettings type
+  // privacySettings: PrivacySettings
   thirdPartyApiKeys: Record<string, string> | undefined;
   externalCalendarSync: boolean;
   dataExportPreferences: any[];
@@ -150,6 +252,11 @@ export interface UserSettings extends Settings {
 }
 
 const userSettings: UserSettings = {
+  
+
+  calendarEvents, todos, tasks, snapshotStores, 
+  
+
   userId: 1,
   userSettings: new NodeJS.Timeout(),
   communicationMode: "text",
@@ -160,7 +267,21 @@ const userSettings: UserSettings = {
   enableGroupManagement: true,
   enableTeamManagement: true,
 
-  idleTimeout: useIdleTimeout("idleTimeout"),
+  idleTimeout: useIdleTimeout("idleTimeout", {
+    intervalId: 0,
+    isActive: false,
+    animateIn: (selector: string) => {},
+    startAnimation: () => {},
+    stopAnimation: () => {},
+    resetIdleTimeout: async () => {},
+    idleTimeoutId: null,
+    startIdleTimeout: (
+      timeoutDuration: number,
+      onTimeout: () => void,
+    ) => {},
+    toggleActivation: () => Promise.resolve(false),
+    idleTimeoutDuration: 0,
+  }),
   startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {
     if (
       typeof userSettings.idleTimeout === "object" &&
@@ -191,7 +312,7 @@ const userSettings: UserSettings = {
   securityFeaturesEnabled: false,
   collaborationPreference1: undefined,
   collaborationPreference2: undefined,
-  theme: "",
+  theme: ThemeEnum.LIGHT,
   language: LanguageEnum.English,
   fontSize: 0,
   darkMode: false,
@@ -211,7 +332,7 @@ const userSettings: UserSettings = {
   teamViewSettings: [],
   defaultTeamDashboard: "",
   passwordExpirationDays: 0,
-  privacySettings: [],
+  privacySettings: selectedSettings,
   thirdPartyApiKeys: {} as Record<string, string>,
   externalCalendarSync: false,
   dataExportPreferences: [],

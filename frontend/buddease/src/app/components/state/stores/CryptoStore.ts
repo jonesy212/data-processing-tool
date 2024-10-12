@@ -3,6 +3,9 @@ import { NotificationTypeEnum, useNotification } from "@/app/components/support/
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+
+
+
 export interface Crypto {
   id: string;
   name: string;

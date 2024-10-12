@@ -61,7 +61,7 @@ export const handleApiErrorAndNotify = (
 
 
 
-export const fetchData = async (endpoint: string): Promise<{ data: YourResponseType } | null> => {
+export const fetchData = async (endpoint: string, id: number): Promise<{ data: YourResponseType } | null> => {
   try {
     const response = await fetch(endpoint);
 

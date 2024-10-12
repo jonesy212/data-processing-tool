@@ -11,12 +11,13 @@ import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CreateSnapshotsPayload } from "../database/Payload";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { SnapshotConfig } from "./snapshot";
+import { SnapshotConfig } from "./SnapshotConfig";
 
 // snapshotDelegate.ts
 const snapshotDelegate = <T extends Data, K extends Data>(
-  snapshotStoreConfig: SnapshotStoreConfig<SnapshotUnion<Data>, Data>[] | undefined
+  snapshotStoreConfig: SnapshotStoreConfig<SnapshotUnion<Data>, K> | undefined
 ): SnapshotStoreConfig<T, K>[] => {
+  
   return [
     {
       getSnapshot: (snapshotFetcher: (id: string) => Promise<{
@@ -273,81 +274,98 @@ const snapshotDelegate = <T extends Data, K extends Data>(
           } else {
             reject(new Error("Snapshot container not found"));
           }
-        });      },
+        });
+      },
       
 
       getSnapshotVersions: (
         snapshot: Snapshot<T, K>,
         snapshotId: string,
         snapshotData: SnapshotStore<T, K>,
-        versionHistory: VersionHistory
+        versionHistory: VersionHistory,
       ): Promise<Snapshot<T, K>> => {
         return new Promise(async (resolve, reject) => {
           
           const fetchSnapshotData = async (id: string): Promise<VersionData | undefined> => {
             try {
-              const snapshotResult = await snapshotData.getSnapshot(id);
-    
-              if (!snapshotResult) {
+                // Use arrow function to maintain `this` context
+                const self = this;
+
+                if(self === undefined){
+                  throw new Error("Snapshot container not found");
+                }
+                if (self.delegate && self.delegate.length > 0) {
+                    const firstDelegate = self.delegate.find(
+                        (del) => typeof del.getSnapshot === "function"
+                    );
+
+                    if (firstDelegate) {
+                        const snapshotResult = await firstDelegate.getSnapshot(snapshot);
+
+                        if (!snapshotResult) {
+                            return undefined;
+                        }
+
+                    // Map snapshotResult to VersionData
+                    const versionData: VersionData = {
+                      // Assuming you need to extract and assign the relevant fields
+                      id: snapshotResult.data.id,
+                      versionNumber: snapshotResult.snapshot.versionNumber,
+                      metadata: {
+                        author: snapshotResult.data.userId, // Example mapping
+                        timestamp: snapshotResult.data.timestamp,
+                        // Add other mappings if necessary
+                      },
+                
+                      parentId: snapshotResult.data.parentId,
+                      parentType: snapshotResult.data.parentType,
+                      parentVersion: snapshotResult.data.parentVersion,
+                      parentTitle: snapshotResult.data.parentTitle,
+                      parentContent: snapshotResult.data.parentContent,
+                      parentName: snapshotResult.data.parentName,
+                      parentUrl: snapshotResult.data.parentUrl,
+                      parentChecksum: snapshotResult.data.parentChecksum,
+                      parentAppVersion: snapshotResult.data.parentAppVersion,
+                      parentVersionNumber: snapshotResult.data.parentVersionNumber,
+                      isLatest: snapshotResult.data.isLatest,
+                      isPublished: snapshotResult.data.isPublished,
+                      publishedAt: snapshotResult.data.publishedAt ?? null,
+                      source: snapshotResult.data.source,
+                      status: snapshotResult.data.status,
+                      version: snapshotResult.data.version,
+                      timestamp: snapshotResult.data.timestamp,
+                      user: snapshotResult.data.user,
+                      comments: snapshotResult.data.comments ?? [],
+                      workspaceId: snapshotResult.data.workspaceId,
+                      workspaceName: snapshotResult.data.workspaceName,
+                      workspaceType: snapshotResult.data.workspaceType,
+                      workspaceUrl: snapshotResult.data.workspaceUrl,
+                      workspaceViewers: snapshotResult.data.workspaceViewers ?? [],
+                      workspaceAdmins: snapshotResult.data.workspaceAdmins ?? [],
+                      workspaceMembers: snapshotResult.data.workspaceMembers ?? [],
+                      data: snapshotResult.data.data,
+                      backend: snapshotResult.data.backend,
+                      frontend: snapshotResult.data.frontend,
+                      name: snapshotResult.data.name,
+                      url: snapshotResult.data.url,
+                      documentId: snapshotResult.data.documentId,
+                      draft: snapshotResult.data.draft,
+                      userId: snapshotResult.data.userId,
+                      content: snapshotResult.data.content,
+                      versionData: snapshotResult.data.versionData ?? [],
+                      checksum: snapshotResult.data.checksum,
+                      changes: snapshotResult.changes
+                    };
+                    return versionData;
+                  }
+                }
+              } catch (error) {
+                console.error("Error fetching snapshot data:", error);
                 return undefined;
               }
-  
-              // Map snapshotResult to VersionData
-              const versionData: VersionData = {
-                // Assuming you need to extract and assign the relevant fields
-                id: snapshotResult.data.id,
-                versionNumber: snapshotResult.snapshot.versionNumber,
-                metadata: {
-                  author: snapshotResult.data.userId, // Example mapping
-                  timestamp: snapshotResult.data.timestamp,
-                  // Add other mappings if necessary
-                },
-                parentId: snapshotResult.data.parentId,
-                parentType: snapshotResult.data.parentType,
-                parentVersion: snapshotResult.data.parentVersion,
-                parentTitle: snapshotResult.data.parentTitle,
-                parentContent: snapshotResult.data.parentContent,
-                parentName: snapshotResult.data.parentName,
-                parentUrl: snapshotResult.data.parentUrl,
-                parentChecksum: snapshotResult.data.parentChecksum,
-                parentAppVersion: snapshotResult.data.parentAppVersion,
-                parentVersionNumber: snapshotResult.data.parentVersionNumber,
-                isLatest: snapshotResult.data.isLatest,
-                isPublished: snapshotResult.data.isPublished,
-                publishedAt: snapshotResult.data.publishedAt ?? null,
-                source: snapshotResult.data.source,
-                status: snapshotResult.data.status,
-                version: snapshotResult.data.version,
-                timestamp: snapshotResult.data.timestamp,
-                user: snapshotResult.data.user,
-                comments: snapshotResult.data.comments ?? [],
-                workspaceId: snapshotResult.data.workspaceId,
-                workspaceName: snapshotResult.data.workspaceName,
-                workspaceType: snapshotResult.data.workspaceType,
-                workspaceUrl: snapshotResult.data.workspaceUrl,
-                workspaceViewers: snapshotResult.data.workspaceViewers ?? [],
-                workspaceAdmins: snapshotResult.data.workspaceAdmins ?? [],
-                workspaceMembers: snapshotResult.data.workspaceMembers ?? [],
-                data: snapshotResult.data.data,
-                backend: snapshotResult.data.backend,
-                frontend: snapshotResult.data.frontend,
-                name: snapshotResult.data.name,
-                url: snapshotResult.data.url,
-                documentId: snapshotResult.data.documentId,
-                draft: snapshotResult.data.draft,
-                userId: snapshotResult.data.userId,
-                content: snapshotResult.data.content,
-                versionData: snapshotResult.data.versionData ?? [],
-                checksum: snapshotResult.data.checksum,
-                changes: snapshotResult.changes
-              };
-  
-              return versionData;
-            } catch (error) {
-              console.error("Error fetching snapshot data:", error);
-              return undefined;
-            }
-          };        
+            }; 
+          
+          
           try {
             const versions = await fetchSnapshotData(snapshotId);
         
@@ -367,6 +385,10 @@ const snapshotDelegate = <T extends Data, K extends Data>(
               versionData,
               published,
               checksum,
+              releaseDate, 
+              major, 
+              minor, 
+              patch
             } = versions;
         
             snapshot.versionInfo = {
@@ -381,6 +403,10 @@ const snapshotDelegate = <T extends Data, K extends Data>(
               versionData,
               published,
               checksum,
+              releaseDate, 
+              major, 
+              minor, 
+              patch
             };
         
             snapshot.versionHistory = versionHistory;
@@ -389,6 +415,9 @@ const snapshotDelegate = <T extends Data, K extends Data>(
           } catch (error) {
             reject(error);
           }
+          // Call fetchSnapshotData with the required id if needed
+        const result = await fetchSnapshotData(snapshotId);
+        resolve(result);
         });
       },
       fetchData: async (): Promise<VersionData[]> => {

@@ -2,8 +2,15 @@ import * as apiFile from '@/api/ApiFiles';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import * as path from 'path';
 import { AppStructureItem } from '../appStructure/AppStructure';
-interface BackendStructure {
+import { frontend } from '../appStructure/FrontendStructure';
+import { backend } from '../appStructure/BackendStructure';
+import DocumentPermissions from '@/app/components/documents/DocumentPermissions';
+
+
+interface BackendStructureP {
   // Define the structure for the backend
+  databaseSchema: string;
+
 }
 
 const backendStructure: AppStructureItem[] = [];
@@ -11,6 +18,8 @@ const backendStructure: AppStructureItem[] = [];
 export const traverseBackendDirectory = async (dir: string): Promise<AppStructureItem[]> => {
   const files: string[] = await fetchFilesInDirectory(dir);
   const result: AppStructureItem[] = [];
+
+  const docPermissions = new DocumentPermissions(true, true);
 
   for (const file of files) {
     const filePath = path.join(dir, file);
@@ -27,10 +36,20 @@ export const traverseBackendDirectory = async (dir: string): Promise<AppStructur
       const structureId = UniqueIDGenerator.generateAppStructureID.toString()
       const appStructureItem: AppStructureItem = {
         // Populate with relevant properties
+
         id: structureId,
+        name: path.basename(file, path.extname(file)),
+        type: typeof apiFile.getFileType(file),
+        draft: false,
+        
         path: filePath,
         content: content,
-        draft: false,
+        versions: {
+          backend: Promise.resolve(JSON.stringify(backend.getStructureAsArray())), // Wrap in a promise
+          frontend: Promise.resolve(JSON.stringify(frontend.getStructureAsArray())) // Wrap in a promise
+             
+        },
+        versionData: [],
         permissions: {
           read: true,
           write: true,
@@ -38,13 +57,9 @@ export const traverseBackendDirectory = async (dir: string): Promise<AppStructur
           share: true,
           execute: true,
         },
-        type: apiFile.getFileType(file),
-        name: path.basename(file, path.extname(file)),
         items: {
           // Populate items for backend routes/models etc
-
         }
-
         // ... other properties
       };
       result.push(appStructureItem);

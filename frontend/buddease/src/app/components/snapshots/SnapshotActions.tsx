@@ -42,7 +42,8 @@ export enum SnapshotOperationType {
   CalendarSnapshot = 'calendarEvent',
   NewSnapshotResult = 'newSnapshotResult',
   TaskSnapshotReference = 'taskSnapshotReference',
-  CategorizeSnapshots = 'categorizeSnapshot'
+  CategorizeSnapshots = 'categorizeSnapshot',
+  HandleSnapshot = 'handleSnapshot'
 }
 
 
@@ -62,6 +63,10 @@ interface SnapshotActionsTypes<T extends Data, K extends Data> {
   fetchSnapshotData: ActionCreatorWithPayload<string>;
   handleSnapshotSuccess: ActionCreatorWithPayload<{ snapshot: Snapshot<T, K>; snapshotId: string }>;
   handleSnapshotFailure: ActionCreatorWithPayload<string>;
+  handleTaskSnapshotSuccess: ActionCreatorWithPayload<{message: string,
+    snapshot: Snapshot<T, K> | null,
+    snapshotId: string
+  }>;
 }
 
 
@@ -103,7 +108,7 @@ export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActio
   fetchSnapshotData: createAction<string>('fetchSnapshotData'),
   handleSnapshotSuccess: createAction<{ snapshot: Snapshot<T, K>; snapshotId: string }>('handleSnapshotSuccess'),
   handleSnapshotFailure: createAction<string>('handleSnapshotFailure'),
-  
+  handleTaskSnapshotSuccess: createAction<string>('handleTaskSnapshotSuccess'),
 });
 
 
@@ -730,7 +735,7 @@ export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActio
 //   ): void | null {
 //     throw new Error('Function not implemented.');
 //   },
-//   createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<Task, any>, snapshotManager: SnapshotManager<Task, any>, payload: CreateSnapshotsPayload<Task, any>, callback: (snapshots: Snapshot<Task, any>[]) => void | null, snapshotDataConfig?: SnapshotConfig<Task, any>[] | undefined, category?: string | CategoryProperties): Snapshot<Task, any>[] | null {
+//   createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<Task, any>, snapshotManager: SnapshotManager<Task, any>, payload: CreateSnapshotsPayload<Task, any>, callback: (snapshots: Snapshot<Task, any>[]) => void | null, snapshotDataConfig?: SnapshotConfig<Task, any>[] | undefined, category?: string | symbol | Category): Snapshot<Task, any>[] | null {
 //     throw new Error('Function not implemented.');
 //   },
 //   onSnapshot: function (snapshotId: string, snapshot: Snapshot<Task, any>, type: string, event: Event, callback: (snapshot: Snapshot<Task, any>) => void): void {

@@ -10,6 +10,12 @@ import { SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotDataType } from "./SnapshotContainer";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { SnapshotStoreProps } from "./useSnapshotStore";
+import { Subscription } from "../subscriptions/Subscription";
+import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+
+
+
 
 // Define the necessary types
 interface SnapshotStoreMethod<T extends Data, K extends Data> {
@@ -20,12 +26,15 @@ interface SnapshotStoreMethod<T extends Data, K extends Data> {
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K>) => void,
-    dataStoreMethods: DataStore<T, K>[],
+    dataStore: DataStore<T, K>,
+    dataStoreMethods: DataStoreMethods<T, K>,
     // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
     metadata: UnifiedMetaDataOptions,
     subscriberId: string, // Add subscriberId here
-    endpointCategory: string | number ,// Add endpointCategory here
+    endpointCategory: string | number,// Add endpointCategory here
+    storeProps: SnapshotStoreProps<T, K>,
     snapshotConfigData: SnapshotConfig<T, K>,
+    subscription: Subscription<T, K>,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
     snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null,
   ) => Promise<{snapshot: Snapshot<T, K>}>,

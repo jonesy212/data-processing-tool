@@ -1,17 +1,15 @@
 // Payload.ts
-import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
 import { BaseData, Data } from "../models/data/Data";
 import { StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
-import { K } from "../snapshots/SnapshotConfig";
 import CalendarEvent from "../state/stores/CalendarEvent";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { NotificationTypeEnum } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 
 interface Payload {
-    error: string;
+    error: string | undefined;
     meta: {
       name: string;
       timestamp: Date;
@@ -36,7 +34,7 @@ interface Payload {
       isAutoDismissOnTap: boolean;
       optionalData: any;
       data: any;
-    };
+    } | undefined
   }
   
   
@@ -45,7 +43,7 @@ interface Payload {
     events: Record<string, CalendarEvent<T, K>[]>;
     dataItems: RealtimeDataItem[];
     newData: Snapshot<T, K>;
-    category?: string | CategoryProperties;
+    category?: string | symbol | Category;
   }
   
   

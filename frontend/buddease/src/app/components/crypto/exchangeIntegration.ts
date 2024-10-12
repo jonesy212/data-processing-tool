@@ -10,8 +10,11 @@ import * as subscriptionApi from "./../../api/subscriberApi";
 import { OrderBookData } from "./OrderBookData";
 import OrderBookUpdater from "./OrderBookUpdater";
 import TickerUpdater from "./TickerUpdater";
-import { BaseData } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 import { K, T } from "../snapshots/SnapshotConfig";
+import updateUI, { updateUIWithSearchResults } from "../documents/editing/updateUI";
+import { updateUIWithSnapshotStore } from "../snapshots/updateUIWithSnapshotStore";
+import { getSnapshotId } from "@/app/api/SnapshotApi";
 
 // Define enum for exchange data types
 enum ExchangeDataTypeEnum {
@@ -479,8 +482,8 @@ const subscriber = createSubscriber();
 export const initialSnapshot: Snapshot<BaseData> = {
   data: initialData, // Replace with actual initial data
   events: {
-    eventRecords: undefined,
-    callbacks: []
+    eventRecords: null,
+    callbacks: {}
   }, // Replace with actual initial events
   callbacksts: {}
   // Other properties as needed
@@ -511,20 +514,62 @@ const unsubscribeFromOrderBookUpdates = (
   orderBookSubscriber.unsubscribe(subscriber);
 };
 
+
+
+// update the UI with order book snapshot updates
+const handleOrderBookUpdateUI = async (snapshotStore: Snapshot<Data, Data>): Promise<void> => {
+  updateUIWithSnapshotStore(snapshotStore); // Use the existing function to handle snapshot store updates
+
+  // Example: Get the ID as a resolved value
+  const id = await getSnapshotId(snapshotStore.id); // Await the Promise
+  if(id === undefined){
+    throw new Error("not able to get id");
+  }
+  const snapshot = snapshotStore.getSnapshotById(id.toString()); // Assuming you have a method to get a specific snapshot by ID
+  if (!snapshot) {
+    throw new Error("not able to get snapshot");
+  }
+  // Example: Update UI for specific components like search results
+  if (window.searchResults) {
+    updateUIWithSearchResults(snapshotStore.getData(id, snapshot));
+  }
+
+  // Optionally update other UI components based on store
+  updateUI(snapshotStore.getData(id, snapshot), "editor"); // Update editor store
+};
+
+
+
+
 // Function to notify subscribers about order book updates
-const notifyOrderBookUpdate = (): void => {
+const notifyOrderBookUpdate = async (): Promise<void> => {
   // Create an empty snapshot to pass to subscribers
-  const data: Snapshot<BaseData> = {
+  const data: Snapshot<BaseData, BaseData> = {
     timestamp: new Date(),
     data: undefined,
     category: undefined,
     events: undefined,
-    meta: undefined
+    meta: {}
   };
 
-  // Notify subscribers about the update
-  orderBookSubscriber.notify!(data);
-};
+  const subscribers = await subscriptionApi.getSubscribersAPI()
+
+
+  const callback = (data: Snapshot<BaseData>) => {
+    // Handle the data as needed
+    console.log("Received data:", data);
+    
+    // Update the UI with the snapshot store
+    handleOrderBookUpdateUI(data);
+
+    // Notify subscribers about the update
+    orderBookSubscriber.notify!(data, callback, subscribers);
+  };
+
+}
+
+
+
 
 const updateTicker = (tickerData: any): void => {
   try {
@@ -536,6 +581,10 @@ const updateTicker = (tickerData: any): void => {
     // Update ticker information
     tickerUpdater.updateTicker(tickerData);
 
+    // Update the UI with the updated ticker data
+    updateUI(tickerData, "settings"); // Use "settings" store to update settings UI
+
+
     // Log the update
     console.log("Ticker information updated successfully.");
   } catch (error: any) {
@@ -543,6 +592,9 @@ const updateTicker = (tickerData: any): void => {
     console.error("Error updating ticker information:", error.message);
   }
 };
+
+
+
 const isValidTickerData = (tickerData: any): boolean => {
   // Check if tickerData is an object
   if (typeof tickerData !== "object" || tickerData === null) {
@@ -638,3 +690,7 @@ export {
   unsubscribeFromOrderBookUpdates
 };
 
+
+// Example usage of subscribe and unsubscribe functions
+subscribeToOrderBookUpdates(handleOrderBookUpdateUI);
+unsubscribeFromOrderBookUpdates(handleOrderBookUpdateUI);

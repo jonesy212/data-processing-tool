@@ -4,9 +4,12 @@ import { useAuth } from "@/app/components/auth/AuthContext";
 import useErrorHandling from "../hooks/useErrorHandling";
 import axiosInstance from "../security/csrfToken";
 import * as apiDocument from '../../../app/api/ApiDocument'
+import useDocumentStore from "../state/stores/DocumentStore";
+
 const useDocumentManagement = () => {
   const { handleError } = useErrorHandling();
   const { isAuthenticated, user } = useAuth();
+  const documentStore = useDocumentStore(); // Initialize the document store
 
   const fetchDocumentContent = async (documentKey: string): Promise<string | null> => {
     try {
@@ -24,9 +27,12 @@ const useDocumentManagement = () => {
       if (document.isPrivate && !user.isAuthorized) {
         throw new Error("Unauthorized access");
       }
-
       // Fetch document content from backend
       const content = await fetchDocumentContentFromBackend(documentKey);
+
+       // Optionally, add the fetched document to the store
+       documentStore.addDocument(document, content); // Add content to the document
+    
       return content;
     } catch (error: any) {
       handleError(error.message);

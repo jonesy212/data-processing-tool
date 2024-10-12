@@ -21,6 +21,7 @@ import { VersionData } from "../components/versions/VersionData";
 import { StructuredMetadata } from "./StructuredMetadata";
 import BackendStructure from "./appStructure/BackendStructure";
 import FrontendStructure from "./appStructure/FrontendStructure";
+import { AppStructureItem } from "./appStructure/AppStructure";
 
 export interface DocumentBuilderConfig extends DocumentOptions {
   levels: any;
@@ -83,41 +84,98 @@ export interface CustomHydrateResult<T> extends IHydrateResult<T> {
   initialState?: any;
   rehydrate: () => CustomHydrateResult<T>;
   version: Version;
-  then(callback: () => void): DocumentBuilderConfig; // Adjusted return type
+ // Adjust the `then` method to match the Promise signature
+ then<TResult1 = T, TResult2 = never>(
+  onfulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>,
+  onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>
+): CustomHydrateResult<TResult1 | TResult2>;
+
   [Symbol.toStringTag]: "CustomHydrateResult";
   finally(onFinally: () => void): CustomHydrateResult<T>; // Implementing finally method
-  catch(onError: (err: any) => void): CustomHydrateResult<T>; // Implementing catch method
-
+  catch<TResult = never>(
+    onError?: (reason: any) => TResult | PromiseLike<TResult>
+  ): CustomHydrateResult<T | TResult>;
 }
-
-
 
 const versionInfo: Version = {
   id: 123456789,
-  
-  // author: "John Doe",
-  // parentId: "987654321",
-  // parentType: "document",
-  // parentVersion: "1.0.0",
-  // parentTitle: "Parent Document",
-  // parentContent: "This is the content of the parent document.",
-  // parentName: "Parent Document",
-  // parentUrl: "https://example.com/parent-document",
-  // parentChecksum: "abcdef123456",
-  // parentMetadata: {
-  //   title: "Parent Document",
-  //   description: "This is the parent document.",
-  //   author: "John Doe",
-  //   date: "2023-08-15",
-  //   tags: ["parent", "document"],
-  //   rentAppVersion: "1.0.0",
-  //   parentVersionNumber: "1.0.0",
-  //   isLatest: true,
-  //   isPublished: true,
-  //   publishedAt: "2023-08-15",
-  //   source: "https://example.com/parent-document",
-  //   status: "published",
-  // }
+  versionData: undefined,
+  buildVersions: undefined,
+  isActive: false,
+releaseDate: new Date(),
+  major: 0,
+  minor: 0,
+  patch: 0,
+  name: "",
+  url: "",
+  versionNumber: "",
+  documentId: "",
+  draft: false,
+  userId: "",
+  content: "",
+  description: "",
+  buildNumber: "",
+  metadata: undefined,
+  versions: null,
+  appVersion: "",
+  checksum: "",
+  parentId: null,
+  parentType: "",
+  parentVersion: "",
+  parentTitle: "",
+  parentContent: "",
+  parentName: "",
+  parentUrl: "",
+  parentChecksum: "",
+  parentAppVersion: "",
+  parentVersionNumber: "",
+  isLatest: false,
+  isPublished: false,
+  publishedAt: null,
+  source: "",
+  status: "",
+  workspaceId: "",
+  workspaceName: "",
+  workspaceType: "",
+  workspaceUrl: "",
+  workspaceViewers: [],
+  workspaceAdmins: [],
+  workspaceMembers: [],
+  data: [],
+  _structure: {} as Record<string, AppStructureItem[]>,
+  versionHistory: {
+    versionData: {}
+  },
+  currentHash: "",
+  structureData: "",
+  getVersionNumber(): string {
+    // Logic to return the version number
+    return `${this.major}.${this.minor}.${this.patch}`;
+  },
+
+  calculateHash(): string {
+    // Logic to calculate the hash based on version details
+    const hashInput = `${this.versionNumber}${this.buildNumber}${this.id}`;
+    // Simple hash example, replace with a real hash calculation
+    return btoa(hashInput);
+  },
+
+  async updateStructureHash(): Promise<void> {
+    // Logic to update the hash asynchronously
+    this.currentHash = this.calculateHash();
+    // Simulate async operation
+    return new Promise((resolve) => setTimeout(resolve, 100));
+  },
+
+  setStructureData(newData: string): void {
+    // Logic to set structure data
+    this.structureData = newData;
+  },
+
+  hash(value: string): string {
+    // Logic to hash the provided value
+    return btoa(value);
+  },
 }
 
 const versionData: VersionData = {
@@ -128,9 +186,11 @@ const versionData: VersionData = {
   userId: versionInfo.userId,
   content: versionInfo.content, 
   metadata: versionInfo.metadata || {
-    author: versionInfo.author,
+    author: "Unknown Author", // Default value for author
     timestamp: new Date(),
   },
+  isActive: versionInfo.isActive,
+  releaseDate: versionInfo.releaseDate,
   versionData: [], 
   checksum: versionInfo.checksum,
   versionNumber: versionInfo.versionNumber,
@@ -165,12 +225,17 @@ const versionData: VersionData = {
   workspaceMembers: versionInfo.workspaceMembers,
   createdAt: versionInfo.createdAt,
   updatedAt: versionInfo.updatedAt,
-  _structure: this._structure, // Assuming this is set somewhere in the Version class
-  frontendStructure: this.frontendStructure,
-  backendStructure: this.backendStructure,
+  _structure: versionInfo._structure, // Assuming this is set somewhere in the Version class
+  frontendStructure: versionInfo.frontendStructure,
+  backendStructure: versionInfo.backendStructure,
   data: versionInfo.data, // Assuming this is an array of Data or undefined
   backend: versionInfo.versions?.backend,
-  frontend: versionInfo.versions?.frontend
+  frontend: versionInfo.versions?.frontend,
+  buildVersions: versionInfo.buildVersions ? versionInfo.buildVersions : undefined,
+  major: versionInfo.major,
+  minor: versionInfo.minor,
+  patch: versionInfo.patch,
+ 
 };
 
 
@@ -245,9 +310,9 @@ const createHydrateResult = <T extends Object>(
     isArchived: false,
     archivedBy: "admin",
     archivedAt: null,
-    tags: [],
+    tags: {},
     categories: [],
-    permissions: [],
+    permissions: {},
     collaborators: [],
     comments: [],
     reactions: [],

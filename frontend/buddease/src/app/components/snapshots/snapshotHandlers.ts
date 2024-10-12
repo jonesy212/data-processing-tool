@@ -41,6 +41,7 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
 import { useSnapshotStore } from "./useSnapshotStore";
+import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
 
 const { notify } = useNotification();
 const dispatch = useDispatch()
@@ -71,26 +72,17 @@ export const initSnapshot: T = {
 };
 
 
-
-// type Subscriber<T extends BaseData, K extends BaseData> = (
-//   snapshot: Snapshot<T, K>,
-//   add: (snapshot: Snapshot<T, K>) => void,
-// ) => void;
-
-
-// type Subscribers<T extends BaseData, K extends BaseData> = (
-//   snapshots: Snapshots<T>
-// ) => Subscribers<T, K>
-
-
 const snapshotSubscribers: Map<string, Set<Subscriber<BaseData, K>>> = new Map();
 
-
-
 export const subscribeToSnapshots = <T extends BaseData, K extends BaseData>(
+  snapshotStore: SnapshotStore<T, K>,
   snapshotId: string,
+  snapshotData: SnapshotStore<T, K>,
+  category: Category | undefined,
+  snapshotConfig: SnapshotStoreConfig<T, K>,
   callback: (snapshots: SnapshotsArray<T>) => Subscriber<T, K> | null,
-  snapshots: SnapshotsArray<T>
+  snapshots: SnapshotsArray<T>,
+  unsubscribe?: UnsubscribeDetails, 
 ): SnapshotsArray<T> => {
   if (!snapshotSubscribers.has(snapshotId)) {
     snapshotSubscribers.set(snapshotId, new Set<Subscriber<T, K>>());
@@ -928,7 +920,7 @@ export const updateSnapshotSuccess = async <T extends Data, K extends Data>(
 
 
 export const updateSnapshotFailure = async<T extends Data, K extends Data>(
-  subscribers: Subscriber<T, K>,
+  subscribers: Subscriber<T, K>[],
   payload: { error: Payload },
 ) => {
   const snapshotManager = await useSnapshotManager();
@@ -1093,7 +1085,7 @@ export const addSnapshotSuccess = async <T extends Data, K extends Data>(
 const updateSnapshot = async <T extends { data: any }, K extends CustomSnapshotData>(
   snapshotId: string,
   data: SnapshotStore<T, K>,
-  events: Record<string, CalendarEvent<T, K>[]>,
+  events: Record<string, CalendarManagerStoreClass<T, K>[]>,
   snapshotStore: SnapshotStore<T, K>,
   dataItems: RealtimeDataItem[],
   newData: Partial<T> | Data,

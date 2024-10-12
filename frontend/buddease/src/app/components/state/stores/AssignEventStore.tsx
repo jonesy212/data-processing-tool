@@ -18,6 +18,7 @@ import { ExtendedTodo, useAssignBaseStore } from "../AssignBaseStore";
 import { AuthStore } from "./AuthStore";
 import { PresentationEventAssignment } from "./UserPresentationsStore";
 import { EventData } from "@/app/utils/ethereumUtils";
+import { fetchUsersByTaskApi } from "@/app/api/TasksApi";
 
 const RESPONSES_STORAGE_KEY = "responses";
 
@@ -89,8 +90,10 @@ interface AssignEventStore {
 
   convertResponsesToTodos: (responses: ReassignEventResponse[]) => string[];
   getResponsesByEventId: (eventId: string) => Promise<ReassignEventResponse[]>;
-  fetchUsersByTaskId: 
+  fetchUsersByTaskId: (taskId: string) => Promise<string[]>; // Fetches user IDs by task ID
 }
+
+
 
 const useAssignEventStore = (): AssignEventStore => {
   const assignedUsers: Record<string, string[]> = {};
@@ -112,6 +115,9 @@ const useAssignEventStore = (): AssignEventStore => {
       console.error(`Event with ID ${eventId} not found.`);
     }
   };
+
+
+
 
   const assignEvent = (eventId: string, userId: User) => {
     const event = baseStore.events[eventId];
@@ -323,12 +329,23 @@ const useAssignEventStore = (): AssignEventStore => {
   const assignUserFailure = (error: string) => {
     console.error("User assignment failed:", error);
   };
-
+  
+  const fetchUsersByTaskId = async (taskId: string): Promise<string[]> => {
+    try {
+      const users = await fetchUsersByTaskApi(taskId);
+      console.log(`Fetched users for task ID ${taskId}:`, users);
+      return users;
+    } catch (error) {
+      console.error(`Failed to fetch users for task ID ${taskId}:`, error);
+      return []; // Return an empty array on failure
+    }
+  };
   const useAssignEventStore = makeObservable({
     assignedUsers,
     assignedEvents,
     assignedTodos,
     reassignUser,
+    fetchUsersByTaskId,
     updateEventStatus,
     assignEvent,
     assignUsersToEvents,

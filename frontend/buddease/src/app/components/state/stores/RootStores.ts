@@ -174,7 +174,7 @@ export class RootStores {
   }
 
   @action
-  public getSnapshotDataKey(documentId: string, eventId: number, userId: string) {
+  public getSnapshotDataKey(documentId: string | number, eventId: number, userId: string) {
     return this.documentManager.getSnapshotDataKey(documentId, eventId, userId)
   }
 

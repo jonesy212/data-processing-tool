@@ -1,7 +1,8 @@
 // generateDrawingJSON.ts
 interface Drawing {
     id: string;
-    name: string;
+  name: string;
+  artwork: 
     // Define other properties of the drawing
 }
 

@@ -16,6 +16,7 @@ import { DocumentData } from "./DocumentBuilder";
 import { DocumentTypeEnum } from './DocumentGenerator';
 import { DocumentOptions } from "./DocumentOptions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
+import { TagsRecord } from '../snapshots';
 
 export interface CommonAnimationOptions {
   type: "slide" | "fade" | "show" | "custom" | "none"; // Add more animation types as needed
@@ -26,6 +27,8 @@ export interface CommonAnimationOptions {
 }
 
 export interface DocumentBuilderProps extends DocumentData  {
+ 
+
   isDynamic: boolean;
   setDocumentPhase?: (
     docPhase: string | Phase | undefined,
@@ -34,7 +37,7 @@ export interface DocumentBuilderProps extends DocumentData  {
     phase: string | Phase | undefined,
     phaseType: DocumentPhaseTypeEnum
     } | undefined;
-  currentContent: ContentState
+  currentContent?: ContentState
   previousContent?: string | ContentState;
   currentMetadata: StructuredMetadata | undefined;
   previousMetadata: StructuredMetadata | undefined;
@@ -71,7 +74,7 @@ export interface DocumentBuilderProps extends DocumentData  {
   options: DocumentOptions;
   editorState: EditorState
   projectPath: string;
-  buildDocument: (documentData: DocumentData, document: DocumentObject, documentType: DocumentTypeEnum) => void;
+  buildDocument: (options: DocumentFormattingOptions, documentData: DocumentData, document: DocumentObject, documentType: DocumentTypeEnum) => void;
   buildDocuments?: DocumentData[];
 }
 

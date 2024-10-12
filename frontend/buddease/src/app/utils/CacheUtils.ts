@@ -2,6 +2,7 @@
 import { create } from 'mobx-persist';
 import { generateInterfaces } from '../generators/GenerateInterfaces';
 import { readCache, writeCache } from './ReadAndWriteCache';
+import { writeAndUpdateCache } from './CacheManager';
 
 const backendModelPaths = ['path/to/backend/models']; // Update this with the actual path
 
@@ -16,17 +17,6 @@ export const readAndLogCache = async () => {
     return cache;
   } catch (error) {
     console.error('Error reading cache:', error);
-    // Handle the error as needed, e.g., show a user-friendly message
-    throw error;
-  }
-};
-
-// Write cache data
-export const writeAndUpdateCache = async (newCacheData: any) => {
-  try {
-    await writeCache(newCacheData);
-  } catch (error) {
-    console.error('Error writing cache:', error);
     // Handle the error as needed, e.g., show a user-friendly message
     throw error;
   }
@@ -54,8 +44,9 @@ const exampleUsage = async () => {
       darkMode: true,
     };
 
+    
     // Write the updated cache data
-    await writeAndUpdateCache(updatedCache);
+    await writeAndUpdateCache(updatedCache, newCacheData);
 
     // Hydrate the store
     hydrateMobXStore(key, cache);

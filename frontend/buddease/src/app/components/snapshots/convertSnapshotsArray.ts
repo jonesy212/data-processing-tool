@@ -56,7 +56,7 @@ function convertSnapshotsArray<T extends Data, K extends Data>(
       versionInfo: snapshot.versionInfo,
       
       transformSubscriber: snapshot.transformSubscriber,
-      transformDelegate: snapshot.transformDelegate,
+      transformDelegate: snapshot.transformedDelegate,
       initializedState: snapshot.initializedState,
       getAllKeys: snapshot.getAllKeys,
       getAllValues: snapshot.getAllValues,

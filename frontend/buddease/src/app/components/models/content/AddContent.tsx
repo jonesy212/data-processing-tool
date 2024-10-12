@@ -8,10 +8,12 @@ import UserRoles from "../../users/UserRoles";
 import ContentDetailsListItem from "./ContentDetailsListItem";
 import ContentToolbar from "./ContentToolbar";
 import { Category } from '../../libraries/categories/generateCategoryProperties';
-import { CustomSnapshotData, SnapshotWithCriteria } from '../../snapshots';
+import { CustomSnapshotData, ItemUnion, SnapshotWithCriteria } from '../../snapshots';
 import { BaseData, Data } from '../data/Data';
+import { TaskData } from '../tasks/Task';
+import { StatusType } from '../data/StatusType';
 
-interface Content<T extends Data> {
+interface Content<T extends Data, K extends Data> {
   id: string | number | undefined;
   title: string;
   description: string;
@@ -19,8 +21,8 @@ interface Content<T extends Data> {
   category:  Category | undefined,
   categoryProperties: string | CategoryProperties | undefined,
   timestamp: string | number | Date,
-  length: 0,
-  items: ContentItem[],
+  length: number,
+  items: ItemUnion[],
   data: T | SnapshotWithCriteria<T, Data> | CustomSnapshotData | null | undefined,
 }
 
@@ -46,7 +48,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
     }
 
     // Create new content object
-    const newContent: Content<any> = {
+    const newContent: Content<any, any> = {
       id: Math.floor(Math.random() * 1000),
       title,
       description,
@@ -468,6 +470,8 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               _id: "123",
               id: "123",
               teamId: "1",
+              roles: [],
+              storeId: 9009,
               roleInTeam: "Member",
               memberName: "memberName",
               username: "username",
@@ -485,10 +489,10 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               snapshots: [],
               token: null,
               followers: [],
-              preferences: {},
-              // other properties
-
-
+              preferences: {
+                refreshUI: () => {}
+              },
+              
               avatarUrl: null,
               createdAt: new Date,
               updatedAt: undefined,
@@ -502,7 +506,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               settings: null,
               interests: [],
               privacySettings: undefined,
-              notificationSettings: undefined,
+              notifications: undefined,
               activityLog: [],
               socialLinks: undefined,
               relationshipStatus: null,
@@ -549,4 +553,52 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
 
 export default AddContent;
 export type { Content, ContentProps };
+export {taskContent}
+
+
+
+
+const taskContent: Content<TaskData, Data> = {
+  id: "task-001",
+  title: "Develop Feature X",
+  description: "Implement the new feature as per the requirements.",
+  subscriberId: "user-001",
+  category: "Development",
+  categoryProperties: "Frontend",
+  timestamp: new Date(),
+  length: 3,
+  items: [
+    {
+      id: "update-001",
+      title: "Initial Task Created",
+      body: "The task was initially created and assigned to John.",
+      heading: "Task Created",
+      type: "text",
+      status: StatusType.Pending,
+      userId: "user-001",
+      updatedAt: new Date("2023-01-01"),
+    },
+    {
+      id: "update-002",
+      title: "Task Status Updated",
+      body: "The status of the task has been changed to 'In Progress'.",
+      heading: "Status Update",
+      type: "text",
+      status: StatusType.InProgress,
+      userId: "user-002",
+      updatedAt: new Date("2023-01-05"),
+    },
+    {
+      id: "update-003",
+      title: "Task Completed",
+      body: "The task has been completed successfully.",
+      heading: "Completion",
+      type: "text",
+      status: StatusType.Completed,
+      userId: "user-001",
+      updatedAt: new Date("2023-01-10"),
+    },
+  ],
+  data: null,
+};
 

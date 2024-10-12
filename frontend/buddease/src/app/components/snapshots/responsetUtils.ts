@@ -8,9 +8,11 @@ import { Snapshot } from './LocalStorageSnapshotStore';
 import { SnapshotData } from './SnapshotData';
 import SnapshotStore from './SnapshotStore';
 import { SnapshotStoreDataResponse } from './SnapshotStoreDataResponse';
-import { SnapshotDataType } from './SnapshotContainer';
+import { SnapshotContainer, SnapshotDataType } from './SnapshotContainer';
 import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { SnapshotStoreProps } from './useSnapshotStore';
+import { SnapshotConfig } from './SnapshotConfig';
 
 
 
@@ -256,20 +258,22 @@ export const returnsSnapshotStore = async (
       snapshot: async (
         id: string | number | undefined,
         snapshotId: string | null,
-        snapshotData: SnapshotDataType<any, any>,
+        snapshotData: SnapshotDataType<any, any> | null,
         category: Category,
         categoryProperties: CategoryProperties | undefined,
-        callback: (snapshotStore: SnapshotStore<any, any>) => void,
+        callback: (snapshot: Snapshot<any, any>) => void,
         dataStoreMethods: DataStore<any, any>[],
         metadata: UnifiedMetaDataOptions,
         subscriberId: string, // Add subscriberId here
-        endpointCategory: string | number ,// Add endpointCategory here
+        endpointCategory: string | number,// Add endpointCategory here
+        storeProps: SnapshotStoreProps<any, any>,
+        snapshotConfigData: SnapshotConfig<any, any>,
         snapshotStoreConfigData?: SnapshotStoreConfig<any, any>,
-        snapshotContainer?: Snapshot<any, any> | null
+        snapshotContainer?: SnapshotContainer<any, any> | undefined
       ) => {
         // Implement the snapshot function here
         // This is a placeholder implementation
-        const result = await Promise.resolve({} as SnapshotStore<any, any>);
+        const result = await Promise.resolve({} as Snapshot<any, any>);
         callback(result);
         return result;
       },
