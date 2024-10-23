@@ -1,29 +1,29 @@
+import { getSubscriberId } from "@/app/api/subscriberApi";
+import { useUser } from "@/app/context/UserContext";
 import React, { useEffect, useState } from "react";
-import { Data } from "../models/data/Data";
-import { subscriptionService } from "./SubscriptionService";
 import useRealtimeData, {
-  RealtimeUpdateCallback,
+    RealtimeUpdateCallback,
 } from "../hooks/commHooks/useRealtimeData";
-import { Subscription } from "./Subscription";
-import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
+import { useSnapshotManager } from "../hooks/useSnapshotManager";
+import { Data } from "../models/data/Data";
 import {
-  SubscriberTypeEnum,
-  SubscriptionTypeEnum,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum,
 } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { useUser } from "@/app/context/UserContext";
-import { Subscriber } from "../users/Subscriber";
-import {
-  logActivity,
-  notifyEventSystem,
-  triggerIncentives,
-  updateProjectState,
-} from "../utils/applicationUtils";
-import { getSubscriberId } from "@/app/api/subscriberApi";
-import { useSnapshotManager } from "../hooks/useSnapshotManager";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
+import { K, T } from "../snapshots/SnapshotConfig";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
-import { K, T } from "../snapshots/SnapshotConfig";
+import { Subscriber } from "../users/Subscriber";
+import {
+    logActivity,
+    notifyEventSystem,
+    triggerIncentives,
+    updateProjectState,
+} from "../utils/applicationUtils";
+import { Subscription } from "./Subscription";
+import { subscriptionService } from "./SubscriptionService";
 
 interface Props {
   initialData: RealtimeDataItem[];
@@ -42,11 +42,11 @@ const SubscriptionComponent: React.FC<Props> = async ({
   );
   const data = useRealtimeData(initialData, updateCallback);
   const snapshotStore = useSnapshotManager();
-  const events = {} as Record<string, CalendarEvent<T, K>[]>;
+  const events = {} as Record<string, CalendarEvent<T, Meta, K>[]>;
   useEffect(() => {
     if (user) {
       // Create a subscription object
-      const subscription: Subscription<T, K> = {
+      const subscription: Subscription<T, Meta, K> = {
         unsubscribe: () => {},
         portfolioUpdates: () => {},
         tradeExecutions: () => {},
@@ -54,7 +54,7 @@ const SubscriptionComponent: React.FC<Props> = async ({
         triggerIncentives: () => {},
         communityEngagement: () => {},
         portfolioUpdatesLastUpdated: null,
-        determineCategory: (data: Snapshot<T, K> | null | undefined) => "",
+        determineCategory: (data: Snapshot<T, Meta, K> | null | undefined) => "",
         subscriberId: user._id,
         subscriptionId: "sub-123-id",
         subscriberType: SubscriberTypeEnum.Individual,
@@ -80,8 +80,8 @@ const SubscriptionComponent: React.FC<Props> = async ({
       setSubscriptionData(subscription as unknown as Data);
 
       // Subscribe to the data service
-      const callback = (data: SnapshotStore<T, K>) => {
-        // Transform data from SnapshotStore<Snapshot<Data>> to Data
+      const callback = (data: SnapshotStore<T, Meta, K>) => {
+        // Transform data from SnapshotStore<Snapshot<Data, Meta, Data>> to Data
         const extractedData =
           Array.isArray(data.snapshots) && data.snapshots.length > 0 && Array.isArray(data.snapshots[0].snapshots)
             ? data.snapshots[0].snapshots[0]

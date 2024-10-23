@@ -10,6 +10,17 @@ function isTagObject(tag: string | Tag): tag is Tag {
   return (tag as Tag).id !== undefined;
 }
 
+
+// Define the type for the data property
+interface ContentData {
+  stroke?: string;
+  strokeWidth?: number;
+  fillColor?: string;
+  flippedX?: boolean;
+  flippedY?: boolean;
+  x?: number;
+  y?: number;
+}
 // Define the type for the content item
 interface ContentItem {
   then?(arg0: (newContent: any) => void): unknown;
@@ -25,7 +36,7 @@ interface ContentItem {
   status: StatusType | undefined; // Status of the task after this update (e.g., "In Progress", "Completed")
   userId: string | undefined; // ID of the user who created this update
   updatedAt: Date | undefined; // The date and time when the update was made
-  
+  data?: ContentData;
   // Add more properties as needed
 }
 

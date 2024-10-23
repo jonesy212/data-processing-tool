@@ -102,7 +102,7 @@ const versionInfo: Version = {
   versionData: undefined,
   buildVersions: undefined,
   isActive: false,
-releaseDate: new Date(),
+  releaseDate: new Date() ? new Date().toISOString() : undefined,
   major: 0,
   minor: 0,
   patch: 0,

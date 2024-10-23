@@ -15,5 +15,8 @@ export interface Presentation {
     id: string;
     title: string;
     content: string;
+    slideNumber: number;
+    media?: string[]; // Media items like images, videos, etc.
+    notes?: string;
   }
   

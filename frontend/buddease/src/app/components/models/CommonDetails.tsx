@@ -1,8 +1,9 @@
 
 // CommonDetails.tsx
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import React, { useState } from "react";
 import { CommonData, SupportedData } from "./CommonData";
-
+import { Data } from "./data/Data";
 
 
 interface Customizations<T> {
@@ -10,13 +11,13 @@ interface Customizations<T> {
 }
 
 // Define the CommonDetailsProps interface with the generic CommonData type
-interface CommonDetailsProps<T> {
-  data?: CommonData
+interface CommonDetailsProps<T extends Data, Meta = UnifiedMetaDataOptions, K extends Data = T> {
+  data?: CommonData<T, Meta, K>
   customizations?: Customizations<T>;
 }
 
 // CommonDetails component for displaying common details
-const CommonDetails = <T extends SupportedData>({
+const CommonDetails = <T extends SupportedData<Data>>({
   data,
   customizations,
 }: CommonDetailsProps<T>) => {

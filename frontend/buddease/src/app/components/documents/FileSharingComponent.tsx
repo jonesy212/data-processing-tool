@@ -18,20 +18,20 @@ import { Data } from "../models/data/Data";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataDetailsComponent } from "../models/teams/Team";
 import { brandingSettings } from "../projects/branding/BrandingSettings";
-import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
+import SnapshotStore from "../snapshots/SnapshotStore";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import DynamicTypography from "../styling/DynamicTypography";
-
+ 
 const API_BASE_URL = endpoints;
 // FileSharingComponent functional component
-const FileSharingComponent: React.FC = () => {
+const FileSharingComponent: React.FC = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>() => {
   // State for managing selected file
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   // Ensure that inputValue is a string state
   const [inputValue, setInputValue] = useState<string>("");
   // Define state variables
   const [uploadError, setUploadError] = useState<string | null>(null); // State to store upload error message
-  const [realtimeData, setRealtimeData] = useState<SupportedData[]>([]);
+  const [realtimeData, setRealtimeData] = useState<SupportedData<T>[]>([]);
   const { handleFileChanges, uploadFile } = useFileUpload({
     inputValue,
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => {
@@ -43,10 +43,10 @@ const FileSharingComponent: React.FC = () => {
   const router = useRouter(); // Get the router object using useRouter hook
 
   // Implement the update callback function
-  const updateCallback = (
-    data: SupportedData[],
+  const updateCallback = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+    data: SupportedData<T>[],
     events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<Snapshot<Data>>,
+    snapshotStore: SnapshotStore<T, Meta, K>,
     dataItems: RealtimeDataItem[]
   ) => {
     // Your update logic here

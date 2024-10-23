@@ -1,29 +1,32 @@
 
-import { Callback, MultipleEventsCallbacks } from '../snapshots/index'
-import { Snapshot } from '../snapshots/LocalStorageSnapshotStore';
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { SnapshotStoreOptions } from '../hooks/SnapshotStoreOptions';
+import { Category } from '../libraries/categories/generateCategoryProperties';
 import { Data } from '../models/data/Data';
-import SnapshotStoreOptions from '../hooks/SnapshotStoreOptions';
+import { Callback, MultipleEventsCallbacks } from '../snapshots/index';
+import { Snapshot } from '../snapshots/LocalStorageSnapshotStore';
 
 
-class SnapshotStoreComponent<T extends Data, K extends Data> {
-  private id: string | number;
-  private category: string;
-  private snapshots: Map<string, Snapshot<T, K>>;
-  private callbacks: MultipleEventsCallbacks<Snapshot<T, K>>;
+class SnapshotStoreComponent<T extends Data, Meta extends UnifiedMetaDataOptions,
+  K extends Data = T> {
+  private id: string | number | null;
+  private category: symbol | string | Category | undefined;
+  private snapshots: Map<string, Snapshot<T, Meta, K>>;
+  private callbacks: MultipleEventsCallbacks<Snapshot<T, Meta, K>>;
 
-  constructor(options: SnapshotStoreOptions<T, K>) {
+  constructor(options: SnapshotStoreOptions<T, Meta, K>) {
     this.id = options.id
     this.category = options.category;
-    this.snapshots = new Map<string, Snapshot<T, K>>();
+    this.snapshots = new Map<string, Snapshot<T, Meta, K>>();
     this.callbacks = options.callbacks || {};
   }
 
   // Method to add a snapshot
-  addSnapshot(snapshot: Snapshot<T, K>): void {
+  addSnapshot(snapshot: Snapshot<T, Meta, K>): void {
     if (!snapshot || !snapshot.id) {
       throw new Error('Invalid snapshot data.');
     }
-    this.snapshots.set(snapshot.id, snapshot);
+    this.snapshots.set(snapshot.id.toString(), snapshot);
     this.triggerCallbacks('add', snapshot);
   }
 
@@ -40,29 +43,29 @@ class SnapshotStoreComponent<T extends Data, K extends Data> {
   }
 
   // Method to update a snapshot
-  updateSnapshot(snapshot: Snapshot<T, K>): void {
+  updateSnapshot(snapshot: Snapshot<T, Meta, K>): void {
     if (!snapshot || !snapshot.id) {
       throw new Error('Invalid snapshot data.');
     }
-    if (!this.snapshots.has(snapshot.id)) {
+    if (!this.snapshots.has(snapshot.id.toString())) {
       throw new Error(`Snapshot with id ${snapshot.id} does not exist.`);
     }
-    this.snapshots.set(snapshot.id, snapshot);
+    this.snapshots.set(snapshot.id.toString(), snapshot);
     this.triggerCallbacks('update', snapshot);
   }
 
   // Method to retrieve a snapshot
-  getSnapshot(id: string): Snapshot<T, K> | undefined {
+  getSnapshot(id: string): Snapshot<T, Meta, K> | undefined {
     return this.snapshots.get(id);
   }
 
   // Method to retrieve all snapshots
-  getAllSnapshots(): Snapshot<T, K>[] {
+  getAllSnapshots(): Snapshot<T, Meta, K>[] {
     return Array.from(this.snapshots.values());
   }
 
   // Method to trigger callbacks
-  private triggerCallbacks(event: string, snapshot: Snapshot<T, K>): void {
+  private triggerCallbacks(event: string, snapshot: Snapshot<T, Meta, K>): void {
     const eventCallbacks = this.callbacks[event] || [];
     eventCallbacks.forEach(callback => callback(snapshot));
 
@@ -72,7 +75,7 @@ class SnapshotStoreComponent<T extends Data, K extends Data> {
   }
 
   // Method to register a callback for an event
-  on(event: string, callback: Callback<Snapshot<T, K>>): void {
+  on(event: string, callback: Callback<Snapshot<T, Meta, K>>): void {
     if (!this.callbacks[event]) {
       this.callbacks[event] = [];
     }
@@ -80,7 +83,7 @@ class SnapshotStoreComponent<T extends Data, K extends Data> {
   }
 
   // Method to unregister a callback for an event
-  off(event: string, callback: Callback<Snapshot<T, K>>): void {
+  off(event: string, callback: Callback<Snapshot<T, Meta, K>>): void {
     if (!this.callbacks[event]) return;
     this.callbacks[event] = this.callbacks[event].filter(cb => cb !== callback);
   }
@@ -88,27 +91,28 @@ class SnapshotStoreComponent<T extends Data, K extends Data> {
   // Method to clear all snapshots
   clearSnapshots(): void {
     this.snapshots.clear();
-    this.triggerCallbacks('clear', {} as Snapshot<T, K>); // Trigger clear event
+    this.triggerCallbacks('clear', {} as Snapshot<T, Meta, K>); // Trigger clear event
   }
 
   // Method to find snapshots by a specific criterion
-  findSnapshotsByCriterion(predicate: (snapshot: Snapshot<T, K>) => boolean): Snapshot<T, K>[] {
+  findSnapshotsByCriterion(predicate: (snapshot: Snapshot<T, Meta, K>) => boolean): Snapshot<T, Meta, K>[] {
     return Array.from(this.snapshots.values()).filter(predicate);
   }
 
   // Method to sort snapshots
-  sortSnapshots(compareFn: (a: Snapshot<T, K>, b: Snapshot<T, K>) => number): Snapshot<T, K>[] {
+  sortSnapshots(compareFn: (a: Snapshot<T, Meta, K>, b: Snapshot<T, Meta, K>) => number): Snapshot<T, Meta, K>[] {
     return Array.from(this.snapshots.values()).sort(compareFn);
   }
 
   // Method to categorize snapshots
-  categorizeSnapshots(): Map<string, Snapshot<T, K>[]> {
-    const categories = new Map<string, Snapshot<T, K>[]>();
-    this.snapshots.forEach(snapshot => {
-      if (!categories.has(snapshot.category)) {
-        categories.set(snapshot.category, []);
+  categorizeSnapshots(): Map<string, Snapshot<T, Meta, K>[]> {
+    const categories = new Map<string, Snapshot<T, Meta, K>[]>();
+    this.snapshots.forEach((snapshot) => {
+      const category = snapshot.category ?? 'uncategorized';
+      if (!categories.has(category)) {
+        categories.set(category, []);
       }
-      categories.get(snapshot.category)!.push(snapshot);
+      categories.get(category)!.push(snapshot);
     });
     return categories;
   }

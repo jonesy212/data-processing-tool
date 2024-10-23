@@ -1,4 +1,5 @@
-import * as snapshotApi from '@/app/api/SnapshotApi'
+import * as snapshotApi from '@/app/api/SnapshotApi';
+import { SubscriptionLevel } from '@/app/components/crypto/SubscriptionLevel';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import React, { useEffect, useState } from "react";
 import { ModifiedDate } from "../documents/DocType";
@@ -8,35 +9,35 @@ import { SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusT
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 
-
-import { TriggerIncentivesParams } from "../utils/applicationUtils";
-import { userId } from "../users/ApiUser";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
+import { userId } from "../users/ApiUser";
+import { TriggerIncentivesParams } from "../utils/applicationUtils";
 
-import { Data } from "../models/data/Data";
-import { Category } from "../libraries/categories/generateCategoryProperties";
-import { Callback, snapshotContainer, SnapshotWithCriteria, SubscriberCollection, useSnapshotStore } from "../snapshots";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
+import { Category } from "../libraries/categories/generateCategoryProperties";
+import { Data } from "../models/data/Data";
+import { Callback, snapshotContainer, SubscriberCollection, useSnapshotStore } from "../snapshots";
 
 
-type FetchSnapshotByIdCallback<T extends Data, K extends Data>  = {
-  onSuccess: (snapshot: Snapshot<T, K>) => void;
+type FetchSnapshotByIdCallback<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>  = {
+  onSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
   onError: (error: any) => void;
 };
 
-type Subscription<T extends Data, K extends Data> = {
+type Subscription<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> = {
   name?: string;
   subscriberId?: string;
   subscriptionId?: string;
   subscriberType?: SubscriberTypeEnum;
   subscriptionType?: SubscriptionTypeEnum;
-  subscribers: SubscriberCollection<T, K>
+  subscribers: SubscriberCollection<T, Meta, K>;
+  data: Snapshot<T, Meta, K>; // Added
+  getSubscriptionLevel: () => SubscriptionLevel; // Added
   unsubscribe: (
     snapshotId: number, 
     unsubscribe: UnsubscribeDetails, 
-    callback: Callback<Snapshot<T, K>> | null
- 
+    callback: Callback<Snapshot<T, Meta, K>> | null
   ) => void;
   portfolioUpdates: (
     { userId, snapshotId }: {
@@ -51,14 +52,15 @@ type Subscription<T extends Data, K extends Data> = {
       tradeExecutionType: string,
       tradeExecutionData: any
     },
-
   ) => void;
+
   marketUpdates: (
     { userId, snapshotId }: {
       userId: string;
       snapshotId: string;
     }
   ) => void;
+
   triggerIncentives: ({ userId, incentiveType, params }: TriggerIncentivesParams) => void;
   communityEngagement: (
     { userId, snapshotId }: {
@@ -73,9 +75,9 @@ type Subscription<T extends Data, K extends Data> = {
       snapshotId: string;
     }
   ) => SubscriberTypeEnum;
-  portfolioUpdatesLastUpdated:number | ModifiedDate | null;
+  portfolioUpdatesLastUpdated: number | ModifiedDate | null;
   getId?: () => string;
-  determineCategory: (data: Snapshot<T, K>) => string | CategoryProperties | null;
+  determineCategory: (data: Snapshot<T, Meta, K>) => string | CategoryProperties | null;
   category?: Category | null;
   categoryProperties?: CategoryProperties | null;
   fetchSnapshotById?: (
@@ -89,17 +91,17 @@ type Subscription<T extends Data, K extends Data> = {
       userId: string;
       snapshotId: string;
     },
-    callback: FetchSnapshotByIdCallback<T, K>
+    callback: FetchSnapshotByIdCallback<T, Meta, K>
   ) => void; // Adjust this type according to the actual implementation
 
 };
 
-const SubscriptionComponent = (
+const SubscriptionComponent = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   initialData: RealtimeDataItem[],
   updateCallback: RealtimeUpdateCallback<RealtimeDataItem, K>,
   hookName: string
 ) => {
-  const [subscriptionData, setSubscriptionData] = useState<Subscription<T, K> | null>(
+  const [subscriptionData, setSubscriptionData] = useState<Subscription<T, Meta, K> | null>(
     null
   );
   const [unsubscribeType, setUnsubscribeType] = useState<string>(""); // Initialize with empty string
@@ -108,7 +110,7 @@ const SubscriptionComponent = (
   const [unsubscribeData, setUnsubscribeData] = useState<any>({}); // Initialize with empty object
   const [snapshot, setSnapshot] = useState<Snapshot<any, any> | null>(null); // Add state for snapshot
 
-  const data = useRealtimeData(initialData, updateCallback);
+  const data = useRealtimeData<T, Meta, K>(initialData, updateCallback);
 
   useEffect(() => {
     // Subscribe to the data service
@@ -133,7 +135,7 @@ const SubscriptionComponent = (
     // Your subscription usage
     const subscribeToData = async () => {
   
-      const subscriptionUsage: Subscription<T, K> | undefined = subscription.subscribe(
+      const subscriptionUsage: Subscription<T, Meta, K> | undefined = subscription.subscribe(
         hookName,
         async (data: RealtimeDataItem) => {
           if (data.type === "snapshot" && data.data && data.data.subscriberId === hookName) {
@@ -142,8 +144,9 @@ const SubscriptionComponent = (
       
             setSnapshot(snapshotData); // Update snapshot state
          
-            const snapshotStore = await useSnapshotStore(addToSnapshotList);
-            const subscriptionData: Subscription<T, K> | null = snapshot.data ? {
+            const snapshotStore = await useSnapshotStore(addToSnapshotList, storeProps);
+            const subscriptionData: Subscription<T, Meta, K> | null = snapshot.data ? {
+              ...snapshot.data,
               unsubscribe: () => { },
               portfolioUpdates: () => { },
               tradeExecutions: () => { },
@@ -152,12 +155,23 @@ const SubscriptionComponent = (
               communityEngagement: () => { },
               determineCategory: snapshotStore.determineCategory,
               portfolioUpdatesLastUpdated: {} as ModifiedDate,
-              ...snapshot.data
+              subscribers: [],
+              getSubscriptionLevel: () => ({
+                  name: "",
+                  description: "",
+                  price: 0,
+                  features: [],
+              } as SubscriptionLevel)
+              
+              //todo integrate
+              // getId: () => snapshot.id,
+              // fetchSnapshotById: () => { },
+              // // fetchSnapshotByIdCallback: () => { }, // Adjust this type according to the actual implementation
             } : null;
             setSubscriptionData(subscriptionData);
           }
         }
-      ) as Subscription<T, K> | undefined;
+      ) as Subscription<T, Meta, K> | undefined;
       
       
       // Ensure subscriptionUsage is defined before accessing unsubscribe
@@ -173,7 +187,9 @@ const SubscriptionComponent = (
           // Cleanup: Unsubscribe when the component unmounts
           return () => {
             // Make sure to pass the correct parameters to unsubscribe
-            subscriptionUsage?.unsubscribe({
+            subscriptionUsage?.unsubscribe(
+              snapshotId,
+              {
               userId: String(userId),
               snapshotId,
               unsubscribeType,
@@ -194,7 +210,7 @@ const SubscriptionComponent = (
   }, [hookName, unsubscribeType, unsubscribeDate, unsubscribeReason, unsubscribeData]); // Depend on relevant variables
 
   const addToSnapshotList = async (
-    snapshot: Snapshot<T, K>) => {
+    snapshot: Snapshot<T, Meta, K>) => {
     console.log("Snapshot added to snapshot list: ", snapshot);    setSubscriptionData(snapshot.data? {
       unsubscribe: () => {},
       portfolioUpdates: () => {},
@@ -228,7 +244,7 @@ const SubscriptionComponent = (
 const handleSubscriptionCallback = async (data: RealtimeDataItem) => {
   // Handle incoming subscription data here
   // Transform RealtimeDataItem to Subscription or null
-  const transformedData: Subscription<T, K> | null = data.type === "snapshot" && data.data && data.data.subscriberId === hookName
+  const transformedData: Subscription<T, Meta, K> | null = data.type === "snapshot" && data.data && data.data.subscriberId === hookName
     ? {
         portfolioUpdates: () => {},
         tradeExecutions: () => {},
@@ -246,7 +262,7 @@ const handleSubscriptionCallback = async (data: RealtimeDataItem) => {
             unsubscribeReason: string;
             unsubscribeData: any;
           },
-          callback: Callback<Snapshot<T, K>> | null
+          callback: Callback<Snapshot<T, Meta, K>> | null
         ) => {
           if (data.data?.unsubscribe) {
             data.data.unsubscribe(unsubscribeDetails, callback);
@@ -280,4 +296,5 @@ const handleSubscriptionCallback = async (data: RealtimeDataItem) => {
 };
 
 export default SubscriptionComponent;
-export type { Subscription, FetchSnapshotByIdCallback };
+export type { FetchSnapshotByIdCallback, Subscription };
+

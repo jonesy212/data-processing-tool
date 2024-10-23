@@ -1,16 +1,15 @@
-import { action } from 'mobx';
 // ContentSlice.ts
-import CommonDetails from '@/app/components/models/CommonDetails';
 import { endpoints } from "@/app/api/ApiEndpoints";
 import * as ApiTask from "@/app/api/TasksApi";
 import axiosInstance from "@/app/api/axiosInstance";
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import { FileType } from "@/app/components/documents/Attachment/attachment";
+import { SupportedData } from '@/app/components/models/CommonData';
 import ContentDetails from "@/app/components/models/content/ContentDetails";
 import {
-  PriorityTypeEnum,
-  StatusType,
-  TaskStatus,
+    PriorityTypeEnum,
+    StatusType,
+    TaskStatus,
 } from "@/app/components/models/data/StatusType";
 import ExportTasksPayload from "@/app/components/models/tasks/ExportTasksPayload";
 import ImportTasksPayload from "@/app/components/models/tasks/ImportTasksPayload";
@@ -18,6 +17,8 @@ import TaskDetails, { Task, TaskData } from "@/app/components/models/tasks/Task"
 import { Phase } from "@/app/components/phases/Phase";
 import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
 import { SortCriteria } from "@/app/components/settings/SortCriteria";
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotConfig';
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { TaskSort } from "@/app/components/sort/TaskSort";
 import { WritableDraft } from "@/app/components/state/redux/ReducerGenerator";
@@ -27,24 +28,19 @@ import { AxiosResponse } from "axios";
 import useWebNotifications from "../../../hooks/commHooks/useWebNotifications";
 import { ContentLogger } from "../../../logging/Logger";
 import { ContentItem } from "../../../models/content/ContentItem";
-import { BaseData, Comment, Data, DataDetails } from "../../../models/data/Data";
+import { BaseData, Comment, Data } from "../../../models/data/Data";
 import { sanitizeInput } from "../../../security/SanitizationFunctions";
 import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification,
 } from "../../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../../support/NotificationMessages";
 import { Idea, IdeationSession } from "../../../users/Ideas";
 import { User } from "../../../users/User";
 import { VideoData } from "../../../video/Video";
-import { ProjectManagerStore } from "../../stores/ProjectStore";
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import { DetailsItem } from "../../stores/DetailsListStore";
-import { Team } from "@/app/components/models/teams/Team";
-import { FC } from "react";
-import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotConfig';
-import { SupportedData } from '@/app/components/models/CommonData';
+import { ProjectManagerStore } from "../../stores/ProjectStore";
 const { showNotification } = useWebNotifications();
 const { notify } = useNotification();
 
@@ -533,7 +529,7 @@ export const useContentSlice = createSlice({
         then: function (arg0: (newTask: any) => void): unknown {
           throw new Error("Function not implemented.");
         },
-        getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+        getData: function (): Promise<SnapshotStore<Snapshot<Data, Meta, Data>>[]> {
           throw new Error("Function not implemented.");
         },
       });
@@ -658,7 +654,7 @@ export const useContentSlice = createSlice({
               : existingTask.subtasks,
             actions: changes.actions
               ? Array.isArray(changes.actions)
-                ? changes.actions.map((action) => ({ ...action } as WritableDraft<SnapshotStoreConfig<BaseData, BaseData>>))
+                ? changes.actions.map((action) => ({ ...action } as WritableDraft<SnapshotStoreConfig<BaseData, Meta, BaseData>>))
                 : existingTask.actions
               : existingTask.actions,
             status: changes.status ?? existingTask.status,
@@ -681,7 +677,7 @@ export const useContentSlice = createSlice({
               : existingTask.updatedSubtasks,
             updatedActions: changes.updatedActions
               ? Array.isArray(changes.updatedActions)
-                ? changes.updatedActions.map((updatedAction) => ({ ...updatedAction } as WritableDraft<SnapshotStoreConfig<BaseData, BaseData>>))
+                ? changes.updatedActions.map((updatedAction) => ({ ...updatedAction } as WritableDraft<SnapshotStoreConfig<BaseData, Meta, BaseData>>))
                 : existingTask.updatedActions
               : existingTask.updatedActions,
             updatedComments: changes.updatedComments

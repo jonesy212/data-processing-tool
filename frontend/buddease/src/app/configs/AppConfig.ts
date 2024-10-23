@@ -69,6 +69,8 @@ interface AppConfig {
   // Properties related to navigation
   navigateTo: (route: string) => void;
 
+  getApiKey: () => string; // Method to retrieve the API key
+
   // Add any other necessary props specific to your admin dashboard application
 }
 
@@ -276,6 +278,8 @@ export const getAppConfig = (): AppConfig => {
     },
     changeTheme: () => {},
     navigateTo: () => {},
+    getApiKey: () => configurationService.getApiKey(), // Implementing the method
+ 
     // Add other necessary props specific to your application
   };
 };
@@ -286,4 +290,4 @@ console.log(appConfig.appName); // Accessing properties of AppConfig
 
 export type { AppConfig };
 // Export the API version header constant
-  export { API_VERSION_HEADER };
+  export { API_VERSION_HEADER, appConfig };

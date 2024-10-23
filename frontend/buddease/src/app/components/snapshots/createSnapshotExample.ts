@@ -1,21 +1,21 @@
 import { Data } from '../models/data';
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { snapshot } from './snapshot';
-import { T, K } from "./SnapshotConfig";
+import { K, T } from "./SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
 import { snapshotConfig } from "./snapshotStoreConfigInstance";
 
 // createSnapshotExample.ts
 const createSnapshotExample = async (
   id: string,
-  snapshotData: Snapshot<any, Data>,
+  snapshotData: SnapshotData<any, Data>,
   category: string
-): Promise<{ snapshot: Snapshot<T, K> }> => {
+): Promise<{ snapshot: Snapshot<T, Meta, K> }> => {
   const currentConfig = snapshotConfig.find(
     (config) => (config.snapshotId as string) === id
   );
 
-  return new Promise<{ snapshot: Snapshot<Data, Data> }>(
+  return new Promise<{ snapshot: Snapshot<Data, Meta, Data> }>(
     (resolve, reject) => {
       if (currentConfig && typeof currentConfig.createSnapshot === "function") {
         // Ensure currentConfig.createSnapshot is called with correct arguments
@@ -23,7 +23,7 @@ const createSnapshotExample = async (
           id,
           snapshotData,
           category,
-          (snapshot: Snapshot<Data>) => {
+          (snapshot: Snapshot<Data, Meta, Data>) => {
             // Check if snapshot returned is valid
             if (snapshot instanceof SnapshotStore) {
               resolve({ snapshot });

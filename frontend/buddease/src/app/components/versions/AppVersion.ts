@@ -291,6 +291,6 @@ const currentAppName = appVersion.getAppName();
 appVersion.updateAppName("NewApp");
 const updatedAppName = appVersion.getAppName();
 
-export { currentAppName, updatedAppName };
+export { currentAppName, updatedAppName , appVersion};
 
 export default AppVersionImpl;

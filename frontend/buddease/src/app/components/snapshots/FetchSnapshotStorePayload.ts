@@ -1,11 +1,9 @@
 
 import { Data } from '../models/data/Data';
-import { Snapshot, SnapshotsArray } from './LocalStorageSnapshotStore';
-import { SnapshotConfig } from './SnapshotConfig';
 import SnapshotStore from './SnapshotStore';
 
-interface FetchedSnapshotStore<T extends Data, K extends Data> {
-    snapshotStore: SnapshotStore<T, K>;
+interface FetchedSnapshotStore<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+    snapshotStore: SnapshotStore<T, Meta, K>;
 }
 
-export type {FetchedSnapshotStore}
+export type { FetchedSnapshotStore };

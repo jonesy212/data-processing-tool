@@ -3,7 +3,7 @@ import { StatusType } from "../models/data/StatusType";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 
 // snapshotDefaults.ts
-function defaultTransformDelegate<T extends Data, K extends Data>(snapshot: Snapshot<T, K>): Snapshot<T, K> {
+function defaultTransformDelegate<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(snapshot: Snapshot<T, Meta, K>): Snapshot<T, Meta, K> {
     // Example transformation logic
     // You can modify the snapshot data here, e.g., adding metadata or modifying existing fields.
     snapshot.metadata = {
@@ -13,10 +13,10 @@ function defaultTransformDelegate<T extends Data, K extends Data>(snapshot: Snap
   
     return snapshot;
   }
-  function defaultAddDataStatus<T extends Data, K extends Data>(
+  function defaultAddDataStatus<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
     id: number,
     status: StatusType | undefined,
-    snapshot: Snapshot<T, K>
+    snapshot: Snapshot<T, Meta, K>
   ): void {
     if (!status) {
       console.error(`Status is undefined for ID ${id}.`);
@@ -42,9 +42,9 @@ function defaultTransformDelegate<T extends Data, K extends Data>(snapshot: Snap
 
   
 
-  function defaultRemoveData<T extends Data, K extends Data>(
+  function defaultRemoveData<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
     id: number,
-    snapshot: Snapshot<T, K>
+    snapshot: Snapshot<T, Meta, K>
   ): void {
     if (snapshot.data && snapshot.data instanceof Map) {
       if (snapshot.data.delete(id.toString())) {
@@ -57,10 +57,10 @@ function defaultTransformDelegate<T extends Data, K extends Data>(snapshot: Snap
     }
   }
     
-  function defaultUpdateData<T extends Data, K extends Data>(
+  function defaultUpdateData<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
     id: number,
-    newData: Snapshot<T, K>,
-    snapshot: Snapshot<T, K>
+    newData: Snapshot<T, Meta, K>,
+    snapshot: Snapshot<T, Meta, K>
   ): void {
     if (snapshot.data && snapshot.data instanceof Map) {
       if (snapshot.data.has(id.toString())) {
@@ -74,10 +74,10 @@ function defaultTransformDelegate<T extends Data, K extends Data>(snapshot: Snap
     }
   }
 
-  function defaultUpdateDataTitle<T extends Data, K extends Data>(
+  function defaultUpdateDataTitle<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   id: number,
   title: string,
-  snapshot: Snapshot<T, K>
+  snapshot: Snapshot<T, Meta, K>
 ): void {
   if (snapshot.data && snapshot.data instanceof Map) {
     const item = snapshot.data.get(id.toString());
@@ -93,10 +93,10 @@ function defaultTransformDelegate<T extends Data, K extends Data>(snapshot: Snap
 }
 
   
-function defaultUpdateDataDescription<T extends Data, K extends Data>(
+function defaultUpdateDataDescription<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
     id: number,
     description: string,
-    snapshot: Snapshot<T, K>
+    snapshot: Snapshot<T, Meta, K>
   ): void {
     if (snapshot.data && snapshot.data instanceof Map) {
       const item = snapshot.data.get(id.toString());
@@ -113,10 +113,10 @@ function defaultUpdateDataDescription<T extends Data, K extends Data>(
 
   
 
-  function defaultUpdateDataStatus<T extends Data, K extends Data>(
+  function defaultUpdateDataStatus<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
     id: number,
     status: StatusType | undefined,
-    snapshot: Snapshot<T, K>
+    snapshot: Snapshot<T, Meta, K>
   ): void {
     if (!status) {
       console.error(`Status is undefined for ID ${id}.`);
@@ -140,9 +140,9 @@ function defaultUpdateDataDescription<T extends Data, K extends Data>(
   }
 
   
-  function defaultAddDataSuccess<T extends Data, K extends Data>(
-    payload: { data: Snapshot<T, K>[] },
-    snapshot: Snapshot<T, K>
+  function defaultAddDataSuccess<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+    payload: { data: Snapshot<T, Meta, K>[] },
+    snapshot: Snapshot<T, Meta, K>
   ): void {
     if (snapshot.data && snapshot.data instanceof Map) {
       payload.data.forEach(item => {
@@ -161,12 +161,6 @@ function defaultUpdateDataDescription<T extends Data, K extends Data>(
   }
   
   export {
-    defaultAddDataStatus,
-    defaultRemoveData,
-    defaultUpdateData,
-    defaultUpdateDataTitle,
-    defaultUpdateDataDescription,
-    defaultUpdateDataStatus,
-    defaultAddDataSuccess,
-    defaultTransformDelegate
-  }
+    defaultAddDataStatus, defaultAddDataSuccess, defaultRemoveData, defaultTransformDelegate, defaultUpdateData, defaultUpdateDataDescription,
+    defaultUpdateDataStatus, defaultUpdateDataTitle
+};

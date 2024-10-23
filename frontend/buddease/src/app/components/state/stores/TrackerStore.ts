@@ -1,20 +1,23 @@
 import { makeAutoObservable } from 'mobx';
-import { Tracker } from '../../models/tracker/Tracker';
+import { TrackerProps } from '../../models/tracker/Tracker';
 import { RootStores } from './RootStores';
 
 export interface TrackerStore {
-  trackers: Record<string, Tracker>;
-  addTracker: (newTracker: Tracker) => void;
-  getTracker: (id: string) => Tracker | undefined;
-  getTrackers: (filter?: { id?: string; name?: string }) => Tracker[];
-  removeTracker: (trackerToRemove: Tracker) => void;
+  trackers: Record<string, TrackerProps>;
+  addTracker: (newTracker: TrackerProps) => void;
+  getTracker: (id: string) => TrackerProps | undefined;
+  getTrackers: (filter?: { id?: string; name?: string }) => TrackerProps[];
+  removeTracker: (trackerToRemove: TrackerProps) => void;
   dispatch: (action: any) => void;
 }
 
 const useTrackerStore = (rootStore:  RootStores): TrackerStore => {
-  const trackers: Record<string, Tracker> = {};
+  const trackers: Record<string, TrackerProps> = {};
 
-  const addTracker = (newTracker: Tracker) => {
+  const addTracker = (newTracker: TrackerProps) => {
+    if(newTracker.id === undefined){
+      throw new Error("Tracker ID is required");
+    }
     trackers[newTracker.id] = newTracker;
   };
 
@@ -28,7 +31,10 @@ const useTrackerStore = (rootStore:  RootStores): TrackerStore => {
     });
   };
 
-  const removeTracker = (trackerToRemove: Tracker) => {
+  const removeTracker = (trackerToRemove: TrackerProps) => {
+    if(trackerToRemove.id === undefined){
+      throw new Error("Tracker ID is required");
+    }
     delete trackers[trackerToRemove.id];
   };
 

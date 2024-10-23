@@ -5,70 +5,70 @@ import { Data } from '@/app/components/models/data/Data';
 import { CategoryProperties } from '../../pages/personas/ScenarioBuilder';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { SnapshotStoreConfig } from './SnapshotStoreConfig';
-interface SnapshotHandling<T extends Data, K extends Data> {
+interface SnapshotHandling<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
     mapSnapshots(
         storeIds: number[],
         snapshotId: string,
         category: Category | undefined,
         categoryProperties: CategoryProperties | undefined,
-        snapshot: Snapshot<T, K>,
+        snapshot: Snapshot<T, Meta, K>,
         timestamp: string | number | Date | undefined,
         type: string,
         event: Event,
         id: number,
-        snapshotStore: SnapshotStore<T, K>,
+        snapshotStore: SnapshotStore<T, Meta, K>,
         data: Data,
         callback: (
           storeIds: number[],
           snapshotId: string,
           category: symbol | string | Category | undefined,
           categoryProperties: CategoryProperties | undefined,
-          snapshot: Snapshot<T, K>,
+          snapshot: Snapshot<T, Meta, K>,
           timestamp: string | number | Date | undefined,
           type: string,
           event: Event,
           id: number,
-          snapshotStore: SnapshotStore<T, K>,
+          snapshotStore: SnapshotStore<T, Meta, K>,
           data: T,
           index: number
-        ) => SnapshotsObject<T>
-      ): Promise<SnapshotsArray<T>>    
+        ) => SnapshotsObject<T, Meta, K>
+      ): Promise<SnapshotsArray<T, Meta>>    
 
       createSnapshotStore: (
         id: string,
         storeId: number,
         snapshotId: string,
-        snapshotStoreData: SnapshotStore<T, K>[],
+        snapshotStoreData: SnapshotStore<T, Meta, K>[],
         category: Category | undefined,
         categoryProperties: CategoryProperties | undefined,
-        callback?: (snapshotStore: SnapshotStore<T, K>) => void,
-        snapshotDataConfig?: SnapshotStoreConfig<T, K>[]
-      ) => Promise<SnapshotStore<T, K> | null>;
+        callback?: (snapshotStore: SnapshotStore<T, Meta, K>) => void,
+        snapshotDataConfig?: SnapshotStoreConfig<T, Meta, K>[]
+      ) => Promise<SnapshotStore<T, Meta, K> | null>;
     
       updateSnapshotStore: (
         id: string,
         snapshotId: number,
-        snapshotStoreData: Snapshots<T>,
+        snapshotStoreData: Snapshots<T, Meta>,
         category?: string | symbol | Category,
-        callback?: (snapshotStore: SnapshotStore<T, K>) => void,
-        snapshotDataConfig?: SnapshotStoreConfig<T, K>[]
-      ) => Promise<SnapshotStore<T, K> | null>;
+        callback?: (snapshotStore: SnapshotStore<T, Meta, K>) => void,
+        snapshotDataConfig?: SnapshotStoreConfig<T, Meta, K>[]
+      ) => Promise<SnapshotStore<T, Meta, K> | null>;
     
 
   initSnapshot: (
-    snapshot: SnapshotStore<T, K> | Snapshot<T, K> | null,
+    snapshot: SnapshotStore<T, Meta, K> | Snapshot<T, Meta, K> | null,
     snapshotId: string | null,
-    snapshotData: SnapshotStore<T, K>, // Ensure snapshotData matches SnapshotStore<T, K>
+    snapshotData: SnapshotData<T, Meta, K>, // Ensure snapshotData matches SnapshotStore<T, Meta, K>
     category: symbol | string | Category | undefined,
-    snapshotConfig: SnapshotStoreConfig<T, K>, // Use K instead of T for snapshotConfig
+    snapshotConfig: SnapshotStoreConfig<T, Meta, K>, // Use K instead of T for snapshotConfig
     callback: (snapshotStore: SnapshotStore<any, any>) => void
   ) => void;
 
   deleteSnapshot: (id: string) => void;
 
-  reduceSnapshots: <U>(callback: (acc: U, snapshot: Snapshot<T, K>) => U, initialValue: U) => U;
-  sortSnapshots: (compareFn: (a: Snapshot<T, K>, b: Snapshot<T, K>) => number) => void;
-  filterSnapshots: (predicate: (snapshot: Snapshot<T, K>) => boolean) => Snapshot<T, K>[];
+  reduceSnapshots: <U>(callback: (acc: U, snapshot: Snapshot<T, Meta, K>) => U, initialValue: U) => U;
+  sortSnapshots: (compareFn: (a: Snapshot<T, Meta, K>, b: Snapshot<T, Meta, K>) => number) => void;
+  filterSnapshots: (predicate: (snapshot: Snapshot<T, Meta, K>) => boolean) => Snapshot<T, Meta, K>[];
   
-  mergeSnapshots: (snapshots: Snapshots<T>, category: string) => Promise<void>;
+  mergeSnapshots: (snapshots: Snapshots<T, Meta>, category: string) => Promise<void>;
 }

@@ -1,9 +1,9 @@
+import { useDispatch } from 'react-redux';
 import { Data } from "../models/data/Data";
-import {useDispatch} from 'react-redux';
 
 const dispatch = useDispatch()
 // updateUIWithSnapshotStore.ts
-const updateUIWithSnapshotStore = <T extends Data, K extends Data>(snapshotStore: Snapshot<T, K>) => {
+const updateUIWithSnapshotStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(snapshotStore: Snapshot<T, Meta, K>) => {
     try {
       // Perform a UI update with the snapshotStore data
       const snapshotContent = snapshotStore.getData(); // Retrieve the data from snapshotStore
@@ -33,4 +33,4 @@ const updateUIWithSnapshotStore = <T extends Data, K extends Data>(snapshotStore
       console.error("Error updating UI with snapshot store:", error);
     }
   };
-  export {updateUIWithSnapshotStore}
+  export { updateUIWithSnapshotStore };

@@ -14,6 +14,7 @@ import useTrackerStore from "../state/stores/TrackerStore";
 import TodoImpl, { Todo } from "../todos/Todo";
 import ToolbarItem from "./ToolbarItem";
 import { showModalOrNotification } from "../hooks/commHooks/idleTimeoutUtils";
+import useSecureStoreId from '../utils/useSecureStoreId';
 
 const ProjectManagementToolbar: React.FC<{ task: Task }> = ({ task }) => {
   const toolbarOptions = {
@@ -46,7 +47,7 @@ const ProjectManagementToolbar: React.FC<{ task: Task }> = ({ task }) => {
     const trackerStore = useTrackerStore(rootStore);
 
 
-    const initialStoreId = await snapshotApi.
+    const initialStoreId = useSecureStoreId()
     if(!props){
       throw Error("props is undefined")
     }
@@ -98,6 +99,9 @@ const ProjectManagementToolbar: React.FC<{ task: Task }> = ({ task }) => {
         break;
       case "Manage Todos":
         const todoId = (await useTodoManagerStore(props)).getTodoId
+        if(!initialStoreId){
+          throw new Error("initialStoreId is undefined")
+        }
         const teamId = (await useTeamManagerStore(initialStoreId)).getTeamId
         // Call MobX action to manage todo settings or preferences
         useTodoManagerStore(props).openTodoSettingsPage(todoId as unknown as number, teamId as unknown as number);

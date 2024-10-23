@@ -216,3 +216,4 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
 };
 
 export default DataAnalysisPhase;
+export {DataAnalysisSubPhase}

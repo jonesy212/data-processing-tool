@@ -1,38 +1,41 @@
 import { CustomHydrateResult } from "@/app/configs/DocumentBuilderConfig";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { ContentState } from 'draft-js';
-import { CodingLanguageEnum, LanguageEnum } from "../../communications/LanguageEnum";
-import { DocumentTypeEnum } from "../../documents/DocumentGenerator";
 import { DataStore } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotConfig, SnapshotItem, SnapshotOperationType } from '../../snapshots';
 import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
 
-import { SnapshotContainer, SnapshotDataType } from "../../snapshots/SnapshotContainer";
-import SnapshotStore from "../../snapshots/SnapshotStore";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { useSnapshotManager } from "../../hooks/useSnapshotManager";
+import { Category } from "../../libraries/categories/generateCategoryProperties";
+import { SnapshotContainer } from "../../snapshots/SnapshotContainer";
+import SnapshotStore, { SubscriberCollection } from "../../snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "../../snapshots/SnapshotWithCriteria";
 import { useSnapshotStore } from "../../snapshots/useSnapshotStore";
-import { AlignmentOptions } from "../../state/redux/slices/toolbarSlice";
 import { addToSnapshotList } from "../../utils/snapshotUtils";
+import useSecureStoreId from "../../utils/useSecureStoreId";
 import Version from "../../versions/Version";
-import { VersionData } from "../../versions/VersionData";
-import { LinksType } from './../../documents/DocumentOptions';
+import { RealtimeDataItem } from "../realtime/RealtimeData";
 import { BaseData, Data } from "./Data";
-import { DocumentSize, Layout, StatusType } from "./StatusType";
-import { Category } from "../../libraries/categories/generateCategoryProperties";
+import { StatusType } from "./StatusType";
 
 
 export type T = Data;
-export type K = T; // K could be the same as T or a different specialized type
+// Define a generic type K that extends Data
+export type K<T extends Data> = T; // K is now a generic type that takes T as an argument extending Data.// K could be the same as T or a different specialized type
+export type Meta = UnifiedMetaDataOptions
 
 
-
+const storeId = useSecureStoreId()
+if(storeId === null){
+  throw new Error("Store id is null");
+}
 // dataStoreMethods.ts
-const dataStoreMethods: DataStore<T, K> = {
+const dataStoreMethods: DataStore<T, Meta, K> = {
   data: undefined,
-  storage: [] as SnapshotStore<T, K>[],
-  addData: (data: Snapshot<T, K>) => { },
-  updateData: (id: number, newData: Snapshot<T, K>) => { },
+  storage: [] as SnapshotStore<T, Meta, K>[],
+  addData: (data: Snapshot<T, Meta, K>) => { },
+  updateData: (id: number, newData: Snapshot<T, Meta, K>) => { },
   removeData: (id: number) => { },
 
   updateDataTitle: (id: number, title: string) => { },
@@ -45,7 +48,7 @@ const dataStoreMethods: DataStore<T, K> = {
     id: number,
     status: StatusType | undefined
   ) => { },
-  addDataSuccess: (payload: { data: Snapshots<T> }) => { },
+  addDataSuccess: (payload: { data: Snapshots<T, Meta> }) => { },
   getDataVersions: async (id: number) => {
     // Implement logic to fetch data versions from a data source
     return undefined;
@@ -60,7 +63,7 @@ const dataStoreMethods: DataStore<T, K> = {
         storeValue: 0,
         version: {} as Version,
         customProperty1: "",
-        customMethod: () => {},
+        customMethod: () => { },
         // The `rehydrate` method now returns `hydrateResult` to ensure recursive compatibility
         rehydrate: () => hydrateResult,
 
@@ -72,299 +75,36 @@ const dataStoreMethods: DataStore<T, K> = {
 
         // Implementing the `then` method to comply with Promise-like behavior
         // Adjusted `then` method to match the expected signature
-        then: (callback: () => void) => {
-          // Execute the callback and return a `DocumentBuilderConfig`
-          callback();
-          return { /* Construct and return a DocumentBuilderConfig object */
-            levels: [],
-            isDynamic: false,
-            language: LanguageEnum.English,
-            documentType: DocumentTypeEnum.Text,
-            fontFamily: "Arial",
-            fontSize: 12,
-            textColor: "",
-            backgroundColor: "",
-            lineSpacing: 1,
-            structure: undefined,
-            uniqueIdentifier: "",
-            enableSpellCheck: false,
-            enableAutoSave: false,
-            autoSaveInterval: 0,
-            showWordCount: false,
-            maxWordCount: 0,
-            enableSyncWithExternalCalendars: false,
-            enableThirdPartyIntegration: false,
-            thirdPartyAPIKey: "",
-            thirdPartyEndpoint: "",
-            enableAccessibilityMode: false,
-            highContrastMode: false,
-            screenReaderSupport: false,
-            metadata: {
-              metadataEntries: { },
-              apiEndpoint: "",
-              apiKey: "",
-              timeout: 0,
-              retryAttempts: 0,
-            },
-            additionalOptionsLabel: "Additional Options",
-            documentSize: DocumentSize.A4,
-            createdBy: "",
-            sections: [],
-            orientation: "portrait",
-            lastModifiedBy: "",
-            limit: 0,
-            page: 0,
-            additionalOptions: undefined,
-            documentPhase: "",
-            versionData: {} as VersionData,
-            size: DocumentSize.A4,
-            animations: {
-              type: "custom",
-              duration: 0
-            },
-            layout: {} as Layout,
-            panels: [],
-            pageNumbers: {
-              enabled: true,
-              format: "",
-            },
-            footer: "",
-            watermark: {
-              enabled: false,
-              text: "",
-              color: "",
-              opacity: 50,
-              fontSize: 12,
-              size: DocumentSize.A4,
-              x: 0,
-              y: 0,
-              rotation: 0,
-              borderStyle: "",
-
-            },
-            headerFooterOptions: {
-              enabled: true,
-              showHeader: true,
-              showFooter: true,
-              differentFirstPage: true,
-              differentOddEven: true,
-              headerOptions: {
-                height: {
-                  type: "fixed",
-                  value: 0,
-                },
-                fontSize: 12,
-                fontFamily: "Arial",
-                fontColor: "",
-                alignment: AlignmentOptions.LEFT,
-                font: "Arial",
-                bold: false,
-                italic: false,
-                underline: false,
-                strikeThrough: false,
-                margin: {
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  left: 0,
-                },
-              },
-              footerOptions: {
-                alignment: AlignmentOptions.LEFT,
-                font: "Arial",
-                fontSize: 12,
-                fontFamily: "Arial",
-                fontColor: "",
-                bold: false,
-                italic: false,
-                underline: false,
-                strikeThrough: false,
-                height: {
-                  type: "fixed",
-                  value: 0,
-                },
-                margin: {
-                  top: 0,
-                  right: 0,
-                  bottom: 0,
-                  left: 0,
-                },
-              },
-
-            },
-            zoom: 100,
-            showRuler: false,
-            showDocumentOutline: false,
-            showComments: false,
-            showRevisions: false,
-            spellCheck: false,
-            grammarCheck: false,
-            visibility: "",
-
-            font: "",
-            alignment: AlignmentOptions.NULL,
-            indentSize: 0,
-            bulletList: {
-              symbol: "",
-              style: "",
-            },
-            numberedList: {
-              style: "",
-              format: "",
-            },
-            headingLevel: 0,
-            toc: {
-              enabled: false,
-              format: "",
-              levels: 2,
-            },
-
-            bold: false,
-            italic: false,
-            underline: false,
-            strikethrough: false,
-            subscript: false,
-
-            superscript: false,
-            hyperlink: "",
-            textStyles: {},
-            image: "",
-
-            links: {} as LinksType,
-            embeddedContent: {
-              enabled: false,
-              allow: false,
-              language: LanguageEnum.English
-
-            },
-            bookmarks: {
-              enabled: false,
-            },
-            crossReferences: {
-              enabled: false,
-              format: "",
-            },
-            footnotes: {
-              enabled: false,
-              format: "",
-            },
-            endnotes: {
-              enabled: false, // Assuming default values, adjust as needed
-              format: "APA",  // Example format
-            },
-            comments: {
-              enabled: false, // Assuming default values, adjust as needed
-              author: "",
-              dateFormat: "MM-DD-YYYY",
-            },
-            revisions: undefined, // Set to undefined or an appropriate RevisionOptions object
-            embeddedMedia: {
-              enabled: false,
-              allow: false,
-            },
-            embeddedCode: {
-              enabled: false,
-              language: CodingLanguageEnum.Javascript, // Replace with the appropriate enum value
-              allow: false,
-            },
-            styles: {},
-            previousMetadata: undefined, // StructuredMetadata or undefined
-            currentMetadata: undefined,  // StructuredMetadata or undefined
-            currentContent: {} as ContentState, // Assuming a string or appropriate ContentState object
-            previousContent: undefined,  // Assuming undefined or a ContentState object
-            lastModifiedDate: undefined, // Assuming ModifiedDate or undefined
-            accessHistory: [], // Assuming an array of AccessRecord objects
-            tableCells: {
-              enabled: false,
-              padding: 0,
-              fontSize: 12,
-              alignment: "left",
-              borders: undefined, // Assuming BorderStyle or undefined
-            },
-            table: {
-              enabled: false, // Adjust as needed
-            },
-            tableRows: [], // Assuming an array of numbers or empty array
-            tableColumns: [], // Assuming an array of numbers or empty array
-            codeBlock: {
-              enabled: false, // Assuming default values or adjust as needed
-            },
-            blockquote: {
-              enabled: false, // Adjust as needed
-            },
-            codeInline: {
-              enabled: false, // Adjust as needed
-            },
-            quote: {
-              enabled: false, // Assuming it's an object with enabled property
-            },
-            todoList: {
-              enabled: false, // Adjust as needed
-            },
-            orderedTodoList: {
-              enabled: false, // Adjust as needed
-            },
-            unorderedTodoList: {
-              enabled: false, // Adjust as needed
-            },
-            color: "#000000", // Assuming a default color
-            colorCoding: undefined, // Assuming a Record<string, string> or undefined
-            highlight: {
-              enabled: false,
-              colors: {}, // Assuming a dictionary of colors
-            },
-            highlightColor: "#FFFF00", // Assuming a default highlight color
-            customSettings: undefined, // Assuming a Record<string, any> or undefined
-            documents: [], // Assuming an array of DocumentData objects
-            includeType: "none", // "all" | "selected" | "none"
-            footnote: {
-              enabled: false,
-              format: "APA", // Example format
-            },
-            defaultZoomLevel: 100, // Default zoom level
-            customProperties: undefined, // Assuming a Record<string, any> or undefined
-            value: null, // Allow setting a value
-            includeTitle: {
-              enabled: false, // Adjust as needed
-            },
-            includeContent: {
-              enabled: false, // Adjust as needed
-            },
-            includeStatus: {
-              enabled: false, // Adjust as needed
-            },
-            includeAdditionalInfo: {
-              enabled: false, // Adjust as needed
-            },
-            userSettings: undefined, // Assuming UserSettings or undefined
-            dataVersions: undefined, // Assuming DataVersions or undefined
-            options: {
-              additionalOptions: [],
-              additionalOptionsLabel: "",
-              additionalDocumentOptions: undefined,
-            },
-          };
+        then: <TResult1 = number, TResult2 = never>(
+          onfulfilled?: (value: number) => TResult1 | PromiseLike<TResult1>,
+          onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>
+        ): CustomHydrateResult<TResult1 | TResult2> => {
+          if (onfulfilled) {
+            const result = onfulfilled(hydrateResult.storeValue);
+            return {
+              ...hydrateResult,
+              storeValue: result as TResult1,
+            } as CustomHydrateResult<TResult1 | TResult2>;
+          }
+          return hydrateResult as unknown as CustomHydrateResult<TResult1 | TResult2>;
         },
-
-        // Implementing `catch` in case of error handling (if necessary)
         catch: (onrejected) => {
-          // Handle rejection here if needed
+          if (onrejected) {
+            onrejected(new Error("An error occurred"));
+          }
           return hydrateResult;
         },
-
         [Symbol.toStringTag]: "CustomHydrateResult",
       };
-
       return hydrateResult;
     } else {
-      // If the condition is not met, fallback to another Promise
       return Promise.resolve("Backend version as a string");
     }
   },
 
   getFrontendVersion: () => Promise.resolve(""),
-  fetchData: (id: number) => Promise.resolve({
 
+  fetchData: (id: number) => Promise.resolve({
     id,
     title: "",
     content: "",
@@ -375,107 +115,101 @@ const dataStoreMethods: DataStore<T, K> = {
     topic: "",
     date: "",
 
+    // Configuration Methods
+    config: undefined,
+    configs: [],
+    getConfig: undefined,
+    setConfig: undefined,
+    handleActions: undefined,
+    transformSnapshotConfig: undefined,
 
+    // Delegate Methods
+    delegate: undefined,
+    transformedDelegate: undefined,
+    ensureDelegate: undefined,
+    handleDelegate: undefined,
+    transformDelegate: undefined,
 
+    // Event Methods
+    events: [],
+    notify: undefined,
+    notifySuccess: undefined,
+    notifyFailure: undefined,
 
+    // Snapshot Comparison
+    compareSnapshotState: undefined,
+    deepCompare: undefined,
+    shallowCompare: undefined,
 
+    // Snapshot Management
+    clearSnapshotSuccess: undefined,
+    clearSnapshotFailure: undefined,
+    createSnapshotSuccess: undefined,
+    createSnapshotFailure: undefined,
+    takeSnapshotsSuccess: undefined,
+    flatMap: undefined,
+    setSnapshot: undefined,
+    setSnapshotData: undefined,
+    setSnapshots: undefined,
+    clearSnapshot: undefined,
+    mergeSnapshots: undefined,
+    reduceSnapshots: undefined,
+    sortSnapshots: undefined,
+    filterSnapshots: undefined,
+    mapSnapshots: undefined,
+    mapSnapshotsAO: undefined,
 
+    // Data Manipulation
+    setData: undefined,
+    getData: undefined,
+    getAllKeys: undefined,
+    getInitialState: undefined,
+    addStore: undefined,
+    removeStore: undefined,
+    findSnapshot: undefined,
+    addDataSuccess: undefined,
+    removeItem: undefined,
+    getItem: undefined,
+    setItem: undefined,
+    addChild: undefined,
+    removeChild: undefined,
 
-  // Configuration Methods
-  config: undefined,
-  configs: [],
-  getConfig: undefined,
-  setConfig: undefined,
-  handleActions: undefined,
-  transformSnapshotConfig: undefined,
+    // Data Validation
+    validateSnapshot: undefined,
+    filterInvalidSnapshots: undefined,
+    isSnapshotStoreConfig: undefined,
 
-  // Delegate Methods
-  delegate: undefined,
-  transformedDelegate: undefined,
-  ensureDelegate: undefined,
-  handleDelegate: undefined,
-  transformDelegate: undefined,
+    // ID and Mapping
+    generateId: undefined,
+    findIndex: undefined,
+    splice: undefined,
+    getDataStoreMethods: (): Promise<Map<string, DataStore<Data, Data>>> => {},
+    mapSnapshot: undefined,
+    determinePrefix: undefined,
 
-  // Event Methods
-  events: [],
-  notify: undefined,
-  notifySuccess: undefined,
-  notifyFailure: undefined,
+    // Subscriber Transformation
+    transformSubscriber: undefined,
+    isSnapshotStoreConfig: undefined,
 
-  // Snapshot Comparison
-  compareSnapshotState: undefined,
-  deepCompare: undefined,
-  shallowCompare: undefined,
+    // State Management
+    getState: undefined,
+    setState: undefined,
+    initializedState: undefined,
 
-  // Snapshot Management
-  clearSnapshotSuccess: undefined,
-  clearSnapshotFailure: undefined,
-  createSnapshotSuccess: undefined,
-  createSnapshotFailure: undefined,
-  takeSnapshotsSuccess: undefined,
-  flatMap: undefined,
-  setSnapshot: undefined,
-  setSnapshotData: undefined,
-  setSnapshots: undefined,
-  clearSnapshot: undefined,
-  mergeSnapshots: undefined,
-  reduceSnapshots: undefined,
-  sortSnapshots: undefined,
-  filterSnapshots: undefined,
-  mapSnapshots: undefined,
-  mapSnapshotsAO: undefined,
+    // Encryption and Compression
+    compress: undefined,
+    auditRecords: undefined,
+    encrypt: undefined,
+    decrypt: undefined,
 
-  // Data Manipulation
-  setData: undefined,
-  getData: undefined,
-  getAllKeys: undefined,
-  getInitialState: undefined,
-  addStore: undefined,
-  removeStore: undefined,
-  findSnapshot: undefined,
-  addDataSuccess: undefined,
-  removeItem: undefined,
-  getItem: undefined,
-  setItem: undefined,
-  addChild: undefined,
-  removeChild: undefined,
+    // Snapshot Timing
+    getTimestamp: undefined,
+    isExpired: undefined,
+    createdAt: undefined,
 
-  // Data Validation
-  validateSnapshot: undefined,
-  filterInvalidSnapshots: undefined,
-  isSnapshotStoreConfig: undefined,
+    // Symbol Iterator (for iteration purposes)
+    [Symbol.iterator]: undefined,
 
-  // ID and Mapping
-  generateId: undefined,
-  findIndex: undefined,
-  splice: undefined,
-  getDataStoreMethods: undefined,
-  mapSnapshot: undefined,
-  determinePrefix: undefined,
-
-  // Subscriber Transformation
-  transformSubscriber: undefined,
-  isSnapshotStoreConfig: undefined,
-  
-  // State Management
-  getState: undefined,
-  setState: undefined,
-  initializedState: undefined,
-
-  // Encryption and Compression
-  compress: undefined,
-  auditRecords: undefined,
-  encrypt: undefined,
-  decrypt: undefined,
-
-  // Snapshot Timing
-  getTimestamp: undefined,
-  isExpired: undefined,
-  createdAt: undefined,
-
-  // Symbol Iterator (for iteration purposes)
-  [Symbol.iterator]: undefined,
-   
     operation: {
       operationType: SnapshotOperationType.CreateSnapshot,
     },
@@ -508,90 +242,105 @@ const dataStoreMethods: DataStore<T, K> = {
       brandMessage: "This is a branded message for the category."
     },
     message: "default message",
-   
+
     timestamp: "",
     eventRecords: {},
     type: "",
     subscribers: [],
-    store: snapshotStore,
+    store: (await useSnapshotManager(storeId)).snapshotStore,
     stores: [],
     snapshots: [],
-    snapshotConfig: "",
-   
+    snapshotConfig: [],
+
     meta: "",
-    snapshotMethods: "",
+    snapshotMethods: [],
     getSnapshotsBySubscriber: "",
     getSnapshotsBySubscriberSuccess: "",
-   
+
     getSnapshotsByTopic: "",
     getSnapshotsByTopicSuccess: "",
     getSnapshotsByCategory: "",
     getSnapshotsByCategorySuccess: "",
-   
+
     getSnapshotsByKey: "",
     getSnapshotsByKeySuccess: "",
     getSnapshotsByPriority: "",
     getSnapshotsByPrioritySuccess: "",
-    
+
     getStoreData: "",
     updateStoreData: "",
     updateDelegate: "",
     getSnapshotContainer: "",
-   
+
     getSnapshotVersions: "",
     createSnapshot: "",
     criteria: "",
     defaultSubscribeToSnapshots: "",
-   
-    getDataStoreMap: "",
+
+    getDataStoreMap: (): Promise<Map<string, DataStore<Data, Data>>> => {},
     addSnapshotItem: "",
     addNestedStore: "",
-    emit: "",
-    
-    removeChild: "",
+    emit: (
+      event: string,
+      snapshot: Snapshot<T, Meta, K>,
+      snapshotId: string,
+      subscribers: SubscriberCollection<T, Meta, K>,
+      type: string,
+      snapshotStore: SnapshotStore<T, Meta, K>,
+      dataItems: RealtimeDataItem[],
+      criteria: SnapshotWithCriteria<T, Meta, K>,
+      category: Category
+    ) => { },
+
+    removeChild: (
+      childId: string, 
+      parentId: string, 
+      parentSnapshot: Snapshot<Data, Meta, Data>,
+      childSnapshot: Snapshot<Data, Meta, Data>
+    ) => { },
     getChildren: "",
     hasChildren: "",
     isDescendantOf: "",
-   
+
     getInitialState: "",
     getConfigOption: "",
     getTimestamp: "",
     getStores: "",
-   
+
     getData: "",
     addStore: "",
     removeStore: "",
     createSnapshots: "",
-    
+
     onSnapshot: "",
     restoreSnapshot: "",
-    snapshotStoreConfig: "",
+    snapshotStoreConfig: [],
     config: "",
-   
+
     dataStore: "",
     mapDataStore: "",
     snapshotStores: "",
-   
+
     initialState: "",
     snapshotItems: "",
     nestedStores: "",
     snapshotIds: "",
-    
+
     dataStoreMethods: "",
     delegate: "",
     getConfig: "",
     setConfig: "",
-    
+
     ensureDelegate: "",
     getSnapshotItems: "",
     handleDelegate: "",
     notifySuccess: "",
-   
+
     notifyFailure: "",
     findSnapshotStoreById: "",
     defaultSaveSnapshotStore: "",
     saveSnapshotStore: "",
-    
+
     findIndex: "",
     splice: "",
     events: "",
@@ -600,181 +349,184 @@ const dataStoreMethods: DataStore<T, K> = {
     value: "",
     todoSnapshotId: "",
     snapshotStore: "",
-   
+
     dataItems: "",
     newData: "",
-    storeId: "",
+    storeId: 0,
     defaultCreateSnapshotStores: "",
-    
+
     createSnapshotStores: "",
     subscribeToSnapshots: "",
     subscribeToSnapshot: "",
     defaultOnSnapshots: "",
-   
+
     onSnapshots: "",
     transformSubscriber: "",
     isSnapshotStoreConfig: "",
     transformDelegate: "",
-    
+
     getSaveSnapshotStore: "",
     getSaveSnapshotStores: "",
     initializedState: "",
     transformedDelegate: "",
-   
+
     transformedSubscriber: "",
     getSnapshotIds: "",
     getNestedStores: "",
     getFindSnapshotStoreById: "",
-    
+
     getAllKeys: "",
     mapSnapshot: "",
     getAllItems: "",
     addData: "",
-   
+
     addDataStatus: "",
     removeData: "",
     updateData: "",
     updateDataTitle: "",
-   
+
     updateDataDescription: "",
     updateDataStatus: "",
     addDataSuccess: "",
     getDataVersions: "",
-   
+
     updateDataVersions: "",
     getBackendVersion: "",
     getFrontendVersion: "",
     fetchData: "",
-   
+
     defaultSubscribeToSnapshot: "",
     handleSubscribeToSnapshot: "",
     snapshot: "",
     removeItem: "",
-   
+
     getSnapshot: "",
     getSnapshotById: "",
     getSnapshotSuccess: "",
     getSnapshotId: "",
-   
+
     getSnapshotArray: "",
     getItem: "",
     setItem: "",
     addSnapshotFailure: "",
-   
+
     addSnapshotSuccess: "",
     getParentId: "",
     getChildIds: "",
     addChild: "",
-    
+
     compareSnapshotState: "",
     deepCompare: "",
     shallowCompare: "",
     getDataStoreMethods: "",
-   
+
     getDelegate: "",
     determineCategory: "",
     determineSnapshotStoreCategory: "",
     determinePrefix: "",
-   
+
     updateSnapshot: "",
     updateSnapshotSuccess: "",
     updateSnapshotFailure: "",
     removeSnapshot: "",
-   
+
     clearSnapshots: "",
     addSnapshot: "",
     createInitSnapshot: "",
     createSnapshotSuccess: "",
-   
+
     clearSnapshotSuccess: "",
     clearSnapshotFailure: "",
     createSnapshotFailure: "",
     setSnapshotSuccess: "",
-   
+
     setSnapshotFailure: "",
     updateSnapshots: "",
     updateSnapshotsSuccess: "",
     updateSnapshotsFailure: "",
-   
+
     initSnapshot: "",
     takeSnapshot: "",
     takeSnapshotSuccess: "",
     takeSnapshotsSuccess: "",
-    
+
     configureSnapshotStore: "",
     updateSnapshotStore: "",
     flatMap: "",
     setData: "",
-   
+
     getState: "",
     setState: "",
     validateSnapshot: "",
     handleSnapshot: "",
-   
+
     handleActions: "",
     setSnapshot: "",
     transformSnapshotConfig: "",
     setSnapshotData: "",
-   
+
     filterInvalidSnapshots: "",
     setSnapshots: "",
     clearSnapshot: "",
     mergeSnapshots: "",
-    
+
     reduceSnapshots: "",
     sortSnapshots: "",
     filterSnapshots: "",
     mapSnapshotsAO: "",
-    
+
     mapSnapshots: "",
     findSnapshot: "",
     getSubscribers: "",
     notify: "",
-   
+
     notifySubscribers: "",
     subscribe: "",
     unsubscribe: "",
     fetchSnapshot: "",
-    
+
     fetchSnapshotSuccess: "",
     fetchSnapshotFailure: "",
     getSnapshots: "",
     getAllSnapshots: "",
-   
+
     getSnapshotStoreData: "",
     generateId: "",
     batchFetchSnapshots: "",
     batchTakeSnapshotsRequest: "",
-   
+
     batchUpdateSnapshotsRequest: "",
     batchFetchSnapshotsSuccess: "",
     batchFetchSnapshotsFailure: "",
     batchUpdateSnapshotsSuccess: "",
-   
+
     batchUpdateSnapshotsFailure: "",
     batchTakeSnapshot: "",
     handleSnapshotSuccess: "",
     isExpired: "",
-    
+
     compress: "",
     auditRecords: "",
     encrypt: "",
     decrypt: "",
-    
+
     createdAt: "",
     getSnapshotsByTopic: "",
     name: "",
     schema: "",
-   
+
     addSnapshotToStore: "",
     getDataStore: "",
-   
-    [Symbol.iterator],
+
+    [Symbol.iterator]: "",
     // snapshotStore, snapshotContainers, snapshotContainersMap,
-    
+
     // isAncestorOf, getDescendants, getAncestors, getRoot, getLeafs,
-    
-    getSnapshotsByDate:"", getSnapshotsByDateSuccess:"", getSnapshotsByOperation:"", getSnapshotsByOperationSuccess:"",
+
+    getSnapshotsByDate: "",
+    getSnapshotsByDateSuccess: "",
+    getSnapshotsByOperation: "",
+    getSnapshotsByOperationSuccess: "",
     additionalInfo: "",
     createdDate: "",
     modifiedDate: "",
@@ -819,23 +571,29 @@ const dataStoreMethods: DataStore<T, K> = {
     includeType: "",
     includeTitle: [],
 
-
-
-
-
-
-
-
-
+    options, structuredMetadata, get, maxAge,
+    expirationDate, initializeWithData, hasSnapshots, getEventsAsRecord,
+    getStore, dataStores, getSnapshotStores, getItems,
+    initializeDefaultConfigs, _saveSnapshotStores, consolidateMetadata, _saveSnapshotStore,
+    defaultSaveSnapshotStores, safeCastSnapshotStore, getFirstDelegate, getInitialDelegate,
+    transformInitialState, transformSnapshot, transformMappedSnapshotData, transformSnapshotStore,
+    transformSnapshotMethod, getName, getVersion, getSchema,
+    getSnapshotStoreConfig, defaultConfigs, items, payload,
+    callback, storeProps, endpointCategory, getMetadata,
+    getProjectMetadata, getStructuredMetadata, find, isCompatibleSnapshot,
+    getTransformedSnapshot, getSavedSnapshotStore, getConfigs, getSavedSnapshotStores,
+    getTransformedInitialState, getPayload, getCallback, getStoreProps,
+    getEndpointCategory, setPayload, setCallback, setStoreProps,
+    setEndpointCategory, addDebugInfo, storeTempData, getTempData,
   }),
-  getItem: (key: string): Promise<Snapshot<any, Data> | undefined> => {
+  getItem: (key: T): Promise<Snapshot<any, Meta, Data> | undefined> => {
     return new Promise((resolve, reject) => {
       if (dataStoreMethods.storage?.length) {
         for (const store of dataStoreMethods.storage) {
           if (store.getItem) {
             const item = store.getItem(key);
             if (item) {
-              item.then((resolvedItem: SnapshotItem<any, any>
+              item.then((resolvedItem: SnapshotItem<any, any, Meta>
 
               ) => {
                 if (resolvedItem) {
@@ -873,16 +631,17 @@ const dataStoreMethods: DataStore<T, K> = {
     storeId: number,
     snapshotId: string,
     category: symbol | string | Category | undefined,
-    snapshot: Snapshot<T, K>,
+    categoryProperties: CategoryProperties | undefined,
+    snapshot: Snapshot<SnapshotUnion<BaseData, Meta>, K>,
     timestamp: string | number | Date | undefined,
     type: string,
     event: Event,
     id: number,
-    snapshotStore: SnapshotStore<T, K>,
+    snapshotStore: SnapshotStore<T, Meta, K>,
     data: T
   ): Promise<string[] | undefined> => {
     const keys: string[] = [];
-  
+
     if (dataStoreMethods.storage?.length) {
       for (const store of dataStoreMethods.storage) {
         // Example usage of parameters, adjust as necessary
@@ -914,12 +673,12 @@ const dataStoreMethods: DataStore<T, K> = {
     snapshotId: string,
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
-    snapshot: Snapshot<T, K>,
+    snapshot: Snapshot<T, Meta, K>,
     timestamp: string | number | Date | undefined,
     type: string,
     event: Event,
     id: number,
-    snapshotStore: SnapshotStore<T, K>,
+    snapshotStore: SnapshotStore<T, Meta, K>,
     data: T
   ): Promise<Snapshot<Data, any>[]> {
     try {
@@ -934,7 +693,7 @@ const dataStoreMethods: DataStore<T, K> = {
           return item;
         })
       );
-  
+
       const filteredItems = items.filter(
         (item): item is Data => item !== undefined
       );
@@ -1113,11 +872,11 @@ const dataStoreMethods: DataStore<T, K> = {
             data: item,
             isCore: true, // Adjust according to your Snapshot<Data, any> requirements
             initialConfig: {},
-            removeSubscriber: () => {},
-            onInitialize: () => {},
+            removeSubscriber: () => { },
+            onInitialize: () => { },
             // Add other required properties and methods for Snapshot<Data, any>
-          
-      }));
+
+          }));
     } catch (error) {
       console.error('Error fetching all items:', error);
       throw error;
@@ -1147,7 +906,7 @@ const dataStoreMethods: DataStore<T, K> = {
     subscribers: [],
     eventIds: []
   },
-  snapshotStoreConfig: (config: SnapshotStoreConfig<SnapshotUnion<Data>, any>) => {
+  snapshotStoreConfig: (config: SnapshotStoreConfig<SnapshotUnion<Data, Meta>, any>) => {
     return {
       snapshotStoreConfig: config
     };
@@ -1162,7 +921,7 @@ const dataStoreMethods: DataStore<T, K> = {
   },
 
   defaultSubscribeToSnapshots: (
-    
+
     callback: (snapshot: Snapshot<Data, any>) => void
   ) => {
     callback(item);
@@ -1178,169 +937,169 @@ const dataStoreMethods: DataStore<T, K> = {
     return snapshot;
   },
 
-  meta: { },
-  
-getSnapshotStoreData: function (
-  id: number // Changed from string to number
-): Promise<SnapshotStore<Data, BaseData>| undefined> {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const snapshotStore = await useSnapshotStore(addToSnapshotList)
+  meta: {},
 
-      if (!snapshotStore || !snapshotStore.state) {
-        return reject(new Error("SnapshotStore or its state is null"));
+  getSnapshotStoreData: function (
+    id: number // Changed from string to number
+  ): Promise<SnapshotStore<Data, Meta, BaseData> | undefined> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const snapshotStore = await useSnapshotStore(addToSnapshotList)
+
+        if (!snapshotStore || !snapshotStore.state) {
+          return reject(new Error("SnapshotStore or its state is null"));
+        }
+
+        const snapshot = snapshotStore.getSnapshot(id.toString()); // Convert number to string if necessary
+
+        if (snapshot) {
+          resolve({
+            category: snapshot.category,
+            timestamp: snapshot.timestamp,
+            id: snapshot.id,
+            snapshot,
+            snapshotStore,
+            data: snapshot.data,
+          });
+        } else {
+          reject(new Error(`Snapshot with id ${id} not found`));
+        }
+      } catch (error) {
+        reject(new Error(`An error occurred while getting the snapshot: ${error.message}`));
       }
+    });
+  },
 
-      const snapshot = snapshotStore.getSnapshot(id.toString()); // Convert number to string if necessary
-
-      if (snapshot) {
-        resolve({
-          category: snapshot.category,
-          timestamp: snapshot.timestamp,
-          id: snapshot.id,
-          snapshot,
-          snapshotStore,
-          data: snapshot.data,
-        });
-      } else {
-        reject(new Error(`Snapshot with id ${id} not found`));
-      }
-    } catch (error) {
-      reject(new Error(`An error occurred while getting the snapshot: ${error.message}`));
-    }
-  });
-},
-
-getStoreData: function (id: number): Promise<SnapshotStore<Data, any>[]> {
-  throw new Error("Function not implemented.");
-},
-getDelegate: function (context: {
-  useSimulatedDataSource: boolean;
-  simulatedDataSource: SnapshotStoreConfig<SnapshotWithCriteria<T, K>, K>[];
-}): Promise<SnapshotStoreConfig<SnapshotUnion<Data>, any>[]> {
-  throw new Error("Function not implemented.");
-},
-updateDelegate: function (config: SnapshotStoreConfig<Data, any>[]): Promise<SnapshotStoreConfig<Data, any>[]> {
-  throw new Error("Function not implemented.");
-},
-getSnapshot: function (
-  snapshot: (id: string | number) =>
-    | Promise<{
-      snapshotId: number;
-        snapshotData: SnapshotDataType<T, K>;
+  getStoreData: function (id: number): Promise<SnapshotStore<Data, any>[]> {
+    throw new Error("Function not implemented.");
+  },
+  getDelegate: function (context: {
+    useSimulatedDataSource: boolean;
+    simulatedDataSource: SnapshotStoreConfig<SnapshotWithCriteria<T, Meta, K>, K>[];
+  }): Promise<SnapshotStoreConfig<SnapshotUnion<Data, Meta>, any>[]> {
+    throw new Error("Function not implemented.");
+  },
+  updateDelegate: function (config: SnapshotStoreConfig<Data, any>[]): Promise<SnapshotStoreConfig<Data, any>[]> {
+    throw new Error("Function not implemented.");
+  },
+  getSnapshot: function (
+    snapshot: (id: string | number) =>
+      | Promise<{
+        snapshotId: number;
+        snapshotData: SnapshotData<T, Meta, K>;
         category: Category | undefined;
         categoryProperties: CategoryProperties | undefined;
-        dataStoreMethods: DataStore<T, K> | null;
+        dataStoreMethods: DataStore<T, Meta, K> | null;
         timestamp: string | number | Date | undefined;
         id: string | number | undefined;
-        snapshot: Snapshot<T, K>;
-        snapshotStore: SnapshotStore<T, K>;
+        snapshot: Snapshot<T, Meta, K>;
+        snapshotStore: SnapshotStore<T, Meta, K>;
         data: T;
       }>
-    | undefined
-): Promise<Snapshot<Data, any> | undefined> {
-  return this.getSnapshot(category, timestamp, id, snapshot, snapshotStore, data);
-},
+      | undefined
+  ): Promise<Snapshot<Data, any> | undefined> {
+    return this.getSnapshot(category, timestamp, id, snapshot, snapshotStore, data);
+  },
 
-getSnapshotWithCriteria: function (
-  category: any,
-  timestamp: any,
-  id: number,
-  snapshot: Snapshot<BaseData, any>,
-  snapshotStore: SnapshotStore<Data, any>,
-  data: Data
-): Promise<SnapshotWithCriteria<T, K> | undefined> {
-  return new Promise((resolve, reject) => {
-    resolve(undefined);
-  })
-},
+  getSnapshotWithCriteria: function (
+    category: symbol | string | Category | undefined,
+    timestamp: any,
+    id: number,
+    snapshot: Snapshot<BaseData, any>,
+    snapshotStore: SnapshotStore<Data, any>,
+    data: Data
+  ): Promise<SnapshotWithCriteria<T, Meta, K> | undefined> {
+    return new Promise((resolve, reject) => {
+      resolve(undefined);
+    })
+  },
 
-getSnapshotVersions: function (
-  category: any,
-  timestamp: any,
-  id: number,
-  snapshot: Snapshot<BaseData, any>,
-  snapshotStore: SnapshotStore<Data, any>,
-  data: Data
-): Promise<Snapshot<Data, any>[] | undefined> {
-  return new Promise((resolve, reject) => {
-    resolve(undefined);
-  })
-},
-getSnapshotWithCriteriaVersions: function (
-  category: any,
-  timestamp: any,
-  id: number,
-  snapshot: Snapshot<BaseData, any>,
-  snapshotStore: SnapshotStore<Data, any>,
-  data: Data
-): Promise<SnapshotWithCriteria<T, K>[] | undefined> {
-  return new Promise((resolve, reject) => {
-    resolve(undefined);
-  })
-},
+  getSnapshotVersions: function (
+    category: symbol | string | Category | undefined,
+    timestamp: any,
+    id: number,
+    snapshot: Snapshot<BaseData, any>,
+    snapshotStore: SnapshotStore<Data, any>,
+    data: Data
+  ): Promise<Snapshot<Data, any>[] | undefined> {
+    return new Promise((resolve, reject) => {
+      resolve(undefined);
+    })
+  },
+  getSnapshotWithCriteriaVersions: function (
+    category: symbol | string | Category | undefined,
+    timestamp: any,
+    id: number,
+    snapshot: Snapshot<BaseData, any>,
+    snapshotStore: SnapshotStore<Data, any>,
+    data: Data
+  ): Promise<SnapshotWithCriteria<T, Meta, K>[] | undefined> {
+    return new Promise((resolve, reject) => {
+      resolve(undefined);
+    })
+  },
 
-mapSnapshot: function (
-  storeId: number,
-  snapshotStore: SnapshotStore<T, K>,
-  snapshotContainer: SnapshotContainer<T, K>,
-  snapshotId: string,
-  criteria: CriteriaType,
-  snapshot: Snapshot<T, K>,
-  type: string,
-  event: Event
-  //data: Data
-): Promise<Snapshot<Data, any> | undefined> {
-  return new Promise((resolve, reject) => {
-    resolve(undefined);
-  })
-},
+  mapSnapshot: function (
+    storeId: number,
+    snapshotStore: SnapshotStore<T, Meta, K>,
+    snapshotContainer: SnapshotContainer<T, Meta, K>,
+    snapshotId: string,
+    criteria: CriteriaType,
+    snapshot: Snapshot<T, Meta, K>,
+    type: string,
+    event: Event
+    //data: Data
+  ): Promise<Snapshot<Data, any> | undefined> {
+    return new Promise((resolve, reject) => {
+      resolve(undefined);
+    })
+  },
 
-mapSnapshots: (
-  storeIds: number[],
-  snapshotId: string,
-  category: symbol | string | Category | undefined,
-  snapshot: Snapshot<T, K>,
-  timestamp: string | number | Date | undefined,
-  type: string,
-  event: Event,
-  id: number,
-  snapshotStore: SnapshotStore<T, K>,
-  data: T,
-  callback: (
+  mapSnapshots: (
     storeIds: number[],
     snapshotId: string,
     category: symbol | string | Category | undefined,
-    snapshot: Snapshot<T, K>,
+    snapshot: Snapshot<T, Meta, K>,
     timestamp: string | number | Date | undefined,
     type: string,
     event: Event,
     id: number,
-    snapshotStore: SnapshotStore<T, K>,
-    data: T
-  ) => SnapshotsObject<T>
-): SnapshotsObject<T> => {
-  try {
-    // Call the callback function with the provided parameters
-    const result = callback(
-      storeIds,
-      snapshotId,
-      category,
-      snapshot,
-      timestamp,
-      type,
-      event,
-      id,
-      snapshotStore,
-      data
-    );
+    snapshotStore: SnapshotStore<T, Meta, K>,
+    data: T,
+    callback: (
+      storeIds: number[],
+      snapshotId: string,
+      category: symbol | string | Category | undefined,
+      snapshot: Snapshot<T, Meta, K>,
+      timestamp: string | number | Date | undefined,
+      type: string,
+      event: Event,
+      id: number,
+      snapshotStore: SnapshotStore<T, Meta, K>,
+      data: T
+    ) => SnapshotsObject<T, Meta, K>
+  ): SnapshotsObject<T, Meta, K> => {
+    try {
+      // Call the callback function with the provided parameters
+      const result = callback(
+        storeIds,
+        snapshotId,
+        category,
+        snapshot,
+        timestamp,
+        type,
+        event,
+        id,
+        snapshotStore,
+        data
+      );
 
-    // Return the result from the callback function
-    return result;
-  } catch (error: any) {
-    throw new Error(`Error processing snapshots: ${error.message}`);
-  }
-},
+      // Return the result from the callback function
+      return result;
+    } catch (error: any) {
+      throw new Error(`Error processing snapshots: ${error.message}`);
+    }
+  },
 
   updateStoreData: (
     data: Data,
@@ -1351,63 +1110,63 @@ mapSnapshots: (
   },
 
 
-    getSnapshotContainer: (
-      category: string, // Adjusted to more specific type
-      timestamp: string, // Adjusted to more specific type
-      id: number,
-      snapshot: Snapshot<BaseData, any>,
-      snapshotStore: SnapshotStore<Data, any>,
-      snapshotData: SnapshotStore<Data, Data>,
-      data: Data,
-      snapshotsArray: SnapshotsArray<T>,
-      snapshotsObject: SnapshotsObject<T>
-    ): Promise<SnapshotContainer<Data, any> | undefined> => {
-      return new Promise((resolve, reject) => {
-        // Implementation logic to fetch or construct a SnapshotContainer
-        const container: SnapshotContainer<Data, any> = {
-          id: id.toString(), // Ensure id is a string
-          category,
-          timestamp,
-          snapshot,
-          snapshotData,
-          snapshotStore,
-          data,
-          snapshotsArray,
-          snapshotsObject
-        };
-        resolve(container);
-      });
-    },
+  getSnapshotContainer: (
+    category: string, // Adjusted to more specific type
+    timestamp: string, // Adjusted to more specific type
+    id: number,
+    snapshot: Snapshot<BaseData, any>,
+    snapshotStore: SnapshotStore<Data, any>,
+    snapshotData: SnapshotData<Data, Data>,
+    data: Data,
+    snapshotsArray: SnapshotsArray<T, Meta>,
+    snapshotsObject: SnapshotsObject<T, Meta, K>
+  ): Promise<SnapshotContainer<Data, any> | undefined> => {
+    return new Promise((resolve, reject) => {
+      // Implementation logic to fetch or construct a SnapshotContainer
+      const container: SnapshotContainer<Data, any> = {
+        id: id.toString(), // Ensure id is a string
+        category,
+        timestamp,
+        snapshot,
+        snapshotData,
+        snapshotStore,
+        data,
+        snapshotsArray,
+        snapshotsObject
+      };
+      resolve(container);
+    });
+  },
 
-      mapSnapshotStore: (
-        storeId: number,
-        snapshotId: string,
-        category: symbol | string | Category | undefined,
-        categoryProperties:  CategoryProperties | undefined,
-        snapshot: Snapshot<any, any>,
-        timestamp: string | number | Date | undefined,
-        type: string,
-        event: Event,
-        id: number,
-        snapshotStore: SnapshotStore<any, any>,
-        data: any
-      ): Promise<SnapshotContainer<any, any> | undefined> => {
-        return new Promise((resolve, reject) => {
-          // Implementation logic to fetch or construct a SnapshotContainer
-          const container: SnapshotContainer<any, any> = {
-            id: id.toString(), // Ensure id is a string
-            category,
-            timestamp,
-            snapshot,
-            snapshotData: snapshotStore,
-            snapshotStore,
-            data,
-            snapshotsArray: [],
-            snapshotsObject: {}
-          };
-          resolve(container);
-        });
-      }
+  mapSnapshotStore: (
+    storeId: number,
+    snapshotId: string,
+    category: symbol | string | Category | undefined,
+    categoryProperties: CategoryProperties | undefined,
+    snapshot: Snapshot<any, any>,
+    timestamp: string | number | Date | undefined,
+    type: string,
+    event: Event,
+    id: number,
+    snapshotStore: SnapshotStore<any, any>,
+    data: any
+  ): Promise<SnapshotContainer<any, any> | undefined> => {
+    return new Promise((resolve, reject) => {
+      // Implementation logic to fetch or construct a SnapshotContainer
+      const container: SnapshotContainer<any, any> = {
+        id: id.toString(), // Ensure id is a string
+        category,
+        timestamp,
+        snapshot,
+        snapshotData: snapshotStore,
+        snapshotStore,
+        data,
+        snapshotsArray: [],
+        snapshotsObject: {}
+      };
+      resolve(container);
+    });
+  }
 };
 
 

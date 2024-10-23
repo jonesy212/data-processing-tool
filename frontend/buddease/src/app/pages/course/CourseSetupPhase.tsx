@@ -1,6 +1,6 @@
 import { Data } from "@/app/components/models/data/Data";
 import SnapshotStore, {
-  Snapshot,
+    Snapshot,
 } from "@/app/components/snapshots/SnapshotStore";
 import React, { useState } from "react";
 import { CourseDevelopmentPhase } from "./CourseDevelopmentPhaseManager";
@@ -8,7 +8,7 @@ import { CourseDevelopmentPhase } from "./CourseDevelopmentPhaseManager";
 interface CourseSetupPhaseProps {
   onSubmit: (data: any) => void;
   setCurrentPhase: React.Dispatch<React.SetStateAction<CourseDevelopmentPhase>>;
-  userData: SnapshotStore<Snapshot<Data>>[];
+  userData: SnapshotStore<Snapshot<Data, Meta, Data>>[];
 }
 
 const CourseSetupPhase: React.FC<CourseSetupPhaseProps> = ({

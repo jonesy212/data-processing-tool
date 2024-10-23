@@ -178,7 +178,7 @@ interface EndpointConfigurations {
     backend: EndpointConfig;
     frontend: EndpointConfig
   };
-  
+  logging: EndpointConfig;
   news: NewsEndpoints;
 
   notes: NotesEndpoints
@@ -500,6 +500,14 @@ const endpointConfigurations: EndpointConfigurations = {
     backend: { path: "/api/highlights/backend", method: "POST"},
     frontend: { path: "/api/highlights/frontend", method: "POST"},
   },
+  logging: {
+    logs: { path: `${BASE_URL}/logging`, method: "POST" },
+    logInfo: { path: `${BASE_URL}/logging/info`, method: "POST" },
+    logWarning: { path: `${BASE_URL}/logging/warning`, method: "POST" },
+    logError: { path: `${BASE_URL}/logging/error`, method: "POST" },
+    logSuccess: { path: `${BASE_URL}/logging/success`, method: "POST" },
+    logFailure: { path: `${BASE_URL}/logging/failure`, method: "POST" },
+  },
   news: {
     list: { path: "/news", method: "GET" },
     single: (newsId: number) => ({ path: `/news/${newsId}`, method: "GET" }),
@@ -713,6 +721,12 @@ const updatedEndpoints = {
     delete: generateEndpointUrl("highlights", "delete"),
   }),
 
+  logging: mergeConfigurations(endpointConfigurations.logging, {
+    logInfo: generateEndpointUrl("logging", "logInfo" ),
+    logSuccess: generateEndpointUrl("logging", "logSuccess" ),
+    logFailure: generateEndpointUrl("logging", "logFailure" ),
+  }),// Include logging in the updated endpoints
+ 
   news: mergeConfigurations(endpointConfigurations.news, {
     list: generateEndpointUrl("news", "list"),
     single: (newsId: number) => generateEndpointUrl("news", `single/${newsId}`),

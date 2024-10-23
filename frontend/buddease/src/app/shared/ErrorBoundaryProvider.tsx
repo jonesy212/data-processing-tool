@@ -1,8 +1,13 @@
-// ErrorBoundaryProvider.tsx
 import React, { createContext, ReactNode } from 'react';
 
+// Define a specific type for the error handler
+interface ErrorHandlerType {
+  logError: (error: Error) => void;
+  // Add other methods as necessary
+}
+
 interface ErrorBoundaryContextProps {
-  ErrorHandler: any; // Type for the error handling utility
+  ErrorHandler: ErrorHandlerType | null; // Use the defined type
 }
 
 export const ErrorBoundaryContext = createContext<ErrorBoundaryContextProps>({
@@ -10,7 +15,7 @@ export const ErrorBoundaryContext = createContext<ErrorBoundaryContextProps>({
 });
 
 interface ErrorBoundaryProviderProps {
-  ErrorHandler: any; // Type for the error handling utility
+  ErrorHandler: ErrorHandlerType | null; // Use the defined type
   children: ReactNode;
 }
 

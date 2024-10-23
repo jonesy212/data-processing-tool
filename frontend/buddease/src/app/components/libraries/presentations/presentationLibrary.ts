@@ -1,9 +1,10 @@
 // presentationLibrary.ts
-import { DataDetails } from '@/app/components/models/data/Data';
+import { Data, DataDetails } from '@/app/components/models/data/Data';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Presentation, Slide } from "../../documents/Presentation";
 import { NotificationType, NotificationTypeEnum } from "../../support/NotificationContext";
 import { generatePresentationJSON } from "./generatePresentationJSON";
+import { BaseMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 
 
 enum PresentationType {
@@ -15,6 +16,23 @@ enum PresentationType {
   CREATIVE = 'creative'
 }
 
+
+// Extending BaseMeta for PresentationMetadata
+interface PresentationMetadata extends BaseMetadata, UnifiedMetaDataOptions {
+  duration?: number;
+  author?: string;
+  // Additional presentation-specific metadata can be added here
+}
+
+
+// Extending BaseData for PresentationData
+interface PresentationData<T extends Data = Data> {
+  metadata: PresentationMetadata;
+  content: T;
+  slideData?: Record<string, Slide>;
+  associatedItems?: Record<string, any>;
+  customAttributes?: Record<string, any>;
+}
 
 // Function to create a new presentation
 function createPresentation(title: string, slides: Slide[]): Presentation {
@@ -41,7 +59,7 @@ function createPresentation(title: string, slides: Slide[]): Presentation {
     "created Presentation",
     "Presentation ID generated for " + presentationName,
     "presentation" as NotificationType,
-    {} as DataDetails
+    {} as DataDetails<Data, PresentationMetadata, PresentationData>
   );
 
   presentation.id = id;
@@ -51,8 +69,7 @@ function createPresentation(title: string, slides: Slide[]): Presentation {
   console.log("Created presentation JSON:", presentationJSON);
 
   return presentation;
-}
-  
+}  
 
 
   
@@ -72,19 +89,24 @@ function addSlideToPresentation(
     "created Slide",
     "Slide ID generated for " + presentationName,
     "slide" as NotificationType,
-    {} as DataDetails
+    {} as DataDetails<Data, PresentationMetadata, PresentationData>
   );
   // Create the slide object
   const slide: Slide = {
     id,
     content,
     title: "", // Add a title property with an empty string
+    slideNumber: 0,
+    media: [], // Media items like images, videos, etc.
+    notes: "",
     // Add other properties as needed
   };
   // Append the new slide to the slides array of the presentation
   presentation.slides.push(slide);
   return presentation;
 }
+
+
 // Function to remove a slide from a presentation
 function removeSlideFromPresentation(
   presentation: Presentation,
@@ -102,3 +124,4 @@ export {
   addSlideToPresentation, createPresentation, removeSlideFromPresentation
 };
 
+export type { PresentationMetadata, PresentationData }

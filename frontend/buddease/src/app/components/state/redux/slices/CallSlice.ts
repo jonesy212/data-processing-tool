@@ -120,11 +120,11 @@ export const useCallManagerSlice = createSlice({
       state.error = action.payload.error;
     },
 
-    addCall: (state, action: PayloadAction<Call>) => {
+    addCall: (state, action: PayloadAction<WritableDraft<Call>>) => {
       state.calls.push(action.payload);
     },
 
-    addCallSuccess(state, action: PayloadAction<{ call: Call }>) {
+    addCallSuccess(state, action: PayloadAction<{ call: WritableDraft<Call> }>) {
       state.calls.push(action.payload.call);
     },
 
@@ -202,7 +202,7 @@ export const useCallManagerSlice = createSlice({
       }
     },
 
-    resizeCall(state, action: PayloadAction<Call>) {
+    resizeCall(state, action: PayloadAction<WritableDraft<Call>>) {
       const index = state.calls.findIndex(
         (call) => call.id === action.payload.id
       );
@@ -211,7 +211,7 @@ export const useCallManagerSlice = createSlice({
       }
     },
 
-    dropCall(state, action: PayloadAction<Call>) {
+    dropCall(state, action: PayloadAction<WritableDraft<Call>>) {
       const index = state.calls.findIndex(
         (call) => call.id === action.payload.id
       );

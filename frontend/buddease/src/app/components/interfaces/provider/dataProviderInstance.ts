@@ -1,6 +1,7 @@
 import { } from './../../models/data/dataContracts';
 // dataProviderInstance.ts
 import {
+    BaseRecord,
     DataProvider,
 } from "@refinedev/core";
 import axiosInstance from "../../../api/axiosInstance";
@@ -47,7 +48,7 @@ const dataProvider: DataProvider = {
                 data: data.items as TData[],
                 total: data.totalCount,
             };
-        } catch (error) {
+        } catch (error: any) {
             if (error instanceof Error) {
                 throw new Error(`Error fetching list for ${params.resource}: ${error.message}`);
             }
@@ -55,15 +56,25 @@ const dataProvider: DataProvider = {
         }
     },
 
-    getMany: async <TData extends CustomBaseRecord = CustomBaseRecord>(params: GetManyParams): Promise<GetManyResponse<TData>> => {        try {
+    getMany: async <TData extends BaseRecord = BaseRecord>(params: GetManyParams): Promise<GetManyResponse<TData>> => {
+        try {
             const { resource, ids } = params;
+
+            // Filter or cast ids to be of type number[]
+            const numericIds = ids.filter((id): id is number => typeof id === 'number');
+
+            if (numericIds.length !== ids.length) {
+                throw new Error(`All IDs must be numbers for ${resource}`);
+            }
+
             const { data } = await axiosInstance.get(`${API_URL}/${resource}`, {
-                params: { ids: ids.join(',') },
+                params: { ids: numericIds.join(',') },
             });
+
             return {
-                data: data.items as TData[], // Cast to TData[]
+                data: data.items as TData[],
             };
-        } catch (error) {
+        } catch (error: any) {
             throw new Error(`Error fetching many ${params.resource}: ${error.message}`);
         }
     },
@@ -76,13 +87,13 @@ const dataProvider: DataProvider = {
                 data: data as TData, // Cast to TData
                 resource: resource,
             };
-        } catch (error) {
+        } catch (error: any) {
             throw new Error(`Error fetching ${params.resource} with ID ${params.id}: ${error.message}`);
         }
     },
 
     create: async <TData extends CustomBaseRecord = CustomBaseRecord, TVariables = {}>(
-        params: CustomCreateParams<TVariables>
+        params: CustomCreateParams<TVariables extends {} ? any : any>
     ): Promise<CreateResponse<TData>> => {
         
         try {
@@ -91,43 +102,49 @@ const dataProvider: DataProvider = {
             return {
                 data: response.data as TData, // Ensure data is cast to TData
             };
-        } catch (error) {
+        } catch (error: any) {
             throw new Error(`Error creating ${params.resource}: ${error.message}`);
         }
     },
 
-    createMany: async <TData extends CustomBaseRecord = CustomBaseRecord, TVariables extends {}[] = {}[]>(params: CustomCreateManyParams<TVariables>): Promise<CreateManyResponse<TData>> => {
+    createMany: async <TData extends CustomBaseRecord = CustomBaseRecord, TVariables extends {}[] = {}[]>(
+        params: CustomCreateManyParams<TVariables extends {} ? any : any>
+    ): Promise<CreateManyResponse<TData>> => {
         try {
             const { resource, data } = params;
             const response = await axiosInstance.post(`${API_URL}/${resource}/bulk`, data);
             return {
                 data: response.data as TData[], // Cast to TData[]
             };
-        } catch (error) {
+        } catch (error: any) {
             throw new Error(`Error creating many ${params.resource}: ${error.message}`);
         }
     },
 
-    update: async <TData extends CustomBaseRecord = CustomBaseRecord, TVariables = {}>(params: CustomUpdateParams<TVariables>): Promise<UpdateResponse<TData>> => {
+    update: async <TData extends CustomBaseRecord = CustomBaseRecord, TVariables = {}>(
+        params: CustomUpdateParams<TVariables>
+    ): Promise<UpdateResponse<TData>> => {
         try {
             const { resource, id, data } = params;
             const response = await axiosInstance.put(`${API_URL}/${resource}/${id}`, data);
             return {
                 data: response.data as TData, // Cast to TData
             };
-        } catch (error) {
+        } catch (error: any) {
             throw new Error(`Error updating ${params.resource} with ID ${params.id}: ${error.message}`);
         }
     },
 
-    updateMany: async <TData extends CustomBaseRecord = CustomBaseRecord, TVariables = {}>(params: CustomUpdateManyParams<TVariables>): Promise<UpdateManyResponse<TData>> => {
+    updateMany: async <TData extends CustomBaseRecord = CustomBaseRecord, TVariables = {}>(
+        params: CustomUpdateManyParams<TVariables>
+    ): Promise<UpdateManyResponse<TData>> => {
         try {
             const { resource, data } = params;
             const response = await axiosInstance.put(`${API_URL}/${resource}/bulk`, data);
             return {
                 data: response.data as TData[], // Cast to TData[]
             };
-        } catch (error) {
+        } catch (error: any) {
             throw new Error(`Error updating many ${params.resource}: ${error.message}`);
         }
     },
@@ -145,21 +162,23 @@ const dataProvider: DataProvider = {
                     data: params.previousData as TData, // Cast previousData to TData
                 });
             });
-        } catch (error) {
+        } catch (error: any) {
             return new Promise<DeleteOneResponse<TData>>((_, reject) => {
                 reject(new Error(`Error deleting ${params.resource} with ID ${params.id}: ${error.message}`));
             });
         }
     },
     
-    deleteMany: async <TData extends CustomBaseRecord = CustomBaseRecord, TVariables = {}>(params: DeleteManyParams<TVariables>): Promise<DeleteManyResponse<TData>> => {
+    deleteMany: async <TData extends CustomBaseRecord = CustomBaseRecord, TVariables = {}>(
+        params: DeleteManyParams<TVariables>
+    ): Promise<DeleteManyResponse<TData>> => {
         try {
             const { resource, ids } = params;
             await axiosInstance.delete(`${API_URL}/${resource}/bulk`, { data: { ids } });
             return {
                 data: params.previousData as TData[], // Cast to TData[]
             };
-        } catch (error) {
+        } catch (error: any) {
             throw new Error(`Error deleting many ${params.resource}: ${error.message}`);
         }
     },
@@ -178,7 +197,7 @@ const dataProvider: DataProvider = {
             return {
                 data: data as TData,
             };
-        } catch (error) {
+        } catch (error: any) {
             throw new Error(`Error in custom request: ${(error as Error).message}`);
         }
     },

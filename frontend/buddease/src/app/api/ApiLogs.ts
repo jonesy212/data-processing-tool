@@ -1,17 +1,17 @@
 //Apilogs.ts
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import DefaultNotificationContext, {
   NotificationTypeEnum,
 } from "@/app/components/support/NotificationContext";
 import axios, { AxiosError, AxiosResponse } from "axios";
-import dotProp from "dot-prop";
 import { observable, runInAction } from "mobx";
 import { addLog } from "../components/state/redux/slices/LogSlice";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import axiosInstance from "./axiosInstance";
 // Other imports remain unchanged
 
-const API_BASE_URL = dotProp.getProperty(endpoints, "logging");
+// #todo
+const API_BASE_URL = endpoints.logging; // Direct access to the logging endpoint
 
 const { notify } = DefaultNotificationContext;
 
@@ -63,16 +63,15 @@ export const handleApiError = (
   }
 };
 
+
 export const logsApiService = observable({
   logInfo: async (
     message: string,
     user: string | null = null
   ): Promise<AxiosResponse> => {
     try {
-      const logInfoEndpoint = dotProp.getProperty(
-        API_BASE_URL,
-        "logInfo"
-      ) as string; // Cast logInfoEndpoint as string
+      //#todo  logSuccess
+      const logInfoEndpoint = API_BASE_URL.logInfo; // Directly access logInfo
       if (!logInfoEndpoint) {
         throw new Error("Log info endpoint not found");
       }
@@ -106,7 +105,6 @@ export const logsApiService = observable({
       throw error;
     }
   },
-  
 
   logApiRequest: async (endpoint: string): Promise<void> => {
     try {
@@ -131,10 +129,8 @@ export const logsApiService = observable({
     user: string | null = null
   ): Promise<AxiosResponse> => {
     try {
-      const logSuccessEndpoint = dotProp.getProperty(
-        API_BASE_URL,
-        "logSuccess"
-      ) as string; // Cast logSuccessEndpoint as string
+      //#todo proper update 'logSuccess'
+      const logSuccessEndpoint = API_BASE_URL.logSuccess; // Directly access logSuccess
       if (!logSuccessEndpoint) {
         throw new Error("Log success endpoint not found");
       }
@@ -174,10 +170,8 @@ export const logsApiService = observable({
     user: string | null = null
   ): Promise<AxiosResponse> => {
     try {
-      const logFailureEndpoint = dotProp.getProperty(
-        API_BASE_URL,
-        "logFailure"
-      ) as string; // Cast logFailureEndpoint as string
+      //#todo proper update 'logFailure'
+      const logFailureEndpoint = API_BASE_URL.logFailure; // Directly access logFailure
       if (!logFailureEndpoint) {
         throw new Error("Log failure endpoint not found");
       }

@@ -1,21 +1,23 @@
 // CommonDetails.tsx
 import React from "react";
 
-import ProjectMetadata, { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { ProjectMetadata, StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { CacheData } from "@/app/generators/GenerateCache";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { MeetingData } from "../calendar/MeetingData";
 import { ScheduledData } from "../calendar/ScheduledData";
+import { Category } from "../components/libraries/categories/generateCategoryProperties";
 import { CryptoData } from "../crypto/parseData";
 import { ModifiedDate } from "../documents/DocType";
 import { DocumentData } from "../documents/DocumentBuilder";
 import { DocumentTypeEnum } from "../documents/DocumentGenerator";
-import { DocumentOptions } from "../documents/DocumentOptions";
 import { FakeData } from "../intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
 import { ProjectData } from "../projects/Project";
+import { TagsRecord } from "../snapshots";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { AllStatus, DetailsItem } from "../state/stores/DetailsListStore";
 import { NotificationType } from "../support/NotificationContext";
@@ -23,6 +25,7 @@ import { Todo } from "../todos/Todo";
 import { TradeData } from "../trading/TradeData";
 import { AllTypes } from "../typings/PropTypes";
 import { UserData } from "../users/User";
+import AccessHistory from "../versions/AccessHistory";
 import { CommunityData } from "./CommunityData";
 import { LogData } from "./LogData";
 import { BaseData, Data, DataDetails } from "./data/Data";
@@ -32,14 +35,9 @@ import { RealtimeDataComponent } from "./realtime/RealtimeData";
 import { Task } from "./tasks/Task";
 import TeamData from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
-import { Tag } from "./tracker/Tag";
-import AccessHistory from "../versions/AccessHistory";
-import { TagsRecord } from "../snapshots";
-import { CombinedEvents } from "../hooks/useSnapshotManager";
-import { StatusType } from "./data/StatusType";
 
 // Define a generic type for data
-interface CommonData<T extends Data> {
+  interface CommonData<T extends Data, Meta extends UnifiedMetaDataOptions = UnifiedMetaDataOptions, K extends Data = T> {
   _id?: string;
   id?: string | number | undefined;
   title?: string;
@@ -61,7 +59,7 @@ interface CommonData<T extends Data> {
   status?: AllStatus;
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[];
-  metadata?: StructuredMetadata | ProjectMetadata;
+  metadata?: StructuredMetadata<T, Meta, K> | undefined;
   details?: DetailsItem<T>
   // data?: T extends CommonData<infer R> ? R : never;
   projectId?: string;
@@ -82,8 +80,8 @@ interface CommonData<T extends Data> {
     // ...
   };
   folderPath?: string;
-  previousMetadata?: StructuredMetadata;
-  currentMetadata?: StructuredMetadata;
+  previousMetadata?: StructuredMetadata<T, Meta, K>;
+  currentMetadata?: StructuredMetadata<T, Meta, K>;
   accessHistory?: AccessHistory[];
   folders?: FolderData[];
   lastModifiedDate?: ModifiedDate;
@@ -98,27 +96,39 @@ interface CommonData<T extends Data> {
   documentBackup?: string;
   date?: Date | undefined;
   completed?: boolean;
-  then?: <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
+  then?: <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(callback: (newData: Snapshot<BaseData, Meta, K>) => void) => Snapshot<Data, Meta, K> | undefined;
+  // then?: <T extends Data, Meta extends UnifiedMetaDataOptions, K extends keyof BaseData = keyof BaseData>(callback: (newData: Snapshot<BaseData, Meta, K>) => void) => Snapshot<Data, Meta, K> | undefined;
 
+
+  // Moved from VideoCommonData
+  createdBy?: string; // Moved to common data
+  updatedAt?: Date; // Moved to common data
+  viewsCount?: number; // Could be generalized if relevant across content types
+  likesCount?: number; // Could be generalized if relevant across content types
+  commentsCount?: number; // Could be generalized if relevant across content types
+  category?: symbol | string | Category | undefined,
+  isPrivate?: boolean; // General property
+  isUnlisted?: boolean; // General property
+  isLicensedContent?: boolean; // General property
+  isFamilyFriendly?: boolean; // General property
+  isEmbeddable?: boolean; // General property
+  isDownloadable?: boolean; // General property
 }
-
 interface Customizations<T> {
   [key: string]: (value: any) => React.ReactNode;
 }
-
-
-
+ 
 export type DataType = NotificationType | string | DocumentTypeEnum | AnimationTypeEnum;
 export type TaskType = "addTask" | "removeTask" | "bug" | "feature" | "epic" | "story" | "task";
 
 // Define a union type for the supported data types
-type SupportedData<T extends Data> = UserData &
+type SupportedData<T extends Data, Meta extends UnifiedMetaDataOptions> = UserData &
   Data &
   Todo &
   Task &
   // TaskType & 
   CommunityData &
-  DocumentData &
+  DocumentData<T, Meta, K> &
   ProjectData &
   TeamData &
   CacheData &
@@ -126,7 +136,7 @@ type SupportedData<T extends Data> = UserData &
   MeetingData &
   CryptoData &
   LogData &
-  DataDetails &
+  DataDetails<T, Meta, K> &
   DataType &
   TradeData &
   CommonData<T> &

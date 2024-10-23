@@ -576,11 +576,11 @@ var updateSnapshotsSuccess = function (snapshots) {
                 case 1:
                     snapshotData = _g.sent();
                     if (!snapshotData.data.timestamp) return [3 /*break*/, 3];
-                    // Assuming snapshotData.data is of type Snapshot<Data>
+                    // Assuming snapshotData.data is of type Snapshot<Data, Meta, Data>
                     _b = (_a = snapshotStoreInstance).updateSnapshot;
                     return [4 /*yield*/, snapshotData.data];
                 case 2:
-                    // Assuming snapshotData.data is of type Snapshot<Data>
+                    // Assuming snapshotData.data is of type Snapshot<Data, Meta, Data>
                     _b.apply(_a, [_g.sent()]);
                     return [3 /*break*/, 5];
                 case 3:
@@ -592,11 +592,11 @@ var updateSnapshotsSuccess = function (snapshots) {
                     _d.apply(_c, [_g.sent()]);
                     _g.label = 5;
                 case 5:
-                    // Check if snapshotData.data is of type Snapshot<Data>
+                    // Check if snapshotData.data is of type Snapshot<Data, Meta, Data>
                     _f = (_e = snapshotStoreInstance).updateSnapshot;
                     return [4 /*yield*/, snapshotData.data];
                 case 6:
-                    // Check if snapshotData.data is of type Snapshot<Data>
+                    // Check if snapshotData.data is of type Snapshot<Data, Meta, Data>
                     _f.apply(_e, [_g.sent()]);
                     return [2 /*return*/];
             }

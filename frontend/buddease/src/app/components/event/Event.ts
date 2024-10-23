@@ -1,9 +1,8 @@
 import { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
 import { CombinedEvents } from "../hooks/useSnapshotManager";
-import { Snapshot, Snapshots } from "../snapshots/LocalStorageSnapshotStore";
-import { T, K } from "../snapshots/SnapshotConfig";
-import { Subscriber } from "../users/Subscriber";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { triggerEvent, unsubscribe } from "../utils/applicationUtils";
+import { Meta, T, K } from "@/app/components/models/data/dataStoreMethods";
 
 
 
@@ -13,10 +12,10 @@ interface CalendarSnapshotEvents {
 
 
 // Example implementation of CombinedEvents
-const combinedEvents: CombinedEvents<T, K> = {
+const combinedEvents: CombinedEvents<T, Meta, K> = {
   eventRecords: {},
   callbacks: {
-      default: [(snapshot: Snapshot<T, K>) => {
+      default: [(snapshot: Snapshot<T, Meta, K>) => {
           // Handle snapshot data
           console.log(snapshot);
       }]
@@ -24,7 +23,7 @@ const combinedEvents: CombinedEvents<T, K> = {
   subscribers: [],
   eventIds: [],
     subscribe: (event: string,
-        callback: (snapshot: Snapshot<T, T>
+        callback: (snapshot: Snapshot<T, Meta, T>
 
         ) => void) => {
       // Add subscriber to the list
@@ -33,5 +32,6 @@ const combinedEvents: CombinedEvents<T, K> = {
   trigger: triggerEvent,
 };  
   
-export type { CalendarSnapshotEvents }
 export { combinedEvents };
+export type { CalendarSnapshotEvents };
+

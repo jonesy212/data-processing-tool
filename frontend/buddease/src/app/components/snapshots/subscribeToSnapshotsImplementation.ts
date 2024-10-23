@@ -1,5 +1,6 @@
+import { Data } from '@/app/components/models/data/Data';
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 // subscribeToSnapshotsImplementation.ts
-import { BaseData } from "../models/data/Data";
 import { Subscriber } from "../users/Subscriber";
 import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from "./LocalStorageSnapshotStore";
 import SnapshotStore from "./SnapshotStore";
@@ -43,17 +44,17 @@ const snapshotSubscribers: Map<string, Callback<Snapshot<any, any>>[]> =
     return wrappedCallback;
   };
   
-  const subscribeToSnapshotsImpl = <T extends BaseData, K extends BaseData>(
+  const subscribeToSnapshotsImpl =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
     snapshotId: string,
-    snapshotCallback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null,
-    snapshot: SnapshotsArray<T>
+    snapshotCallback: (snapshots: Snapshots<T, Meta>) => Subscriber<T, Meta, K> | null,
+    snapshot: SnapshotsArray<T, Meta>
   ) => {
     if (!snapshotSubscribers.has(snapshotId)) {
       snapshotSubscribers.set(snapshotId, []);
     }
 
-    const typedCallback = addSubscriptionMethods<SnapshotUnion<T>>((snapshot) => {
-      snapshotCallback([snapshot as unknown as SnapshotStore<T, K>] as unknown as Snapshots<T>);
+    const typedCallback = addSubscriptionMethods<SnapshotUnion<T, Meta>>((snapshot) => {
+      snapshotCallback([snapshot as unknown as SnapshotStore<T, Meta, K>] as unknown as Snapshots<T, Meta>);
     }, snapshotId);
 
     snapshotSubscribers.get(snapshotId)?.push(typedCallback);
@@ -63,7 +64,7 @@ const snapshotSubscribers: Map<string, Callback<Snapshot<any, any>>[]> =
       typedCallback(snap);
     });
 
-    const snapshots: Snapshots<T> = []; // Replace with actual logic to get snapshots
+    const snapshots: Snapshots<T, Meta> = []; // Replace with actual logic to get snapshots
 
     snapshots.forEach(snap => {
       if (snap.type !== null && snap.type !== undefined && snap.timestamp !== undefined) {
@@ -76,23 +77,23 @@ const snapshotSubscribers: Map<string, Callback<Snapshot<any, any>>[]> =
           events: snap.events ?? [],
           meta: snap.meta,
           data: snap.data ?? ({} as T)
-        } as SnapshotUnion<T>);
+        } as SnapshotUnion<T, Meta>);
       }
     });
   };
   
 
 
-  const subscribeToSnapshotImpl = <T extends BaseData, K extends BaseData>(
+  const subscribeToSnapshotImpl =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
     snapshotId: string,
-    callback: (snapshot: Snapshot<T, K>) => Subscriber<T, K> | null,
-    snapshot: Snapshot<T, K> | Snapshots<T> | SnapshotsArray<T>
-  ): Subscriber<T, K> | null => {
+    callback: (snapshot: Snapshot<T, Meta, K>) => Subscriber<T, Meta, K> | null,
+    snapshot: Snapshot<T, Meta, K> | Snapshots<T, Meta> | SnapshotsArray<T, Meta>
+  ): Subscriber<T, Meta, K> | null => {
     if (!snapshotSubscribers.has(snapshotId)) {
       snapshotSubscribers.set(snapshotId, []);
     }
   
-    const subscriber = callback(snapshot as Snapshot<T, K>); // Ensure callback returns Subscriber or null
+    const subscriber = callback(snapshot as Snapshot<T, Meta, K>); // Ensure callback returns Subscriber or null
     if (subscriber) {
       snapshotSubscribers.get(snapshotId)?.push(subscriber);
     }
@@ -100,7 +101,7 @@ const snapshotSubscribers: Map<string, Callback<Snapshot<any, any>>[]> =
     // Process each snapshot in the array
     if (Array.isArray(snapshot)) {
       snapshot.forEach(snap => {
-        const subscriber = callback(snap as Snapshot<T, K>);
+        const subscriber = callback(snap as Snapshot<T, Meta, K>);
         if (subscriber) {
           snapshotSubscribers.get(snapshotId)?.push(subscriber);
         }

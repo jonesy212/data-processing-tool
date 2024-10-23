@@ -1,11 +1,8 @@
 // determineFileCategory.tsx
 
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import * as snapshotApi from '@/app/api/SnapshotApi';
 import { FileCategory } from "../../documents/FileType";
-import { BaseData, Data } from "../../models/data/Data";
-import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
-import SnapshotStore from "../../snapshots/SnapshotStore";
-import * as snapshotApi from '@/app/api/SnapshotApi'
+import { Data } from "../../models/data/Data";
 
 // Utility function to determine file category based on categoryName
 function determineFileCategory(categoryName: string): FileCategory {
@@ -76,15 +73,12 @@ function determineFileCategory(categoryName: string): FileCategory {
 }
 
 // Example implementation of fetching snapshot data based on category
-async function fetchFileSnapshotData<T extends Data, K extends Data>(
+async function fetchFileSnapshotData<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   category: FileCategory,
   snapshotId: string
 ): Promise<{ data: any }> {
 
-  // Example implementation fetching data based on category
-  // Here you can replace this with your actual fetching logic
-
-  const data = await snapshotApi.getSnapshotData(snapshotId);
+  const data =  snapshotApi.getSnapshotData(snapshotId);
 
   return { data };
 }

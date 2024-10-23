@@ -1,9 +1,8 @@
-import { SnapshotData } from ".";
+import { SnapshotData } from '@/app/components/snapshots';
 import { ContentItem } from "../cards/DummyCardLoader";
-import { BaseData } from "../models/data/Data";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 
-export interface SnapshotContent<T extends BaseData, K extends BaseData> extends ContentItem {
-  snapshot: Snapshot<T, K>;
-  snapshotData: SnapshotData<T, K>;
+export interface SnapshotContent <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> extends ContentItem {
+  snapshot: Snapshot<T, Meta, K>;
+  snapshotData: SnapshotData<T, Meta, K>;
 }

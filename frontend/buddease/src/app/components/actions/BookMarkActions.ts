@@ -1,6 +1,6 @@
 // BookMarkActions.ts
 import { createAction } from "@reduxjs/toolkit";
-import BookmarkStatus from "../models/data/StatusType";
+import { BookmarkStatus } from "../models/data/StatusType";
 import BookmarkData from "../models/data/BookmarkData";
 
 

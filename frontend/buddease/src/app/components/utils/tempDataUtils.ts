@@ -1,8 +1,8 @@
 import { Data } from "../models/data/Data";
 import { SnapshotStoreConfig } from "./snapshotStoreConfig";
 
-export function storeTempData<T extends Data, K extends Data>(
-  configs: SnapshotStoreConfig<T, K>[],
+export function storeTempData<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  configs: SnapshotStoreConfig<T, Meta, K>[],
   configId: string,
   tempResults: T[]
 ): void {
@@ -19,8 +19,8 @@ export function storeTempData<T extends Data, K extends Data>(
   console.warn(`No config found with ID: ${configId}`);
 }
 
-export function getTempData<T extends Data, K extends Data>(
-  configs: SnapshotStoreConfig<T, K>[],
+export function getTempData<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  configs: SnapshotStoreConfig<T, Meta, K>[],
   configId: string
 ): T[] | undefined {
   for (const config of configs) {

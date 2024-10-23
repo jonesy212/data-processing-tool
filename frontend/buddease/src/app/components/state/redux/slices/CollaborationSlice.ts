@@ -1,3 +1,6 @@
+import DocumentPermissions  from '@/app/components/documents/DocumentPermissions';
+import { Data } from '@/app/components/models/data/Data';
+import { Participant } from '@/app/pages/management/ParticipantManagementPage';
 // CollaborationSlice.ts
 import Milestone from "@/app/components/calendar/CalendarSlice";
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
@@ -8,7 +11,6 @@ import { DocumentBuilderOptions } from "@/app/components/documents/DocumentOptio
 import { Change } from "@/app/components/documents/NoteData";
 import { mergeChanges } from "@/app/components/documents/editing/autosave";
 import { CollaborationOptions } from "@/app/components/interfaces/options/CollaborationOptions";
-import { Comment } from "@/app/components/models/data/Data";
 import { Task } from "@/app/components/models/tasks/Task";
 import { Member } from "@/app/components/models/teams/TeamMembers";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
@@ -17,8 +19,8 @@ import { SecurityMeasure } from "@/app/components/security/SecurityMeasures";
 import { Feedback } from "@/app/components/support/Feedback";
 import { Todo } from "@/app/components/todos/Todo";
 import UserService, {
-  userId,
-  userService,
+    userId,
+    userService,
 } from "@/app/components/users/ApiUser";
 import { Idea } from "@/app/components/users/Ideas";
 import { VersionData } from "@/app/components/versions/VersionData";
@@ -47,7 +49,7 @@ enum ResourceType {
   Link,
   Other,
 }
-interface CollaborationState {
+interface CollaborationState<T extends Data, Meta extends UniffiedMetaDataOptions, K extends Data = T> {
   sharedProjects: Project[];
   sharedMeetings: Meeting[];
   tasks: Task[];
@@ -70,7 +72,7 @@ interface CollaborationState {
   isBrainstorming: boolean;
   brainstormingTopic: string;
   brainstormingIdeas: Idea[];
-  documents: Document[];
+  documents: Document<T, Meta, K>[];
   comments: Feedback[];
   todos: Progress[];
   resources: Resource[];
@@ -82,14 +84,14 @@ interface CollaborationState {
   selectedProject: (state: RootState, projectId: string) => Project | null;
 
   collaboration: {
-    documentData: DocumentData;
+    documentData: DocumentData<T, Meta, K>;
     uiManager: ReturnType<typeof useUIManager>;
     userService: UserService;
   };
   // Add other collaboration-related state properties here
 }
 
-const initialState: CollaborationState = {
+const initialState: CollaborationState<Data, UniffiedMetaDataOptions> = {
   sharedProjects: [],
   sharedMeetings: [],
   tasks: [],
@@ -156,7 +158,6 @@ const initialState: CollaborationState = {
     return project || null;
   }
 };
-
 const handleCommunicationChange = (
   state: WritableDraft<CollaborationState>,
   action: PayloadAction<WritableDraft<Communication>>

@@ -1,32 +1,36 @@
+import { CreateSnapshotStoresPayload } from "../database/Payload";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
+import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Data } from "../models/data/Data";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
-import { CreateSnapshotStoresPayload, Snapshot } from "./LocalStorageSnapshotStore";
-import { SnapshotConfig } from "./snapshot";
+import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
+import { defaultSubscribeToSnapshots } from "./defaultSubscribeToSnapshots";
+import { Snapshot } from "./LocalStorageSnapshotStore";
+import { SnapshotConfig } from "./SnapshotConfig";
+import { getSnapshotItems } from "./snapshotOperations";
 
 // createSnapshots.ts
-const createSnapshots = <T extends Data, K extends Data = T>(
+const createSnapshots = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
     id: string,
     snapshotId: string,
-    snapshot: Snapshot<T, K>,
-    snapshotManager: SnapshotManager<T, K>,
-    payload: CreateSnapshotStoresPayload<T, K>,
-    callback: (snapshots: Snapshot<T, K>[]) => void | null,
-    snapshotDataConfig?: SnapshotConfig<T, K>[],
-    category?: string | symbol | Category
-  ): Snapshot<T, K>[] | null => {
+    snapshot: Snapshot<T, Meta, K>,
+    snapshotManager: SnapshotManager<T, Meta, K>,
+    payload: CreateSnapshotStoresPayload<T, Meta, K>,
+    callback: (snapshots: Snapshot<T, Meta, K>[]) => void | null,
+    snapshotConfig?: SnapshotConfig<T, Meta, K>[],
+    category?: string | symbol | Category | undefined,
+  ): Snapshot<T, Meta, K>[] | null => {
     const { data, events, dataItems, newData } = payload;
     
     // Example logic to create multiple snapshots
-    const snapshots: Snapshot<T, K>[] = [];
+    const snapshots: Snapshot<T, Meta, K>[] = [];
   
-    const eventRecords: Record<string, CalendarEvent<T, K>[]> = (events && typeof events === 'object') 
+    const eventRecords: Record<string, CalendarManagerStoreClass<T, Meta, K>[]> = (events && typeof events === 'object') 
     ? events 
       : {};
   
     data?.forEach((snapshotData: T, key: string) => {
-       // Ensure eventRecords is of type Record<string, CalendarEvent<T, K>[]> or null
-      const newSnapshot: Snapshot<T, K> = {
+       // Ensure eventRecords is of type Record<string, CalendarEvent<T, Meta, K>[]> or null
+      const newSnapshot: Snapshot<T, Meta, K> = {
         // ...snapshot,
         id: key,
         data: snapshotData,
@@ -72,7 +76,7 @@ const createSnapshots = <T extends Data, K extends Data = T>(
         addNestedStore: addNestedStore,
         clearSnapshots: clearSnapshots,
         addSnapshot: addSnapshot,
-        createSnapshot: undefined,
+        createSnapshot: null,
         createInitSnapshot: createInitSnapshot,
         setSnapshotSuccess: setSnapshotSuccess,
         setSnapshotFailure: setSnapshotFailure,

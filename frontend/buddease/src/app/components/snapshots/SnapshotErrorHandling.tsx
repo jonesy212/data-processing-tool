@@ -1,17 +1,13 @@
-import React from 'react';
-import { createErrorNotificationContent, errorLogger, FileLogger } from "@/app/components/logging/Logger";
-import ErrorHandler from "@/app/shared/ErrorHandler";
-import { ErrorInfo, useState } from "react";
-import safeParseData from "../crypto/SafeParseData";
-import { ParsedData } from "../crypto/parseData";
-import { YourResponseType } from "../typings/types";
+import { createErrorNotificationContent, errorLogger } from "@/app/components/logging/Logger";
+import React, { useState } from 'react';
 import { Data } from '../models/data/Data';
-
-import { Payload } from './LocalStorageSnapshotStore';
+import { YourResponseType } from "../typings/types";
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import useErrorHandling from '../hooks/useErrorHandling';
 import { NotificationTypeEnum, useNotification } from '../support/NotificationContext';
+import { Payload } from './LocalStorageSnapshotStore';
 
-interface SnapshotErrorHandling<T extends Data, K extends Data> {
+interface SnapshotErrorHandling<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
     onError?: (error: Payload) => void;
     clearSnapshotFailure(): unknown;
     logError: (error: Error, extraInfo?: any) => void;
@@ -103,4 +99,4 @@ const SnapshotHandler: React.FC<{
 
 export default SnapshotHandler;
 
-export type {SnapshotErrorHandling}
+export type { SnapshotErrorHandling };

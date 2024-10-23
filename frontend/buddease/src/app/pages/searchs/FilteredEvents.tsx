@@ -5,8 +5,10 @@ import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import { FilterState } from "./FilterState";
 
 // Define a selector function to get filtered events from the state
-export const selectFilteredEvents = (state: RootState) =>
-  state.filterManager.filteredEvents;
+// Define your selector to get the filtered events from the state
+export const selectFilteredEvents = (state: RootState): FilteredEventsState<T, Meta, K> => {
+  return state.filteredEvents; // Adjust this according to your state shape
+};
 
 // Create a slice for filtered events
 const filteredEventsSlice = createSlice({

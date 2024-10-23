@@ -1,8 +1,10 @@
 // TaskManagerComponent.tsx
+import { Meta } from '../models/data/dataStoreMethods';
 import { checkTodoCompletion, updateTodo } from "@/app/api/ApiTodo";
-import { fetchTasks, handleTaskApiErrorAndNotify, updateTask } from "@/app/api/TasksApi";
+import { handleTaskApiErrorAndNotify, updateTask } from "@/app/api/TasksApi";
 import { ProjectDetails } from "@/app/components/projects/Project";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
+import { AxiosError } from "axios";
 import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { ProjectActions } from "../actions/ProjectActions";
@@ -23,6 +25,7 @@ import { brandingSettings } from "../projects/branding/BrandingSettings";
 import TaskProgress from "../projects/projectManagement/TaskProgress";
 import TeamProgress from "../projects/projectManagement/TeamProgress";
 import TodoProgress from "../projects/projectManagement/TodoProgress";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { createMilestone } from "../state/redux/slices/TrackerSlice";
 import { rootStores } from "../state/stores/RootStores";
 import { useTaskManagerStore } from "../state/stores/TaskStore ";
@@ -30,8 +33,6 @@ import useTrackerStore from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
 import { todoService } from "../todos/TodoService";
 import { VideoData } from "../video/Video";
-import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
-import { AxiosError } from "axios";
 
 interface TaskAssignmentProps {
   taskId: () => string;
@@ -90,7 +91,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       recurring: null,
       dependencies: [],
       subtasks: [],
-      snapshot: {} as Snapshot<Data>,
+      snapshot: {} as Snapshot<Data, Meta, Data>,
       analysisType: AnalysisTypeEnum.DEFAULT,
       analysisResults: {} as DataAnalysisResult[],
       videoData: {} as VideoData,

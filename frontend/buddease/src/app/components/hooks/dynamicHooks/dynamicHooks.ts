@@ -3,13 +3,15 @@ import { ModifiedDate } from '@/app/components/documents/DocType';
 import { performLogin } from "@/app/pages/forms/utils/CommonLoginLogic";
 import { useEffect, useState } from "react";
 import { loadDashboardState } from "../../dashboards/LoadDashboard";
+import { Data } from '../../models/data/Data';
 import { generatePrompt } from "../../prompts/promptGenerator";
+import { SubscriberCollection } from '../../snapshots';
 import useAqua from "../../web3/aquaIntegration/hooks/useAqua";
 import useFluence from "../../web3/fluenceProtocoIntegration/src/fluence/useFuence";
+import Web3Provider from '../../web3/Web3Provider';
 import { myPhaseHook } from "../phaseHooks/EnhancePhase";
 import useAsyncHookLinker, { LibraryAsyncHook } from "../useAsyncHookLinker";
 import createDynamicHook from "./dynamicHookGenerator";
-import Web3Provider from '../../web3/Web3Provider';
 
 interface AsyncHook {
   condition: (idleTimeoutDuration: number) => Promise<boolean>;
@@ -255,13 +257,21 @@ useAsyncHookLinker({
   ],
 });
 
-const subscriptionService = {
-  subscriptions: new Map<string, (message: any) => void>(),
 
-  subscribe: (hookName: string, callback: (message: any) => void) => {
+
+const subscriptionService = {
+  subscriptions: new Map<string, { callback: (message: any) => void; usage: string }>(),
+   // Add generic types <T, Meta, K> to the subscribers method
+   subscribers<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(name: string, id: string): SubscriberCollection<T, Meta, K> {
+    // Return an empty array or mock data for the subscribers as a placeholder
+    return [];
+  },   
+  subscribe:
+    (hookName: string, callback: (message: any) => void, usage: string) => {
     const dynamicHook = dynamicHooks[hookName as keyof typeof dynamicHooks];
     if (dynamicHook) {
       if (
+  
         dynamicHook.hook &&
         typeof dynamicHook.hook.asyncEffect === "function"
       ) {
@@ -313,9 +323,10 @@ const subscriptionService = {
         portfolioUpdatesLastUpdated: {} as ModifiedDate, // Placeholder function
       };
     }
+    subscriptionService.subscriptions.set(hookName, { callback, usage });
   },
 
-  unsubscribe: (hookName: string, subscriptionUsage: string) => {
+  unsubscribe: (hookName: string, subscriptionUsage: string, callback: (data: any) => void) => {
     if (subscriptionService.subscriptions.has(hookName)) {
       subscriptionService.subscriptions.delete(hookName);
     }
@@ -330,5 +341,11 @@ const subscriptionService = {
   },
 };
 
+
+// Update the `subscription` retrieval to ensure correct property access
+const subscription = subscriptionService.subscriptions.get('snapshot') ?? {
+  callback: () => {},
+  usage: '',
+};
 export { subscriptionService };
 export default dynamicHooks;

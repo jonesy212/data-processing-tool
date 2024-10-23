@@ -11,7 +11,7 @@ interface CommunicationType {
   title: string;
   timestamp: Date;
   subscriberId: string;
-  category: string | Category;
+  category: symbol | string | Category | undefined;
   length: number;
   content: string;
   data: any; // Example, replace with actual data structure

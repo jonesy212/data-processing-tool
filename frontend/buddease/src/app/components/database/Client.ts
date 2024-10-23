@@ -129,17 +129,20 @@ export class Client {
     }
   }
 
-
   // Getter for connected property
   getConnected(): boolean {
     return this.connected; // Change from '_connected' to 'connected'
   }
-
-
-
-
-  
-
+  // Method to get client information
+  getClientInformation(): ClientInformation {
+    return {
+      userAgent: navigator.userAgent,
+      screenWidth: window.screen.width,
+      screenHeight: window.screen.height,
+      language: navigator.language,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    };
+  }
   // Add other methods as needed
 }
 

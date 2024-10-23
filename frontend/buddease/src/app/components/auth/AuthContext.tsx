@@ -198,7 +198,13 @@ const AuthProvider: React.FC<{ children: React.ReactNode; token: string }> = ({
     store.setUser(user);
     store.setRoles(verifiedRoles);
     store.setNFTs(nfts);
-    store.setUserPreferences({ theme: "dark", language: LanguageEnum.English });
+    store.setUserPreferences({
+      theme: "dark", language: LanguageEnum.English,
+      refreshUI: function (): void {
+        // #todo
+        throw new Error("Function not implemented.");
+      }
+    });
     store.setUserProfilePicture("https://example.com/profile-picture-url");
     store.setUserEmail("newemail@example.com");
     store.setUserContactInfo({

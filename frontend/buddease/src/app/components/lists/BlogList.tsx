@@ -14,7 +14,7 @@ interface BlogData {
   author: string;
   date: string;
   data: {
-    snapshots: SnapshotStore<Snapshot<Data>>[];
+    snapshots: SnapshotStore<Snapshot<Data, Meta, Data>>[];
   };
 }
 
@@ -47,3 +47,4 @@ const BlogList: React.FC<BlogListProps> = ({ blogPosts }) => {
 };
 
 export default BlogList;
+export type {BlogData}

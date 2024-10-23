@@ -1,21 +1,21 @@
-import { Subscriber } from "../users/Subscriber";
 import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
 import { CalendarEvent } from "../calendar/CalendarEvent";
-import { Data } from "../models/data/Data";
-import { Snapshot } from "./LocalStorageSnapshotStore";
-import { StatusType } from "../models/data/StatusType";
 import { Category } from "../libraries/categories/generateCategoryProperties";
+import { Data } from "../models/data/Data";
+import { StatusType } from "../models/data/StatusType";
+import { Subscriber } from "../users/Subscriber";
+import { Snapshot } from "./LocalStorageSnapshotStore";
 
 
-interface FetchSnapshotPayload<T extends Data, K extends Data = T> {
+interface FetchSnapshotPayload<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
   title: string;
   description: string;
   createdAt: Date | undefined;
   updatedAt: Date | undefined;
   status: StatusType | undefined;
   category?: Category; // Optional category properties related to the snapshot
-  data: T | Map<string, Snapshot<T, K>> | null | undefined;
-  events: Record<string, CalendarEvent<T, K>[]>;
+  data: T | Map<string, Snapshot<T, Meta, K>> | null | undefined;
+  events: Record<string, CalendarEvent<T, Meta, K>[]>;
   dataItems: T[];
   newData: T;
   metadata: any;
@@ -28,8 +28,8 @@ interface FetchSnapshotPayload<T extends Data, K extends Data = T> {
   createdBy: string; // Adding createdBy
   eventRecords: Record<string, any>; // Adding eventRecords
   type: string; // Adding type
-  subscribers: Subscriber<T, K>[]; // Adding subscribers
-  snapshots: Map<string, Snapshot<T, K>>; // Adding snapshots
+  subscribers: Subscriber<T, Meta, K>[]; // Adding subscribers
+  snapshots: Map<string, Snapshot<T, Meta, K>>; // Adding snapshots
   requestTimestamp: Date; // Timestamp of when the fetch request was made
   requestContext: string; // Context or purpose of the fetch operation
   queryParams?: Record<string, any>; // Optional query parameters to customize the fetch
@@ -55,4 +55,5 @@ interface FetchTaskSnapshotPayload {
 
 
 
-export type { FetchTaskSnapshotPayload, FetchSnapshotPayload};
+export type { FetchSnapshotPayload, FetchTaskSnapshotPayload };
+

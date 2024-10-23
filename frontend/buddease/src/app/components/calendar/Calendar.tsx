@@ -4,6 +4,7 @@ import DatePickerComponent from "react-datepicker";
 import { CryptoHolding } from "../crypto/CryptoHolding";
 import CryptoTransaction from "../crypto/CryptoTransaction";
 import { ContentPost } from "../models/content/ContentPost";
+import { Data } from "../models/data/Data";
 import { Task } from "../models/tasks/Task";
 import { Project } from "../projects/Project";
 import { Label } from "../projects/branding/BrandingSettings";
@@ -18,7 +19,6 @@ import YearView from "./CalendarYearView";
 import DayView from "./DayOfWeek";
 import { MonthInfo } from "./Month";
 import YourCalendarLibrary from "./YourCalendarLibrary";
-import { Data } from "../models/data/Data";
 
 interface CommonCalendarProps{
   year?: YearInfo[] | number;
@@ -84,7 +84,7 @@ interface CommonCalendarProps{
   onContentPostPerformanceTrack: (post: ContentPost) => void;
 }
 
-interface CalendarProps<T extends Data, K extends Data> extends CommonCalendarProps {
+interface CalendarProps<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> extends CommonCalendarProps {
   view: string | CalendarManagerState;
   container: any;
   speed: number;
@@ -100,7 +100,7 @@ interface CalendarProps<T extends Data, K extends Data> extends CommonCalendarPr
   onDateSelect: (date: Date) => void;
 }
 
-const Calendar = <T extends Data, K extends Data>({
+const Calendar = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>({
   view,
   container,
   speed,
@@ -114,7 +114,7 @@ const Calendar = <T extends Data, K extends Data>({
   milestones,
   onDateSelect,
   ...taskHandlers
-}: CalendarProps<T, K>) => {
+}: CalendarProps<T, Meta, K>) => {
   return (
     <div>
       {view === "day" && (

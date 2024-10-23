@@ -2,16 +2,16 @@ import { Data } from "./../../components/models/data/Data";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
-function transformToSnapshotMap<T extends Data, K extends Data>(
+function transformToSnapshotMap<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   map: Map<string, T>
-): Map<string, Snapshot<T, K>> {
+): Map<string, Snapshot<T, Meta, K>> {
   return new Map(
     [...map.entries()].map(([key, value]) => [
       key,
       {
         ...value, // Keep the value's properties
         data: value, // Assign value to data if `T` fits into `data`
-        // If `Snapshot<T, K>` has additional required properties, initialize them here
+        // If `Snapshot<T, Meta, K>` has additional required properties, initialize them here
         isCore: false, // Example: defaulting some snapshot properties, adjust as needed
         initialConfig: {}, // Default initialConfig
         removeSubscriber: () => {}, // Default function for removeSubscriber
@@ -27,7 +27,7 @@ function transformToSnapshotMap<T extends Data, K extends Data>(
           transformDelegate, initializedState, getAllKeys, getAllValues, 
           getAllItems, getSnapshotEntries, getAllSnapshotEntries, addDataStatus,
           
-      } as Snapshot<T, K>,
+      } as Snapshot<T, Meta, K>,
     ])
   );
 }
@@ -35,8 +35,8 @@ function transformToSnapshotMap<T extends Data, K extends Data>(
 function transformSnapshotConfig<
   BaseData extends Data,
   T extends BaseData,
-  K extends BaseData
->(config: SnapshotStoreConfig<T, K>): SnapshotStoreConfig<T, K> {
+  K extends Data
+>(config: SnapshotStoreConfig<T, Meta, K>): SnapshotStoreConfig<T, Meta, K> {
   const { initialState, configOption, ...rest } = config;
 
   const transformedConfigOption =

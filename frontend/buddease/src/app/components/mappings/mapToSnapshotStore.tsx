@@ -1,11 +1,10 @@
-import { BaseData } from "../models/data/Data";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { Snapshot } from "./../snapshots/LocalStorageSnapshotStore";
 
 
-export function mapToSnapshotStore<T extends BaseData, K extends BaseData>(
-  map: Map<string, Snapshot<T, K> | null>
-): Partial<SnapshotStore<T, K>> {
+export function mapToSnapshotStore <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  map: Map<string, Snapshot<T, Meta, K> | null>
+): Partial<SnapshotStore<T, Meta, K>> {
   // Filter out undefined values and map entries to a new Map
   if (map === null) {
     return {
@@ -16,8 +15,8 @@ export function mapToSnapshotStore<T extends BaseData, K extends BaseData>(
   // Check if `map` is a Map
   if (map instanceof Map) {
     // Filter out undefined values and map entries to a new Map
-    const filteredEntries: [string, Snapshot<T, K>][] = Array.from(map.entries())
-      .filter((entry): entry is [string, Snapshot<T, K>] => entry[1] !== null);
+    const filteredEntries: [string, Snapshot<T, Meta, K>][] = Array.from(map.entries())
+      .filter((entry): entry is [string, Snapshot<T, Meta, K>] => entry[1] !== null);
 
     return {
       data: new Map(filteredEntries)

@@ -1,5 +1,6 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { searchAPI } from "@/app/api/ApiSearch";
+import { constructTarget } from "@/app/api/EndpointConstructor";
 import { SearchResultWithQuery } from "@/app/components/routing/SearchResult";
 import { RetryConfig } from "@/app/configs/ConfigurationService";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
@@ -11,14 +12,14 @@ import { useAppSelector } from "@/app/utils/useAppSelector";
 import { AxiosResponse } from "axios";
 import { Router, useRouter } from "next/router";
 import React, {
-  BaseSyntheticEvent,
-  MouseEventHandler,
-  SyntheticEvent,
-  UIEvent,
-  UIEventHandler,
-  useEffect,
-  useRef,
-  useState,
+    BaseSyntheticEvent,
+    MouseEventHandler,
+    SyntheticEvent,
+    UIEvent,
+    UIEventHandler,
+    useEffect,
+    useRef,
+    useState,
 } from "react";
 import { GestureHandlerGestureEvent } from "react-native-gesture-handler";
 import { useDispatch } from "react-redux";
@@ -31,6 +32,7 @@ import { DragActions } from "../actions/DragActions";
 import { DrawingActions } from "../actions/DrawingActions";
 import { EventHandlerActions } from "../actions/EventHanderActions";
 import { ListActions } from "../actions/ListActions";
+import { MeetingActions } from "../actions/MeetingActions";
 import { ProjectActions } from "../actions/ProjectActions";
 import { SearchActions } from "../actions/SearchActions";
 import { SelectActions } from "../actions/SelectActions";
@@ -41,8 +43,8 @@ import { EventDetails } from "../calendar/CalendarEventViewingDetails";
 import getSocketConnection from "../communications/getSocketConnection";
 import { saveCryptoPortfolioData } from "../documents/editing/autosave";
 import updateUI, {
-  updateUIWithCopiedText,
-  updateUIWithSearchResults
+    updateUIWithCopiedText,
+    updateUIWithSearchResults
 } from "../documents/editing/updateUI";
 import { HighlightActions } from "../documents/screenFunctionality/HighlightActions";
 import { currentAppType } from "../getCurrentAppType";
@@ -50,11 +52,11 @@ import useErrorHandling from "../hooks/useErrorHandling";
 import useWebSocket from "../hooks/useWebSocket";
 import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { BlogActions } from "../models/blogs/BlogAction";
-import {ProgressDataProps} from "../models/data/ProgressData";
+import { ProgressDataProps } from "../models/data/ProgressData";
 import { SortingType } from "../models/data/StatusType";
 import {
-  initiateBitcoinPayment,
-  initiateEthereumPayment,
+    initiateBitcoinPayment,
+    initiateEthereumPayment,
 } from "../payment/initCryptoPayments";
 import { PhaseActions } from "../phases/PhaseActions";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
@@ -62,6 +64,7 @@ import { DataAnalysisActions } from "../projects/DataAnalysisPhase/DataAnalysisA
 import { brandingSettings } from "../projects/branding/BrandingSettings";
 import { ContentActions } from "../security/ContentActions";
 import { sanitizeData, sanitizeInput } from "../security/SanitizationFunctions";
+import { K, T } from "../snapshots";
 import SnapshotList from "../snapshots/SnapshotList";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { addMessage } from "../state/redux/slices/ChatSlice";
@@ -69,13 +72,11 @@ import { RootState } from "../state/redux/slices/RootSlice";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { historyManagerStore } from "../state/stores/HistoryStore";
 import { Subscription } from "../subscriptions/Subscription";
-import { MeetingActions } from "../actions/MeetingActions";
 import { UIApi } from "../users/APIUI";
 import * as apiSnapshot from "./../../api/SnapshotApi";
 import { BaseCustomEvent } from "./BaseCustomEvent";
 import { CustomMouseEvent } from "./EventService";
-import { K, T } from "../snapshots";
-import { constructTarget, Target } from "@/app/api/EndpointConstructor";
+import { Meta } from "../models/data/dataStoreMethods";
 
 const dispatch = useDispatch();
 // State and other logic...
@@ -298,7 +299,7 @@ const resetStateVariables = () => {
 
 const clearResources = (
   socket: WebSocket | null,
-  subscription: Subscription<T, K> | null,
+  subscription: Subscription<T, Meta, K> | null,
   unsubscribeDetails?: UnsubscribeDetails
 ) => {
 
@@ -328,7 +329,7 @@ const cleanupState = (subscription: any) => {
 };
 
 const cleanupSubscriptions = (
-  subscription: Subscription<T, K> | null,
+  subscription: Subscription<T, Meta, K> | null,
   unsubscribeDetails?: UnsubscribeDetails,
 ) => {
   // Clean up any subscriptions
@@ -345,7 +346,7 @@ const cleanupSocketConnection = (socket: WebSocket) => {
 
 const closeConnections = (
   socket: WebSocket,
-  subscription: Subscription<T, K>| null,
+  subscription: Subscription<T, Meta, K>| null,
   unsubscribeDetails?: UnsubscribeDetails
 ) => {
   // Close any open connections
@@ -1169,7 +1170,7 @@ const DynamicEventHandlerService = ({
   handleSorting,
 }: {
   handleSorting: (
-    snapshotList: Promise<SnapshotList<T, K>>,
+    snapshotList: Promise<SnapshotList<T, Meta, K>>,
     event: SyntheticEvent<Element, Event> | MouseEvent
   ) => void;
 }) => {
@@ -1180,10 +1181,10 @@ const DynamicEventHandlerService = ({
 
   // State to track messages
   const [messages, setMessages] = useState<string[]>([]);
-  const snapshhotListRef = useRef<Promise<SnapshotList<T, K>>>();
+  const snapshhotListRef = useRef<Promise<SnapshotList<T, Meta, K>>>();
   let sentiment: AxiosResponse<any, any>;
 
-  const handleSortingWrapper = (snapshotList: Promise<SnapshotList<T, K>>) => {
+  const handleSortingWrapper = (snapshotList: Promise<SnapshotList<T, Meta, K>>) => {
     // Handle sorting logic
     // Assuming snapshotList is an array or object with sorting functionality
     (async () => {
@@ -2499,7 +2500,7 @@ const DynamicEventHandlerService = ({
         });
     
         // Fetch the sorted list using the constructed Target
-        const snapshotList: Promise<SnapshotList<T, K>> = apiSnapshot.getSortedList(targetConfig);
+        const snapshotList: Promise<SnapshotList<T, Meta, K>> = apiSnapshot.getSortedList(targetConfig);
         handleSorting(snapshotList, event);
       }
     );
@@ -2636,8 +2637,8 @@ const DynamicEventHandlerService = ({
 };
 
 export default DynamicEventHandlerService;
+export { generateNextPhaseRoute };
 export type { CustomEventListener, UnsubscribeDetails };
-export {generateNextPhaseRoute}
 
 function stopImmediatePropagation(
   event: React.MouseEvent<HTMLCanvasElement, MouseEvent>

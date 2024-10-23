@@ -1,5 +1,4 @@
 import { Data } from "../models/data/Data";
-import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 
 // versionUtils.ts
 interface DataWithVersion {
@@ -30,8 +29,8 @@ function hasPriority<T extends Partial<DataWithPriority>>(data: T): data is T & 
     return (data as DataWithPriority).priority !== undefined;
 }
 
-const processSnapshotData = <T extends Data, K extends Data>(
-    snapshotData: Snapshot<T, K>
+const processSnapshotData = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+    snapshotData: SnapshotData<T, Meta, K>
   ): void => {
     const dataWithPriority: Partial<DataWithPriority> = {
       priority: (snapshotData.data as T & { priority?: string })?.priority, // Use optional chaining and type assertion
@@ -46,9 +45,7 @@ const processSnapshotData = <T extends Data, K extends Data>(
   };
   
 export {
-    hasVersion,
-    hasPriority,
-    processSnapshotData
+    hasPriority, hasVersion, processSnapshotData
 };
 
-export type {SnapshotDataTypeVersion, DataWithPriority, DataWithVersion, DataWithTimestamp}
+    export type { DataWithPriority, DataWithTimestamp, DataWithVersion, SnapshotDataTypeVersion };

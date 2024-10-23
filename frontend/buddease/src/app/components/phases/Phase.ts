@@ -1,3 +1,4 @@
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { FC } from "react";
 import { Lesson } from "../documents/CourseBuilder";
@@ -9,10 +10,12 @@ import { Progress } from "../models/tracker/ProgressBar";
 import { TagsRecord } from "../snapshots";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { Data } from "../models/data/Data";
-import { T } from "../models/data/dataStoreMethods";
+import { Meta, T } from "../models/data/dataStoreMethods";
 
 // Define a type for a phase
-export interface Phase<T extends Data>
+export interface Phase<T extends Data,
+Meta extends UnifiedMetaDataOptions = UnifiedMetaDataOptions,
+K extends Data = T>
   extends CommonData<T> {
   id: string;
   index?: number;
@@ -37,7 +40,9 @@ export interface Phase<T extends Data>
   __typename?: "Phase";
 }
 
-export class PhaseImpl <T extends Data> implements Phase<T> {
+export class PhaseImpl<T extends Data,
+  Meta extends UnifiedMetaDataOptions = UnifiedMetaDataOptions,
+  K extends Data = T> implements Phase<T> {
   id: string = "";
   name: string = "";
   startDate: Date = new Date();
@@ -82,7 +87,7 @@ export class PhaseImpl <T extends Data> implements Phase<T> {
   // tasks?: Task[] | undefined;
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[] | undefined;
-  metadata?: StructuredMetadata | undefined;
+  metadata?: StructuredMetadata<T, Meta, K> | undefined;
   details?: DetailsItem<any> | undefined; 
   tags?: TagsRecord | string[] | undefined;
   categories?: string[] | undefined;

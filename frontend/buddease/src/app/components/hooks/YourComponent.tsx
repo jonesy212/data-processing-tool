@@ -1,13 +1,21 @@
-import * as snapshotApi from '@/app/api/SnapshotApi'
+import { SnapshotData } from "../components/snapshots";
+import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
+import { Category } from "../components/libraries/categories/generateCategoryProperties";
+import { Subscriber } from '../components/users/Subscriber';
+import appTreeApiService from "@/app/api/appTreeApi";
 import DataFrameAPI from "@/app/api/DataframeApi";
+import { getSnapshotId } from "@/app/api/SnapshotApi";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import React, { useEffect, useState } from "react";
 import {
-  SimpleCalendarEvent,
-  useCalendarContext,
+    SimpleCalendarEvent,
+    useCalendarContext,
 } from "../calendar/CalendarContext";
+import { Payload } from "./LocalStorageSnapshotStore";
 import DynamicContent from "../documents/DynamicContent";
-import { BaseData, Data, DataDetails } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
+import { K, Meta, T } from '../models/data/dataStoreMethods';
+import { StatusType } from '../models/data/StatusType';
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import LoadingSpinner from "../models/tracker/LoadingSpinner";
 import ProgressBar, { ProgressPhase } from "../models/tracker/ProgressBar";
@@ -15,6 +23,9 @@ import { TrackerProps } from "../models/tracker/Tracker";
 import { NotificationManagerServiceProps } from "../notifications/NotificationService";
 import useNotificationManagerServiceProps from "../notifications/useNotificationManagerServiceProps";
 import { PromptPageProps } from "../prompts/PromptPage";
+import { headersConfig } from '../shared/SharedHeaders';
+import { ConfigureSnapshotStorePayload, Snapshot, SnapshotOperation, SnapshotOperationType, SnapshotsArray, SnapshotStoreConfig, SnapshotStoreProps, UpdateSnapshotPayload } from "../snapshots";
+import SnapshotStore from "../snapshots/SnapshotStore";
 import CalendarEvent, { updateCallback } from "../state/stores/CalendarEvent";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { rootStores } from "../state/stores/RootStores";
@@ -24,16 +35,19 @@ import { useSecureUserId } from "../utils/useSecureUserId";
 import useRealtimeData from "./commHooks/useRealtimeData";
 import generateDynamicDummyHook from "./generateDynamicDummyHook";
 import useIdleTimeout from "./idleTimeoutHooks";
-import {  UpdateSnapshotPayload, SnapshotStoreProps, SnapshotOperationType, SnapshotsArray, SnapshotStoreConfig, Snapshot, SnapshotOperation } from "../snapshots";
-import SnapshotStore from "../snapshots/SnapshotStore";
-import appTreeApiService from "@/app/api/appTreeApi";
-import { getSnapshotId } from "@/app/api/SnapshotApi";
-import ExampleComponent from '../models/tracker/ExampleComponent';
-import { headersConfig } from '../shared/SharedHeaders';
-import { StatusType } from '../models/data/StatusType';
-import { SnapshotStoreOptions } from './SnapshotStoreOptions';
-import { K, T } from '../models/data/dataStoreMethods';
-import { Category } from '../libraries/categories/generateCategoryProperties';
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import progress from "antd/es/progress";
+import { duration } from "moment";
+import { type } from "os";
+import { title } from "process";
+import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { isSnapshot } from "../snapshots/createSnapshotStoreOptions";
+
+
+
+
+
 
 
 interface HooksObject {
@@ -102,17 +116,40 @@ const categoryHooks: { [category: string]: string[] } = {
   ],
 };
 
+
 export interface YourComponentProps {
   children: React.ReactNode;
   apiConfig: ApiConfig;
+  updateSnapshot: (
+    snapshotId: string,
+    data: any,
+    events: any,
+    snapshotStore: any,
+    dataItems: any,
+    newData: any,
+    updatedPayload: any
+  ) => Promise<void>;
 }
 
 
 
+const updateSnapshotMethod = (
+  snapshotId: string,
+  data: any,
+  events: any,
+  snapshotStore: any,
+  dataItems: any,
+  newData: any,
+  updatedPayload: any
+): Promise<void> => {
+  // Implementation of the updateSnapshot logic
+  return Promise.resolve();
+};
+
 
 
 // Initialize storeProps with meaningful values
-const storeProps: SnapshotStoreProps<T, K> = {
+const storeProps: SnapshotStoreProps<T, Meta, K> = {
   storeId: "yourStoreId",
   name: "MySnapshotStore", // Provide a valid name
   version: {
@@ -258,31 +295,47 @@ const storeProps: SnapshotStoreProps<T, K> = {
     criteria: {},
     callbacks: {},
     subscribeToSnapshots: (
-      snapshot,
-      snapshotId,
-      snapshotData,
-      category,
-      snapshotConfig,
-      callback,
-      snapshots
-    ) => {
+      snapshotStore: SnapshotStore<T, Meta, K>,
+      snapshotId: string,
+      snapshotData: SnapshotData<T, Meta, K>,
+      category: Category | undefined,
+      snapshotConfig: SnapshotStoreConfig<T, Meta, K>,
+      callback: (snapshots: SnapshotsArray<T, Meta>) => Subscriber<T, Meta, K> | null,
+      snapshots: SnapshotsArray<T, Meta>,
+      unsubscribe?: UnsubscribeDetails, 
+    ): SnapshotsArray<T, Meta> | [] => {
       // Implement your logic here
       return snapshots; // or modify the snapshots as needed
     },
-    subscribeToSnapshot: (snapshotId, callback, snapshot) => {
+    subscribeToSnapshot: (
+      snapshotId: string,
+      callback: (snapshot: Snapshot<T, Meta, K>) => Subscriber<T, Meta, K> | null,
+      snapshot: Snapshot<T, Meta, K>
+    ):Subscriber<T, Meta, K> | null  => {
       // Implement your logic here
       return null; // or return a Subscriber if necessary
     },
-    unsubscribeToSnapshots: (snapshotId, snapshot, type, event, callback) => {
+    unsubscribeToSnapshots: (
+      snapshotId: string,
+      snapshot: Snapshot<T, Meta, K>,
+      type: string,
+      event: Event,
+      callback: (snapshot: Snapshot<T, Meta, K>) => void  
+    ) => {
       // Implement your logic here
     },
-    unsubscribeToSnapshot: (snapshotId, snapshot, type, event, callback) => {
+    unsubscribeToSnapshot: (snapshotId: string,
+      snapshot: Snapshot<T, Meta, K>,
+      type: string,
+      event: Event,
+      callback: (snapshot: Snapshot<T, Meta, K>) => void
+    ) => {
       // Implement your logic here
     },
     delegate: null,
     getDelegate: (context) => {
       // Implement your logic here
-      return []; // or your logic to return an array of SnapshotStoreConfig<T, K>
+      return []; // or your logic to return an array of SnapshotStoreConfig<T, Meta, K>
     },
     getCategory: (snapshotId, snapshot, type, event) => {
       // Implement your logic here
@@ -321,65 +374,145 @@ const storeProps: SnapshotStoreProps<T, K> = {
       snapshotDataConfig
     ) => {
       // Implement your logic here
-      return null; // or return the created SnapshotStore
+      return Promise.resolve(null); // or return the created SnapshotStore
     },
     configureSnapshot: (
-      id,
-      storeId,
-      snapshotId,
-      snapshotData,
-      categoryProperties,
-      callback,
-      snapshotDataStore,
-      snapshotStoreConfig
-    ) => {
-      // Implement your logic here
-      return null; // or return { snapshot, config }
+      id: string,
+      storeId: number,
+      snapshotId: string,
+      snapshotData: SnapshotData<Data, Meta, Data>,
+      dataStoreMethods: DataStore<Data, Meta, K>,
+      category?: string | symbol | Category,
+      categoryProperties?: CategoryProperties,
+      callback?: (snapshotStore: SnapshotStore<T, Meta, K>) => void,
+      snapshotStoreConfig?: SnapshotStoreConfig<Data, Meta, K>
+    ): Promise<Snapshot<Data, Meta, K> | null> => {
+        // Your implementation logic
+        const newSnapshot: Snapshot<Data, Meta, K> = {/* your snapshot creation logic */};
+        
+        // Call callback if provided
+        callback?.(newSnapshot);
+
+        return Promise.resolve(newSnapshot); // Resolve with the created Snapshot
     },
     configureSnapshotStore: (
-      snapshotStore,
-      snapshotId,
-      data,
-      events,
-      dataItems,
-      newData,
-      payload,
-      store,
-      callback
-    ) => {
-      // Implement your logic here
-      return { snapshotStore, storeConfig: {} as SnapshotStoreConfig<T, K> }; // Update as necessary
-    },
+      snapshotStore: SnapshotStore<T, Meta, K>,
+      snapshotId: string,
+      data: Map<string, Snapshot<T, Meta, K>>,
+      events: Record<string, any>,
+      dataItems: RealtimeDataItem[],
+      newData: Snapshot<T, Meta, K>,
+      payload: ConfigureSnapshotStorePayload<Data, Meta>,
+      store: SnapshotStore<T, Meta, K>,
+      callback?: (snapshotStore: SnapshotStore<T, Meta, K>) => void
+    ): Promise<{
+      snapshotStore: SnapshotStore<T, Meta, K>, 
+      storeConfig: SnapshotStoreConfig<T, Meta, K>,
+      updatedStore?: SnapshotStore<T, Meta, K>
+    }> => {
+        // Step 1: Update the snapshot data
+        if (snapshotId && newData) {
+            // Update or add new snapshot data to the store
+            data.set(snapshotId, newData);
+        }
+    
+        // Step 2: Handle events (optional)
+        // If events need to trigger some changes in the snapshotStore or data processing, handle them here
+        if (events) {
+            // For example, you could update metadata or trigger some event-specific logic
+            for (const eventKey in events) {
+                // Perform some action based on the event key and its data
+                const eventData = events[eventKey];
+                console.log(`Handling event: ${eventKey}`, eventData);
+            }
+        }
+    
+        // Step 3: Process dataItems if necessary
+        if (dataItems && dataItems.length > 0) {
+            // Example: Update snapshotStore based on the real-time data items
+            dataItems.forEach((item) => {
+                // Logic to update snapshotStore or snapshot data based on real-time data item
+                console.log(`Processing data item: ${item.id}`, item);
+            });
+        }
+    
+        // Step 4: Update snapshotStore configuration based on the payload
+        const storeConfig: SnapshotStoreConfig<T, Meta, K> = {
+            // Populate the configuration based on the payload and other provided parameters
+            id: snapshotId,
+            records: Array.from(data.values()), // Convert the Map to an array of snapshots
+            options: payload.options || {}, // Use options from the payload if available
+            metadata: payload.metadata || {}, // Use metadata from the payload if available
+            category: payload.category, // Optionally set a category from the payload
+        };
+    
+        // Step 5: Optionally, call the callback if provided
+        if (callback) {
+            callback(snapshotStore);
+        }
+    
+        // Step 6: Return the updated snapshotStore and the new storeConfig
+        return {
+            snapshotStore,
+            storeConfig,
+        };
+    },  
     getDataStoreMethods: (
       snapshotStoreConfig,
       dataStoreMethods
     ) => {
       // Implement your logic here
-      return {}; // or the appropriate Partial<DataStoreWithSnapshotMethods<T, K>>
+      return {}; // or the appropriate Partial<DataStoreWithSnapshotMethods<T, Meta, K>>
     },
-    // Array of SnapshotStoreMethod<T, K>
+    // Array of SnapshotStoreMethod<T, Meta, K>
     snapshotMethods: [],
     handleSnapshotOperation: (
-      snapshot: Snapshot<Data, Data>,
-      data: SnapshotStoreConfig<Data, Data>,
+      snapshot: Snapshot<Data, Meta, Data>,
+      data: SnapshotStoreConfig<Data, Meta, Data>,
       operation: SnapshotOperation, // Ensure you use this in your logic
       operationType: SnapshotOperationType
-    ): Promise<Snapshot<Data, Data> | null> => {
+    ): Promise<Snapshot<Data, Meta, Data> | null> => {
       return new Promise((resolve) => {
+
+        // Use useSecureUserId to get the current user's ID and ensure the user is authenticated
+        const { userId, error: userError } = useSecureUserId();
+
+        if (userError || !userId) {
+          console.error("User validation failed:", userError);
+          resolve(null);
+          return;
+        }
+
         // Check if data is valid
         if (!data || !data.records) {
           resolve(null); // Resolve with null if data is invalid
           return; // Exit the function early
         }
-        // Example logic to process the snapshot
-        const isValidSnapshot = /* logic to determine if the snapshot is valid */;
+        // Use the isSnapshot type guard to validate the snapshot
+        const isValidSnapshot = isSnapshot<Data, Meta, Data>(snapshot);
         
-        if (isValidSnapshot) {
-          const newSnapshot: Snapshot<Data, Data> = /* logic to create or obtain a valid Snapshot */;
-          resolve(newSnapshot); // Resolve with the new valid snapshot
-        } else {
+        if (!isValidSnapshot) {
           resolve(null); // Resolve with null if the snapshot is invalid
+          return;
         }
+        // Check if a snapshot with the requested properties exists
+        const existingSnapshot = data.records.find(record => record.id === snapshot.id);
+
+        if (!existingSnapshot) {
+          console.warn("No matching snapshot found for the provided properties.");
+          resolve(null);
+          return;
+        }
+    
+        // If all conditions are met, create a new snapshot instance using createSnapshotInstance
+        const newSnapshot = createSnapshotInstance<Data, Meta, Data>({
+          snapshotId: snapshot.id,
+          data: snapshot.data,
+          meta: snapshot.meta,
+          events: snapshot.events,
+        });
+    
+        resolve(newSnapshot); // Resolve with the new valid snapshot
       });
     },
     
@@ -413,7 +546,7 @@ const storeProps: SnapshotStoreProps<T, K> = {
    
   }, 
   
-  config: null, // Set a valid config or null
+  config: Promise.resolve(null), // Set a valid config or null
   operation: {
     operationType: SnapshotOperationType.CreateSnapshot
   }, // Example operation
@@ -430,7 +563,36 @@ const snapshotId = storeProps.state?.[0]?.id
   ? getSnapshotId(storeProps.state[0].id) 
   : null;
 
-
+  const mapToPayload = (updatePayload: UpdateSnapshotPayload<Data>): Payload => {
+    return {
+      error: updatePayload.error || undefined,
+      meta: updatePayload.meta
+        ? {
+            ...updatePayload.meta,
+            name: updatePayload.meta.name,
+            timestamp: updatePayload.meta.timestamp,
+            type: updatePayload.meta.type,
+            startDate: updatePayload.meta.startDate,
+            endDate: updatePayload.meta.endDate,
+            status: updatePayload.meta.status,
+            id: updatePayload.meta.id,
+            isSticky: updatePayload.meta.isSticky,
+            isDismissable: updatePayload.meta.isDismissable,
+            isClickable: updatePayload.meta.isClickable,
+            isClosable: updatePayload.meta.isClosable,
+            isAutoDismiss: updatePayload.meta.isAutoDismiss,
+            isAutoDismissable: updatePayload.meta.isAutoDismissable,
+            isAutoDismissOnNavigation: updatePayload.meta.isAutoDismissOnNavigation,
+            isAutoDismissOnAction: updatePayload.meta.isAutoDismissOnAction,
+            isAutoDismissOnTimeout: updatePayload.meta.isAutoDismissOnTimeout,
+            isAutoDismissOnTap: updatePayload.meta.isAutoDismissOnTap,
+            optionalData: updatePayload.meta.optionalData,
+            data: updatePayload.meta.data,
+          }
+        : undefined,
+    };
+  };
+  
 
 const YourComponent: React.FC<YourComponentProps> = ({
   apiConfig,
@@ -443,7 +605,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
     updateCallback
   );
   const { isActive, toggleActivation, resetIdleTimeout } =
-    useIdleTimeout(undefined, props); // Destructure the idle timeout properties
+    useIdleTimeout(undefined, { apiConfig }); // Destructure the idle timeout properties
   const dataFrameAPI = DataFrameAPI; // Initialize the dataframe API class
   const { calendarData, updateCalendarData } = useCalendarContext();
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -473,6 +635,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
     loading: false, // Simulated loading state
   };
 
+  const mappedPayload = mapToPayload(payload);
   const { addTracker, removeTracker, getTrackers } =
     useTrackerStore(rootStores); // Import and use the tracker store
 
@@ -492,15 +655,16 @@ const YourComponent: React.FC<YourComponentProps> = ({
   const updateSnapshot = async (
     snapshotId: string,
     data: Data,
-    events: Record<string, CalendarEvent<T, K>[]>,
-    snapshotStore: SnapshotStore<BaseData, K>,
+    events: Record<string, CalendarEvent<T, Meta, K>[]>,
+    snapshotStore: SnapshotStore<BaseData, Meta, K>,
     dataItems: RealtimeDataItem[],
     newData: Data,
     payload: UpdateSnapshotPayload<Data>
   ) => {
+  
     try {
       // Implement the logic to update the snapshot
-      console.log("Updating snapshot with payload:", payload);
+      console.log("Updating snapshot with payload:", mappedPayload);
       // Call your API or logic here
     } catch (error) {
       console.error("Error during snapshot update:", error);
@@ -530,7 +694,10 @@ const YourComponent: React.FC<YourComponentProps> = ({
     };
 
     
-    const snapshotStore = new SnapshotStore<BaseData, K>({storeId, name, version, schema, options, category, config, operation});
+    const snapshotStore = new SnapshotStore<BaseData, Meta, K>({
+      storeId, name, version, schema, options, category, config, operation, expirationDate,
+      payload: mappedPayload, callback, storeProps, endpointCategory
+    });
     const dataItems: RealtimeDataItem[] = [];
 
 
@@ -710,7 +877,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
 };
 
 export default YourComponent;
-export {storeProps}
+export { storeProps };
 
 
 
@@ -718,10 +885,26 @@ export {storeProps}
 
 // Example:
 
-
-const events: Record<string, CalendarEvent<T, K>[]> = {};
-const data = new SnapshotStore<T, K>({ storeId, name, version, schema, options, category, config, operation, expirationDate});
-const snapshotStore = new SnapshotStore<BaseData, K>({ storeId, name, version, schema, options, category, config, operation});
+const { callback, payload, endpointCategory} = storeProps as SnapshotStoreProps<T, Meta, K>
+const events: Record<string, CalendarEvent<T, Meta, K>[]> = {};
+const storeData = new SnapshotStore<T, Meta, K>({ storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory});
+const data: Data= {
+  title: "",
+  category: "",
+  description: "",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  status: "",
+  projects: "",
+  progress: "",
+  phase: {
+    type,
+    duration,
+    value,
+    id, name, description, startDate, endDate,
+  },
+}
+const snapshotStore = new SnapshotStore<BaseData, Meta, K>({ storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory});
 const dataItems: RealtimeDataItem[] = [];
 const newData: Data = {
   timestamp: undefined
@@ -735,7 +918,8 @@ const retryDelay = 1000;
 const maxAge = 1000;
 const staleWhileRevalidate = 1000;
 const cacheKey = await appTreeApiService.cacheKey
-const payload: UpdateSnapshotPayload<Data> = {
+const updatedPayload: UpdateSnapshotPayload<Data> = {
+  ...payload,
   snapshotId: snapshotId, // Assign snapshotId here
   newData: newData,
   title: "",
@@ -768,7 +952,12 @@ const component = <YourComponent
     withCredentials: false
   }}
   children={[]}
+  updateSnapshot={updateSnapshotMethod}
+
 />;
+
+
+
 
 component
   .updateSnapshot(
@@ -778,7 +967,7 @@ component
     snapshotStore,
     dataItems,
     newData,
-    payload
+    updatedPayload,
   )
   .then(() => {
     console.log("Snapshot update completed.");

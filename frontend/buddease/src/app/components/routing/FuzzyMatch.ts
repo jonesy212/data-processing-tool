@@ -5,12 +5,18 @@ import { useAuth } from "../auth/AuthContext";
 import { processTextWithSpaCy } from "../intelligence/AutoGPTSpaCyIntegration";
 import { AllTypes } from "../typings/PropTypes";
 
-// Define a type for your entities
-interface Entity {
-  id: string | number;
+interface BaseEntity { id: string | number;
   name: string | undefined;
   description?: string | null | undefined;
+  createdAt?: string | Date;
+  createdBy?: string;
+  updatedBy?: string;
+  filePathOrUrl?: string;
   source?: string;
+}
+// Define a type for your entities
+interface Entity extends BaseEntity {
+ 
   type?: AllTypes;  // Add more properties as needed
 }
 
@@ -69,4 +75,4 @@ const query = "Microsft Corp"; // Intentional typo for demonstration
 const matchedEntities = fuzzyMatchEntities(query, entities);
 const filteredEntities = entities.filter((entity) => entity.type === "company");
 console.log("Matched Entities:", matchedEntities, filteredEntities);
-export type { Entity}
+export type { Entity, BaseEntity}

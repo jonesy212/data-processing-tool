@@ -71,8 +71,8 @@ class TeamApiService {
   private async requestHandler(
     request: () => Promise<AxiosResponse>,
     errorMessage: string,
-    successMessageId: keyof TeamNotificationMessages,
-    errorMessageId: keyof TeamNotificationMessages,
+    successMessageId: DataeamNotificationMessages,
+    errorMessageId: DataeamNotificationMessages,
     notificationData: any = null
   ): Promise<AxiosResponse> {
     try {

@@ -1,22 +1,21 @@
 // responsetUtils.ts
 import { fetchSnapshotById } from '@/app/api/SnapshotApi';
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { Data } from '../models/data/Data';
 import { DataStore, InitializedState } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Snapshot } from './LocalStorageSnapshotStore';
-import { SnapshotData } from './SnapshotData';
-import SnapshotStore from './SnapshotStore';
-import { SnapshotStoreDataResponse } from './SnapshotStoreDataResponse';
-import { SnapshotContainer, SnapshotDataType } from './SnapshotContainer';
-import { SnapshotStoreConfig } from './SnapshotStoreConfig';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { SnapshotStoreProps } from './useSnapshotStore';
 import { SnapshotConfig } from './SnapshotConfig';
+import { SnapshotContainer } from './SnapshotContainer';
+import SnapshotStore from './SnapshotStore';
+import { SnapshotStoreConfig } from './SnapshotStoreConfig';
+import { SnapshotStoreDataResponse } from './SnapshotStoreDataResponse';
+import { SnapshotStoreProps } from './useSnapshotStore';
 
 
 
-function handleSnapshot<T extends Data, K extends Data>(snapshot: Snapshot<any, any>) {
+function handleSnapshot<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(snapshot: Snapshot<any, any>) {
     if ('snapshotMethods' in snapshot.data) {
       // Safely access SnapshotStore specific methods
       const methods = (snapshot.data as SnapshotStoreDataResponse<T,K>).snapshotMethods;
@@ -29,9 +28,9 @@ function handleSnapshot<T extends Data, K extends Data>(snapshot: Snapshot<any, 
   }
 
 
-function mapResponseToSnapshot<T extends Data, K extends Data>(
+function mapResponseToSnapshot<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   response: any
-): Snapshot<SnapshotStoreDataResponse<T, K>> {
+): Snapshot<SnapshotStoreDataResponse<T, Meta, K>> {
     return {
       id: response.id,
       timestamp: new Date(response.timestamp),
@@ -258,7 +257,7 @@ export const returnsSnapshotStore = async (
       snapshot: async (
         id: string | number | undefined,
         snapshotId: string | null,
-        snapshotData: SnapshotDataType<any, any> | null,
+        snapshotData: SnapshotData<any, any> | null,
         category: Category,
         categoryProperties: CategoryProperties | undefined,
         callback: (snapshot: Snapshot<any, any>) => void,

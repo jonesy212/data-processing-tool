@@ -74,12 +74,15 @@ const exampleSchema: Record<string, SchemaField> = {
 };
 
 // Example SnapshotStoreConfig using the schema
-const snapshotStoreConfig: SnapshotStoreConfig<Data, BaseData> = {
+const snapshotStoreConfig: SnapshotStoreConfig<Data, Data> = {
     name: 'exampleStore',
     version: 1,
     schema: exampleSchema,
     options: {}
 };
+
+
+
 const isValidSchema = validateDataAgainstSchema({
     id: '123',
     timestamp: new Date(),

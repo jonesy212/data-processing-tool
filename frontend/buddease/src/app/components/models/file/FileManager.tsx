@@ -1,18 +1,21 @@
-import { CalendarEvent } from "../../CalendarEvent";
+import { fetchFolderContentsAPI } from '../../api/ApiFiles'
 import { RootState } from "../../state/redux/slices/RootSlice";
 import {useCallback, useEffect, useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import { Folder } from '../data/ Folder';
-import {useFilterStore } from '../../state/FilterStore';
 import { clearFilteredEvents as clearFilteredEventsAction, selectFilteredEvents } from "@/app/components/state/redux/slices/FilteredEventsSlice";
 import { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
 import HighlightEvent from "../../documents/screenFunctionality/HighlightEvent";
-
+import * as React from 'react'
+import { CalendarEvent } from "../../calendar/CalendarEvent";
+import { useFilterStore } from "../../state/stores/FilterStore";
+import { refreshUIForFile } from "../../snapshots/refreshUI"
+import { FilteredEventsState } from '../../state/redux/slices/FilteredEventState'
 
 interface File {
-    id: string;
-    name: string;
-    metadata: FileMetadata;
+    id?: string;
+    name?: string | undefined;
+    metadata: FileMetadata
   }
 interface FileMetadata {
     size: number;
@@ -30,14 +33,20 @@ interface FileManagerProps {
   }
 
 
-  interface FilteredEventsState {
-    payload: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[];
-  }
-  
   
   const FileManager: React.FC<FileManagerProps> = ({ initialFiles, initialFolders, payload }) => {
-      const [files, setFiles] = useState<Map<string, File>>(() => new Map(initialFiles.map(file => [file.id, file])));
-      const [folders, setFolders] = useState<Map<string, Folder>>(() => new Map(initialFolders.map(folder => [folder.id, folder])));
+    // Filter out files with undefined ids and ensure that ids are strings
+    const [files, setFiles] = useState<Map<string, File>>(() => {
+      const fileMap = new Map<string, File>();
+      initialFiles.forEach(file => {
+        if (file.id) { // Ensure that id is defined
+          fileMap.set(file.id, file);
+        }
+      });
+      return fileMap;
+    });
+
+    const [folders, setFolders] = useState<Map<string, Folder>>(() => new Map(initialFolders.map(folder => [folder.id, folder])));
       
       const filterStore = useFilterStore(); // Use FilterStore instance
       const dispatch = useDispatch();
@@ -54,21 +63,41 @@ interface FileManagerProps {
     const updateFileMetadata = (fileId: string, newMetadata: Partial<FileMetadata>) => {
       setFiles(prevFiles => {
         const updatedFile = { ...prevFiles.get(fileId), metadata: { ...prevFiles.get(fileId)?.metadata, ...newMetadata } };
+
+        if(updatedFile.name === undefined){
+          throw new Error("Must provide a file name to update file")
+        }
         return new Map(prevFiles).set(fileId, updatedFile);
       });
     };
   
     // Refresh UI for a specific file
-    const refreshUIForFile = (fileId: string) => {
-      // Trigger a UI update for the specific file (e.g., re-render the file component)
-      console.log(`Refreshing UI for file: ${fileId}`);
+    const handleRefreshUIForFile = (fileId: number) => {
+      refreshUIForFile(fileId); // Call the imported function
     };
+
   
     // Refresh contents of a specific folder
-    const refreshFolderContents = (folderId: string) => {
-      // Logic to refresh folder contents (e.g., re-fetch folder data from the server)
-      console.log(`Refreshing folder contents for folder: ${folderId}`);
+    const refreshFolderContents = async (folderId: string) => {
+      try {
+        // Fetch the updated folder contents from the API
+        const updatedFolderContents = await fetchFolderContentsAPI(folderId); // You would define this API call
+    
+        // Update the local state with the new contents
+        setFolders((prevFolders) => {
+          const newFolders = new Map(prevFolders); // Create a copy of the current folders
+          const updatedFolder = updatedFolderContents; // Assuming the API returns the updated folder data
+    
+          newFolders.set(updatedFolder.id, updatedFolder); // Update or add the folder in the map
+          return newFolders; // Return the new state
+        });
+    
+        console.log(`Folder contents refreshed for folder: ${folderId}`);
+      } catch (error) {
+        console.error(`Failed to refresh folder contents for folder ID ${folderId}:`, error);
+      }
     };
+      
   
     // Sync folder with server
     const syncFolderWithServer = async (folderId: string) => {
@@ -103,7 +132,7 @@ interface FileManagerProps {
         {Array.from(files.values()).map(file => (
           <li key={file.id}>
             {file.name} - Size: {file.metadata.size}
-            <button onClick={() => refreshUIForFile(file.id)}>Refresh UI</button>
+            <button onClick={() => refreshUIForFile(Number(file.id))}>Refresh UI</button>
           </li>
         ))}
       </ul>
@@ -113,11 +142,14 @@ interface FileManagerProps {
       <h3>Folders</h3>
       <ul>
         {Array.from(folders.values()).map(folder => (
-          <li key={folder.id}>
-            {folder.name}
-            <button onClick={() => refreshFolderContents(folder.id)}>Refresh Contents</button>
-            <button onClick={() => syncFolderWithServer(folder.id)}>Sync with Server</button>
-          </li>
+          <div>
+            <li key={folder.id}>
+              {folder.name}
+              <button onClick={() => refreshFolderContents(folder.id)}>Refresh Contents</button>
+              <button onClick={() => syncFolderWithServer(folder.id)}>Sync with Server</button>
+            </li>
+            <button onClick={() => handleRefreshUIForFile(folder.id)}>Refresh UI</button>
+          </div>
         ))}
       </ul>
     </div>

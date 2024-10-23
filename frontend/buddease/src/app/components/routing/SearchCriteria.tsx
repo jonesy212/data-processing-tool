@@ -26,10 +26,9 @@ import LoadingSpinner from "../models/tracker/LoadingSpinner";
 import { searchDocuments } from "@/app/api/ApiDocument";
 import SearchComponent from "@/app/pages/searchs/SearchComponent";
 import useSearchOptions from "@/app/pages/searchs/useSearchOptions";
-import { error } from "console";
 import { sanitizeInput } from "../security/SanitizationFunctions";
 import { setLoading, clearError } from "../state/stores/UISlice";
-import SearchResult from "./SearchResult";
+import SearchResult, { SearchResultWithQuery } from "./SearchResult";
 import useErrorHandling from "../hooks/useErrorHandling";
 import useSearchPagination from "../hooks/commHooks/useSearchPagination";
 import { selectEventLoading } from "../state/redux/slices/EventSlice";
@@ -105,19 +104,21 @@ const exampleData: EnhancedSupportedData = {
 };
 
 
+type SearchResultItem = Entity | SearchResultWithQuery<any>;
 
 const SearchCriteriaComponent: React.FC<{
   onUpdateCriteria: (criteria: string) => void;
 }> = ({ onUpdateCriteria }) => {
   const [criteria, setCriteria] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<Entity[]>([]);
+  const [searchResults, setSearchResults] = useState<SearchResultItem[]>([]);
   const dispatch = useDispatch();
   const entities = useSelector((state: RootState) => state.entityManager);
   const { searchOptions, handleFilterTasks, handleSortTasks } = useSearchOptions();
   const { currentPage, nextPage, previousPage, pageSize, changePageSize } = useSearchPagination();
   const [searchQuery, setSearchQuery] = useState<string>("");
   const { handleError } = useErrorHandling()
+  const [error, setError] = useState<string | null>(null);
 
   const loading = useSelector(selectEventLoading);
 
@@ -125,10 +126,10 @@ const SearchCriteriaComponent: React.FC<{
   const { userId } = useParams()
 
   setEffect(() => {
-    if (searchQuery) {
-      performSearch(searchQuery);
+    if (searchQuery || searchTerm) {
+      performSearch(searchQuery || searchTerm);
     }
-  }, [searchQuery, currentPage]);
+  }, [searchQuery, searchTerm, currentPage]);
 
   const performSearch = async (query: string) => {
     try {
@@ -138,11 +139,12 @@ const SearchCriteriaComponent: React.FC<{
       setSearchResults(results);
       setLoading(false);
       SearchLogger.logSearchResults(query, results.length, String(userId));
-      clearError();
+      setError(null);
     } catch (error: any) {
       handleError("Failed to fetch search results. Please try again.");
       SearchLogger.logSearchError(query, error.message, String(userId));
       setLoading(false);
+      setError("Failed to fetch search results. Please try again.");
     }
   };
 
@@ -269,9 +271,25 @@ const SearchCriteriaComponent: React.FC<{
 
       {/* Search Results */}
       <div className="search-results">
-        {searchResults.map((result, index) => (
-          <SearchResult key={index} result={result} />
-        ))}
+      {searchResults.map((result, index) => {
+          if ('query' in result) {
+            // Handle SearchResultWithQuery rendering
+            return (
+              <div key={index}>
+                <h3>{result.title}</h3>
+                <p>Query: {result.query}</p>
+                <p>Total Count: {result.totalCount}</p>
+                {result.items.map((item, subIndex) => (
+                  <SearchResult key={`${index}-${subIndex}`} result={item} />
+                ))}
+              </div>
+            );
+          } else {
+            // Handle Entity rendering
+            const entityResult = result as Entity & SearchResultWithQuery<any>;
+            return <SearchResult key={index} result={entityResult} />;
+          }
+        })}
         <SearchComponent
           componentSpecificData={searchResults
             .filter((result) => result.source === "local")
@@ -284,15 +302,14 @@ const SearchCriteriaComponent: React.FC<{
             documentData={searchResults
               .filter((result) => result.source === "global")
               .map((result) => ({
-
                 createdAt: result.createdAt || new Date(), // Use the actual value or default to now
                 createdBy: result.createdBy || "", // Default to an empty string if not available
                 updatedBy: result.updatedBy || "", // Default to an empty string if not available
                 filePathOrUrl: result.filePathOrUrl || "", // Default to an empty string if not available
-                uploadedBy: '', // Assuming these are already defined elsewhere
-                tagsOrCategories: '', // Assuming these are already defined elsewhere
-                format: "", // Assuming these are already defined elsewhere
-                uploadedByTeamId: 0, // Assuming these are already defined elsewhere
+                uploadedBy: '', 
+                tagsOrCategories: '', 
+                format: "", 
+                uploadedByTeamId: 0, 
                 uploadedByTeam: {
                   team: { 
                     id: "",
@@ -325,8 +342,8 @@ const SearchCriteriaComponent: React.FC<{
                   reassignedProjects: [],
                   assignProject: (team: Team, project: Project, assignedDate: Date) => { },
                   reassignProject: (team: Team, project: Project, previousTeam: Team, reassignmentDate: Date) => { },
-                  unassignProject: "",
-                  updateProgress: "",
+                  unassignProject: (team: Team, project: Project) => {},
+                  updateProgress: (team: Team, project: Project) => {},
                   }, 
                 
                 selectedDocument: {} as DocumentData<Data>,
@@ -408,8 +425,8 @@ const SearchCriteriaComponent: React.FC<{
                 _routing_values_as_array_of_objects_with_key_and_value: [], // Default to empty array
                 _routing_values_as_array_of_objects_with_key_and_value_and_value: [], // Default to empty array
               }))}
-          searchQuery={searchQuery}
-        />
+              searchQuery={searchQuery || searchTerm}
+              />
       </div>
 
       {/* Pagination Controls */}
@@ -432,7 +449,6 @@ const SearchCriteriaComponent: React.FC<{
     </div>
   );
 };
-
 
 
 export default SearchCriteriaComponent;

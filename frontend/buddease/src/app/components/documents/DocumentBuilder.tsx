@@ -43,6 +43,7 @@ import PromptViewer from "../prompts/PromptViewer";
 import { selectedmetadata } from "../routing/MetadataComponent";
 import axiosInstance from "../security/csrfToken";
 import SharingOptions from "../shared/SharingOptions";
+import { TagsRecord } from "../snapshots";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import {
     DocumentObject,
@@ -78,7 +79,6 @@ import {
 import { ToolbarOptionsComponent, ToolbarOptionsProps } from "./ToolbarOptions";
 import { ResearchReport, TechnicalReport } from "./documentation/report/Report";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
-import { TagsRecord } from "../snapshots";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 
@@ -93,7 +93,7 @@ const checksum = computeChecksum(versionData);
 type ContentStructuredMetadata = StructuredMetadata & ContentState;
 // DocumentData.tsx
 
-export interface DocumentData<T extends Data> extends DocumentBase<T>, 
+export interface DocumentData<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> extends DocumentBase<T>, 
 CommonData<T>, 
 DatasetModel<T> {
   id: string | number;
@@ -143,7 +143,7 @@ DatasetModel<T> {
         copyright?: string;
         license?: string;
         links?: string[];
-         tags?: TagsRecord | string[] | undefined; 
+        tags?: TagsRecord | string[] | undefined; 
         phaseType: ProjectPhaseTypeEnum;
         customProp1: string;
         customProp2: number;
@@ -1229,7 +1229,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
     });
     
     // Create a document object
-    const documentObject: DocumentObject = {
+    const documentObject: DocumentObject<T, Meta, K> = {
       // Document Identification & Versioning
       id: "", // Document unique identifier
       _id: "", // Internal document identifier

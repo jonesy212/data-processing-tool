@@ -1,11 +1,15 @@
 // SubscriptionActions.ts
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createAction } from "@reduxjs/toolkit";
-import { Subscriber } from "../users/Subscriber";
 import { Data } from "../models/data/Data";
 import { CustomSnapshotData } from "../snapshots";
+import { Subscriber } from "../users/Subscriber";
 
 // Define the payload interface for subscription-related actions
-interface SubscriptionPayload<T extends Data, K extends CustomSnapshotData> {
+interface SubscriptionPayload<T extends Data, Meta extends UnifiedMetaDataOptions,
+  K extends Data & CustomSnapshotData> {
+
+    
   notify: any;
   id: any;
   content: any;
@@ -54,17 +58,17 @@ interface SubscriptionPayload<T extends Data, K extends CustomSnapshotData> {
   onUnsubscribe: any;
   onSnapshot: any;
   triggerOnSnapshot: any;
-  subscriber: Subscriber<T, K> | undefined;
+  subscriber: Subscriber<T, Meta, K> | undefined;
   message?: string;
   subscriberId: string;
   type?: "info" | "success" | "error" | "warning";
 }
 
 
-export const SubscriptionActions = <T extends Data, K extends CustomSnapshotData>() => {
+export const SubscriptionActions = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data & CustomSnapshotData>() => {
   const actions = {
     // Action to add a new subscriber
-    subscribe: createAction<SubscriptionPayload<T, K>>("subscribe"),
+    subscribe: createAction<SubscriptionPayload<T, Meta, K>>("subscribe"),
 
     // Action to remove a subscriber
     unsubscribe: createAction<string>("unsubscribe"),
@@ -80,7 +84,7 @@ export const SubscriptionActions = <T extends Data, K extends CustomSnapshotData
   };
 
   return actions as {
-    subscribe: ActionCreatorWithPayload<SubscriptionPayload<T, K>>;
+    subscribe: ActionCreatorWithPayload<SubscriptionPayload<T, Meta, K>>;
     unsubscribe: ActionCreatorWithPayload<string>;
     fetchInitialSubscriptions: ActionCreatorWithoutPayload;
     subscriptionSuccess: ActionCreatorWithPayload<string>;

@@ -5,7 +5,7 @@ import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
 import { SnapshotItem } from "./SnapshotList";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
-interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends SnapshotDataResponse<T, K> {
+interface SnapshotStoreDataResponse<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> extends SnapshotDataResponse<T, Meta, K> {
   id: string | number;
   timestamp: Date;
   category: string;
@@ -29,15 +29,15 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
     onError: (error: Error) => void;
     // Add other methods as needed
   };
-  getSnapshotsBySubscriber?: () => Snapshot<SnapshotStoreDataResponse<T, K>>[];
+  getSnapshotsBySubscriber?: () => Snapshot<SnapshotStoreDataResponse<T, Meta, K>>[];
   getSnapshotsBySubscriberSuccess?: boolean;
-  getSnapshotsByTopic?: () => Snapshot<SnapshotStoreDataResponse<T, K>>[];
+  getSnapshotsByTopic?: () => Snapshot<SnapshotStoreDataResponse<T, Meta, K>>[];
   getSnapshotsByTopicSuccess?: boolean;
-  getSnapshotsByCategory?: () => Snapshot<SnapshotStoreDataResponse<T, K>>[];
+  getSnapshotsByCategory?: () => Snapshot<SnapshotStoreDataResponse<T, Meta, K>>[];
   getSnapshotsByCategorySuccess?: boolean;
-  getSnapshotsByKey?: () => Snapshot<SnapshotStoreDataResponse<T, K>>[];
+  getSnapshotsByKey?: () => Snapshot<SnapshotStoreDataResponse<T, Meta, K>>[];
   getSnapshotsByKeySuccess?: boolean;
-  getSnapshotsByPriority?: () => Snapshot<SnapshotStoreDataResponse<T, K>>[];
+  getSnapshotsByPriority?: () => Snapshot<SnapshotStoreDataResponse<T, Meta, K>>[];
   getSnapshotsByPrioritySuccess?: boolean;
   getStoreData?: () => any; // Adjust to specific type if known
   updateStoreData?: (data: any) => void; // Adjust to specific type if known
@@ -47,11 +47,11 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
   createSnapshot?: () => void;
   updateSnapshot?: (id: string, data: any) => void; // Adjust as needed
   deleteSnapshot?: (id: string) => void;
-  findSnapshot?: (id: string) => Snapshot<SnapshotStoreDataResponse<T, K>> | null;
+  findSnapshot?: (id: string) => Snapshot<SnapshotStoreDataResponse<T, Meta, K>> | null;
   getSnapshotItems: (
     // snapshotId: string,
-    // callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null,
-    // snapshot: Snapshot<T, K> | null
+    // callback: (snapshots: Snapshots<T, Meta>) => Subscriber<T, Meta, K> | null,
+    // snapshot: Snapshot<T, Meta, K> | null
   ) => (SnapshotStoreConfig<T, any> | SnapshotItem<Data, any>)[] | undefined; // Adjust to specific type if known
   dataStore?: any; // Adjust to specific type if known
   snapshotItems?: any[]; // Adjust to specific type if known
@@ -72,22 +72,22 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
   getCustomStore?: () => any; // Adjust to specific type if known
   addSCustomStore?: (store: any) => void; // Adjust type if known
   removeStore?: (storeId: string) => void;
-  onSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void;
+  onSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, Meta, K>>) => void;
   getData?: () => any; // Adjust to specific type if known
   getDataStore?: () => any; // Adjust to specific type if known
   addSnapshotItem?: (item: any) => void; // Adjust type if known
   addNestedStore?: (store: any) => void; // Adjust type if known
   defaultSubscribeToSnapshots: (
     snapshotId: string,
-    callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null,
-    snapshot: Snapshot<T, K> | null
+    callback: (snapshots: Snapshots<T, Meta>) => Subscriber<T, Meta, K> | null,
+    snapshot: Snapshot<T, Meta, K> | null
   ) => void | undefined;
   defaultCreateSnapshotStores?: () => void;
   createSnapshotStores?: () => void;
-  subscribeToSnapshots?: (callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void) => void;
-  subscribeToSnapshot?: (id: string, callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void) => void;
+  subscribeToSnapshots?: (callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, Meta, K>>) => void) => void;
+  subscribeToSnapshot?: (id: string, callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, Meta, K>>) => void) => void;
   defaultOnSnapshots?: () => void;
-  onSnapshots?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void;
+  onSnapshots?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, Meta, K>>) => void;
   transformSubscriber?: (subscriber: any) => any; // Adjust type if known
   isSnapshotStoreConfig?: () => boolean;
   transformDelegate?: (delegate: any) => any; // Adjust type if known
@@ -95,7 +95,7 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
   transformedDelegate?: any[]; // Adjust to specific type if known
   getSnapshotIds?: string[];
   getAllKeys?: () => string[];
-  mapSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => any; // Adjust type if known
+  mapSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, Meta, K>>) => any; // Adjust type if known
   getAllItems?: () => any[]; // Adjust to specific type if known
   addData?: (data: any) => void; // Adjust type if known
   addDataStatus?: string;
@@ -111,9 +111,9 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
   getFrontendVersion?: () => string;
   fetchData?: () => any; // Adjust to specific type if known
   defaultSubscribeToSnapshot?: (id: string) => void;
-  handleSubscribeToSnapshot?: (id: string, callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void) => void;
+  handleSubscribeToSnapshot?: (id: string, callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, Meta, K>>) => void) => void;
   removeItem?: (id: string) => void;
-  getSnapshot?: (id: string) => Snapshot<SnapshotStoreDataResponse<T, K>> | null;
+  getSnapshot?: (id: string) => Snapshot<SnapshotStoreDataResponse<T, Meta, K>> | null;
   getSnapshotSuccess?: boolean;
   getSnapshotId?: (id: string) => string;
   getItem?: (id: string) => any; // Adjust to specific type if known
@@ -133,7 +133,7 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
   updateSnapshotFailure?: boolean;
   removeSnapshot?: (id: string) => void;
   clearSnapshots?: () => void;
-  addSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void;
+  addSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, Meta, K>>) => void;
   createInitSnapshot?: () => void;
   createSnapshotSuccess?: boolean;
   clearSnapshotSuccess?: boolean;
@@ -141,7 +141,7 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
   createSnapshotFailure?: boolean;
   setSnapshotSuccess?: boolean;
   setSnapshotFailure?: boolean;
-  updateSnapshots?: (snapshots: Snapshot<SnapshotStoreDataResponse<T, K>>[]) => void;
+  updateSnapshots?: (snapshots: Snapshot<SnapshotStoreDataResponse<T, Meta, K>>[]) => void;
   updateSnapshotsSuccess?: boolean;
   updateSnapshotsFailure?: boolean;
   initSnapshot?: () => void;
@@ -154,11 +154,11 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
   getState?: () => any; // Adjust type if known
   setState?: (state: any) => void; // Adjust type if known
   validateSnapshot?: () => boolean;
-  handleSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void;
+  handleSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, Meta, K>>) => void;
   handleActions?: (actions: any) => void; // Adjust type if known
-  setSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void;
+  setSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, Meta, K>>) => void;
   transformSnapshotConfig?: (config: any) => any; // Adjust type if known
-  getSnapshotCategory?: (category: string) => Snapshot<SnapshotStoreDataResponse<T, K>>[];
+  getSnapshotCategory?: (category: string) => Snapshot<SnapshotStoreDataResponse<T, Meta, K>>[];
   getSnapshotCategorySuccess?: boolean;
   getSnapshotCategoryFailure?: boolean;
   transformSnapshotStore?: (store: any) => any; // Adjust type if known
@@ -185,4 +185,4 @@ interface SnapshotStoreDataResponse<T extends Data, K extends Data> extends Snap
   getSnapshotStoreConfigFailure?: boolean;
 }
 
-export type {SnapshotStoreDataResponse}
+export type { SnapshotStoreDataResponse };

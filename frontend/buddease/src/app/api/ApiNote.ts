@@ -5,7 +5,6 @@ import {
   useNotification,
 } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
-import dotProp from "dot-prop";
 import { ModifiedDate } from "../components/documents/DocType";
 import { NoteData } from "../components/documents/NoteData";
 import FolderData from "../components/models/data/FolderData";
@@ -34,6 +33,15 @@ interface NoteNotificationMessages {
   UPDATE_NOTE_ERROR: string;
   DELETE_NOTE_SUCCESS: string;
   DELETE_NOTE_ERROR: string;
+
+  ARCHIVE_NOTE_ERROR: string;
+  RESTORE_NOTE_ERROR: string;
+  MOVE_NOTE_ERROR: string;
+  MERGE_NOTES_ERROR: string;
+  SPLIT_NOTE_ERROR: string;
+  SEARCH_NOTE_ERROR: string;
+  FILTER_NOTE_ERROR: string;
+  SEARCH_NOTES_ERROR: string;
   // Add more keys as needed
 }
 
@@ -47,6 +55,14 @@ const apiNotificationMessages: NoteNotificationMessages = {
   UPDATE_NOTE_ERROR: "Failed to update note",
   DELETE_NOTE_SUCCESS: "Note deleted successfully",
   DELETE_NOTE_ERROR: "Failed to delete note",
+  ARCHIVE_NOTE_ERROR: "Failed to archive note",
+  RESTORE_NOTE_ERROR: "Failed to restore note",
+  MOVE_NOTE_ERROR: "Failed to move note",
+  MERGE_NOTES_ERROR: "Failed to merge notes",
+  SPLIT_NOTE_ERROR: "Failed to split note",
+  SEARCH_NOTE_ERROR: "Failed to search note",
+  FILTER_NOTE_ERROR: "Failed to filter notes",
+  SEARCH_NOTES_ERROR: "Failed to search notes",
   // Add more properties as needed
 };
 
@@ -81,7 +97,7 @@ interface Note {
   permissions: string;
 
   encryption: Encryption;
-  currentMetadata: StructuredMetadata;
+  currentMetadata: StructuredMetadata<any, any>;
   searchHistory: SearchHistory[];
   version: Version;
   // Add more properties as needed
@@ -91,24 +107,24 @@ interface Note {
 export const handleNoteApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: string
+  errorMessageId: keyof NoteNotificationMessages
 ) => {
   handleApiError(error, errorMessage);
+  
   if (errorMessageId) {
-    const errorMessageText = dotProp.getProperty(
-      apiNotificationMessages,
-      errorMessageId
-    );
+    // Access the error message directly using standard property access
+    const errorMessageText = apiNotificationMessages[errorMessageId];
+    
+    // Notify using the extracted message
     useNotification().notify(
       errorMessageId,
-      errorMessageText as unknown as string,
+      errorMessageText,
       null,
       new Date(),
       "NoteError" as NotificationTypeEnum
     );
   }
 };
-
 // Fetch note by ID API
 export const fetchNoteByIdAPI = async (
   noteId: number,

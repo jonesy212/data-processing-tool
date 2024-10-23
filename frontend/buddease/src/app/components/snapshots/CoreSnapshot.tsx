@@ -1,182 +1,155 @@
-// CoreSnapshot.ts
-import { Task } from "react-native";
-import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
-import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
-import { Category } from "../libraries/categories/generateCategoryProperties";
-import { Content } from "../models/content/AddContent";
-import { BaseData, Data } from "../models/data/Data";
-import { ProjectPhaseTypeEnum, StatusType } from "../models/data/StatusType";
+// // CoreSnapshot.ts
+// import { Task } from "react-native";
+// import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
+// import { Category } from "../libraries/categories/generateCategoryProperties";
+// import { Content } from "../models/content/AddContent";
+// import { BaseData, Data } from "../models/data/Data";
+// import { ProjectPhaseTypeEnum, StatusType } from "../models/data/StatusType";
 
-import { Phase } from "../phases/Phase";
-import { Label } from "../projects/branding/BrandingSettings";
-import { DataStore, InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
-import { Subscriber } from "../users/Subscriber";
-import { User } from "../users/User";
-import {
-  Snapshot,
-  Snapshots,
-  SnapshotsArray,
-  SnapshotUnion,
-  UpdateSnapshotPayload
-} from "./LocalStorageSnapshotStore";
-import { SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotItem } from "./SnapshotList";
-import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
-import { Callback } from "./subscribeToSnapshotsImplementation";
-import { SnapshotEvents } from "./SnapshotEvents";
-import { SnapshotOperation } from "./SnapshotActions";
-import { CombinedEvents } from "../hooks/useSnapshotManager";
-import { SnapshotStoreMethod } from "./SnapshotStoreMethod";
-import { ContentItem } from "../cards/DummyCardLoader";
-import { InitializedData, InitializedDataStore } from "../hooks/SnapshotStoreOptions";
-import { SnapshotData } from ".";
-import { SnapshotSubscriberManagement } from "./SnapshotSubscriberManagement";
+// import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+// import { SnapshotData } from ".";
+// import { ContentItem } from "../cards/DummyCardLoader";
+// import { InitializedData, InitializedDataStore } from "../hooks/SnapshotStoreOptions";
+// import { CombinedEvents } from "../hooks/useSnapshotManager";
+// import { Phase } from "../phases/Phase";
+// import { Label } from "../projects/branding/BrandingSettings";
+// import { InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+// import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
+// import { AllTypes } from "../typings/PropTypes";
+// import { Subscriber } from "../users/Subscriber";
+// import { User } from "../users/User";
+// import {
+//     Snapshot,
+//     Snapshots,
+//     SnapshotsArray,
+//     SnapshotUnion
+// } from "./LocalStorageSnapshotStore";
+// import { SnapshotOperation } from "./SnapshotActions";
+// import { SnapshotConfig } from "./SnapshotConfig";
+// import { SnapshotEvents } from "./SnapshotEvents";
+// import { SnapshotItem } from "./SnapshotList";
+// import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
+// import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+// import { SnapshotStoreMethod } from "./SnapshotStoreMethod";
+// import { SnapshotSubscriberManagement } from "./SnapshotSubscriberManagement";
+// import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
 
-interface CoreSnapshot<T extends Data, K extends Data> extends SnapshotSubscriberManagement<T, K>
-{
-  id: string | number | undefined
-  config: SnapshotStoreConfig<T, K> | null;
-  configs?: SnapshotStoreConfig<T, K>[] | null;
-  data: InitializedData | null | undefined
-  parentId?: string | null;
-  children?: CoreSnapshot<K, T>[];
-  operation?: SnapshotOperation
-  description?: string | null;
-  name?: string;
-  timestamp: string | number | Date | undefined;
-  orders?: any;
-  createdBy?: string;
-  eventRecords?: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
-  subscriberId?: string;
-  length?: number;
-  task?: Task;
-  category?: symbol | string | Category | undefined;
-  categoryProperties?: CategoryProperties | undefined;
-  date?: string | number | string | number | Date | null;
-  status?: StatusType | undefined;
-  content?: string | Content<T, K>;
-  contentItem?: string | ContentItem ;
-  label: Label | undefined;
-  message?: string;
-  user?: User;
-  type?: string | null | undefined;
-  phases?: ProjectPhaseTypeEnum;
-  phase?: Phase<T> | null;
-  ownerId?: string;
-  store?: SnapshotStore<T, K> | null;
-  state?: SnapshotsArray<T> | null; // Ensure state matches Snapshot<T> or null/undefined
-  dataStore?: InitializedDataStore
-  snapshotId?: string | number;
-  configOption?:
-  | string
-  | SnapshotConfig<T, K>
-  | SnapshotStoreConfig<T, K>
-  | null;
-  snapshotItems?: SnapshotItem<T, K>[];
-  snapshots?: Snapshots<T>;
-  initialState?: InitializedState<T, K> | {}
-  nestedStores?: SnapshotStore<T, K>[];
-  events: CombinedEvents<T, K> | undefined;
+// interface CoreSnapshot<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>
+//   extends SnapshotSubscriberManagement<T, Meta, K>
+// {
+//   id: string | number | undefined
+//   config: Promise<SnapshotStoreConfig<T, Meta, K> | null>;
+//   configs?: SnapshotStoreConfig<T, Meta, K>[] | null;
+//   data: InitializedData | null | undefined
+//   parentId?: string | null;
+//   children?: CoreSnapshot<T, Meta, K>[];
+//   operation?: SnapshotOperation
+//   description?: string | null;
+//   name?: string;
+//   timestamp: string | number | Date | undefined;
+//   orders?: any;
+//   createdBy?: string;
+//   eventRecords?: Record<string, CalendarManagerStoreClass<T, Meta, K>[]> | null;
+//   subscriberId?: string;
+//   length?: number;
+//   task?: Task;
+//   category?: symbol | string | Category | undefined;
+//   categoryProperties?: CategoryProperties | undefined;
+//   date?: string | number | string | number | Date | null;
+//   status?: StatusType | undefined;
+//   content?: string | Content<T, Meta, K>;
+//   contentItem?: string | ContentItem ;
+//   label: Label | undefined;
+//   message?: string;
+//   user?: User;
+//   type?: AllTypes;
+//   phases?: ProjectPhaseTypeEnum;
+//   phase?: Phase<T> | null;
+//   ownerId?: string;
+//   store?: SnapshotStore<T, Meta, K> | null;
+//   state?: SnapshotsArray<T, Meta> | null; // Ensure state matches Snapshot<T> or null/undefined
+//   dataStore?: InitializedDataStore
+//   snapshotId?: string | number | null;
+//   configOption?:
+//   | string
+//   | SnapshotConfig<T, Meta, K>
+//   | SnapshotStoreConfig<T, Meta, K>
+//   | null;
+//   snapshotItems?: SnapshotItem<T, Meta, K>[];
+//   snapshots?: Snapshots<T, Meta>;
+//   initialState?: InitializedState<T, Meta, K> | {}
+//   nestedStores?: SnapshotStore<T, Meta, K>[];
+//   events: CombinedEvents<T, Meta, K> | undefined;
 
-  tags?: TagsRecord | string[] | undefined;  
-  setSnapshotData?: (
-    snapshotStore: SnapshotStore<T, K>,
-    data: Map<string, Snapshot<T, K>>,
-    subscribers: Subscriber<T, K>[],
-    snapshotData: Partial<
-    SnapshotStoreConfig<T, K>
-    >,
-    id?: string, 
-  ) => void;
-  event?: Event;
-  snapshotConfig?:
-    | SnapshotConfig<T, K>[]
-    | undefined;
+//   tags?: TagsRecord | string[] | undefined;  
+//   setSnapshotData?: (
+//     snapshotStore: SnapshotStore<T, Meta, K>,
+//     data: Map<string, Snapshot<T, Meta, K>>,
+//     subscribers: Subscriber<T, Meta, K>[],
+//     snapshotData: Partial<
+//     SnapshotStoreConfig<T, Meta, K>
+//     >,
+//     id?: string, 
+//   ) => void;
+//   event?: Event;
+//   snapshotConfig?:
+//     | SnapshotConfig<T, Meta, K>[]
+//     | undefined;
    
+//   snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null;
   
+//   snapshotStoreConfigSearch?: SnapshotStoreConfig<
+//     SnapshotWithCriteria<any, Meta, BaseData>,
+//     Meta, K> | null;
 
-    snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null;
-    
-    snapshotStoreConfigSearch?: SnapshotStoreConfig<
-    SnapshotWithCriteria<any, BaseData>,
-    K
-    > | null;
-
+//   set?: (
+//     data: T | Map<string, Snapshot<T, Meta, K>>,
+//     type: string,
+//     event: Event
+//   ) => void;
   
-  
-  set?: (
-    data: T | Map<string, Snapshot<T, K>>,
-    type: string,
-    event: Event
-  ) => void;
-  
-  setStore?: (
-    data: T | Map<string, SnapshotStore<T, K>>,
-    type: string,
-    event: Event
-  ) => void | null;
+//   setStore?: (
+//     data: T | Map<string, SnapshotStore<T, Meta, K>>,
+//     type: string,
+//     event: Event
+//   ) => void | null;
 
-  restoreSnapshot: (
-    id: string,
-    snapshot: Snapshot<T, K>,
-    snapshotId: string,
-    snapshotData: Snapshot<T, K>,
-    category: Category | undefined,
-    callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T>,
-    type: string,
-    event: string | SnapshotEvents<T, K>,
-    subscribers: SubscriberCollection<T, K>,
-    snapshotContainer?: T,
-    snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData>, T> | undefined,
-   ) => void;
+//   restoreSnapshot: (
+//     id: string,
+//     snapshot: Snapshot<T, Meta, K>,
+//     snapshotId: string,
+//     snapshotData: SnapshotData<T, Meta, K>,
+//     savedState: SnapshotStore<T, Meta, K>,
+//     category: symbol | string | Category | undefined,
+//     callback: (snapshot: T) => void,
+//     snapshots: SnapshotsArray<T, Meta>,
+//     type: string,
+//     event: string | SnapshotEvents<T, Meta, K>,
+//     subscribers: SubscriberCollection<T, Meta, K>,
+//     snapshotContainer?: T,
+//     snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData, Meta>, Meta, K> | undefined,
+//    ) => void;
 
-  handleSnapshot: (
-    id: string,
-    snapshotId: string | number,
-    snapshot: T extends SnapshotData<T, K> ? Snapshot<T, K> : null,
-    snapshotData: T,
-    category: symbol | string | Category | undefined,
-    categoryProperties: CategoryProperties | undefined,
-    callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T>,
-    type: string,
-    event: Event,
-    snapshotContainer?: T | undefined,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, K> | null | undefined,
-    storeConfigs?: SnapshotStoreConfig<T, K>[]
-  ) => Promise<Snapshot<T, K> | null>
+//   handleSnapshot: (
+//     id: string,
+//     snapshotId: string | number,
+//     snapshot: T extends SnapshotData<T, Meta, K> ? Snapshot<T, Meta, K> : null,
+//     snapshotData: T,
+//     category: symbol | string | Category | undefined,
+//     categoryProperties: CategoryProperties | undefined,
+//     callback: (snapshot: T) => void,
+//     snapshots: SnapshotsArray<T, Meta>,
+//     type: string,
+//     event: Event,
+//     snapshotContainer?: T | undefined,
+//     snapshotStoreConfig?: SnapshotStoreConfig<T, Meta, K> | null | undefined,
+//     storeConfigs?: SnapshotStoreConfig<T, Meta, K>[]
+//   ) => Promise<Snapshot<T, Meta, K> | null>
 
-  subscribe: (
-    snapshotId: string | number,
-    unsubscribe: UnsubscribeDetails,
-    subscriber: Subscriber<T, K> | null,
-    data: T,
-    event: Event,
-    callback: Callback<Snapshot<T, K>>,
-    value: T,
-  ) => [] | SnapshotsArray<T>;
+//   getItem: (key: T) => Promise<Snapshot<T, Meta, K> | undefined>;
+//   meta: Map<string, Snapshot<T, Meta, K>> | {};
+//   snapshotMethods: SnapshotStoreMethod<T, Meta, K>[]
+//   getSnapshotsBySubscriber: (subscriber: string) => Promise<T[]>;
+// }
 
-    
-  subscribeToSnapshots: (
-    snapshotStore: SnapshotStore<T, K>,
-    snapshotId: string,
-    snapshotData: SnapshotStore<T, K>,
-    category: Category | undefined,
-    snapshotConfig: SnapshotStoreConfig<T, K>,
-    callback: (snapshotStore: SnapshotStore<any, any>) => void,
-    snapshots: SnapshotsArray<T>,
-    unsubscribe?: UnsubscribeDetails, 
-  ) => [] | SnapshotsArray<T>;
-    
-  getItem: (key: T) => Promise<Snapshot<T, K> | undefined>;
-  meta: Map<string, Snapshot<T, K>> | {};
-  snapshotMethods: SnapshotStoreMethod<T, K>
-  getSnapshotsBySubscriber: (subscriber: string) => Promise<T[]>;
-
-}
-
-export type { CoreSnapshot };
+// export type { CoreSnapshot };

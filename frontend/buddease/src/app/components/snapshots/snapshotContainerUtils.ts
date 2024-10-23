@@ -43,16 +43,16 @@ const getDataStoreMethods = () => dataStoreMethods;
 const snapshotMethods = {
   create: async () => {
     console.log("Creating snapshot...");
-    return Promise.resolve({} as Snapshot<T, K>);
+    return Promise.resolve({} as Snapshot<T, Meta, K>);
   },
   update: async () => {
     console.log("Updating snapshot...");
-        return Promise.resolve({} as Snapshot<T, K>);
+        return Promise.resolve({} as Snapshot<T, Meta, K>);
 
   },
   delete: async () => {
     console.log("Deleting snapshot...");
-        return Promise.resolve({} as Snapshot<T, K>);
+        return Promise.resolve({} as Snapshot<T, Meta, K>);
 
   }
 };
@@ -97,6 +97,6 @@ const displayToast = (message: string) => {
 };
 
 // Add to snapshot list logic
-const addToSnapshotList = (snapshot: Snapshot<T, K>) => {
+const addToSnapshotList = (snapshot: Snapshot<T, Meta, K>) => {
   console.log("Adding to snapshot list:", snapshot);
 };

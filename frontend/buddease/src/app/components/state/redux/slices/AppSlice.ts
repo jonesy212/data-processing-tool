@@ -67,7 +67,7 @@ interface AppState {
 
   // Event & Collaboration
   eventManager: EventState
-  collaborationManager: CollaborationState
+  collaborationManager: CollaborationState<UserProfile, ProjectData>;
 
   // Entity & Notification
   entityManager: EntityState<any, EntityId>
@@ -82,7 +82,7 @@ interface AppState {
   randomWalkManager: RandomWalkState
   pagingManager: PagingState,
   blogManager: BlogState,
-  drawingManager: DrawingState,
+  drawingManager: DrawingState<DocumentData, UserData>;
   versionManager: VersionState,
   progress: number
   // Add other state properties here if needed
@@ -170,7 +170,8 @@ const initialState: AppState = {
 
   // Event & Collaboration
   eventManager: {} as EventState,
-  collaborationManager: {} as CollaborationState,
+  // Event & Collaboration
+  collaborationManager: {} as CollaborationState<UserData, ProjectData>,
 
   // Entity & Notification
   entityManager: {} as EntityState<any, EntityId>,
@@ -204,7 +205,7 @@ const initialState: AppState = {
   randomWalkManager: {} as RandomWalkState,
   pagingManager: {} as PagingState,
   blogManager: {} as BlogState,
-  drawingManager: {} as DrawingState,
+  drawingManager: {} as DrawingState<DocumentData, UserProfile>,
   versionManager: {} as VersionState,
   currentPage: null,
   currentLayout: null,

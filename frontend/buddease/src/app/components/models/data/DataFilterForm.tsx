@@ -1,8 +1,8 @@
 // DataFilterForm.tsx
 import processSnapshotList from "@/app/generators/processSnapshotList";
 import {
-  DataAnalysisAction,
-  DataAnalysisDispatch,
+    DataAnalysisAction,
+    DataAnalysisDispatch,
 } from "@/app/typings/dataAnalysisTypes";
 import { Dispatch } from "@reduxjs/toolkit";
 import { DataFrame } from "data-forge";
@@ -17,13 +17,13 @@ import { Data } from "./Data";
 // import DataFrameComponent from './DataFrameComponent';
 import { Phase } from '@/app/components/phases/Phase';
 import ListGenerator from "@/app/generators/ListGenerator";
+import SnapshotListGenerator from "@/app/generators/SnapshotListGenerator";
 import { shuffleArray } from "@/app/utils/shuffleArray";
 import { authToken } from "../../auth/authToken";
+import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
+import { K, T } from "../../snapshots/SnapshotConfig";
 import SnapshotList from "../../snapshots/SnapshotList";
 import { DetailsItem } from "../../state/stores/DetailsListStore";
-import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
-import SnapshotListGenerator from "@/app/generators/SnapshotListGenerator";
-import { K, T } from "../../snapshots/SnapshotConfig";
 
 interface DataFilterFormProps {
   onSubmit: (
@@ -68,7 +68,7 @@ const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
   );
   
   
-  const snapshotDetails: DetailsItem<T, K> = {
+  const snapshotDetails: DetailsItem<T, Meta, K> = {
     id: "",
     title: "",
     label: "",
@@ -84,7 +84,7 @@ const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
   
 const snapshotListArray: DetailsItem<Data, Data>[] = Array.from(snapshotList).map(
   (value: unknown) => {
-    const snapshot = value as Snapshot<Data, Data> | null;
+    const snapshot = value as Snapshot<Data, Meta, Data> | null;
     const snapshotDetails: DetailsItem<Data, Data> = {
       id: "",
       subtitle: "",

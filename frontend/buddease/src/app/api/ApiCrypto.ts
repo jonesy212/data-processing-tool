@@ -1,7 +1,6 @@
 // ApiCrypto.ts
 
 import { AxiosError } from "axios";
-import dotProp from "dot-prop";
 import { headersConfig } from "../components/shared/SharedHeaders";
 import {
   NotificationType,
@@ -11,8 +10,9 @@ import {
 import { endpoints } from "./ApiEndpoints";
 import axiosInstance from "./axiosInstance";
 
-const API_BASE_URL = dotProp.getProperty(endpoints, "crypto");
+const API_BASE_URL = endpoints.crypto;
 
+// Define API notification messages
 interface CryptoNotificationMessages {
   FETCH_CRYPTO_DETAILS_SUCCESS: string;
   FETCH_CRYPTO_DETAILS_ERROR: string;

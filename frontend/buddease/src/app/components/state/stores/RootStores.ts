@@ -1,36 +1,32 @@
 // RootStores.ts
-import { initialState } from '@/app/components/state/redux/slices/FilteredEventsSlice';
 
 
 import { action, makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
-import { Todo } from '../../todos/Todo';
+import { CalendarActionPayload, CalendarActionType } from '../../database/CalendarActionPayload';
+import { EventStore } from '../../event/EventStore';
+import useUIStore from '../../libraries/ui/useUIStore';
+import { RealTimeDataStore } from '../../models/realtime/RealTimeDataStore';
+import { DataStore, useDataStore } from '../../projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { ApiManagerStore, useApiManagerStore } from './ApiStore';
+import { AppStore } from './AppStore';
+import { AuthorizationStore, useAuthorizationStore } from './AuthorizationStore';
 import { AuthStore, useAuthStore } from './AuthStore';
 import { CalendarManagerStore, useCalendarManagerStore } from './CalendarEvent';
+import { CollaborationStore, useCollaborationStore } from './CollaborationStore';
+import useDocumentStore, { DocumentStore } from './DocumentStore';
 import useIconStore, { IconStore } from './IconStore';
+import NotificationStore from './NotificationStore';
+import { ProjectManagerStore, useProjectManagerStore } from './ProjectStore';
+import { SettingManagerStore } from './SettingsStore';
 import { TaskManagerStore, useTaskManagerStore } from './TaskStore ';
 import { TeamManagerStore, useTeamManagerStore } from './TeamStore';
 import useTodoManagerStore, { TodoManagerStore } from './TodoStore';
-import useTrackerStore, { TrackerStore } from './TrackerStore';
-import { UndoRedoStore, useUndoRedoStore } from './UndoRedoStore';
-import { UserStore, userManagerStore } from './UserStore';
-import { AppStore } from './AppStore';
-import UIStore from './UIStore';
-import { ApiManagerStore, useApiManagerStore } from './ApiStore';
-import { AuthorizationStore, useAuthorizationStore } from './AuthorizationStore';
-import { ProjectManagerStore, useProjectManagerStore } from './ProjectStore';
 import { ToolbarStore, useToolbarStore } from './ToolbarStore';
-import { SettingManagerStore } from './SettingsStore';
-import NotificationStore from './NotificationStore';
-import { DataStore, useDataStore } from '../../projects/DataAnalysisPhase/DataProcessing/DataStore';
-import useDocumentStore, { DocumentStore } from './DocumentStore';
-import { RealTimeDataStore, RealTimeDataStoreClass } from '../../models/realtime/RealTimeDataStore';
-import { CollaborationStore, useCollaborationStore } from './CollaborationStore';
+import useTrackerStore, { TrackerStore } from './TrackerStore';
+import UIStore from './UIStore';
+import { UserStore, userManagerStore } from './UserStore';
 import useVideoStore, { VideoStore } from './VideoStore';
-import useUIStore from '../../libraries/ui/useUIStore';
-import useUserProfile from '../../hooks/useUserProfile';
-import { CalendarActionPayload, CalendarActionType } from '../../database/CalendarActionPayload';
-import { EventStore } from '../../event/EventStore';
  
 export interface Dispatchable {
   dispatch(action: any): void;
@@ -50,7 +46,7 @@ export interface MobXRootState {
   userManager: UserStore;
   teamManager: TeamManagerStore;
   projectOwner: ProjectManagerStore;
-  dataManager: DataStore<T, K>;
+  dataManager: DataStore<T, Meta, K>;
   dataAnalysisManager: DataAnal;
   calendarManager: CalendarManagerStore;
   todoManager: TodoManagerStore;
@@ -82,7 +78,7 @@ export class RootStores {
   taskManager: TaskManagerStore;
   trackerManager: TrackerStore;
   userManager: UserStore;
-  teamManager: TeamManagerStore<T, K>;
+  teamManager: TeamManagerStore<T, Meta, K>;
   projectOwner: ProjectManagerStore;
   dataManager: DataStore<any, any>;
   dataAnalysisManager: DataAnalysisManagerStore;
@@ -189,7 +185,7 @@ export class RootStores {
   }
 
   @action
-  public action(type: CalendarActionType, payload: CalendarActionPayload<T, K>) {
+  public action(type: CalendarActionType, payload: CalendarActionPayload<T, Meta, K>) {
     this.calendarManager.action(type, payload);
   }
 

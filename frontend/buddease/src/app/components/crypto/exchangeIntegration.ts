@@ -1,8 +1,13 @@
 import { getConfigsData } from "@/app/api/getConfigsApi";
+import { getSnapshotId } from "@/app/api/SnapshotApi";
 import { ModifiedDate } from "@/app/components/documents/DocType";
+import updateUI, { updateUIWithSearchResults } from "../documents/editing/updateUI";
 import { ConfigLogger } from "../logging/Logger";
+import { BaseData, Data } from "../models/data/Data";
 import { ExchangeData } from "../models/data/ExchangeData";
 import { CustomSnapshotData, Snapshot } from "../snapshots/LocalStorageSnapshotStore";
+import { K, T } from "../snapshots/SnapshotConfig";
+import { updateUIWithSnapshotStore } from "../snapshots/updateUIWithSnapshotStore";
 import { Subscription } from "../subscriptions/Subscription";
 import DatabaseClient from "../todos/tasks/DatabaseClient";
 import { Subscriber } from "../users/Subscriber";
@@ -10,11 +15,6 @@ import * as subscriptionApi from "./../../api/subscriberApi";
 import { OrderBookData } from "./OrderBookData";
 import OrderBookUpdater from "./OrderBookUpdater";
 import TickerUpdater from "./TickerUpdater";
-import { BaseData, Data } from "../models/data/Data";
-import { K, T } from "../snapshots/SnapshotConfig";
-import updateUI, { updateUIWithSearchResults } from "../documents/editing/updateUI";
-import { updateUIWithSnapshotStore } from "../snapshots/updateUIWithSnapshotStore";
-import { getSnapshotId } from "@/app/api/SnapshotApi";
 
 // Define enum for exchange data types
 enum ExchangeDataTypeEnum {
@@ -428,7 +428,7 @@ const initialData: CustomSnapshotData = {
 }
 
 // Create an instance of the Subscriber class for order book updates
-const subscription: Subscription<T, K> = {
+const subscription: Subscription<T, Meta, K> = {
   unsubscribe: () => {},
   portfolioUpdates: () => {},
   tradeExecutions: () => {},
@@ -440,7 +440,7 @@ const subscription: Subscription<T, K> = {
 };
 
 // Function to create a subscriber
-const createSubscriber = (): Subscriber<T, K> => {
+const createSubscriber = (): Subscriber<T, Meta, K> => {
   const name = "ExampleName"; // Define the name
   const notifyEventSystem = () => {}; // Define the notifyEventSystem function
   const updateProjectState = () => {}; // Define the updateProjectState function
@@ -489,7 +489,7 @@ export const initialSnapshot: Snapshot<BaseData> = {
   // Other properties as needed
 };
 // Create an instance of the Subscriber class for order book updates
-const orderBookSubscriber = new Subscriber<T, K>(
+const orderBookSubscriber = new Subscriber<T, Meta, K>(
   "orderBookSubscriber",
   "orderBookSubscriberName", // Assuming you have a name for this subscriber
   subscription,
@@ -517,7 +517,7 @@ const unsubscribeFromOrderBookUpdates = (
 
 
 // update the UI with order book snapshot updates
-const handleOrderBookUpdateUI = async (snapshotStore: Snapshot<Data, Data>): Promise<void> => {
+const handleOrderBookUpdateUI = async (snapshotStore: Snapshot<Data, Meta, Data>): Promise<void> => {
   updateUIWithSnapshotStore(snapshotStore); // Use the existing function to handle snapshot store updates
 
   // Example: Get the ID as a resolved value
@@ -544,7 +544,7 @@ const handleOrderBookUpdateUI = async (snapshotStore: Snapshot<Data, Data>): Pro
 // Function to notify subscribers about order book updates
 const notifyOrderBookUpdate = async (): Promise<void> => {
   // Create an empty snapshot to pass to subscribers
-  const data: Snapshot<BaseData, BaseData> = {
+  const data: Snapshot<BaseData, Meta, BaseData> = {
     timestamp: new Date(),
     data: undefined,
     category: undefined,
@@ -685,9 +685,9 @@ console.log(isValidTickerData(tickerData));
 export default integrateExchange;
 
 export {
-  ExchangeDataTypeEnum,
-  subscribeToOrderBookUpdates,
-  unsubscribeFromOrderBookUpdates
+    ExchangeDataTypeEnum,
+    subscribeToOrderBookUpdates,
+    unsubscribeFromOrderBookUpdates
 };
 
 

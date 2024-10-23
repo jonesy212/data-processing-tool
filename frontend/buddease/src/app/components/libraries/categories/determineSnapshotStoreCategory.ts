@@ -1,13 +1,12 @@
 import { Data } from "../../models/data/Data";
-import { SnapshotUnion } from "../../snapshots";
-import  {SnapshotStoreConfig}  from "../../snapshots/SnapshotStoreConfig";
+import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
 
 //determineSnapshotStoreCategory.ts
-function determineSnapshotStoreCategory<T extends Data, K extends Data>(
-  storeConfigs: SnapshotStoreConfig<T, K>[]
+function determineSnapshotStoreCategory<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  storeConfigs: SnapshotStoreConfig<T, Meta, K>[]
 ): string {
   // Example category mappings based on storeConfig properties
-  const categoryMappings: { [key: string]: (config: SnapshotStoreConfig<T, K>) => boolean } = {
+  const categoryMappings: { [key: string]: (config: SnapshotStoreConfig<T, Meta, K>) => boolean } = {
     "financial": (config) => config.dataType === "financial" && config.priority === "high",
     "healthcare": (config) => config.dataType === "healthcare" && config.privacy === "strict",
     "default": (config) => true, // Default mapping if no other criteria are met
@@ -27,4 +26,4 @@ function determineSnapshotStoreCategory<T extends Data, K extends Data>(
 }
 
 
-export {determineSnapshotStoreCategory}
+export { determineSnapshotStoreCategory };

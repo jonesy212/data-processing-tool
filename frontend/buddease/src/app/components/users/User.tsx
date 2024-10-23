@@ -48,14 +48,15 @@ export interface User extends UserData {
   uploadQuota: number;
   usedQuota?: number;
   avatarUrl: string | null;
-  createdAt: Date | undefined;
-  updatedAt: Date | undefined;
+  bannerUrl: string | null;
+  createdAt: string | Date | undefined;
+  updatedAt: string | Date | undefined;
   fullName: string | null;
   isVerified?: boolean;
   isActive?: boolean;
   isAdmin?: boolean;
   isSubscribed?: boolean,
-
+  lastLogin?: Date;
   roles: UserRole[];
   bio: string | null;
   userType: string;
@@ -147,7 +148,7 @@ export interface UserData {
   _id?: string;
   id?: string | number | undefined;
   datasets?: string;
-  username?: string
+  username: string
   tasks?: Task[];
   questionnaireResponses?: any;
   chatSettings?: ChatSettings;
@@ -296,7 +297,7 @@ export interface UserData {
   deletedReason?: string | null;
   deletedBy?: string | null;
   updatedAt?: Date;
-  createdAt?: Date;
+  createdAt?: string | Date;
   createdBy?: string;
   modifiedAt?: Date;
   modifiedBy?: string;
@@ -430,6 +431,7 @@ export interface DocumentNode {
 const userData: UserData = {
   id: 1,
   storeId: 0,
+  username: "username",
   yourDocuments: {
     public: {} as DocumentNode,
     private: {} as DocumentNode,
@@ -531,6 +533,7 @@ export const usersDataSource: Record<string, User> = {
     email: "<EMAIL>",
     role: UserRoles.Guest,
     avatarUrl: "", 
+    bannerUrl: "",
     hasQuota: false, 
     processingTasks: [], 
     persona: null, 
@@ -549,6 +552,7 @@ export const usersDataSource: Record<string, User> = {
     roles: [],
     preferences: {} as UserPreferences,
     data: {
+      username: "username",
       role: UserRoles.Guest,
       storeId: 0,
       deletedAt: null,

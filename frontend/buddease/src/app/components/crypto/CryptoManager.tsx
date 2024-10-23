@@ -5,10 +5,13 @@ import CryptoTransaction from './CryptoTransaction';
 import updateAnalyticsUI from './../../components/libraries/ui/updateAnalyticsUI'
 import { sendAnalyticsDataToBackend, storeAnalyticsData } from '@/app/api/ApiDataAnalysis';
 import calculateMetrics from '../projects/DataAnalysisPhase/DataProcessing/calculateMetrics';
+import { fetchMoreNews, filterNewsFeed, analyzeSentiment } from '../community/newsFeedIntegration';
+import { NewsArticle } from "@/app/pages/blog/Blog";
 
 
 const useCryptoManager = () => {
   const [holdings, setHoldings] = useState<CryptoHolding[]>([]);
+  const [newsFeedState, setNewsFeedState] = useState<NewsArticle[]>([]);
 
   const addHolding = useCallback((holding: CryptoHolding): void => {
     setHoldings((prevHoldings) => [...prevHoldings, holding]);
@@ -159,8 +162,9 @@ const useCryptoManager = () => {
     // You can update the UI with the latest news feed data or perform other actions as needed
   
     // For example, update the state with the new news feed data
-    setNewsFeed(newsFeedData);
-  
+    setNewsFeedState(newsFeedData);
+
+     
     // Or trigger a function to fetch more news if needed
     fetchMoreNews();
   

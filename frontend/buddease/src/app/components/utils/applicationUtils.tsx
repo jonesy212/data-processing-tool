@@ -8,22 +8,21 @@ import { useDispatch } from "react-redux";
 import * as articleApi from '../../../app/api/articleApi';
 import { sendEmail } from "../communications/email/SendEmail";
 import { sendSMS } from "../communications/sendSMS";
+import { BaseData, Data } from "../models/data/Data";
 import { ActivityActionEnum, ActivityTypeEnum, ProjectStateEnum, StatusType } from "../models/data/StatusType";
 import { Task } from "../models/tasks/Task";
 import { Project, ProjectDetails } from "../projects/Project";
-import { updateProject } from "../state/redux/slices/ProjectManagerSlice";
-import { NotificationData } from "../support/NofiticationsSlice";
-import {
-  NotificationTypeEnum,
-  useNotification,
-} from "../support/NotificationContext";
-import NotificationManager from "../support/NotificationManager";
-import { useSecureUserId } from "./useSecureUserId";
-import { BaseData, Data } from "../models/data/Data";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { SnapshotWithCriteria } from "../snapshots/SnapshotWithCriteria";
-import { K } from "../snapshots";
+import { updateProject } from "../state/redux/slices/ProjectManagerSlice";
+import { NotificationData } from "../support/NofiticationsSlice";
+import {
+    NotificationTypeEnum,
+    useNotification,
+} from "../support/NotificationContext";
+import NotificationManager from "../support/NotificationManager";
+import { useSecureUserId } from "./useSecureUserId";
  const dispatch = useDispatch()
 const { notify } = useNotification()
 
@@ -45,9 +44,9 @@ interface TriggerIncentivesParams {
 }
 
 
-interface AnalyticsEvent<T extends Data, K extends Data> {
+interface AnalyticsEvent<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
   type: string;
-  snapshot: Snapshot<T, K>; // Include snapshot in the type definition
+  snapshot: Snapshot<T, Meta, K>; // Include snapshot in the type definition
   date: string;
 }
 
@@ -62,7 +61,7 @@ const notificationManager = new NotificationManager({
 
 const apiNotificationsService = new ApiNotificationsService(useNotification);
 
-const notifyEventSystem = <T extends Data, K extends Data>(
+const notifyEventSystem = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   eventType: string,
   eventData: any,
   source: string
@@ -163,8 +162,8 @@ const notifyEventSystem = <T extends Data, K extends Data>(
         rsvpStatus: "yes",
         participants: [],
         teamMemberId: "",
-        getSnapshotStoreData: function (): Promise<SnapshotStore<T, K>[]> {
-          const snapshotStore = new SnapshotStore<T, K>(storeId, options, config, operation);
+        getSnapshotStoreData: function (): Promise<SnapshotStore<T, Meta, K>[]> {
+          const snapshotStore = new SnapshotStore<T, Meta, K>(storeId, options, config, operation);
           return Promise.resolve([snapshotStore]);
         },
         getData: function (): Promise<Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
@@ -518,9 +517,9 @@ const unsubscribe = (unsubscribeDetails: {
   // Additional logic here...
 };
 
-const triggerEvent = <T extends Data, K extends Data>(
+const triggerEvent = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   event: string,            // Match parameter name with the CombinedEvents interface
-  snapshot: Snapshot<T, K>, // Ensure Snapshot type is used here
+  snapshot: Snapshot<T, Meta, K>, // Ensure Snapshot type is used here
   eventDate: Date
 ) => {
   // Log the event for debugging purposes
@@ -553,8 +552,8 @@ const triggerEvent = <T extends Data, K extends Data>(
 };
 
 // Example function to send event data to an analytics service
-const sendEventToAnalyticsService = <T extends Data, K extends Data>(
-  event: AnalyticsEvent<T, K>
+const sendEventToAnalyticsService = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  event: AnalyticsEvent<T, Meta, K>
 ) => {
   // Replace with actual analytics service logic
   console.log("Sending event to analytics service:", event);
@@ -643,7 +642,7 @@ const isValidParameters = (params: any): boolean => {
 
   
   export {
-  logActivity, notifyEventSystem, portfolioUpdates, tradeExections, triggerIncentives, unsubscribe, updateProjectState, triggerEvent
+    logActivity, notifyEventSystem, portfolioUpdates, tradeExections, triggerEvent, triggerIncentives, unsubscribe, updateProjectState
 };
 
   export type { TriggerIncentivesParams };

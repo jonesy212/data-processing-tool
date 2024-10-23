@@ -1,33 +1,30 @@
-import fs from 'fs';
 // Logger.ts
+// Update the SecurityLogger class to use encryption and decryption functions
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { LogData } from "@/app/components/models/LogData";
 import { Task } from "@/app/components/models/tasks/Task";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import fs from 'fs';
 
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 import { Data, DataDetails } from "@/app/components/models/data/Data";
 import { team, Team } from "@/app/components/models/teams/Team";
 import TeamData from "@/app/components/models/teams/TeamData";
 import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
-import dotProp from "dot-prop";
-const API_BASE_URL = endpoints.logging;
-  // Update the SecurityLogger class to use encryption and decryption functions
 
-// Import the encryptData function
-  import { Theme } from '../libraries/ui/theme/Theme';
-import { encryptData } from "../security/encryptedData";
 import { DefaultCalendarEvent } from '../actions/CalendarEventActions';
-import { T, K } from '../models/data/dataStoreMethods';
+import { Theme } from '../libraries/ui/theme/Theme';
+import { encryptData } from "../security/encryptedData";
 import { Snapshot } from '../snapshots';
-  
+
+const API_BASE_URL = endpoints.logging;
 const { notify } = useNotification();
 
 function createErrorNotificationContent(error: Error): any {
@@ -63,7 +60,7 @@ class Logger {
       console.log(`[${logType}] ${message}`);
     }
   }
-  
+
 
   static error(errorMessage: string, extraInfo?: any) {
     console.error(errorMessage, extraInfo);
@@ -273,7 +270,7 @@ class SearchLogger extends Logger {
       userId
     );
   }
-  
+
   static logSearchTimeout(query: string, userId: string) {
     super.logWithOptions(
       "Search",
@@ -294,7 +291,7 @@ class SearchLogger extends Logger {
 }
 
 class TeamLogger extends Logger {
-  static async logTeamCreation(teamId: string, team: Team, storeId: number,  color?: string | null, ): Promise<void> {
+  static async logTeamCreation(teamId: string, team: Team, storeId: number, color?: string | null,): Promise<void> {
     try {
       // Convert teamId to a number if necessary
       const numericTeamId = parseInt(teamId, 10);
@@ -405,44 +402,44 @@ class TeamLogger extends Logger {
     try {
       // Convert teamId to a number using the utility method
 
-      if(storeId !== undefined && color !== undefined){
+      if (storeId !== undefined && color !== undefined) {
         const teamData: TeamData | null = (await useTeamManagerStore(storeId)).getTeamData(
           teamId,
           team,
           color
         )
-      
 
-      if (!teamData) {
-        throw new Error("Team data is null");
+
+        if (!teamData) {
+          throw new Error("Team data is null");
+        }
+
+        // Ensure teamData is of type TeamData
+        if (typeof teamData !== "object" || teamData === null) {
+          throw new Error("Team data is not of type TeamData");
+        }
+
+        // Now that we've confirmed teamData is not null, we can assert its type as TeamData
+        const teamDataTyped: TeamData = teamData!;
+        const teamDataString = JSON.stringify(teamData);
+        const teamDataStringLength = teamDataString.length;
+        if (teamDataStringLength > 10000) {
+          // Truncate the team data string to 10000 characters
+          const truncatedTeamDataString = teamDataString.substring(0, 10000);
+          // Assign truncated data to teamData
+          // Note: You may need to assign to teamDataTyped instead of teamData
+          teamDataTyped.data = truncatedTeamDataString;
+        }
+
+        const logUrl = this.getLogUrl("teamEvent");
+        await fetch(logUrl, {
+          method: "POST",
+          body: JSON.stringify({ teamId, message, teamData, data }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
       }
-
-      // Ensure teamData is of type TeamData
-      if (typeof teamData !== "object" || teamData === null) {
-        throw new Error("Team data is not of type TeamData");
-      }
-
-      // Now that we've confirmed teamData is not null, we can assert its type as TeamData
-      const teamDataTyped: TeamData = teamData!;
-      const teamDataString = JSON.stringify(teamData);
-      const teamDataStringLength = teamDataString.length;
-      if (teamDataStringLength > 10000) {
-        // Truncate the team data string to 10000 characters
-        const truncatedTeamDataString = teamDataString.substring(0, 10000);
-        // Assign truncated data to teamData
-        // Note: You may need to assign to teamDataTyped instead of teamData
-        teamDataTyped.data = truncatedTeamDataString;
-      }
-
-      const logUrl = this.getLogUrl("teamEvent");
-      await fetch(logUrl, {
-        method: "POST",
-        body: JSON.stringify({ teamId, message, teamData, data }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    }
     } catch (error) {
       console.error(`Error logging team event for team ${teamId}:`, error);
       throw error;
@@ -586,11 +583,11 @@ class AnimationLogger extends Logger {
     }
   }
 
-  static generateID(
+  static generateID<T extends Data, K extends Data = T>(
     prefix: string,
     name: string,
     type: NotificationType,
-    dataDetails?: DataDetails 
+    dataDetails?: DataDetails<T, Meta, K>
   ): string {
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 10);
@@ -639,7 +636,7 @@ class AnimationLogger extends Logger {
 }
 
 class DataLogger extends Logger {
-  static async log(message: string, data?: {} ): Promise<void> {
+  static async log(message: string, data?: {}): Promise<void> {
     const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
 
     try {
@@ -647,7 +644,7 @@ class DataLogger extends Logger {
 
       const response = await fetch(logUrl, {
         method: "POST",
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, data }), // Include data in the log if provided
         headers: {
           "Content-Type": "application/json",
         },
@@ -669,7 +666,7 @@ class DataLogger extends Logger {
   private static getLogUrl(action: string): string {
     let logUrl = ""; // Initialize with an empty string
 
-    const logEvent = dotProp.getProperty(endpoints, `logging.${action}`); // Access nested property using dot-prop
+    const logEvent = endpoints.logging?.[action]; // Access nested property using optional chaining
 
     if (typeof logEvent === "string") {
       logUrl = logEvent;
@@ -678,7 +675,7 @@ class DataLogger extends Logger {
     } else {
       // Handle the case when logEvent is a nested object
       if (logEvent) {
-        const logEventToFile = dotProp.getProperty(logEvent, "logEventToFile");
+        const logEventToFile = logEvent.logEventToFile; // Access property directly
         if (typeof logEventToFile === "function") {
           logUrl = logEventToFile();
         }
@@ -835,7 +832,7 @@ class ChatLogger extends Logger {
 
 
 
-class FormLogger extends Logger{
+class FormLogger extends Logger {
   static async logFormEvent(eventType: string, formID: string, eventData: any) {
     const { handleError } = useErrorHandling(); // Accessing the handleError function from the useErrorHandling hook
 
@@ -1046,13 +1043,15 @@ class FileLogger extends Logger {
   }
 }
 
-class TaskLogger extends Logger {
-  static logTaskEvent(
+class TaskLogger<T extends Data, K extends Data, Meta> extends Logger {
+  // Make logTaskEvent static and provide types directly
+  static logTaskEvent<DataType extends Data, KeyType extends Data, MetaType>(
     taskID: Task["id"],
     event: Task,
     completionMessage: string,
     type: string,
-    notify: (message: string, type: string, date: Date, id: string) => void
+    notify: (message: string, type: string, date: Date, id: string) => void,
+    meta: Map<string, Snapshot<DataType, MetaType, KeyType>> & Data // Use DataType, KeyType, MetaType for flexibility
   ) {
     // Assuming you want to log the completion message
 
@@ -1069,18 +1068,16 @@ class TaskLogger extends Logger {
       isDelivered: true,
       responded: false,
       delivered: new Date(),
-     
+
       opened: new Date(),
       clicked: new Date(),
       responseTime: new Date(),
-     
+
       eventData: {} as DefaultCalendarEvent,
       topics: [],
       highlights: [],
       files: [],
-      meta: {} as Map<string, Snapshot<T, K>> & Data,
-     
-
+      meta,
     };
 
     if (completionMessageLog.createdAt) {
@@ -1125,7 +1122,8 @@ class TaskLogger extends Logger {
       event,
       completionMessage,
       NOTIFICATION_MESSAGES.Tasks.COMPLETED,
-      notify
+      notify,
+      meta
     );
   }
 
@@ -1162,8 +1160,6 @@ class TaskLogger extends Logger {
     );
     // Additional logic specific to logging task reassignment
   }
-  // Log to file
-
   // Add more methods as needed for other task-related events
 }
 
@@ -1208,7 +1204,7 @@ class CalendarLogger extends Logger {
   }
 }
 
-class WebLogger  extends Logger {
+class WebLogger extends Logger {
   static async logWebEvent(action: string, message: string, data?: any) {
     try {
       const logUrl = this.getLogUrl(action);
@@ -1375,7 +1371,7 @@ class ContentLogger extends Logger {
     );
   }
 
-  
+
   static logTaskReassignment(taskId: string, oldUserId: string, newUserId: string) {
     super.logWithOptions(
       "Content",
@@ -1384,7 +1380,7 @@ class ContentLogger extends Logger {
     );
   }
 
-  
+
   static logTaskDeletion(taskId: string, title: string, userId: string, contentId?: string) {
     super.logWithOptions(
       "Content",
@@ -1700,7 +1696,7 @@ class SnapshotLogger extends Logger {
     }
   }
 
-  static async logSnapshotOperation(snapshotId: string, operation: string, data: any): Promise<void> { 
+  static async logSnapshotOperation(snapshotId: string, operation: string, data: any): Promise<void> {
     try {
       await this.logEvent("performOperation", `Performing operation ${operation}`, snapshotId, data);
     } catch (error) {
@@ -1853,32 +1849,28 @@ class ThemeLogger extends Logger {
 export default Logger;
 
 export {
-  createErrorNotificationContent,
-  errorLogger,
-  AnalyticsLogger,
-  AnimationLogger, AssignBaseStoreLogger, AudioLogger,
-  BugLogger,
-  CalendarLogger,
-  ChannelLogger,
-  ChatLogger,
-  CollaborationLogger,
-  CommunityLogger,
-  ComponentLogger,
-  ConfigLogger,
-  ContentLogger,
-  DataLogger,
-  DexLogger,
-  DocumentLogger,
-  ErrorLogger,
-  ExchangeLogger,
-  FileLogger,
-  FormLogger,
-  IntegrationLogger,
-  PaymentLogger,
-  SearchLogger,
-  SecurityLogger, SnapshotLogger, TaskLogger,
-  TeamLogger,
-  TenantLogger, ThemeLogger, UILogger, VideoLogger,
-  WebLogger
+    AnalyticsLogger,
+    AnimationLogger, AssignBaseStoreLogger, AudioLogger,
+    BugLogger,
+    CalendarLogger,
+    ChannelLogger,
+    ChatLogger,
+    CollaborationLogger,
+    CommunityLogger,
+    ComponentLogger,
+    ConfigLogger,
+    ContentLogger, createErrorNotificationContent, DataLogger,
+    DexLogger,
+    DocumentLogger, errorLogger, ErrorLogger,
+    ExchangeLogger,
+    FileLogger,
+    FormLogger,
+    IntegrationLogger,
+    PaymentLogger,
+    SearchLogger,
+    SecurityLogger, SnapshotLogger, TaskLogger,
+    TeamLogger,
+    TenantLogger, ThemeLogger, UILogger, VideoLogger,
+    WebLogger
 };
 

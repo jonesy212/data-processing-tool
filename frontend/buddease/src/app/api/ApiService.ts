@@ -1,7 +1,9 @@
+import { CustomApp } from "@/app/components/web3/dAppAdapter/DApp";
+import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { Data } from '@/app/components/models/data/Data';
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import {generateAllHeaders} from '@/app/api/generateAllHeaders'
+import {generateAllHeaders} from '@/app/api/headers/generateAllHeaders'
 import { handleApiError } from "@/app/api/ApiLogs";
 import { calendarEvent } from '@/app/components/state/stores/CalendarEvent';
 import { AxiosError, AxiosRequestConfig } from "axios";
@@ -33,22 +35,32 @@ import { AlignmentOptions } from '../components/state/redux/slices/toolbarSlice'
 import { Style as DocxStyle } from 'docx';
 import { ContentState } from 'draft-js';
 import { ModifiedDate } from "../components/documents/DocType";
-import { CacheWriteOptions, writeAndUpdateCache } from "../utils/CacheManager";
+import { CacheWriteOptions, getBackendStructureFilePath, STORE_KEYS, writeAndUpdateCache } from "../utils/CacheManager";
 import { Settings } from "../components/state/stores/SettingsStore";
-import { snapshotContainer, snapshots, snapshotStoreConfig } from "../components/snapshots";
+import { snapshotContainer, snapshotStoreConfig } from "../components/snapshots";
 import useSecureStoreId from '../components/utils/useSecureStoreId';
 import { getAuthToken } from '../components/auth/getAuthToken';
 import { DataSharingPreferences } from '../components/settings/PrivacySettings';
+import configurationService, { ConfigurationService } from "../configs/ConfigurationService";
+import { currentAppName } from "../components/versions/AppVersion";
+import { appConfig } from "../configs/AppConfig";
 
 
 // Define the API base URL
 const API_BASE_URL = endpoints.data; // Assuming 'endpoints' has a property 'data' for the base URL
 const { notify } = useNotification();
 
+
+type CacheReadOptions<T extends Data> = {
+  filePath: string;
+  apiKey: string;
+  token: string;
+};
+
 // Define the structure of the response data
-interface CacheResponse<T extends Data> {
+interface CacheResponse<T extends Data, Meta extends UnifiedMetaDataOptions> {
   id?: string | number | undefined;
-  data: SupportedData<T>;
+  data: SupportedData<T, Meta>;
 }
 
 
@@ -136,11 +148,42 @@ if (!storeId){
 
 
 const authToken = getAuthToken()
+
+// Usage example:
+const cacheKey = STORE_KEYS.USER_PREFERENCES; // Replace with the actual key you want to use
+
+// Get the file path dynamically based on the cache key
+const filePath = getBackendStructureFilePath(cacheKey);
+
+
+// Instantiate configuration service
+const configurationService = new ConfigurationService();
+
+// Retrieve values
+const apiKey = configurationService.getApiKey();
+const appId = configurationService.getAppId();
+const appDescription = configurationService.getAppDescription();
+// Create an instance of AppSettings
+const appSettings = new AppSettings(apiKey, appId, appDescription);
+
+// Create an instance of appData based on the CustomApp interface
+const appData: CustomApp = {
+  id: appSettings.getAppId(), // Retrieve the actual app ID
+  name: currentAppName, // Replace with the actual app name
+  description: appSettings.getAppDescription(), // Retrieve the actual description
+  authToken: authToken, // Replace with the actual auth token
+  apiKey: appSettings.getApiKey(), // Retrieve the actual API key
+  // Add any additional properties here if needed
+};
+
 // Generate headers with the authToken
-const options = {
+const options:  CacheReadOptions<Data> = {
   apiKey: appData.apiKey, // Assuming `appData` has an apiKey property
   token: authToken,
+  filePath: filePath,
 };
+
+
 
 const additionalHeaders = generateAllHeaders(options, authToken);
   
@@ -150,7 +193,7 @@ const snapshotId = snapshotApi.getSnapshotId(criteria)
 const snapshot = snapshotApi.getSnapshot(String(snapshotId), storeId, additionalHeaders)
 
 // Usage example:
-const cacheData: SupportedData<Data> = {
+const cacheData: SupportedData<Data, Meta> = {
 
   options: {
     previousContent: {} as ContentState,
@@ -780,10 +823,6 @@ writeAndUpdateCache(writePath, cacheData)
 
 
 
-type CacheReadOptions<T extends Data> = {
-  filePath: string;
-};
-
 
 
 // Update readCache to return SupportedData<T>
@@ -807,13 +846,6 @@ const readCache = async <T extends Data>(
   return undefined; // Explicitly return undefined if no cacheResponse is found
 };
 
-// Usage example:
-const filePath = './path/to/cache/data'; // Replace with actual file path
-
-const options: CacheReadOptions<Data> = {
-  filePath: filePath, // or just `filePath` since it's the same name
-  // Add any other necessary properties
-};
 
 readCache(options)
   .then((data) => {

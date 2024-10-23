@@ -41,40 +41,38 @@ const InitialSetupSubPhase: React.FC<InitialSetupSubPhaseProps> = ({ onSubmit, u
     try {
       // Sanitize user input before submission
       let sanitizedData: TempUserData | string = sanitizeData(data); // Assuming sanitizeData returns TempUserData or string
-
+  
       // Convert string to TempUserData if needed
       if (typeof sanitizedData === 'string') {
         sanitizedData = stringToTempUserData(sanitizedData);
       }
-
+  
       // Validate user data
       const validationErrors = validateUserData(sanitizedData as TempUserData & User);
-
-      if (validationErrors.length === 0) {
-        // Data is valid, proceed with submission
-        onSubmit(sanitizedData as TempUserData);
-      } else {
+  
+      if (validationErrors.length > 0) {
         // Notify user about validation errors
         validationErrors.forEach((error: any) => {
           notify(
             "ValidationSubmitError",
-            `Something happened causing an error when trying to submit your information. Please try again and advise the ${appName} team if the problem persists.`,
-            error.errorMessage,
+            error.errorMessage || `Something happened causing an error when trying to submit your information. Please try again and advise the ${appName} team if the problem persists.`,
             new Date(),
-            NotificationTypeEnum.OperationError);
+            NotificationTypeEnum.OperationError
+          );
         });
+        return; // Stop further execution if there are validation errors
       }
+  
+      // Data is valid, proceed with submission
+      await onSubmit(sanitizedData as TempUserData);
     } catch (error) {
-      // Handle Axios errors
-      if (error instanceof AxiosError) {
-        console.error("Axios error:", error.response?.data);
-        // Notify user or handle the error as needed
-      } else {
-        console.error("Unexpected error:", error);
-        // Handle other unexpected errors
-      }
+      // Handle errors in a user-friendly way
+      const errorMessage = error instanceof AxiosError ? error.response?.data.message : "An unexpected error occurred.";
+      notify("SubmissionError", errorMessage, new Date(), NotificationTypeEnum.OperationError);
+      console.error("Submission error:", error);
     }
   };
+
 
   return (
     <div>

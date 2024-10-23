@@ -1,7 +1,4 @@
 // refreshUI.js
-
-import { File } from "../models/file/FileManager";
-
 // Reusable refreshUI function
 function refreshUI(updates: {
     stroke?: { width: number; color: string };

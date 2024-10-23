@@ -1,3 +1,4 @@
+import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import axios from "axios";
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
@@ -5,12 +6,10 @@ import CommonDetails, { CommonData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
-import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import useTodoManagerStore from "../state/stores/TodoStore";
 import { Todo } from "./Todo";
-import { User } from "../users/User";
-import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 
 type MappedTodo = Pick<Todo, "id" | "title" | "done">;
 type MappedAndTodo = Todo & MappedTodo;
@@ -33,7 +32,7 @@ const TodoList: React.FC = observer(() => {
           } as Todo;
         });
 
-        const todoSnapShotData = {} as SnapshotStore<Snapshot<Data>>;
+        const todoSnapShotData = {} as SnapshotStore<Snapshot<Data, Meta, Data>>;
 
         todoStore.addTodos(mappedTodos, todoSnapShotData); // Remove the unnecessary cast
       } catch (error) {
@@ -187,7 +186,7 @@ const TodoList: React.FC = observer(() => {
         recurringDaysOfWeek: [1, 3, 5], // Monday, Wednesday, Friday
         recurringDaysOfMonth: [],
         recurringMonthsOfYear: [],
-        snapshot: {} as Snapshot<Data>,
+        snapshot: {} as Snapshot<Data, Meta, Data>,
         entities: [],
         timestamp: new Date().toISOString(),
         category: "Task",

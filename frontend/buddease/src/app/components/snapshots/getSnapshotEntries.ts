@@ -1,10 +1,9 @@
 import { Snapshot } from "./LocalStorageSnapshotStore";
-import { T, K } from "./SnapshotConfig";
-import * as snapshotApi from '@/app/api/SnapshotApi';
+import { K, T } from "./SnapshotConfig";
 
 
 // Implement the getSnapshotEntries method
-const getSnapshotEntries: Snapshot<T, K>['getSnapshotEntries'] = (snapshotId: string) => {
+const getSnapshotEntries: Snapshot<T, Meta, K>['getSnapshotEntries'] = (snapshotId: string) => {
   const snapshot = this.getSnapshot(snapshotId); // Retrieve the snapshot by its ID
   if (snapshot && snapshot.data instanceof Map) {
     return snapshot.data; // Return the map of entries if the snapshot contains one
@@ -13,7 +12,7 @@ const getSnapshotEntries: Snapshot<T, K>['getSnapshotEntries'] = (snapshotId: st
 };
 
 // Implement the getAllSnapshotEntries method
-const getAllSnapshotEntries: Snapshot<T, K>['getAllSnapshotEntries'] = () => {
+const getAllSnapshotEntries: Snapshot<T, Meta, K>['getAllSnapshotEntries'] = () => {
   const entries: Map<string, T>[] = [];
   const allSnapshots = this.getSnapshots(); // Retrieve all snapshots
   
@@ -26,4 +25,4 @@ const getAllSnapshotEntries: Snapshot<T, K>['getAllSnapshotEntries'] = () => {
   }
   return entries;
 };
-export {getSnapshotEntries, getAllSnapshotEntries}
+export { getAllSnapshotEntries, getSnapshotEntries };

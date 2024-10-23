@@ -2,8 +2,7 @@ import React from "react";
 
 import RandomWalkSuggestions from '@/app/components/hooks/userInterface/RandomWalkSuggestions';
 import { Data } from '@/app/components/models/data/Data';
-import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
-import { Snapshot } from '@/app/components/snapshots/SnapshotStore';
+import SnapshotStore, { Snapshot } from '@/app/components/snapshots/SnapshotStore';
 import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import configurationService from '@/app/configs/ConfigurationService';
 import ReactDOM from 'react-dom';
@@ -12,7 +11,7 @@ import ReactDOM from 'react-dom';
 
 // Automated system setup process
 const setupAutomationSystem = (
-  config: SnapshotStoreConfigType<SnapshotStore<Snapshot<Data>>>
+  config: SnapshotStoreConfigType<SnapshotStore<Snapshot<Data, Meta, Data>>>
 ) => {
   const { notify } = useNotification();
   typeof SnapshotStoreConfig === "function" &&

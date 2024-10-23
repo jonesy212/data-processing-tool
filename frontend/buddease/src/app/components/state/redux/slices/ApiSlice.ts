@@ -6,6 +6,9 @@ import { Data } from "@/app/components/models/data/Data";
 import { PriorityTypeEnum } from "@/app/components/models/data/StatusType";
 import { Phase } from "@/app/components/phases/Phase";
 import { AnalyticsTool } from "@/app/components/projects/DataAnalysisPhase/AnalyticsTool";
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
+import { Payment, Revenue, SubscriptionPlan } from "@/app/components/subscriptions/SubscriptionPlan";
 import { EncryptionSetting, Permission } from "@/app/components/users/Permission";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
@@ -13,9 +16,6 @@ import { useDispatch } from "react-redux";
 import { DetailsItem } from "../../stores/DetailsListStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { addTask } from "./TaskSlice";
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
-import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
-import { Payment, Revenue, SubscriptionPlan } from "@/app/components/subscriptions/SubscriptionPlan";
 
 interface CommunityEvent {
   id: string;
@@ -213,7 +213,7 @@ export const useApiManagerSlice = createSlice({
         [Symbol.iterator]: function (): Iterator<any, any, undefined> {
           throw new Error("Function not implemented.");
         },
-        getData: function (): Promise<SnapshotStore<Snapshot<Data>>[]> {
+        getData: function (): Promise<SnapshotStore<Snapshot<Data, Meta, Data>>[]> {
           throw new Error("Function not implemented.");
         }
       }));

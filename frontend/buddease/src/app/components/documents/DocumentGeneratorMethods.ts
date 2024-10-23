@@ -1,3 +1,5 @@
+import { Data } from '@/app/components/models/data/Data';
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import Papa from "papaparse";
 import fs from "fs";
 // DocumentGeneratorMethods.t
@@ -63,7 +65,7 @@ import { fetchTextContentFromDatabase } from "../database/DataBaseMethods";
 
 var xl = require("excel4node");
 
-async function loadTextDocumentContent(document: DocumentData): Promise<string> {
+async function loadTextDocumentContent<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(document: DocumentData<T, Meta, K>): Promise<string> {
   let textContent = "";
 
   // Check if content exists in local storage
@@ -99,9 +101,9 @@ function downloadTextContentFromCloud(url: string): string {
   return `Downloaded text content from ${url}`;
 }
 
-async function loadDiagramDocumentContent(
+async function loadDiagramDocumentContent<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   documentId: number,
-  dataCallback: (data: WritableDraft<DocumentObject>) => void
+  dataCallback: (data: WritableDraft<DocumentObject<T, Meta, K>>) => void
 ): Promise<string> {
   try {
     // Fetch the document data
@@ -142,9 +144,9 @@ async function loadDiagramDocumentContent(
   }
 }
 
-async function loadFinancialReportDocumentContent(
+async function loadFinancialReportDocumentContent<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   documentId: number,
-  dataCallback: (data: WritableDraft<DocumentObject>) => void
+  dataCallback: (data: WritableDraft<DocumentObject<T, Meta, K>>) => void
 ): Promise<string> {
   try {
     // Fetch the document data using the document ID
@@ -173,9 +175,9 @@ async function loadFinancialReportDocumentContent(
   }
 }
 
-async function loadMarketAnalysisDocumentContent(
-  document: DocumentData,
-  dataCallback: (data: WritableDraft<DocumentObject>) => void
+async function loadMarketAnalysisDocumentContent<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  document: DocumentData<T, Meta, K>,
+  dataCallback: (data: WritableDraft<DocumentObject<T, Meta, K>>) => void
 ): Promise<string> {
   try {
     // Logic to load content for a market analysis document
@@ -192,9 +194,9 @@ async function loadMarketAnalysisDocumentContent(
   }
 }
 
-async function loadClientPortfolioDocumentContent(
-  document: DocumentData,
-  dataCallback: (data: WritableDraft<DocumentObject>) => void
+async function loadClientPortfolioDocumentContent<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  document: DocumentData<T, Meta, K>,
+  dataCallback: (data: WritableDraft<DocumentObject<T, Meta, K>>) => void
 ): Promise<string> {
   try {
     // Logic to load content for a client portfolio document
@@ -211,9 +213,9 @@ async function loadClientPortfolioDocumentContent(
   }
 }
 
-async function loadSQLDocumentContent(
+async function loadSQLDocumentContent<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   document: DocumentPath,
-  dataCallback: (data: WritableDraft<DocumentObject>) => void
+  dataCallback: (data: WritableDraft<DocumentObject<T, Meta, K>>) => void
 ): Promise<string> {
   try {
     // Assuming the SQL script is stored in the document's content property
@@ -222,7 +224,7 @@ async function loadSQLDocumentContent(
       const sqlScript = document.content;
 
       // Wrap sqlScript in a WritableDraft<DocumentData> object
-      const draft: WritableDraft<DocumentObject> = {
+      const draft: WritableDraft<DocumentObject<T, Meta, K>> = {
         id: 0,
         title: "draft title",
         content: sqlScript,
@@ -351,9 +353,9 @@ async function loadSQLDocumentContent(
   }
 }
 
-async function loadPDFDocumentContent(
-  document: DocumentData,
-  dataCallback: (data: WritableDraft<DocumentObject>) => void
+async function loadPDFDocumentContent<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  document: DocumentData<T, Meta, K>,
+  dataCallback: (data: WritableDraft<DocumentObject<T, Meta, K>>) => void
 ): Promise<string> {
   try {
     const pdfBytes =
@@ -375,7 +377,7 @@ async function loadPDFDocumentContent(
     }
 
     const updatedDocument = { ...document, content: text };
-    dataCallback(updatedDocument as WritableDraft<DocumentObject>);
+    dataCallback(updatedDocument as WritableDraft<DocumentObject<T, Meta, K>>);
 
     return text;
   } catch (error) {
@@ -386,7 +388,7 @@ async function loadPDFDocumentContent(
 
 async function loadMarkdownDocumentContent(
   document: DocumentPath,
-  dataCallback: (data: WritableDraft<DocumentObject>) => void
+  dataCallback: (data: WritableDraft<DocumentObject<T, Meta, K>>) => void
 ): Promise<string> {
   try {
     // Assuming the Markdown file path is stored in the document's filePathOrUrl property
@@ -397,7 +399,7 @@ async function loadMarkdownDocumentContent(
 
     // Call dataCallback with the modified document
     const updatedDocument = { ...document, content: markdownContent };
-    dataCallback(updatedDocument as WritableDraft<DocumentObject>);
+    dataCallback(updatedDocument as WritableDraft<DocumentObject<T, Meta, K>>);
 
     // Return the Markdown content
     return markdownContent;
@@ -416,7 +418,7 @@ async function loadCalendarEventsDocumentContent(documentId: number) {
 }
 
 // Function to load content for a drawing document
-async function loadDrawingDocumentContent(
+async function loadDrawingDocumentContent<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   documentId: DocumentData
 ): Promise<string> {
   try {
@@ -433,8 +435,8 @@ async function loadDrawingDocumentContent(
   }
 }
 
-async function loadPresentationDocumentContent(
-  presentationId: DocumentObject
+async function loadPresentationDocumentContent<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  presentationId: DocumentObject<T, Meta, K>
 ): Promise<string> {
   try {
     // Logic to load presentation content
@@ -471,10 +473,10 @@ async function loadDraftDocumentContent(
   }
 }
 
-async function loadGenericDocumentContent(
-  documentId: DocumentObject,
+async function loadGenericDocumentContent<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  documentId: DocumentObject<T, Meta, K>,
   format: string,
-  dataCallback: (data: WritableDraft<DocumentObject>) => void
+  dataCallback: (data: WritableDraft<DocumentObject<T, Meta, K>>) => void
 ): Promise<string> {
   let parsedContent: any;
 
@@ -579,7 +581,7 @@ function parsePDFData<T extends object>({
   });
 }
 
-async function loadDocumentContentFromDatabase(
+async function loadDocumentContentFromDatabase<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   pdfType: YourPDFType,
   [],
   pdfData: string | Uint8Array,
@@ -589,7 +591,7 @@ async function loadDocumentContentFromDatabase(
   appType: AppType,
   documentId: number,
   format: string,
-  dataCallback: (data: WritableDraft<DocumentData>) => void
+  dataCallback: (data: WritableDraft<DocumentData<T, Meta, K>>) => void
 ): Promise<string> {
   let parsedContent: any;
 
@@ -871,7 +873,7 @@ async function loadOtherDocumentContent(
 }
 
 async function loadCryptoWatchDocumentContent(
-  documentId: DocumentData,
+  documentId: DocumentData<T, Meta, K>,
   userId: string
 ): Promise<string> {
   try {
@@ -898,8 +900,8 @@ async function loadCryptoWatchDocumentContent(
 // Update the return type in loadDocumentContent to handle Promise
 async function loadDocumentContent(
   documentId: number,
-  document: DocumentObject,
-  dataCallback: (data: WritableDraft<DocumentData>) => void,
+  document: DocumentObject<T, Meta, K>,
+  dataCallback: (data: WritableDraft<DocumentData<T, Meta, K>>) => void,
   docx: CustomDocxtemplater<any>
 ): Promise<string | undefined> {
   switch (document.type) {
@@ -922,7 +924,7 @@ async function loadDocumentContent(
   return undefined; // Return undefined for unsupported document types
 }
 
-function loadSpreadsheetDocumentContent(document: DocumentData): string {
+function loadSpreadsheetDocumentContent(document: DocumentData<T, Meta, K>): string {
   // Logic to load content for a spreadsheet document
   // For example, if the content is stored in a database:
   const workbook = new xl.Workbook();

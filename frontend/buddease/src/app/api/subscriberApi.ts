@@ -5,7 +5,7 @@ import { Subscriber } from "../components/users/Subscriber";
 import axiosInstance from "./axiosInstance";
 
 export const getSubscriberId = (subscriber: Subscriber<T,K>) => subscriber.id
-export const getSubscribersAPI = async <T extends Data, K extends Data>(): Promise<Subscriber<T, K>[]> => {
+export const getSubscribersAPI = async <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(): Promise<Subscriber<T, Meta, K>[]> => {
   try {
     const response = await axiosInstance.get("/subscribers");
     return response.data;

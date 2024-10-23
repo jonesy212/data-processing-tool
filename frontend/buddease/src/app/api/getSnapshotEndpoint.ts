@@ -1,4 +1,5 @@
-import { K, T } from "../components/models/data/dataStoreMethods";
+import { Data } from '@/app/components/models/data/Data';
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { Snapshot } from "../components/snapshots";
 import endpointConfigurations, { EndpointConfig } from "./endpointConfigurations";
 
@@ -8,11 +9,19 @@ type SnapshotCategoryType = "User" | "Todo" | "Task" | "Delegate" | "Highlight" 
     "Note" |
     "Comment";
 
-interface SnapshotCategory<T, K> {
+interface SnapshotCategory<
+  T extends Data, 
+  Meta extends UnifiedMetaDataOptions,
+//   ExcludedFields extends keyof T = never, // Declare ExcludedFields first
+  K extends Data,
+// K extends Exclude<keyof T, ExcludedFields> = Exclude<keyof T, ExcludedFields> // Then use it in K
+> {
     id: string;
     name: SnapshotCategoryType; // Use the string literal type here
     description?: string;
-    snapshots: Snapshot<T, K>[];
+    snapshots: Snapshot<T, Meta, K>[]; 
+    
+    // snapshots: Snapshot<Omit<T, ExcludedFields>, Meta, K>[]; // This should now be valid
 }
 
 // Update your function to accept SnapshotCategoryType
@@ -41,6 +50,7 @@ function getSnapshotEndpoint(snapshotCategory: SnapshotCategoryType, snapshotId?
 }
 
 
-export type { SnapshotCategory, SnapshotCategoryType }
+export type { SnapshotCategory, SnapshotCategoryType };
 
-export {getSnapshotEndpoint}
+    export { getSnapshotEndpoint };
+

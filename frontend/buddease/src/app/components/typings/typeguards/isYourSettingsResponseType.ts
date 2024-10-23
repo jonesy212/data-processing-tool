@@ -50,6 +50,6 @@ function convertToYourSettingsResponseType(data: ParsedData<YourResponseType>): 
     };
 }
 
-
-isYourSettingsResponseType
-convertToYourSettingsResponseType
+export {
+isYourSettingsResponseType,
+convertToYourSettingsResponseType }

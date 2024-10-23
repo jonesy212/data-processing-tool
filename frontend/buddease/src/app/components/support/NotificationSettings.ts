@@ -1,4 +1,5 @@
-import { NotificationChannels, NotificationTypes } from '../../components/settings/NotificationChannels';
+import { NotificationChannels } from '../../components/settings/NotificationChannels';
+import { NotificationTypes } from './NotificationTypes';
 
 interface BaseNotificationSettings {
   enabled: boolean; // Common to all notifications

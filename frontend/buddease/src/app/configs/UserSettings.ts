@@ -1,39 +1,39 @@
-import { object } from "prop-types";
+import { Task } from "@/app/components/models/tasks/Task";
 import { TodoManagerStore } from "@/app/components/state/stores/TodoStore";
 import { Idea } from "@/app/components/users/Ideas";
-import { Phase } from "../components/phases/Phase";
-import HighlightEvent from "../components/documents/screenFunctionality/HighlightEvent";
-import { CodingLanguageEnum, LanguageEnum } from "../components/communications/LanguageEnum";
-import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
-import useAuthentication from "../components/hooks/useAuthentication";
-import { PrivacySettings, selectedSettings } from "../components/settings/PrivacySettings";
-import useSettingManagerStore, { Settings } from "../components/state/stores/SettingsStore";
-import { ThemeEnum } from "../components/libraries/ui/theme/Theme";
-import { NotificationData } from "../components/support/NofiticationsSlice";
-import { SnapshotStoreConfig, SnapshotStoreUnion } from "../components/snapshots";
-import TodoImpl, { Todo, UserAssignee} from "../components/todos/Todo";
-import { Task } from "@/app/components/models/tasks/Task";
-import { DataAnalysisResult } from "../components/projects/DataAnalysisPhase/DataAnalysisResult";
-import { store } from "../components/state/stores/useAppDispatch";
-import { resetState, useAppManagerSlice } from "../components/state/redux/slices/AppSlice";
-import { Data, BaseData } from "../components/models/data/Data";
-import { VideoData } from "../components/video/Video";
-import BrowserCheckStore from "../components/state/stores/BrowserCheckStore";
-import { Category } from "../components/libraries/categories/generateCategoryProperties";
-import { CategoryProperties } from "../pages/personas/ScenarioBuilder";
-import { Attachment } from "../components/documents/Attachment/attachment";
-import { CollaborationOptions } from "../components/interfaces/options/CollaborationOptions";
+import { object } from "prop-types";
 import { NestedEndpoints } from "../api/ApiEndpoints";
 import { CalendarEvent } from "../components/calendar/CalendarEvent";
-import { CalendarManagerStore } from "../components/state/stores/CalendarEvent";
-import { CustomComment } from "../components/state/redux/slices/BlogSlice";
-import { DetailsItem } from "../components/state/stores/DetailsListStore";
-import { TrackerStore } from "../components/state/stores/TrackerStore";
-import { IconStore } from "../components/state/stores/IconStore";
-import SnapshotStore from "../components/snapshots/SnapshotStore";
-import { InitializedState } from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { NotificationSettings } from "../components/support/NotificationSettings";
+import { CodingLanguageEnum, LanguageEnum } from "../components/communications/LanguageEnum";
+import { Attachment } from "../components/documents/Attachment/attachment";
+import HighlightEvent from "../components/documents/screenFunctionality/HighlightEvent";
+import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
+import useAuthentication from "../components/hooks/useAuthentication";
+import { CollaborationOptions } from "../components/interfaces/options/CollaborationOptions";
+import { Category } from "../components/libraries/categories/generateCategoryProperties";
+import { ThemeEnum } from "../components/libraries/ui/theme/Theme";
+import { BaseData, Data } from "../components/models/data/Data";
 import { Member } from "../components/models/teams/TeamMembers";
+import { Phase } from "../components/phases/Phase";
+import { DataAnalysisResult } from "../components/projects/DataAnalysisPhase/DataAnalysisResult";
+import { InitializedState } from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { PrivacySettings, selectedSettings } from "../components/settings/PrivacySettings";
+import { SnapshotStoreConfig, SnapshotStoreUnion } from "../components/snapshots";
+import SnapshotStore from "../components/snapshots/SnapshotStore";
+import { resetState } from "../components/state/redux/slices/AppSlice";
+import { CustomComment } from "../components/state/redux/slices/BlogSlice";
+import BrowserCheckStore from "../components/state/stores/BrowserCheckStore";
+import { CalendarManagerStore } from "../components/state/stores/CalendarEvent";
+import { DetailsItem } from "../components/state/stores/DetailsListStore";
+import { IconStore } from "../components/state/stores/IconStore";
+import useSettingManagerStore, { Settings } from "../components/state/stores/SettingsStore";
+import { TrackerStore } from "../components/state/stores/TrackerStore";
+import { store } from "../components/state/stores/useAppDispatch";
+import { NotificationData } from "../components/support/NofiticationsSlice";
+import { NotificationSettings } from "../components/support/NotificationSettings";
+import TodoImpl, { Todo, UserAssignee } from "../components/todos/Todo";
+import { VideoData } from "../components/video/Video";
+import { CategoryProperties } from "../pages/personas/ScenarioBuilder";
 
 const logoutUser = useAuthentication().logout;
 
@@ -146,15 +146,15 @@ export interface UserSettings extends Settings {
     | HighlightEvent[]
     | Idea[]
     | SnapshotStore<SnapshotStoreUnion<Data>, Data>[]
-    | InitializedState<BaseData, BaseData>
+    | InitializedState<BaseData, Meta, BaseData>
     | Member[]
     | NotificationSettings
     | Todo[]
     | Task[]
     | TodoManagerStore
     | TodoImpl<Todo, any>[]
-    | CalendarEvent<BaseData, BaseData>[]
-    | CalendarManagerStore<BaseData, BaseData>
+    | CalendarEvent<BaseData, Meta, BaseData>[]
+    | CalendarManagerStore<BaseData, Meta, BaseData>
     | SnapshotStoreConfig<Data, Data>[]
     | Record<string, string>
     | undefined

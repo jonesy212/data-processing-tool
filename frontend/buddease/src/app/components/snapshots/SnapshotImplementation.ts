@@ -15,7 +15,7 @@ class SnapshotImplementation<T> {
 }
 
 // Example usage
-const snapshotType = (snapshot: Snapshot<Data>) => {
+const snapshotType = (snapshot: Snapshot<Data, Meta, Data>) => {
   const newSnapshot = snapshot;
   newSnapshot.id = snapshot.id || generateSnapshotId;
   // Other initialization logic...

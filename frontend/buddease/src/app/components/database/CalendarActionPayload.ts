@@ -1,5 +1,5 @@
 // CalendarActionPayload.ts
-
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { CalendarEvent } from "../calendar/CalendarEvent";
 import { Data } from "../models/data/Data";
 import { AllStatus } from "../state/stores/DetailsListStore";
@@ -12,13 +12,13 @@ type CalendarActionType =
   | 'SET_EVENT_STATUS';
 
 // Define the payloads for different actions
-interface AddEventPayload<T extends Data, K extends Data> {
-  event: CalendarEvent<T, K>;
+interface AddEventPayload<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+  event: CalendarEvent<T, Meta, K>;
 }
 
-interface UpdateEventPayload<T extends Data, K extends Data> {
+interface UpdateEventPayload<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
   eventId: string;
-  updatedEvent: Partial<CalendarEvent<T, K>>;
+  updatedEvent: Partial<CalendarEvent<T, Meta, K>>;
 }
 
 interface RemoveEventPayload {
@@ -31,9 +31,9 @@ interface SetEventStatusPayload {
 }
 
 // Define a union type for action payloads
-type CalendarActionPayload<T extends Data, K extends Data> =
-  | AddEventPayload<T, K>
-  | UpdateEventPayload<T, K>
+type CalendarActionPayload<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> =
+  | AddEventPayload<T, Meta, K>
+  | UpdateEventPayload<T, Meta, K>
   | RemoveEventPayload
   | SetEventStatusPayload;
 

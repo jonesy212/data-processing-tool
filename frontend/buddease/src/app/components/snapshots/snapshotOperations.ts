@@ -1,128 +1,131 @@
+import { SnapshotData } from '@/app/components/snapshots';
 // snapshotOperations.ts
 // import { getSnapshot } from "@/app/api/SnapshotApi"
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder"
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType"
-import { SnapshotContainer, SnapshotStoreProps, SubscriberCollection } from "."
-import { SnapshotManager } from "../hooks/useSnapshotManager"
-import { Category } from "../libraries/categories/generateCategoryProperties"
-import { Content } from "../models/content/AddContent"
-import { BaseData, Data } from "../models/data/Data"
-import { RealtimeDataItem } from "../models/realtime/RealtimeData"
-import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods"
-import CalendarManagerStoreClass from "../state/stores/CalendarEvent"
-import { convertSnapshotContainerToStore } from "../typings/YourSpecificSnapshotType"
-import { Subscriber } from "../users/Subscriber"
-import { createVersionInfo } from "../versions/createVersionInfo"
-import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore"
-import { SnapshotItem } from "./SnapshotList"
-import SnapshotStore from "./SnapshotStore"
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig"
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { SnapshotContainer, SnapshotStoreProps, SubscriberCollection } from ".";
+import { SnapshotManager } from "../hooks/useSnapshotManager";
+import { Category } from "../libraries/categories/generateCategoryProperties";
+import { Content } from "../models/content/AddContent";
+import { BaseData, Data } from "../models/data/Data";
+import { Meta } from '../models/data/dataStoreMethods';
+import { RealtimeDataItem } from "../models/realtime/RealtimeData";
+import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
+import { convertSnapshotContainerToStore } from "../typings/YourSpecificSnapshotType";
+import { Subscriber } from "../users/Subscriber";
+import { createVersionInfo } from "../versions/createVersionInfo";
+import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
+import { SnapshotItem } from "./SnapshotList";
+import SnapshotStore from "./SnapshotStore";
+import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 
 
-interface SnapshotOperations<T extends Data, K extends BaseData> {
+interface SnapshotOperations<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
   // Existing methods
-  mapSnapshot: (snapshot: Snapshot<T, K>) => any;
-  mapSnapshotWithDetails: (snapshot: Snapshot<T, K>) => any;
+  mapSnapshot: (snapshot: Snapshot<T, Meta, K>) => any;
+  mapSnapshotWithDetails: (snapshot: Snapshot<T, Meta, K>) => any;
   removeStore: (id: string) => void;
-  fetchSnapshot: (id: string) => Promise<Snapshot<T, K>>;
-  fetchSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-  updateSnapshotFailure: (snapshot: Snapshot<T, K>, error: Error) => void;
+  fetchSnapshot: (id: string) => Promise<Snapshot<T, Meta, K>>;
+  fetchSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+  updateSnapshotFailure: (snapshot: Snapshot<T, Meta, K>, error: Error) => void;
   fetchSnapshotFailure: (id: string, error: Error) => void;
   configureSnapshotStore: (options: any) => void;
-  onSnapshot: (snapshot: Snapshot<T, K>) => void;
-  onSnapshots: (snapshots: Snapshots<Data>) => void;
+  onSnapshot: (snapshot: Snapshot<T, Meta, K>) => void;
+  onSnapshots: (snapshots: Snapshots<Data, Meta>) => void;
   events: any[];
   parentId: string;
   childIds: string[];
 
   // New methods
-  getParentId: (snapshot: Snapshot<T, K>) => string | null;
-  getChildIds: (childSnapshot: Snapshot<T, K>) => string[];
+  getParentId: (snapshot: Snapshot<T, Meta, K>) => string | null;
+  getChildIds: (childSnapshot: Snapshot<T, Meta, K>) => string[];
   clearSnapshotFailure: () => unknown;
-  validateSnapshot: (snapshot: Snapshot<T, K>) => boolean;
-  getSnapshot: (id: string) => Promise<Snapshot<T, K>>;
-  takeSnapshot: (snapshot: Snapshot<T, K>, subscribers: Subscriber<T, K>[]) => Promise<{ snapshot: Snapshot<T, K>; }>;
-  removeSnapshot: (snapshotToRemove: SnapshotStore<T, K>) => void;
+  validateSnapshot: (snapshot: Snapshot<T, Meta, K>) => boolean;
+  getSnapshot: (id: string) => Promise<Snapshot<T, Meta, K>>;
+  takeSnapshot: (snapshot: Snapshot<T, Meta, K>, subscribers: Subscriber<T, Meta, K>[]) => Promise<{ snapshot: Snapshot<T, Meta, K>; }>;
+  removeSnapshot: (snapshotToRemove: SnapshotStore<T, Meta, K>) => void;
   updateSnapshot: (
     snapshotId: string,
-    data: Map<string, Snapshot<T, K>>,
-    events: Record<string, CalendarManagerStoreClass<T, K>[]>,
-    snapshotStore: SnapshotStore<T, K>,
+    data: Map<string, Snapshot<T, Meta, K>>,
+    events: Record<string, CalendarManagerStoreClass<T, Meta, K>[]>,
+    snapshotStore: SnapshotStore<T, Meta, K>,
     dataItems: RealtimeDataItem[],
-    newData: Snapshot<T, K>,
+    newData: Snapshot<T, Meta, K>,
     payload: UpdateSnapshotPayload<Data>,
-    store: SnapshotStore<any, BaseData>
-  ) => Promise<{ snapshot: Snapshot<any, Data>; }>;
-  getSnapshots: (category: string, data: Snapshots<Data>) => Snapshots<Data>;
-  getSnapshotItems: (category: symbol | string | Category | undefined, snapshots: SnapshotsArray<Data>) => Promise<{ snapshots: SnapshotItem<T, K>[]; }>;
+    store: SnapshotStore<any, Meta, BaseData>
+  ) => Promise<{ snapshot: Snapshot<any, Meta, Data>; }>;
+  getSnapshots: (category: string, data: Snapshots<Data, Meta>) => Snapshots<Data, Meta>;
+  getSnapshotItems: (category: symbol | string | Category | undefined, snapshots: SnapshotsArray<Data, Meta>) => Promise<{ snapshots: SnapshotItem<T, Meta, K>[]; }>;
   getSnapshotContainer: (
     id: string | number,
     snapshotFetcher: (id: string | number) => Promise<{
       category: string;
       timestamp: string;
       id: string;
-      snapshotStore: SnapshotStore<T, K>;
-      snapshot: Snapshot<T, K>;
-      snapshots: Snapshots<Data>;
-      subscribers: Subscriber<T, K>[];
+      snapshotStore: SnapshotStore<T, Meta, K>;
+      snapshot: Snapshot<T, Meta, K>;
+      snapshots: Snapshots<Data, Meta>;
+      subscribers: Subscriber<T, Meta, K>[];
       data: Data;
       newData: Data;
       unsubscribe: () => void;
-      addSnapshotFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-      createSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-      createSnapshotFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-      updateSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-      batchUpdateSnapshotsSuccess: (snapshots: Snapshots<Data>) => void;
-      batchUpdateSnapshotsFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-      batchUpdateSnapshotsRequest: (snapshots: Snapshots<Data>) => void;
-      createSnapshots: (snapshots: Snapshots<Data>) => void;
-      batchTakeSnapshot: (snapshot: Snapshot<T, K>) => void;
-      batchTakeSnapshotsRequest: (snapshots: Snapshots<Data>) => void;
+      addSnapshotFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+      createSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+      createSnapshotFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+      updateSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+      batchUpdateSnapshotsSuccess: (snapshots: Snapshots<Data, Meta>) => void;
+      batchUpdateSnapshotsFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+      batchUpdateSnapshotsRequest: (snapshots: Snapshots<Data, Meta>) => void;
+      createSnapshots: (snapshots: Snapshots<Data, Meta>) => void;
+      batchTakeSnapshot: (snapshot: Snapshot<T, Meta, K>) => void;
+      batchTakeSnapshotsRequest: (snapshots: Snapshots<Data, Meta>) => void;
       deleteSnapshot: (id: string) => void;
-      batchFetchSnapshots: (criteria: any) => Promise<Snapshots<Data>>;
-      batchFetchSnapshotsSuccess: (snapshots: Snapshots<Data>) => void;
-      batchFetchSnapshotsFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-      filterSnapshotsByStatus: (status: string) => Snapshots<Data>;
-      getSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
+      batchFetchSnapshots: (criteria: any) => Promise<Snapshots<Data, Meta>>;
+      batchFetchSnapshotsSuccess: (snapshots: Snapshots<Data, Meta>) => void;
+      batchFetchSnapshotsFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+      filterSnapshotsByStatus: (status: string) => Snapshots<Data, Meta>;
+      getSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
       removeSnapshot: (id: string) => void;
       removeSnapshots: (ids: string[]) => void;
       removeSnapshotsSuccess: (ids: string[]) => void;
-      removeSnapshotsFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
+      removeSnapshotsFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
       resetSnapshotData: () => void;
     }>
   ) => Promise<{
     category: string;
     timestamp: string;
     id: string;
-    snapshotStore: SnapshotStore<T, K>;
-    snapshot: Snapshot<T, K>;
-    snapshots: Snapshots<Data>;
-    subscribers: Subscriber<T, K>[];
+    snapshotStore: SnapshotStore<T, Meta, K>;
+    snapshot: Snapshot<T, Meta, K>;
+    snapshots: Snapshots<Data, Meta>;
+    subscribers: Subscriber<T, Meta, K>[];
     data: Data;
     newData: Data;
     unsubscribe: () => void;
-    addSnapshotFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-    createSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-    createSnapshotFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-    updateSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-    batchUpdateSnapshotsSuccess: (snapshots: Snapshots<Data>) => void;
-    batchUpdateSnapshotsFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-    batchUpdateSnapshotsRequest: (snapshots: Snapshots<Data>) => void;
-    createSnapshots: (snapshots: Snapshots<Data>) => void;
-    batchTakeSnapshot: (snapshot: Snapshot<T, K>) => void;
-    batchTakeSnapshotsRequest: (snapshots: Snapshots<Data>) => void;
+    addSnapshotFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+    createSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+    createSnapshotFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+    updateSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+    batchUpdateSnapshotsSuccess: (snapshots: Snapshots<Data, Meta>) => void;
+    batchUpdateSnapshotsFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+    batchUpdateSnapshotsRequest: (snapshots: Snapshots<Data, Meta>) => void;
+    createSnapshots: (snapshots: Snapshots<Data, Meta>) => void;
+    batchTakeSnapshot: (snapshot: Snapshot<T, Meta, K>) => void;
+    batchTakeSnapshotsRequest: (snapshots: Snapshots<Data, Meta>) => void;
     deleteSnapshot: (id: string) => void;
-    batchFetchSnapshots: (criteria: any) => Promise<Snapshots<Data>>;
-    batchFetchSnapshotsSuccess: (snapshots: Snapshots<Data>) => void;
-    batchFetchSnapshotsFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-    filterSnapshotsByStatus: (status: string) => Snapshots<Data>;
-    getSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
+    batchFetchSnapshots: (criteria: any) => Promise<Snapshots<Data, Meta>>;
+    batchFetchSnapshotsSuccess: (snapshots: Snapshots<Data, Meta>) => void;
+    batchFetchSnapshotsFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+    filterSnapshotsByStatus: (status: string) => Snapshots<Data, Meta>;
+    getSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
     removeSnapshot: (id: string) => void;
     removeSnapshots: (ids: string[]) => void;
     removeSnapshotsSuccess: (ids: string[]) => void;
-    removeSnapshotsFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
+    removeSnapshotsFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
     resetSnapshotData: () => void;
   }>;
 
@@ -133,35 +136,35 @@ interface SnapshotOperations<T extends Data, K extends BaseData> {
     snapshotId: string,
     category: Category | undefined,
     categoryProperties: CategoryProperties | undefined,
-    snapshot: Snapshot<T, K>,
+    snapshot: Snapshot<T, Meta, K>,
     timestamp: string | number | Date | undefined,
     type: string,
     event: Event,
     id: number,
-    snapshotStore: SnapshotStore<T, K>,
+    snapshotStore: SnapshotStore<T, Meta, K>,
     data: Data,
     callback: (
       storeIds: number[],
       snapshotId: string,
       category: symbol | string | Category | undefined,
       categoryProperties: CategoryProperties | undefined,
-      snapshot: Snapshot<T, K>,
+      snapshot: Snapshot<T, Meta, K>,
       timestamp: string | number | Date | undefined,
       type: string,
       event: Event,
       id: number,
-      snapshotStore: SnapshotStore<T, K>,
+      snapshotStore: SnapshotStore<T, Meta, K>,
       data: Data,
       index: number
-    ) => SnapshotUnion<Data>
-  ) => Promise<SnapshotsArray<Data>>;
+    ) => SnapshotUnion<Data, Meta>
+  ) => Promise<SnapshotsArray<Data, Meta>>;
 
   getSnapshotById: (
     fetchSnapshot: (id: string) => Promise<{
       category: Category;
       timestamp: string | number | Date | undefined;
       id: string | number | undefined;
-      snapshotStore: SnapshotStore<T, K>;
+      snapshotStore: SnapshotStore<T, Meta, K>;
       data: Data;
     } | undefined>,
     id: string,
@@ -169,10 +172,10 @@ interface SnapshotOperations<T extends Data, K extends BaseData> {
       id: string | number | undefined;
       category: Category;
       timestamp: string | number | Date | undefined;
-      snapshotStore: SnapshotStore<T, K>;
+      snapshotStore: SnapshotStore<T, Meta, K>;
       data: Data;
-    }) => Snapshot<T, K>
-  ) => Promise<Snapshot<T, K> | null>;
+    }) => Snapshot<T, Meta, K>
+  ) => Promise<Snapshot<T, Meta, K> | null>;
 
   handleSnapshot: (
     id: string,
@@ -181,31 +184,31 @@ interface SnapshotOperations<T extends Data, K extends BaseData> {
     snapshotData: Data,
     category: Category | undefined,
     callback: (snapshot: Data) => void,
-    snapshots: SnapshotsArray<any>,
+    snapshots: SnapshotsArray<any, Meta>,
     type: string,
     event: Event,
-    snapshotContainer?: SnapshotContainer<T, K> | undefined,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, K> | null
-  ) => Promise<Snapshot<T, K> | null>;
+    snapshotContainer?: SnapshotContainer<T, Meta, K> | undefined,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, Meta, K> | null
+  ) => Promise<Snapshot<T, Meta, K> | null>;
 
 
-  configureSnapshot: <T extends Data, K extends BaseData>(
+  configureSnapshot: <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
     id: string,
-    snapshotData: Snapshot<T, K>,
+    snapshotData: SnapshotData<T, Meta, K>,
     category?: string | symbol | Category,
-    callback?: ((snapshot: Snapshot<T, K>) => void) | undefined,
-    snapshotDataStore?: SnapshotStore<T, K> | undefined,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, K> | undefined,
-    subscribers?: SubscriberCollection<T, K> | undefined
-  ) => Snapshot<T, K> | null;
+    callback?: ((snapshot: Snapshot<T, Meta, K>) => void) | undefined,
+    SnapshotData?: SnapshotStore<T, Meta, K> | undefined,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, Meta, K> | undefined,
+    subscribers?: SubscriberCollection<T, Meta, K> | undefined
+  ) => Snapshot<T, Meta, K> | null;
 }
 
 
 
-const getParentId = (snapshot: Snapshot<Data, BaseData>): string | null => {
+const getParentId = (snapshot: Snapshot<Data, Meta, BaseData>): string | null => {
   return snapshot.parentId || null;
 };
-const getChildIds = (childSnapshot: Snapshot<Data, BaseData>): string[] => {
+const getChildIds = (childSnapshot: Snapshot<Data, Meta, BaseData>): string[] => {
   return childSnapshot.childIds || [];
 };
 
@@ -218,29 +221,29 @@ const mapSnapshots = async (
   snapshotId: string,
   category: Category | undefined,
   categoryProperties: CategoryProperties | undefined,
-  snapshot: Snapshot<Data, BaseData>,
+  snapshot: Snapshot<Data, Meta, BaseData>,
   timestamp: string | number | Date | undefined,
   type: string,
   event: Event,
   id: number,
-  snapshotStore: SnapshotStore<Data, BaseData>,
+  snapshotStore: SnapshotStore<Data, Meta, BaseData>,
   data: Data,
   callback: (
     storeIds: number[],
     snapshotId: string,
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
-    snapshot: Snapshot<Data, BaseData>,
+    snapshot: Snapshot<Data, Meta, BaseData>,
     timestamp: string | number | Date | undefined,
     type: string,
     event: Event,
     id: number,
-    snapshotStore: SnapshotStore<Data, BaseData>,
+    snapshotStore: SnapshotStore<Data, Meta, BaseData>,
     data: Data,
     index: number
-  ) => SnapshotUnion<Data>
-): Promise<SnapshotsArray<Data>> => {
-  const snapshotsArray: SnapshotsArray<Data> = [];
+  ) => SnapshotUnion<Data, Meta>
+): Promise<SnapshotsArray<Data, Meta>> => {
+  const snapshotsArray: SnapshotsArray<Data, Meta> = [];
 
   for (let i = 0; i < storeIds.length; i++) {
     const snapshotObject = callback(
@@ -269,7 +272,7 @@ const getSnapshotById = (
     category: Category;
     timestamp: string | number | Date | undefined;
     id: string | number | undefined;
-    snapshotStore: SnapshotStore<Data, BaseData>;
+    snapshotStore: SnapshotStore<Data, Meta, BaseData>;
     data: Data;
   } | undefined>,
   id: string,
@@ -277,10 +280,10 @@ const getSnapshotById = (
     id: string | number | undefined;
     category: Category;
     timestamp: string | number | Date | undefined;
-    snapshotStore: SnapshotStore<Data, BaseData>;
+    snapshotStore: SnapshotStore<Data, Meta, BaseData>;
     data: Data;
-  }) => Snapshot<Data, BaseData> // This provider generates Snapshot instances
-): Promise<Snapshot<Data, BaseData> | null> => {
+  }) => Snapshot<Data, Meta, BaseData> // This provider generates Snapshot instances
+): Promise<Snapshot<Data, Meta, BaseData> | null> => {
   // Ensure fetchSnapshot is defined
   if (!fetchSnapshot) {
     console.error("fetchSnapshot is undefined");
@@ -314,28 +317,28 @@ const getSnapshotById = (
 };
 
 
-const handleSnapshot = <T extends Data, K extends Data>(
+const handleSnapshot = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   id: string,
   snapshotId: string,
   snapshot: T | null,
   snapshotData: Data,
   category: Category | undefined,
   callback: (snapshot: Data) => void,
-  snapshots: SnapshotsArray<any>,
+  snapshots: SnapshotsArray<any, Meta>,
   type: string,
   event: Event,
-  snapshotContainer?: SnapshotContainer<T, K> | undefined,
-  snapshotStoreConfig?: SnapshotStoreConfig<T, K> | null,
-  storeProps?: SnapshotStoreProps<T, K>
-): Promise<Snapshot<T, K> | null> => {
+  snapshotContainer?: SnapshotContainer<T, Meta, K> | undefined,
+  snapshotStoreConfig?: SnapshotStoreConfig<T, Meta, K> | null,
+  storeProps?: SnapshotStoreProps<T, Meta, K>
+): Promise<Snapshot<T, Meta, K> | null> => {
 
   try {
     if (snapshot) {
       callback(snapshot);
     }
 
-    // Ensure snapshotStore is a SnapshotStore<T, K>
-    let snapshotStore: SnapshotStore<T, K>;
+    // Ensure snapshotStore is a SnapshotStore<T, Meta, K>
+    let snapshotStore: SnapshotStore<T, Meta, K>;
 
     if (storeProps === undefined) {
       throw new Error("cannot find store properties")
@@ -348,21 +351,21 @@ const handleSnapshot = <T extends Data, K extends Data>(
 
     if (snapshotContainer) {
       // Ensure snapshotContainer is of the correct type, otherwise use a default instance
-      snapshotStore = convertSnapshotContainerToStore<T, K>(snapshotContainer);
+      snapshotStore = convertSnapshotContainerToStore<T, Meta, K>(snapshotContainer);
 
     } else if (snapshotStoreConfig && snapshotStoreConfig.config !== null) {
       const versionInfo = createVersionInfo(snapshotStoreConfig.version || '0.0.0');
 
 
       // Create a new SnapshotStore with provided configuration
-      snapshotStore = new SnapshotStore<T, K>({
+      snapshotStore = new SnapshotStore<T, Meta, K>({
         storeId, name, version, schema, options, category, config, expirationDate,
         operation, storeProps,
         payload, callback, endpointCategory
       });
     } else {
       // Fallback to a default or empty instance
-      snapshotStore = new SnapshotStore<T, K>({
+      snapshotStore = new SnapshotStore<T, Meta, K>({
         storeId: storeId,
         name,
         version: version || (snapshotStoreConfig && snapshotStoreConfig.version ? createVersionInfo(snapshotStoreConfig.version) : undefined),
@@ -373,7 +376,7 @@ const handleSnapshot = <T extends Data, K extends Data>(
     }
 
     // Create an object that conforms to the Snapshot interface
-    const processedSnapshot: Snapshot<T, K> = {
+    const processedSnapshot: Snapshot<T, Meta, K> = {
       id,
       category: category ?? undefined,
       timestamp: new Date(),
@@ -396,8 +399,8 @@ const handleSnapshot = <T extends Data, K extends Data>(
         snapshotData: Data,
         category: Category | undefined,
         categoryProperties: CategoryProperties | undefined,
-        dataStoreMethods: DataStoreMethods<T, K>
-      ): Promise<SnapshotStore<T, K>> => {
+        dataStoreMethods: DataStoreMethods<T, Meta, K>
+      ): Promise<SnapshotStore<T, Meta, K>> => {
         return Promise.resolve(snapshotStore);
       },
       getSnapshotItems: () => [],
@@ -467,45 +470,45 @@ const handleSnapshot = <T extends Data, K extends Data>(
 }
 
 
-const validateSnapshot = (snapshot: Snapshot<Data, BaseData>): boolean => {
+const validateSnapshot = (snapshot: Snapshot<Data, Meta, BaseData>): boolean => {
   return snapshot.id !== undefined && snapshot.data !== undefined;
 }
 
 
 const getSnapshot = (snapshot: (id: string) => Promise<{
   category: any; timestamp: any;
-  id: any; snapshot: Snapshot<Data, BaseData>;
+  id: any; snapshot: Snapshot<Data, Meta, BaseData>;
   data: Data;
 }> | undefined
-): Promise<Snapshot<Data, BaseData>> => {
+): Promise<Snapshot<Data, Meta, BaseData>> => {
   throw new Error("Function not implemented.");
 }
 
 
 const takeSnapshot = async (
-  snapshot: Snapshot<Data, BaseData>,
-  subscribers: Subscriber<Data, BaseData>[]
-): Promise<{ snapshot: Snapshot<Data, BaseData>; }> => {
+  snapshot: Snapshot<Data, Meta, BaseData>,
+  subscribers: Subscriber<Data, Meta, BaseData>[]
+): Promise<{ snapshot: Snapshot<Data, Meta, BaseData>; }> => {
   subscribers.forEach(subscriber => {
     subscriber.update(snapshot);
   });
 
   return { snapshot };
 };
-const removeSnapshot = (snapshotToRemove: SnapshotStore<Data, BaseData>): void => {
+const removeSnapshot = (snapshotToRemove: SnapshotStore<Data, Meta, BaseData>): void => {
   snapshotToRemove.clearSnapshot();
 };
 
 const updateSnapshot = (
   snapshotId: string,
-  data: Map<string, Snapshot<Data, BaseData>>,
-  events: Record<string, CalendarManagerStoreClass<Data, BaseData>[]>,
-  snapshotStore: SnapshotStore<Data, BaseData>,
+  data: Map<string, Snapshot<Data, Meta, BaseData>>,
+  events: Record<string, CalendarManagerStoreClass<Data, Meta, BaseData>[]>,
+  snapshotStore: SnapshotStore<Data, Meta, BaseData>,
   dataItems: RealtimeDataItem[],
-  newData: Snapshot<Data, BaseData>,
+  newData: Snapshot<Data, Meta, BaseData>,
   payload: UpdateSnapshotPayload<Data>,
-  store: SnapshotStore<any, BaseData> // Ensure the correct type here
-): Promise<{ snapshot: Snapshot<any, Data>; }> => {
+  store: SnapshotStore<any, Meta, BaseData> // Ensure the correct type here
+): Promise<{ snapshot: Snapshot<any, Meta, Data>; }> => {
   return store.updateSnapshot(
     snapshotId,
     data,
@@ -518,81 +521,81 @@ const updateSnapshot = (
   );
 };
 
-const getSnapshots = (category: string, data: Snapshots<Data>): Snapshots<Data> => {
+const getSnapshots = (category: string, data: Snapshots<Data, Meta>): Snapshots<Data, Meta> => {
   return Array.isArray(data) ? data.filter(snapshot => snapshot.category === category) : [];
 };
 
 const getSnapshotItems = async (
   category: symbol | string | Category | undefined,
-  snapshots: SnapshotsArray<Data>
-): Promise<{ snapshots: SnapshotItem<Data, BaseData>[] }> => {
-  const snapshotItems: SnapshotItem<Data, BaseData>[] = snapshots
+  snapshots: SnapshotsArray<Data, Meta>
+): Promise<{ snapshots: SnapshotItem<Data, Meta, BaseData>[] }> => {
+  const snapshotItems: SnapshotItem<Data, Meta, BaseData>[] = snapshots
     .filter(snapshot => snapshot.category === category)
     .map(snapshot => {
       // Ensure content aligns with the expected type in SnapshotItem
-      const content: Content<Data, BaseData> | undefined =
+      const content: Content<Data, Meta, BaseData> | undefined =
         typeof snapshot.content === 'string'
           ? undefined // Or handle string content conversion if needed
           : snapshot.content;
       return {
         ...snapshot,
-        content // This now is either undefined or Content<Data, BaseData>
-      } as SnapshotItem<Data, BaseData>; // Cast to ensure TypeScript understands this is a SnapshotItem
+        content // This now is either undefined or Content<Data, Meta, BaseData>
+      } as SnapshotItem<Data, Meta, BaseData>; // Cast to ensure TypeScript understands this is a SnapshotItem
     });
 
   return { snapshots: snapshotItems };
 };
 
 
-const getSnapshotContainer = <T extends Data, K extends BaseData>(
+const getSnapshotContainer = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   id: string | number,
   snapshotFetcher: (id: string | number) => Promise<{
     category: string;
     timestamp: string;
     id: string;
-    snapshotStore: SnapshotStore<T, K>;
-    snapshot: Snapshot<T, K>;
-    snapshots: Snapshots<Data>;
-    subscribers: Subscriber<T, K>[];
+    snapshotStore: SnapshotStore<T, Meta, K>;
+    snapshot: Snapshot<T, Meta, K>;
+    snapshots: Snapshots<Data, Meta>;
+    subscribers: Subscriber<T, Meta, K>[];
     data: Data;
     newData: Data;
     unsubscribe: () => void;
-    addSnapshotFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-    createSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-    createSnapshotFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-    updateSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-    batchUpdateSnapshotsSuccess: (snapshots: Snapshots<Data>) => void;
-    batchUpdateSnapshotsFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-    batchUpdateSnapshotsRequest: (snapshots: Snapshots<Data>) => void;
-    createSnapshots: (snapshots: Snapshots<Data>) => void;
-    batchTakeSnapshot: (snapshot: Snapshot<T, K>) => void;
-    batchTakeSnapshotsRequest: (snapshots: Snapshots<Data>) => void;
+    addSnapshotFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+    createSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+    createSnapshotFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+    updateSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+    batchUpdateSnapshotsSuccess: (snapshots: Snapshots<Data, Meta>) => void;
+    batchUpdateSnapshotsFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+    batchUpdateSnapshotsRequest: (snapshots: Snapshots<Data, Meta>) => void;
+    createSnapshots: (snapshots: Snapshots<Data, Meta>) => void;
+    batchTakeSnapshot: (snapshot: Snapshot<T, Meta, K>) => void;
+    batchTakeSnapshotsRequest: (snapshots: Snapshots<Data, Meta>) => void;
     deleteSnapshot: (id: string) => void;
-    batchFetchSnapshots: (criteria: any) => Promise<Snapshots<Data>>;
-    batchFetchSnapshotsSuccess: (snapshots: Snapshots<Data>) => void;
-    batchFetchSnapshotsFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-    filterSnapshotsByStatus: (status: string) => Snapshots<Data>;
-    getSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
+    batchFetchSnapshots: (criteria: any) => Promise<Snapshots<Data, Meta>>;
+    batchFetchSnapshotsSuccess: (snapshots: Snapshots<Data, Meta>) => void;
+    batchFetchSnapshotsFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+    filterSnapshotsByStatus: (status: string) => Snapshots<Data, Meta>;
+    getSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
     removeSnapshot: (id: string) => void;
     removeSnapshots: (ids: string[]) => void;
     removeSnapshotsSuccess: (ids: string[]) => void;
-    removeSnapshotsFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
+    removeSnapshotsFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
     resetSnapshotData: () => void;
     // New Methods
-    mapSnapshot: (snapshot: Snapshot<T, K>) => any;
-    mapSnapshotWithDetails: (snapshot: Snapshot<T, K>) => any;
+    mapSnapshot: (snapshot: Snapshot<T, Meta, K>) => any;
+    mapSnapshotWithDetails: (snapshot: Snapshot<T, Meta, K>) => any;
     removeStore: (id: string) => void;
-    fetchSnapshot: (id: string) => Promise<Snapshot<T, K>>;
-    fetchSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-    updateSnapshotFailure: (snapshot: Snapshot<T, K>, error: Error) => void;
+    fetchSnapshot: (id: string) => Promise<Snapshot<T, Meta, K>>;
+    fetchSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+    updateSnapshotFailure: (snapshot: Snapshot<T, Meta, K>, error: Error) => void;
     fetchSnapshotFailure: (id: string, error: Error) => void;
     configureSnapshotStore: (options: any) => void;
-    onSnapshot: (snapshot: Snapshot<T, K>) => void;
-    onSnapshots: (snapshots: Snapshots<Data>) => void;
+    onSnapshot: (snapshot: Snapshot<T, Meta, K>) => void;
+    onSnapshots: (snapshots: Snapshots<Data, Meta>) => void;
     getSnapshotStore: (storeId: number,
-      snapshotContainer: SnapshotContainer<T, K>,
+      snapshotContainer: SnapshotContainer<T, Meta, K>,
       criteria: CriteriaType
-    ) => Promise<SnapshotStore<T, K>>
+    ) => Promise<SnapshotStore<T, Meta, K>>
     events: any[];
     parentId: string;
     childIds: string[];
@@ -603,7 +606,7 @@ const getSnapshotContainer = <T extends Data, K extends BaseData>(
     getChildren: () => string[];
     hasChildren: (id: string) => boolean;
     isDescendantOf: (id: string) => boolean;
-    getSnapshotById: (id: string) => Snapshot<T, K> | undefined;
+    getSnapshotById: (id: string) => Snapshot<T, Meta, K> | undefined;
     mappedSnapshotData: any;
     snapshotData: any;
     currentCategory: string;
@@ -614,15 +617,15 @@ const getSnapshotContainer = <T extends Data, K extends BaseData>(
     isCore: boolean;
     notify: () => void;
     notifySubscribers: () => void;
-    getSnapshots: () => Snapshots<Data>;
-    getAllSnapshots: () => Snapshots<Data>;
+    getSnapshots: () => Snapshots<Data, Meta>;
+    getAllSnapshots: () => Snapshots<Data, Meta>;
     generateId: () => string;
-    compareSnapshots: (snapshot1: Snapshot<T, K>, snapshot2: Snapshot<T, K>) => number;
+    compareSnapshots: (snapshot1: Snapshot<T, Meta, K>, snapshot2: Snapshot<T, Meta, K>) => number;
     compareSnapshotItems: (item1: any, item2: any) => number;
-    filterSnapshotsByCategory: (category: string) => Snapshots<Data>;
-    filterSnapshotsByTag: (tag: string) => Snapshots<Data>;
-    handleSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-    getSnapshotId: (snapshot: Snapshot<T, K>) => string;
+    filterSnapshotsByCategory: (category: string) => Snapshots<Data, Meta>;
+    filterSnapshotsByTag: (tag: string) => Snapshots<Data, Meta>;
+    handleSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+    getSnapshotId: (snapshot: Snapshot<T, Meta, K>) => string;
     compareSnapshotState: (state1: any, state2: any) => number;
     payload: any;
     dataItems: any[];
@@ -635,52 +638,52 @@ const getSnapshotContainer = <T extends Data, K extends BaseData>(
     addData: (data: Data) => void;
     stores: any[];
     getStore: (id: string) => any | undefined;
-    addStore: (storId: number) => SnapshotStore<T, K>
+    addStore: (storId: number) => SnapshotStore<T, Meta, K>
   }>
 ): Promise<{
   category: string;
   timestamp: string;
   id: string;
-  snapshotStore: SnapshotStore<T, K>;
-  snapshot: Snapshot<T, K>;
-  snapshots: Snapshots<Data>;
-  subscribers: Subscriber<T, K>[];
+  snapshotStore: SnapshotStore<T, Meta, K>;
+  snapshot: Snapshot<T, Meta, K>;
+  snapshots: Snapshots<Data, Meta>;
+  subscribers: Subscriber<T, Meta, K>[];
   data: Data;
   newData: Data;
 
   unsubscribe: () => void;
-  addSnapshotFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-  createSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-  createSnapshotFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-  updateSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-  batchUpdateSnapshotsSuccess: (snapshots: Snapshots<Data>) => void;
-  batchUpdateSnapshotsFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-  batchUpdateSnapshotsRequest: (snapshots: Snapshots<Data>) => void;
-  createSnapshots: (snapshots: Snapshots<Data>) => void;
-  batchTakeSnapshot: (snapshot: Snapshot<T, K>) => void;
-  batchTakeSnapshotsRequest: (snapshots: Snapshots<Data>) => void;
+  addSnapshotFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+  createSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+  createSnapshotFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+  updateSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+  batchUpdateSnapshotsSuccess: (snapshots: Snapshots<Data, Meta>) => void;
+  batchUpdateSnapshotsFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+  batchUpdateSnapshotsRequest: (snapshots: Snapshots<Data, Meta>) => void;
+  createSnapshots: (snapshots: Snapshots<Data, Meta>) => void;
+  batchTakeSnapshot: (snapshot: Snapshot<T, Meta, K>) => void;
+  batchTakeSnapshotsRequest: (snapshots: Snapshots<Data, Meta>) => void;
   deleteSnapshot: (id: string) => void;
-  batchFetchSnapshots: (criteria: any) => Promise<Snapshots<Data>>;
-  batchFetchSnapshotsSuccess: (snapshots: Snapshots<Data>) => void;
-  batchFetchSnapshotsFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
-  filterSnapshotsByStatus: (status: string) => Snapshots<Data>;
-  getSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
+  batchFetchSnapshots: (criteria: any) => Promise<Snapshots<Data, Meta>>;
+  batchFetchSnapshotsSuccess: (snapshots: Snapshots<Data, Meta>) => void;
+  batchFetchSnapshotsFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
+  filterSnapshotsByStatus: (status: string) => Snapshots<Data, Meta>;
+  getSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
   removeSnapshot: (id: string) => void;
   removeSnapshots: (ids: string[]) => void;
   removeSnapshotsSuccess: (ids: string[]) => void;
-  removeSnapshotsFailure: (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error }) => void;
+  removeSnapshotsFailure: (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error }) => void;
   resetSnapshotData: () => void;
   // New Methods
-  mapSnapshot: (snapshot: Snapshot<T, K>) => any;
-  mapSnapshotWithDetails: (snapshot: Snapshot<T, K>) => any;
+  mapSnapshot: (snapshot: Snapshot<T, Meta, K>) => any;
+  mapSnapshotWithDetails: (snapshot: Snapshot<T, Meta, K>) => any;
   removeStore: (id: string) => void;
-  fetchSnapshot: (id: string) => Promise<Snapshot<T, K>>;
-  fetchSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-  updateSnapshotFailure: (snapshot: Snapshot<T, K>, error: Error) => void;
+  fetchSnapshot: (id: string) => Promise<Snapshot<T, Meta, K>>;
+  fetchSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+  updateSnapshotFailure: (snapshot: Snapshot<T, Meta, K>, error: Error) => void;
   fetchSnapshotFailure: (id: string, error: Error) => void;
   configureSnapshotStore: (options: any) => void;
-  onSnapshot: (snapshot: Snapshot<T, K>) => void;
-  onSnapshots: (snapshots: Snapshots<Data>) => void;
+  onSnapshot: (snapshot: Snapshot<T, Meta, K>) => void;
+  onSnapshots: (snapshots: Snapshots<Data, Meta>) => void;
   events: any[];
   parentId: string;
   childIds: string[];
@@ -691,7 +694,7 @@ const getSnapshotContainer = <T extends Data, K extends BaseData>(
   getChildren: () => string[];
   hasChildren: (id: string) => boolean;
   isDescendantOf: (id: string) => boolean;
-  getSnapshotById: (id: string) => Snapshot<T, K> | undefined;
+  getSnapshotById: (id: string) => Snapshot<T, Meta, K> | undefined;
   mappedSnapshotData: any;
   snapshotData: any;
   currentCategory: string;
@@ -702,15 +705,15 @@ const getSnapshotContainer = <T extends Data, K extends BaseData>(
   isCore: boolean;
   notify: () => void;
   notifySubscribers: () => void;
-  getSnapshots: () => Snapshots<Data>;
-  getAllSnapshots: () => Snapshots<Data>;
+  getSnapshots: () => Snapshots<Data, Meta>;
+  getAllSnapshots: () => Snapshots<Data, Meta>;
   generateId: () => string;
-  compareSnapshots: (snapshot1: Snapshot<T, K>, snapshot2: Snapshot<T, K>) => number;
+  compareSnapshots: (snapshot1: Snapshot<T, Meta, K>, snapshot2: Snapshot<T, Meta, K>) => number;
   compareSnapshotItems: (item1: any, item2: any) => number;
-  filterSnapshotsByCategory: (category: string) => Snapshots<Data>;
-  filterSnapshotsByTag: (tag: string) => Snapshots<Data>;
-  handleSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
-  getSnapshotId: (snapshot: Snapshot<T, K>) => string;
+  filterSnapshotsByCategory: (category: string) => Snapshots<Data, Meta>;
+  filterSnapshotsByTag: (tag: string) => Snapshots<Data, Meta>;
+  handleSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+  getSnapshotId: (snapshot: Snapshot<T, Meta, K>) => string;
   compareSnapshotState: (state1: any, state2: any) => number;
   payload: any;
   dataItems: any[];
@@ -723,7 +726,7 @@ const getSnapshotContainer = <T extends Data, K extends BaseData>(
   addData: (data: Data) => void;
   stores: any[];
   getStore: (id: string) => any | undefined;
-  addStore: (storeId: number) => SnapshotStore<T, K>
+  addStore: (storeId: number) => SnapshotStore<T, Meta, K>
 }> => {
   // Your implementation here
   return snapshotFetcher(id).then(snapshotContainer => {
@@ -832,15 +835,15 @@ const getSnapshotContainer = <T extends Data, K extends BaseData>(
   });
 };
 
-const configureSnapshot = <T extends Data, K extends BaseData>(
+const configureSnapshot = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   id: string,
-  snapshotData: Snapshot<T, K>,
+  snapshotData: SnapshotData<T, Meta, K>,
   category?: string | symbol | Category,
-  callback?: ((snapshot: Snapshot<T, K>) => void) | undefined,
-  snapshotDataStore?: SnapshotStore<T, K> | undefined,
-  snapshotStoreConfig?: SnapshotStoreConfig<T, K> | undefined,
-  subscribers?: SubscriberCollection<T, K> | undefined // Added this as an argument
-): Snapshot<T, K> | null => {
+  callback?: ((snapshot: Snapshot<T, Meta, K>) => void) | undefined,
+  SnapshotData?: SnapshotStore<T, Meta, K> | undefined,
+  snapshotStoreConfig?: SnapshotStoreConfig<T, Meta, K> | undefined,
+  subscribers?: SubscriberCollection<T, Meta, K> | undefined // Added this as an argument
+): Snapshot<T, Meta, K> | null => {
   // Validate required parameters
   if (!id || !snapshotData) {
     console.error("Invalid ID or SnapshotData");
@@ -857,10 +860,10 @@ const configureSnapshot = <T extends Data, K extends BaseData>(
   }
 
   // Step 2: Configure snapshot store if provided
-  if (snapshotDataStore && snapshotStoreConfig) {
+  if (SnapshotData && snapshotStoreConfig) {
     try {
       // Add snapshot to the store with snapshotId and subscribers
-      snapshotDataStore.addSnapshot(snapshotData, id, subscribers);
+      SnapshotData.addSnapshot(snapshotData, id, subscribers);
     } catch (error) {
       console.error("Failed to add snapshot to store:", error);
       return null;
@@ -882,6 +885,7 @@ const configureSnapshot = <T extends Data, K extends BaseData>(
 
 
 export {
-  clearSnapshotFailure, configureSnapshot, getChildIds, getParentId, getSnapshot, getSnapshotById, getSnapshotContainer, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot, takeSnapshot, updateSnapshot, validateSnapshot
-}
-export type { SnapshotOperations }
+    clearSnapshotFailure, configureSnapshot, getChildIds, getParentId, getSnapshot, getSnapshotById, getSnapshotContainer, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot, takeSnapshot, updateSnapshot, validateSnapshot
+};
+export type { SnapshotOperations };
+

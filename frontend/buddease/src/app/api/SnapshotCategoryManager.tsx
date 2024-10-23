@@ -1,13 +1,14 @@
 import { Data } from "../components/models/data/Data";
 import { Snapshot } from "../components/snapshots";
+import { UnifiedMetaDataOptions } from "../configs/database/MetaDataOptions";
 import { SnapshotCategory, SnapshotCategoryType } from "./getSnapshotEndpoint";
 
-class SnapshotCategoryManager <T extends Data, K extends Data> {
-    private categories: SnapshotCategory<T, K>[] = [];
+class SnapshotCategoryManager <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+    private categories: SnapshotCategory<T, Meta, K>[] = [];
 
     // Add a new category
-    addCategory(name: SnapshotCategoryType, description?: string): SnapshotCategory<T, K> {
-        const newCategory: SnapshotCategory<T, K> = {
+    addCategory(name: SnapshotCategoryType, description?: string): SnapshotCategory<T, Meta, K> {
+        const newCategory: SnapshotCategory<T, Meta, K> = {
             id: this.generateId(),
             name,
             description,
@@ -18,7 +19,7 @@ class SnapshotCategoryManager <T extends Data, K extends Data> {
     }
 
     // Add a snapshot to a category
-    addSnapshotToCategory(categoryId: string, snapshot: Snapshot<T, K>): boolean {
+    addSnapshotToCategory(categoryId: string, snapshot: Snapshot<T, Meta, K>): boolean {
         const category = this.categories.find(cat => cat.id === categoryId);
         if (category) {
             category.snapshots.push(snapshot);
@@ -38,7 +39,7 @@ class SnapshotCategoryManager <T extends Data, K extends Data> {
     }
 
     // Retrieve all snapshots in a category
-    getSnapshotsInCategory(categoryId: string): Snapshot<T, K>[] | null {
+    getSnapshotsInCategory(categoryId: string): Snapshot<T, Meta, K>[] | null {
         const category = this.categories.find(cat => cat.id === categoryId);
         return category ? category.snapshots : null;
     }
@@ -48,3 +49,5 @@ class SnapshotCategoryManager <T extends Data, K extends Data> {
         return (Math.random() * 1e9).toString(36);
     }
 }
+
+export default SnapshotCategoryManager

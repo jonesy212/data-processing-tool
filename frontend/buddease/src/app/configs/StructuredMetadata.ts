@@ -4,18 +4,17 @@ let fs: any;
 if (typeof window === 'undefined') {
   fs = require('fs');
 }
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import * as path from 'path';
 import { useState } from 'react';
 import { LanguageEnum } from '../components/communications/LanguageEnum';
-import useErrorHandling from '../components/hooks/useErrorHandling';
 import { Data } from '../components/models/data/Data';
-import determineFileType from './DetermineFileType';
-import { BaseConfig } from './BaseConfig';
 import { TagsRecord } from '../components/snapshots';
+import { BaseConfig } from './BaseConfig';
 
 // Define interfaces for metadata structures
-interface StructuredMetadata extends BaseConfig {
-  description: string | undefined; // Must match BaseMetaDataOptions
+interface StructuredMetadata<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> extends BaseConfig<T, Meta, K> {
+  description?: string | undefined; // Must match BaseMetaDataOptions
   metadataEntries: {
     [fileOrFolderId: string]: {
       originalPath: string;
@@ -41,7 +40,6 @@ interface VideoMetadata {
   title: string;
   url: string;
   duration: number;
-  resolution: string;
   sizeInBytes: number;
   format: string;
   uploadDate: Date;
@@ -53,25 +51,33 @@ interface VideoMetadata {
   views: number;
   likes: number;
   comments: number;
-  
+  resolution: string;
+  aspectRatio: string;
+  subtitles: boolean | string[];
+  closedCaptions: string[];
+  license: string;
+  isLicensedContent: boolean;
+  isFamilyFriendly: boolean;
+  isEmbeddable: boolean;
+  isDownloadable: boolean;
   data: Data; // Assuming Data is a custom data type
 }
 
 interface ProjectMetadata {
-  startDate: Date;
-  endDate: Date;
+  startDate: Date | undefined;
+  endDate: Date | undefined;
   budget: number;
   status: string;
-  description: string | undefined;
+  description?: string | undefined;
   teamMembers: string[];
   tasks: string[];
   milestones: string[];
   videos: VideoMetadata[];
 }
 
-function transformProjectToStructured(projectMetadata: ProjectMetadata): StructuredMetadata {
+function transformProjectToStructured<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(projectMetadata: ProjectMetadata): StructuredMetadata<T, Meta, K> {
   // Perform transformation here
-  return {} as StructuredMetadata;
+  return {} as StructuredMetadata<T, Meta, K>;
 }
 
 const projectMetadata: ProjectMetadata = {
@@ -138,6 +144,6 @@ const useUndoRedo = <T>(initialState: T) => {
   return { state, setState, undo, redo };
 };
 
-// Export types and constants
+export { getStructureMetadataPath, projectMetadata, transformProjectToStructured, useUndoRedo };
 export type { ProjectMetadata, StructuredMetadata, VideoMetadata };
-export { projectMetadata, getStructureMetadataPath, transformProjectToStructured, useUndoRedo };
+ 

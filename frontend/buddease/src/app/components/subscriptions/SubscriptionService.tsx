@@ -1,7 +1,35 @@
+import { ModifiedDate } from "../documents/DocType";
 import { action, observable } from 'mobx';
+import Web3Provider from "../web3/Web3Provider";
+import { AuthenticationProvider } from "../auth/AuthService";
 
 class SubscriptionService {
   @observable subscribers: Record<string, ((data: any) => void)[]> = {};
+
+  subscriptions: Record<string, () => void> = {};
+
+  private authenticationProviders: AuthenticationProvider[] = [];
+
+  // Method to add authentication providers
+  public async addAuthenticationProvider(provider: AuthenticationProvider): Promise<void> {
+      if (!this.authenticationProviders.includes(provider)) {
+          this.authenticationProviders.push(provider);
+      }
+      // Optional: Save providers to persistent storage
+  }
+
+  // Method to get the list of authentication providers
+  public async getAuthenticationProviders(): Promise<AuthenticationProvider[]> {
+      return this.authenticationProviders;
+  }
+
+  // Optional: Remove an authentication provider
+  public async removeAuthenticationProvider(provider: AuthenticationProvider): Promise<void> {
+      this.authenticationProviders = this.authenticationProviders.filter(
+          p => p !== provider
+      );
+      // Optional: Update persistent storage
+  }
 
   @action
   subscribe = (eventName: string, callback: (data: any) => void) => {
@@ -36,12 +64,31 @@ class SubscriptionService {
 
   @action
   setSubscriptions = (subscriptions: Record<string, () => void>) => {
-    this.subscribers = Object.entries(subscriptions).reduce<Record<string, (() => void)[]>>((acc, [key, value]) => {
-      acc[key] = [value];
-      return acc;
-    }, {});
+    this.subscriptions = subscriptions;
+  };
+
+  // Update for using ModifiedDate and web3 connection
+  @observable portfolioUpdatesLastUpdated: ModifiedDate | null = null;
+
+  @action
+  connectWeb3Provider = (web3Provider: Web3Provider) => {
+    web3Provider.connectWeb3Provider();
   };
 }
 
 export const subscriptionService = new SubscriptionService();
 export default SubscriptionService;
+
+
+// example usage
+subscriptionService.setSubscriptions({
+  snapshot: () => console.log('Snapshot callback executed'),
+});
+
+const subscription = subscriptionService.subscriptions['snapshot'] ?? {
+  callback: () => {},
+  usage: '',
+};
+
+
+export  { subscription }

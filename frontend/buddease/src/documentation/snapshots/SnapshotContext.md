@@ -82,7 +82,7 @@ recentSnapshotCount: fetchedData.snapshotStore.snapshots.filter(snapshot => {
 To integrate these properties into your `fetchSnapshotStoreFromAPI` function, modify the fetched snapshot store object like this:
 
 ```typescript
-const fetchedSnapshotStore: SnapshotStore<T, K> = {
+const fetchedSnapshotStore: SnapshotStore<T, Meta, K> = {
   ...fetchedData.snapshotStore,
   snapshotCount: fetchedData.snapshotStore.snapshots.length,
   lastUpdated: fetchedData.snapshotStore.snapshots.length > 0 

@@ -1,24 +1,22 @@
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { Content } from "../models/content/AddContent";
+import { ContentItem } from "../cards/DummyCardLoader";
+import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Data } from "../models/data/Data";
 import { Snapshot } from "./LocalStorageSnapshotStore";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { Label } from "../projects/branding/BrandingSettings";
-import { User } from "../users/User";
-import { Category } from "../libraries/categories/generateCategoryProperties";
-import { ContentItem } from "../cards/DummyCardLoader";
+import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { createSnapshotInstance } from "./snapshot";
  
 
-interface SnapshotItem<T extends Data, K extends Data> extends Snapshot<T, K> {
+interface SnapshotItem<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> extends Snapshot<T, Meta, K> {
   message?: string | undefined;
   itemContent?: ContentItem; 
-  data: T | Map<string, Snapshot<T, K>> | null | undefined; // Data associated with the snapshot
+  data: T | Map<string, Snapshot<T, Meta, K>> | null | undefined; // Data associated with the snapshot
 }
 
 
-class SnapshotList<T extends Data, K extends Data> {
-  private snapshots: SnapshotItem<T, K>[];
+class SnapshotList<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+  private snapshots: SnapshotItem<T, Meta, K>[];
   private id: string;
   public category: string;
   constructor() {
@@ -62,16 +60,16 @@ class SnapshotList<T extends Data, K extends Data> {
     });
   }
 
-  getSnapshotList(snapshots: SnapshotItem<T, K>[]) {
+  getSnapshotList(snapshots: SnapshotItem<T, Meta, K>[]) {
     return snapshots;
   }
 
 
-  getSnapshot(index: number): SnapshotItem<T, K> | undefined {
+  getSnapshot(index: number): SnapshotItem<T, Meta, K> | undefined {
     return this.snapshots[index];
   }
 
-  getSnapshots(): SnapshotItem<T, K>[] {
+  getSnapshots(): SnapshotItem<T, Meta, K>[] {
     return this.snapshots;
   }
 
@@ -115,12 +113,12 @@ class SnapshotList<T extends Data, K extends Data> {
   }
 
   // Methods to manipulate snapshot items
-  addSnapshot(snapshot: SnapshotItem<T, K>) {
+  addSnapshot(snapshot: SnapshotItem<T, Meta, K>) {
     snapshot.id = UniqueIDGenerator.generateSnapshoItemID(this.id);
     this.snapshots.push(snapshot);
   }
 
-  fetchSnaphostById(id: string): SnapshotItem<T, K> | undefined {
+  fetchSnaphostById(id: string): SnapshotItem<T, Meta, K> | undefined {
     return this.snapshots.find((snapshot) => snapshot.id === id);
   }
 
@@ -142,7 +140,7 @@ class SnapshotList<T extends Data, K extends Data> {
     const snapshots = this.snapshots;
 
     return {
-      next(): IteratorResult<SnapshotItem<T, K>> {
+      next(): IteratorResult<SnapshotItem<T, Meta, K>> {
         if (index < snapshots.length) {
           const value = snapshots[index++];
           return { value, done: false };
@@ -153,11 +151,36 @@ class SnapshotList<T extends Data, K extends Data> {
     };
   }
 
-  toArray(): SnapshotItem<T, K>[] {
+  toArray(): SnapshotItem<T, Meta, K>[] {
     return this.snapshots;
   }
   // Other methods as needed
 }
 
+
+
+const createSnapshotItem = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshotId: string | null,
+  data: T,
+  category: symbol | string | Category | undefined,
+  snapshotStore: SnapshotStore<T, Meta, K> | null,
+  snapshotStoreConfig: SnapshotStoreConfig<T, Meta, K> | null
+): SnapshotItem<T, Meta, K> => {
+  const baseSnapshot = createSnapshotInstance(snapshotId, data, category, snapshotStore, snapshotStoreConfig);
+
+  // Extend baseSnapshot with additional properties for SnapshotItem
+  const snapshotItem: SnapshotItem<T, Meta, K> = {
+    ...baseSnapshot, // Spread the baseSnapshot properties
+    message: "Custom message",
+    itemContent: undefined, // Add additional fields specific to SnapshotItem
+    data, // This could be adjusted based on specific requirements
+  };
+
+  return snapshotItem;
+};
+
+
 export default SnapshotList;
+export { createSnapshotItem };
 export type { SnapshotItem };
+

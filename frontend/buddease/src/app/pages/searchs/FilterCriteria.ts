@@ -1,11 +1,15 @@
 import {
-  CodingLanguageEnum,
-  LanguageEnum,
+    CodingLanguageEnum,
+    LanguageEnum,
 } from "@/app/components/communications/LanguageEnum";
+import { Meta } from '@/app/components/models/data/dataStoreMethods';
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+
 import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import { FileTypeEnum } from "@/app/components/documents/FileType";
 import FormatEnum from "@/app/components/form/FormatEnum";
 import AnimationTypeEnum from "@/app/components/libraries/animations/AnimationLibrary";
+import { Category, CategoryIdentifier } from "@/app/components/libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "@/app/components/models/data/Data";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
@@ -13,35 +17,32 @@ import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "@/app/components/phases/TenantManagementPhase";
 import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
 import { SecurityFeatureEnum } from "@/app/components/security/SecurityFeatureEnum";
+import { SnapshotStoreConfig, SnapshotWithCriteria, } from "@/app/components/snapshots";
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
 import UserRoles from "@/app/components/users/UserRoles";
 import { IdeaCreationPhaseEnum } from "@/app/components/users/userJourney/IdeaCreationPhase";
 import { MessageType } from "@/app/generators/MessaageType";
+import { SnapshotData } from '.';
+import { CategoryProperties } from "../personas/ScenarioBuilder";
 import {
-  BookmarkStatus,
-  CalendarStatus,
-  DataStatus,
-  DevelopmentPhaseEnum,
-  NotificationStatus,
-  PriorityTypeEnum,
-  PrivacySettingEnum,
-  ProjectPhaseTypeEnum,
-  StatusType,
-  SubscriberTypeEnum,
-  SubscriptionTypeEnum,
-  TaskStatus,
-  TeamStatus,
-  TodoStatus,
+    BookmarkStatus,
+    CalendarStatus,
+    DataStatus,
+    DevelopmentPhaseEnum,
+    NotificationStatus,
+    PriorityTypeEnum,
+    PrivacySettingEnum,
+    ProjectPhaseTypeEnum,
+    StatusType,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum,
+    TaskStatus,
+    TeamStatus,
+    TodoStatus,
 } from "./../../components/models/data/StatusType";
 import { CalendarEvent } from "./../../components/state/stores/CalendarEvent";
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
-import { createSnapshot } from "@/app/api/SnapshotApi";
-import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
-import { resolve } from "path";
-import { reject } from "lodash";
- import { CategoryIdentifier } from "@/app/components/libraries/categories/generateCategoryProperties";
-import { SnapshotWithCriteria } from "@/app/components/snapshots";
-import { CategoryProperties } from "../personas/ScenarioBuilder";
 import { CriteriaType } from "./CriteriaType";
 
 
@@ -363,7 +364,9 @@ const events: CalendarEvent[] = [
       id: "",
       roles: [], 
       followers: [],
-      preferences: {}, 
+      preferences: {
+        refreshUI: () => {},
+      }, 
       storeId: 0,
       username: "",
       memberName: "",
@@ -444,6 +447,11 @@ const events: CalendarEvent[] = [
               teamStatus: TeamStatus.Active,
               dataStatus: DataStatus.Processed,
               calendarStatus: CalendarStatus.IDLE,
+
+
+
+              initialState, isCore, initialConfig, onInitialize,
+              
             }
             ]
           resolve(data);
@@ -453,11 +461,11 @@ const events: CalendarEvent[] = [
         })
       },
     meta:{} as Data,
-      getData(): Promise<SnapshotWithCriteria<BaseData, BaseData>> {
+      getData(): Promise<SnapshotWithCriteria<BaseData, Meta, BaseData>> {
       return new Promise((resolve, reject) => {
         try {
           // Sample data implementing SnapshotWithCriteria
-          const data: SnapshotWithCriteria<BaseData, BaseData>[] = [
+          const data: SnapshotWithCriteria<BaseData, Meta, BaseData>[] = [
           {
               description: "This is a sample event",
               startDate: new Date("2024-06-01"),
@@ -510,11 +518,11 @@ const events: CalendarEvent[] = [
         }
       })
     },
-    then: function <T extends Data, K extends Data>(
-      callback: (newData: Snapshot<T, K>) => void
-    ): Snapshot<T, K> {
+    then: function <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data>(
+      callback: (newData: Snapshot<T, Meta, K>) => void
+    ): Snapshot<T, Meta, K> {
       // Simulate fetching data
-      const snapshot: Snapshot<T, K>  = {
+      const snapshot: Snapshot<T, Meta, K>  = {
         description: "This is a sample event",
         // startDate: new Date("2024-06-01"),
         // endDate: new Date("2024-06-05"),
@@ -555,11 +563,12 @@ const events: CalendarEvent[] = [
         highlights: [],
         files: [],
         rsvpStatus: "yes",
-        getData: function <T extends Data, K extends Data>(callback: (
-          newData: Snapshot<BaseData, K>) => void): void {
+        getData: function (id: number | string, 
+          snapshotStore: SnapshotStore<T, Meta, K>
+        ): Data | Map<string, Snapshot<T, Meta, K>> | null | undefined {
           // Simulate fetching data
           // Fetch or create the snapshot data
-          const snapshot: Snapshot<T, K> = {
+          const snapshot: Snapshot<T, Meta, K> = {
             description: "This is a sample event",
             startDate: new Date("2024-06-01"),
             endDate: new Date("2024-06-05"),
@@ -600,19 +609,47 @@ const events: CalendarEvent[] = [
             highlights: [],
             files: [],
             rsvpStatus: "yes",
+          } as Snapshot<T, Meta, K>;
+
+          if (typeof callback === 'function') {
+            callback(snapshot);
           }
 
-          callback(snapshot as unknown as Snapshot<BaseData, K>)
+          // If you have specific logic for creating or fetching data based on the id, implement it here
+          if (snapshot) {
+            return snapshot; // Return the found snapshot or any data you wish to return
+          }
+          
+          return null; // Or some other default value
+      
         },
-
-        createSnapshot(additionalData: any) {
-          const newSnapshoht = {
-            id: "",
+        createSnapshot(
+          id: string,
+          snapshotData: SnapshotData<T, Meta, K>,
+          additionalData: any,
+          category?: string | symbol | Category,
+          callback?: (snapshot: Snapshot<Data, Meta, K>) => void,
+          SnapshotData?: SnapshotStore<T, Meta, K>,
+          snapshotStoreConfig?: SnapshotStoreConfig<Data, Meta, K>,
+        ): Snapshot<T, Meta, K> | null {
+          const newSnapshot: Snapshot<T, Meta, K> = {
+            id,
+            ...snapshotData,  // Assuming you want to include data from the existing snapshotData
+            additionalData,
+            category,
+            // Include any other necessary properties
+          };
+        
+          // Optionally call the callback with the new snapshot
+          if (callback) {
+            callback(newSnapshot);
           }
+        
+          return newSnapshot; // Return the created snapshot
         },
         callback(snapshot: any) { },
       }
-      return snapshot as unknown as Snapshot<T, K>
+      return snapshot as unknown as Snapshot<T, Meta, K>
     },
 
   },
@@ -663,4 +700,5 @@ const filterCriteria: FilterCriteria = {
 const filteredEvents = applyFilters(events, filterCriteria);
 
 console.log(filteredEvents);
-export type { FilterCriteria, CalendarEventWithCriteria };
+export type { CalendarEventWithCriteria, FilterCriteria };
+

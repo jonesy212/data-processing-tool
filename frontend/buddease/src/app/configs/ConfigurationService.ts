@@ -5,22 +5,23 @@ import { Project, isProjectInSpecialPhase } from "../components/projects/Project
 import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
 import StoreConfig from "../shopping_center/ShoppingCenterConfig";
 import {
-  BackendConfig,
-  backendConfig,
+    BackendConfig,
+    backendConfig,
 } from "./BackendConfig";
 
 import { getConfigsData } from '../api/getConfigsApi';
+import { K, T } from '../components/models/data/dataStoreMethods';
+import { EventRecord } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { VersionHistory } from '../components/versions/VersionData';
 import { API_VERSION_HEADER } from './AppConfig';
 import dataVersions from "./DataVersionsConfig";
 import { frontendConfig } from "./FrontendConfig";
 import LazyLoadScriptConfigImpl from "./LazyLoadScriptConfig";
 import userPreferences, { ModuleType } from "./UserPreferences";
 import userSettings from "./UserSettings";
-import { VersionHistory } from '../components/versions/VersionData';
-import CalendarManagerStoreClass from '../components/state/stores/CalendarEvent';
-import { K, T } from '../components/models/data/dataStoreMethods';
-import { EventRecord } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
-
+import fs from 'fs'
+import { Data } from '../components/models/data/Data';
+import { UnifiedMetaDataOptions } from './database/MetaDataOptions';
 
 interface BaseRetryConfig {
   maxRetries?: number;
@@ -32,9 +33,10 @@ interface BaseCacheConfig {
   staleWhileRevalidate?: number;
 }
 
-interface BaseMetadataConfig {
+
+interface BaseMetadataConfig<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
   enableSnapshot?: boolean;
-  eventRecords?: EventRecord<T, K>[] | []
+  eventRecords?: EventRecord<T, Meta, K>[] | []
   
 }
 
@@ -111,7 +113,7 @@ interface ConfigurationOptions {
 export const DATA_PATH = getConfigsData()
 
 const notify = useNotification
-class ConfigurationService {
+export class ConfigurationService {
   private static instance: ConfigurationService;
   private apiConfig: ApiConfig;
   private cachedConfig: LazyLoadScriptConfigImpl | null = null;
@@ -135,6 +137,28 @@ class ConfigurationService {
       onLoad: () => {},
     };
   }
+
+
+  
+  private readConfigFile(): any {
+    const rawData = fs.readFileSync('config.json', 'utf-8');
+    return JSON.parse(rawData);
+  }
+
+  getApiKey(): string {
+    return this.readConfigFile().apiKey;
+  }
+
+  getAppId(): string {
+    return this.readConfigFile().appId;
+  }
+
+  getAppDescription(): string {
+    return this.readConfigFile().appDescription;
+  }
+
+
+
 // Update the getDefaultApiConfig method
 private getDefaultApiConfig(): ApiConfig {
   return {
@@ -181,7 +205,7 @@ private getDefaultApiConfig(): ApiConfig {
   
   // New public method to expose getDefaultApiConfig
   getPublicDefaultApiConfig(): ApiConfig {
-    return this.getDefaultApiConfig();
+    return this.apiConfig;
   }
 
   static getInstance(): ConfigurationService {
@@ -434,5 +458,5 @@ async getSystemConfigs(): Promise<typeof SystemConfigs> {
 const configurationService = ConfigurationService.getInstance();
 
 export default configurationService;
-export type { ConfigurationOptions, BaseRetryConfig, BaseCacheConfig, BaseMetadataConfig  };
+export type {  BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, ConfigurationOptions };
 

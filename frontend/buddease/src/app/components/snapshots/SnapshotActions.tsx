@@ -1,4 +1,5 @@
 //snapshots/SnapshotActions.ts
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import { BaseData, Data } from '../models/data/Data';
@@ -44,6 +45,7 @@ export enum SnapshotOperationType {
   TaskSnapshotReference = 'taskSnapshotReference',
   CategorizeSnapshots = 'categorizeSnapshot',
   HandleSnapshot = 'handleSnapshot'
+  FilterSnapshot = 'filterSnapshot'
 }
 
 
@@ -56,29 +58,29 @@ type SnapshotOperation = {
 
 
 // Define generic action types
-interface SnapshotActionsTypes<T extends Data, K extends Data> {
-  addSnapshot: ActionCreatorWithPayload<Snapshot<T, K>>;
+interface SnapshotActionsTypes<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+  addSnapshot: ActionCreatorWithPayload<Snapshot<T, Meta, K>>;
   removeSnapshot: ActionCreatorWithPayload<string>;
   updateSnapshot: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
   fetchSnapshotData: ActionCreatorWithPayload<string>;
-  handleSnapshotSuccess: ActionCreatorWithPayload<{ snapshot: Snapshot<T, K>; snapshotId: string }>;
+  handleSnapshotSuccess: ActionCreatorWithPayload<{ snapshot: Snapshot<T, Meta, K>; snapshotId: string }>;
   handleSnapshotFailure: ActionCreatorWithPayload<string>;
   handleTaskSnapshotSuccess: ActionCreatorWithPayload<{message: string,
-    snapshot: Snapshot<T, K> | null,
+    snapshot: Snapshot<T, Meta, K> | null,
     snapshotId: string
-  }>;
+  }, string>;
 }
 
 
 // // Define action types with generics
-// interface SnapshotStoreActionsTypes<T extends Data, K extends Data> {
-//   addSnapshotToStore: ActionCreatorWithPayload<Snapshot<T, K>>;
+// interface SnapshotStoreActionsTypes<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+//   addSnapshotToStore: ActionCreatorWithPayload<Snapshot<T, Meta, K>>;
 //   removeSnapshotFromStore: ActionCreatorWithPayload<string>; // Snapshot ID
 //   updateSnapshotInStore: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
 //   fetchSnapshotStoreData: ActionCreatorWithPayload<string>; // Store ID
 //   handleSnapshotStoreSuccess: ActionCreatorWithPayload<{
-//     snapshotStore: SnapshotStore<T, K>;
-//     snapshot: Snapshot<T, K>;
+//     snapshotStore: SnapshotStore<T, Meta, K>;
+//     snapshot: Snapshot<T, Meta, K>;
 //     snapshotId: string;
 //     operation: SnapshotOperation,
 //     operationType: SnapshotOperationType,
@@ -87,7 +89,7 @@ interface SnapshotActionsTypes<T extends Data, K extends Data> {
 // }
 
 
-// interface TaskWithSubtasksSnapshotActionsTypes<T extends Data, K extends Data>  {
+// interface TaskWithSubtasksSnapshotActionsTypes<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>  {
 //   addTaskWithSubtasksSnapshot: ActionCreatorWithPayload<Snapshot<TaskData, SubtaskData>>;
 //   removeTaskWithSubtasksSnapshot: ActionCreatorWithPayload<string>;
 //   updateTaskWithSubtasksSnapshot: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
@@ -101,36 +103,36 @@ interface SnapshotActionsTypes<T extends Data, K extends Data> {
 
 
 // Create action creators with generics
-export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActionsTypes<T, K> => ({
-  addSnapshot: createAction<Snapshot<T, K>>('addSnapshot'),
+export const SnapshotActions = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(): SnapshotActionsTypes<T, Meta, K> => ({
+  addSnapshot: createAction<Snapshot<T, Meta, K>>('addSnapshot'),
   removeSnapshot: createAction<string>('removeSnapshot'),
   updateSnapshot: createAction<{ snapshotId: string; newData: any }>('updateSnapshot'),
   fetchSnapshotData: createAction<string>('fetchSnapshotData'),
-  handleSnapshotSuccess: createAction<{ snapshot: Snapshot<T, K>; snapshotId: string }>('handleSnapshotSuccess'),
+  handleSnapshotSuccess: createAction<{ snapshot: Snapshot<T, Meta, K>; snapshotId: string }>('handleSnapshotSuccess'),
   handleSnapshotFailure: createAction<string>('handleSnapshotFailure'),
-  handleTaskSnapshotSuccess: createAction<string>('handleTaskSnapshotSuccess'),
+  handleTaskSnapshotSuccess: createAction<{ message: string; snapshot: Snapshot<T, Meta, K> | null; snapshotId: string; }, string>('handleTaskSnapshotSuccess'),
 });
 
 
-// export const SnapshotStoreActions = <T extends Data, K extends Data>(): SnapshotStoreActionsTypes<T, K> => ({
-//   addSnapshotToStore: createAction<Snapshot<T, K>>('addSnapshotToStore'),
+// export const SnapshotStoreActions = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(): SnapshotStoreActionsTypes<T, Meta, K> => ({
+//   addSnapshotToStore: createAction<Snapshot<T, Meta, K>>('addSnapshotToStore'),
 //   removeSnapshotFromStore: createAction<string>('removeSnapshotFromStore'),
 //   updateSnapshotInStore: createAction<{ snapshotId: string; newData: any }>('updateSnapshotInStore'),
 //   fetchSnapshotStoreData: createAction<string>('fetchSnapshotStoreData'),
 //   handleSnapshotStoreSuccess: createAction<{
-//     snapshotStore: SnapshotStore<T, K>;
-//     snapshot: Snapshot<T, K>;
+//     snapshotStore: SnapshotStore<T, Meta, K>;
+//     snapshot: Snapshot<T, Meta, K>;
 //     snapshotId: string;
 //   }>('handleSnapshotStoreSuccess'),
 //   handleSnapshotStoreFailure: createAction<string>('handleSnapshotStoreFailure'),
 // });
 
 
-// // export type SnapshotStoreActionsTypes<T extends Data, K extends Data> = ReturnType<typeof SnapshotStoreActions<T, K>>;
+// // export type SnapshotStoreActionsTypes<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> = ReturnType<typeof SnapshotStoreActions<T, Meta, K>>;
 
 
 // // Actions for managing task snapshots with subtasks
-// export const TaskWithSubtasksSnapshotActions = <T extends Data, K extends Data>(): TaskWithSubtasksSnapshotActionsTypes<T, K> => ({
+// export const TaskWithSubtasksSnapshotActions = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(): TaskWithSubtasksSnapshotActionsTypes<T, Meta, K> => ({
 //   addTaskWithSubtasksSnapshot: createAction<Snapshot<TaskData, SubtaskData>>('addTaskWithSubtasksSnapshot'),
 //   removeTaskWithSubtasksSnapshot: createAction<string>("removeTaskWithSubtasksSnapshot"),
 //   updateTaskWithSubtasksSnapshot: createAction<{ snapshotId: string, newData: any }>("updateTaskWithSubtasksSnapshot"),
@@ -185,8 +187,8 @@ export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActio
     
 //   },
 //   meta: new Map<string, Snapshot<Task, K>>(),
-//   getSnapshotId: <T extends Data, K extends Data>(
-//     key: string | SnapshotData<T, K>
+//   getSnapshotId: <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+//     key: string | SnapshotData<T, Meta, K>
 //   ): unknown => {
 //     if (typeof key === 'string') {
 //       // If key is a string, use it to generate a new snapshot ID
@@ -198,7 +200,7 @@ export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActio
 //         "SnapshotCreation" as NotificationType
 //       );
 //     } else {
-//       // If key is SnapshotData<T, K>, extract and return the ID from the snapshot data
+//       // If key is SnapshotData<T, Meta, K>, extract and return the ID from the snapshot data
 //       return key._id;
 //     }
 //   },
@@ -538,13 +540,13 @@ export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActio
 //   createSnapshot: undefined,
 //   createInitSnapshot: function (
 //     id: string,
-//     snapshotData: SnapshotStoreConfig<any, Task>,
+//     snapshotData: SnapshotData<any, Task>,
 //     category: string
 //   ): Snapshot<Task, any> {
 //     throw new Error('Function not implemented.');
 //   },
 //   setSnapshotSuccess: function (
-//     snapshotData: SnapshotStore<Task, any>,
+//     snapshotData: SnapshotData<Task, any>,
 //     subscribers: ((data: Subscriber<Task, any>) => void)[]
 //   ): void {
 //     throw new Error('Function not implemented.');
@@ -561,7 +563,7 @@ export const SnapshotActions = <T extends Data, K extends Data>(): SnapshotActio
 //   updateSnapshotsFailure: function (error: Payload): void {
 //     throw new Error('Function not implemented.');
 //   },
-//   initSnapshot: function (snapshotConfig: SnapshotStoreConfig<Task, any>, snapshotData: SnapshotStore<Task, any>): void {
+//   initSnapshot: function (snapshotConfig: SnapshotStoreConfig<Task, any>, snapshotData: SnapshotData<Task, any>): void {
 //     throw new Error('Function not implemented.');
 //   },
 //   takeSnapshot: function (snapshot: Snapshot<Task, any>, subscribers: Subscriber<Task, any>[]): Promise<{ snapshot: Snapshot<Task, any>; }> {

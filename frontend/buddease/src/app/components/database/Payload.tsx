@@ -1,4 +1,5 @@
 // Payload.ts
+import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
 import { StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
@@ -7,6 +8,33 @@ import CalendarEvent from "../state/stores/CalendarEvent";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { NotificationTypeEnum } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
+
+
+interface ExtendedBaseDataPayload extends BaseData {
+  meta?: {
+    name: string;
+    timestamp: Date;
+    type: NotificationTypeEnum;
+    startDate: Date;
+    endDate: Date;
+    status: AllStatus;
+    id: string;
+    isSticky: boolean;
+    isDismissable: boolean;
+    isClickable: boolean;
+    isClosable: boolean;
+    isAutoDismiss: boolean;
+    isAutoDismissable: boolean;
+    isAutoDismissOnNavigation: boolean;
+    isAutoDismissOnAction: boolean;
+    isAutoDismissOnTimeout: boolean;
+    isAutoDismissOnTap: boolean;
+    optionalData: any;
+    data: any;
+  };
+}
+
+
 
 interface Payload {
     error: string | undefined;
@@ -38,16 +66,16 @@ interface Payload {
   }
   
   
-  interface CreateSnapshotsPayload<T extends Data, K extends Data> {
-    data: Map<string, Snapshot<T, K>>;
-    events: Record<string, CalendarEvent<T, K>[]>;
+  interface CreateSnapshotsPayload<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+    data: Map<string, Snapshot<T, Meta, K>>;
+    events: Record<string, CalendarEvent<T, Meta, K>[]>;
     dataItems: RealtimeDataItem[];
-    newData: Snapshot<T, K>;
+    newData: Snapshot<T, Meta, K>;
     category?: string | symbol | Category;
   }
   
   
-  interface CreateSnapshotStoresPayload<T extends BaseData, K extends BaseData> {
+  interface CreateSnapshotStoresPayload <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
     snapshotId: string;
     title: string;
     description: string;
@@ -55,10 +83,10 @@ interface Payload {
     updatedAt: Date | undefined;
     status: "active" | "inactive" | "archived";
     category: string;
-    data: T | Map<string, Snapshot<T, K>> | null | undefined;
-    events: Record<string, CalendarEvent<T, K>[]>;
+    data: T | Map<string, Snapshot<T, Meta, K>> | null | undefined;
+    events: Record<string, CalendarEvent<T, Meta, K>[]>;
     dataItems: RealtimeDataItem[];
-    newData: Snapshot<T, K>;
+    newData: Snapshot<T, Meta, K>;
     metadata: any;
     id: string; // Adding id
     key: string; // Adding key
@@ -69,8 +97,8 @@ interface Payload {
     createdBy: string; // Adding createdBy
     eventRecords: Record<string, any>; // Adding eventRecords
     type: string; // Adding type
-    subscribers: Subscriber<T, K>[]; // Adding subscribers
-    snapshots: Map<string, Snapshot<T, K>>; // Adding snapshots
+    subscribers: Subscriber<T, Meta, K>[]; // Adding subscribers
+    snapshots: Map<string, Snapshot<T, Meta, K>>; // Adding snapshots
   }
   
   
@@ -86,4 +114,5 @@ interface Payload {
   }
   
   
-  export type { CreateSnapshotsPayload, CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload };
+  export type { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload, Payload, UpdateSnapshotPayload };
+

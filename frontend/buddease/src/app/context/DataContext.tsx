@@ -1,29 +1,28 @@
 // DataContext.tsx
 import * as React from "react";
-import { createContext, useContext, ReactNode } from "react";
+import { createContext, ReactNode, useContext } from "react";
+import { Data } from "../components/models/data/Data";
 import {
-  DataStore,
-  useDataStore,
-  VersionedData,
+    DataStore,
+    useDataStore,
+    VersionedData,
 } from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SnapshotWithCriteria } from "../components/snapshots/SnapshotWithCriteria";
-import { BaseData, Data } from "../components/models/data/Data";
-import { SnapshotStoreConfig, SnapshotUnion } from "../components/snapshots";
+import { SnapshotStoreConfig } from "../components/snapshots";
 
-interface DataContextProps<T extends BaseData, K extends BaseData> {
-  dataStore: DataStore<T, K> & VersionedData<T, K>;
+interface DataContextProps <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+  dataStore: DataStore<T, Meta, K> & VersionedData<T, Meta, K>;
   useSimulatedDataSource: boolean;
-  simulatedDataSource: SnapshotStoreConfig<T, K>[]
+  simulatedDataSource: SnapshotStoreConfig<T, Meta, K>[]
 }
 
 const DataContext = createContext<DataContextProps<any, any> | undefined>(undefined);
   
-export const DataProvider = <T extends Data, K extends BaseData>({
+export const DataProvider = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>({
   children,
 }: {
   children: ReactNode;
 }) => {
-  const dataStore = useDataStore<T, K>();
+  const dataStore = useDataStore<T, Meta, K>();
 
   return (
     <DataContext.Provider
@@ -46,4 +45,4 @@ export const useDataContext = () => {
 };
 
 
-export {DataContext}
+export { DataContext };

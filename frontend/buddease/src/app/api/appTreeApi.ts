@@ -198,7 +198,13 @@ const responses: ReassignEventResponse[] = [
     comment: "",
     timestamp: undefined,
     reassignData: [],
-    assignedTo: ""
+    assignedTo: "",
+
+    blockNumber: "",
+    transactionHash: "",
+    event: "",
+    signature: "",
+   
   },
   
   {

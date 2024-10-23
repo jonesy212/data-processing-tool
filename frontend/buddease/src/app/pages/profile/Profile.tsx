@@ -22,6 +22,7 @@ interface ProfileAccessControl {
   isPrivateOnly: boolean; 
   isPrivateOnlyForContacts: boolean; 
   isPrivateOnlyForGroups: boolean; 
+  allowMessagesFromFriendContacts: boolean
 }
 
 const Profile: React.FC<ProfileProps> = ({ user, props }) => {

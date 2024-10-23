@@ -1,9 +1,7 @@
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { BaseData } from "../../models/data/Data";
 import { Snapshot } from "../../snapshots";
 import { CategoryKeys } from "./CategoryManager";
-import SnapshotStore from "../../snapshots/SnapshotStore";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 
 
 type CategoryIdentifier = string | symbol;
@@ -120,9 +118,9 @@ function getCategoryLabelForSnapshot(context: string): CategoryKeys | null {
   }
 }
 
-function getOrSetCategoryForSnapshot<T extends BaseData, K extends BaseData>(
+function getOrSetCategoryForSnapshot <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   snapshotId: string,
-  snapshot: Snapshot<T, K>,
+  snapshot: Snapshot<T, Meta, K>,
   type: string,
   event: Event,
   categoryProps?: Category
@@ -186,9 +184,9 @@ function getOrSetCategoryForSnapshot<T extends BaseData, K extends BaseData>(
 
 
 // Update the logic to handle ID assignment and verification
-function generateOrVerifySnapshotId<T extends BaseData, K extends BaseData>(
+function generateOrVerifySnapshotId <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   id: string | number | undefined,
-  snapshotData: SnapshotStore<T, K>,
+  snapshotData: SnapshotData<T, Meta, K>,
   category: Category
 ): string {
   if (typeof id === 'number') {
@@ -205,6 +203,6 @@ function generateOrVerifySnapshotId<T extends BaseData, K extends BaseData>(
 }
 
 
-export {generateCategoryProperties, getOrSetCategoryForSnapshot, getCategoryLabelForSnapshot, isCategoryProperties, generateOrVerifySnapshotId};
+export { generateCategoryProperties, generateOrVerifySnapshotId, getCategoryLabelForSnapshot, getOrSetCategoryForSnapshot, isCategoryProperties };
 
-export type {Category, CategoryIdentifier};
+    export type { Category, CategoryIdentifier };

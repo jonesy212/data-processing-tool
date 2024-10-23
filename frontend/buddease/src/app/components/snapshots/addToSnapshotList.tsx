@@ -11,9 +11,9 @@
 // import { Subscriber } from "../users/Subscriber";
 
 // // addToSnapshotList.ts
-// const addToSnapshotList = async <T extends BaseData, K extends BaseData>(
-//   snapshotStore: SnapshotStore<T, K>,
-//   subscribers: Subscriber<T, K>[]
+// const addToSnapshotList = async  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+//   snapshotStore: SnapshotStore<T, Meta, K>,
+//   subscribers: Subscriber<T, Meta, K>[]
 // ) => {
 //   // Logic to handle adding snapshot to the list in your UI
 //   console.log("SnapshotStore:", snapshotStore);
@@ -50,8 +50,8 @@
 //         getAllItems: snapshotStore.getAllItems,
 //         getDelegate: function (context: {
 //           useSimulatedDataSource: boolean;
-//           simulatedDataSource: SnapshotStoreConfig<SnapshotWithCriteria<T, K>, K>[];
-//         }): Promise<SnapshotStoreConfig<SnapshotWithCriteria<T, K>, K>[]> {
+//           simulatedDataSource: SnapshotStoreConfig<SnapshotWithCriteria<T, Meta, K>, K>[];
+//         }): Promise<SnapshotStoreConfig<SnapshotWithCriteria<T, Meta, K>, K>[]> {
 //           return new Promise((resolve, reject) => {
 //             try {
 //               // Example logic to handle context and simulate data retrieval
@@ -67,43 +67,43 @@
 //             }
 //           });
 //         },
-//         updateDelegate: function (config: SnapshotStoreConfig<T, K>[]): Promise<SnapshotStoreConfig<T, K>[]> {
+//         updateDelegate: function (config: SnapshotStoreConfig<T, Meta, K>[]): Promise<SnapshotStoreConfig<T, Meta, K>[]> {
 //           throw new Error("Function not implemented.");
 //         },
 
 //         getSnapshot: function (
-//           category: any,
+//           category: symbol | string | Category | undefined,
 //           timestamp: any,
 //           id: number,
-//           snapshot: Snapshot<T, K>,
-//           snapshotStore: SnapshotStore<T, K>,
+//           snapshot: Snapshot<T, Meta, K>,
+//           snapshotStore: SnapshotStore<T, Meta, K>,
 //           data: T)
-//           : Promise<Snapshot<T, K> | undefined> {
+//           : Promise<Snapshot<T, Meta, K> | undefined> {
 //           throw new Error("Function not implemented.");
 //         },
 //         getSnapshotContainer: function (
-//           category: any,
+//           category: symbol | string | Category | undefined,
 //           timestamp: any,
 //           id: number,
-//           snapshot: Snapshot<BaseData, K>,
-//           snapshotStore: SnapshotStore<T, K>,
-//           data: T): Promise<Snapshot<T, K>[] | undefined> {
+//           snapshot: Snapshot<BaseData, Meta, K>,
+//           snapshotStore: SnapshotStore<T, Meta, K>,
+//           data: T): Promise<Snapshot<T, Meta, K>[] | undefined> {
 //           throw new Error("Function not implemented.");
 //         },
-//         getSnapshotVersions: function (category: any, timestamp: any, id: number, snapshot: Snapshot<BaseData, K>, snapshotStore: SnapshotStore<T, K>, data: T): Promise<Snapshot<T, K>[] | undefined> {
+//         getSnapshotVersions: function (category: symbol | string | Category | undefined, timestamp: any, id: number, snapshot: Snapshot<BaseData, Meta, K>, snapshotStore: SnapshotStore<T, Meta, K>, data: T): Promise<Snapshot<T, Meta, K>[] | undefined> {
 //           throw new Error("Function not implemented.");
 //         }
 //       } // Provide actual DataStoreMethods
 //     );
 
-//     const snapshot = snapshotResult.snapshot as Snapshot<T, K>; // Type assertion
+//     const snapshot = snapshotResult.snapshot as Snapshot<T, Meta, K>; // Type assertion
 
 //     console.log("Snapshot added to list:", snapshot);
 
 //     // Add the snapshot to the list in your UI
 //     // You can use a state management library like React Context or Redux to manage the list
 //     // For example, using React Context:
-//     const [snapshotList, setSnapshotList] = useState<Snapshot<T, K>[]>([]);
+//     const [snapshotList, setSnapshotList] = useState<Snapshot<T, Meta, K>[]>([]);
 
 //     setSnapshotList((prevList) => [...prevList, snapshot]);
 //     console.log("Snapshot added to list:", snapshotList);

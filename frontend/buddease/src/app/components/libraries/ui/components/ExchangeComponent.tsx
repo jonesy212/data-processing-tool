@@ -16,9 +16,9 @@ const ExchangeComponent = () => {
   const dispatch = useDispatch();
 
   const updateCallback = (
-    data: SnapshotStore<Data, Snapshot<Data>>,
+    data: SnapshotStore<Data, Snapshot<Data, Meta, Data>>,
     events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<Data, Snapshot<Data>>,
+    snapshotStore: SnapshotStore<Data, Snapshot<Data, Meta, Data>>,
     dataItems: RealtimeDataItem[]
   ) => {
     // Implement your update logic here

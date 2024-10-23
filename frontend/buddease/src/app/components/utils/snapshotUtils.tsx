@@ -1,30 +1,32 @@
 // snapshotUtils.tsx
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { IHydrateResult } from "mobx-persist";
+import { UnifiedMetaDataOptions } from '../configs/database/MetaDataOptions';
 import { ModifiedDate } from "../documents/DocType";
+import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
+import { Meta } from '../models/data/dataStoreMethods';
+import { SnapshotConfig, SnapshotDataType, SnapshotWithCriteria } from "../snapshots";
 import {
-  Snapshot,
-  Snapshots,
-  SnapshotsArray,
-  SnapshotStoreObject,
-  SnapshotUnion,
+    Snapshot,
+    Snapshots,
+    SnapshotsArray,
+    SnapshotStoreObject,
+    SnapshotUnion,
 } from "../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../snapshots/SnapshotStore";
+import { SnapshotStoreConfig } from "../snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps, useSnapshotStore } from "../snapshots/useSnapshotStore";
 import { Subscription } from "../subscriptions/Subscription";
 import { useNotification } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
-import { SnapshotStoreConfig } from "../snapshots/SnapshotStoreConfig";
-import { SnapshotConfig, SnapshotWithCriteria } from "../snapshots";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { IHydrateResult } from "mobx-persist";
-import { Category } from "../libraries/categories/generateCategoryProperties";
 
 function isHydrateResult<T>(result: any): result is IHydrateResult<T> {
   return (result as IHydrateResult<T>).then !== undefined;
 }
 
-function isSnapshotConfig<T extends Data, K extends Data>(config: any): config is SnapshotConfig<T, K> {
+function isSnapshotConfig<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(config: any): config is SnapshotConfig<T, Meta, K> {
   return config && 'storeConfig' in config && 'additionalData' in config;
 }
 
@@ -35,12 +37,12 @@ const isSnapshotStoreBaseData = (
   // Ensure snapshot is an object and has at least one key
   if (typeof snapshot === "object" && snapshot !== null) {
     const keys = Object.keys(snapshot);
-    // Check if the object has at least one property and each property value is a SnapshotUnion<BaseData>
+    // Check if the object has at least one property and each property value is a SnapshotUnion<BaseData, Meta>
     return (
       keys.length > 0 &&
       keys.every((key) => {
         const value = snapshot[key];
-        // Check if the value is a valid SnapshotUnion<BaseData>
+        // Check if the value is a valid SnapshotUnion<BaseData, Meta>
         return isSnapshotUnionBaseData(value);
       })
     );
@@ -48,10 +50,10 @@ const isSnapshotStoreBaseData = (
   return false;
 };
 
-// Type guard function to check if a value is a SnapshotUnion<BaseData>
+// Type guard function to check if a value is a SnapshotUnion<BaseData, Meta>
 const isSnapshotUnionBaseData = (
   value: any
-): value is SnapshotUnion<BaseData> => {
+): value is SnapshotUnion<BaseData, Meta> => {
   return isSnapshotBaseData(value) || isSnapshotWithCriteriaBaseData(value);
 };
 
@@ -70,8 +72,8 @@ const isSnapshotBaseData = (value: any): value is Snapshot<BaseData, any> => {
 // Implement the logic to verify SnapshotWithCriteriaBaseData
 const isSnapshotWithCriteriaBaseData = (
   value: any
-): value is SnapshotWithCriteria<BaseData, BaseData> => {
-  // Implement checks for properties that are specific to SnapshotWithCriteria<BaseData, BaseData>
+): value is SnapshotWithCriteria<BaseData, Meta, BaseData> => {
+  // Implement checks for properties that are specific to SnapshotWithCriteria<BaseData, Meta, BaseData>
   return (
     value &&
     typeof value.snapshot === "function" &&
@@ -82,19 +84,19 @@ const isSnapshotWithCriteriaBaseData = (
 
 // Example conversion function
 function convertToSnapshotArray<T extends BaseData>(
-  data: Snapshots<T>
-): SnapshotsArray<T> {
+  data: Snapshots<T, Meta>
+): SnapshotsArray<T, Meta> {
   // Implement conversion logic here
   return Array.isArray(data) ? data : Object.values(data);
 }
 
-function convertToSnapshotWithCriteria<T extends Data, K extends BaseData>(
-  snapshot: Snapshot<T, K>
-): SnapshotWithCriteria<T, K> | null {
+function convertToSnapshotWithCriteria <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshot: Snapshot<T, Meta, K>
+): SnapshotWithCriteria<T, Meta, K> | null {
   const { id, snapshotData, category, description, categoryProperties, dataStoreMethods } = snapshot;
 
   if (category) {
-    const criteriaSnapshot: SnapshotWithCriteria<T, K> = {
+    const criteriaSnapshot: SnapshotWithCriteria<T, Meta, K> = {
       ...snapshot,
       criteria: {
         categoryCriteria: category,
@@ -103,35 +105,35 @@ function convertToSnapshotWithCriteria<T extends Data, K extends BaseData>(
       handleSnapshot: (
         id: string,
         snapshotId: string | number,
-        snapshot: Snapshot<T, K> | null,
+        snapshot: Snapshot<T, Meta, K> | null,
         snapshotData: T,
         category: Category,
         categoryProperties: CategoryProperties | undefined,
         callback: (snapshotData: T) => void,
-        snapshots: SnapshotsArray<T>,
+        snapshots: SnapshotsArray<T, Meta>,
         type: string,
         event: Event,
         snapshotContainer?: T,
         snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null
-      ): Promise<Snapshot<T, K> | null> => {
+      ): Promise<Snapshot<T, Meta, K> | null> => {
         // Step 1: Check if snapshot already exists
         if (!snapshot) {
           // If there's no snapshot, create one if the type suggests a creation action
           if (type === 'create') {
-            const newSnapshot: Snapshot<T, K> = {
+            const newSnapshot: Snapshot<T, Meta, K> = {
               id: snapshotId,
               data: snapshotData,
               category: category,
               properties: categoryProperties || {},
               storeConfig: undefined 
               // Add other necessary properties/methods for the snapshot
-            } as Snapshot<T, K>;
+            } as Snapshot<T, Meta, K>;
       
             // Call the callback with the new snapshot data
             callback(snapshotData);
       
             // Add the new snapshot to the snapshots array
-            snapshots.push(newSnapshot as unknown as Snapshot<T, BaseData>);  
+            snapshots.push(newSnapshot as unknown as Snapshot<T, Meta, BaseData>);  
            
             return new Promise((resolve) => resolve(newSnapshot));
           } else {
@@ -194,27 +196,27 @@ function convertToSnapshotWithCriteria<T extends Data, K extends BaseData>(
 
   return null;
 }
-function isSnapshotOfType<T extends Data, K extends BaseData>(
-  snapshot: Snapshot<T, K>,
-  typeCheck: (snapshot: Snapshot<T, K>) => snapshot is Snapshot<T, K>
-): snapshot is Snapshot<T, K> {
-  // Add validation logic here to ensure snapshot is of type Snapshot<T, K>
+function isSnapshotOfType <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshot: Snapshot<T, Meta, K>,
+  typeCheck: (snapshot: Snapshot<T, Meta, K>) => snapshot is Snapshot<T, Meta, K>
+): snapshot is Snapshot<T, Meta, K> {
+  // Add validation logic here to ensure snapshot is of type Snapshot<T, Meta, K>
   return typeCheck(snapshot);
 }
 
 
 function findCorrectSnapshotStore(
-  snapshot: Snapshot<BaseData, BaseData>,
-  snapshotStores: SnapshotStore<BaseData, BaseData>[]
-): SnapshotStore<BaseData, BaseData> | undefined {
+  snapshot: Snapshot<BaseData, Meta, BaseData>,
+  snapshotStores: SnapshotStore<BaseData, Meta, BaseData>[]
+): SnapshotStore<BaseData, Meta, BaseData> | undefined {
   return snapshotStores.find((store) => store.category === snapshot.category);
 }
 
 
-// Type guard to check if data is SnapshotWithCriteria<T, BaseData>
-function isSnapshotWithCriteria<T extends BaseData, K extends BaseData>(
+// Type guard to check if data is SnapshotWithCriteria<T, Meta, BaseData>
+function isSnapshotWithCriteria <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   data: any
-): data is SnapshotWithCriteria<T, BaseData> {
+): data is SnapshotWithCriteria<T, Meta, BaseData> {
   return (
     data &&
     typeof data === "object" &&
@@ -225,9 +227,9 @@ function isSnapshotWithCriteria<T extends BaseData, K extends BaseData>(
 
 
 
-function isSnapshotStoreConfig<T extends Data, K extends Data>(
+function isSnapshotStoreConfig<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   item: any
-): item is SnapshotStoreConfig<T, K>[] {
+): item is SnapshotStoreConfig<T, Meta, K>[] {
   return (
     Array.isArray(item) &&
     item.every(
@@ -237,18 +239,18 @@ function isSnapshotStoreConfig<T extends Data, K extends Data>(
 }
 
 
-export const addToSnapshotList = async <T extends BaseData, K extends BaseData>(
-  snapshot: Snapshot<T, K>,
-  subscribers: Subscriber<T, K>[],
-  storeProps?: SnapshotStoreProps<T, K>
-): Promise<Subscription<T, K> | null> => {
+export const addToSnapshotList = async  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshot: Snapshot<T, Meta, K>,
+  subscribers: Subscriber<T, Meta, K>[],
+  storeProps?: SnapshotStoreProps<T, Meta, K>
+): Promise<Subscription<T, Meta, K> | null> => {
   console.log("Snapshot added to snapshot list: ", snapshot);
   if (!storeProps) {
     throw new Error("Snapshot properties not available")
   }
   const snapshotStore = await useSnapshotStore(addToSnapshotList, storeProps);
 
-  const subscriptionData: Subscription<T, K> | null = snapshot.data
+  const subscriptionData: Subscription<T, Meta, K> | null = snapshot.data
     ? {
         name: snapshot.name ? snapshot.name : undefined,
         subscribers: [],
@@ -259,7 +261,7 @@ export const addToSnapshotList = async <T extends BaseData, K extends BaseData>(
         triggerIncentives: (): void => {},
         communityEngagement: (): void => {},
         determineCategory: (
-          data: string | Snapshot<T, K> | null | undefined
+          data: string | Snapshot<T, Meta, K> | null | undefined
         ): string | CategoryProperties => {
           // Adjusted return type
           if (data === undefined || data === null) {
@@ -280,8 +282,8 @@ export const addToSnapshotList = async <T extends BaseData, K extends BaseData>(
 };
 
 export const addSnapshotHandler = (
-  snapshot: Snapshot<Data, Data>,
-  subscribers: (snapshot: Snapshot<Data, Data>) => void,
+  snapshot: Snapshot<Data, Meta, Data>,
+  subscribers: (snapshot: Snapshot<Data, Meta, Data>) => void,
   delegate: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, BaseData>[]
 ) => {
   if (delegate && delegate.length > 0) {
@@ -317,16 +319,55 @@ export const addSnapshotHandler = (
   }
 };
 
+
+function isSnapshotDataType<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  data: any
+): data is SnapshotDataType<T, Meta, K> {
+  // Check if the data is a Map
+  if (data instanceof Map) {
+    // Verify the structure of each entry in the Map
+    for (const [key, value] of data.entries()) {
+      if (!isSnapshot(value)) { // Assuming you have an isSnapshot function to check Snapshot<T, Meta, K>
+        return false; // Entry does not match Snapshot<T, Meta, K>
+      }
+    }
+    return true; // All entries are valid Snapshots
+  }
+
+  // Check if data is an object with the required properties for SnapshotDataType
+  if (data && typeof data === 'object') {
+    return 'structuredMetadata' in data || 'keys' in data;
+  }
+
+  return false; // Not a valid SnapshotDataType<T, Meta, K>
+}
+
+
+
+
+function isSnapshot <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  obj: any
+): obj is Snapshot<T, Meta, K> {
+  return (
+    obj &&
+    typeof obj === "object" &&       // Check if obj is an object
+    typeof obj.id === "string" &&    // Check if 'id' is a string
+    typeof obj === 'object' && 'state' in obj &&
+    // 'isCore' in obj.isCore &&
+    obj.data instanceof Map &&       // Check if 'data' is a Map
+    'type' in obj &&                 // Ensure 'type' property exists
+    'timestamp' in obj               // Ensure 'timestamp' property exists
+  );
+}
+
+
+function isSnapshotData<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(data: any): data is SnapshotData<T, Meta, K> {
+  return data && typeof data === 'object' && 'storeId' in data && 'config' in data;
+}
+
 export {
-  isSnapshotStoreBaseData,
-  isSnapshotStoreConfig,
-  findCorrectSnapshotStore,
-  convertToSnapshotArray,
-  isSnapshotWithCriteria,
-  isSnapshotOfType,
-  isHydrateResult,
-  isSnapshotConfig,
-  isSnapshotUnionBaseData
+    convertToSnapshotArray, findCorrectSnapshotStore, isHydrateResult, isSnapshot, isSnapshotConfig, isSnapshotData, isSnapshotDataType, isSnapshotOfType, isSnapshotStoreBaseData,
+    isSnapshotStoreConfig, isSnapshotUnionBaseData, isSnapshotWithCriteria
 };
 export const generateSnapshotId = UniqueIDGenerator.generateSnapshotID();
 export const notify = useNotification();

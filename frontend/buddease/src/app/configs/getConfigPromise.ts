@@ -1,15 +1,16 @@
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { Data } from "../components/models/data/Data";
 import { SnapshotStoreConfig } from "../components/snapshots";
 
-export function getConfigPromise<T extends Data, K extends Data>(): Promise<SnapshotStoreConfig<T, K>[]> {
+export function getConfigPromise<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(): Promise<SnapshotStoreConfig<T, Meta, K>[]> {
   return new Promise((resolve, reject) => {
       try {
           // Simulate asynchronous data retrieval, e.g., from a database or API
-          const simulatedData: SnapshotStoreConfig<T, K>[] = [
+          const simulatedData: SnapshotStoreConfig<T, Meta, K>[] = [
               {
                 initialState: "",
                  id: "",
-                  data: "",
+                  data: {},
                   timestamp: "", 
           category: 'Category1',
           clearSnapshotSuccess: (context) => {

@@ -8,12 +8,12 @@ import { SnapshotOperation } from "./SnapshotActions";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
-function convertSnapshotStoreToStorage<T extends Data, K extends Data>(snapshotStore: SnapshotStore<T, K>): Storage {
+function convertSnapshotStoreToStorage<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(snapshotStore: SnapshotStore<T, Meta, K>): Storage {
     const storage: Storage = window.localStorage;
   
     // Store the snapshot data in the Storage object (e.g., localStorage)
     snapshotStore.keys.forEach((key) => {
-      const item = (snapshotStore.data as Map<string, Snapshot<T, K>>).get(key);
+      const item = (snapshotStore.data as Map<string, Snapshot<T, Meta, K>>).get(key);
       if (item) {
         storage.setItem(key, JSON.stringify(item));
       }
@@ -24,19 +24,19 @@ function convertSnapshotStoreToStorage<T extends Data, K extends Data>(snapshotS
   
 
 
-function convertStorageToSnapshotStore<T extends Data, K extends Data>(
+function convertStorageToSnapshotStore<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
     storage: Storage,
     snapshotStoreId: number,
     topic: string, 
     date: Date, 
-    options: SnapshotStoreOptions<T, K>, 
+    options: SnapshotStoreOptions<T, Meta, K>, 
     category: symbol | string | Category | undefined, 
-    config: SnapshotStoreConfig<T, K>, 
+    config: SnapshotStoreConfig<T, Meta, K>, 
     operation: SnapshotOperation
-): SnapshotStore<T, K> {
+): SnapshotStore<T, Meta, K> {
     const keys = Object.keys(storage);
-    const data = new Map<string, Snapshot<T, K>>();
-    const snapshotStore = new SnapshotStore<T, K>(
+    const data = new Map<string, Snapshot<T, Meta, K>>();
+    const snapshotStore = new SnapshotStore<T, Meta, K>(
         Number(snapshotStoreId), 
         options, 
         category, 

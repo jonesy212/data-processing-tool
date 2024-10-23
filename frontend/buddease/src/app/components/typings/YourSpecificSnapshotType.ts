@@ -1,6 +1,6 @@
-import { createSnapshot, getSnapshotId } from "@/app/api/SnapshotApi";
+import { createSnapshot, getSnapshotContainer, getSnapshotId } from "@/app/api/SnapshotApi";
 import { Subscriber } from '@/app/components/users/Subscriber';
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { categoryProperties, CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { useContext } from "react";
 import { CombinedEvents, SnapshotManager } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
@@ -9,43 +9,53 @@ import { StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotStoreConfig, SnapshotStoreProps } from '../snapshots';
-import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from "../snapshots/LocalStorageSnapshotStore";
+import { SnapshotContainer, SnapshotData, SnapshotDataType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotStoreProps } from '../snapshots';
+import { CoreSnapshot, Snapshot, snapshots, Snapshots, SnapshotsArray, SnapshotUnion } from "../snapshots/LocalStorageSnapshotStore";
 import { retrieveSnapshotData } from "../snapshots/RetrieveSnapshotData";
-import { ConfigureSnapshotStorePayload, K } from "../snapshots/SnapshotConfig";
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from "../snapshots/SnapshotConfig";
 import { default as SnapshotStore } from "../snapshots/SnapshotStore";
 import { createSnapshotStoreOptions } from '../snapshots/createSnapshotStoreOptions';
 
 import { SnapshotContext } from "@/app/context/SnapshotContext";
 import { SnapshotContent } from "../snapshots/SnapshotContent";
-import { snapshotStoreDelegate } from "../snapshots/SnapshotStoreDelegate";
-import { delegate, initSnapshot, subscribeToSnapshots } from "../snapshots/snapshotHandlers";
+import { convertBaseDataToK } from "../snapshots/convertSnapshot";
+import { createSnapshotStore, delegate, initSnapshot, subscribeToSnapshots } from "../snapshots/snapshotHandlers";
 import {
-  Callback
+    Callback
 } from "../snapshots/subscribeToSnapshotsImplementation";
 import { generateSnapshotId } from "../utils/snapshotUtils";
-import { CalendarEvent } from "./../state/stores/CalendarEvent";
+import { CalendarEvent, eventRecords } from "./../state/stores/CalendarEvent";
+
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { getCurrentSnapshotConfigOptions } from "../snapshots/getCurrentSnapshotConfigOptions";
+import { configureSnapshot } from "../snapshots/snapshotOperations";
+import { store } from "../state/stores/useAppDispatch";
+
+import { CreateSnapshotsPayload } from "../database/Payload";
+import { K, Meta, T } from "../models/data/dataStoreMethods";
+
+import { Subscription } from "react-redux";
 
 
 
-// Define YourSpecificSnapshotTywpe implementing Snapshot<T, K>
-class YourSpecificSnapshotType<T extends BaseData, K extends BaseData>
-  implements Snapshot<T, K> {
+// Define YourSpecificSnapshotTywpe implementing Snapshot<T, Meta, K>
+class YourSpecificSnapshotType <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>
+  implements Snapshot<T, Meta, K> {
   id: string;
-  data: Map<string, Snapshot<T, K>>;
-  meta: Map<string, Snapshot<T, K>>;
-  events: CombinedEvents<T, K>
+  data: Map<string, Snapshot<T, Meta, K>>;
+  meta: Map<string, Snapshot<T, Meta, K>>;
+  events: CombinedEvents<T, Meta, K>
   
   constructor(
     id: string,
-    data: Map<string, Snapshot<T, K>>,
-    meta: Map<string, Snapshot<T, K>>,
-    events?: CombinedEvents<T, K>) {
+    data: Map<string, Snapshot<T, Meta, K>>,
+    meta: Map<string, Snapshot<T, Meta, K>>,
+    events?: CombinedEvents<T, Meta, K>) {
     this.id = id;
     this.data = data;
     this.meta = meta;
     this.events = {
-      callbacks: events?.callbacks ?? ((snapshot: Snapshot<T, K>) => {
+      callbacks: events?.callbacks ?? ((snapshot: Snapshot<T, Meta, K>) => {
         console.log("callback called");
         return { snapshots: [snapshot] }
       }),
@@ -58,12 +68,12 @@ class YourSpecificSnapshotType<T extends BaseData, K extends BaseData>
     };
   }
 
-  // Implement methods required by Snapshot<T, K>
+  // Implement methods required by Snapshot<T, Meta, K>
   getId(): string {
     return this.id;
   }
 
-  setData(data: Map<string, Snapshot<T, K>>): void {
+  setData(data: Map<string, Snapshot<T, Meta, K>>): void {
     this.data = data;
     // Additional logic if necessary
   }
@@ -72,8 +82,8 @@ class YourSpecificSnapshotType<T extends BaseData, K extends BaseData>
 
 
 function flatMapImplementation<T extends Data, K extends Data, U extends Iterable<any>>(
-  array: SnapshotStoreConfig<T, K>[],
-  callback: (value: SnapshotStoreConfig<T, K>, index: number, array: SnapshotStoreConfig<T, K>[]) => U
+  array: SnapshotStoreConfig<T, Meta, K>[],
+  callback: (value: SnapshotStoreConfig<T, Meta, K>, index: number, array: SnapshotStoreConfig<T, Meta, K>[]) => U
 ): U extends Iterable<infer I> ? I[] : never {
   const result: any[] = [];
   array.forEach((value, index) => {
@@ -87,7 +97,7 @@ function flatMapImplementation<T extends Data, K extends Data, U extends Iterabl
 
 
 // Create specific snapshot with SampleSnapshot
-const specificSnapshot = new YourSpecificSnapshotType<T, BaseData>(
+const specificSnapshot = new YourSpecificSnapshotType<T, Meta, BaseData>(
   "123",
   new Map([
     ["key", new SampleSnapshot("keyId", new Map(), new Map(), {})],
@@ -109,15 +119,15 @@ console.log(specificSnapshot.data); // Output: 'updated snapshot data'
 
 
 // Example function to map SnapshotStoreConfig to DataStore
-const convertToDataStore = <T extends Data, K extends Data>(
-  config: SnapshotStoreConfig<T, K>[]
-): Promise<DataStore<T, K>[]> => {
+const convertToDataStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  config: SnapshotStoreConfig<T, Meta, K>[]
+): Promise<DataStore<T, Meta, K>[]> => {
   return Promise.resolve(
     config.map(c => ({
     // Snapshot mapping methods
-    mapSnapshot: (snapshot: Snapshot<T, K>) => snapshot,
-    mapSnapshots: (snapshots: Snapshot<T, K>[]) => snapshots,
-    mapSnapshotStore: (store: SnapshotStore<T, K>) => store,
+    mapSnapshot: (snapshot: Snapshot<T, Meta, K>) => snapshot,
+    mapSnapshots: (snapshots: Snapshot<T, Meta, K>[]) => snapshots,
+    mapSnapshotStore: (store: SnapshotStore<T, Meta, K>) => store,
 
     // Core properties
     id: c.id ?? undefined,
@@ -166,7 +176,7 @@ const convertToDataStore = <T extends Data, K extends Data>(
     has: () => false,
     delete: () => false,
     get: () => null,
-    set: () => ({} as DataStore<T, K>),
+    set: () => ({} as DataStore<T, Meta, K>),
     getAll: () => [],
     setAll: () => { },
     removeAll: () => { },
@@ -178,7 +188,7 @@ const convertToDataStore = <T extends Data, K extends Data>(
     sizeAll: 0,
     hasAll: () => false,
     deleteAll: () => false,
-    getDataStore: () => ({} as DataStore<T, K>),
+    getDataStore: () => ({} as DataStore<T, Meta, K>),
     setDataStore: () => { },
 
     // Data update and management methods
@@ -229,10 +239,10 @@ const convertToDataStore = <T extends Data, K extends Data>(
 
 
 
-function convertToSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
-  snapshotStore: SnapshotStore<T, K>
+function convertToSnapshotStoreConfig <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshotStore: SnapshotStore<T, Meta, K>
 ): SnapshotStoreConfig<T, any> {
-  const mappedSnapshots: Snapshots<T> =
+  const mappedSnapshots: Snapshots<T, Meta> =
     snapshotStore.snapshots.map((s: Snapshot<T, any>) => ({
       ...s,
       ...snapshotStore,
@@ -265,9 +275,9 @@ function convertToSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
       // Add other required properties here
     }));
 
-  const mappedState: Snapshot<T, K>[] | null = snapshotStore.state
+  const mappedState: Snapshot<T, Meta, K>[] | null = snapshotStore.state
     ? snapshotStore.state.map((
-      snapshot: SnapshotUnion<T>
+      snapshot: SnapshotUnion<T, Meta>
     ) => ({
       ...snapshot,
       store: snapshot.store
@@ -284,9 +294,9 @@ function convertToSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
     }))
     : null;
 
-  function isSubscriber<T extends BaseData, K extends BaseData>(
+  function isSubscriber <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
     obj: any
-  ): obj is Subscriber<T, K> {
+  ): obj is Subscriber<T, Meta, K> {
     return (
       obj &&
       typeof obj === "object" &&
@@ -433,15 +443,15 @@ function convertToSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
   };
 }
 
-function convertSnapshotStoreConfig<T extends Data, K extends Data>(config: SnapshotStoreConfig<any, any>): SnapshotStoreConfig<T, K> {
+function convertSnapshotStoreConfig<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(config: SnapshotStoreConfig<any, any>): SnapshotStoreConfig<T, Meta, K> {
   // Implement conversion logic for SnapshotStoreConfig
   // This is a placeholder; adjust according to your actual conversion logic
-  return config as SnapshotStoreConfig<T, K>;
+  return config as SnapshotStoreConfig<T, Meta, K>;
 }
 
-function convertSnapshotToStore<T extends BaseData, K extends BaseData>(
-  snapshot: Snapshot<T, K>
-): SnapshotStore<T, K> {
+function convertSnapshotToStore <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshot: Snapshot<T, Meta, K>
+): SnapshotStore<T, Meta, K> {
   // Manually convert snapshot to snapshot store
   return {
     snapshotId: snapshot.id,
@@ -535,14 +545,14 @@ function convertSnapshotToStore<T extends BaseData, K extends BaseData>(
     removeSnapshot: snapshot.removeSnapshot,
 
     snapshotItems: snapshot.snapshotItems,
-    snapshotItems: snapshot.snapshotItems,: snapshot.nestedStores,
-    nestedStores: snapshot.nestedStores,: snapshot.addSnapshotItem,
-    addSnapshotItem: snapshot.addSnapshotItem,: snapshot.addNestedStore,
+    snapshotItems: snapshot.snapshotItems.nestedStores,
+    nestedStores: snapshot.nestedStores,
+    addSnapshotItem: snapshot.addSnapshotItem,
     addNestedStore: snapshot.addNestedStore,
     getData: snapshot.getData,
-    getData: snapshot.getData,: snapshot.clearSnapshots,
-    clearSnapshots: snapshot.clearSnapshots,: snapshot.addSnapshot,
-    addSnapshot: snapshot.addSnapshot,: snapshot.createSnapshot,
+    getData: snapshot.getData,
+    clearSnapshots: snapshot.clearSnapshots,
+    addSnapshot: snapshot.addSnapshot,
     createSnapshot: snapshot.createSnapshot,
     snapshotStoreConfig: snapshot.snapshotStoreConfig,
     meta: snapshot.meta,
@@ -625,14 +635,14 @@ function convertSnapshotToStore<T extends BaseData, K extends BaseData>(
           };
         },
       };
-      // other properties from SnapshotStore<T, K>
+      // other properties from SnapshotStore<T, Meta, K>
     }
   }
 }
 
-const convertSnapshotStoreToSnapshot = <T extends Data, K extends Data>(
-  store: SnapshotStore<T, K>
-): Snapshot<T, K> => {
+const convertSnapshotStoreToSnapshot = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  store: SnapshotStore<T, Meta, K>
+): Snapshot<T, Meta, K> => {
   const snapshotStoreConfig = store.getConfig();
 
   return {
@@ -665,14 +675,14 @@ const convertSnapshotStoreToSnapshot = <T extends Data, K extends Data>(
     getChildIds: () => [], // Example implementation
     addChild: () => { }, // Example implementation
     removeChild: () => { }, // Example implementation
-    getChildren: (id: string, childSnapshot: Snapshot<T, K>) => { 
+    getChildren: (id: string, childSnapshot: Snapshot<T, Meta, K>) => { 
       return []
     },
     hasChildren: () => false,
     isDescendantOf: (childId: string, 
       parentId: string, 
-      parentSnapshot: Snapshot<T, K>, 
-      childSnapshot: Snapshot<T, K>) => false,
+      parentSnapshot: Snapshot<T, Meta, K>, 
+      childSnapshot: Snapshot<T, Meta, K>) => false,
     dataItems: [],
     compareSnapshotState: store.compareSnapshotState,
     eventRecords: store.eventRecords,
@@ -723,30 +733,41 @@ const convertSnapshotStoreToSnapshot = <T extends Data, K extends Data>(
 // Export the specific snapshot type if needed
 export { YourSpecificSnapshotType };
 
-const convertSnapshotData = <T extends BaseData, K extends BaseData>(
-  snapshotConfigData: SnapshotDataType<T, K> 
-): SnapshotDataType<T, K> => {
+const convertSnapshotData =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshotConfigData: SnapshotDataType<T, Meta, K> 
+): SnapshotDataType<T, Meta, K> => {
   return snapshotConfigData
 };
 
 
-function convertToDataSnapshot<T extends BaseData, K extends BaseData>(
-  snapshot: Snapshot<T, K>
-): Snapshot<Data, Data> {
+function convertToDataSnapshot <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshot: Snapshot<T, Meta, K>
+): Snapshot<Data, Meta, Data> {
   return {
     ...snapshot,
-    data: snapshot.data as unknown as Map<string, Snapshot<Data, Data>>,
-    content: snapshot.content as unknown as SnapshotContent<T, Data>,
-    mappedSnapshotData: new Map(Object.entries(snapshot.mappedSnapshotData).map(([key, value]) => [key, value as Snapshot<Data, Data>])),
+    data: snapshot.data as unknown as Map<string, Snapshot<Data, Meta, Data>>,
+    content: snapshot.content as unknown as SnapshotContent<T, Meta, Data>,
+    mappedSnapshotData: new Map(Object.entries(snapshot.mappedSnapshotData).map(([key, value]) => [key, value as Snapshot<Data, Meta, Data>])),
     snapshot: (
       id: string | number | undefined,
       snapshotId: number,
-      snapshotData: SnapshotData<T, K>,
-      category: string | Category,
+      snapshotData: SnapshotData<T, Meta, K>,
+      category: symbol | string | Category | undefined,
       categoryProperties: CategoryProperties | undefined,
-      dataStoreMethods: DataStoreMethods<T, K>[]
+      callback: (snapshotStore: SnapshotStore<T, Meta, K>) => void,
+      dataStore: DataStore<T, Meta, K>,
+      dataStoreMethods: DataStoreMethods<T, Meta, K>,
+      metadata: UnifiedMetaDataOptions,
+      subscriberId: string, // Add subscriberId here
+      endpointCategory: string | number, // Add endpointCategory here
+      storeProps: SnapshotStoreProps<T, Meta, K>,
+      snapshotConfigData: SnapshotConfig<T, Meta, K>,
+      subscription: Subscription<T, Meta, K>,
+  
+      snapshotStoreConfigData?: SnapshotStoreConfig<T, Meta, K>,
+      snapshotContainer?: SnapshotStore<T, Meta, K> | Snapshot<T, Meta, K> | null
     ) => {
-      return new Promise<Snapshot<Data, Data>>(async (resolve, reject) => {
+      return new Promise<Snapshot<Data, Meta, Data>>(async (resolve, reject) => {
         try {
           const result = await snapshot.snapshot(
             id,
@@ -754,31 +775,41 @@ function convertToDataSnapshot<T extends BaseData, K extends BaseData>(
             snapshotData,
             category,
             categoryProperties,
-            dataStoreMethods
+            callback,
+            dataStore,
+            dataStoreMethods,
+            metadata,
+            subscriberId,
+            endpointCategory,
+            storeProps,
+            snapshotConfigData,
+            subscription,
+            snapshotStoreConfigData,
+            snapshotContainer,
           );
-          resolve(result as unknown as Snapshot<Data, Data>);
+          resolve(result as unknown as Snapshot<Data, Meta, Data>);
         } catch (error) {
           reject(error);
         }
       });
     }
-  } as unknown as Snapshot<Data, Data>;
+  } as unknown as Snapshot<Data, Meta, Data>;
 }
 
 
 
 
 
-const convertSnapshoStoretData = <T extends BaseData, K extends BaseData>(
-  snapshotStoreConfigData: SnapshotStoreConfig<any, K>
-): SnapshotStoreConfig<any, K> => {
+const convertSnapshoStoretData =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshotStoreConfigData: SnapshotStoreConfig<any, Meta, K>
+): SnapshotStoreConfig<any, Meta, K> => {
   return snapshotStoreConfigData
 };
 
 
-const snapshotType = <T extends BaseData, K extends BaseData>(
-  snapshot: Snapshot<T, K>
-): Snapshot<T, K> => {
+const snapshotType =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshot: Snapshot<T, Meta, K>
+): Snapshot<T, Meta, K> => {
   const defaultCategory: Category = "defaultCategory";
   const newSnapshot = { ...snapshot }
   newSnapshot.id = snapshot.id || generateSnapshotId;
@@ -820,12 +851,15 @@ const snapshotType = <T extends BaseData, K extends BaseData>(
   return newSnapshot;
 };
 
-const snapshotStoreType = <T extends BaseData, K extends BaseData>(  snapshotStore: SnapshotStore<T, K>
-): SnapshotStore<T, K> => {
+
+const snapshotStoreType = async <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshotStore: SnapshotStore<T, Meta, K>
+): Promise<SnapshotStore<T, Meta, K>> => {
   const defaultCategory: Category = "defaultCategory";
   const context = useContext(SnapshotContext);
-  const newSnapshotStore = { ...snapshotStore }
-  newSnapshotStore.id = snapshotStore.id || generateSnapshotId;
+  const newSnapshotStore = { ...snapshotStore };
+  
+  newSnapshotStore.id = snapshotStore.id || generateSnapshotId();
   newSnapshotStore.title = snapshotStore.title || "";
   newSnapshotStore.timestamp = snapshotStore.timestamp
     ? new Date(snapshotStore.timestamp)
@@ -833,8 +867,8 @@ const snapshotStoreType = <T extends BaseData, K extends BaseData>(  snapshotSto
   newSnapshotStore.subscriberId = snapshotStore.subscriberId || "";
   newSnapshotStore.category =
     typeof snapshotStore.category === "string"
-      ? defaultCategory
-      : snapshotStore.category || defaultCategory;
+      ? snapshotStore.category
+      : defaultCategory;
   newSnapshotStore.length = snapshotStore.length || 0;
   newSnapshotStore.content = snapshotStore.content || "";
   newSnapshotStore.data = snapshotStore.data;
@@ -847,37 +881,39 @@ const snapshotStoreType = <T extends BaseData, K extends BaseData>(  snapshotSto
     metadataEntries: {}
   };
 
-  newSnapshotStore.delegate = (await snapshotStore.getDelegate(context))
-    ? snapshotStore.getDelegate(snapshotStoreDelegate).map((delegateConfig: any) => ({
-      ...delegateConfig,
-      data: delegateConfig.data as T,
-      snapshotStore: delegateConfig.snapshotStore as SnapshotStore<T, K>
-    }))    : [];
-  newSnapshotStore.store = snapshotStore.store
-  newSnapshotStore.state = snapshotStore.state
+  // Get delegates if available
+  const delegate = await snapshotStore.getDelegate(context);
+  newSnapshotStore.delegate = delegate
+    ? delegate.map((delegateConfig: any) => ({
+        ...delegateConfig,
+        data: delegateConfig.data as T,
+        snapshotStore: delegateConfig.snapshotStore as SnapshotStore<T, Meta, K>
+      }))
+    : [];
+  
+  // Additional assignments
+  newSnapshotStore.store = snapshotStore.store;
+  newSnapshotStore.state = snapshotStore.state;
   newSnapshotStore.todoSnapshotId = snapshotStore.todoSnapshotId || "";
   newSnapshotStore.initialState = snapshotStore.initialState;
-  newSnapshotStore.safeCastSnapshotStore = snapshotStore.safeCastSnapshotStore(snapshotStore),
-  newSnapshotStore.getFirstDelegate = snapshotStore.getFirstDelegate(),
-  newSnapshotStore.getInitialDelegate = snapshotStore.getInitialDelegate(),
-  newSnapshotStore.transformInitialState = snapshotStore.transformInitialState(),
- 
-
-
-
+  newSnapshotStore.safeCastSnapshotStore = snapshotStore.safeCastSnapshotStore(snapshotStore);
+  newSnapshotStore.getFirstDelegate = snapshotStore.getFirstDelegate();
+  newSnapshotStore.getInitialDelegate = snapshotStore.getInitialDelegate();
+  newSnapshotStore.transformInitialState = snapshotStore.transformInitialState();
 
   return newSnapshotStore;
 };
 
+
 // Type guard to check if input is SnapshotStore<BaseData>
-const isSnapshotStore = (store: any): store is SnapshotStore<BaseData, K> => {
+const isSnapshotStore = (store: any): store is SnapshotStore<BaseData, Meta, K> => {
   return store && store instanceof SnapshotStore;
 };
 
 
 
-const convertSnapshotStoreItemToT = <T extends BaseData, K extends BaseData>(
-  item: Snapshot<T, K>
+const convertSnapshotStoreItemToT =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  item: Snapshot<T, Meta, K>
 ): T => {
   if (item.data) {
     const keysIterator = item.data.keys();
@@ -892,21 +928,21 @@ const convertSnapshotStoreItemToT = <T extends BaseData, K extends BaseData>(
 };
 
 
-const convertSnapshotStoreItemToSnapshot = <T extends BaseData, K extends BaseData>(
-  item: Snapshot<T, K>
-): Snapshot<T, K> => {
+const convertSnapshotStoreItemToSnapshot =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  item: Snapshot<T, Meta, K>
+): Snapshot<T, Meta, K> => {
   return item;
 };
 
 // Function to convert SnapshotStore<BaseData> to Map<string, T>
-const convertSnapshotStoreToMap = <T extends BaseData, K extends BaseData>(
-  store: SnapshotStore<T, K>
-): Map<string, Snapshot<T, K>> => {
-  const dataMap = new Map<string, Snapshot<T, K>>();
+const convertSnapshotStoreToMap =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  store: SnapshotStore<T, Meta, K>
+): Map<string, Snapshot<T, Meta, K>> => {
+  const dataMap = new Map<string, Snapshot<T, Meta, K>>();
 
   // Assuming 'data' is an array or iterable within SnapshotStore<BaseData>
-  store.data?.forEach((item: Snapshot<T, K>, key: string) => {
-    // Use the conversion function to ensure item is compatible with Snapshot<T, K>
+  store.data?.forEach((item: Snapshot<T, Meta, K>, key: string) => {
+    // Use the conversion function to ensure item is compatible with Snapshot<T, Meta, K>
     const convertedItem = convertSnapshotStoreItemToSnapshot(item);
     dataMap.set(key, convertedItem);
   });
@@ -915,46 +951,99 @@ const convertSnapshotStoreToMap = <T extends BaseData, K extends BaseData>(
 };
 
 
-function createSnapshotStoreConfig<T extends BaseData, K extends BaseData>(
-  options: SnapshotStoreConfig<T, K>
-): SnapshotStoreConfig<T, K> {
+function createSnapshotStoreConfig <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  options: SnapshotStoreConfig<T, Meta, K>
+): SnapshotStoreConfig<T, Meta, K> {
   return { ...options };
 }
 
 function convertMapToSnapshotStore<T extends Data, K extends T>(
-  map: Map<string, Snapshot<T, K>>,
+  map: Map<string, Snapshot<T, Meta, K>>,
   timestamp: string | number | Date | undefined,
-  storeProps: SnapshotStoreProps<T, K>
-): SnapshotStore<T, K> {
-  const snapshotStoreOptions = createSnapshotStoreOptions<T, K>({
+  storeProps: SnapshotStoreProps<T, Meta, K>
+): SnapshotStore<T, Meta, K> {
+
+  const snapshotStoreOptions = createSnapshotStoreOptions<T, Meta, K>({
     initialState: null,
     snapshotId: "defaultId",
     category: {} as CategoryProperties, // Adjust as needed
-    dataStoreMethods: {} as Partial<DataStoreWithSnapshotMethods<T, K>>, // Provide actual methods if needed
+    dataStoreMethods: {} as Partial<DataStoreWithSnapshotMethods<T, Meta, K>>, // Provide actual methods if needed
     categoryProperties: {} as CategoryProperties,
   });
-  const { storeId, name, version, schema, options, category, config, operation, snapshots} = storeProps
-  const snapshotStore = new SnapshotStore<T, K>({ storeId, name, version, schema, options, category, config, operation, snapshots, });
+  const { storeId, name, version, schema, options, category, config, operation, snapshots, expirationDate, payload, callback, storeProps, endpointCategory} = storeProps
+  const snapshotStore = new SnapshotStore<T, Meta, K>({ storeId, name, version, schema, options, category, config, operation, snapshots, expirationDate, payload, callback, storeProps, endpointCategory });
 
   // Populate snapshotStore with map data
   map.forEach((value, key) => {
-    const snapshot: Snapshot<T, K> = {
+    const snapshot: Snapshot<T, Meta, K> = {
       id: key,
-      data: new Map<string, Snapshot<T, K>>().set(key, {
+      data: new Map<string, Snapshot<T, Meta, K>>().set(key, {
 
-        isCore: , initialConfig: , removeSubscriber: , onInitialize: , 
-        onError: , taskIdToAssign: , schema: , currentCategory: ,
-        mappedSnapshotData: , storeId: , versionInfo: , initializedState: ,
-        criteria: , setCategory: , applyStoreConfig: , generateId: ,
-        snapshotData: , snapshotContainer: , getSnapshotItems: , defaultSubscribeToSnapshots: ,
-        notify: , notifySubscribers: , getAllSnapshots: , getSubscribers: ,
-        transformSubscriber: , transformDelegate: , getAllKeys: , getAllValues: ,
-        getAllItems: , getSnapshotEntries: , getAllSnapshotEntries: , addDataStatus: , 
-        removeData: , updateData: , updateDataTitle: , updateDataDescription: ,
-        updateDataStatus: , addDataSuccess: , getDataVersions: , updateDataVersions: ,
-        getBackendVersion: , getFrontendVersion: , fetchStoreData: , fetchData: ,
-        subscribers: , getSnapshotId: , snapshot: , createSnapshot: , 
-        defaultSubscribeToSnapshot, handleSubscribeToSnapshot, removeItem, getSnapshot,
+        isCore: "",
+        initialConfig: "",
+        removeSubscriber: "",
+        onInitialize: "",
+        
+        onError: "",
+        taskIdToAssign: "",
+        schema: "",
+        currentCategory: "",
+       
+        mappedSnapshotData: "",
+        storeId: "",
+        versionInfo: "",
+        initializedState: "",
+       
+        criteria: "",
+        setCategory: "",
+        applyStoreConfig: "",
+        generateId: "",
+       
+        snapshotData: "",
+        snapshotContainer: "",
+        getSnapshotItems: "",
+        defaultSubscribeToSnapshots: "",
+       
+        notify: "",
+        notifySubscribers: "",
+        getAllSnapshots: "",
+        getSubscribers: "",
+       
+        transformSubscriber: "",
+        transformDelegate: "",
+        getAllKeys: "",
+        getAllValues: "",
+       
+        getAllItems: "",
+        getSnapshotEntries: "",
+        getAllSnapshotEntries: "",
+        addDataStatus: "",
+        
+        removeData: "",
+        updateData: "",
+        updateDataTitle: "",
+        updateDataDescription: "",
+       
+        updateDataStatus: "",
+        addDataSuccess: "",
+        getDataVersions: "",
+        updateDataVersions: "",
+       
+        getBackendVersion: "",
+        getFrontendVersion: "",
+        fetchStoreData: "",
+        fetchData: "",
+       
+        subscribers: "",
+        getSnapshotId: "",
+        snapshot: "",
+        createSnapshot: "",
+        
+        defaultSubscribeToSnapshot: "",
+        handleSubscribeToSnapshot: "",
+        removeItem: "",
+        getSnapshot: "",
+       
 
 
 
@@ -971,140 +1060,140 @@ function convertMapToSnapshotStore<T extends Data, K extends T>(
         getInitialState: () => null,
         getTimestamp: () => new Date(),
         getData: () => new Map<string, T>().set(key, value),
-        setData: (data: Map<string, Snapshot<T, K>>) => { },
+        setData: (data: Map<string, Snapshot<T, Meta, K>>) => { },
         addData: () => { },
         eventRecords: {},
         getParentId: () => null,
-        getChildIds: (childSnapshot: Snapshot<BaseData, K>) => null,
-        addChild: (snapshot: Snapshot<T, K>) => { },
-        removeChild: (snapshot: Snapshot<T, K>) => { },
+        getChildIds: (childSnapshot: Snapshot<BaseData, Meta, K>) => null,
+        addChild: (snapshot: Snapshot<T, Meta, K>) => { },
+        removeChild: (snapshot: Snapshot<T, Meta, K>) => { },
         getChildren: () => { },
         hasChildren: () => false,
         isDescendantOf: () => false,
         dataItems: [],
-        newData: {} as Snapshot<T, K>,
+        newData: {} as Snapshot<T, Meta, K>,
         stores: [],
         getConfigOption: () => getCurrentSnapshotConfigOptions,
         getStore: (
           storeId: number,
-          snapshotStore: SnapshotStore<T, K>,
+          snapshotStore: SnapshotStore<T, Meta, K>,
           snapshotId: string,
-          snapshot: Snapshot<T, K>,
+          snapshot: Snapshot<T, Meta, K>,
           type: string,
           event: Event
         ) => null,
         addStore: (
           storeId: number,
-          snapshotStore: SnapshotStore<T, K>,
+          snapshotStore: SnapshotStore<T, Meta, K>,
           snapshotId: string,
-          snapshot: Snapshot<T, K>,
+          snapshot: Snapshot<T, Meta, K>,
           type: string,
           event: Event
         ) => null,
         mapSnapshot: (
           storeId: number,
-          snapshotStore: SnapshotStore<T, K>,
+          snapshotStore: SnapshotStore<T, Meta, K>,
           snapshotId: string,
-          snapshot: Snapshot<T, K>,
+          snapshot: Snapshot<T, Meta, K>,
           type: string,
           event: Event
         ) => null,
         removeStore: (
           storeId: number,
-          store: SnapshotStore<T, K>,
+          store: SnapshotStore<T, Meta, K>,
           snapshotId: string,
-          snapshot: Snapshot<T, K>,
+          snapshot: Snapshot<T, Meta, K>,
           type: string,
           event: Event
         ) => null,
         unsubscribe: (
-          callback: Callback<Snapshot<T, K>>) => null,
+          callback: Callback<Snapshot<T, Meta, K>>) => null,
         fetchSnapshot: (
           callback: (
             snapshotId: string,
-            snapshot: Snapshot<T, K> | undefined
+            snapshot: Snapshot<T, Meta, K> | undefined
           ) => void
         ) => null,
         addSnapshotFailure: (
-          snapshotManager: SnapshotManager<T, K>,
-          snapshot: Snapshot<T, K>,
+          snapshotManager: SnapshotManager<T, Meta, K>,
+          snapshot: Snapshot<T, Meta, K>,
           payload: { error: Error; }
         ) => null,
         configureSnapshotStore: (
-          snapshotStore: SnapshotStore<T, K>,
+          snapshotStore: SnapshotStore<T, Meta, K>,
           snapshotId: string,
-          data: Map<string, Snapshot<T, K>>,
+          data: Map<string, Snapshot<T, Meta, K>>,
           events: Record<string, CalendarEvent[]>,
           dataItems: RealtimeDataItem[],
-          newData: Snapshot<T, K>,
+          newData: Snapshot<T, Meta, K>,
           payload: ConfigureSnapshotStorePayload<T>,
-          store: SnapshotStore<any, K>,
-          callback: (snapshotStore: SnapshotStore<T, K>) => void
+          store: SnapshotStore<any, Meta, K>,
+          callback: (snapshotStore: SnapshotStore<T, Meta, K>) => void
         ) => null,
         updateSnapshotSuccess: (
           snapshotId: string,
-          snapshotManager: SnapshotManager<T, K>,
-          snapshot: Snapshot<T, K>,
+          snapshotManager: SnapshotManager<T, Meta, K>,
+          snapshot: Snapshot<T, Meta, K>,
           payload: { error: Error; }
         ) => null,
         createSnapshotFailure: async (
           snapshotId: string,
-          snapshotManager: SnapshotManager<T, K>,
-          snapshot: Snapshot<T, K>,
+          snapshotManager: SnapshotManager<T, Meta, K>,
+          snapshot: Snapshot<T, Meta, K>,
           payload: { error: Error; }
         ) => { },
         createSnapshotSuccess: (
           snapshotId: string,
-          snapshotManager: SnapshotManager<T, K>,
-          snapshot: Snapshot<T, K>,
+          snapshotManager: SnapshotManager<T, Meta, K>,
+          snapshot: Snapshot<T, Meta, K>,
           payload: { error: Error; }) => null,
         createSnapshots: (
           id: string,
           snapshotId: string,
-          snapshot: Snapshot<T, K>,
-          snapshotManager: SnapshotManager<T, K>,
-          payload: CreateSnapshotsPayload<T, K>,
-          callback: (snapshots: Snapshot<T, K>[]) => void | null,
-          snapshotDataConfig?: SnapshotConfig<T, K>[],
+          snapshot: Snapshot<T, Meta, K>,
+          snapshotManager: SnapshotManager<T, Meta, K>,
+          payload: CreateSnapshotsPayload<T, Meta, K>,
+          callback: (snapshots: Snapshot<T, Meta, K>[]) => void | null,
+          snapshotDataConfig?: SnapshotConfig<T, Meta, K>[],
           category?: string | symbol | Category
         ) => [],
         onSnapshot: (
           snapshotId: string,
-          snapshot: Snapshot<T, K>,
+          snapshot: Snapshot<T, Meta, K>,
           type: string,
           event: Event,
           callback: (
-            snapshot: Snapshot<T, K>
+            snapshot: Snapshot<T, Meta, K>
           ) => void
         ) => null,
         onSnapshots: (
           snapshotId: string,
-          snapshots: Snapshots<T>,
+          snapshots: Snapshots<T, Meta>,
           type: string,
           event: Event,
-          callback: (snapshots: Snapshots<T>
+          callback: (snapshots: Snapshots<T, Meta>
           ) => void) => { },
         events: {
           callbacks: [],
           eventRecords: {}
         },
         handleSnapshot: (snapshotId: string,
-          snapshot: Snapshot<T, K> | null,
-          snapshots: Snapshots<T>,
+          snapshot: Snapshot<T, Meta, K> | null,
+          snapshots: Snapshots<T, Meta>,
           type: string,
           event: Event
         ) => null,
         mapSnapshots: (
           snapshotId: string,
-          snapshot: Snapshot<T, K>,
-          snapshots: Snapshots<T>,
+          snapshot: Snapshot<T, Meta, K>,
+          snapshots: Snapshots<T, Meta>,
           type: string,
           event: Event
         ) => null,
         meta: undefined,
         snapshotStoreConfig: config,
 
-      } as Snapshot<T, K>
+      } as Snapshot<T, Meta, K>
 
       ),
       dataItems: [],
@@ -1117,7 +1206,7 @@ function convertMapToSnapshotStore<T extends Data, K extends T>(
       snapshotStore: snapshotStore,
       store: {} as any,
       getInitialState: () => null,
-      getConfigOption: (): SnapshotStoreConfig<T, K> | null => getCurrentSnapshotConfigOptions(
+      getConfigOption: (): SnapshotStoreConfig<T, Meta, K> | null => getCurrentSnapshotConfigOptions(
         snapshot,
         category,
         initSnapshot,
@@ -1130,20 +1219,20 @@ function convertMapToSnapshotStore<T extends Data, K extends T>(
 
       ),
       getTimestamp: () => new Date(),
-      getData: () => new Map<string, Snapshot<T, K>>().set(key, {} as Snapshot<T, K>),
-      setData: (data: Map<string, Snapshot<T, K>>) => { },
+      getData: () => new Map<string, Snapshot<T, Meta, K>>().set(key, {} as Snapshot<T, Meta, K>),
+      setData: (data: Map<string, Snapshot<T, Meta, K>>) => { },
       addData: () => { },
       eventRecords: null,
-      getParentId: function (snapshot: Snapshot<T, K>): string | null {
+      getParentId: function (snapshot: Snapshot<T, Meta, K>): string | null {
         throw new Error("Function not implemented.");
       },
-      getChildIds: function (childSnapshot: Snapshot<BaseData, T>): void {
+      getChildIds: function (id: string, childSnapshot: Snapshot<T, Meta, K>): (string | number | undefined)[] {
         throw new Error("Function not implemented.");
       },
-      addChild: function (snapshot: Snapshot<T, K>): void {
+      addChild: function (snapshot: Snapshot<T, Meta, K>): void {
         throw new Error("Function not implemented.");
       },
-      removeChild: function (snapshot: Snapshot<T, K>): void {
+      removeChild: function (snapshot: Snapshot<T, Meta, K>): void {
         throw new Error("Function not implemented.");
       },
       getChildren: function (): void {
@@ -1152,54 +1241,65 @@ function convertMapToSnapshotStore<T extends Data, K extends T>(
       hasChildren: function (): boolean {
         throw new Error("Function not implemented.");
       },
-      isDescendantOf: function (snapshot: Snapshot<T, K>, childSnapshot: Snapshot<T, K>): boolean {
+      isDescendantOf: function (snapshot: Snapshot<T, Meta, K>, childSnapshot: Snapshot<T, Meta, K>): boolean {
         throw new Error("Function not implemented.");
       },
-      newData: undefined,
+      newData: null,
       stores: null,
-      getStore: function (storeId: number, snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event): SnapshotStore<T, K> | null {
+      getStore: function (
+        storeId: number,
+        snapshotStore: SnapshotStore<T, Meta, K>,
+        snapshotId: string | null,
+        snapshot: Snapshot<T, Meta, K>,
+        snapshotStoreConfig: SnapshotStoreConfig<T, Meta, K>,
+        type: string,
+        event: Event
+        ): SnapshotStore<T, Meta, K> | null {
         throw new Error("Function not implemented.");
       },
-      addStore: function (storeId: number, snapshotId: string, snapshotStore: SnapshotStore<T, K>, snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event): void | null {
+      addStore: function (storeId: number, snapshotId: string, snapshotStore: SnapshotStore<T, Meta, K>, snapshotId: string, snapshot: Snapshot<T, Meta, K>, type: string, event: Event): void | null {
         throw new Error("Function not implemented.");
       },
-      mapSnapshot: function (storeId: number, snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event): void | null {
+      mapSnapshot: function (storeId: number, snapshotId: string, snapshot: Snapshot<T, Meta, K>, type: string, event: Event): void | null {
         throw new Error("Function not implemented.");
       },
-      mapSnapshots: function (storeIds: number[], snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event): void | null {
+      mapSnapshots: function (storeIds: number[], snapshotId: string, snapshot: Snapshot<T, Meta, K>, type: string, event: Event): void | null {
         throw new Error("Function not implemented.");
       },
-      removeStore: function (storeId: number, store: SnapshotStore<T, K>, snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event): void | null {
+      removeStore: function (storeId: number, store: SnapshotStore<T, Meta, K>, snapshotId: string, snapshot: Snapshot<T, Meta, K>, type: string, event: Event): void | null {
         throw new Error("Function not implemented.");
       },
-      unsubscribe: function (callback: Callback<Snapshot<T, K>>): void {
+      unsubscribe: function (callback: Callback<Snapshot<T, Meta, K>>): void {
         throw new Error("Function not implemented.");
       },
-      fetchSnapshot: function (callback: (snapshotId: string, snapshot: Snapshot<T, K> | undefined) => void): void {
+      fetchSnapshot: function (callback: (
+        snapshotId: string,
+        snapshot: Snapshot<T, Meta, K> | undefined
+      ) => void): void {
         throw new Error("Function not implemented.");
       },
-      addSnapshotFailure: function (snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void {
+      addSnapshotFailure: function (snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error; }): void {
         throw new Error("Function not implemented.");
       },
-      configureSnapshotStore: function (snapshotStore: SnapshotStore<T, K>, snapshotId: string, data: Map<string, Snapshot<T, K>>, events: Record<string, CalendarEvent[]>, dataItems: RealtimeDataItem[], newData: Snapshot<T, K>, payload: ConfigureSnapshotStorePayload<T>, store: SnapshotStore<any, T>, callback: (snapshotStore: SnapshotStore<T, K>) => void): void | null {
+      configureSnapshotStore: function (snapshotStore: SnapshotStore<T, Meta, K>, snapshotId: string, data: Map<string, Snapshot<T, Meta, K>>, events: Record<string, CalendarEvent[]>, dataItems: RealtimeDataItem[], newData: Snapshot<T, Meta, K>, payload: ConfigureSnapshotStorePayload<T>, store: SnapshotStore<any, T>, callback: (snapshotStore: SnapshotStore<T, Meta, K>) => void): void | null {
         throw new Error("Function not implemented.");
       },
-      updateSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void | null {
+      updateSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error; }): void | null {
         throw new Error("Function not implemented.");
       },
-      createSnapshotFailure: function (snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): Promise<void> {
+      createSnapshotFailure: function (snapshotId: string, snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error; }): Promise<void> {
         throw new Error("Function not implemented.");
       },
-      createSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void | null {
+      createSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<T, Meta, K>, snapshot: Snapshot<T, Meta, K>, payload: { error: Error; }): void | null {
         throw new Error("Function not implemented.");
       },
-      createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<T, K>, snapshotManager: SnapshotManager<T, K>, payload: CreateSnapshotsPayload<T, K>, callback: (snapshots: Snapshot<T, K>[]) => void | null, snapshotDataConfig?: SnapshotConfig<T, K>[] | undefined, category?: string | symbol | Category): Snapshot<T, K>[] | null {
+      createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<T, Meta, K>, snapshotManager: SnapshotManager<T, Meta, K>, payload: CreateSnapshotsPayload<T, Meta, K>, callback: (snapshots: Snapshot<T, Meta, K>[]) => void | null, snapshotDataConfig?: SnapshotConfig<T, Meta, K>[] | undefined, category?: string | symbol | Category): Snapshot<T, Meta, K>[] | null {
         throw new Error("Function not implemented.");
       },
-      onSnapshot: function (snapshotId: string, snapshot: Snapshot<T, K>, type: string, event: Event, callback: (snapshot: Snapshot<T, K>) => void): void {
+      onSnapshot: function (snapshotId: string, snapshot: Snapshot<T, Meta, K>, type: string, event: Event, callback: (snapshot: Snapshot<T, Meta, K>) => void): void {
         throw new Error("Function not implemented.");
       },
-      onSnapshots: function (snapshotId: string, snapshots: Snapshots<T>, type: string, event: Event, callback: (snapshots: Snapshots<T>) => void): void {
+      onSnapshots: function (snapshotId: string, snapshots: Snapshots<T, Meta>, type: string, event: Event, callback: (snapshots: Snapshots<T, Meta>) => void): void {
         throw new Error("Function not implemented.");
       },
       events: {
@@ -1219,17 +1319,17 @@ function convertMapToSnapshotStore<T extends Data, K extends T>(
 
 
 
-// Convert Map<string, T> to Snapshot<BaseData, BaseData>
+// Convert Map<string, T> to Snapshot<BaseData, Meta, BaseData>
 
-// Convert Map<string, T> to Snapshot<BaseData, BaseData>
-function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
-  map: Map<string, Snapshot<T, K>>,
+// Convert Map<string, T> to Snapshot<BaseData, Meta, BaseData>
+function convertMapToSnapshot<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  map: Map<string, Snapshot<T, Meta, K>>,
   timestamp: string | number | Date | undefined
-): SnapshotDataType<T, K> | null  {
-  const snapshotMap = new Map<string, Snapshot<T, K>>();
+): SnapshotDataType<T, Meta, K> | null  {
+  const snapshotMap = new Map<string, Snapshot<T, Meta, K>>();
 
   map.forEach((value, key) => {
-    const snapshot: Snapshot<T, K> = {
+    const snapshot: Snapshot<T, Meta, K> = {
       id: key,
       title: "Snapshot Title",
       timestamp: new Date(),
@@ -1239,7 +1339,7 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
       content: value.data ? value.data.toString() : '',
       data: value.data as T,
       value: 0,
-      // Populate with other properties of Snapshot<T, K> as needed
+      // Populate with other properties of Snapshot<T, Meta, K> as needed
     };
 
     snapshotMap.set(key, snapshot);
@@ -1253,7 +1353,7 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
     category: "some-category",
     length: snapshotMap.size,
     content: snapshotMap.toString(),
-    data: snapshotMap, // Ensure the type matches Snapshot<T, K>
+    data: snapshotMap, // Ensure the type matches Snapshot<T, Meta, K>
     value: 0,
     key: "some-key",
     subscription: null,
@@ -1265,11 +1365,11 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
     state: null,
     todoSnapshotId: "some-todo-id",
     initialState: null,
-    snapshotStoreConfig: {} as SnapshotStoreConfig<T, K>,
+    snapshotStoreConfig: {} as SnapshotStoreConfig<T, Meta, K>,
 
     getSnapshotItems: [],
     defaultSubscribeToSnapshots: () => Promise.resolve(),
-    transformSubscriber: (sub: Subscriber<T, K>): Subscriber<T, K> => {
+    transformSubscriber: (sub: Subscriber<T, Meta, K>): Subscriber<T, Meta, K> => {
       return {
         name: sub.getName(),
         _id: sub.getUniqueId,
@@ -1281,8 +1381,8 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
         onSnapshotCallbacks: sub.getOnSnapshotCallbacks,
         onErrorCallbacks: sub.getOnErrorCallbacks,
         onUnsubscribeCallbacks: sub.getOnSnapshotCallbacks,
-        notifyEventSystem: sub.notifyEventSystem,
-        updateProjectState: sub.updateProjectState,
+        notifyEventSystem: sub.getNotifyEventSystem(),
+        updateProjectState: sub.getUpdateProjectState(),
         logActivity: sub.getLogActivity,
         triggerIncentives: sub.getTriggerIncentives,
         optionalData: sub.getOptionalData,
@@ -1362,7 +1462,7 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
         triggerOnSnapshot: sub.triggerOnSnapshot,
       };
     },
-    transformDelegate: (): SnapshotStoreConfig<T, K>[] => {
+    transformDelegate: (): SnapshotStoreConfig<T, Meta, K>[] => {
       return [
         {
           // Add properties of SnapshotStoreConfig
@@ -1394,7 +1494,7 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
     handleSubscribeToSnapshot: () => Promise.resolve(),
 
     removeItem: () => { },
-    getSnapshot: () => ({}) as Snapshot<T, K>,
+    getSnapshot: () => ({}) as Snapshot<T, Meta, K>,
     getSnapshotSuccess: () => { },
     getSnapshotId: () => '',
 
@@ -1426,7 +1526,7 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
     clearSnapshots: () => { },
     addSnapshot: () => { },
     createSnapshot: () => { },
-    snapshotStoreConfig: {} as SnapshotStoreConfig<T, K>,
+    snapshotStoreConfig: {} as SnapshotStoreConfig<T, Meta, K>,
     meta: {},
     getSnapshotItems: () => [],
     createInitSnapshot: () => { },
@@ -1446,13 +1546,13 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
     takeSnapshotsSuccess: () => { },
     configureSnapshotStore: () => { },
     flatMap: function <U extends Iterable<any>>(
-      callback: (value: SnapshotStoreConfig<T, K>, index: number, array: SnapshotStoreConfig<T, K>[]) => U
+      callback: (value: SnapshotStoreConfig<T, Meta, K>, index: number, array: SnapshotStoreConfig<T, Meta, K>[]) => U
     ) {
-      // Assume we have an array of SnapshotStoreConfig<T, K>
-      const snapshotStoreConfigArray: SnapshotStoreConfig<T, K>[] = []; // Populate this as necessary
+      // Assume we have an array of SnapshotStoreConfig<T, Meta, K>
+      const snapshotStoreConfigArray: SnapshotStoreConfig<T, Meta, K>[] = []; // Populate this as necessary
       return flatMapImplementation(snapshotStoreConfigArray, callback);
     },
-    setData: (data: Map<string, Snapshot<T, K>>) => { },
+    setData: (data: Map<string, Snapshot<T, Meta, K>>) => { },
     getState: () => ({}),
     setState: () => { },
 
@@ -1464,13 +1564,13 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
       snapshotData: T,
       category: Category | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T>,
+      snapshots: SnapshotsArray<T, Meta>,
       type: string,
       event: Event,
       snapshotContainer?: T,
       snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
-    ): Promise<Snapshot<T, K> | null> => { 
-      return new Promise<Snapshot<T, K> | null>(async (resolve, reject) => {
+    ): Promise<Snapshot<T, Meta, K> | null> => { 
+      return new Promise<Snapshot<T, Meta, K> | null>(async (resolve, reject) => {
         try {
           // Validate input parameters
           if (!id || !snapshotId || !snapshotData) {
@@ -1536,7 +1636,7 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
             id,
             data: new Map<string, T>(), // Replace with actual snapshot data if needed
             category,
-            store: {} as SnapshotStore<T, K>, // Replace with actual SnapshotStore instance if needed
+            store: {} as SnapshotStore<T, Meta, K>, // Replace with actual SnapshotStore instance if needed
             getSnapshotId: async () => id,
             compareSnapshotState: () => false, // Implement comparison logic
             snapshot: async () => ({
@@ -1546,7 +1646,7 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
                 category,
               }
             }),
-            getSnapshotData: () => new Map<string, Snapshot<T, K>>(), // Replace with actual snapshot data if needed
+            getSnapshotData: () => new Map<string, Snapshot<T, Meta, K>>(), // Replace with actual snapshot data if needed
             getSnapshotCategory: () => category,
             setSnapshotData: () => {}, // Implement logic to set snapshot data
             setSnapshotCategory: () => {}, // Implement logic to set snapshot category
@@ -1583,11 +1683,11 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
       return config;
     },
     setSnapshotData: (
-      snapshotStore: SnapshotStore<T, K>,
-      data: Map<string, Snapshot<T, K>>,
-      subscribers: Subscriber<T, K>[],
+      snapshotStore: SnapshotStore<T, Meta, K>,
+      data: Map<string, Snapshot<T, Meta, K>>,
+      subscribers: Subscriber<T, Meta, K>[],
       snapshotData: Partial<
-        SnapshotStoreConfig<T, K>
+        SnapshotStoreConfig<T, Meta, K>
       >
     ) => { },
     setSnapshots: () => { },
@@ -1599,14 +1699,14 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
     filterSnapshots: () => [],
 
     mapSnapshots: () => { },
-    findSnapshot: () => ({} as Snapshot<T, K>),
+    findSnapshot: () => ({} as Snapshot<T, Meta, K>),
     getSubscribers: () => [],
     notify: () => { },
 
     notifySubscribers: (
-      subscribers: Subscriber<T, K>[],
+      subscribers: Subscriber<T, Meta, K>[],
       data: Partial<SnapshotStoreConfig<BaseData, any>>
-    ): Subscriber<BaseData, K>[] => {
+    ): Subscriber<BaseData, Meta, K>[] => {
       // Implement the logic to notify subscribers
       return subscribers;
     },
@@ -1634,9 +1734,9 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
     batchUpdateSnapshotsFailure: () => { },
 
     batchTakeSnapshot: (
-      snapshotStore: SnapshotStore<T, K>,
-      snapshots: Snapshots<T>
-    ): Promise<{ snapshots: Snapshots<T>; }> => {
+      snapshotStore: SnapshotStore<T, Meta, K>,
+      snapshots: Snapshots<T, Meta>
+    ): Promise<{ snapshots: Snapshots<T, Meta>; }> => {
       // Implement the logic to batch take snapshots
       return Promise.resolve({ snapshots });
     },
@@ -1646,7 +1746,7 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
     eventRecords: {},
 
     getBackendVersion: async () => "",
-    snapshotStore: {} as SnapshotStore<T, K>,
+    snapshotStore: {} as SnapshotStore<T, Meta, K>,
     getParentId: () => '',
     getChildIds: () => [],
 
@@ -1660,20 +1760,20 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
     newData: null,
     getInitialState: () => null,
 
-    getConfigOption: () => ({} as SnapshotStoreConfig<T, K>),
+    getConfigOption: () => ({} as SnapshotStoreConfig<T, Meta, K>),
     getTimestamp: () => new Date(),
     stores: [],
-    getStore: () => ({} as SnapshotStore<T, K>),
+    getStore: () => ({} as SnapshotStore<T, Meta, K>),
 
-    addStore: () => { },
-    mapSnapshot: () => ({} as Snapshot<T, K>),
+    addStore: (): SnapshotStore<T, Meta, K> | null => { },
+    mapSnapshot: () => ({} as Snapshot<T, Meta, K>),
     removeStore: () => { },
     createSnapshots: () => [],
 
     onSnapshot: () => { },
     onSnapshots: () => { },
     events: {
-      callbacks: {} as Callback<Snapshots<T>>,
+      callbacks: {} as Callback<Snapshots<T, Meta>>,
       eventRecords: {} as Record<string, CalendarEvent[]>
     },
 
@@ -1704,17 +1804,17 @@ function convertMapToSnapshot<T extends BaseData, K extends BaseData>(
 
     findData: () => null,
     getStoreData: () => { },
-    getStoreSnapshot: () => ({} as Snapshot<T, K>),
+    getStoreSnapshot: () => ({} as Snapshot<T, Meta, K>),
     fetchStoreSnapshots: () => [],
 
-    transformSnapshot: () => ({} as Snapshot<T, K>),
+    transformSnapshot: () => ({} as Snapshot<T, Meta, K>),
     flattenSnapshot: () => { },
     batchSnapshots: [],
     batchStores: [],
 
     getAllSnapshotStores: () => [],
     getAllSnapshotItems: () => [],
-    getSnapshotConfig: () => ({} as SnapshotStoreConfig<T, K>),
+    getSnapshotConfig: () => ({} as SnapshotStoreConfig<T, Meta, K>),
     eventStore: [],
 
     getEventStore: () => [],
@@ -1803,8 +1903,8 @@ function convertSnapshotContent<T extends BaseData>(
   return content;
 }
 
-function convertSnapshotToMap<T extends Data, K extends Data>(
-  snapshot: Snapshot<T, K>
+function convertSnapshotToMap<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshot: Snapshot<T, Meta, K>
 ): Map<string, any> {
   const map = new Map<string, any>();
 
@@ -1829,9 +1929,9 @@ function convertSnapshotToMap<T extends Data, K extends Data>(
 }
 
 
-const convertSnapshotContainerToStore = <T extends Data, K extends Data>(
-  snapshotContainer: SnapshotContainer<T, K>
-): SnapshotStore<Data, BaseData> => {
+const convertSnapshotContainerToStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshotContainer: SnapshotContainer<T, Meta, K>
+): SnapshotStore<Data, Meta, BaseData> => {
   return {
     storeId: snapshotContainer.storeId || '', // Or use a default/fallback value
     name: snapshotContainer.name || '',
@@ -1852,24 +1952,78 @@ const convertSnapshotContainerToStore = <T extends Data, K extends Data>(
     updateDelegate, getSnapshotContainer, getSnapshotVersions, createSnapshot,
     maxAge, expirationDate, criteria, initializeWithData, hasSnapshots, getDataStoreMap, emit, removeChild,
     structuredMetadata, snapshotStoreConfig, getChildren, hasChildren,
-    
+
 
     // Map other propertiwes as needed
-  } as SnapshotStore<Data, BaseData>;
+  } as SnapshotStore<Data, Meta, BaseData>;
+};
+
+
+const convertToSnapshot = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  id: string | number | undefined,
+  snapshotId: string | null,
+  snapshotData: SnapshotData<T, Meta, K>,
+  category: symbol | string | Category | undefined,
+  categoryProperties: CategoryProperties | undefined,
+  metadata: UnifiedMetaDataOptions,
+  subscriberId: string,
+  endpointCategory: string | number,
+  storeProps: SnapshotStoreProps<T, Meta, K>,
+  snapshotConfigData: SnapshotConfig<T, Meta, K>,
+  subscription: Subscription<T, Meta, K>,
+  snapshotContainer?: SnapshotStore<T, Meta, K> | Snapshot<T, Meta, K> | null,
+): Snapshot<T, Meta, K> => {
+  // Create a Snapshot object from the parameters
+  const snapshot: Snapshot<T, Meta, K> = {
+    id, // Assign the id
+    snapshotId, // Assign the snapshotId
+    snapshotData, // Assign the snapshotData
+    category, // Assign the category
+    categoryProperties, // Assign the categoryProperties
+    metadata, // Assign metadata
+    subscriberId, // Assign the subscriberId
+    endpointCategory, // Assign endpointCategory
+    storeProps, // Assign storeProps
+    snapshotConfigData, // Assign snapshotConfigData
+    subscription, // Assign subscription
+    snapshotContainer, // Assign snapshotContainer if provided
+    // Include additional properties if needed
+  };
+
+  return snapshot;
 };
 
 
 
+
+function convertSnapshotMap <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  dataMap: Map<string, Snapshot<Data, Meta, Data>>
+): Map<string, Snapshot<T, Meta, K>> {
+  const convertedMap = new Map<string, Snapshot<T, Meta, K>>();
+
+  dataMap.forEach((snapshot, key) => {
+    const convertedSnapshot = convertBaseDataToK(snapshot) as unknown as Snapshot<T, Meta, K>;
+    convertedMap.set(key, convertedSnapshot);
+  });
+
+  return convertedMap;
+}
+
+function isCoreSnapshot<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshot: any
+): snapshot is CoreSnapshot<T, Meta, K> {
+  return snapshot && Array.isArray(snapshot.children) && typeof snapshot.id === 'string';
+}
+
+
 export {
-  convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
-  convertSnapshotData,
-  convertSnapshotStoreConfig,
-  convertSnapshotStoreItemToT,
-  convertSnapshotStoreToMap,
-  convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore,
-  convertToSnapshotStoreConfig,
-  createSnapshotStoreConfig,
-  createSnapshotStoreOptions,
-  isSnapshotStore, snapshotType
+    convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
+    convertSnapshotData, convertSnapshotMap, convertSnapshotStoreConfig,
+    convertSnapshotStoreItemToT,
+    convertSnapshotStoreToMap,
+    convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore,
+    convertToSnapshotStoreConfig,
+    createSnapshotStoreConfig,
+    createSnapshotStoreOptions, isCoreSnapshot, isSnapshotStore, snapshotType, convertToSnapshot
 };
 

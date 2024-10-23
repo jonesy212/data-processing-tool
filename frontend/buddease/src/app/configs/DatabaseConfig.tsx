@@ -2,6 +2,7 @@ import { Client } from "pg"; // Import the Client class
 import performDatabaseOperation from "../components/database/DatabaseOperations";
 import { sanitizeInput } from "../components/security/SanitizationFunctions";
 import { database } from "../generators/GenerateDatabase";
+import { getAuthToken } from "../components/auth/getAuthToken";
 
 // Call getAuthToken without passing any arguments
 const YOUR_AUTH_TOKEN = getAuthToken();
@@ -22,6 +23,9 @@ interface DatabaseConfig {
   port: number;
   saveUserProfiles?(userProfiles: any[]): Promise<void>;
 }
+
+
+
 interface DatabaseService {
   createDatabase(config: DatabaseConfig, databaseQuery: string): Promise<any>;
 
@@ -49,7 +53,8 @@ interface DatabaseService {
     databaseQuery: string
   ): Promise<any>;
 
-  findOne(projectId: string): Promise<any>;
+  findOne(params: { tableName: string; query: { id: string; }}): Promise<any>;
+
   update(data: any, whereClause: any): Promise<any>;
   create(data: any): Promise<any>;
 
@@ -66,7 +71,6 @@ interface DatabaseService {
   batchInsert(data: any[]): Promise<any[]>;
   // Add other database operations as needed (e.g., insert, update, delete, query)
 }
-
 export abstract class BaseDatabaseService implements DatabaseService {
   protected client: any; // Declare a client property to hold the database connection
 
@@ -163,12 +167,13 @@ export abstract class BaseDatabaseService implements DatabaseService {
     }
   }
 
-  async findOne(identifier: string): Promise<any> {
+  async findOne(params: { tableName: string; query: { id: string; } }): Promise<any> {
     try {
+      const { tableName, query } = params;
       // Execute database query to find a record by identifier
       const result = await this.client.query(
-        `SELECT * FROM your_table WHERE id = $1`,
-        [identifier]
+        `SELECT * FROM ${tableName} WHERE id = $1`,
+        [query.id]
       );
 
       // Check if any record was found
@@ -184,7 +189,6 @@ export abstract class BaseDatabaseService implements DatabaseService {
       throw error;
     }
   }
-
   async update(data: any): Promise<any> {
     try {
       // Extract the necessary data for the update operation

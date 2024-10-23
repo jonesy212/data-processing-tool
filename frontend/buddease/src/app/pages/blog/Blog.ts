@@ -20,6 +20,14 @@ export interface Article {
   // Add more properties as needed
 }
 
+
+interface NewsArticle extends Article{
+  source: string; // Source of the news article (e.g., news website or publication)
+  url: string; // URL to the full news article
+  // Add more properties as needed
+}
+
+
 // Create a new blog
 const newBlog: Blog = {
   id: "1",
@@ -46,3 +54,5 @@ newBlog.articles.push(newArticle);
 
 // Display the blog with associated articles
 console.log(newBlog);
+
+export type {NewsArticle}

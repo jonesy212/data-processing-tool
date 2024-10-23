@@ -141,7 +141,7 @@ export interface DAppAdapterConfig<T extends DappProps> {
   dynamicComponentsConfig?: DocumentBuilderConfig;
   documentBuilderConfig?: DocumentBuilderConfig;
   // Add more feature-specific configurations as needed
-  postgresConfig: ClientConfig;
+  postgresConfig: ClientConfig | undefined;
 
   // Additional properties related to DappProps
   dappProps: T;

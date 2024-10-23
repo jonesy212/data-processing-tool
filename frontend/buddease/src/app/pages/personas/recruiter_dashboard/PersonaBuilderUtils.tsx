@@ -1,8 +1,7 @@
 import useRealtimeData from "@/app/components/hooks/commHooks/useRealtimeData";
 import { Data } from "@/app/components/models/data/Data";
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
-import SnapshotStore, {
-} from "@/app/components/snapshots/SnapshotStore";
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
 import { useEffect, useState } from "react";
 
@@ -54,7 +53,7 @@ export const PersonaBuilderUtils = () => {
 
 
   // Function to handle snapshot updates with specific data type
-  const handleSnapshotUpdate = (snapshot: Snapshot<Data> | undefined) => {
+  const handleSnapshotUpdate = (snapshot: Snapshot<Data, Meta, Data> | undefined) => {
     try {
 
       if (snapshot) {
@@ -85,7 +84,7 @@ export const PersonaBuilderUtils = () => {
 // Define your update callback function
 const updateCallback = (
   events: Record<string, CalendarEvent[]>,
-  snapshotStore: SnapshotStore<Snapshot<Data>>
+  snapshotStore: SnapshotStore<Snapshot<Data, Meta, Data>>
 ) => {
   // Your update logic here
 

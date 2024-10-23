@@ -19,7 +19,7 @@ export type GesterEvent = React.TouchEvent<HTMLDivElement> & React.PointerEvent<
 
 
 export const UIActions = {
-  updateCollaborationState: createAction<CollaborationState>("updateCollaborationState"),
+  updateCollaborationState: createAction<CollaborationState<T, K>>("updateCollaborationState"),
   setIsGestureInProgress: createAction<boolean>("setIsGestureInProgress"),
   setGestureStartPosition: createAction<{ x: number; y: number }>("setGestureStartPosition"),
   setGestureCurrentPosition: createAction<{ x: number; y: number }>("setGestureCurrentPosition"),

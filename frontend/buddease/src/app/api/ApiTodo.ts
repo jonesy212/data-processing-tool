@@ -3,12 +3,11 @@
 
 import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';
-import { Todo } from '../components/todos/Todo';
-import { handleApiErrorAndNotify } from './ApiData';
-import { endpoints } from './ApiEndpoints';
-import axiosInstance from './axiosInstance';
 import { NotificationTypeEnum, useNotification } from '../components/support/NotificationContext';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
+import { Todo } from '../components/todos/Todo';
+import { endpoints } from './ApiEndpoints';
+import axiosInstance from './axiosInstance';
 
 // Define the API base URL for todos
 const API_BASE_URL = dotProp.getProperty(endpoints, 'todos.list');
@@ -49,7 +48,7 @@ const todoApiNotificationMessages: TodoNotificationMessages = {
 // Function to handle API errors and notify for todos
 const handleTodoApiErrorAndNotify = (
   error: AxiosError<unknown>,
-  errorMessageId: keyof TodoNotificationMessages
+  errorMessageId: DataodoNotificationMessages
 ) => {
   console.error("Error:", error);
 

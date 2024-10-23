@@ -1,14 +1,14 @@
 // NotificationSlice.tsx
 import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
+import { DocumentOptions } from '../documents/DocumentOptions';
 import { BaseData, Data } from '../models/data/Data';
 import { LogData } from '../models/LogData';
+import SnapshotStore from '../snapshots/SnapshotStore';
+import { SnapshotWithCriteria } from '../snapshots/SnapshotWithCriteria';
 import { WritableDraft } from '../state/redux/ReducerGenerator';
 import { AllStatus } from '../state/stores/DetailsListStore';
 import { NotificationTypeEnum } from './NotificationContext';
-import { DocumentOptions } from '../documents/DocumentOptions';
-import SnapshotStore from '../snapshots/SnapshotStore';
-import { SnapshotWithCriteria } from '../snapshots/SnapshotWithCriteria';
 
 
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";
@@ -84,7 +84,7 @@ export const dispatchNotification = (
         participants: [],
         teamMemberId: '',
         meta: undefined,
-        getSnapshotStoreData: function (): Promise<SnapshotStore<T, K>[]> {
+        getSnapshotStoreData: function (): Promise<SnapshotStore<T, Meta, K>[]> {
           throw new Error('Function not implemented.');
         }
       })

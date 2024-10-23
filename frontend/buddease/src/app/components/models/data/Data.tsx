@@ -1,3 +1,4 @@
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -10,19 +11,21 @@ import { createCustomTransaction } from "../../hooks/dynamicHooks/createCustomTr
 import { FakeData } from "../../intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
 import { Category } from "../../libraries/categories/generateCategoryProperties";
+import { ThemeEnum } from "../../libraries/ui/theme/Theme";
 import { Phase } from "../../phases/Phase";
 import { Label } from "../../projects/branding/BrandingSettings";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import { InitializedState } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot, Snapshots } from "../../snapshots/LocalStorageSnapshotStore";
-import SnapshotStore from "../../snapshots/SnapshotStore";
+import { SnapshotStore } from "../../snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
 import {
   SnapshotWithCriteria,
   TagsRecord,
 } from "../../snapshots/SnapshotWithCriteria";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
+import BrowserCheckStore from "../../state/stores/BrowserCheckStore";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import { Settings } from "../../state/stores/SettingsStore";
 import { NotificationSettings } from "../../support/NotificationSettings";
@@ -36,17 +39,23 @@ import CommonDetails, { CommonData } from "../CommonData";
 import { Content } from "../content/AddContent";
 import { Task } from "../tasks/Task";
 import { Member } from "../teams/TeamMembers";
+import { TrackerProps } from "../tracker/Tracker";
+import { Meta, T } from "./dataStoreMethods";
+import FileData from "./FileData";
 import {
+  PriorityTypeEnum,
   ProjectPhaseTypeEnum,
   StatusType,
   SubscriptionTypeEnum,
 } from "./StatusType";
-import FileData from "./FileData";
-import { T } from "./dataStoreMethods";
+import { taskService } from "../../tasks/TaskService";
 
 
 // Define the interface for DataDetails
-interface DataDetails extends CommonData<T> {
+interface DataDetails<T extends Data,
+  Meta extends UnifiedMetaDataOptions,
+  K extends Data
+> extends CommonData<T> {
   _id?: string;
   title?: string;
   description?: string | null;
@@ -64,10 +73,10 @@ interface DataDetails extends CommonData<T> {
   uploadedAt?: Date | undefined; //
   phase?: Phase<T> | null;
   fakeData?: FakeData;
-  comments?: (Comment | CustomComment)[] | undefined;
+  comments?: (Comment<T, Meta, K> | CustomComment)[] | undefined;
   todos?: Todo[];
   analysisData?: {
-    snapshots?: SnapshotStore<BaseData, BaseData>[];
+    snapshots?: SnapshotStore<BaseData, Meta, BaseData>[];
     analysisResults?: DataAnalysisResult[];
   };
   data?: Data;
@@ -84,34 +93,10 @@ interface DataDetailsProps<T> {
 
 type TodoSubtasks = Todo[] & Task[];
 
-export interface Comment {
-  id?: string;
-  text?: string | Content<Data>;
-  editedAt?: Date;
-  editedBy?: string;
-  attachments?: Attachment[];
-  replies?: Comment[];
-  likes?: number;
-  watchLater?: boolean;
-  highlightColor?: ColorPalettes;
-   tags?: TagsRecord | string[] | undefined; 
-  highlights?: string[];
-  // Consolidating commentBy and author into one field
-  author?: string | number | readonly string[] | undefined;
-  upvotes?: number;
-  content?: string | Content<Data>;
-  resolved?: boolean;
-  pinned?: boolean;
-  // Consolidating upvotes into likes if they serve the same purpose
-  postId?: string | number;
-  data?: string | Data | undefined;
-  customProperty?: string;
-  // Add other properties as needed
-}
-
 interface BaseData {
   _id?: string;
   id?: string | number | undefined;
+  type?: AllTypes;
   title?: string;
   data?: any;
   size?: number;
@@ -130,13 +115,13 @@ interface BaseData {
   phaseType?: ProjectPhaseTypeEnum;
   key?: string;
 
-  value?: number | string | Snapshot<BaseData, BaseData> | null;
-  initialState?: InitializedState<BaseData, BaseData>;
+  value?: number | string | Snapshot<BaseData, Meta, BaseData> | null;
+  initialState?: InitializedState<BaseData, Meta, BaseData>;
   dueDate?: Date | null;
   priority?: string | AllStatus | null;
   assignee?: UserAssignee | null;
   collaborators?: string[];
-  comments?: (Comment | CustomComment)[] | undefined;
+  comments?: (Comment<BaseData, Meta, BaseData> | CustomComment)[] | undefined;
   attachments?: Attachment[];
   subtasks?: TodoImpl<any, any>[];
   createdAt?: string | Date | undefined;
@@ -163,8 +148,8 @@ interface BaseData {
   ideas?: Idea[];
   members?: number[] | string[] | Member[];
   leader?: User | null;
-  snapshotStores?: SnapshotStore<BaseData, BaseData>[];
-  snapshots?: Snapshots<BaseData>;
+  snapshotStores?: SnapshotStore<BaseData, Meta, BaseData>[];
+  snapshots?: Snapshots<BaseData, Meta>;
   text?: string;
   category?: Category;
 
@@ -176,17 +161,18 @@ interface BaseData {
   //   SnapshotWithCriteria<BaseData>>>;
 
   // // Implement the `then` function using the reusable function
-  // then?: <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
+  // then?: <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, Meta, K>) => void) => Snapshot<Data, K> | undefined;
 }
 
 interface Data extends BaseData {
   category?: string | Category;
   categoryProperties?: CategoryProperties;
   subtasks?: TodoImpl<Todo, any>[];
-  actions?: SnapshotStoreConfig<Data, Data>[]; // Use Data instead of BaseData
+  actions?: SnapshotStoreConfig<Data, Meta, Data>[]; // Use Data instead of BaseData
   snapshotWithCriteria?: SnapshotWithCriteria<Data, any>;
   value?: any;
   label?: any;
+  metadata?: Meta | {};
   [key: string]: any;
 }
 
@@ -410,7 +396,8 @@ const coreData: Data = {
     persona: new Persona(PersonaTypeEnum.Default),
     followers: [],
     preferences: {
-      id:"",
+      
+      id: "",
       name:"",
       phases: [],
       trackFileChanges: (file: FileData): FileData => {
@@ -449,9 +436,170 @@ const coreData: Data = {
       (this as typeof coreData.preferences).stroke = newStroke; 
       (this as typeof coreData.preferences).fillColor = newFillColor; 
       },
+      refreshUI: () => {},
     },
 
     settings: {
+      calendarEvents: [],
+      todos: [],
+      tasks: [],
+      snapshotStores: [],
+     
+      currentPhase: "",
+      comment: "",
+      browserCheckStore: {} as BrowserCheckStore,
+      trackerStore: {
+        trackers: {},
+        addTracker: (newTracker: TrackerProps) => {},
+        getTracker: (id: string): TrackerProps => {},
+        getTrackers: (filter?: { id?: string | undefined; name?: string | undefined; } | undefined) => [],
+       
+        removeTracker:(trackerToRemove: TrackerProps) => {},
+        dispatch: (action: any) => {},
+       
+      },
+     
+      todoStore: {
+        dispatch: (action: any) => {},
+        todos: {},
+        todoList: [],
+        toggleTodo: (id: string) => {},
+       
+        assignedTaskStore: "",
+        updateTaskTitle: "",
+        updateTaskDescription: "",
+        updateTaskStatus: "",
+        
+
+      },
+      taskManagerStore: {
+        tasks: {},
+        taskTitle: "",
+        taskDescription: "",
+        taskStatus: {},
+       
+        assignedTaskStore: {},
+        updateTaskTitle: (title: string, taskId: string) => {},
+        updateTaskDescription: (description: string, taskId: string) => {},
+        updateTaskStatus: (description: string, taskId: string) => {},
+        
+        updateTaskDueDate: (taskId: string, dueDate: Date) => {},
+        updateTaskPriority: (taskId: string, priority: PriorityTypeEnum) => {},
+        filterTasksByStatus: (status: AllStatus): Task[] => {
+          // Implement logic to filter tasks by their status
+          return coreData.tasks.filter(task => task.status === status);
+        },
+
+        getTaskCountByStatus: (status: AllStatus): number => {
+          // Implement logic to count tasks by status
+          return coreData.tasks.filter(task => task.status === status).length;
+        },
+             
+        clearAllTasks: () => {},
+        archiveCompletedTasks: () => {},
+        updateTaskAssignee: (taskId: string, assignee: User) => async (dispatch: any): Promise<void> => {
+          // Implement logic to update the assignee of a task
+          const taskIndex = coreData.tasks.findIndex(task => task._id === taskId);
+          if (taskIndex !== -1) {
+            coreData.tasks[taskIndex].assignee = assignee;
+            // Dispatch an action to update the state (assuming Redux or similar)
+            dispatch({ type: 'UPDATE_TASK_ASSIGNEE', payload: { taskId, assignee } });
+          }
+        },
+        
+        getTasksByAssignee: async (tasks: Task[], assignee: User): Promise<Task[]> => {
+          // Implement logic to get tasks assigned to a specific user
+          return tasks.filter(task => task.assignee?._id === assignee._id);
+        },
+        
+        
+        getTaskById: (taskId: string): Task | null => {
+          // Implement logic to find a task by its ID
+          return coreData.tasks.find(task => task._id === taskId) || null;
+        },
+        
+        
+        sortByDueDate: () => { },
+        exportTasksToCSV:  () => {},
+        dispatch: (action: any) => {},
+        addTaskSuccess: (payload: { task: Task; }) => {},
+        addTask: (task: Task) => {},
+        addTasks:(tasks: Task[]) => {},
+        assignTaskToUser: (taskId: string, userId: string) => {},
+       
+        removeTask: (taskId: string) => {},
+        removeTasks: (taskIds: string[]) => {},
+        fetchTasksByTaskId: async (taskId: string): Promise<string> => {
+          // Implement logic to fetch task details by ID, potentially making an API call
+          try {
+            const response = taskService.getTaskById(taskId);
+            if (response && response.data) {
+              // Handle the response data here
+              return response.data; // Assuming the response contains task data in `data`
+            }
+            throw new Error("No task data found");
+          } catch (error) {
+            console.error("Failed to fetch task", error);
+            throw new Error("Failed to fetch task");
+          }
+        }
+      }
+        },
+        
+        
+        fetchTasksSuccess: (payload: { tasks: Task[]; }) => { },
+        
+        fetchTasksFailure: (payload: { error: string; }) => {},
+        fetchTasksRequest: () => {},
+        completeAllTasksSuccess: (success: string) => {},
+        completeAllTasks: (payload: { task: Task[]; }) =>  {},
+       
+        completeAllTasksFailure: (payload: { error: string; }) => {},
+        NOTIFICATION_MESSAGE: "",
+        NOTIFICATION_MESSAGES: {},
+        setDynamicNotificationMessage: (message: string) => {},
+       
+        takeTaskSnapshot: (taskId: string) => {},
+        markTaskAsComplete: (taskId: string) => {},
+        updateTaskPositionSuccess: (payload: { task: Task; }) => {},
+        batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task[]>) => {},
+       
+
+      },
+     
+      iconStore: {
+        dispatch: "",
+      },
+     
+      calendarStore: {
+        openScheduleEventModal: "",
+        openCalendarSettingsPage: "",
+        getData: async (): Promise<SnapshotStore<BaseData, Meta, BaseData>[]> => {
+          // Implement logic to get the data
+          try {
+            // Fetch or generate data for SnapshotStore instances
+            const snapshotStores = await snapshotStores
+            // someDataFetchingFunction();
+            return snapshotStores;
+          } catch (error) {
+            console.error("Failed to get data", error);
+            return [];
+          }
+        },
+        updateDocumentReleaseStatus: "",
+       
+        getState: "",
+        action: "",
+        events: "",
+        eventTitle: "",
+        eventDescription: "",
+        eventStatus: "",
+        assignedEventStore: "",
+        snapshotStore: "",
+       
+
+      },
+     
       id: "0",
       userId: 123,
       userSettings: setTimeout(() => {}, 1000),
@@ -482,7 +630,7 @@ const coreData: Data = {
       taskManagementEnabled: true,
       loggingAndNotificationsEnabled: true,
       securityFeaturesEnabled: true,
-      theme: "dark",
+      theme: ThemeEnum.DARK,
       language: LanguageEnum.English,
       fontSize: 14,
       darkMode: true,
@@ -541,6 +689,63 @@ const coreData: Data = {
     },
     interests: [],
     privacySettings: {
+      isDataSharingEnabled: true,
+      dataSharing: {
+        
+
+        sharingLevel: "public",
+        sharingScope: "all",
+        sharingFrequency: "daily",
+        sharingDuration: "30 days",
+        sharingPermissions: ["read", "write", "delete"],
+        sharingAccess: "public",
+        sharingLocation: "global",
+        sharingTags: ["tag1", "tag2"],
+        sharingGroups: ["group1", "group2"],
+        sharingUsers: ["user1", "user2"],
+        sharingPreferences: {
+          email: true,
+          push: true,
+          sms: true,
+          chat: true,
+          calendar: true,
+          audioCall: false,
+          videoCall: false,
+          fileSharing: true,
+          blockchainCommunication: false,
+          decentralizedStorage: false,
+          databaseEncryption: true,
+          databaseVersion: "v1.0",
+          appVersion: "v1.0",
+          enableDatabaseEncryption: true,
+        },
+
+        allowSharing: true,
+        allowSharingWith: ["user1", "user2"],
+        allowSharingWithTeams:  ["team1", "team2"],
+        allowSharingWithGroups: ["group1", "group2"],
+       
+        allowSharingWithPublic: true,
+        isAllowingSharingWithTeamsAndGroups: ["team1", "team2"],
+        allowSharingWithTeamsAndGroups: true,
+        enableDatabaseEncryption: true,
+        isAllowingSharingWithPublicAndTeams: ["team1", "team2"],
+        allowSharingWithPublicAndTeams: true,
+       
+        allowSharingWithPublicAndGroups: true,
+        isAllowingSharingingWithPublicAndTeamsAndGroups: ["team1", "team2"],
+        allowSharingWithPublicAndTeamsAndGroups: true,
+        allowSharingWithPublicAndTeamsAndGroupsAndPublic: true,
+        isAllowingSharingWithPublicAndTeamsAndGroupsAndPublic: [""],
+        isAllowingSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: [],
+        allowSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: true,
+        isAllowingSharingWithPublic: [],
+        isAllowingingSharingWithTeamsAndGroups: [],
+        isAllowingSharingWithPublicAndTeamsAndGroups: [],
+        isAllowingingSharingWithPublicAndTeams: [],
+       
+      },
+      thirdPartyTracking: false,
       hidePersonalInfo: true,
       enablePrivacyMode: false,
       enableTwoFactorAuth: true,
@@ -691,7 +896,6 @@ const coreData: Data = {
       },
       accountLockoutThreshold: 5,
     },
-  },
   emailVerificationStatus: true,
   phoneVerificationStatus: true,
   walletAddress: "0x123456789abcdef",
@@ -899,7 +1103,7 @@ const coreData: Data = {
       },
     }),
   ],
-  getData: function (): Promise<SnapshotStore<BaseData, BaseData>[]> {
+  getData: function (): Promise<SnapshotStore<BaseData, Meta, BaseData>[]> {
     // Implement logic to get the data
     return Promise.resolve([]);
   },

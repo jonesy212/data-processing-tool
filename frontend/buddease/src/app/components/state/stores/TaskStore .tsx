@@ -1,16 +1,21 @@
 //TaskManagerStore.tsx
+import { addSnapshot } from '@/app/api/SnapshotApi';
 import { saveAs } from '@/app/components/documents/editing/autosave';
 import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import { makeAutoObservable } from "mobx";
 import { title } from 'process';
 import { useState } from "react";
 import FilterTasksRequest from "../../../pages/searchs/FilterTasksRequest";
+import { TaskActions } from '../../actions/TaskActions';
 import useApiManager from "../../hooks/dynamicHooks/useApiManager";
-import {useSnapshotManager} from "../../hooks/useSnapshotManager";
+import { useSnapshotManager } from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { PriorityTypeEnum, TaskStatus } from "../../models/data/StatusType";
 import { Task, tasksDataSource } from "../../models/tasks/Task";
+import { CustomSnapshotData, Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
+import {  updateSnapshot } from '../../snapshots/snapshotHandlers';
 import SnapshotStore from "../../snapshots/SnapshotStore";
+import { useSnapshotStore } from '../../snapshots/useSnapshotStore';
 import {
     NotificationTypeEnum,
     useNotification,
@@ -18,17 +23,12 @@ import {
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { taskService } from "../../tasks/TaskService";
 import { Todo } from "../../todos/Todo";
+import { Subscriber } from '../../users/Subscriber';
 import { User } from "../../users/User";
 import { useApiManagerSlice } from "../redux/slices/ApiSlice";
+import { clearSnapshots, removeSnapshot } from '../redux/slices/SnapshotSlice';
 import { useTaskManagerSlice } from "../redux/slices/TaskSlice";
 import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
-import { TaskActions } from '../../actions/TaskActions';
-import { addSnapshot } from '@/app/api/SnapshotApi';
-import { createSnapshot, updateSnapshot } from '../../snapshots/snapshotHandlers';
-import { clearSnapshots, removeSnapshot } from '../redux/slices/SnapshotSlice';
-import { CustomSnapshotData, Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
-import { useSnapshotStore } from '../../snapshots/useSnapshotStore';
-import { Subscriber } from '../../users/Subscriber';
 
 export interface TaskManagerStore {
   tasks: Record<string, Task[]>;
@@ -36,7 +36,7 @@ export interface TaskManagerStore {
   taskId?: string;
 
   taskDescription: string;
-  taskStatus: "pending" | "inProgress" | "completed";
+  taskStatus:  AllStatus
 
   assignedTaskStore: AssignTaskStore;
   updateTaskTitle: (title: string, taskId: string) => void;
@@ -60,7 +60,7 @@ export interface TaskManagerStore {
     taskId: string,
     assignee: User
   ) => (dispatch: any) => Promise<void>;
-  getTasksByAssignee: (tasks: Task[], assignee: User) => Promise<Task>;
+  getTasksByAssignee: (tasks: Task[], assignee: User) => Promise<Task[]>;
   getTaskById: (taskId: string) => Task | null;
   sortByDueDate: () => void;
   exportTasksToCSV: () => void;
@@ -119,7 +119,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
   const assignedTaskStore = useAssignTaskStore();
   // Initialize SnapshotStore
 
-  const initSnapshot = {} as Snapshot<Data>;
+  const initSnapshot = {} as Snapshot<Data, Meta, Data>;
 
   const dispatch = (action: any) => {
     const { type, payload } = action;

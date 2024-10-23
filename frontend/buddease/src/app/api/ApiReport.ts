@@ -2,7 +2,7 @@ import { endpoints } from '@/app/api/ApiEndpoints';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import axios from 'axios';
 import dotProp from 'dot-prop';
-import { BaseReport, FinancialReport, ReportOptions
+import { BaseReport, FinancialReport, ReportOptions,
   TechnicalReport, ResearchReport
  } from '../components/documents/documentation/report/Report';
 

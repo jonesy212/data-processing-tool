@@ -3,7 +3,7 @@ import { DataStoreWithSnapshotMethods } from "../../projects/DataAnalysisPhase/D
 import { SnapshotStoreMethod } from "../../snapshots";
 
 // Example type guard for checking data store methods
-function isDataStoreMethod<U extends BaseData, K extends BaseData,
+function isDataStoreMethod<U extends BaseData, Meta extends UnifiedMetaDataOptions, K extends Data,
   Key extends keyof DataStoreWithSnapshotMethods<U, K>>(
   value: any
 ): value is DataStoreWithSnapshotMethods<U, K>[Key] {
@@ -33,7 +33,7 @@ function isDataStoreMethod<U extends BaseData, K extends BaseData,
 
 
 // Example type guard for `SnapshotStoreMethod`
-function isSnapshotStoreMethod<U extends BaseData, K extends BaseData>(
+function isSnapshotStoreMethod<U extends BaseData, Meta extends UnifiedMetaDataOptions, K extends Data>(
   value: unknown
 ): value is SnapshotStoreMethod<U, K> {
   // Assuming SnapshotStoreMethod is a function or object with specific properties
@@ -42,9 +42,9 @@ function isSnapshotStoreMethod<U extends BaseData, K extends BaseData>(
 
 
 // Example type guard for checking DataStoreWithSnapshotMethods
-function isDataStoreWithSnapshotMethods<T extends BaseData, K extends BaseData>(
+function isDataStoreWithSnapshotMethods <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   value: unknown
-): value is DataStoreWithSnapshotMethods<T, K> {
+): value is DataStoreWithSnapshotMethods<T, Meta, K> {
   // Ensure the value is an object and not null
   if (typeof value !== 'object' || value === null) {
     return false;
@@ -52,7 +52,7 @@ function isDataStoreWithSnapshotMethods<T extends BaseData, K extends BaseData>(
 
   // Check if `snapshotMethods` is either undefined or an array of `SnapshotStoreMethod`
   if ('snapshotMethods' in value) {
-    const snapshotMethods = (value as DataStoreWithSnapshotMethods<T, K>).snapshotMethods;
+    const snapshotMethods = (value as DataStoreWithSnapshotMethods<T, Meta, K>).snapshotMethods;
     
     if (
       snapshotMethods !== undefined &&
@@ -68,4 +68,4 @@ function isDataStoreWithSnapshotMethods<T extends BaseData, K extends BaseData>(
 }
 
 
-  export {isDataStoreMethod, isDataStoreWithSnapshotMethods}
+  export { isDataStoreMethod, isDataStoreWithSnapshotMethods };

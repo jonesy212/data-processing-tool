@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-interface Comment {
+interface Comment<T = CommentData, Meta = CommentMeta, K = CommentType> {
   id: string;
   text: string;
 }

@@ -8,8 +8,7 @@ import {Project, ProjectData} from "../components/projects/Project";
 import { User } from "../components/users/User";
 import { sendNotification } from "../components/users/UserSlice";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import ProjectMetadata from "../configs/StructuredMetadata";
-import  dotProp  from 'dot-prop';
+import { ProjectMetadata } from "../configs/StructuredMetadata";
 import ProjectModel from "../../../models/ProjectModel";
 import { Product } from "../components/products/Product";
 
@@ -25,7 +24,12 @@ class ProjectService {
   static saveProjectData = async (projectData: ProjectData) => {
     try {
       // Check if the project already exists in the database
-      const existingProject = await ProjectModel.findOne({ where: { id: projectData.id } });
+      const existingProject = await ProjectModel.findOne({
+        criteria: {tableName: ProjectModel.tableName,
+          where: { id: projectData.id },
+        }
+        // Optionally specify the tableName here
+      });
 
       if (existingProject) {
         // If the project exists, update its data
@@ -254,7 +258,7 @@ class ProjectService {
     }
   };
 
-  updatePhase = async (projectId: number, phaseId: number, newPhase: Phase): Promise<void> => {
+  updatePhase = async (projectId: number, phaseId: number, newPhase: Phase<Project>): Promise<void> => {
     try {
       const response = await axiosInstance.put(`${API_BASE_URL}/${projectId}/phases/${phaseId}`, newPhase);
       ProjectActions.updatePhase({ id: projectId, newPhase: response.data });
@@ -267,7 +271,7 @@ class ProjectService {
     }
   };
   
-  addPhase = async (projectId: number, newPhase: Phase): Promise<void> => {
+  addPhase = async (projectId: number, newPhase: Phase<Project>): Promise<void> => {
     try {
       const response = await axiosInstance.post(`${API_BASE_URL}/${projectId}/phases`, newPhase);
       ProjectActions.addPhase({ id: projectId, newPhase: response.data });

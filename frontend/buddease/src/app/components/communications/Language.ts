@@ -15,7 +15,7 @@ interface TimeZone {
   interface CrossCulturalCommunication {
     userId: string;
     preferences: {
-      language: string;
+      language: LanguageEnum;
       timeZone: string;
     };
   }

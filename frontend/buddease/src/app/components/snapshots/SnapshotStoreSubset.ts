@@ -2,7 +2,6 @@ import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
-import CalendarEvent from "../state/stores/CalendarEvent";
 import { NotificationType } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 import { Payload, Snapshot, Snapshots, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
@@ -14,32 +13,32 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 
 // // SnapshotStoreSubset.ts
-interface SnapshotStoreSubset<T extends Data, K extends Data> {
+interface SnapshotStoreSubset<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
   snapshotId: string | null;
-  taskIdToAssign: Snapshot<T, K> | undefined;
+  taskIdToAssign: Snapshot<T, Meta, K> | undefined;
 
   // Adds a snapshot, handling a new snapshot and a list of subscribers.
-  addSnapshot: (snapshot: Omit<Snapshot<T, K>, "id">, subscribers: Subscriber<T, K>[]) => void;
+  addSnapshot: (snapshot: Omit<Snapshot<T, Meta, K>, "id">, subscribers: Subscriber<T, Meta, K>[]) => void;
 
   // Handles snapshot configuration with a snapshot and a list of configurations.
-  onSnapshot: (snapshot: Snapshot<T, K>,
-    config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K>[]
+  onSnapshot: (snapshot: Snapshot<T, Meta, K>,
+    config: SnapshotStoreConfig<SnapshotWithCriteria<any, Meta, BaseData>, Meta, K>[]
       
   ) => void;
 
   // Called when a snapshot is successfully added.
-  addSnapshotSuccess: (snapshot: Snapshot<T, K>, subscribers: Subscriber<T, K>[]) => void;
+  addSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>, subscribers: Subscriber<T, Meta, K>[]) => void;
 
   // Updates a snapshot and handles various data and event parameters.
   updateSnapshot: (
     snapshotId: string,
-    data: SnapshotStore<T, K>,
-    events: Record<string, CalendarManagerStoreClass<T, K>[]>,
-    snapshotStore: SnapshotStore<T, K>,
+    data: SnapshotStore<T, Meta, K>,
+    events: Record<string, CalendarManagerStoreClass<T, Meta, K>[]>,
+    snapshotStore: SnapshotStore<T, Meta, K>,
     dataItems: RealtimeDataItem[],
     newData: T | Data,
     payload: UpdateSnapshotPayload<T>
-  ) => Promise<{ snapshot: SnapshotStore<T, K>[] }>;
+  ) => Promise<{ snapshot: SnapshotStore<T, Meta, K>[] }>;
 
   // Removes a snapshot by ID.
   removeSnapshot: (snapshotId: string) => void;
@@ -48,20 +47,20 @@ interface SnapshotStoreSubset<T extends Data, K extends Data> {
   clearSnapshots: () => void;
 
   // Initializes a snapshot with various possible data types.
-  createInitSnapshot: (snapshotData: SnapshotStore<T, K> | Snapshot<BaseData> | null | undefined) => void;
+  createInitSnapshot: (snapshotData: SnapshotData<T, Meta, K> | Snapshot<BaseData> | null | undefined) => void;
 
   // Called when a snapshot creation is successful.
-  createSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
+  createSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
 
   // Called when a snapshot creation fails.
-  createSnapshotFailure: (snapshot: Snapshot<T, K>, error: any) => Promise<void>;
+  createSnapshotFailure: (snapshot: Snapshot<T, Meta, K>, error: any) => Promise<void>;
 
   // Updates multiple snapshots and returns a result.
-  updateSnapshots: (snapshots: Snapshots<T>) => Promise<any>;
+  updateSnapshots: (snapshots: Snapshots<T, Meta>) => Promise<any>;
 
   // Called when a snapshot update is successful.
   updateSnapshotSuccess: (
-    snapshot: Snapshot<T, K>
+    snapshot: Snapshot<T, Meta, K>
   ) => Promise<{
     id: string;
     data: {
@@ -86,19 +85,19 @@ interface SnapshotStoreSubset<T extends Data, K extends Data> {
   updateSnapshotsFailure: (error: Payload) => void;
 
   // Initializes a snapshot with specific configuration and data.
-  initSnapshot: (snapshotStore: SnapshotStoreConfig<BaseData, BaseData>, snapshotData: Snapshot<BaseData>) => void;
+  initSnapshot: (snapshotStore: SnapshotStoreConfig<BaseData, Meta, BaseData>, snapshotData: SnapshotData<BaseData>) => void;
 
   // Takes a snapshot and returns a list of BaseData or null.
-  takeSnapshot: (updatedSnapshots: Snapshot<T, K>) => Promise<BaseData[] | null>;
+  takeSnapshot: (updatedSnapshots: Snapshot<T, Meta, K>) => Promise<BaseData[] | null>;
 
   // Called when a snapshot is successfully taken.
-  takeSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
+  takeSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
 
   // Called when multiple snapshots are successfully taken.
-  takeSnapshotsSuccess: (snapshots: Snapshot<T, K>[]) => void;
+  takeSnapshotsSuccess: (snapshots: Snapshot<T, Meta, K>[]) => void;
 
   // Configures the snapshot store with a specific configuration.
-  configureSnapshotStore: (snapshotConfigStore: SnapshotStoreConfig<T, Data>) => void;
+  configureSnapshotStore: (snapshotConfigStore: SnapshotStoreConfig<T, Meta, Data>) => void;
 
   // Gets the current data.
   getData: () => T | null;
@@ -122,40 +121,40 @@ interface SnapshotStoreSubset<T extends Data, K extends Data> {
   handleActions: (action: any) => void;
 
   // Sets a snapshot.
-  setSnapshot: (snapshot: Snapshot<T, K>) => void;
+  setSnapshot: (snapshot: Snapshot<T, Meta, K>) => void;
 
   // Sets multiple snapshots.
-  setSnapshots: (snapshots: Snapshots<T>) => void;
+  setSnapshots: (snapshots: Snapshots<T, Meta>) => void;
 
   // Clears a snapshot by ID.
   clearSnapshot: (snapshotId: string) => void;
 
   // Merges multiple snapshots into one.
-  mergeSnapshots: (snapshots: Snapshots<T>) => void;
+  mergeSnapshots: (snapshots: Snapshots<T, Meta>) => void;
 
   // Reduces a collection of snapshots to a single value.
-  reduceSnapshots: <U>(callback: (acc: U, snapshot: Snapshot<T, K>) => U, initialValue: U) => U;
+  reduceSnapshots: <U>(callback: (acc: U, snapshot: Snapshot<T, Meta, K>) => U, initialValue: U) => U;
 
   // Sorts snapshots using a comparison function.
-  sortSnapshots: (compareFn: (a: Snapshot<T, K>, b: Snapshot<T, K>) => number) => void;
+  sortSnapshots: (compareFn: (a: Snapshot<T, Meta, K>, b: Snapshot<T, Meta, K>) => number) => void;
 
   // Filters snapshots based on a predicate.
-  filterSnapshots: (predicate: (snapshot: Snapshot<T, K>) => boolean) => Snapshot<T, K>[];
+  filterSnapshots: (predicate: (snapshot: Snapshot<T, Meta, K>) => boolean) => Snapshot<T, Meta, K>[];
 
   // Maps snapshots to a new form using a callback function.
-  mapSnapshots: <U>(callback: (snapshot: Snapshot<T, K>) => U) => U[];
+  mapSnapshots: <U>(callback: (snapshot: Snapshot<T, Meta, K>) => U) => U[];
 
   // Finds a snapshot that matches a predicate.
-  findSnapshot: (predicate: (snapshot: Snapshot<T, K>) => boolean) => Snapshot<T, K> | undefined;
+  findSnapshot: (predicate: (snapshot: Snapshot<T, Meta, K>) => boolean) => Snapshot<T, Meta, K> | undefined;
 
   // Gets subscribers related to a snapshot.
-  getSubscribers: (subscribers: Subscriber<T, K>[], snapshots: Snapshot<T, K>) => void;
+  getSubscribers: (subscribers: Subscriber<T, Meta, K>[], snapshots: Snapshot<T, Meta, K>) => void;
 
   // Sends a notification.
   notify: (id: string, message: string, content: any, date: Date, type: NotificationType) => void;
 
   // Notifies subscribers with specific data.
-  notifySubscribers: (subscribers: Subscriber<T, K>[], data: CustomSnapshotData | Snapshot<BaseData>) => Promise<T>;
+  notifySubscribers: (subscribers: Subscriber<T, Meta, K>[], data: CustomSnapshotData | Snapshot<BaseData>) => Promise<T>;
 
   // Subscribes to snapshot updates.
   subscribe: () => void;
@@ -173,19 +172,19 @@ interface SnapshotStoreSubset<T extends Data, K extends Data> {
   fetchSnapshotFailure: () => void;
 
   // Gets a snapshot by ID.
-  getSnapshot: (id: string) => Snapshot<T, K> | undefined;
+  getSnapshot: (id: string) => Snapshot<T, Meta, K> | undefined;
 
   // Gets snapshots with optional category and filter.
-  getSnapshots: (category?: string, filter?: (snapshot: Snapshot<T, K>) => boolean) => Promise<Snapshots<T>>;
+  getSnapshots: (category?: string, filter?: (snapshot: Snapshot<T, Meta, K>) => boolean) => Promise<Snapshots<T, Meta>>;
 
   // Gets all snapshots with optional filter.
-  getAllSnapshots: (filter?: (snapshot: Snapshot<T, K>) => boolean) => Promise<Snapshots<T>>;
+  getAllSnapshots: (filter?: (snapshot: Snapshot<T, Meta, K>) => boolean) => Promise<Snapshots<T, Meta>>;
 
   // Generates a unique ID.
   generateId: () => string;
 
   // Batch fetches snapshots.
-  batchFetchSnapshots: () => Promise<Snapshots<T>>;
+  batchFetchSnapshots: () => Promise<Snapshots<T, Meta>>;
 
   // Requests to batch take snapshots.
   batchTakeSnapshotsRequest: () => Promise<void>;
@@ -194,13 +193,13 @@ interface SnapshotStoreSubset<T extends Data, K extends Data> {
   batchUpdateSnapshotsRequest: () => Promise<void>;
 
   // Called when batch fetching snapshots succeeds.
-  batchFetchSnapshotsSuccess: (snapshots: Snapshots<T>) => void;
+  batchFetchSnapshotsSuccess: (snapshots: Snapshots<T, Meta>) => void;
 
   // Called when batch fetching snapshots fails.
   batchFetchSnapshotsFailure: (error: any) => void;
 
   // Called when batch updating snapshots succeeds.
-  batchUpdateSnapshotsSuccess: (snapshots: Snapshots<T>) => void;
+  batchUpdateSnapshotsSuccess: (snapshots: Snapshots<T, Meta>) => void;
 
   // Called when batch updating snapshots fails.
   batchUpdateSnapshotsFailure: (error: any) => void;
@@ -212,7 +211,7 @@ interface SnapshotStoreSubset<T extends Data, K extends Data> {
   handleSnapshotOperation: (action: SnapshotOperation) => void;
 
   // Gets a custom store for snapshots.
-  getCustomStore: () => SnapshotStore<T, K>;
+  getCustomStore: () => SnapshotStore<T, Meta, K>;
 }
 
 

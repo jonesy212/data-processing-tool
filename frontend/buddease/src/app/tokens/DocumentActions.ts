@@ -12,7 +12,7 @@ export const DocumentActions = {
   addDocumentSuccess: createAction<{ id: number, title: string }>("addDocumentSuccess"),
   addDocumentFailure: createAction<string>("addDocumentFailure"),
 
-  createDocument: createAction<DocumentData>("createDocument"),
+  createDocument: createAction<DocumentData<T, Meta, K>>("createDocument"),
   updateDocument: createAction<Partial<DocumentData>>("updateDocument"),
   updateDocumentDetails: createAction<Partial<DocumentData>>("updateDocumentDetails"),
   updateDocumentDetailsSuccess: createAction<Partial<DocumentData>>("updateDocumentDetailsSuccess"),

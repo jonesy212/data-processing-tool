@@ -1,7 +1,8 @@
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { Data } from '@/app/components/models/data/Data';
 // ApiContent.ts
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
-import dotProp from "dot-prop";
 import { ContentState } from "draft-js";
 import useErrorHandling from "../components/hooks/useErrorHandling";
 import { YourResponseType } from "../components/typings/types";
@@ -12,7 +13,7 @@ import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
 
 // Define the API base URL
-const API_BASE_URL = dotProp.getProperty(endpoints, "content");
+const API_BASE_URL = endpoints.content
 
 // Define API notification messages for content operations
 interface ContentNotificationMessages {
@@ -24,6 +25,9 @@ interface ContentNotificationMessages {
   UPDATE_CONTENT_ERROR: string;
   DELETE_CONTENT_SUCCESS: string;
   DELETE_CONTENT_ERROR: string;
+  UPDATE_CONTENT_ERROR_ID: string;
+  CREATE_CONTENT_ERROR_ID: string;
+  DELETE_CONTENT_ERROR_ID: string;
   // Add more keys as needed
 }
 
@@ -36,32 +40,32 @@ const contentNotificationMessages: ContentNotificationMessages = {
   UPDATE_CONTENT_ERROR: "Failed to update content",
   DELETE_CONTENT_SUCCESS: "Content deleted successfully",
   DELETE_CONTENT_ERROR: "Failed to delete content",
+  UPDATE_CONTENT_ERROR_ID: "Failed to update content",
+  CREATE_CONTENT_ERROR_ID: "Failed to create content",
+  DELETE_CONTENT_ERROR_ID: "Failed to delete content",
   // Add more messages as needed
 };
+
 
 // Function to handle API errors and notify
 const handleContentApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: string
+  errorMessageId: keyof ContentNotificationMessages // Use keyof to enforce valid keys
 ) => {
   handleApiError(error, errorMessage);
+  
   if (errorMessageId) {
-    const errorMessageText = dotProp.getProperty(
-      contentNotificationMessages,
-      errorMessageId
-    );
+    const errorMessageText = contentNotificationMessages[errorMessageId]; // Access directly
     useNotification().notify(
       errorMessageId,
-      errorMessageText as unknown as string,
+      errorMessageText,
       null,
       new Date(),
       "ApiClientError" as NotificationType
     );
   }
 };
-
-
 
 
 // Function to fetch contentId from API based on contentState
@@ -147,7 +151,7 @@ const updateContent = async (
     handleContentApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to update content",
-      "UpdateContentErrorId"
+      "UPDATE_CONTENT_ERROR_ID"
     );
     throw error;
   }
@@ -174,7 +178,7 @@ const createContent = async (newContentData: any): Promise<void> => {
     handleContentApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to create content",
-      "CreateContentErrorId"
+      "CREATE_CONTENT_ERROR_ID"
     );
     throw error;
   }
@@ -200,7 +204,7 @@ const deleteContent = async (contentId: number): Promise<void> => {
     handleContentApiErrorAndNotify(
       error as AxiosError<unknown>,
       "Failed to delete content",
-      "DeleteContentErrorId"
+       "DELETE_CONTENT_ERROR_ID"
     );
     throw error;
   }
@@ -236,10 +240,10 @@ const createContentStateFromText = (text: string): any => {
 };
 
  
-const getMetadataForContent = async (
+const getMetadataForContent = async <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data>(
   contentId: string,
   contentState: ContentState // Include contentState in the function parameters
-): Promise<StructuredMetadata> => {
+): Promise<StructuredMetadata<T, Meta, K>> => {
   try {
     // Make API call to fetch metadata for the content
     const getMetadataEndpoint = `${API_BASE_URL}/metadata/${contentId}`;

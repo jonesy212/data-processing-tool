@@ -4,7 +4,6 @@ import {
     useNotification,
   } from "@/app/components/support/NotificationContext";
   import { AxiosError } from "axios";
-  import dotProp from "dot-prop";
   import { handleApiError } from "./ApiLogs";
   import axiosInstance from "./axiosInstance";
   import headersConfig from "./headers/HeadersConfig";
@@ -16,29 +15,27 @@ import {
     FETCH_USERS_ERROR: "Failed to fetch users",
   };
   
-  // Function to handle API errors and notify
-  const handleUserApiErrorAndNotify = (
-    error: AxiosError<unknown>,
-    errorMessage: string,
-    errorMessageId: string
-  ) => {
-    handleApiError(error, errorMessage);
-    if (errorMessageId) {
-      const errorMessageText = dotProp.getProperty(
-        userApiNotificationMessages,
-        errorMessageId
-      );
-      useNotification().notify(
-        errorMessageId,
-        errorMessageText as unknown as string,
-        null,
-        new Date(),
-        "UserError" as NotificationTypeEnum
-      );
-    }
-  };
+  type UserApiNotificationKeys = keyof typeof userApiNotificationMessages;
+
+// Function to handle API errors and notify
+const handleUserApiErrorAndNotify = (
+  error: AxiosError<unknown>,
+  errorMessage: string,
+  errorMessageId: UserApiNotificationKeys
+) => {
+  handleApiError(error, errorMessage);
   
-  // Fetch user IDs from the database
+  if (errorMessageId && userApiNotificationMessages.hasOwnProperty(errorMessageId)) {
+    const errorMessageText = userApiNotificationMessages[errorMessageId];
+    useNotification().notify(
+      errorMessageId,
+      errorMessageText,
+      null,
+      new Date(),
+      "UserError" as NotificationTypeEnum
+    );
+  }
+};  // Fetch user IDs from the database
   const fetchUserIdsFromDatabase = async (taskId: string): Promise<string[]> => {
     try {
       const response = await axiosInstance.get(`${endpoints.data.users}/task/${taskId}`, {

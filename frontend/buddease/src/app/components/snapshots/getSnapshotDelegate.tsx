@@ -1,22 +1,22 @@
-import * as snapshotApi from '@/app/api/SnapshotApi'
+import * as snapshotApi from '@/app/api/SnapshotApi';
+import { Data } from '../models/data/Data';
 import { Snapshot } from './LocalStorageSnapshotStore';
 import { SnapshotContainer } from './SnapshotContainer';
-import { Data } from '../models/data/Data';
 
-interface DelegateType<T, K> {
-    processSnapshot: (snapshot: Snapshot<T, K>) => void;
+interface DelegateType<T, Meta, K> {
+    processSnapshot: (snapshot: Snapshot<T, Meta, K>) => void;
     anotherTask: () => void;
   }
   
 
 // Define the delegate function that retrieves the delegate based on the snapshot ID and store ID
-async function getSnapshotDelegate<T, K>(
+async function getSnapshotDelegate<T, Meta, K>(
   snapshotId: string,
   storeId: number
-): Promise<DelegateType<T, K> | null> {
+): Promise<DelegateType<T, Meta, K> | null> {
   try {
     // You may need to fetch the snapshot container first
-    const snapshotContainer = await snapshotApi.getSnapshotContainer<T, K>(snapshotId, storeId);
+    const snapshotContainer = await snapshotApi.getSnapshotContainer<T, Meta, K>(snapshotId, storeId);
 
     if (!snapshotContainer) {
       console.error("Snapshot container not found for snapshotId:", snapshotId);
@@ -40,9 +40,9 @@ async function getSnapshotDelegate<T, K>(
 }
 
 // Helper function to create a delegate from a container if needed
-function createDelegateFromContainer<T extends Data, K extends Data>(container: SnapshotContainer<T, K>): DelegateType<T, K> {
+function createDelegateFromContainer<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(container: SnapshotContainer<T, Meta, K>): DelegateType<T, Meta, K> {
   return {
-    processSnapshot: (snapshot: Snapshot<T, K>) => {
+    processSnapshot: (snapshot: Snapshot<T, Meta, K>) => {
       try {
         const snapshotId = snapshot.id;
 

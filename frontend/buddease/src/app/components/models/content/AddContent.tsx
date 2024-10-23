@@ -4,16 +4,18 @@ import ContentItemComponent, { ContentItem } from '@/app/components/models/conte
 import { Persona } from "@/app/pages/personas/Persona";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import React, { FormEvent, useState } from "react";
-import UserRoles from "../../users/UserRoles";
-import ContentDetailsListItem from "./ContentDetailsListItem";
-import ContentToolbar from "./ContentToolbar";
 import { Category } from '../../libraries/categories/generateCategoryProperties';
 import { CustomSnapshotData, ItemUnion, SnapshotWithCriteria } from '../../snapshots';
-import { BaseData, Data } from '../data/Data';
-import { TaskData } from '../tasks/Task';
+import UserRoles from "../../users/UserRoles";
+import { Data } from '../data/Data';
 import { StatusType } from '../data/StatusType';
+import { TaskData } from '../tasks/Task';
+import ContentDetailsListItem from "./ContentDetailsListItem";
+import ContentToolbar from "./ContentToolbar";
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 
-interface Content<T extends Data, K extends Data> {
+
+interface Content<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
   id: string | number | undefined;
   title: string;
   description: string;
@@ -23,7 +25,8 @@ interface Content<T extends Data, K extends Data> {
   timestamp: string | number | Date,
   length: number,
   items: ItemUnion[],
-  data: T | SnapshotWithCriteria<T, Data> | CustomSnapshotData | null | undefined,
+  data: T | SnapshotWithCriteria<T, Meta, Data> | CustomSnapshotData | null | undefined,
+  contentItems: ContentItem[]
 }
 
 interface ContentProps {
@@ -552,8 +555,8 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
 };
 
 export default AddContent;
+export { taskContent };
 export type { Content, ContentProps };
-export {taskContent}
 
 
 

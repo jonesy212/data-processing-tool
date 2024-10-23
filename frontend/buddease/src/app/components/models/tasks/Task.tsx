@@ -6,19 +6,18 @@ import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType"
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import { AllTypes } from "../../typings/PropTypes";
 import { Idea } from "../../users/Ideas";
-import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
 import { Data } from "../data/Data";
 import { PriorityTypeEnum, TaskStatus } from "../data/StatusType";
 import { Team, TeamDetails } from "../teams/Team";
-
+import { TaskMetadata } from './../../../configs/database/MetaDataOptions'
 import React from "react";
 import { TagsRecord } from "../../snapshots";
 
-export type TaskData =  SupportedData;
+export type TaskData = SupportedData<Task, Task>;
 
 // Remove the 'then' method from the Task interface
-interface Task extends Data {
+interface Task extends Data, TaskMetadata<Task, UnifiedMetaDataOptions> {
   id: string;
   title: string;
   description: string;
@@ -44,7 +43,7 @@ interface Task extends Data {
     callbackfn: (value: Task, index: number, array: Task[]) => unknown,
     thisArg?: any
   ) => boolean;
-  details?: DetailsItem | undefined;
+  details?: DetailsItem<Task> | undefined;
   startDate: Date | undefined;
   endDate: Date | undefined;
   isActive: boolean;
@@ -93,7 +92,7 @@ const tasksDataSource: Record<string, Task> = {
   "1": {
     id: "1",
     _id: "taskData",
-    phase: {} as Phase,
+    phase: {} as Phase<Task>,
     videoData: {} as VideoData<any, any>,
     ideas: {} as Idea[],
     timestamp: new Date(),
@@ -129,6 +128,7 @@ const tasksDataSource: Record<string, Task> = {
         enabled: true,
         type: "Category",
         tags: {}, // This should match the type defined in Tag
+        relatedTags: [],
         createdAt: new Date(),
         updatedAt: new Date(),
         createdBy: "creator1",
@@ -142,6 +142,7 @@ const tasksDataSource: Record<string, Task> = {
         enabled: true,
         type: "Category",
         tags: {}, // This should match the type defined in Tag
+        relatedTags: [],
         createdAt: new Date(),
         updatedAt: new Date(),
         createdBy: "creator1",
@@ -153,7 +154,7 @@ const tasksDataSource: Record<string, Task> = {
     videoThumbnail: "thumbnail.jpg",
     videoDuration: 60,
     videoUrl: "https://example.com/video",
-    details: {} as DetailsItem,
+    details: {} as DetailsItem<Task>,
     [Symbol.iterator]: () => {
       return {
         next: () => {
@@ -161,7 +162,7 @@ const tasksDataSource: Record<string, Task> = {
             done: true,
             value: {
               _id: "taskData",
-              phase: {} as Phase,
+              phase: {} as Phase<Task>,
               videoData: {} as VideoData<any, any>,
             },
           };
@@ -202,6 +203,7 @@ const tasksDataSource: Record<string, Task> = {
         enabled: true,
         type: "Category",
         tags: {}, // This should match the type defined in Tag
+        relatedTags: [],
         createdAt: new Date(),
         updatedAt: new Date(),
         createdBy: "creator1",
@@ -215,6 +217,7 @@ const tasksDataSource: Record<string, Task> = {
         enabled: true,
         type: "Category",
         tags: {}, // This should match the type defined in Tag
+        relatedTags: [],
         createdAt: new Date(),
         updatedAt: new Date(),
         createdBy: "creator1",
@@ -235,7 +238,8 @@ const tasksDataSource: Record<string, Task> = {
             done: true,
             value: {
               _id: "taskData2",
-              phase: {} as Phase,
+
+              phase: {} as Phase<Task>,
               videoData: {} as VideoData<any, any>,
             },
           };
@@ -243,7 +247,7 @@ const tasksDataSource: Record<string, Task> = {
       };
     },
     _id: "taskData2",
-    phase: {} as Phase,
+    phase: {} as Phase<Task>,
     videoData: {} as VideoData<any, any>,
     ideas: {} as Idea[],
     timestamp: new Date(), // Add timestamp property

@@ -1,4 +1,5 @@
 // AssignBaseStore.tsx
+import { Meta } from '../models/data/dataStoreMethods';
 import { Config } from "@/app/api/ApiConfig";
 import { HeadersConfig } from "@/app/api/headers/HeadersConfig";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
@@ -9,7 +10,8 @@ import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from "../calen
 import { AssignBaseStoreLogger } from "../logging/Logger";
 import { Data } from "../models/data/Data";
 import { Team } from "../models/teams/Team";
-import SnapshotStore, { Snapshot } from "../snapshots/SnapshotStore";
+import SnapshotStore from "../snapshots/SnapshotStore";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { NotificationType, NotificationTypeEnum, useNotification } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { Todo, UserAssignee } from "../todos/Todo";
@@ -82,7 +84,7 @@ export interface AssignBaseStore {
   unassignTeamMemberFromItem: (itemId: string, userId: string) => void;
 
   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
-  snapshotStore: SnapshotStore<Snapshot<Data>>;
+  snapshotStore: SnapshotStore<Snapshot<Data, Meta, Data>>;
 
   reassignUsersToItems: Record<string, string[]>;
 
@@ -159,7 +161,7 @@ export interface AssignBaseStore {
   assignBoardCustomFieldToTeam: Record<string, string[]>,
 
 
-  setAssignedTaskStore: (store: SnapshotStore<Snapshot<Data>>) => void;
+  setAssignedTaskStore: (store: SnapshotStore<Snapshot<Data, Meta, Data>>) => void;
   // Add more methods or properties as needed
 }
 
@@ -699,8 +701,8 @@ const useAssignBaseStore = (): AssignBaseStore => {
     });
   };
 
-  const snapshotStore: SnapshotStore<Snapshot<Data>> = {} as SnapshotStore<
-    Snapshot<Data>
+  const snapshotStore: SnapshotStore<Snapshot<Data, Meta, Data>> = {} as SnapshotStore<
+    Snapshot<Data, Meta, Data>
     >;
   
   const assignPresentationStore: PresentationStore = {} as PresentationStore

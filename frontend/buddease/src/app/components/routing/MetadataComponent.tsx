@@ -1,6 +1,9 @@
+import * as React from 'react';
+import { useEffect, useState } from 'react';
 import { UnifiedMetaDataOptions } from '../../configs/database/MetaDataOptions';
-import  { useState, useEffect } from 'react';
- import * as  React from 'react'
+import { Data } from '../models/data/Data';
+import { EventManager } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { Snapshot } from '../snapshots';
 // Assume selectedmetadata is derived based on your logic (e.g., API call, user action, etc.)
 // Usage Example
 
@@ -13,6 +16,24 @@ const selectedmetadata: UnifiedMetaDataOptions = {
   createdBy: "UserA",
   createdAt: new Date(),
   structuredMetadata: {
+    description: "",
+    id: "",
+    apiEndpoint: "",
+    apiKey: "",
+    timeout: 0,
+    retryAttempts: 0,
+    name: "",
+    category: "",
+    timestamp: "",
+    createdBy: "",
+    tags: [],
+    metadata: {},
+   
+    initialState: "",
+    meta: new Map<string, Snapshot<Data, Meta, Data>>(),
+    events: {} as EventManager<Data, Data>,
+   
+
     metadataEntries: {
       "123": {
         originalPath: "/path/to/file",
@@ -44,7 +65,6 @@ const selectedmetadata: UnifiedMetaDataOptions = {
   tasks: [],
   milestones: []
 };
-
 
 const MetadataComponent: React.FC = () => {
   // Initialize state with selectedmetadata
@@ -134,4 +154,4 @@ const getMetadataFromAPI = async (): Promise<UnifiedMetaDataOptions> => {
   };
 };
 
-export {selectedmetadata}
+export { selectedmetadata };

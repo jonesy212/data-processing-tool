@@ -73,7 +73,7 @@ class CustomDAppAdapter<T extends DappProps> extends YourClass {
       manageDocuments(
         {
           /* newDocument */
-        } as DocumentData,
+        } as DocumentData<T, Meta, K>,
         dappProps
       );
       // Use initiateSocialLogin from useSocialAuthentication

@@ -195,7 +195,7 @@ class UniqueIDGenerator {
     id?: string,
     title?: string,
     notificationType?: NotificationType,
-    dataDetails?: DataDetails
+    dataDetails?: DataDetails<any, any, any>
   ): string {
     const generatedID = `${prefix || 'presentation'}_${name}_${type}_${Date.now()}`;
 
@@ -209,7 +209,6 @@ class UniqueIDGenerator {
     // You can also use dataDetails if needed for the ID generation
     return generatedID;
   }
-
 
   static generateCouponCode(): string {
     return `coupon_${Date.now()}`;

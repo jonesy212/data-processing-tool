@@ -551,7 +551,7 @@ export async function initializeAllPhases() {
   const storageClient = initializeDecentralizedStorage();
 
   // Fetch data from storage for each phase
-  allPhaseNames.forEach(async (phaseName: Phase["name"]) => {
+  allPhaseNames.forEach(async (phaseName: Phase<T>["name"]) => {
     const phaseHook = allPhaseHooks[phaseName.replace(/\s/g, "") + "PhaseHook"];
     if (phaseHook) {
       const fetchDataResult = await fetchDataFromStorage(storageClient, [

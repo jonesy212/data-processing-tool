@@ -1,12 +1,13 @@
+import { Meta } from '../models/data/dataStoreMethods';
 import { Data } from "../components/models/data/Data";
 import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
 import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
+import { useNotification } from "../components/support/NotificationContext";
 import { VideoData } from "../components/video/Video";
 import FrontendStructure from "../configs/appStructure/FrontendStructureComponent";
 import AppCacheManagerExtended from "./AppCacheManagerExtended";
 import BackendCacheManager from "./BackendCacheManager";
 import FrontendCacheManager from "./FrontendCacheManager";
-import { useNotification } from "../components/support/NotificationContext";
 
 const { notify } = useNotification();
 // Assuming Data has properties like 'property1' and 'property2'
@@ -109,12 +110,12 @@ const backendData: {
     tags: [],
     data: {
       then: function <T extends Data>(
-        callback: (newData: Snapshot<Snapshot<T, K>>) => void
+        callback: (newData: Snapshot<Snapshot<T, Meta, K>>) => void
       ): void {
         // Fetch existing data from backend cache
         appCacheManager.getBackendCache("backendCache").then((cachedData) => {
           if (cachedData !== null) {
-            callback(cachedData as Snapshot<Snapshot<T, K>>);
+            callback(cachedData as Snapshot<Snapshot<T, Meta, K>>);
           }
         });
       },

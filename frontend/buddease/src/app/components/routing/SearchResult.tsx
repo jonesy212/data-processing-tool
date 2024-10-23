@@ -53,6 +53,8 @@ interface SearchResult<T> extends Entity, DocumentData {
   repoURL?: string
 }
 
+
+
 const SearchResultComponent: React.FC<SearchResultProps<any>> = ({ result }) => {
   const [searchResults, setSearchResults] = useState<any[]>([]); // State to store search results
   const [loading, setLoading] = useState(false); // State to track loading status

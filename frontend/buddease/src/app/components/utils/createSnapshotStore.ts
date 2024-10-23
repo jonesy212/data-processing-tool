@@ -11,13 +11,13 @@ import { Subscriber } from "../users/Subscriber";
 import { CategoryProperties } from "./../../pages/personas/ScenarioBuilder";
 
 // createSnapshotStore.ts
-function createSnapshotStore<T extends BaseData, K extends BaseData>(
+function createSnapshotStore <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   id: string,
-  snapshotData: SnapshotStoreConfig<T, K>,
+  snapshotData: SnapshotData<T, Meta, K>,
   category?: string | symbol | Category,
-  callback?: (snapshotStore: SnapshotStore<T, K>) => void,
-  snapshotDataConfig?: SnapshotStoreConfig<T, K> 
-): Snapshot<T, K> | null {
+  callback?: (snapshotStore: SnapshotStore<T, Meta, K>) => void,
+  snapshotDataConfig?: SnapshotStoreConfig<T, Meta, K> 
+): Snapshot<T, Meta, K> | null {
   // Validate inputs
   if (!id || !snapshotData) {
     console.error('Invalid arguments provided to createSnapshotStore');
@@ -25,7 +25,7 @@ function createSnapshotStore<T extends BaseData, K extends BaseData>(
   }
 
   // Create a new SnapshotStore instance
-  const snapshotStore: SnapshotStore<T, K> = {
+  const snapshotStore: SnapshotStore<T, Meta, K> = {
     id: id,
     data: snapshotData.initialState || new Map<string, T>(),
     category: category ?? 'default-category',
@@ -45,9 +45,9 @@ function createSnapshotStore<T extends BaseData, K extends BaseData>(
     getSnapshotData: () => new Map(snapshotStore.data),
     getSnapshotCategory: () => snapshotStore.category,
     setSnapshotData: (
-      data: Map<string, Snapshot<T, K>>,
+      data: Map<string, Snapshot<T, Meta, K>>,
       subscribers: Subscriber<any, any>[],
-      snapshotData: Partial<SnapshotStoreConfig<T, K>>) => {
+      snapshotData: Partial<SnapshotStoreConfig<T, Meta, K>>) => {
       snapshotStore.data = new Map(data);
     },
     setSnapshotCategory: (newCategory: string | CategoryProperties) => { snapshotStore.category = newCategory; },
@@ -55,17 +55,17 @@ function createSnapshotStore<T extends BaseData, K extends BaseData>(
     
     restoreSnapshot: (
       id: string,
-      snapshot: Snapshot<T, K>,
+      snapshot: Snapshot<T, Meta, K>,
       snapshotId: string,
-      snapshotData: SnapshotUnion<T>,
+      snapshotData: SnapshotData<T>,
       category: Category | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T>,
+      snapshots: SnapshotsArray<T, Meta>,
       type: string,
-      event: string | SnapshotEvents<T, K>,
-      subscribers: SubscriberCollection<T, K>,
+      event: string | SnapshotEvents<T, Meta, K>,
+      subscribers: SubscriberCollection<T, Meta, K>,
       snapshotContainer?: T,
-      snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData>, T> | undefined
+      snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData, Meta>, T> | undefined
         ) => {
           // Step 1: Handle `this.id` being potentially undefined
           if (!snapshot.id) {
@@ -124,17 +124,17 @@ function createSnapshotStore<T extends BaseData, K extends BaseData>(
             event.trigger(type, snapshotData);
           }
         },
-    createSnapshot: () => ({ id, data: new Map<string, Snapshot<T, K>>(Object.entries(snapshotStore.data)), category: snapshotStore.category }),
+    createSnapshot: () => ({ id, data: new Map<string, Snapshot<T, Meta, K>>(Object.entries(snapshotStore.data)), category: snapshotStore.category }),
     updateSnapshot: async (
       snapshotId: string,
-    data: Map<string, Snapshot<T, K>>,
-    events: Record<string, CalendarManagerStoreClass<T, K>[]>,
-    snapshotStore: SnapshotStore<T, K>,
+    data: Map<string, Snapshot<T, Meta, K>>,
+    events: Record<string, CalendarManagerStoreClass<T, Meta, K>[]>,
+    snapshotStore: SnapshotStore<T, Meta, K>,
     dataItems: RealtimeDataItem[],
-    newData: Snapshot<T, K>,
+    newData: Snapshot<T, Meta, K>,
     payload: UpdateSnapshotPayload<T>,
-    store: SnapshotStore<any, K>
-  ): Promise<{ snapshot: Snapshot<T, K> }> => {
+    store: SnapshotStore<any, Meta, K>
+  ): Promise<{ snapshot: Snapshot<T, Meta, K> }> => {
       // Implement update logic
       return { snapshotId, data, events, snapshotStore, dataItems, newData, payload, store };
      },

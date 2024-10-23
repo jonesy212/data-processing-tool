@@ -1,22 +1,18 @@
 // useUIRealtimeData.tsx
-import { Dispatch, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import socketIOClient from 'socket.io-client';
-import axiosInstance from '@/app/api/axiosInstance';
-import { EventActions } from './../../../components/actions/EventActions';
-import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
-import { Data} from "../../models/data/Data"
-import { useSecureUserId } from '../../utils/useSecureUserId';
 import { fetchData } from '@/app/api/ApiData';
+import axiosInstance from '@/app/api/axiosInstance';
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { DocumentActionTypes } from '@/app/tokens/DocumentActions';
+import { TokenActionTypes } from '@/app/tokens/TokenActions';
+import { Dispatch, useEffect, useState } from 'react';
+import socketIOClient from 'socket.io-client';
+import { AppActions, AppActionsType } from '../../actions/AppActions';
+import { Data } from "../../models/data/Data";
 import { RealtimeData, RealtimeDataItem } from '../../models/realtime/RealtimeData';
 import SnapshotStore from '../../snapshots/SnapshotStore';
 import CalendarEvent from '../../state/stores/CalendarEvent';
+import { EventActions } from './../../../components/actions/EventActions';
 export const ENDPOINT = "http://your-backend-endpoint"; // Update with your actual backend endpoint
-import { endpoints } from '@/app/api/endpointConfigurations';
-import { AppActions, AppActionsType } from '../../actions/AppActions';
-import { DocumentActionTypes } from '@/app/tokens/DocumentActions';
-import { TokenActionTypes } from '@/app/tokens/TokenActions';
-import { DocumentData } from '../../documents/DocumentBuilder';
 
 const isKnownAction = (action: any): action is AppActionsType => {
   // This function can be as complex as needed to check if the action type is known.
@@ -271,8 +267,8 @@ const handleTokenActions = (action: TokenActionTypes) => {
 
 const useUIRealtimeData = <T extends Data, K extends RealtimeData = any>(
   initialData: RealtimeDataItem[],
-  updateCallback: (events: Record<string, CalendarEvent<T, K>[]>,
-    snapshotStore: SnapshotStore<T, K>, dataItems: RealtimeDataItem[],
+  updateCallback: (events: Record<string, CalendarEvent<T, Meta, K>[]>,
+    snapshotStore: SnapshotStore<T, Meta, K>, dataItems: RealtimeDataItem[],
     updateCallback: (dispatch: Dispatch<AppActionsType>) => void
 
   ) => void
@@ -328,8 +324,8 @@ const useUIRealtimeData = <T extends Data, K extends RealtimeData = any>(
       'updateData',
       (
         data: any,
-        events: Record<string, CalendarEvent<T, K>[]>,
-        snapshotStore: SnapshotStore<T, K>,
+        events: Record<string, CalendarEvent<T, Meta, K>[]>,
+        snapshotStore: SnapshotStore<T, Meta, K>,
         dataItems: RealtimeDataItem[]
       ) => {
         // Call the provided updateCallback with the updated data, events, snapshotStore, and dataItems
@@ -388,7 +384,7 @@ const useUIRealtimeData = <T extends Data, K extends RealtimeData = any>(
 
 // Define your update callback function
 const updateCallback =<T extends Data, K extends RealtimeData = any>
-  (events: Record<string, CalendarEvent<T, K>[]>,
+  (events: Record<string, CalendarEvent<T, Meta, K>[]>,
   snapshotStore: SnapshotStore<RealtimeData, K>,
   dataItems: RealtimeDataItem[]
 
@@ -400,7 +396,7 @@ const updateCallback =<T extends Data, K extends RealtimeData = any>
   Object.keys(events).forEach((eventId: string) => {
     const calendarEvents = events[eventId];
     // Perform actions based on each calendar event
-    calendarEvents.forEach((event: CalendarEvent<T, K>) => {
+    calendarEvents.forEach((event: CalendarEvent<T, Meta, K>) => {
       // Example: Update UI or trigger notifications based on the event
       console.log(`Updated event with ID ${eventId}:`, event);
     });
@@ -408,4 +404,4 @@ const updateCallback =<T extends Data, K extends RealtimeData = any>
 };
 
 export default useUIRealtimeData;
-export {updateCallback}
+export { updateCallback };

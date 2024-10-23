@@ -85,7 +85,7 @@ const tradingNotificationMessages: TradingNotificationMessages = {
 const handleTradingApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: keyof TradingNotificationMessages
+  errorMessageId: DataradingNotificationMessages
 ) => {
   handleApiError(error, errorMessage);
   if (errorMessageId) {

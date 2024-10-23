@@ -1,7 +1,8 @@
 // dataContracts.ts
 import { BaseRecord, CreateParams, UpdateParams, CustomParams, CreateManyParams, UpdateManyParams, GetListParams,
   GetListResponse,
-  CrudOperators, } from "@refinedev/core";
+  CrudOperators,
+  BaseKey, } from "@refinedev/core";
 import { PaginationOptions, SortingOption } from "../../../pages/searchs/SearchOptions";
 
 
@@ -19,13 +20,13 @@ export interface CustomBaseRecord extends BaseRecord {
 
 
 export interface InternalCustomParams<TQuery = unknown, TPayload = unknown> extends CustomParams {
-  query: TQuery; // Query parameters for the custom request
-  payload: TPayload; // Payload for the custom request
+  query?: TQuery; // Query parameters for the custom request
+  payload?: TPayload; // Payload for the custom request
 }
 
 
 export interface GetOneParams extends ResourceBase {
-  id: string; // ID of the record to fetch
+  id: string | number; // ID of the record to fetch
 }
 
 
@@ -38,13 +39,13 @@ export interface CustomResponse<TData> {
 }
 
 
-export interface CustomGetListResponse<TData>  extends GetListResponse{
+export interface CustomGetListResponse<TData extends BaseRecord>  extends GetListResponse{
   data: TData[];
   total: number; // Total count of items matching the query
 }
 
 export interface GetManyParams extends ResourceBase {
-  ids: string[]; // List of IDs to fetch
+  ids: BaseKey[]
 }
 
 export interface GetManyResponse<TData> {
@@ -54,13 +55,14 @@ export interface GetManyResponse<TData> {
 
 
 interface CustomFilterBase {
-  field: string;
+  field?: string;
   operator: string; // You can specify a union type for specific operators
   value: any;       // The value type can be flexible depending on your use case
 }
 
 // Extend the CustomFilterBase to include specific filters if needed
 interface CustomLogicalFilter extends CustomFilterBase {
+  field: string;
   operator: Exclude<CrudOperators, "or" | "and">;
 }
 
@@ -80,8 +82,8 @@ export interface CustomGetListParams extends GetListParams {
   filters?: CustomFilter[];  // Custom filters structure
 }
 
-export interface CustomCreateParams<TVariables = {}> extends ResourceBase, CreateParams {
-  data: Record<string, any>; // The data to create the new record
+export interface CustomCreateParams<TVariables extends {} = {}> extends ResourceBase, CreateParams {
+  data?: Record<string, any>; // The data to create the new record
   variables: TVariables; // Optional variables for additional context or parameters
 }
 
@@ -90,7 +92,7 @@ export interface CreateResponse<TData> {
 }
 
 export interface CustomCreateManyParams<TVariables extends {}[] = {}[]> extends ResourceBase, CreateManyParams {
-  data: Record<string, any>[]; // Array of data to create multiple new records
+  data?: Record<string, any>[]; // Array of data to create multiple new records
   variables: TVariables; // Optional variables for additional context or parameters
 }
 
@@ -99,8 +101,8 @@ export interface CreateManyResponse<TData> {
 }
 
 export interface CustomUpdateParams<TVariables = {}> extends ResourceBase, UpdateParams<TVariables> {
-  id: string; // ID of the record to update
-  data: Record<string, any>; // Updated data for the record
+  id: BaseKey; // ID of the record to update
+  data?: Record<string, any>; // Updated data for the record
   variables: TVariables; // Variables for additional context or parameters
 }
 
@@ -109,8 +111,8 @@ export interface UpdateResponse<TData> {
 }
 
 export interface CustomUpdateManyParams<TVariables = {}> extends ResourceBase, UpdateManyParams<TVariables> {
-  ids: string[]; // List of IDs to update
-  data: Record<string, any>[]; // Array of updated data for multiple records
+  ids: BaseKey[]; // List of IDs to update
+  data?: Record<string, any>[]; // Array of updated data for multiple records
   variables: TVariables; // Variables for additional context or parameters
 }
 
@@ -119,7 +121,7 @@ export interface UpdateManyResponse<TData> {
 }
 
 export interface DeleteOneParams<TVariables = {}> extends ResourceBase {
-  id: string; // ID of the record to delete
+  id: BaseKey; // ID of the record to delete
   variables?: TVariables; // Optional variables for additional context or parameters
 }
 
@@ -128,7 +130,7 @@ export interface DeleteOneResponse<TData> {
 }
 
 export interface DeleteManyParams<TVariables = {}> extends ResourceBase {
-  ids: string[]; // List of IDs to delete
+  ids: BaseKey[]; // List of IDs to delete
   variables?: TVariables; // Optional variables for additional context or parameters
 }
 

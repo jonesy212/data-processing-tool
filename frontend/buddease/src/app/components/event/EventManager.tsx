@@ -1,23 +1,21 @@
-import { useEffect, useState, useCallback } from "react";
 import * as React from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { EventStore, defaultEventStore } from "./EventStore";
+import { defaultEventStore, EventStore } from "./EventStore";
 
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { Data } from "../models/data/Data";
+import axiosInstance from "../security/csrfToken";
 import { Snapshot } from "../snapshots";
 import {
-
-  addEvent,
-  removeEvent,
-  removeAllEvents,
-  selectEvents,
-  selectEventLoading,
-  selectEventError,
+    addEvent,
+    removeAllEvents,
+    removeEvent,
+    selectEventError,
+    selectEventLoading,
+    selectEvents,
 } from "../state/redux/slices/EventSlice";
 import { CustomEventExtension } from "./BaseCustomEvent";
-import { Data } from "../models/data/Data";
-import { AppThunk } from "@/app/configs/appThunk";
-import { createAsyncThunk, Dispatch } from "@reduxjs/toolkit";
-import axiosInstance from "../security/csrfToken";
 
 
 
@@ -37,11 +35,11 @@ const fetchEvents = createAsyncThunk<CustomEventExtension[]>(
 );
 
 // Define the type for the callback function
-type SnapshotCallback<T extends Data, K extends Data> = (snapshot: Snapshot<T, K>) => void;
+type SnapshotCallback<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> = (snapshot: Snapshot<T, Meta, K>) => void;
 
 // Define the type for the subscribers
-interface Subscribers<T extends Data, K extends Data> {
-  [event: string]: SnapshotCallback<T, K>[]; // Keys are event names, values are arrays of callback functions
+interface Subscribers<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+  [event: string]: SnapshotCallback<T, Meta, K>[]; // Keys are event names, values are arrays of callback functions
 }
 
 interface EventManagerProps {

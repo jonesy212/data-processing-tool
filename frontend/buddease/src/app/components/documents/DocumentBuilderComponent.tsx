@@ -1,17 +1,18 @@
 // DocumentBuilderComponent.tsx
-import React from 'react'
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import { DocumentObject } from "../state/redux/slices/DocumentSlice";
 import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
 import DocumentBuilder, { saveDocument } from "./DocumentBuilder";
 import { getDefaultDocumentOptions } from "./DocumentOptions";
-import { useDispatch } from 'react-redux'
-
+import { Data } from '@/app/components/models/data/Data';
+import { Meta } from "@/app/components/models/data/dataStoreMethods";
 const dispatch = useDispatch()
 
-function formatDocument(
-  documentObject: DocumentObject,
+function formatDocument<T extends Data, K extends Data = T>(
+  documentObject: DocumentObject<T, Meta, K>,
   options: DocumentFormattingOptions
-): DocumentObject {
+): DocumentObject<T, Meta, K> {
   // Apply formatting options to the document (e.g., page size, margins, styles)
   documentObject.size = options.pageSize;
   documentObject.margins = options.margins;
@@ -25,9 +26,9 @@ function validateDocumentType(documentType: string): string | null {
 }
 
 // Define the buildDocument function
-const buildDocument = async (
+const buildDocument = async <T extends Data, K extends Data = T>(
   options: DocumentFormattingOptions,
-  documentObject: DocumentObject,
+  documentObject: DocumentObject<T, Meta, K>,
   documentType: string
 ): Promise<void> => {
   try {
@@ -85,8 +86,14 @@ const DocumentBuilderComponent = () => {
       }}
       documents={[]}
       buildDocument={buildDocument} // Pass the buildDocument function as a prop
+      currentMetadata={}
+      previousMetadata={}
+      accessHistory={}
+      lastModifiedDate={}
+     
     />
   );
 };
 
-export { formatDocument, validateDocumentType, buildDocument };
+export { buildDocument, formatDocument, validateDocumentType };
+

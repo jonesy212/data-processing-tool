@@ -1,8 +1,9 @@
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 // DetailsListStore.ts
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { makeAutoObservable } from "mobx";
 import { FC } from "react";
-import { BaseData, Data } from "../../models/data/Data";
+import { Data } from "../../models/data/Data";
 import { Team } from "../../models/teams/Team";
 import { Phase } from "../../phases/Phase";
 import SnapshotStore from "../../snapshots/SnapshotStore";
@@ -12,7 +13,6 @@ import {
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
-import * as snapshotApi from '@/app/api/SnapshotApi';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CommunicationActionTypes } from "../../community/CommunicationActions";
 import { Attachment } from "../../documents/Attachment/attachment";
@@ -33,9 +33,7 @@ import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType"
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Project } from "../../projects/Project";
 import { SnapshotConfig, SnapshotDataType, SnapshotStoreProps, TagsRecord } from "../../snapshots";
-import { Snapshot, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
-import { SnapshotOperation, SnapshotOperationType } from "../../snapshots/SnapshotActions";
-import {  InitializedConfig, SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
+import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 
 import { AllTypes } from "../../typings/PropTypes";
 import { createSnapshotStoreOptions } from "../../typings/YourSpecificSnapshotType";
@@ -127,7 +125,7 @@ interface DetailsItemExtended extends DataDetails{
   clearCurrentProject?: () => void;
 }
 
-export interface DetailsListStore<T extends BaseData, K extends BaseData> {
+export interface DetailsListStore <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
   details: Record<string, DetailsItemExtended[]>;
   detailsTitle: string;
   detailsDescription: string;
@@ -140,11 +138,11 @@ export interface DetailsListStore<T extends BaseData, K extends BaseData> {
     | TaskStatus.Cancelled
     | TaskStatus.Scheduled
     | undefined;
-  snapshotStore: SnapshotStore<T, K>;
+  snapshotStore: SnapshotStore<T, Meta, K>;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   updateDetailsTitle: (title: string, newTitle: string) => void;
-  subscribe(callback: (snapshot: Snapshot<T, K>) => void): void;
+  subscribe(callback: (snapshot: Snapshot<T, Meta, K>) => void): void;
 
   toggleDetails: (detailsId: string) => void;
 
@@ -167,8 +165,8 @@ export interface DetailsListStore<T extends BaseData, K extends BaseData> {
   setDynamicNotificationMessage: (message: string) => void;
 }
 
-class DetailsListStoreClass<T extends BaseData, K extends BaseData>
-  implements DetailsListStore<T, K>
+class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>
+  implements DetailsListStore<T, Meta, K>
 {
   details: Record<string, DetailsItemExtended[]> = {
     pending: [],
@@ -186,15 +184,15 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
     | TaskStatus.Cancelled
     | TaskStatus.Scheduled
     | undefined = undefined;
-  snapshotStore!: SnapshotStore<T, K>;
+  snapshotStore!: SnapshotStore<T, Meta, K>;
 
-  subscribe = (callback: (snapshot: Snapshot<T, K>) => void) => {};
+  subscribe = (callback: (snapshot: Snapshot<T, Meta, K>) => void) => {};
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
 
   constructor( 
-    storeProps: SnapshotStoreProps<T, K>,
-    snapConfig: SnapshotConfig<T, K>
+    storeProps: SnapshotStoreProps<T, Meta, K>,
+    snapConfig: SnapshotConfig<T, Meta, K>
   ) {
     makeAutoObservable(this);
     this.initSnapshotStore(storeProps, snapConfig);
@@ -202,16 +200,16 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
 
   
 
-  determineCategory(snapshot: Snapshot<T, K> | null | undefined): string {
+  determineCategory(snapshot: Snapshot<T, Meta, K> | null | undefined): string {
     if (snapshot && snapshot.store) {
       return snapshot.store.toString();
     }
     return "";
   }
 
-  private async initSnapshotStore(storeProps: SnapshotStoreProps<T, K>, snapConfig: SnapshotConfig<T, K>) {
+  private async initSnapshotStore(storeProps: SnapshotStoreProps<T, Meta, K>, snapConfig: SnapshotConfig<T, Meta, K>) {
     const initialState = null;
-    const snapshotStoreProps: SnapshotStoreProps<T, K> = {
+    const snapshotStoreProps: SnapshotStoreProps<T, Meta, K> = {
       id: storeProps.storeId.toString(), // Assuming ID needs to be a string
       storeId: storeProps.storeId,
       name: storeProps.name, // Assuming this relates to the store's name
@@ -228,7 +226,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
     }
     
     // Initialize the snapshot store using snapshotStoreProps
-    this.snapshotStore = new SnapshotStore<T, K>({
+    this.snapshotStore = new SnapshotStore<T, Meta, K>({
       storeId: snapshotStoreProps.storeId,
       name: snapshotStoreProps.name,
       version: snapshotStoreProps.version,
@@ -239,7 +237,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
       operation: snapshotStoreProps.operation,
     });
 
-    const snapshotConfig: SnapshotConfig<T, K> = {
+    const snapshotConfig: SnapshotConfig<T, Meta, K> = {
         id: snapConfig?.id || 'default-id', // Default or generate an ID
         store: snapConfig?.store || undefined, // Initialize appropriately
         state: snapConfig?.state || initialState, // Initialize state as needed
@@ -264,7 +262,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
         setCategory: snapConfig?.setCategory || (() => {}),
         applyStoreConfig: snapConfig?.applyStoreConfig || (() => {}),
         generateId: snapConfig?.generateId || (() => 'default-generated-id'),
-        snapshotData: snapConfig?.snapshotData || (() => ({} as SnapshotDataType<T, K>)),
+        snapshotData: snapConfig?.snapshotData || (() => ({} as SnapshotDataType<T, Meta, K>)),
         getSnapshotItems: snapConfig?.getSnapshotItems || (() => []),
 
 
@@ -457,8 +455,8 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
       };
 
 
-      // Ensure delegate is correctly typed as Snapshot<T, K>
-      const delegateSnapshot: Snapshot<T, K> = {
+      // Ensure delegate is correctly typed as Snapshot<T, Meta, K>
+      const delegateSnapshot: Snapshot<T, Meta, K> = {
         // Provide appropriate default values for the snapshot
         id: snapshotConfig.id, // Default or generate an ID
         store: snapshotConfig.store, // Initialize appropriately
@@ -710,7 +708,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
         NotificationTypeEnum.InvalidCredentials
       );
 
-      const options = createSnapshotStoreOptions<T, K>({
+      const options = createSnapshotStoreOptions<T, Meta, K>({
         initialState,
         snapshotId: "snapshot_123", // Example snapshot ID, replace with actual ID
         category: category as unknown as CategoryProperties,
@@ -761,7 +759,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
         throw new Error("Name, operation and version are required for SnapshotStore");
       }
 
-      this.snapshotStore = new SnapshotStore<T, K>({storeId, name, version, schema, options, category, config, operation});
+      this.snapshotStore = new SnapshotStore<T, Meta, K>({storeId, name, version, schema, options, category, config, operation});
     }
 
   updateDetailsTitle(id: string, newTitle: string): void {
@@ -1022,7 +1020,7 @@ class DetailsListStoreClass<T extends BaseData, K extends BaseData>
   }
 }
 
-const useDetailsListStore = <T extends Data, K extends Data>(storeProps: SnapshotStoreProps<T, K>, snapConfig: SnapshotConfig<T, K>): DetailsListStore<T,K> => {
+const useDetailsListStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(storeProps: SnapshotStoreProps<T, Meta, K>, snapConfig: SnapshotConfig<T, Meta, K>): DetailsListStore<T,K> => {
   return new DetailsListStoreClass(storeProps, snapConfig);
 };
 

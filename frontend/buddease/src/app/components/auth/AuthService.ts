@@ -3,9 +3,10 @@
 import { DatabaseConfig, DatabaseService } from "@/app/configs/DatabaseConfig";
 import { PostgresDatabaseService } from "../database/PostgresDatabaseService";
 import UserService from "../users/ApiUser";
-import { generateToken } from "@/app/generators/GenerateTokens";
+import { generateToken } from "@/app/generators/generateTokens";
  import * as jwt  from 'jsonwebtoken'
 import { JWT_SECRET } from "../snapshots/JwtConfig";
+
 type AuthenticationProvider = 'Google' | 'Facebook' | 'Twitter' | 'LinkedIn' | 'GitHub';
 
 class AuthService {

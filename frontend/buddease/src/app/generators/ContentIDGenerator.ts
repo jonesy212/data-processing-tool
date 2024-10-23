@@ -34,6 +34,8 @@ const contentItem: DetailsItem<Data> = {
   id: ContentIDGenerator.generateContentID("Sample Content", "This is a sample content item.", NotificationTypeEnum.ContentItem),
   title: "Sample Content",
   description: "This is a sample content item.",
+  subtitle: "This is a sample content item subtitle.",
+  value: "This is a sample content item value.",
   analysisResults: [],
   /* Add other relevant details here */
 };

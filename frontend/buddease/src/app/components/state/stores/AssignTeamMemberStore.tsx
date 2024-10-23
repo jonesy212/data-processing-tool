@@ -3,6 +3,8 @@ import { makeAutoObservable } from "mobx";
 import { TeamMember } from "../../models/teams/TeamMembers";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { NotificationType } from "../../support/NotificationContext";
 
 
 
@@ -184,12 +186,14 @@ const useAssignTeamMemberStore = (): AssignTeamMemberStore => {
   const assignTeamMemberFailure = (error: string) => {
     console.error("Assign team member failure:", error);
     setDynamicNotificationMessage(
-      NOTIFICATION_MESSAGES.Team.ASSIGN_TEAM_MEMBER_FAILURE
+
+      NOTIFICATION_MESSAGES.Team.ASSIGN_TEAM_MEMBER_FAILURE,
+      NotificationType.ERROR
     );
   };
 
-  const setDynamicNotificationMessage = (message: string) => {
-    setDynamicNotificationMessage(message);
+  const setDynamicNotificationMessage = (message: Message, type: NotificationType) => {
+    setDynamicNotificationMessage(message, type);
   };
 
   const shareResource = (teamId: string, resourceId: string) => {

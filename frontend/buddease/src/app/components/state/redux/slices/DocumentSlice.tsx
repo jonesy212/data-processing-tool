@@ -1,44 +1,41 @@
 // DocumentSlice.tsx
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { fetchDocumentById, fetchDocumentByIdAPI } from "@/app/api/ApiDocument";
 import { ModifiedDate } from "@/app/components/documents/DocType";
 import DocumentBuilder, {
-  DocumentData,
-  options,
+    DocumentData
 } from "@/app/components/documents/DocumentBuilder";
 import {
-  DocumentStatusEnum,
-  DocumentTypeEnum,
+    DocumentStatusEnum,
+    DocumentTypeEnum,
 } from "@/app/components/documents/DocumentGenerator";
 import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import { DocumentStatus } from "@/app/components/documents/types";
 import useDataExport from "@/app/components/hooks/dataHooks/useDataExport";
+import { DocumentSize } from "@/app/components/models/data/StatusType";
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import Version from "@/app/components/versions/Version";
 import { VersionData } from "@/app/components/versions/VersionData";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
+import BackendStructure, { backend, backendStructure } from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure, { frontend, frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
 import { AppThunk } from "@/app/configs/appThunk";
-import { getStructureAsArray, traverseBackendDirectory } from "@/app/configs/declarations/traverseBackend";
 import { performSearch } from "@/app/pages/searchs/SearchComponent";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { v4 as uuidv4 } from "uuid";
+import { Document } from "../../stores/DocumentStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
-import BackendStructure, { backend, backendStructure } from "@/app/configs/appStructure/BackendStructure";
-import { DocumentSize } from "@/app/components/models/data/StatusType";
-import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
-import { Document } from "../../stores/DocumentStore";
 
-import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import DocumentPermissions from "@/app/components/documents/DocumentPermissions";
+import { BaseData, Data } from "@/app/components/models/data/Data";
 import TodoImpl, { Todo } from "@/app/components/todos/Todo";
+import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import getAppPath from "appPath";
-import { result } from "lodash";
-import { Data } from "@/app/components/models/data/Data";
 
 
 const {versionNumber, appVersion} = getCurrentAppInfo()
@@ -66,23 +63,34 @@ const initialDocumentSliceState: DocumentSliceState<Data> = {
   documentBuilder: undefined,
 };
 
-interface DocumentObject<T extends Data> extends Document, DocumentData, DocumentSliceState {
+
+interface ArtworkItem {
+  url: string;
+  title: string;
+  description?: string;
+  creator?: string;
+  dimensions?: {
+    width: number;
+    height: number;
+  };
+  type?: "image" | "video" | "3D" | "audio";
+}
+
+
+
+
+
+interface DocumentObject<T extends Data, Meta
+  extends UnifiedMetaDataOptions, K extends Data = T>
+  extends Document<T, Meta, K>, DocumentData<T, Meta, K>, 
+  DocumentSliceState {
   // Optionally add additional fields here if needed
   description?: string | null; // Reintroduce with the original name
   createdBy: string | undefined; // Reintroduce with the original name
   alinkColor: string
   subtasks?: WritableDraft<TodoImpl<Todo, any>>[];
-  artwork?: {
-    url: string; // URL of the artwork
-    title: string; // Title of the artwork
-    description?: string; // Optional description of the artwork
-    creator?: string; // Optional creator or artist name
-    dimensions?: {
-      width: number; // Width of the artwork
-      height: number; // Height of the artwork
-    };
-    type?: 'image' | 'video' | '3D' | 'audio'; // Type of artwork (e.g., image, video, etc.)
-  }
+  artwork?: ArtworkItem[];
+  clientInformation?: ClientInformation; 
 }
 
 interface ViewTransition {
@@ -92,19 +100,23 @@ interface ViewTransition {
 }
 
 
-function toObject(document: DocumentObject): object {
+function toObject(document: DocumentObject<T, Meta, K>): object {
   return { ...document };
 }
 
 
 
 
-const initialState: DocumentObject = {
+const initialState: DocumentObject<BaseData, Meta, BaseData> = {
   // _id: uuidv4(),
   id: "",
   title: "New Document",
 
-  content: "",
+  content: {
+  id, title, description, subscriberId, 
+  category, categoryProperties, timestamp, length, 
+
+  },
   topics: [],
   highlights: [],
   files: [],
@@ -2601,7 +2613,7 @@ export const useDocumentManagerSlice = createSlice({
       const { id, status } = action.payload;
       const documentIndex = state.documentList?.findIndex((doc) => doc.id === id);
       if (documentIndex !== -1) {
-        state.documentList?[documentIndex].status = status;
+        state.documentList?[documentIndex].status = status : null;
       } else {
         console.log("Document not found");
       }
@@ -4212,21 +4224,54 @@ export const useDocumentManagerSlice = createSlice({
 
     intelligentDocumentSearch: (
       state,
-      action: PayloadAction<{ documentId: number; search: string }>
+      action: PayloadAction<{ searchTerm: string; options?: any }>
     ) => {
-      const { documentId, search } = action.payload;
-      const documentToSearch = state.documentList?.find(
-        (doc) => doc.id === documentId
+      const { searchTerm, options } = action.payload;
+      const initialSearchTerm = searchTerm.toLowerCase();
+      const searchResults = state.documentList?.filter((doc) =>
+        doc.content.toLowerCase().includes(initialSearchTerm)
       );
-      if (documentToSearch) {
-        applyTransformation(
-          documentToSearch,
-          search,
-          transformations.search,
-          "Document searched with " + search
-        );
+    
+      if (searchResults && searchResults.length > 0) {
+        // Automatically tag matched documents
+        searchResults.forEach((doc) => {
+          applyTransformation(
+            doc,
+            "Matched by intelligent search",
+            transformations.tag,
+            "Search match: " + searchTerm
+          );
+        });
+    
+        // Log the search activity
+        searchResults.forEach((doc) => {
+          applyTransformation(
+            doc,
+            "Search action performed",
+            transformations.logActivity,
+            "Document found during search: " + searchTerm
+          );
+        });
+    
+        // Optionally trigger collaborative editing if specified
+        if (options?.triggerCollaboration) {
+          searchResults.forEach((doc) => {
+            applyTransformation(
+              doc,
+              "Collaborator",
+              transformations.collaborate,
+              "Collaborative search editing initiated"
+            );
+          });
+        }
+    
+        // Update the state with search results
+        state.searchResults = searchResults;
+      } else {
+        console.error("No documents matched the search criteria.");
       }
     },
+    ,
 
     createDocumentVersion: (
       state,
@@ -4901,7 +4946,7 @@ export const selectSelectedDocument = (state: RootState) =>
 // Export the reducer
 export default useDocumentManagerSlice.reducer;
 
-export type { DocumentSliceState, DocumentObject };
+export type { DocumentObject, DocumentSliceState };
 
 
 

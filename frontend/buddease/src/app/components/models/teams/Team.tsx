@@ -29,8 +29,8 @@ import { Member, TeamMember } from "./TeamMembers";
 import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
 import { assignProject, unassignProject, updateProgress } from "../../calendar/CalendarApp";
 import {
-  CodingLanguageEnum,
-  LanguageEnum,
+    CodingLanguageEnum,
+    LanguageEnum,
 } from "../../communications/LanguageEnum";
 import { NotificationPreferenceEnum } from "../../notifications/Notification";
 import { SortCriteria } from "../../settings/SortCriteria";
@@ -130,7 +130,7 @@ interface Team extends Data {
   percentage: number;
   data?: TeamData;
   members?: Member[];
-  then?: <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
+  then?: <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(callback: (newData: Snapshot<BaseData, Meta, K>) => void) => Snapshot<Data, Meta, K> | undefined;
   pointOfContact?: TeamMember | null;
   currentProject?: Project | null;
   currentTeam?: Team | null;
@@ -201,7 +201,7 @@ const team: Team = {
       memberName: "Sam Smith",
       teams: [] as Team[],
       persona: {} as Persona,
-      snapshots: [] as SnapshotStore<Snapshot<Data>>[],
+      snapshots: [] as SnapshotStore<Snapshot<Data, Meta, Data>>[],
       token: null,
       avatarUrl: null,
       createdAt: new Date(),
@@ -465,7 +465,7 @@ const team: Team = {
       roleInTeam: "moderator",
       memberName: "Jane English",
       persona: {} as Persona,
-      snapshots: [] as SnapshotStore<Snapshot<Data>>[],
+      snapshots: [] as SnapshotStore<Snapshot<Data, Meta, Data>>[],
       token: null,
       avatarUrl: null,
       createdAt: new Date(),
@@ -734,7 +734,7 @@ const team: Team = {
     role: UserRoles.Guest,
     timeBasedCode: timeBasedCode,
     persona: {} as Persona,
-    snapshots: [] as SnapshotStore<Snapshot<Data>>[],
+    snapshots: [] as SnapshotStore<Snapshot<Data, Meta, Data>>[],
   } as User,
 
   then(callback: (newData: Team) => void) {
@@ -935,6 +935,6 @@ const DataDetailsComponent: React.FC<DataDetailsProps<any>> = ({ data }) => (
   />
 );
 
-export { DataDetailsComponent, TeamDetails, team };
+export { DataDetailsComponent, team, TeamDetails };
 export type { Team };
 

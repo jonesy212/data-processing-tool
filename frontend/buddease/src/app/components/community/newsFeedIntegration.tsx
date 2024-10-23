@@ -365,4 +365,4 @@ const filterNewsFeed = (newsData: any): void => {
   };
   
 
-  export { filterNewsFeed, storeSentimentAnalysisResults, updateSentimentAnalysisUI };
+  export { analyzeSentiment, filterNewsFeed, storeSentimentAnalysisResults, updateSentimentAnalysisUI, fetchMoreNews };

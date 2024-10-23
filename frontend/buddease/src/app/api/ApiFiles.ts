@@ -1,3 +1,4 @@
+import FileData from '@/app/components/models/data/FileData';
 import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
 
@@ -65,5 +66,29 @@ export const determineFileTypeAPI = async (file: any) => {
     return response.data;
   } catch (error) {
     throw new Error("Failed to determine file type");
+  }
+};
+
+
+
+export const getFileDetails = async (fileId: string): Promise<FileData> => {
+  try {
+    const response = await fetchFileAPI(fileId); // Call the API to fetch the file details
+    return response; // Assuming the response contains the file data
+  } catch (error) {
+    throw new Error(`Failed to fetch details for file ID ${fileId}`);
+  }
+};
+
+
+export const fetchFolderContentsAPI = async (folderId: string) => {
+  const apiBaseUrl = process.env.BASE_URL || "https://api.example.com";
+  const endpoint = `${apiBaseUrl}/folders/${folderId}/contents`; // Adjust this URL based on your API structure
+
+  try {
+    const response = await axiosInstance.get(endpoint);
+    return response.data; // Return the data, which should include files and subfolders
+  } catch (error) {
+    throw new Error(`Failed to fetch contents for folder ${folderId}`);
   }
 };

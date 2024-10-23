@@ -62,3 +62,8 @@ if (subscriptionLevel) {
 } else {
     console.log("Invalid subscription level.");
 }
+
+
+
+
+export type {SubscriptionLevel}

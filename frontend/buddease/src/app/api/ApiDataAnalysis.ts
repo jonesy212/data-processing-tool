@@ -6,6 +6,7 @@ import {
 import { AxiosError } from "axios";
 import { useDispatch } from "react-redux";
 import { BaseData, Data } from "../components/models/data/Data";
+import { Meta } from "../components/models/data/dataStoreMethods";
 import { PriorityTypeEnum } from "../components/models/data/StatusType";
 import { DataAnalysisResult } from "../components/projects/DataAnalysisPhase/DataAnalysisResult";
 import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
@@ -80,7 +81,7 @@ export const handleDataAnalysisApiErrorAndNotify = (
 export function fetchDataAnalysis(
   endpoint: string,
   text?: string
-): Promise<YourResponseType | Snapshot<Data>> {
+): Promise<YourResponseType | Snapshot<Data, Meta, Data>> {
   const fetchDataAnalysisEndpoint = `${DATA_ANALYSIS_BASE_URL}${endpoint}`;
   const config = {
     headers: headersConfig,
@@ -88,8 +89,8 @@ export function fetchDataAnalysis(
   };
 
   return axiosInstance
-    .get<YourResponseType | Snapshot<Data>>(fetchDataAnalysisEndpoint, config)
-    .then((response) => response.data as Snapshot<Data>)
+    .get<YourResponseType | Snapshot<Data, Meta, Data>>(fetchDataAnalysisEndpoint, config)
+    .then((response) => response.data as Snapshot<Data, Meta, Data>)
     .catch((error) => {
       console.error("Error fetching data analysis:", error);
       const errorMessage = "Failed to fetch data analysis";
@@ -113,7 +114,7 @@ export const fetchAnalysisResults = (): Promise<any> => {
   }
 
   return fetchDataAnalysis(endpoint)
-    .then((response: YourResponseType | Snapshot<Data, Data>) => {
+    .then((response: YourResponseType | Snapshot<Data, Meta, Data>) => {
       const analysisResults = response.data;
 
       // Check if analysisResults is of type DataAnalysisResult
@@ -130,12 +131,13 @@ export const fetchAnalysisResults = (): Promise<any> => {
         // Return processed data
       return {
         // General Properties
+        
+       
+        
         ...rest,
         description: description ?? undefined,
         phase: phase ?? undefined,
         priority: priority as PriorityTypeEnum | undefined,
-
-
 
         schema: analysisResults.snapshotStores[0].getSchema(),
         storeId: analysisResults.snapshotStores[0].storeId,
@@ -215,7 +217,6 @@ export const fetchAnalysisResults = (): Promise<any> => {
         addNestedStore: analysisResults.addNestedStore,
         removeStore: analysisResults.removeStore,
 
-
         removeSnapshot: analysisResults.removeSnapshot,
         getDataStoreMap: analysisResults.getDataStoreMap,
 
@@ -291,11 +292,9 @@ export const fetchAnalysisResults = (): Promise<any> => {
         getSnapshotValuesSuccess: analysisResults.getSnapshotValuesSuccess,
         reduceSnapshotItems: analysisResults.reduceSnapshotItems,
 
-
         filterSnapshotsByStatus: analysisResults.filterSnapshotsByStatus,
         filterSnapshotsByCategory: analysisResults.filterSnapshotsByCategory,
         filterSnapshotsByTag: analysisResults.filterSnapshotsByTag,
-
 
         // Data Storage
         getStore: analysisResults.getStore,
@@ -315,8 +314,6 @@ export const fetchAnalysisResults = (): Promise<any> => {
         setSnapshot: analysisResults.setSnapshot,
         setSnapshotCategory: analysisResults.setSnapshotCategory,
         getSnapshotCategory: analysisResults.getSnapshotCategory,
-
-
 
         setCategory: analysisResults.setCategory,
         applyStoreConfig: analysisResults.applyStoreConfig,
@@ -366,10 +363,22 @@ export const fetchAnalysisResults = (): Promise<any> => {
         fetchSnapshot: analysisResults.fetchSnapshot,
         addSnapshotFailure: analysisResults.addSnapshotFailure,
 
-
         currentCategory: analysisResults.currentCategory,
-
-      } as Snapshot<BaseData, BaseData>
+        fetchStoreData: analysisResults.snapshotStores[0].getStoreData,
+        snapshotMethods: analysisResults.snapshotStores[0].snapshotMethods,
+        getSnapshotsBySubscriber: analysisResults.snapshotStores[0].getSnapshotsBySubscriber,
+        isSubscribed: analysisResults.snapshotStores[0].isSubscribed,
+        
+        clearSnapshotSuccess: analysisResults.snapshotStores[0].clearSnapshotSuccess,
+        addToSnapshotList: analysisResults.snapshotStores[0].addToSnapshotList,
+        getSnapshotsBySubscriberSuccess: analysisResults.snapshotStores[0].getSnapshotsBySubscriberSuccess,
+        isExpired: analysisResults.snapshotStores[0].isExpired,
+        find: analysisResults.snapshotStores[0].find,
+        handleSnapshotFailure: analysisResults.snapshotStores[0].handleSnapshotFailure,
+        initializeWithData: analysisResults.snapshotStores[0].initializeWithData,
+        hasSnapshots: analysisResults.snapshotStores[0].hasSnapshots,
+        equals: analysisResults.snapshotStores[0].equals
+      } as Snapshot<BaseData, Meta, BaseData>
     })
     .catch((error) => {
       handleDataAnalysisApiErrorAndNotify(

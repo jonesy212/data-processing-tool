@@ -1,7 +1,7 @@
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 import { Data } from "@/app/components/models/data/Data";
 import { DataStore } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { CustomSnapshotData, SnapshotConfig, SnapshotContainer, SnapshotDataType, SnapshotStoreConfig, SnapshotStoreProps } from "@/app/components/snapshots";
+import { CustomSnapshotData, SnapshotConfig, SnapshotContainer, SnapshotStoreConfig, SnapshotStoreProps } from "@/app/components/snapshots";
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { isSnapshot } from "@/app/components/typings/YourSpecificSnapshotType";
@@ -10,34 +10,34 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import React, { useEffect, useState } from "react";
 
 
-type CreateSnapshotType<T extends Data, K extends Data> = (
+type CreateSnapshotType<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> = (
   additionalData: CustomSnapshotData
-) => SnapshotContainer<T, K> | null | undefined;
+) => SnapshotContainer<T, Meta, K> | null | undefined;
 
-interface SnapshotProps<T extends Data, K extends Data> {
-  snapshotConfig: SnapshotStoreConfig<T, K>;
+interface SnapshotProps<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+  snapshotConfig: SnapshotStoreConfig<T, Meta, K>;
   id: string | number | null;
-  snapshotData: SnapshotDataType<T, K>;
-  snapshotStoreData: SnapshotStore<T, K>;
+  snapshotData: SnapshotData<T, Meta, K>;
+  snapshotStoreData: SnapshotStore<T, Meta, K>;
   categoryProperties: CategoryProperties;
   category: string;
   callback: (snapshot: Snapshot<T, any> | null) => void;
-  createSnapshot: CreateSnapshotType<T, K> | null | undefined;
+  createSnapshot: CreateSnapshotType<T, Meta, K> | null | undefined;
   
    // Add the missing props here
-   dataStore: DataStore<T, K>,
-dataStoreMethods: DataStoreMethods<T, K>;          
+   dataStore: DataStore<T, Meta, K>,
+dataStoreMethods: DataStoreMethods<T, Meta, K>;          
    metadata: UnifiedMetaDataOptions;             
    subscriberId: string;                         
    endpointCategory: string | number;           
-   storeProps: SnapshotStoreProps<T, K>;         
-   snapshotConfigData: SnapshotConfig<T, K>;      
-   snapshotStoreConfigData?: SnapshotStoreConfig<T, K>; 
+   storeProps: SnapshotStoreProps<T, Meta, K>;         
+   snapshotConfigData: SnapshotConfig<T, Meta, K>;      
+   snapshotStoreConfigData?: SnapshotStoreConfig<T, Meta, K>; 
  
 }
 
-const SnapshotComponent  = <T extends Data, K extends Data>(
-  snapshotProps: SnapshotProps<T, K>
+const SnapshotComponent  = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  snapshotProps: SnapshotProps<T, Meta, K>
 ): JSX.Element => {
   const {
     snapshotConfig,
@@ -59,7 +59,7 @@ const SnapshotComponent  = <T extends Data, K extends Data>(
 
 
 
-  const [snapshots, setSnapshots] = useState<Snapshot<T, K>[]>([]);
+  const [snapshots, setSnapshots] = useState<Snapshot<T, Meta, K>[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { error, handleError, clearError } = useErrorHandling();
 
@@ -151,13 +151,13 @@ const SnapshotComponent  = <T extends Data, K extends Data>(
               const newData = newSnapshot.snapshotData;
           
               // Create a new array of Snapshots to add
-              let snapshotsToAdd: Snapshot<T, K>[] = [];
+              let snapshotsToAdd: Snapshot<T, Meta, K>[] = [];
           
-              // If newData is a Map, extract values and ensure they're of type Snapshot<T, K>
+              // If newData is a Map, extract values and ensure they're of type Snapshot<T, Meta, K>
               if (newData instanceof Map) {
                 snapshotsToAdd = Array.from(newData.values()).filter(isSnapshot);
               } else if (newData && isSnapshot(newData)) {
-                snapshotsToAdd = [newData as Snapshot<T, K>];
+                snapshotsToAdd = [newData as Snapshot<T, Meta, K>];
               }
           
               // Return the updated array of Snapshots

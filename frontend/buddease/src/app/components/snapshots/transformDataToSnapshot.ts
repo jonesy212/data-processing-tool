@@ -1,22 +1,18 @@
 // transformDataToSnapshot.ts
-import { SnapshotConfig, SnapshotItem, SnapshotStoreConfig, SnapshotWithCriteria } from ".";
-import { Category } from "../libraries/categories/generateCategoryProperties";
-import { BaseData } from "../models/data/Data";
-import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
-import { CoreSnapshot, Snapshot, SnapshotUnion, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
-import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
+import { SnapshotConfig, SnapshotStoreConfig } from ".";
+import { Data } from "../models/data/Data";
+import { CoreSnapshot, Snapshot } from "./LocalStorageSnapshotStore";
 
-const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
-  item: CoreSnapshot<T, K>,
-  snapshotConfig: SnapshotConfig<T, K>,
-  snapshotStoreConfig: SnapshotStoreConfig<T, K>
-): Snapshot<T, K> => {
-  const snapshotItem: Snapshot<T, K> = {
+const transformDataToSnapshot =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  item: CoreSnapshot<T, Meta, K>,
+  snapshotConfig: SnapshotConfig<T, Meta, K>,
+  snapshotStoreConfig: SnapshotStoreConfig<T, Meta, K>
+): Snapshot<T, Meta, K> => {
+  const snapshotItem: Snapshot<T, Meta, K> = {
     // Core Properties
     id: item.id?.toString() ?? '',
-    data: item.data as T | Map<string, Snapshot<T, K>> | null | undefined,
-    initialState: item.initialState as unknown as Snapshot<T, K> | null,
+    data: item.data as T | Map<string, Snapshot<T, Meta, K>> | null | undefined,
+    initialState: item.initialState as unknown as Snapshot<T, Meta, K> | null,
     timestamp: item.timestamp ? new Date(item.timestamp) : new Date(),
     meta: item.meta,
     label: item.label,
@@ -53,7 +49,7 @@ const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
       onSnapshotAdded: item.events?.onSnapshotAdded ?? (() => { }),
       onSnapshotRemoved: item.events?.onSnapshotRemoved ?? (() => { }),
       onSnapshotUpdated: item.events?.onSnapshotUpdated ?? (() => { }),
-      initialConfig: item.events?.initialConfig ?? {} as SnapshotConfig<T, K>,
+      initialConfig: item.events?.initialConfig ?? {} as SnapshotConfig<T, Meta, K>,
       removeSubscriber: item.events?.removeSubscriber ?? (() => { }),
       onInitialize: item.events?.onInitialize ?? (() => { }),
       onError: item.events?.onError ?? (() => { }),
@@ -265,3 +261,25 @@ const transformDataToSnapshot = <T extends BaseData, K extends BaseData>(
 
 export default transformDataToSnapshot;
 
+function transformToCalendarManagerStoreClassMap<T, Meta, K>(
+  events: (SnapshotEvents<T, Meta, K> & CombinedEvents<T, Meta, K>) | {}
+): Record<string, CalendarManagerStoreClass<T, Meta, K>[]> {
+  const result: Record<string, CalendarManagerStoreClass<T, Meta, K>[]> = {};
+
+  // Iterate over each key in the `events` object if it's not an empty object
+  if (events && typeof events === 'object' && Object.keys(events).length > 0) {
+    Object.keys(events).forEach((key) => {
+      const value = events[key as keyof typeof events];
+      
+      // Perform a type check to ensure value is of type `CalendarManagerStoreClass<T, Meta, K>[]`
+      if (Array.isArray(value) && value.every(item => item instanceof CalendarManagerStoreClass)) {
+        result[key] = value as CalendarManagerStoreClass<T, Meta, K>[];
+      } else {
+        // Handle cases where the value is not a `CalendarManagerStoreClass<T, Meta, K>[]`
+        result[key] = []; // or handle differently if needed
+      }
+    });
+  }
+
+  return result;
+}

@@ -1,8 +1,8 @@
-import { SnapshotStoreConfig } from "@/app/components/snapshots/SnapshotStoreConfig";
 import { Data } from "@/app/components/models/data/Data";
+import { SnapshotStoreConfig } from "@/app/components/snapshots/SnapshotStoreConfig";
 
-export function addDebugInfo<T extends Data, K extends Data>(
-  configs: SnapshotStoreConfig<T, K>[],
+export function addDebugInfo<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  configs: SnapshotStoreConfig<T, Meta, K>[],
   configId: string,
   message: string,
   operation?: string

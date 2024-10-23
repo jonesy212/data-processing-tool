@@ -1,10 +1,14 @@
 // UserJourneyManager.tsx
+import {IdeaLifecycleProcess} from '@app/components/phases/IdeaLifecycleProcess'
+import { TaskPhase } from '@/app/components/phases/TaskPhaseEnum'
 import { useAuth } from "@/app/components/auth/AuthContext";
 import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
 import {
   DevelopmentPhaseEnum,
   ProjectPhaseTypeEnum,
 } from "@/app/components/models/data/StatusType";
+import {UserSupportPhase} from "@/app/components/libraries/ui/components/UserSupportPhaseComponent";
+import { DataAnalysisSubPhase } from "@/app/components/projects/DataAnalysisPhase";
 import { PhaseActions } from "@/app/components/phases/PhaseActions";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
 import { User, UserData } from "@/app/components/users/User";
@@ -111,7 +115,7 @@ const phaseComponents: Record<string, React.FC<any>> = {
   [TradingPhase.PROFESSIONAL_TRADER_CONTENT_MANAGEMENT]: TradingProcess,
 
   // Idea Lifecycle Phases
-  [IdeaLifecyclePhase.CONCEPT_DEVELOPMENT]: IdeaLifecycleProcese,
+  [IdeaLifecyclePhase.CONCEPT_DEVELOPMENT]: IdeaLifecycleProcess,
   [IdeaLifecyclePhase.IDEA_VALIDATION]: IdeaLifecycleProcess,
   [IdeaLifecyclePhase.PROOF_OF_CONCEPT]: IdeaLifecycleProcess,
 
@@ -124,7 +128,7 @@ const phaseComponents: Record<string, React.FC<any>> = {
   // Task Management Phases
   [TaskManagementPhase.LAUNCH]: TaskManagementProcess,
   [TaskManagementPhase.DATA_ANALYSIS]: TaskManagementProcess,
-  [TaskManagementPhase.PLANNING]: TaskManagementProcess,
+  [TaskManagementPhase.TEAM_PLANNING]: TaskManagementProcess,
   [TaskManagementPhase.EXECUTION]: TaskManagementProcess,
   [TaskManagementPhase.TESTING]: TaskManagementProcess,
   [TaskManagementPhase.COMPLETION]: TaskManagementProcess,

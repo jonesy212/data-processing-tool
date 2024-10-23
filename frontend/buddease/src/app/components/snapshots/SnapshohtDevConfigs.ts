@@ -19,7 +19,7 @@
 //     id: string,
 //     snapshotId: string | null,
 //     snapshot: SnapshotWithCriteria<any, BaseData> | null,
-//     snapshotData: SnapshotWithCriteria<any, BaseData>,
+//     snapshotData: SnapshotDataWithCriteria<any, BaseData>,
 //     category: symbol | string | Category | undefined,
 //     callback: (snapshot: SnapshotWithCriteria<any, BaseData>) => void,
 //     snapshots: Snapshots<Data>,
@@ -54,13 +54,13 @@
 //   snapshot: async (
 //     id: string,
 //     snapshotId: string | null,
-//     snapshotData: Snapshot<SnapshotWithCriteria<BaseData, any>, Data> | null,
+//     snapshotData: SnapshotData<SnapshotWithCriteria<BaseData, any>, Data> | null,
 //     category: symbol | string | Category | undefined,
 //     categoryProperties: CategoryProperties | undefined,
-//     callback: (snapshotData: Snapshot<SnapshotWithCriteria<any, BaseData>, Data>) => void,
+//     callback: (snapshotData: SnapshotData<SnapshotWithCriteria<any, BaseData>, Data>) => void,
 //     snapshotContainer?: Snapshot<SnapshotWithCriteria<any, BaseData>, Data> | null,
 //     snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Data>
-//   ): Promise<{ snapshotData: Snapshot<SnapshotWithCriteria<any, BaseData>, Data> | null }> => {
+//   ): Promise<{ snapshotData: SnapshotData<SnapshotWithCriteria<any, BaseData>, Data> | null }> => {
 //     let processedSnapshot = snapshotData;
 
 //     if (snapshotContainer) {
@@ -94,14 +94,14 @@
 
 //     handleSnapshot: async (id, snapshotId, snapshot, snapshotData, category, callback, snapshots, type, event, snapshotContainer, snapshotStoreConfigData) => {
 //     // Implementation for staging environment
-//     const processedSnapshot = {} as Snapshot<Data, Data>;
+//     const processedSnapshot = {} as Snapshot<Data, Meta, Data>;
 //     callback(processedSnapshot);
 //     return { snapshot: processedSnapshot };
 //   },
 //   snapshot: async (id, snapshotData, category) => {
 //     // Implementation for staging environment
 
-//     return { snapshot: {} as Snapshot<Data, Data> };
+//     return { snapshot: {} as Snapshot<Data, Meta, Data> };
 //   },
 //   subscribers: [],
 //   createSnapshot: (id, snapshotData, category) => {},
@@ -128,7 +128,7 @@
 //   subscribers: [],
 //   createSnapshot: (
 //     id: string,
-//     snapshotData: SnapshotStoreConfig<any, Data>,
+//     snapshotData: SnapshotData<any, Data>,
 //     category: string) => {
 //     // Implementation for production environment
 //     return {
@@ -137,15 +137,15 @@
 //         snapshot: snapshotData,
 //         category: category,
 //       }
-//     } as Snapshot<Data, K>;
+//     } as Snapshot<Data, Meta, K>;
      
 //   },
   
 //   configureSnapshotStore: (snapshot) => {},
 //   createSnapshotSuccess: () => {},
 //   createSnapshotFailure: (    snapshotId: string,
-//     snapshotManager: SnapshotManager<T, K>,
-//     snapshot: Snapshot<T, K>,
+//     snapshotManager: SnapshotManager<T, Meta, K>,
+//     snapshot: Snapshot<T, Meta, K>,
 //     payload: { error: Error }
 //   ) => {
 //     console.log(error);

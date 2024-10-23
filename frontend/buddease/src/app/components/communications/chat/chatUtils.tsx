@@ -26,10 +26,10 @@ import { openVideoOptionsMenu } from "../../video/openVideoOptionsMenu";
 import {
   AudioOptions,
   ChatSettingsModal,
-  DocumentEditingPermissions,
   NotificationPreferences,
   VideoOptions,
 } from "./ChatSettingsModal";
+import { DocumentEditingPermissions } from '../../users/Permissions'
 import openAudioOptionsMenu from "./features/openAudioOptionsMenu";
 import { saveToLocalStorage } from "../../hooks/useLocalStorage";
 import { useContext } from "react";

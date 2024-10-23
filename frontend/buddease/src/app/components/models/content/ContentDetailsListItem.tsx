@@ -5,7 +5,7 @@ import { Data } from '../data/Data';
 import { Member } from '../teams/TeamMembers';
 
 interface ContentDetailsListItemProps {
-  item: DetailsItemExtended<Data>;
+  item: DetailsItemExtended
 }
 
 const ContentDetailsListItem: React.FC<ContentDetailsListItemProps> = ({ item }) => {
@@ -34,8 +34,8 @@ const ContentDetailsListItem: React.FC<ContentDetailsListItemProps> = ({ item })
       <p>Description: {description || 'No description available'}</p>
       <p>Status: {status || 'Unknown'}</p>
       {renderParticipants()}
-      <p>Start Date: { 'Not specified' || startDate }</p>
-      <p>End Date: { 'Not specified' || endDate }</p>
+      <p>Start Date: {startDate ? startDate.toDateString() : 'Not specified'}</p>
+      <p>End Date: {endDate ? endDate.toDateString() : 'Not specified'}</p>
       {/* Render other details as needed */}
     </div>
   );

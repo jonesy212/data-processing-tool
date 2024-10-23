@@ -1,9 +1,8 @@
 import axiosInstance from "@/app/api/axiosInstance";
+import { Data } from "../../models/data/Data";
 import { Snapshot } from "../../snapshots";
-import { DataAnalysis } from "./DataAnalysis";
-import { BaseData, Data } from "../../models/data/Data";
 
-const sendToAnalytics = <T extends Data, K extends Data>(eventName: string, eventData: Record<string, any>, snapshot: Snapshot<T, K>) => {
+const sendToAnalytics = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(eventName: string, eventData: Record<string, any>, snapshot: Snapshot<T, Meta, K>) => {
   try {
     // Example: Interacting with a third-party analytics platform (like Mixpanel)
     if (window.mixpanel) {
@@ -31,4 +30,4 @@ const sendToAnalytics = <T extends Data, K extends Data>(eventName: string, even
     console.error("Failed to send analytics event:", eventName, error);
   }
 };
-export {sendToAnalytics}
+export { sendToAnalytics };

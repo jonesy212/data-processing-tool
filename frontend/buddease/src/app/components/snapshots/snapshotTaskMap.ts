@@ -281,7 +281,7 @@
 //         dataItems: RealtimeDataItem[],
 //         newData: Snapshot<Task, K>,
 //         payload: UpdateSnapshotPayload<T>,
-//         store: SnapshotStore<any, K>
+//         store: SnapshotStore<any, Meta, K>
 //       ): Promise<{ snapshot: SnapshotStore<Task, Data>; }> => {
 //         console.log(`Updating snapshot ${snapshotId}`);
 //       },
@@ -512,7 +512,7 @@
     
 //       createInitSnapshot: (
 //         id, snapshotData, category
-//       ): Snapshot<Data, Data> => {
+//       ): Snapshot<Data, Meta, Data> => {
 //         console.log('Creating init snapshot');
 //         // Your logic to create an init snapshot
 //         // Return the created snapshot
@@ -737,7 +737,7 @@
 //         // Possibly dispatch an error action or log the error
 //       },
     
-//       batchUpdateSnapshotsSuccess: (subscribers: Subscriber<Task, K>[], snapshots: Snapshots<T>) => {
+//       batchUpdateSnapshotsSuccess: (subscribers: Subscriber<Task, K>[], snapshots: Snapshots<T, Meta>) => {
 //         console.log('Batch updating snapshots success');
 //         // Handle the success of batch updating snapshots
 //         // Update the state or notify subscribers about the success
@@ -749,14 +749,14 @@
 //         // Possibly dispatch an error action or log the error
 //       },
     
-//       batchTakeSnapshot: async (snapshotStore: SnapshotStore<Task, K>, snapshots: Snapshots<T>) => {
+//       batchTakeSnapshot: async (snapshotStore: SnapshotStore<Task, K>, snapshots: Snapshots<T, Meta>) => {
 //         console.log('Batch taking snapshot');
 //         // Your logic to batch take snapshots
 //         // For example, this could involve updating the snapshot store and returning the result
 //         return { snapshots };
 //       },
     
-//       handleSnapshotSuccess: (snapshot: Snapshot<Data, Data> | null, snapshotId: string) => {
+//       handleSnapshotSuccess: (snapshot: Snapshot<Data, Meta, Data> | null, snapshotId: string) => {
 //         console.log('Handling snapshot success');
 //         // Handle the success of a snapshot operation
 //         // This could involve updating the state or performing other success actions
@@ -827,8 +827,8 @@
 //           id: number,
 //           snapshotStore: SnapshotStore<Task, K>,
 //           data: T
-//         ) => SnapshotsObject<T>
-//      ): SnapshotsObject<T> => {
+//         ) => SnapshotsObject<T, Meta, K>
+//      ): SnapshotsObject<T, Meta, K> => {
 //         console.log('Mapping snapshots');
 //         // Map the snapshots to a new structure
 //         // This could involve mapping the snapshots to a new structure
@@ -1038,7 +1038,7 @@
 //       },
 //       subscribeToSnapshots: [],
 //       subscribers: [],
-//       [Symbol.iterator]: function* (): IterableIterator<Snapshot<SnapshotDataResponse<T, K>>> {
+//       [Symbol.iterator]: function* (): IterableIterator<Snapshot<SnapshotDataResponse<T, Meta, K>>> {
 //         yield this;
 //       },
 //     }

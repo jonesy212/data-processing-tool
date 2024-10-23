@@ -39,7 +39,7 @@ interface Version {
   versionData?: VersionData | null; // Adjust based on actual type
   buildVersions?: BuildVersion | undefined; // Adjust based on actual type
   isActive: boolean;
-  releaseDate: string;
+  releaseDate: string | Date | undefined;
   major: number;
   minor: number;
   patch: number;
@@ -193,7 +193,7 @@ class VersionImpl implements Version {
   isActive: boolean;
   isPublished: boolean;
   publishedAt: Date | null;
-  releaseDate: string
+  releaseDate: string | Date | undefined
   source: string;
   status: string;
   workspaceId: string;
@@ -300,7 +300,7 @@ class VersionImpl implements Version {
     isLatest: boolean;
     isPublished: boolean;
     publishedAt: Date | null;
-    releaseDate: string,
+    releaseDate: string | Date | undefined;
 
     isDeleted: boolean,
 
@@ -400,7 +400,9 @@ class VersionImpl implements Version {
       url: versionInfo.url ?? '',
       versionNumber: versionInfo.versionNumber ?? '',
       isActive: versionInfo.isArchived,
-      releaseDate: versionInfo.releaseDate ?? '',
+      releaseDate: versionInfo.releaseDate 
+      ? (versionInfo.releaseDate instanceof Date ? versionInfo.releaseDate.toISOString() : versionInfo.releaseDate) 
+      : '',
       buildVersions: versionInfo.buildVersions,
       documentId: versionInfo.documentId ?? '',
       draft: versionInfo.draft ?? false,
@@ -429,7 +431,7 @@ class VersionImpl implements Version {
       source: versionInfo.source ?? 'initial',
       status: versionInfo.status ?? 'active',
       version: versionInfo.versionNumber ?? '',
-      timestamp: versionInfo.metadata?.timestamp ?? new Date(),
+      timestamp: versionInfo.metadata?.timestamp ? versionInfo.metadata.timestamp.toString() : new Date().toString(),
       user: 'unknown', // Replace with actual user if available
       changes: versionInfo.changes ?? [],
       comments: versionInfo.comments ?? [],
@@ -440,8 +442,8 @@ class VersionImpl implements Version {
       workspaceViewers: versionInfo.workspaceViewers ?? [],
       workspaceAdmins: versionInfo.workspaceAdmins ?? [],
       workspaceMembers: versionInfo.workspaceMembers ?? [],
-      createdAt: versionInfo.metadata?.timestamp ?? new Date(),
-      updatedAt: new Date(),
+      createdAt: versionInfo.metadata?.timestamp ? versionInfo.metadata.timestamp.toString() : new Date().toString(),
+      updatedAt: new Date().toString(),
       _structure: versionInfo._structure,
       frontendStructure: versionInfo.frontendStructure,
       backendStructure: versionInfo.backendStructure ?? Promise.resolve([]),
@@ -480,7 +482,6 @@ class VersionImpl implements Version {
     );
     this.backendStructure = Promise.resolve(backendStructureInstance.getStructureAsArray());
   }
-
 
 
   private async generateStructureHash?(): Promise<string> {
@@ -654,26 +655,38 @@ class VersionImpl implements Version {
     const checksum = this.generateChecksum!(content);
     // Assuming you have a fileOrFolderId variable
     const fileOrFolderId = "fileOrFolderId";
-    const metadata: StructuredMetadata = {
-      name: "",
-      description: "",
+    const metadata: StructuredMetadata<Data, any> = {
+      name: "Sample Project Name",
+      description: "This project focuses on providing sample metadata structures.",
+      id: "project-12345",
+      category: "Sample Category",
+      timestamp: new Date().toISOString(), // Assuming you want a string representation
+      createdBy: "John Doe",
+      
+      tags: ["sample", "metadata", "example"],
+      metadata: {},
+      initialState: "Initialized",
+      meta: {"Sample Meta Information": "Sample Meta Value"},
+      events: {},
+  
+     
       metadataEntries: {
         [fileOrFolderId]: {
-          originalPath: "",
-          alternatePaths: [],
-          author: name,
-          timestamp: new Date(),
-          fileType: "",
-          title: "",
-          description: "",
-          keywords: [],
-          authors: [],
-          contributors: [],
-          publisher: "",
-          copyright: "",
-          license: "",
-          links: [],
-          tags: [],
+            originalPath: "/path/to/original/file.txt",
+            alternatePaths: ["/path/to/alternate/file1.txt", "/path/to/alternate/file2.txt"],
+            author: "Jane Smith",
+            timestamp: new Date(),
+            fileType: "text/plain",
+            title: "Example Text File",
+            description: "This is an example text file used for demonstration purposes.",
+            keywords: ["example", "text", "demo"],
+            authors: ["Jane Smith", "John Doe"],
+            contributors: ["Alice Johnson"],
+            publisher: "Example Publishing",
+            copyright: "© 2024 Example Publishing",
+            license: "MIT",
+            links: ["https://example.com", "https://example.org"],
+            tags: ["demo", "example", "text"],
         },
       },
       apiEndpoint: "",
@@ -796,7 +809,8 @@ class VersionImpl implements Version {
         isArchived: false,
         archivedBy: "",
 
-        archivedAt: new Date,
+
+        archivedAt: new Date(),
         tags: {},
         categories: [],
         permissions: docPermissions,
@@ -817,8 +831,8 @@ class VersionImpl implements Version {
 
     // Return or use 'data' as needed
     return versionData;
-  }
 
+  }
   // Method to update version history
   updateVersionHistory?(newVersionData: VersionData): void {
     if (Array.isArray(this.versionHistory.versionData)) {
@@ -1101,8 +1115,8 @@ const devVersion: DevVersion = {
   pullRequestMergeCommitCommitterEmail: '',
 };
 
-export { versionData };
-export type { BuildVersion, VersionImpl }
+export { versionData, VersionImpl };
+export type { BuildVersion }
 
 
 

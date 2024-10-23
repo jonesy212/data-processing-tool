@@ -10,8 +10,8 @@ import { DataActions } from '../projects/DataAnalysisPhase/DataActions';
 export const AuthorizationActions = {
   // Data-related authorization actions
   dataAuthorization: {
-    updateDataTitle: DataActions.updateDataTitle,
-    updateDataDescription: DataActions.updateDataDescription,
+    updateDataTitle: DataActions().updateDataTitle,
+    updateDataDescription: DataActions().updateDataDescription,
     // Define other data-related actions as needed
   },
   

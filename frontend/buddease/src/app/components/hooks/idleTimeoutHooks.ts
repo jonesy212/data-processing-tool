@@ -3,7 +3,7 @@ import { DynamicHookParams } from "./DynamicHookParams";
 import { IDLE_TIMEOUT_DURATION, clearUserData, showModalOrNotification } from "./commHooks/idleTimeoutUtils";
 import createDynamicHook from "./dynamicHooks/dynamicHookGenerator";
 import { IdleTimeoutType } from "@/app/configs/UserSettings";
-const useIdleTimeout = (name: string, props: any): IdleTimeoutType => {
+const useIdleTimeout = (name: string | undefined, props: any): IdleTimeoutType => {
   let timeoutId: NodeJS.Timeout | null = null; // Initialize with null instead of undefined
 
   const onTimeout = () => {

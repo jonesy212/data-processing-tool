@@ -1,33 +1,34 @@
+import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import { UserSettings } from "@/app/configs/UserSettings";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { NotificationPreferences } from "../communications/chat/ChatSettingsModal";
 import { CustomTransaction, SmartContractInteraction } from "../crypto/SmartContractInteraction";
+import { BaseData, Data } from "../models/data/Data";
+import { T } from "../models/data/dataStoreMethods";
 import { Task, TaskData } from "../models/tasks/Task";
+import { Member } from "../models/teams/TeamMembers";
 import { NFT } from "../nft/NFT";
+import { Phase } from "../phases/Phase";
+import { InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Project } from "../projects/Project";
 import { PrivacySettings } from "../settings/PrivacySettings";
+import { Snapshots, SnapshotStoreConfig, SnapshotWithCriteria, TagsRecord } from "../snapshots";
+import SnapshotStore from "../snapshots/SnapshotStore";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
+import { CustomComment } from "../state/redux/slices/BlogSlice";
 import { Resource } from "../state/redux/slices/CollaborationSlice";
 import { Deadline } from "../state/redux/slices/ProjectSlice";
 import { RootState } from "../state/redux/slices/RootSlice";
+import { DetailsItem } from "../state/stores/DetailsListStore";
+import { NotificationSettings } from "../support/NotificationSettings";
 import { ProjectFeedback } from "../support/ProjectFeedback";
+import TodoImpl, { Todo } from "../todos/Todo";
+import { BaseResponseType } from "../typings/types";
+import { VideoData } from "../video/Video";
 import { BlockchainAsset } from "./BlockchainAsset";
 import { BlockchainPermissions } from "./BlockchainPermissions";
-import { Address, Education, Employment, SocialLinks, User, UserData } from "./User";
-import { Snapshots, SnapshotStoreConfig, SnapshotWithCriteria, TagsRecord } from "../snapshots";
-import TodoImpl, { Todo } from "../todos/Todo";
-import { BaseData, Data } from "../models/data/Data";
-import { Phase } from "../phases/Phase";
-import { InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { CustomComment } from "../state/redux/slices/BlogSlice";
-import { DetailsItem } from "../state/stores/DetailsListStore";
-import { VideoData } from "../video/Video";
-import { Member } from "../models/teams/TeamMembers";
-import SnapshotStore from "../snapshots/SnapshotStore";
-import { NotificationSettings } from "../support/NotificationSettings";
-import { T} from "../models/data/dataStoreMethods";
-import { BaseResponseType } from "../typings/types";
+import { Address, Education, Employment, SocialLinks, User } from "./User";
 
 
 
@@ -417,17 +418,17 @@ export const userManagerSlice = createSlice({
             data: task.data as WritableDraft<TaskData> | null,
             tags: task.tags as WritableDraft<TagsRecord> | undefined,
             subtasks: task.subtasks as WritableDraft<TodoImpl<Todo, any>>[] | undefined,
-            actions: task.actions as WritableDraft<SnapshotStoreConfig<T, Data>[]> | undefined,
+            actions: task.actions as WritableDraft<SnapshotStoreConfig<T, Meta, Data>[]> | undefined,
             snapshotWithCriteria: task.snapshotWithCriteria as WritableDraft<SnapshotWithCriteria<Data, any>> | undefined,
             phase: task.phase as WritableDraft<Phase> | null | undefined,
-            initialState: task.initialState as WritableDraft<InitializedState<Data, BaseData>> | null | undefined,
+            initialState: task.initialState as WritableDraft<InitializedState<Data, Meta, BaseData>> | null | undefined,
             comments: task.comments as (WritableDraft<Comment> | WritableDraft<CustomComment>)[] | undefined,
             updatedDetails: task.updatedDetails as WritableDraft<DetailsItem<BaseData>> | undefined,
             videoData: task.videoData as WritableDraft<VideoData> | undefined,
             members: task.members as string[] | WritableDraft<Member>[] | number[] | undefined,
             leader: task.leader as WritableDraft<User> | null | undefined,
             followers: task.followers as WritableDraft<User>[] | undefined,
-            snapshotStores: task.snapshotStores as WritableDraft<SnapshotStore<BaseData, BaseData>>[] | undefined,
+            snapshotStores: task.snapshotStores as WritableDraft<SnapshotStore<BaseData, Meta, BaseData>>[] | undefined,
             snapshots: task.snapshots as WritableDraft<Snapshots<BaseData> | undefined> | undefined,
             // Add other properties here
           }));

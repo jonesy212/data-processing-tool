@@ -1,32 +1,36 @@
 import { ExtendedCalendarEvent } from "@/app/components/calendar/CalendarEventTimingOptimization";
 import HighlightEvent from "@/app/components/documents/screenFunctionality/HighlightEvent";
+import { Data } from "@/app/components/models/data/Data";
+import { Meta, T } from "@/app/components/models/data/dataStoreMethods";
 import { Member } from "@/app/components/models/teams/TeamMembers";
+import { Tag } from "@/app/components/models/tracker/Tag";
+import { RootState } from '@/app/components/state/redux/slices/RootSlice';
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { produce } from "immer"; // Import immer for immutable updates
 import { WritableDraft } from "../ReducerGenerator";
-import { T } from "@/app/components/snapshots";
-import { Data } from "@/app/components/models/data/Data";
-import { Tag } from "@/app/components/models/tracker/Tag";
 
-interface FilteredEventsState<T extends Data, K extends Data> {
-  filteredEvents: (ExtendedCalendarEvent | CalendarEvent<T, K> | HighlightEvent)[];
-  addFilteredEvent: (event:  ExtendedCalendarEvent | CalendarEvent<T, K> | HighlightEvent) => void; // Define methods
+interface FilteredEventsState<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+  filteredEvents: (ExtendedCalendarEvent | CalendarEvent<T, Meta, K> | HighlightEvent)[];
+  addFilteredEvent: (event:  ExtendedCalendarEvent | CalendarEvent<T, Meta, K> | HighlightEvent) => void; // Define methods
+  payload: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[];
 }
 
-export const initialState: FilteredEventsState<T, Data> = {
+export const initialState: FilteredEventsState<T, Meta, Data> = {
   filteredEvents: [],
-  addFilteredEvent: function (event: ExtendedCalendarEvent | CalendarEvent<T, Data> | HighlightEvent): void {
+  addFilteredEvent: function (event: ExtendedCalendarEvent | CalendarEvent<T, Meta, Data> | HighlightEvent): void {
     this.filteredEvents.push(event);
-  }
+  },
+  payload: []
 };
 
 export const useFilteredEventsSlice = createSlice({
   name: "filteredEvents",
   initialState,
   reducers: {
-    addFilteredEvent: (state, action: PayloadAction<CalendarEvent<T, Data>>) => {
-      state.filteredEvents.push(action.payload as WritableDraft<CalendarEvent<T, Data>>);
+    addFilteredEvent: (state, action: PayloadAction<CalendarEvent<T, Meta, Data>>) => {
+      state.filteredEvents.push(action.payload as WritableDraft<CalendarEvent<T, Meta, Data>>);
     },
     removeFilteredEvent: (state, action: PayloadAction<string>) => {
       state.filteredEvents = state.filteredEvents.filter(
@@ -41,7 +45,7 @@ export const useFilteredEventsSlice = createSlice({
       state,
       action: PayloadAction<{
         eventId: string;
-        updatedEvent: Partial<CalendarEvent<T, Data>>;
+        updatedEvent: Partial<CalendarEvent<T, Meta, Data>>;
       }>
     ) => {
       const { eventId, updatedEvent } = action.payload;
@@ -52,15 +56,15 @@ export const useFilteredEventsSlice = createSlice({
         produce(state.filteredEvents, (draftEvents) => {
           const draftEvent = draftEvents[
             eventIndex
-          ] as WritableDraft<CalendarEvent<T, Data>>;
+          ] as WritableDraft<CalendarEvent<T, Meta, Data>>;
           Object.assign(draftEvent, updatedEvent);
           draftEvent.id = eventId;
         });
       }
     },
-    replaceFilteredEvents: (state, action: PayloadAction<CalendarEvent<T, Data>[]>) => {
+    replaceFilteredEvents: (state, action: PayloadAction<CalendarEvent<T, Meta, Data>[]>) => {
       state.filteredEvents = action.payload.map(
-        (event) => event as WritableDraft<CalendarEvent<T, Data>>
+        (event) => event as WritableDraft<CalendarEvent<T, Meta, Data>>
       );
     },
     toggleFilteredEventStatus: (state, action: PayloadAction<string>) => {
@@ -72,7 +76,7 @@ export const useFilteredEventsSlice = createSlice({
         produce(state.filteredEvents, (draftEvents) => {
           const draftEvent = draftEvents[
             eventIndex
-          ] as WritableDraft<CalendarEvent<T, Data>>;
+          ] as WritableDraft<CalendarEvent<T, Meta, Data>>;
           draftEvent.status =
             draftEvent.status === "completed" ? "scheduled" : "completed";
         });
@@ -87,7 +91,7 @@ export const useFilteredEventsSlice = createSlice({
         produce(state.filteredEvents, (draftEvents) => {
           const draftEvent = draftEvents[
             eventIndex
-          ] as WritableDraft<CalendarEvent<T, Data>>;
+          ] as WritableDraft<CalendarEvent<T, Meta, Data>>;
           draftEvent.status =
             draftEvent.status === "completed" ? "scheduled" : "completed";
         });
@@ -107,7 +111,7 @@ export const useFilteredEventsSlice = createSlice({
       });
     },
 
-    selectFilteredEvents: (state, action: PayloadAction<(CalendarEvent<T, Data> | ExtendedCalendarEvent | HighlightEvent)[]>) => { 
+    selectFilteredEvents: (state, action: PayloadAction<(CalendarEvent<T, Meta, Data> | ExtendedCalendarEvent | HighlightEvent)[]>) => { 
       const selectedIds = action.payload;
       produce(state, (draftState) => {
         draftState.filteredEvents = draftState.filteredEvents.filter(event =>
@@ -166,7 +170,7 @@ export const useFilteredEventsSlice = createSlice({
 
     filterByCustomFields: (
       state,
-      action: PayloadAction<Partial<CalendarEvent<T, Data>>>
+      action: PayloadAction<Partial<CalendarEvent<T, Meta, Data>>>
     ) => {
       const customFields = action.payload;
       produce(state, (draftState) => {
@@ -324,3 +328,12 @@ export const {
 
 
 export default useFilteredEventsSlice.reducer;
+export type { FilteredEventsState };
+
+
+
+// Alternatively, if you want to get only the events array
+const selectFilteredEventIds = createSelector(
+  (state: RootState) => state.filteredEvents.filteredEvents,
+  (filteredEvents) => filteredEvents.map(event => event.id)
+);

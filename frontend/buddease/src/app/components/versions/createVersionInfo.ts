@@ -1,10 +1,11 @@
+import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import DocumentPermissions from "../documents/DocumentPermissions";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
 import { Snapshot, SnapshotContainer, SnapshotsArray, SnapshotStoreConfig, TagsRecord } from "../snapshots";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { convertSnapshotContainerToStore } from "../typings/YourSpecificSnapshotType";
-import Version from "./Version";
+import Version, { VersionImpl } from "./Version";
 import { VersionData, VersionHistory } from "./VersionData";
 
 const createVersionInfo = (versionData: string | VersionData): Version => {
@@ -15,9 +16,19 @@ const createVersionInfo = (versionData: string | VersionData): Version => {
     id: 0,
 
 
-    source, status, buildNumber, workspaceId,
-    workspaceName, workspaceType, workspaceUrl, workspaceViewers,
-    workspaceAdmins, workspaceMembers,
+    source: "",
+    status: "",
+    buildNumber: "",
+    workspaceId: "",
+   
+    workspaceName: "",
+    workspaceType: "",
+    workspaceUrl: "",
+    workspaceViewers: "",
+   
+    workspaceAdmins: "",
+    workspaceMembers: "",
+   
 
     versionNumber: typeof versionData === 'string' ? versionData : '0.0.0',
     appVersion: '1.0.0',
@@ -76,7 +87,7 @@ const createVersionInfo = (versionData: string | VersionData): Version => {
     attachments: [],
   };
   if (typeof versionData !== 'string') {
-    return new Version({
+    return new VersionImpl({
       ...defaultVersionInfo,
       versionData: [versionData], // Use the provided VersionData
       isDeleted: false,
@@ -112,7 +123,7 @@ const createVersionInfo = (versionData: string | VersionData): Version => {
     });
   }
 
-  return new Version(defaultVersionInfo); // Return with defaults if only version string is provided
+  return new VersionImpl(defaultVersionInfo); // Return with defaults if only version string is provided
 };
 
 // Update handleSnapshot function
@@ -123,18 +134,18 @@ export const handleSnapshot = (
   snapshotData: Data,
   category: Category | undefined,
   callback: (snapshot: Data) => void,
-  snapshots: SnapshotsArray<any>,
+  snapshots: SnapshotsArray<any, any>,
   type: string,
   event: Event,
-  snapshotContainer?: SnapshotContainer<T, K>,
-  snapshotStoreConfig?: SnapshotStoreConfig<Data, BaseData>
-): Promise<Snapshot<Data, BaseData> | null> => {
+  snapshotContainer?: SnapshotContainer<T, Meta, K>,
+  snapshotStoreConfig?: SnapshotStoreConfig<Data, Meta, BaseData>
+): Promise<Snapshot<Data, Meta, BaseData> | null> => {
   try {
     if (snapshot) {
       callback(snapshot);
     }
 
-    let snapshotStore: SnapshotStore<Data, BaseData>;
+    let snapshotStore: SnapshotStore<Data, Meta, BaseData>;
 
     if (snapshotContainer) {
       // Convert the SnapshotContainer to SnapshotStore using the conversion function
@@ -144,7 +155,7 @@ export const handleSnapshot = (
       const versionInfo = createVersionInfo(snapshotStoreConfig.version || '0.0.0');
 
       // Create a new SnapshotStore with provided configuration
-      snapshotStore = new SnapshotStore<Data, BaseData>(
+      snapshotStore = new SnapshotStore<Data, Meta, BaseData>(
         snapshotStoreConfig.storeId,
         snapshotStoreConfig.name || '',
         versionInfo,  // Use the constructed version object
@@ -156,11 +167,11 @@ export const handleSnapshot = (
       );
     } else {
       // Fallback to a default or empty instance
-      snapshotStore = {} as SnapshotStore<Data, BaseData>;
+      snapshotStore = {} as SnapshotStore<Data, Meta, BaseData>;
     }
 
     // Create an object that conforms to the Snapshot interface
-    const processedSnapshot: Snapshot<Data, BaseData> = {
+    const processedSnapshot: Snapshot<Data, Meta, BaseData> = {
       id,
       category: category ?? undefined,
       timestamp: new Date(),
@@ -181,4 +192,4 @@ export const handleSnapshot = (
 };
 
 
-export {createVersionInfo}
+export { createVersionInfo };

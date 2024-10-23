@@ -40,10 +40,15 @@ async function showErrorMessage(error: string): Promise<void> {
 }
 
 
-async function displayToast(message: string): Promise<void> {
+async function displayToast(
+  message: string, 
+  type: string = 'info', // Default type is 'info'
+  duration: number = 3000, // Default duration is 3 seconds
+  onClose: () => void = () => {} // Default onClose is an empty function
+): Promise<void> {
   // Create a new div element to hold the toast message
   const toast = document.createElement('div');
-  toast.classList.add('toast');
+  toast.classList.add('toast', `toast-${type}`); // Add type-specific class for styling
   
   // Assign the content to the toast's textContent
   toast.textContent = message;
@@ -51,11 +56,13 @@ async function displayToast(message: string): Promise<void> {
   // Append the toast element to the body of the document
   document.body.appendChild(toast);
 
-  // Automatically remove the toast after a certain duration (e.g., 3 seconds)
+  // Automatically remove the toast after the specified duration
   setTimeout(() => {
     toast.remove();
-  }, 3000); // 3000 milliseconds = 3 seconds
+    onClose(); // Invoke the onClose callback after the toast is removed
+  }, duration);
 }
+
 
 
 export { displayToast, showErrorMessage, showToast };

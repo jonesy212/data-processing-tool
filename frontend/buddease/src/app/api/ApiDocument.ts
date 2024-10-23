@@ -1,10 +1,11 @@
+import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
+import { Meta } from './../components/models/data/dataStoreMethods';
 // ApiDocument.ts
 import {
   NotificationTypeEnum,
   useNotification,
 } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
-import dotProp from "dot-prop";
 import { DocumentOptions } from "../components/documents/DocumentOptions";
 import { Presentation } from "../components/documents/Presentation";
 
@@ -24,8 +25,10 @@ import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
 
 
-import { endpoints } from './endpointConfigurations'
+import { Data } from "../components/models/data/Data";
 import { WritableDraft } from "../components/state/redux/ReducerGenerator";
+import { UnifiedMetaDataOptions } from "../configs/database/MetaDataOptions";
+import { endpoints } from './endpointConfigurations';
 // Define the API base URL
 const API_BASE_URL = endpoints.data.documents;
 
@@ -85,7 +88,7 @@ const handleDocumentApiErrorAndNotify = (
 };
 
 
-const fakeApiCall = (documentId: number): Promise<DocumentObject> => {
+const fakeApiCall = (documentId: number): Promise<DocumentObject<Data, Meta, Data>> => {
   // Simulate an API call
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -93,104 +96,104 @@ const fakeApiCall = (documentId: number): Promise<DocumentObject> => {
         id: documentId,
         status: DocumentStatusEnum.Draft,
         type: DocumentTypeEnum.Document,
-        // createdBy, alinkColor, bgColor, documentURI,
-        // currentScript, defaultView, doctype, ownerDocument,
-        // scrollingElement, timeline, _rev, title,
-        // content, createdAt, updatedBy, visibility,
-        // characterSet, charset, compatMode, contentType,
-
         // Other properties as needed
-      } as DocumentObject);
+      } as DocumentObject<Data, Meta, Data>);
     }, 1000);
   });
 };
 
-
-
 // Define an async thunk action creator to update the document name
 const updateDocumentName = createAsyncThunk<
-  DocumentObject, // The return type of the action
-  { documentId: number; newName: string } // Input parameters: documentId and newName
+  DocumentObject<Data, Meta, Data>, // Specify the type argument here
+  { documentId: number; newName: string }
 >(
   "documents/updateDocumentName",
-  async ({ documentId, newName }, { dispatch }) => {
-    try {
-      const response = await axiosInstance.put(
-        `${API_BASE_URL}/documents/${documentId}/name`,
-        { name: newName },
-        {
-          headers: headersConfig,
-        }
-      );
-
-      // Dispatch success notification
-      useNotification().notify(
-        "UPDATE_DOCUMENT_NAME_SUCCESS",
-        apiNotificationMessages.UPDATE_DOCUMENT_NAME_SUCCESS,
-        null,
-        new Date(),
-        "DocumentSuccess" as NotificationTypeEnum
-      );
-
-      return response.data;
-    } catch (error) {
-      const errorMessage = "Failed to update document name";
-      console.error("Error updating document name:", error);
-      handleDocumentApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        "UPDATE_DOCUMENT_NAME_ERROR"
-      );
-      throw error;
-    }
+   ({ documentId, newName }, { dispatch }) => {
+    return new Promise<DocumentObject<Data, Meta, Data>>((resolve, reject) => {
+      axiosInstance
+        .put(
+          `${API_BASE_URL}/documents/${documentId}/name`,
+          { name: newName },
+          {
+            headers: headersConfig,
+          }
+        )
+        .then((response) => {
+          // Dispatch success notification
+          useNotification().notify(
+            "UPDATE_DOCUMENT_NAME_SUCCESS",
+            apiNotificationMessages.UPDATE_DOCUMENT_NAME_SUCCESS,
+            null,
+            new Date(),
+            "DocumentSuccess" as NotificationTypeEnum
+          );
+          resolve(response.data as DocumentObject<Data, Meta, Data>);
+        })
+        .catch((error) => {
+          const errorMessage = "Failed to update document name";
+          console.error("Error updating document name:", error);
+          handleDocumentApiErrorAndNotify(
+            error as AxiosError<unknown>,
+            errorMessage,
+            "UPDATE_DOCUMENT_NAME_ERROR"
+          );
+          reject(error);
+        });
+    });
   }
 );
 
-
-
-
-
-
-// Define an async thunk action creator to fetch document by ID
-const fetchDocumentById = createAsyncThunk<DocumentObject, number>(
+// Define an async thunk action creator to fetch a document by ID
+const fetchDocumentById = createAsyncThunk<DocumentObject<Data, Meta, Data>, number>(
   "documents/fetchDocumentById",
-  async (documentId: number, { dispatch }) => {
-    try {
-      const response = await axiosInstance.get(
-        `${API_BASE_URL}/documents/${documentId}`,
-        {
+  (documentId: number, { dispatch }) => {
+    return new Promise<DocumentObject<Data, Meta, Data>>((resolve, reject) => {
+      axiosInstance
+        .get(`${API_BASE_URL}/documents/${documentId}`, {
           headers: headersConfig,
-        }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching document:", error);
-      const errorMessage = "Failed to fetch document";
-      handleDocumentApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        "FETCH_DOCUMENT_ERROR"
-      );
-      throw error;
-    }
+        })
+        .then((response) => {
+          resolve(response.data as DocumentObject<Data, Meta, Data>);
+        })
+        .catch((error) => {
+          console.error("Error fetching document:", error);
+          const errorMessage = "Failed to fetch document";
+          handleDocumentApiErrorAndNotify(
+            error as AxiosError<unknown>,
+            errorMessage,
+            "FETCH_DOCUMENT_ERROR"
+          );
+          reject(error);
+        });
+    });
   }
 );
 
-
-
-/
 // Function to convert documentData to WritableDraft<DocumentObject>
-const createDraftDocument = (data: any): WritableDraft<DocumentObject> => {
+const createDraftDocument = (data: DocumentObject<Data, Meta, Data>): WritableDraft<DocumentObject<Data, Meta, Data>> => {
+  
+  // Get the languages from the window and ensure they're of type string[]
+  const languages: string[] = [...window.navigator.languages];
+  const supportedLanguages = languages.filter(lang => Object.values(LanguageEnum).includes(lang as LanguageEnum));
   return {
     ...data,
-    // Ensure all properties are mutable and adjust types as necessary
-    artwork: data.artwork ? [...data.artwork] : [], // Example for handling 'artwork'
-    // Add other properties as necessary to ensure compatibility
+    artwork: data.artwork ? data.artwork.map(item => ({...item})) : [],
+    defaultView: data.defaultView ? { ...data.defaultView } : undefined,
+    clientInformation: data.clientInformation ? {
+      ...data.clientInformation,
+      mediaSession: data.clientInformation.mediaSession ? {
+        ...data.clientInformation.mediaSession,
+        metadata: data.clientInformation.mediaSession.metadata ? {
+          ...data.clientInformation.mediaSession.metadata,
+          artwork: data.clientInformation.mediaSession.metadata.artwork ? 
+            [...data.clientInformation.mediaSession.metadata.artwork] : []
+        } : undefined
+      } : undefined
+    } : undefined,
   };
-};
 
-// Function to convert WritableDraft<DocumentObject> back to DocumentObject
-const convertToDocumentObject = (draft: WritableDraft<DocumentObject>): DocumentObject => {
+};
+const convertToDocumentObject = (draft: DocumentObject<Data, Meta, Data>): DocumentObject<Data, Meta, Data> => {
   return {
     ...draft,
     // Convert or clean up any properties as necessary to ensure strict type compatibility
@@ -200,25 +203,27 @@ const convertToDocumentObject = (draft: WritableDraft<DocumentObject>): Document
   };
 };
 
+
+
 // Mock API function for fetching a document by ID
 const fetchDocumentByIdAPI = (
   documentId: number,
-  updateDocument: (data: WritableDraft<DocumentObject>) => void
-): Promise<DocumentObject> => {
+  updateDocument: (data: WritableDraft<DocumentObject<Data, Meta, Data>>) => void
+): Promise<DocumentObject<Data, Meta, Data>> => {
   return new Promise(async (resolve, reject) => {  // Wrap in a new Promise
     try {
       // Use axios to fetch the document by ID
       const response = await axiosInstance.get(`/api/documents/${documentId}`);
       
       // Parse the document data from the response
-      const documentData: DocumentObject = response.data;
+      const documentData: DocumentObject<Data, Meta, Data> = response.data;
 
       // Create a draft document for updates
-      const draftDocument: WritableDraft<DocumentObject> = createDraftDocument(documentData);
+      const draftDocument: WritableDraft<DocumentObject<Data, Meta, Data>> = createDraftDocument(documentData);
       updateDocument(draftDocument);
 
-      // Convert draftDocument back to DocumentObject before resolving
-      const finalDocument: DocumentObject = convertToDocumentObject(draftDocument);
+      // Convert draftDocument back to DocumentObject<Data, Meta, Data> before resolving
+      const finalDocument: DocumentObject<Data, Meta, Data> = convertToDocumentObject(draftDocument);
       
       // Resolve the promise with the updated document data
       resolve(finalDocument);
@@ -324,7 +329,9 @@ const updateDocumentNameAPI = async (
 };
 
 
-const addDocumentAPI = async (documentData: any): Promise<any> => {
+const addDocumentAPI = async (
+  documentData: DocumentObject<Data, Meta, Data>
+): Promise<DocumentObject<Data, Meta, Data>> => {
   try {
     const addDocumentEndpoint = `${API_BASE_URL}/documents`;
     const response = await axiosInstance.post(
@@ -334,7 +341,7 @@ const addDocumentAPI = async (documentData: any): Promise<any> => {
         headers: headersConfig,
       }
     );
-    return response.data;
+    return response.data as Promise<DocumentObject<Data, UnifiedMetaDataOptions, Data>>; // Ensure to cast the response data
   } catch (error) {
     console.error("Error adding document:", error);
     const errorMessage = "Failed to add document";
@@ -347,8 +354,9 @@ const addDocumentAPI = async (documentData: any): Promise<any> => {
   }
 };
 
+
 const loadPresentationFromDatabase = async (
-  presentationId: DocumentObject
+  presentationId: DocumentObject<Data, Meta, Data>
 ): Promise<Presentation> => {
   try {
     // Make a GET request to the API endpoint
@@ -1820,11 +1828,11 @@ const exportToExternalSystem = async (exportData: any): Promise<any> => {
   }
 };
 
-const generateDocument = (
+const generateDocument = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   documentData: any,
   options: DocumentOptions
-): Promise<DocumentObject> => {
-  return new Promise<DocumentObject>(async (resolve, reject) => {
+): Promise<DocumentObject<T, Meta, K>> => {
+  return new Promise<DocumentObject<T, Meta, K>>(async (resolve, reject) => {
     try {
       const response = await axiosInstance.post(
         `${API_BASE_URL}/api/documents/generate`,
@@ -2096,31 +2104,31 @@ const documentTemplates = async (templatesData: any): Promise<any> => {
 
 export {
   addDocument, addDocumentAPI, approveDocument, archiveDocument, assignTaskInDocument, automateDocumentTasks, backupDocuments, categorizeDocuments, collaborativeEditing, commentOnDocument, compareDocuments, connectWithExternalSystem, createDocumentVersion, customizeDocumentView, customizeReportSettings, decryptDocument, deleteDocumentAPI, documentAccessControls, documentActivityLogging, documentAnnotation, documentApprovalWorkflow,
-  documentLifecycleManagement, documentRedaction, 
-  documentTemplates, documentVersionComparison, 
-  downloadDocument, encryptDocument, exportDocumentReport, 
+  documentLifecycleManagement, documentRedaction,
+  documentTemplates, documentVersionComparison,
+  downloadDocument, encryptDocument, exportDocumentReport,
   exportToExternalSystem, fakeApiCall,
-  fetchAllDocumentsAPI, fetchDocumentById,
-  fetchJsonDocumentByIdAPI,
+  fetchAllDocumentsAPI, fetchDocumentById, fetchDocumentByIdAPI, fetchJsonDocumentByIdAPI,
   fetchXmlDocumentByIdAPI, filterDocuments,
   filterDocumentsAPI, generateDocument,
-  generateDocumentReport, getDocument, getDocumentUrl, 
-  getDocumentVersions, grantDocumentAccess, 
-  importFromExternalSource, initiateDocumentWorkflow, 
-  intelligentDocumentSearch, listDocuments, 
+  generateDocumentReport, getDocument, getDocumentUrl,
+  getDocumentVersions, grantDocumentAccess,
+  importFromExternalSource, initiateDocumentWorkflow,
+  intelligentDocumentSearch, listDocuments,
   loadPresentationFromDatabase, lockDocument,
-   manageDocumentPermissions, mentionUserInDocument,
-    mergeDocuments, moveDocument, 
-    provideFeedbackOnDocument, rejectDocument, 
+  manageDocumentPermissions, mentionUserInDocument,
+  mergeDocuments, moveDocument,
+  provideFeedbackOnDocument, rejectDocument,
   removeDocument, requestFeedbackOnDocument,
-  requestReviewOfDocument, resolveFeedbackOnDocument, 
-  restoreDocument, retrieveBackup, revertToDocumentVersion, 
-  revokeDocumentAccess, scheduleReportGeneration, 
-  searchDocumentAPI, searchDocuments, shareDocument, 
-  smartTagging, splitDocument, synchronizeWithCloudStorage, 
+  requestReviewOfDocument, resolveFeedbackOnDocument,
+  restoreDocument, retrieveBackup, revertToDocumentVersion,
+  revokeDocumentAccess, scheduleReportGeneration,
+  searchDocumentAPI, searchDocuments, shareDocument,
+  smartTagging, splitDocument, synchronizeWithCloudStorage,
   tagDocuments, trackDocumentChanges, triggerDocumentEvents,
-   unlockDocument, updateDocument, updateDocumentAPI, 
-   updateDocumentNameAPI, updateSnapshotDetails, 
-   uploadDocument, validateDocument,
-    viewDocumentHistory, fetchDocumentByIdAPI,
+  unlockDocument, updateDocument, updateDocumentAPI,
+  updateDocumentNameAPI, updateSnapshotDetails,
+  uploadDocument, validateDocument,
+  viewDocumentHistory
 };
+

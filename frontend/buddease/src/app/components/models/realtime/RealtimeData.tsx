@@ -8,32 +8,31 @@ import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { EventData } from "@/app/components/state/stores/AssignEventStore";
 
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { AllTypes } from "../../typings/PropTypes";
+import { Meta } from "../data/dataStoreMethods";
 
 interface BaseRealtimeData {
   id: string;
   name: string;
   value: string;
-  type: AllTypes
-
-
-  
+  type: AllTypes;
   // Add other common properties shared by RealtimeDataItem and RealtimeData here
 }
 
-interface RealtimeDataItem extends BaseRealtimeData,EventData {
+interface RealtimeDataItem extends BaseRealtimeData, EventData {
   title?: string;
-  date:  Date | string;
+  date: Date | string;
   forEach?: (callback: (item: RealtimeDataItem) => void) => void;
   userId: string;
   dispatch: (action: any) => void;
   value: string;
   name: string;
   timestamp: string | Date;
-  data?:  Snapshot<any>;
+  data?: Snapshot<any, any, any>;
   // Add other properties specific to RealtimeDataItem here
 }
 
@@ -41,7 +40,7 @@ interface RealtimeData extends BaseRealtimeData {
   date: Date | string;
   timestamp: string | number | Date | undefined;
   eventId: string;
-  type: string;
+  type: AllTypes;
   // Define other properties specific to RealtimeData here
 }
 
@@ -52,11 +51,11 @@ interface RealtimeData {
   // type: ExchangeDataTypeEnum;
 }
 
-const processSnapshotStore = (snapshotStore: SnapshotStore<Snapshot<Data>>) => {
+const processSnapshotStore = (snapshotStore: SnapshotStore<Snapshot<Data, Meta, Data>>) => {
   Object.keys(snapshotStore).forEach((snapshotId) => {
     // Perform actions based on each snapshotId
     // For example, you can access the snapshot data using snapshotStore[snapshotId]
-    const typedSnapshotId = snapshotId as keyof SnapshotStore<Snapshot<Data>>;
+    const typedSnapshotId = snapshotId as keyof SnapshotStore<Snapshot<Data, Meta, Data>>;
     const snapshotData = snapshotStore[typedSnapshotId];
     console.log(
       `Processing snapshot with ID ${String(typedSnapshotId)}:`,
@@ -67,26 +66,37 @@ const processSnapshotStore = (snapshotStore: SnapshotStore<Snapshot<Data>>) => {
   });
 };
 
-const RealtimeDataComponent: React.FC<RealtimeDataItem> = ({
+const RealtimeDataComponent: React.FC<RealtimeDataItem> = <
+  T extends Data,
+  K extends Data
+>({
   userId,
+  date,
   dispatch,
   value,
-}) => {
+  name,
+  timestamp,
+  title,
+}: RealtimeDataItem) => {
   // Initial data can be an empty array or any initial state you want
   const initialData: RealtimeDataItem[] = [];
   const { error, handleError, clearError } = useErrorHandling(); // Initialize error handling
 
   // Custom update callback function
   // Adjust the type of updateCallback to match the expected signature
-  const updateCallback: (
-    data: SnapshotStore<Snapshot<Data>>,
+  const updateCallback: <T extends Data,
+    Meta extends UnifiedMetaDataOptions,
+    K extends Data>(
+    id: string,
+    data: SnapshotStore<T, Meta, K>,
     events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<Snapshot<Data>>,
+    snapshotStore: SnapshotStore<T, Meta, K>,
     dataItems: RealtimeDataItem[]
   ) => void = (
-    data: SnapshotStore<Snapshot<Data>>,
+    id: string,
+    data: SnapshotStore<T, Meta, K>,
     events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<Snapshot<Data>>,
+    snapshotStore: SnapshotStore<T, Meta, K>,
     dataItems: RealtimeDataItem[]
   ) => {
     // Convert exchangeData and dexData to RealtimeData if needed
@@ -125,7 +135,7 @@ const RealtimeDataComponent: React.FC<RealtimeDataItem> = ({
   };
 
   // Get realtime data and fetchData function from the hook
-  const { realtimeData, fetchData } = useRealtimeData(
+  const { realtimeData, fetchData } = useRealtimeData<RealtimeDataItem, Meta, K>(
     initialData,
     updateCallback
   );
@@ -143,6 +153,13 @@ const RealtimeDataComponent: React.FC<RealtimeDataItem> = ({
       {/* Display your realtime data in the component */}
       {realtimeData.map((dataItem: RealtimeDataItem, index: number) => (
         <div key={index}>
+          <h3>{name}</h3>
+          <p>User ID: {userId}</p>
+          <p>Value: {value}</p>
+          <p>Date: {date.toString()}</p>
+          <p>Timestamp: {timestamp.toString()}</p>
+          {title && <p>Title: {title}</p>}
+
           {/* Display each data item */}
           <p>{dataItem.id}</p>
           <p>{dataItem.value}</p>

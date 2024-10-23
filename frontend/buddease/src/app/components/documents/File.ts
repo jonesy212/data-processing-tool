@@ -1,5 +1,5 @@
 // File.ts
-
+import { TagsRecord } from "../snapshots/SnapshotWithCriteria";
 import { AllTypes } from "../typings/PropTypes";
 
 // File interface representing a file

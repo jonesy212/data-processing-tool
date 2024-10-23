@@ -1,36 +1,48 @@
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { Project, ProjectData } from '@/app/components/projects/Project';
 import { DatasetModel } from '@/app/components/todos/tasks/DataSetModel';
 import DatabaseClient from '@/app/components/todos/tasks/DatabaseClient';
 import { DatabaseService } from '@/app/configs/DatabaseConfig';
 
-class ProjectModel {
-  private readonly tableName: string = 'projects';
-  private readonly dbClient: DatabaseClient;
-  static dbClient: any;
 
+
+// Define the generic types you need
+type ProjectDataType = ProjectData; // Replace with the actual type you intend to use
+
+class ProjectModel {
+  // Remove the instance tableName property
+  static tableName = "projects"; // Keep this as a static property
+
+  private readonly dbClient: DatabaseClient; // Keep this as an instance property
+  static dbClient: any;
   
   private static dbService: DatabaseService; // Database service instance
   
-  
-  
   constructor(dbClient: DatabaseClient) {
-    this.dbClient = dbClient;
+    this.dbClient = dbClient; // Instance property can use the dbClient passed in the constructor
   }
   
-  static tableName = "projects";
-  static findOne(projectId: object): Promise<Project | null> {
-    return this.dbClient
-      .findOne(this.tableName, { id: projectId })
-      .then((result: any) => result || null)
-      .catch((error: any) => {
+  // Update the method to accept an object with a `where` property
+  static findOne(criteria: { tableName?: string; where: { id: string } }): Promise<Project | null> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Ensure the tableName is provided in the criteria or fall back to the default
+        const tableName = criteria.tableName || ProjectModel.tableName;
+        
+        const result = await ProjectModel.dbService.findOne({
+          tableName: tableName, // Use the tableName
+          query: criteria.where  // Use the `where` condition from the criteria
+        });
+        
+        resolve(result ? (result as Project) : null);
+      } catch (error) {
         console.error("Error finding project:", error);
-        return null;
-      });
+        resolve(null);
+      }
+    });
   }
-  
-  
-  static async update(projectData: ProjectData, whereClause: any): Promise<void> {
-    // Use the database service to update the project with the provided whereClause
+
+  static async update(projectData: ProjectData, whereClause: any): Promise<void> {    // Use the database service to update the project with the provided whereClause
     await ProjectModel.dbService.update(projectData, whereClause);
   }
 
@@ -40,40 +52,48 @@ class ProjectModel {
   }
 
   static async findAll(): Promise<Project[]> {
-    return await ProjectModel.dbService.findAll(ProjectModel.tableName);
-  }
-  static async insert(tableName: string, data: any): Promise<any> {
-    return await ProjectModel.dbService.create(data);
+    return await ProjectModel.dbService.findAll(ProjectModel.tableName); // Use static tableName
   }
 
-  static async createProject(projectData: DatasetModel): Promise<DatasetModel | null> {
-    try {
-      // Insert project data into the database
-      const result = await this.dbClient.insert(this.tableName, projectData);
-      return result.rows[0] || null;
-    } catch (error) {
-      console.error("Error creating project:", error);
-      return null;
-    }
+  static insert(data: ProjectDataType): Promise<ProjectDataType | null> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const result = await ProjectModel.dbService.create(data);
+        resolve(result ? (result as ProjectDataType) : null);
+      } catch (error) {
+        console.error("Error inserting project:", error);
+        resolve(null);
+      }
+    });
   }
 
+  static createProject(projectData: ProjectDataType): Promise<ProjectDataType | null> {
+    return new Promise(async (resolve) => {
+        try {
+            const result = await ProjectModel.insert(projectData);
+            resolve(result); // Resolve with the result
+        } catch (error) {
+            console.error("Error creating project:", error);
+            resolve(null); // Resolve with null if there's an error
+        }
+    });
+  }
 
   static getProjectById(projectId: number): Promise<Project | null> {
-    try {
-      const queryResult = (this.dbClient.query as any)(
-        `SELECT * FROM ${this.tableName} WHERE id = $1`,
-        [projectId]
-      );
-      return Promise.resolve(queryResult.rows[0] || null);
-    } catch (error) {
-      console.error("Error fetching project by ID:", error);
-      return Promise.resolve(null);
-    }
+    return new Promise(async (resolve) => {
+        try {
+            const queryResult = await (this.dbClient.query as any)(
+                `SELECT * FROM ${this.tableName} WHERE id = $1`, // Use static tableName
+                [projectId]
+            );
+            resolve(queryResult.rows[0] || null); // Resolve with the found project or null
+        } catch (error) {
+            console.error("Error fetching project by ID:", error);
+            resolve(null); // Resolve with null if there's an error
+        }
+    });
   }
-  
-  
-
-  // Implement other CRUD methods for updating and deleting projects
 }
+
 
 export default ProjectModel;

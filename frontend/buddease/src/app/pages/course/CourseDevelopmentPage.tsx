@@ -2,7 +2,7 @@
 import { fetchDataWithToken, useAuth } from "@/app/components/auth/AuthContext";
 import { Data } from "@/app/components/models/data/Data";
 import SnapshotStore, {
-  Snapshot,
+    Snapshot,
 } from "@/app/components/snapshots/SnapshotStore";
 import { useNotification } from "@/app/components/support/NotificationContext";
 import React, { useEffect, useState } from "react";
@@ -27,7 +27,7 @@ const CourseDevelopmentPhaseManager: React.FC = () => {
     CourseDevelopmentPhase.PLANNING // Initial phase
   );
 
-  const userData = {} as SnapshotStore<Snapshot<Data>>[];
+  const userData = {} as SnapshotStore<Snapshot<Data, Meta, Data>>[];
 
   // Additional logic specific to the Course Development Phase
 

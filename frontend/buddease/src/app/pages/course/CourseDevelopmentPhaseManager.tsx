@@ -28,7 +28,7 @@ const CourseDevelopmentPhaseManager: React.FC = () => {
   );
 
   const timeBasedCode = generateTimeBasedCode();
-  const userData = {} as SnapshotStore<Snapshot<Data>>[]
+  const userData = {} as SnapshotStore<Snapshot<Data, Meta, Data>>[]
 
   // Additional logic specific to the Course Development Phase
 

@@ -1,23 +1,22 @@
-import StructuredMetadata, { ProjectMetadata } from "@/app/configs/StructuredMetadata";
-import { Data } from "../models/data/Data";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { CalendarEventWithCriteria } from "@/app/pages/searchs/FilterCriteria";
 import { DocumentOptions } from "../documents/DocumentOptions";
 import { CommonData } from "../models/CommonDetails";
-import { BaseData } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 import { Team } from "../models/teams/Team";
 import { Member } from "../models/teams/TeamMembers";
 import { Phase } from "../phases/Phase";
-import { TagsRecord, Snapshot } from "../snapshots";
-import SnapshotStore from "../snapshots/SnapshotStore";
+import { Snapshot, TagsRecord } from "../snapshots";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import CommonEvent from "../state/stores/CommonEvent";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { NotificationType } from "../support/NotificationContext";
 import { Attendee } from "./Attendee";
-import { CalendarEventWithCriteria } from "@/app/pages/searchs/FilterCriteria";
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 
 //CalendarEvent.t
-interface CalendarEvent<T extends Data = BaseData, K extends Data = BaseData>
+interface CalendarEvent<T extends Data = BaseData,
+  Meta extends UnifiedMetaDataOptions = UnifiedMetaDataOptions,
+  K extends Data = T>
   extends CommonEvent,
     CommonData<T> {
   id: string;
@@ -66,11 +65,11 @@ interface CalendarEvent<T extends Data = BaseData, K extends Data = BaseData>
 
   
   getData?: () => Promise<
-    Snapshot<T, K>
+    Snapshot<T, Meta, K>
   >;
 
-  then?: <T extends Data, K extends Data>(
-    callback: (newData: Snapshot<T, K>) => void
-  ) => Snapshot<T, K> | undefined;
+  then?: <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+    callback: (newData: Snapshot<T, Meta, K>) => void
+  ) => Snapshot<T, Meta, K> | undefined;
 }
-export type {  CalendarEvent}
+export type { CalendarEvent };

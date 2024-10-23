@@ -1,37 +1,17 @@
-import { snapshot } from '.';
 // fetchInitialSnapshotData.ts
 
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { Subscriber } from '../users/Subscriber';
-import { IHydrateResult } from "mobx-persist";
-import { Data } from "../models/data/Data";
-import { SubscriberCollection } from ".";
-import { CalendarEvent } from "../calendar/CalendarEvent";
-import { CreateSnapshotsPayload } from "../database/Payload";
-import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { BaseData } from "../models/data/Data";
-import { StatusType, NotificationPosition } from "../models/data/StatusType";
-import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { Data } from "../models/data/Data";
 import { DataStore, InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
-import { NotificationType } from "../support/NotificationContext";
-import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
-import { Snapshot, SnapshotsArray, UpdateSnapshotPayload, Snapshots, Payload, SnapshotsObject } from "./LocalStorageSnapshotStore";
-import { SnapshotConfig } from "./snapshot";
-import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";
-import { SnapshotData } from "./SnapshotData";
-import { createSnapshotStore } from "./snapshotHandlers";
-import { SnapshotItem } from "./SnapshotList";
+import useDocumentStore from "../state/stores/DocumentStore";
+import { Subscriber } from '../users/Subscriber';
+import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { Callback } from "./subscribeToSnapshotsImplementation";
-import useDocumentStore from "../state/stores/DocumentStore";
 
 // Example functions for fetching initial snapshot data and current data
-const fetchInitialSnapshotData = async <T extends BaseData, K extends BaseData>(): Promise<Snapshot<T, K>[]> => {
+const fetchInitialSnapshotData = async  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(): Promise<Snapshot<T, Meta, K>[]> => {
   await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate delay of 1 second
 
 
@@ -39,12 +19,12 @@ const fetchInitialSnapshotData = async <T extends BaseData, K extends BaseData>(
   const category = "someCategory"; // Define your category
   const documentManager = useDocumentStore(); // Instantiate DocumentManager
 
-  // Return initial snapshot data as an array of Snapshot<Data, K> objects
+  // Return initial snapshot data as an array of Snapshot<Data, Meta, K> objects
   return [
     {
       id: "1",
       data: null, // or appropriate data
-      initialState: {} as InitializedState<T, K>, // Initialize with an empty object or appropriate state
+      initialState: {} as InitializedState<T, Meta, K>, // Initialize with an empty object or appropriate state
       isCore: true,
       initialConfig: {}, // Initialize with your configuration
       removeSubscriber: () => {},
@@ -54,7 +34,7 @@ const fetchInitialSnapshotData = async <T extends BaseData, K extends BaseData>(
       currentCategory: category,
       mappedSnapshotData: new Map(),
       snapshot: snapshot, // Define your snapshot function
-      setCategory: (category: string | Category) => console.log(`Category set to: ${category}`),
+      setCategory: (category: symbol | string | Category | undefined) => console.log(`Category set to: ${category}`),
       applyStoreConfig: () => {},
       generateId: () => "unique-id",
       snapshotData: async (
@@ -62,27 +42,30 @@ const fetchInitialSnapshotData = async <T extends BaseData, K extends BaseData>(
         snapshotData: T, 
         category: Category, 
         categoryProperties: CategoryProperties | undefined,
-        dataStoreMethods: DataStore<T, K>
-      ): Promise<SnapshotStore<T, K>> => {
+        dataStoreMethods: DataStore<T, Meta, K>
+      ): Promise<SnapshotStore<T, Meta, K>> => {
         // Implement the logic here
-        return {} as SnapshotStore<T, K>; // Return a Promise that resolves to SnapshotStore<T, K>
+        return {} as SnapshotStore<T, Meta, K>; // Return a Promise that resolves to SnapshotStore<T, Meta, K>
       },
       getSnapshotItems: () => [],
       defaultSubscribeToSnapshots: () => {},
       notify: () => {},
       notifySubscribers: (
-        message: string, subscribers: Subscriber<T, K>[], data: Partial<SnapshotStoreConfig<T, any>>
-      ): Subscriber<T, K>[] => {
+        message: string, 
+        subscribers: Subscriber<T, Meta, K>[], 
+        callback: (data: Snapshot<T, Meta, BaseData>) => Subscriber<T, Meta, K>[],
+        data: Partial<SnapshotStoreConfig<T, any>>
+      ): Subscriber<T, Meta, K>[] => {
         // Implement the logic here
-        return []; // Return an array of Subscriber<T, K>
+        return []; // Return an array of Subscriber<T, Meta, K>
       },
-      getAllSnapshots: (): Promise<Snapshot<T, K>[]> => {
+      getAllSnapshots: (): Promise<Snapshot<T, Meta, K>[]> => {
         // Implement the logic here
-        return Promise.resolve([]); // Return an array of Snapshot<T, K>
+        return Promise.resolve([]); // Return an array of Snapshot<T, Meta, K>
       },
       getSubscribers: (): Promise<{
-        subscribers: Subscriber<T, K>[];
-        snapshots: Snapshots<T>;
+        subscribers: Subscriber<T, Meta, K>[];
+        snapshots: Snapshots<T, Meta>;
       }> => {
         // Implement the logic here
         return Promise.resolve({ subscribers: [], snapshots: {} }); // Return an object with subscribers and snapshots
@@ -103,21 +86,21 @@ const fetchInitialSnapshotData = async <T extends BaseData, K extends BaseData>(
         versionData: [],
         checksum: ""
       },
-      transformSubscriber: (sub: Subscriber<T, K>): Subscriber<T, K> => {
+      transformSubscriber: (sub: Subscriber<T, Meta, K>): Subscriber<T, Meta, K> => {
         // Implement the logic here
         return sub; // Return the transformed subscriber
       },
-      transformDelegate: (): SnapshotStoreConfig<T, K>[] => {
+      transformDelegate: (): SnapshotStoreConfig<T, Meta, K>[] => {
         // Implement the logic here
-        return []; // Return an array of SnapshotStoreConfig<T, K>
+        return []; // Return an array of SnapshotStoreConfig<T, Meta, K>
       },
-      initializedState: {} as InitializedState<T, K>,
+      initializedState: {} as InitializedState<T, Meta, K>,
       getAllKeys: (): Promise<string[] | undefined> => {
         // Implement the logic here
         return Promise.resolve(undefined); // Return a Promise that resolves to an array of strings or undefined
       },
       getAllValues: () => [],
-      getAllItems: (): Promise<Snapshot<T, K>[] | undefined> | => {},
+      getAllItems: (): Promise<Snapshot<T, Meta, K>[] | undefined> | => {},
       getSnapshotEntries: () => [],
       getAllSnapshotEntries: () => [],
       addDataStatus: () => {},
@@ -245,7 +228,15 @@ const fetchInitialSnapshotData = async <T extends BaseData, K extends BaseData>(
       setData: () => {},
       addData: () => {},
       stores: [],
-      getStore: () => {},
+      getStore: (
+        storeId: number,
+        snapshotStore: SnapshotStore<T, Meta, K>,
+        snapshotId: string | null,
+        snapshot: Snapshot<T, Meta, K>,
+        snapshotStoreConfig: SnapshotStoreConfig<T, Meta, K>,
+        type: string,
+        event: Event
+      ) => {},
       addStore: () => {},
       mapSnapshot: () => {},
       mapSnapshotWithDetails: () => {},

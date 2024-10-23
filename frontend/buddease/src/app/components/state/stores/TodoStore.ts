@@ -1,29 +1,32 @@
 import { generateSnapshotId } from './../../utils/snapshotUtils';
 // TodoManagerStore.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { makeAutoObservable } from "mobx";
 import { MutableRefObject, useRef, useState } from "react";
-import {useSnapshotManager} from "../../hooks/useSnapshotManager";
+import { useSnapshotManager } from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
+import { Snapshot, Snapshots } from '../../snapshots/LocalStorageSnapshotStore';
 import SnapshotStore, { SubscriberCollection } from "../../snapshots/SnapshotStore";
-import useSnapshotStore from "../../snapshots/SnapshotStore";
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { Todo } from "../../todos/Todo";
 import { todoService } from "../../todos/TodoService";
-import { Snapshot, Snapshots } from '../../snapshots/LocalStorageSnapshotStore';
 import useSecureStoreId from '../../utils/useSecureStoreId';
-import { Subscriber } from '../../users/Subscriber';
+import { AllStatus } from './DetailsListStore';
 
 const { notify } = useNotification();
 
 interface TodoManagerStoreProps {
   initialTodos?: Record<string, Todo>; // Optional initial todos
 }
-export interface TodoManagerStore {
+
+export interface TodoManagerStore<T extends Data,
+Meta extends UnifiedMetaDataOptions,
+K extends Data = T> {
   dispatch: (action: any) => void;
   todos: Record<string, Todo>;
   todoList: Todo[];
@@ -33,7 +36,7 @@ export interface TodoManagerStore {
   error: string | null;
   addTodos: (
     newTodos: Todo[],
-    data: SnapshotStore<Snapshot<any, any>>
+    data: SnapshotStore<Snapshot<any, any, any>>
   ) => void;
   removeTodo: (id: string) => void;
   assignTodoToUser: (todoId: string, userId: string) => void;
@@ -53,14 +56,21 @@ export interface TodoManagerStore {
   
   subscribeToSnapshot: (
     id: string,
-    callback: (snapshot: Snapshot<Todo>) => void,
-    snapshot: Snapshot<Todo>
+    callback: (snapshot: Snapshot<Todo, Meta, Data>) => void,
+    snapshot: Snapshot<Todo, Meta, Data>
   ) => void;
   
   batchFetchTodoSnapshotsRequest: (payload: Record<string, Todo[]>) => void;
+  assignedTaskStore: (id: string, assignedTo: string) => void;
+  updateTaskTitle: (id: string, newTitle: string) => void;
+  updateTaskDescription: (id: string, newDescription: string) => void;
+  updateTaskStatus: (id: string, newStatus: AllStatus) => void;
+
+
+  
 }
 
-const useTodoManagerStore = <T extends Data, K extends Data = T>(
+const useTodoManagerStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
   props: TodoManagerStoreProps): TodoManagerStore => {
   const [todos, setTodos] = useState<Record<string, Todo>>(props.initialTodos || {});
   const [subscriptions, setSubscriptions] = useState<
@@ -105,7 +115,7 @@ const useTodoManagerStore = <T extends Data, K extends Data = T>(
   // Inside useTodoManagerStore function
   const snapshotStore = useSnapshotManager(storeId);
   // Initialize SnapshotStore
-  const onSnapshotCallbacks: ((snapshot: Snapshot<Todo>) => void)[] = [];
+  const onSnapshotCallbacks: ((snapshot: Snapshot<Todo, Meta, K>) => void)[] = [];
 
   const dispatch = (action: any) => {
     switch (action.type) {
@@ -154,7 +164,7 @@ const useTodoManagerStore = <T extends Data, K extends Data = T>(
   const addTodos = (
     newTodos: Todo[],
     data: SnapshotStore<Todo>,
-    subscribers?: SubscriberCollection<T, K>
+    subscribers?: SubscriberCollection<T, Meta, K>
   ): void => {
     setTodos((prevTodos: Record<string, Todo>) => {
       const updatedTodos = { ...prevTodos };
@@ -165,7 +175,7 @@ const useTodoManagerStore = <T extends Data, K extends Data = T>(
         // Take snapshot for each todo
         if (data) {
           // Convert todo to snapshot format
-          const snapshot: Snapshot<Todo, Todo> = {
+          const snapshot: Snapshot<Todo, Meta, Todo> = {
             todoSnapshotId: generateSnapshotId,
             initialState: todo,
             category: "todo",
@@ -193,8 +203,8 @@ const useTodoManagerStore = <T extends Data, K extends Data = T>(
   const todoList = Object.values(todos);
   const subscribeToSnapshot = (
     id: string,
-    callback: (snapshot: Snapshot<Todo>) => void,
-    snapshot: Snapshot<Todo> // Add 'snapshot' as an argument
+    callback: (snapshot: Snapshot<Todo, Meta, Todo>) => void,
+    snapshot: Snapshot<Todo, Meta, Todo> // Add 'snapshot' as an argument
   ) => {
     // Define the conversion functions
     const todoToData = (todo: Todo): Data => {
@@ -251,7 +261,7 @@ const useTodoManagerStore = <T extends Data, K extends Data = T>(
     // Check the type of 'data' and 'convertedTodo' to determine the correct conversion
     if ('id' in data && 'id' in convertedTodo) {
       // Perform conversion logic specific to Todo
-      const convertedSnapshot: Snapshot<Todo> = {
+      const convertedSnapshot: Snapshot<Todo, Meta, Todo> = {
         ...snapshot, // Spread the 'snapshot' passed as an argument
         id,
         data: {
@@ -331,7 +341,7 @@ const useTodoManagerStore = <T extends Data, K extends Data = T>(
 
       
       // Perform conversion logic specific to Data
-      const convertedSnapshot: Snapshot<Todo> = {
+      const convertedSnapshot: Snapshot<Todo, Meta, Todo> = {
         ...snapshot, // Spread the 'snapshot' passed as an argument
         data: {
           ...snapshot.data,
@@ -569,7 +579,7 @@ const useTodoManagerStore = <T extends Data, K extends Data = T>(
   };
 
   const batchFetchSnapshotsSuccess = async (payload: {
-    snapshots: Snapshots<Data>;
+    snapshots: Snapshots<Data, Meta>;
   }) => {
     console.log("Snapshots fetched successfully!");
     const { snapshots } = payload;
@@ -591,6 +601,100 @@ const useTodoManagerStore = <T extends Data, K extends Data = T>(
     setSubscriptions(JSON.parse(prevSubscriptions));
   }
 
+  
+  const assignTodoToUser = async (todoId: string, userId: string) => {
+    setUIState({ loading: true, error: null });
+    try {
+      await todoService.assignTodoToUser(todoId, userId);
+      setTodos((prevTodos) => ({
+        ...prevTodos,
+        [todoId]: {
+          ...prevTodos[todoId],
+          assignedTo: userId
+        }
+      }));
+      notify(
+        "assignTodoToUser",
+        "Todo assigned successfully!",
+        NOTIFICATION_MESSAGES.Todos.TODO_ASSIGNED_SUCCESSFULLY,
+        new Date(),
+        NotificationTypeEnum.Success
+      );
+    } catch (error: any) {
+      setUIState({ loading: false, error: error.message });
+      notify(
+        "assignTodoToUserFailure",
+        error.message,
+        NOTIFICATION_MESSAGES.Todos.TODO_ASSIGN_ERROR,
+        new Date(),
+        NotificationTypeEnum.Error
+      );
+    } finally {
+      setUIState({ loading: false, error: null });
+    }
+  };
+
+  const updateTaskTitle = (todoId: string, newTitle: string) => {
+    setTodos((prevTodos) => {
+      const updatedTodos = { ...prevTodos };
+      if (updatedTodos[todoId]) {
+        updatedTodos[todoId] = {
+          ...updatedTodos[todoId],
+          title: newTitle
+        };
+      }
+      return updatedTodos;
+    });
+    notify(
+      "updateTaskTitle",
+      "Task title updated successfully!",
+      NOTIFICATION_MESSAGES.Todos.TODO_TITLE_UPDATED,
+      new Date(),
+      NotificationTypeEnum.Success
+    );
+  };
+
+  const updateTaskDescription = (todoId: string, newDescription: string) => {
+    setTodos((prevTodos) => {
+      const updatedTodos = { ...prevTodos };
+      if (updatedTodos[todoId]) {
+        updatedTodos[todoId] = {
+          ...updatedTodos[todoId],
+          description: newDescription
+        };
+      }
+      return updatedTodos;
+    });
+    notify(
+      "updateTaskDescription",
+      "Task description updated successfully!",
+      NOTIFICATION_MESSAGES.Todos.TODO_DESCRIPTION_UPDATED,
+      new Date(),
+      NotificationTypeEnum.Success
+    );
+  };
+
+  const updateTaskStatus = (todoId: string, newStatus: "pending" | "in-progress" | "completed") => {
+    setTodos((prevTodos) => {
+      const updatedTodos = { ...prevTodos };
+      if (updatedTodos[todoId]) {
+        updatedTodos[todoId] = {
+          ...updatedTodos[todoId],
+          status: newStatus
+        };
+      }
+      return updatedTodos;
+    });
+    notify(
+      "updateTaskStatus",
+      "Task status updated successfully!",
+      NOTIFICATION_MESSAGES.Todos.TODO_STATUS_UPDATED,
+      new Date(),
+      NotificationTypeEnum.Success
+    );
+  };
+
+
   const useTodoManagerStore = makeAutoObservable(
     {
       // Todos
@@ -598,7 +702,11 @@ const useTodoManagerStore = <T extends Data, K extends Data = T>(
       todos,
       loading,
       error,
-      toggleTodo,
+      toggleTodo: (id) => updateTaskStatus(id, todos[id].status === "completed" ? "pending" : "completed"),
+      assignedTaskStore: assignTodoToUser,
+      updateTaskTitle,
+      updateTaskDescription,
+      updateTaskStatus,
       addTodo,
       addTodos,
       todoList,
@@ -641,8 +749,9 @@ const useTodoManagerStore = <T extends Data, K extends Data = T>(
     }
   );
 
+
   return useTodoManagerStore;
 };
 export default useTodoManagerStore;
 
-export type {TodoManagerStoreProps}
+export type { TodoManagerStoreProps };

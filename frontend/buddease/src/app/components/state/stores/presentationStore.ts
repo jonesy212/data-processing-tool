@@ -7,9 +7,9 @@ import { Presentation } from "../../documents/Presentation";
 import { sanitizeData } from "../../security/SanitizationFunctions";
 import { AssignBaseStore } from "../AssignBaseStore";
 import { WritableDraft } from "../redux/ReducerGenerator";
+import { AssignTaskStore } from "./AssignTaskStore";
 import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
 import { userManagerStore } from "./UserStore";
-import { AssignTaskStore } from "./AssignTaskStore";
 
 // Define the necessary types and interfaces
 type PresentationStoreSubset = Pick<
@@ -72,7 +72,7 @@ type PresentationStoreSubset = Pick<
   | "assignBoardCustomFieldToTeam"
 >;
 
-function getPropertyIfExists<T extends object, K extends keyof T>(
+function getPropertyIfExists<T extends object, K extends Data>(
   obj: T,
   prop: K
 ): T[K] | undefined {
