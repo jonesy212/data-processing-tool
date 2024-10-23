@@ -1,0 +1,28 @@
+name: Generate Interfaces
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate-interfaces:
+    runs-on: macos-latest  # Change to macos-latest for macOS
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+
+    - name: Install pnpm
+      run: npm install -g pnpm
+
+    - name: Install dependencies
+      run: pnpm install  # Use pnpm instead of npm
+
+    - name: Run code generation script
+      run: pnpm run generate-interfaces  # Use pnpm instead of npm

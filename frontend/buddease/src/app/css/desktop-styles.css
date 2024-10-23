@@ -1,0 +1,9 @@
+/* desktop-styles.css */
+/* Desktop Styles */
+@media (min-width: 1025px) and (max-width: 1200px) {
+    body {
+        font-size: 20px;
+    }
+
+    /* Add desktop-specific styles here */
+}

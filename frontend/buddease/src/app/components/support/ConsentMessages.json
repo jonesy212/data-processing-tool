@@ -1,0 +1,453 @@
+
+    {
+      "consentMessages": [
+        {
+          "id": 1,
+          "phase": "Ideation",
+          "message": "I consent to participate in ideation sessions and contribute ideas for the project."
+        },
+        {
+          "id": 2,
+          "phase": "Team Creation",
+          "message": "I consent to join or create teams for collaboration on project tasks."
+        },
+        {
+          "id": 3,
+          "phase": "Product Brainstorming",
+          "message": "I consent to participate in brainstorming sessions to shape the features and aspects of the product."
+        },
+        {
+          "id": 4,
+          "phase": "Product Launch",
+          "message": "I consent to receive notifications and updates related to the product launch."
+        },
+        {
+          "id": 5,
+          "phase": "Realtime Communication",
+          "message": "I consent to engage in realtime communication using audio, video, and text features."
+        },
+        {
+          "id": 6,
+          "phase": "Collaboration Options",
+          "message": "I consent to use collaboration options for real-time collaboration on project tasks."
+        },
+        {
+          "id": 7,
+          "phase": "Data Analysis",
+          "message": "I consent to the analysis of project data for meaningful results and improvements."
+        },
+        {
+          "id": 8,
+          "phase": "Reiterations",
+          "message": "I consent to participate in reiterations and improvements based on data analysis."
+        },
+        {
+          "id": 9,
+          "phase": "General Communication",
+          "message": "I consent to receive general communication and updates related to the project."
+        },
+        {
+          "id": 10,
+          "phase": "File Sharing",
+          "message": "I consent to share and receive files for collaborative work on the project."
+        },
+        {
+          "id": 11,
+          "phase": "Task Assignment",
+          "message": "I consent to be assigned tasks and responsibilities within the project."
+        },
+        {
+          "id": 12,
+          "phase": "Milestone Updates",
+          "message": "I consent to receive updates on project milestones and achievements."
+        },
+        {
+          "id": 13,
+          "phase": "Meeting Scheduling",
+          "message": "I consent to participate in scheduled meetings for project discussions."
+        },
+        {
+          "id": 14,
+          "phase": "Feedback Collection",
+          "message": "I consent to provide and receive feedback for continuous improvement."
+        },
+        {
+          "id": 15,
+          "phase": "User Data Handling",
+          "message": "I consent to the handling of my user data as per the privacy policy."
+        },
+        {
+          "id": 16,
+          "phase": "Notifications",
+          "message": "I consent to receive notifications for important project-related updates."
+        },
+        {
+          "id": 17,
+          "phase": "Collaborative Editing",
+          "message": "I consent to engage in collaborative editing for shared project documents."
+        },
+        {
+          "id": 18,
+          "phase": "Access Permissions",
+          "message": "I consent to grant and manage access permissions for project resources."
+        },
+        {
+          "id": 19,
+          "phase": "Task Progress Tracking",
+          "message": "I consent to track and update the progress of assigned project tasks."
+        },
+        {
+          "id": 20,
+          "phase": "Privacy Settings",
+          "message": "I consent to manage privacy settings for my profile and project-related information."
+        },
+        {
+          "id": 21,
+          "phase": "Discussion Forums",
+          "message": "I consent to participate in discussion forums for project-related conversations."
+        },
+        {
+          "id": 22,
+          "phase": "Collaborative Decision Making",
+          "message": "I consent to participate in collaborative decision-making processes within the project."
+        },
+        {
+          "id": 23,
+          "phase": "Project Surveys",
+          "message": "I consent to participate in surveys for project feedback and improvement."
+        },
+        {
+          "id": 24,
+          "phase": "Project Documentation",
+          "message": "I consent to contribute to and access project documentation for reference and clarity."
+        },
+        {
+          "id": 25,
+          "phase": "Data Security Measures",
+          "message": "I consent to the implementation of data security measures as per the project's policies."
+        },
+        {
+          "id": 26,
+          "phase": "Project Roles",
+          "message": "I consent to understand and adhere to assigned roles and responsibilities within the project."
+        },
+        {
+          "id": 27,
+          "phase": "Task Dependencies",
+          "message": "I consent to manage task dependencies and coordinate with team members accordingly."
+        },
+        {
+          "id": 28,
+          "phase": "Access Logs",
+          "message": "I consent to the recording and monitoring of access logs for security purposes."
+        },
+        {
+          "id": 29,
+          "phase": "Cross-Team Collaboration",
+          "message": "I consent to collaborate with members from other teams for cross-team projects."
+        },
+        {
+          "id": 30,
+          "phase": "Project Archives",
+          "message": "I consent to access and contribute to project archives for historical reference."
+        },
+        {
+          "id": 31,
+          "phase": "Task Prioritization",
+          "message": "I consent to participate in task prioritization discussions and decisions."
+        },
+        {
+          "id": 32,
+          "phase": "Project Calendar",
+          "message": "I consent to use and contribute to the project calendar for scheduling events and deadlines."
+        },
+        {
+          "id": 33,
+          "phase": "Integration with External Tools",
+          "message": "I consent to integrate the project with external tools for enhanced functionality."
+        },
+        {
+          "id": 34,
+          "phase": "User Profile Privacy",
+          "message": "I consent to manage the privacy of my user profile within the project."
+        },
+        {
+          "id": 35,
+          "phase": "Project Budget Tracking",
+          "message": "I consent to participate in budget tracking discussions and updates."
+        },
+        {
+          "id": 36,
+          "phase": "Collaborative Reporting",
+          "message": "I consent to collaborate on generating and analyzing project reports."
+        },
+        {
+          "id": 37,
+          "phase": "Risk Management Discussions",
+          "message": "I consent to participate in discussions related to project risk management."
+        },
+        {
+          "id": 38,
+          "phase": "Integration with Communication Tools",
+          "message": "I consent to integrate project communication with external communication tools."
+        },
+        {
+          "id": 39,
+          "phase": "Cross-Platform Access",
+          "message": "I consent to access and contribute to the project from different platforms and devices."
+        },
+        {
+          "id": 40,
+          "phase": "Project Timelines",
+          "message": "I consent to contribute to discussions and updates on project timelines."
+        },
+        {
+          "id": 41,
+          "phase": "Data Visualization",
+          "message": "I consent to explore and utilize data visualization tools for project insights."
+        },
+        {
+          "id": 42,
+          "phase": "Project Polls",
+          "message": "I consent to participate in polls related to project decisions and preferences."
+        },
+        {
+          "id": 43,
+          "phase": "Collaborative Coding",
+          "message": "I consent to engage in collaborative coding sessions for project development."
+        },
+        {
+          "id": 44,
+          "phase": "Accessibility Features",
+          "message": "I consent to use accessibility features for an inclusive project environment."
+        },
+        {
+          "id": 45,
+          "phase": "Project Health Monitoring",
+          "message": "I consent to participate in discussions on monitoring and maintaining project health."
+        },
+        {
+          "id": 46,
+          "phase": "Knowledge Sharing",
+          "message": "I consent to share knowledge and insights for the benefit of the project team."
+        },
+        {
+          "id": 47,
+          "phase": "Project Notifications",
+          "message": "I consent to receive notifications for critical project updates and announcements."
+        },
+        {
+          "id": 48,
+          "phase": "Meeting Recordings",
+          "message": "I consent to the recording of project meetings for reference and documentation."
+        },
+        {
+          "id": 49,
+          "phase": "Integration with Calendar Apps",
+          "message": "I consent to integrate project events with external calendar applications."
+        },
+        {
+          "id": 50,
+          "phase": "Project Resource Allocation",
+          "message": "I consent to discussions and decisions related to project resource allocation."
+        },
+        {
+          "id": 51,
+          "phase": "Collaborative Design Sessions",
+          "message": "I consent to engage in collaborative design sessions for project design aspects."
+        },
+        {
+          "id": 52,
+          "phase": "Automated Task Reminders",
+          "message": "I consent to receive automated reminders for upcoming project tasks and deadlines."
+        },
+        {
+          "id": 53,
+          "phase": "Project Discussions Archive",
+          "message": "I consent to access and contribute to the archive of past project discussions."
+        },
+        {
+          "id": 54,
+          "phase": "Integration with Project Management Tools",
+          "message": "I consent to integrate the project with external project management tools for efficiency."
+        },
+        {
+          "id": 55,
+          "phase": "User Authentication",
+          "message": "I consent to the use of user authentication mechanisms for secure project access."
+        },
+        {
+          "id": 56,
+          "phase": "Project Knowledge Base",
+          "message": "I consent to contribute to the project knowledge base for shared learning."
+        },
+        {
+          "id": 57,
+          "phase": "Collaborative Testing Sessions",
+          "message": "I consent to engage in collaborative testing sessions for project quality assurance."
+        },
+        {
+          "id": 58,
+          "phase": "User Feedback Integration",
+          "message": "I consent to the integration of user feedback for project improvements."
+        },
+        {
+          "id": 59,
+          "phase": "Project Chat Rooms",
+          "message": "I consent to participate in project chat rooms for informal team communication."
+        },
+        {
+          "id": 60,
+          "phase": "Project Maintenance",
+          "message": "I consent to participate in discussions and actions related to ongoing project maintenance."
+        },
+
+        {
+          "id": 51,
+          "phase": "Collaborative Design Sessions",
+          "message": "I consent to engage in collaborative design sessions for project design aspects."
+        },
+        {
+          "id": 52,
+          "phase": "Automated Task Reminders",
+          "message": "I consent to receive automated reminders for upcoming project tasks and deadlines."
+        },
+        {
+          "id": 53,
+          "phase": "Project Discussions Archive",
+          "message": "I consent to access and contribute to the archive of past project discussions."
+        },
+        {
+          "id": 54,
+          "phase": "Integration with Project Management Tools",
+          "message": "I consent to integrate the project with external project management tools for efficiency."
+        },
+        {
+          "id": 55,
+          "phase": "User Authentication",
+          "message": "I consent to the use of user authentication mechanisms for secure project access."
+        },
+        {
+          "id": 56,
+          "phase": "Project Knowledge Base",
+          "message": "I consent to contribute to the project knowledge base for shared learning."
+        },
+        {
+          "id": 57,
+          "phase": "Collaborative Testing Sessions",
+          "message": "I consent to engage in collaborative testing sessions for project quality assurance."
+        },
+        {
+          "id": 58,
+          "phase": "User Feedback Integration",
+          "message": "I consent to the integration of user feedback for project improvements."
+        },
+        {
+          "id": 59,
+          "phase": "Project Chat Rooms",
+          "message": "I consent to participate in project chat rooms for informal team communication."
+        },
+        {
+          "id": 51,
+          "phase": "Collaborative Design Sessions",
+          "message": "I consent to engage in collaborative design sessions for project design aspects."
+        },
+        {
+          "id": 52,
+          "phase": "Automated Task Reminders",
+          "message": "I consent to receive automated reminders for upcoming project tasks and deadlines."
+        },
+        {
+          "id": 53,
+          "phase": "Project Discussions Archive",
+          "message": "I consent to access and contribute to the archive of past project discussions."
+        },
+        {
+          "id": 54,
+          "phase": "Integration with Project Management Tools",
+          "message": "I consent to integrate the project with external project management tools for efficiency."
+        },
+        {
+          "id": 55,
+          "phase": "User Authentication",
+          "message": "I consent to the use of user authentication mechanisms for secure project access."
+        },
+        {
+          "id": 56,
+          "phase": "Project Knowledge Base",
+          "message": "I consent to contribute to the project knowledge base for shared learning."
+        },
+        {
+          "id": 57,
+          "phase": "Collaborative Testing Sessions",
+          "message": "I consent to engage in collaborative testing sessions for project quality assurance."
+        },
+        {
+          "id": 58,
+          "phase": "User Feedback Integration",
+          "message": "I consent to the integration of user feedback for project improvements."
+        },
+        {
+          "id": 59,
+          "phase": "Project Chat Rooms",
+          "message": "I consent to participate in project chat rooms for informal team communication."
+        },
+        {
+          "id": 60,
+          "phase": "Project Maintenance",
+          "message": "I consent to participate in discussions and actions related to ongoing project maintenance."
+        },
+        {
+          "id": 61,
+          "phase": "Community Forums",
+          "message": "I consent to participate in community forums for discussions and knowledge sharing."
+        },
+        {
+          "id": 62,
+          "phase": "Community Events",
+          "message": "I consent to receive notifications and updates for community events and gatherings."
+        },
+        {
+          "id": 63,
+          "phase": "Community Polls",
+          "message": "I consent to participate in polls related to community decisions and preferences."
+        },
+        {
+          "id": 64,
+          "phase": "Community Collaboration",
+          "message": "I consent to collaborate with community members on shared projects and initiatives."
+        },
+        {
+          "id": 65,
+          "phase": "Community Project Contributions",
+          "message": "I consent to contribute to community projects and initiatives for collective progress."
+        },
+        {
+          "id": 66,
+          "phase": "Community Resource Sharing",
+          "message": "I consent to share and access resources within the community for collaborative efforts."
+        },
+        {
+          "id": 67,
+          "phase": "Community Moderation",
+          "message": "I consent to participate in community moderation activities for a positive and inclusive environment."
+        },
+        {
+          "id": 68,
+          "phase": "Community Announcements",
+          "message": "I consent to receive announcements and updates related to community activities and news."
+        },
+        {
+          "id": 69,
+          "phase": "Community Code of Conduct",
+          "message": "I consent to abide by the community's code of conduct for respectful and ethical interactions."
+        },
+        {
+          "id": 70,
+          "phase": "Community Feedback Sessions",
+          "message": "I consent to participate in feedback sessions for community improvement and enhancements."
+        }
+
+      ]
+    }
+    

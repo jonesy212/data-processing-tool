@@ -1,0 +1,1 @@
+// selectDocumentEditingPermissions.ts

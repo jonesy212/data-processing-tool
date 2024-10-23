@@ -1,0 +1,18 @@
+/* WebComponent.css */
+
+.web-component-container {
+    /* Add platform-specific styles using CSS */
+    background-color: #f0f0f0;
+    padding: 20px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Add more platform-specific styles as needed */
+  
+
+  /* WebLoader.css */
+.web-loader {
+  /* Add web-specific loader styles */
+}

@@ -1,0 +1,121 @@
+# todo
+HTTPS For Data Transmission
+Ensure all data transmitted during the login process is encrypted. This is crucial for protecting sensitive information like passwords. Use HTTPS instead of HTTP in your Flask application.
+
+In production, set up an SSL certificate for your domain and ensure your server is configured to handle HTTPS request
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Running The Tests
+Finally, run the tests to validate the functionality of your login system.
+
+python -m unit_test discover
+
+
+Incorrect User Authentication Handling
+Issues with User Authentication often stem from incorrect handling of credentials. Verify that your user authentication logic correctly matches usernames and passwords with the database records.
+
+user = User.query.filter_by(username=username).first()
+if user and check_password_hash(user.password, password):
+    # Correct handling
+
+
+
+
+
+
+
+Session Management Problems
+Problems with Session Management can lead to users not being able to stay logged in. Ensure your session secret key is set and that user IDs are correctly stored and retrieved from sessions.
+
+app.secret_key = so.urandom(24)  # Make sure this is set
+
+session['user_id'] = user.id  # Storing user ID in session
+
+
+CSRF Token Issues
+CSRF Token errors can occur if the CSRF token is missing or incorrect. When using Flask-WTF, ensure that the CSRF token is included in your login forms.
+
+<form method="post">
+    {{ form.hidden_tag() }}  <!-- Include CSRF token -->
+    <!-- Form fields -->
+</form>
+
+
+
+Debugging Flask Applications
+Use Flask's built-in debugger to get detailed error messages and stack traces for exceptions.
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+
+
+
+
+
+
+    #TODO MUST: SET UP PROXY SERVER
+    4. Run Gunicorn:
+
+bash
+Copy code
+gunicorn -c gunicorn_config.py app:app
+This will start Gunicorn with the specified configuration.
+
+5. Set up Nginx as a reverse proxy:
+
+Install Nginx:
+
+bash
+Copy code
+sudo apt-get update
+sudo apt-get install nginx
+Create an Nginx configuration file (/etc/nginx/sites-available/my-app):
+
+nginx
+Copy code
+server {
+    listen 80;
+
+    server_name your_domain.com;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+Create a symbolic link to the sites-enabled directory:
+
+bash
+Copy code
+sudo ln -s /etc/nginx/sites-available/my-app /etc/nginx/sites-enabled
+Remove the default Nginx configuration:
+
+bash
+Copy code
+sudo rm /etc/nginx/sites-enabled/default
+Restart Nginx:
+
+bash
+Copy code
+sudo service nginx restart
+Now, Nginx will act as a reverse proxy and distribute incoming requests to the Gunicorn server.

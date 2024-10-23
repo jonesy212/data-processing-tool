@@ -1,0 +1,265 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Ignore compiled files
+*.class
+*.o
+*.pyc
+
+# Ignore temporary files
+*~
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+
+
+# Ignore build output
+/dist/
+
+# Ignore environment-specific files
+.env
+
+# Ignore editor-specific files
+.vscode/
+
+# Ignore logs
+logs/
+
+
+# Ignore specific files added in this commit
+
+# Ignore specific files added in this commit
+src/app/pages/forms/FormInputComponent.tsx
+src/app/pages/forms/IOSForm.tsx
+src/app/pages/forms/InteractiveForm.tsx
+src/app/pages/onboarding/FeatureImplementationSubPhase.tsx
+src/app/pages/onboarding/InitialSetupSubPhase.tsx
+src/app/pages/personas/ArtistPersona.tsx
+src/app/pages/personas/DeveloperPersona.tsx
+src/app/pages/personas/PersonaBuilder.tsx
+src/app/pages/personas/trainerUserJourney.tsx
+src/app/pages/profile/ProfilePage.tsx
+src/app/pages/profile/VerificationPage.tsx
+src/app/pages/teams/TeamManagementPage.tsx
+src/app/services/MusicService.tsx
+src/app/services/NFTService.ts
+src/app/services/encryptionService.ts
+src/app/services/identityService.ts
+src/app/services/verificationService.ts
+src/app/utils/credentialConstants.ts
+src/app/utils/didConstants.ts
+src/app/utils/encryptionUtils.ts
+src/app/utils/web3/DIDManager.ts
+src/app/utils/web3/DIDProfile.tsx
+src/app/utils/web3/credentialUtils.ts
+src/app/utils/web3/didUtils.ts
+src/app/ts/EventDataService.tsx
+tsconfig.json
+../../script_command/manage.py
+../../script_command/other_scripts.py
+../../versioning/cache_manager.py
+../../versioning/synchronize_cache_from_frontend.py
+../../versioning/version_generator.py
+
+
+src/app/configs/DynamicFormConfig.ts
+src/app/configs/babel.config.ts
+src/app/configs/detailsConfig.ts
+src/app/configs/metro.config.ts
+src/app/configs/react-native.config.js
+src/app/generators/GenerateChatInterfaces.ts
+src/app/generators/GenerateComponent.js
+src/app/generators/GenerateTokens.tsx
+src/app/generators/GenerateUniqueIds.ts
+src/app/generators/generateAppTree.tsx
+src/app/generators/generateNewApiConfig.ts
+src/app/libraries/actions/themeChangeAction.tsx
+src/app/libraries/theme/PromptGeneratorService.tsx
+src/app/pages/blog/AIoSBlogPosts.tsx
+src/app/pages/blog/UpdateCallbackUtils.ts
+src/app/pages/culture/collections/manageMediaCollections.ts
+src/app/pages/culture/music/ArtistPhase.tsx
+src/app/pages/culture/music/MusicPage.tsx
+src/app/pages/development/AppDevelopmentProcess.tsx
+src/app/pages/forms/AndroidForm.tsx
+src/app/pages/forms/FormBuilder.tsx
+src/app/pages/forms/FormDocumentMiddleware.tsx
+
+
+
+
+
+
+# Ignore specific files added or modified in this commit
+paltform/android/AndroidManifest.xml
+paltform/android/Podfile
+paltform/android/UserInterfaceState.xcuserstate
+paltform/android/build.gradle
+paltform/android/contents.xcworkspacedata
+paltform/android/gradle.properties
+paltform/android/settings.gradle
+
+pnpm-lock.yaml
+src/app/api/TeamManagementApi.ts
+src/app/components/actions/TeamManagementApi.tsx
+src/app/components/communications/scheduler/OnlinePopupsComponent.tsx
+src/app/components/communications/scheduler/ScheduleMeetingComponent.tsx
+src/app/components/context/DIDContext.tsx
+src/app/components/context/TeamContext.tsx
+src/app/components/crypto/VerifiableCredential.ts
+src/app/components/documents/privateDocs/nft.md
+src/app/components/hooks/VersioningComponent.tsx
+src/app/components/hooks/useFileUpload.tsx
+src/app/components/hooks/useVerifiableCredential.ts
+src/app/components/hooks/userInterface/TenantActions.ts
+src/app/components/hooks/dynamicHooks/dynamicFormGenerator.ts
+src/app/components/hooks/useDID.ts
+src/app/components/libraries/ui/components/NFTConversionComponent.tsx
+src/app/components/models/data/index.ts
+src/app/components/nft/convertNFT.ts
+src/app/components/phases/AppDevelopmentActions.ts
+src/app/components/phases/AppDevelopmentPhase.tsx
+src/app/components/phases/BrainstormingPhase.tsx
+src/app/components/phases/BrandingPhase.tsx
+src/app/components/phases/MarketingPhase.tsx
+src/app/components/phases/UXUIDevelopmentPhase.tsx
+src/app/components/phases/WebDevelopmentPhase.tsx
+src/app/components/projects/branding/appUtils.ts
+src/app/components/routes/AppRoutes.tsx
+src/app/components/security/SanitizationFunctions.ts
+src/app/components/socialMedia/InstagramIntegration.ts
+
+# Ignore modified files
+../../.vscode/settings.json
+package.json
+src/app/api/ApiActions.ts
+src/app/api/ApiCrypto.tsx
+src/app/api/ApiEndpoints.ts
+src/app/api/ApiLogs.ts
+src/app/api/ApiStateGovCities.ts
+src/app/api/ApiVideo.ts
+src/app/components/actions/ProjectActions.ts
+src/app/components/actions/ProjectOwnerActions.ts
+src/app/components/calendar/CalendarActions.ts
+src/app/components/calendar/CalendarSlice.tsx
+src/app/components/communications/scheduler/Meeting.tsx
+src/app/components/community/Community.tsx
+src/app/components/community/CommunityDetails.tsx
+src/app/components/documents/DocumentGenerator.ts
+src/app/components/documents/Toolbar/EnhancedVideoControlToolbar.tsx
+src/app/components/hooks/userInterface/automation_process.tsx
+src/app/components/models/LogData.ts
+src/app/components/models/data/Data.tsx
+src/app/components/models/marketing/Campaign.tsx
+src/app/components/models/tasks/Task.tsx
+src/app/components/projects/Project.tsx
+src/app/components/projects/branding/ThemeUtils.ts
+src/app/components/prompts/PromptComponent.tsx
+
+
+
+
+
+
+# Ignore specific files added or modified in this commit
+src/app/components/state/redux/sagas/teamManagementSagas.ts
+src/app/components/state/redux/sagas/tenantSags.ts
+src/app/components/state/redux/slices/ProjectOwnerSlice.ts
+src/app/components/state/redux/slices/TenantSlice.ts
+src/app/components/state/redux/slices/Untitled-3.ts
+src/app/components/state/stores/VersioningStore.ts
+src/app/components/typings/CredentialTypes.ts
+src/app/components/typings/DIDContext.tsx
+src/app/components/typings/DIDTypes.ts
+src/app/components/users/artist/ArtistManagementPHase.tsx
+src/app/components/users/artist/ArtistManagementPhaseComponent.tsx
+src/app/components/users/artist/ArtisticExpressionPage.tsx
+src/app/components/users/artist/CreateProductComponent.tsx
+src/app/components/users/artist/MusicAlbum.tsx
+src/app/components/users/artist/MusicSection.tsx
+src/app/components/users/artist/ReceiveDonationsComponent.tsx
+src/app/components/users/artist/artist_todos.md
+src/app/components/users/management/ManageContentComponent.tsx
+src/app/components/users/management/ManageFollowersComponent.tsx
+src/app/components/users/management/ManageTeamsComponent.tsx
+src/app/components/users/management/SellMerchandiseComponent.tsx
+src/app/components/versions/VersionGenerator.tsx
+src/app/components/web3/community/TaskManagementSmartContract.sol
+src/app/components/web3/contracts/NFT/DIDRegistry.sol
+src/app/components/web3/contracts/NFT/VerifiableCredential.sol
+src/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent.tsx
+
+# Ignore modified files
+src/app/components/state/redux/sagas/authorizationSagas.tsx
+src/app/components/state/redux/sagas/calendarSagas.tsx
+src/app/components/state/redux/sagas/detailsSaga.ts
+src/app/components/state/redux/sagas/teamSagas.ts
+src/app/components/state/redux/sagas/userPreferencesSagas.ts
+src/app/components/state/redux/slices/RootSlice.ts
+src/app/components/state/redux/slices/TaskSlice.ts
+src/app/components/state/redux/slices/TaskSlice.tsx
+src/app/components/state/stores/ApiStore.tsx
+src/app/components/state/stores/ErrorHandlingStore.ts
+src/app/components/subscriptions/Subscription.tsx
+src/app/components/support/NotificationContext.tsx
+src/app/components/support/NotificationMessages.ts
+src/app/components/support/NotificationTypes.ts
+src/app/components/teams/TeamActions.ts
+src/app/components/users/User.tsx
+src/app/components/users/UserRole.ts
+src/app/components/users/userJourney/IdeationPhase.tsx
+src/app/components/versions/DynamicVersioning.tsx
+src/app/components/versions/Version.ts
+src/app/components/video/Video.ts
+src/app/components/video/VideoManagementUI.tsx
+src/app/components/video/VideoSystem.ts
+src/app/components/video/ViewerScreen.tsx
+src/app/components/web3/CommunityGovernance.sol
+src/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent.tsx
+
+# Ignore all .py files
+*.py
+
+# Ignore modified files
+src/app/configs/configData.ts
+src/app/generators/generateSimulatedEventsUtils.tsx
+src/app/pages/blog/BlogUtils.ts
+src/app/pages/blog/CalendarUtils.ts
+src/app/pages/dashboards/DesignDashboard.tsx
+
+# Ignore all .py files
+*.py
+
+/frontend/buddease/src/app/components/documents/privateDocs

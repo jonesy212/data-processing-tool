@@ -1,24 +1,39 @@
 # wsgi.py
-
 import subprocess
+
+from gunicorn.app.base import BaseApplication
 
 from configs.config import app
 
 
-def run_gunicorn():
-    command = [
-        'gunicorn',
-        '-w', '4',  # Number of worker processes, adjust based on your server capacity
-        '-b', '0.0.0.0:8000',  # Binding address and port
-        '--timeout', '120',  # Maximum time a worker is allowed to process a request
-        '--graceful-timeout', '10',  # Timeout for graceful worker shutdown
-        '--log-level=info',  # Log level (info, debug, warning, etc.)
-        '--access-logfile', '-',  # Log requests to stdout
-        '--error-logfile', '-',  # Log errors to stderr
-        'configs.config:app',  # Replace 'your_app_module' with your actual module name
-    ]
+class GunicornApplication(BaseApplication):
+    def __init__(self, app, options=None):
+        self.options = options or {}
+        self.application = app
+        super().__init__()
 
-    subprocess.run(command)
+    def load_config(self):
+        config = {key: value for key, value in self.options.items() if key in self.cfg.settings and value is not None}
+        for key, value in config.items():
+            self.cfg.set(key.lower(), value)
+
+    def load(self):
+        return self.application
+
+
+def run_gunicorn():
+    options = {
+        'bind': '0.0.0.0:8000',
+        'workers': 4,
+        'timeout': 120,
+        'graceful_timeout': 10,
+        'loglevel': 'info',
+        'accesslog': '-',
+        'errorlog': '-',
+    }
+
+    gunicorn_app = GunicornApplication(app, options)
+    gunicorn_app.run()
 
 if __name__ == "__main__":
     run_gunicorn()

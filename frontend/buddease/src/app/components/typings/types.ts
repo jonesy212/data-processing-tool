@@ -1,0 +1,110 @@
+import { NestedEndpoints } from "@/app/api/ApiEndpoints";
+import { SearchNotesResponse } from "@/app/api/ApiNote";
+import { Exchange } from "../crypto/Exchange";
+import { DataWithComment } from "../crypto/SafeParseData";
+import HighlightEvent from "../documents/screenFunctionality/HighlightEvent";
+import { ExchangeData } from "../models/data/ExchangeData";
+import { Task } from "../models/tasks/Task";
+import { Team } from "../models/teams/Team";
+import { Phase } from "../phases/Phase";
+import { DataAnalysisResult } from '../projects/DataAnalysisPhase/DataAnalysisResult';
+import { Project } from "../projects/Project";
+import BrowserCheckStore from "../state/stores/BrowserCheckStore";
+import { CalendarEvent, CalendarManagerStore } from "../state/stores/CalendarEvent";
+import { IconStore } from "../state/stores/IconStore";
+import { TaskManagerStore } from "../state/stores/TaskStore ";
+import { TodoManagerStore } from "../state/stores/TodoStore";
+import { TrackerStore } from "../state/stores/TrackerStore";
+import { Todo } from "../todos/Todo";
+import { K, T } from "../models/data/dataStoreMethods";
+import { Snapshot, SnapshotStoreUnion } from "../snapshots";
+import SnapshotStore from "../snapshots/SnapshotStore";
+import { User, UserData } from "../users/User";
+import { Settings } from "../state/stores/SettingsStore";
+
+
+interface BaseResponseType {
+  calendarEvents: CalendarEvent[];
+  todos: Todo[];
+  tasks: Task[];
+  snapshotStores: SnapshotStore<SnapshotStoreUnion<T>, K>[];
+  currentPhase: Phase | null;
+  comment: string;
+  securityStamp?: string | null | undefined
+  
+
+    // Add any other shared properties
+}
+
+
+interface YourSettingsResponseType extends Settings, YourResponseType
+    //, 
+// Omit<YourResponseType, 'calendarEvents' | 'todos' | 'tasks' | 'snapshotStores'> 
+{
+    // Additional properties specific to YourSettingsResponseType
+    // calendarEvents: CalendarEventType[];
+    // todos: TodoType[];
+    // tasks: TaskType[];
+    // snapshotStores: SnapshotStoreType[];
+}
+
+
+type UserDataResponseType = User & BaseResponseType & YourSettingsResponseType
+
+
+
+// Define the structure of YourResponseType based on the actual response from the backend
+interface YourResponseType extends BaseResponseType, DataWithComment, SearchNotesResponse {
+  id?: string;
+  forEach?: (arg0: (notification: import("../support/NofiticationsSlice").NotificationData) => void) => void;
+  length?: number;
+  // pageNumber: number
+  calendarEvents: CalendarEvent[]; // Assuming CalendarEvent is a type/interface for calendar events
+  todos: Todo[]; // Assuming Todo is a type/interface for todos
+  tasks: Task[]; // Assuming Task is a type/interface for tasks
+  snapshotStores: SnapshotStore<SnapshotStoreUnion<T>, K>[]
+  currentPhase: Phase | null; // Assuming a string representing the current project phase
+  comment: string; // Additional comment field
+
+  // Add field from RootStores
+  browserCheckStore: BrowserCheckStore;
+  trackerStore: TrackerStore;
+  todoStore: TodoManagerStore;
+  taskManagerStore: TaskManagerStore;
+  iconStore: IconStore;
+  calendarStore: CalendarManagerStore;
+  prototype?: any;
+  browsers?: any;
+  endpoints: NestedEndpoints;
+  highlights: HighlightEvent[];
+  data?: {
+    id: number;
+    projectName: Project["name"];
+    description: Project["description"];
+    teamMembers: Team["members"];
+    exchange: Exchange;
+    communication: {
+      audio: boolean;
+      video: boolean;
+      text: boolean;
+    };
+    collaborationOptions: {
+      brainstorming: boolean;
+      fileSharing: boolean;
+      realTimeEditing: boolean;
+    };
+    // Additional properties
+    metadata: {
+      createdBy: string;
+      createdAt: Date;
+      updatedBy: string;
+      updatedAt: Date;
+    };
+    exchangeData: ExchangeData[];
+    averagePrice: number;
+  };
+  analysisResults?: string | DataAnalysisResult[];
+  // Add other properties if necessary
+}
+
+export type { YourResponseType, BaseResponseType, UserDataResponseType, YourSettingsResponseType };

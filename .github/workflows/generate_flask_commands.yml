@@ -1,0 +1,32 @@
+name: Generate Flask Commands
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Generates Flask commands by:
+  # - Checking out code
+  # - Setting up Python
+  # - Installing dependencies
+  # - Running flask_commands.py
+  generate-flask-commands:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Flask commands
+        run: python flask_commands.py

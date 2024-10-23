@@ -1,0 +1,59 @@
+Areas we need to expose user password in a secure way:
+User Login
+Password Change
+Account Deactivation
+Account Deletion
+Forgot Password - Password Reset
+Email Verification
+Changing Email Address
+Two-Factor Authentication Setup
+Two-Factor Authentication Disable
+Changing Profile Information
+Changing Profile Picture
+Project Creation (if password confirmation is required for security settings)
+Team Creation (if password confirmation is required for security settings)
+Changing Team Settings (if password confirmation is required for security settings)
+Task Assignment to Team Members
+Adding a New Team Member
+Removing a Team Member
+Exporting Sensitive Data (if password confirmation is required for security)
+Importing Sensitive Data (if password confirmation is required for security)
+Accessing Archived Projects
+Accessing Archived Tasks
+Changing Notification Settings
+Exporting Chat History
+Importing Chat History
+Accessing Data Analytics Reports
+Creating Data Analytics Queries (if password confirmation is required for security)
+Accessing Billing Information
+Upgrading Account (if password confirmation is required for security)
+Downgrading Account (if password confirmation is required for security)
+Viewing Payment History
+Accessing Integration Settings
+Integration Authorization (e.g., with third-party tools)
+Exporting Project Timelines
+Importing Project Timelines
+Accessing API Key (if password confirmation is required for security)
+Generating API Key
+Revoking API Key
+Accessing Account Security Logs
+Viewing Activity Logs
+Accessing Data Privacy Settings
+Changing Data Retention Settings (if password confirmation is required for security)
+Accessing User Permissions
+Changing User Permissions (if password confirmation is required for security)
+Accessing Accessibility Settings
+Changing Accessibility Preferences
+Accessing App Theme Preferences
+Changing App Theme
+Accessing Mobile App Settings
+Changing Mobile App Preferences
+Accessing Desktop App Settings
+Changing Desktop App Preferences
+Accessing Browser Extension Settings
+Changing Browser Extension Preferences
+Accessing File Storage Settings
+Changing File Storage Preferences
+Accessing Data Backup Settings
+Initiating Data Backup
+Restoring Data from Backup

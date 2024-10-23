@@ -1,0 +1,82 @@
+Cards
+Authentication Cards
+
+LoginForm.tsx: Card for user login.
+
+RegisterForm.tsx: Card for user registration.
+
+ChangePasswordForm.tsx: Card for changing user password.
+
+ForgotPasswordForm.tsx: Card for password recovery.
+
+VerifyEmail.tsx: Card for email verification.
+Communication Cards
+ChatCard.tsx: Card for chat functionality.
+EmailCard.tsx: Card for sending and receiving emails.
+Dashboard Cards
+DashboardCard.tsx: Card for displaying user dashboards.
+RecruiterDashboardCard.tsx: Card for displaying specific dashboards for recruiters.
+Onboarding Cards
+OnboardingCard.tsx: Card for onboarding new users.
+QuestionnaireCard.tsx: Card for displaying user questionnaires.
+Prompt Cards
+PromptCard.tsx: Card for displaying prompts or notifications.
+
+Lists
+Authorization Lists
+OAuthList.tsx: List for handling OAuth authorization.
+Company Lists
+CompanyList.tsx: List for displaying companies.
+CompanyRecruiterList.tsx: List for displaying recruiters associated with companies.
+Error Handling Lists
+ErrorHandlingList.tsx: List for displaying error handling information.
+Search Lists
+SearchList.tsx: List for handling search functionality.
+Upload Lists
+UploadList.tsx: List for handling file uploads.
+
+
+
+
+
+
+
+Others
+Data Analysis
+AnalyzeDataCard.tsx: Card for analyzing data.
+Data Preview
+DataPreviewCard.tsx: Card for previewing data.
+
+
+Data Processing
+DataProcessingCard.tsx: Card for processing data.
+
+Dataset
+DatasetUploadCard.tsx: Card for uploading datasets.
+
+
+Hypothesis Testing
+HypothesisTestingCard.tsx: Card for performing hypothesis tests.
+
+
+Permissions
+HasPermissionsCard.tsx: Card for handling user permissions.
+Preprocessing
+PreprocessingCard.tsx: Card for preprocessing data.
+
+Rate Limiting
+RateLimitingCard.tsx: Card for handling rate limiting.
+
+Security
+CSRFProtectionCard.tsx: Card for CSRF protection.
+
+Session
+SessionTimeoutCard.tsx: Card for handling session timeout.
+Task
+
+TaskCard.tsx: Card for managing tasks.
+
+Testing
+UnitTestCard.tsx: Card for unit testing.
+Notes
+NotesCard.tsx: Card for displaying and managing project notes.****
