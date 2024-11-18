@@ -1,17 +1,20 @@
 // //RetrieveSnapshotData.tsx
 import { RetrievedSnapshot } from '@/app/utils/retrieveSnapshotData';
-import { Data } from '../models/data/Data';
 import axiosInstance from '../security/csrfToken';
 import { Snapshot } from './LocalStorageSnapshotStore';
 import { SnapshotData } from './SnapshotData';
 import SnapshotStoreComponent from './SnapshotStoreComponent';
+import { BaseData } from '../data/Data';
 
 
 // // Define the API endpoint for retrieving snapshot data
 const SNAPSHOT_DATA_API_URL = 'https://example.com/api/snapshot';
 
 // Define the type for the response data
-interface SnapshotDataResponse<T extends Data,K extends Data> extends Snapshot<any, any>  {
+interface SnapshotDataResponse<
+  T extends  BaseData<T>, 
+  K extends T = T> 
+extends Snapshot<T, K>  {
   // Define the structure of the response data
   // This should match the structure of your snapshot data
   // Adjust it according to your actual data structure
@@ -22,11 +25,11 @@ interface SnapshotDataResponse<T extends Data,K extends Data> extends Snapshot<a
 }
 
 // Define the function to retrieve snapshot data
-export const retrieveSnapshotData = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(): Promise<Snapshot<SnapshotDataResponse<T, Meta, K>> | null> => {
+export const retrieveSnapshotData = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<Snapshot<SnapshotDataResponse<T, K>> | null> => {
   return new Promise(async (resolve, reject) => {
-    // Define a function to convert RetrievedSnapshot<SnapshotDataResponse> to SnapshotStore<Snapshot<Data, Meta, Data>>
-    const convertToSnapshotStore =  (retrievedSnapshot: RetrievedSnapshot<SnapshotDataResponse<T, Meta, K>, any>) => {
-      const response = await axiosInstance.get<SnapshotDataResponse<T, Meta, K>>(SNAPSHOT_DATA_API_URL);
+    // Define a function to convert RetrievedSnapshot<SnapshotDataResponse> to SnapshotStore<Snapshot<Data, Data>>
+    const convertToSnapshotStore =  (retrievedSnapshot: RetrievedSnapshot<SnapshotDataResponse<T, K>, any>) => {
+      const response = await axiosInstance.get<SnapshotDataResponse<T, K>>(SNAPSHOT_DATA_API_URL);
       // Create a new SnapshotStore instance
       const snapshotStore = new SnapshotStoreComponent(retrievedSnapshot.id, retrievedSnapshot.timestamp, retrievedSnapshot.category, retrievedSnapshot.data, retrievedSnapshot.callbacks);
 
@@ -34,7 +37,7 @@ export const retrieveSnapshotData = <T extends Data, Meta extends UnifiedMetaDat
         // Fetch snapshot data from the API endpoint
 
         // Extract the snapshot data from the response
-        const snapshotData: SnapshotData<SnapshotDataResponse<T, Meta, K>> = {
+        const snapshotData: SnapshotData<SnapshotDataResponse<T, K>> = {
           id: response.data.id.toString(), // Ensure id is a string
           timestamp: new Date(response.data.timestamp), // Convert timestamp to Date
           category: response.data.category,
@@ -205,7 +208,7 @@ export const retrieveSnapshotData = <T extends Data, Meta extends UnifiedMetaDat
           batchUpdateSnapshotsFailure: response.data.batchUpdateSnapshotsFailure,
           batchTakeSnapshot: response.data.batchTakeSnapshot,
           handleSnapshotSuccess: response.data.handleSnapshotSuccess,
-          [Symbol.iterator]: function* (): IterableIterator<Snapshot<SnapshotDataResponse<T, Meta, K>>> {
+          [Symbol.iterator]: function* (): IterableIterator<Snapshot<SnapshotDataResponse<T, K>>> {
             yield this;
           },
         };

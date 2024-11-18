@@ -1,8 +1,6 @@
 // TodoApi.ts
-
-
+import { BaseData } from '@/app/components/models/data/Data';
 import { AxiosError } from 'axios';
-import dotProp from 'dot-prop';
 import { NotificationTypeEnum, useNotification } from '../components/support/NotificationContext';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
 import { Todo } from '../components/todos/Todo';
@@ -10,7 +8,7 @@ import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
 
 // Define the API base URL for todos
-const API_BASE_URL = dotProp.getProperty(endpoints, 'todos.list');
+const API_BASE_URL = endpoints.todos.list
 
 // Define interface for todo notification messages
 interface TodoNotificationMessages {
@@ -48,7 +46,7 @@ const todoApiNotificationMessages: TodoNotificationMessages = {
 // Function to handle API errors and notify for todos
 const handleTodoApiErrorAndNotify = (
   error: AxiosError<unknown>,
-  errorMessageId: DataodoNotificationMessages
+  errorMessageId: keyof TodoNotificationMessages
 ) => {
   console.error("Error:", error);
 
@@ -130,7 +128,7 @@ export const toggleTodo = async (
   };
 
 // Add todo
-export const addTodo = async (newTodo: Omit<Todo, 'id'>): Promise<void> => {
+export const addTodo = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(newTodo: Omit<Todo<T, K>, 'id'>): Promise<void> => {
   try {
     const addTodoEndpoint = `${API_BASE_URL}.add`;
     await axiosInstance.post(addTodoEndpoint, newTodo);
@@ -160,7 +158,7 @@ export const removeTodo = async (todoId: number): Promise<void> => {
 
 
 // Update todo
-export const updateTodo = async (todoId: number, updatedFields: Partial<Todo>): Promise<void> => {
+export const updateTodo = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(todoId: number, updatedFields: Partial<Todo<T,K>>): Promise<void> => {
   try {
     const updateTodoEndpoint = `${API_BASE_URL}.update.${todoId}`;
     await axiosInstance.put(updateTodoEndpoint, updatedFields);
@@ -231,19 +229,19 @@ export const assignTodoToTeam = async (todoId: number, teamId: number): Promise<
   }
 };
 
-export const fetchTodosSuccess = async (
+export const fetchTodosSuccess = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   req: Request,
   res: Response
-): Promise<Todo[]> => {
+): Promise<Todo<T,K>[]> => {
   return [];
 }
 
 
 
-export const fetchTodosFailure = async (
+export const fetchTodosFailure = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   req: Request,
   res: Response
-): Promise<Todo[]> => {
+): Promise<Todo<T,K>[]> => {
   return [];
 }
 
@@ -255,10 +253,10 @@ export const completeAllTodosRequest = async (
   res: Response
 ): Promise<void> => {};
 
-export const completeAllTodosSuccess = async (
+export const completeAllTodosSuccess = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   req: Request,
   res: Response
-): Promise<Todo[]> => {
+): Promise<Todo<T,K>[]> => {
   return [];
 }
 

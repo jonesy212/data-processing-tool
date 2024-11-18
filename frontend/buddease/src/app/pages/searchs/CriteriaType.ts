@@ -53,6 +53,7 @@ export type CriteriaType = {
     formatType?: FormatEnum | null;
     privacySettingsType?: PrivacySettingEnum | null;
     messageType?: MessageType | null;
+    tableName?: string
     // Add more filter criteria as needed
 };
   

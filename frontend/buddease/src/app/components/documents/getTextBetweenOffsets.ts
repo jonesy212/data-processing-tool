@@ -5,6 +5,7 @@
  * @param endOffset - The end offset of the substring.
  * @returns The extracted text between the specified offsets.
  */
+
 const getTextBetweenOffsets = (
     inputText: string,
     startOffset: number,

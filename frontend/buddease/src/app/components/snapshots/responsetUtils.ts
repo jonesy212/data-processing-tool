@@ -1,5 +1,6 @@
 // responsetUtils.ts
 import { fetchSnapshotById } from '@/app/api/SnapshotApi';
+import { SnapshotData } from '@/app/components/snapshots';
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Category } from '../libraries/categories/generateCategoryProperties';
@@ -12,10 +13,11 @@ import SnapshotStore from './SnapshotStore';
 import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 import { SnapshotStoreDataResponse } from './SnapshotStoreDataResponse';
 import { SnapshotStoreProps } from './useSnapshotStore';
+import { BaseData } from '@/app/components/models/data/Data';
 
 
 
-function handleSnapshot<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(snapshot: Snapshot<any, any>) {
+function handleSnapshot<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(snapshot: Snapshot<any, any>) {
     if ('snapshotMethods' in snapshot.data) {
       // Safely access SnapshotStore specific methods
       const methods = (snapshot.data as SnapshotStoreDataResponse<T,K>).snapshotMethods;
@@ -28,9 +30,9 @@ function handleSnapshot<T extends Data, Meta extends UnifiedMetaDataOptions, K e
   }
 
 
-function mapResponseToSnapshot<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+function mapResponseToSnapshot<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   response: any
-): Snapshot<SnapshotStoreDataResponse<T, Meta, K>> {
+): Snapshot<SnapshotStoreDataResponse<T, K>> {
     return {
       id: response.id,
       timestamp: new Date(response.timestamp),
@@ -206,7 +208,7 @@ function mapResponseToSnapshot<T extends Data, Meta extends UnifiedMetaDataOptio
 
 
 
-export const returnsSnapshotStore = async (
+const returnsSnapshotStore = async (
   id: string,
   snapshotData: SnapshotData<any, any>,
   category: Category | undefined,
@@ -262,7 +264,7 @@ export const returnsSnapshotStore = async (
         categoryProperties: CategoryProperties | undefined,
         callback: (snapshot: Snapshot<any, any>) => void,
         dataStoreMethods: DataStore<any, any>[],
-        metadata: UnifiedMetaDataOptions,
+        metadata: UnifiedMetaDataOptions<any, any>,
         subscriberId: string, // Add subscriberId here
         endpointCategory: string | number,// Add endpointCategory here
         storeProps: SnapshotStoreProps<any, any>,
@@ -288,3 +290,9 @@ export const returnsSnapshotStore = async (
     throw new Error('Failed to configure snapshot store');
   }
 };
+
+
+export {handleSnapshot
+  mapResponseToSnapshot,
+  returnsSnapshotStore,
+}

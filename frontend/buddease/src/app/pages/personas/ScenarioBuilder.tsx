@@ -53,21 +53,49 @@ interface CategoryProperties {
   componentDescription?: string;  // Add this if it's a direct property
 }
 
-const categoryProperties: CategoryProperties = {
+
+
+export const defaultCategoryProperties: CategoryProperties = {
+  name: "DefaultCategory",
+  description: "",
+  icon: "",
+  color: "",
+  iconColor: "",
+  isActive: true,
+  isPublic: true,
+  isSystem: true,
+  isDefault: true,
+  isHidden: false,
+  isHiddenInList: false,
+  UserInterface: [],
+  DataVisualization: [],
+  Forms: undefined,
+  Analysis: [],
+  Communication: [],
+  TaskManagement: [],
+  Crypto: [],
+  brandName: "",
+  brandLogo: "",
+  brandColor: "",
+  brandMessage: "",
+};
+
+
+const mergeCategoryProperties = (overrides: Partial<CategoryProperties>): CategoryProperties => ({
+  ...defaultCategoryProperties,
+  ...overrides,
+});
+
+const dataVisualizationProperties = mergeCategoryProperties({
   name: "Data Visualization",
   description: "Data visualization component",
   icon: "fa-chart-bar",
   color: "#007bff",
   iconColor: "#fff",
-  isActive: true,
-  isPublic: true,
   isSystem: false,
   isDefault: false,
-  isHidden: false,
-  isHiddenInList: false,
   UserInterface: ["componentName", "componentDescription"],
   DataVisualization: ["dataProperties", "chartType"],
-  Forms: {},
   Analysis: ["categorizeNews"],
   Communication: ["audio", "video", "text"],
   TaskManagement: ["phases", "tasks", "dataAnalysis"],
@@ -76,38 +104,17 @@ const categoryProperties: CategoryProperties = {
   brandLogo: "path/to/logo.png",
   brandColor: "#ff5733",
   brandMessage: "Bringing insights to life",
-  componentDescription: "This component provides data visualization capabilities."
+  componentDescription: "This component provides data visualization capabilities.",
+});
 
-};
 
-
-export function convertToCategoryProperties(category: string | symbol | CategoryKeys | CategoryProperties | undefined): CategoryProperties {
+export function convertToCategoryProperties(
+  category: string | symbol | CategoryKeys | CategoryProperties | undefined
+): CategoryProperties {
   if (typeof category === 'string' || typeof category === 'symbol') {
-    // Convert the string or symbol to CategoryProperties
-    return {
-      name: typeof category === 'string' ? category : category.toString(),  // Handle symbol case
-      description: '',
-      icon: '',
-      color: '',
-      iconColor: '',
-      isActive: false,
-      isPublic: false,
-      isSystem: false,
-      isDefault: false,
-      isHidden: false,
-      isHiddenInList: false,
-      UserInterface: [],
-      DataVisualization: [],
-      Forms: undefined,
-      Analysis: [],
-      Communication: [],
-      TaskManagement: [],
-      Crypto: [],
-      brandName: '',
-      brandLogo: '',
-      brandColor: '',
-      brandMessage: ''
-    };
+    return mergeCategoryProperties({
+      name: typeof category === 'string' ? category : category.toString()  // Handle symbol case
+    });
   } else if (category !== undefined) {
     return category as CategoryProperties;  // Assume it's already a valid CategoryProperties object
   } else {
@@ -116,13 +123,18 @@ export function convertToCategoryProperties(category: string | symbol | Category
 }
 
 
+
 function generateComponent(
   componentName: string, 
   category: AllCategoryValues, // Updated to use conditional types
-  properties: any, 
+  properties: Partial<CategoryProperties> = {},
   brand: any,
   nestedCategory?: NestedCategoryKeys 
 ) {
+
+  // Use convertToCategoryProperties to initialize properties with defaults
+  const fullProperties = convertToCategoryProperties(properties);
+
   let reactCode = "";
 
  
@@ -130,10 +142,10 @@ function generateComponent(
     // Handle nested categories
     switch (nestedCategory) {
       case "UserInterface":
-        reactCode = generateUserInterfaceComponent(componentName, properties.componentDescription, brand);
+        reactCode = generateUserInterfaceComponent(componentName, fullProperties.componentDescription, brand);
         break;
       case "DataVisualization":
-        reactCode = generateDataVisualizationComponent(componentName, properties.dataProperties, properties.chartType, brand);
+        reactCode = generateDataVisualizationComponent(componentName, fullProperties.dataProperties, fullProperties.chartType, brand);
         break;
       default:
         throw new Error("Unknown nested category");
@@ -142,13 +154,14 @@ function generateComponent(
     // Existing logic for handling top-level categories
     switch (category) {
       case "assignedNotes":
-        reactCode = generateUserInterfaceComponent(componentName, properties.description, brand);
+        reactCode = generateUserInterfaceComponent(componentName, fullProperties.description, brand);
         break;
       // Handle other top-level categories...
       default:
         throw new Error("Unknown category");
     }
   }
+
 
   // Create a directory for the component
   const componentDir = `src/app/components/${componentName}`;
@@ -509,8 +522,8 @@ const componentFilePath = `src/app/components/${componentName}/${componentName}.
 
 
 // Before accessing the properties, ensure the category is valid
-if (category in categoryProperties) {
-  const properties = categoryProperties[category as keyof CategoryProperties];
+if (category in dataVisualizationProperties) {
+  const properties = dataVisualizationProperties[category as keyof CategoryProperties];
   if (properties && typeof properties === 'object' && !Array.isArray(properties)) {
     const brand = {
       brandName: 'brandName' in properties && typeof properties.brandName === 'string' ? properties.brandName : '',
@@ -561,6 +574,10 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
         name: "Phase 1",
         startDate: new Date(),
         endDate: new Date(),
+        description: "default_phase description",
+        label: {}, 
+        date: new Date().now(), 
+        createdBy: "User123",
         component: () => <div>Phase 1 Component</div>,
         subPhases: [],
         hooks: {
@@ -592,7 +609,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
 
     // Generate validation rules code
     const validationRules = generateValidationRulesCode(
-      categoryProperties.Forms?.validationRules
+      dataVisualizationProperties.Forms?.validationRules
     );
     
     // Generate component code
@@ -600,7 +617,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
       "ValidationRules",
       "Forms",
       {
-        formFields: categoryProperties.Forms?.validationRules,
+        formFields: dataVisualizationProperties.Forms?.validationRules,
       },
       validationRules
     );
@@ -741,7 +758,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
     console.log("User scenarios and user journey mapped successfully.");
 
   // Get properties based on the selected category
-  const properties = categoryProperties[category as keyof CategoryProperties];
+  const properties = dataVisualizationProperties[category as keyof CategoryProperties];
 
   if (!properties) {
     console.error("Invalid category.");
@@ -757,10 +774,10 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
 
 
 // Example usage
-generateComponent("MyDataVizComponent", "DataVisualization", { dataProperties: ["data"], chartType: "bar" }, categoryProperties);
+generateComponent("MyDataVizComponent", "DataVisualization", { dataProperties: ["data"], chartType: "bar" }, dataVisualizationProperties);
 export {
     categorizeNews,
-    categoryProperties, generateComponent, generateFormsComponent, generateNewsCategories, generateNewsComponent, generateUserJourneyComponent, generateUserJourneyMapComponent, generateUserScenarioComponent, generateUserScenarioMapComponent
+    dataVisualizationProperties, generateComponent, generateFormsComponent, generateNewsCategories, generateNewsComponent, generateUserJourneyComponent, generateUserJourneyMapComponent, generateUserScenarioComponent, generateUserScenarioMapComponent
 };
 export type { CategoryProperties };
 
@@ -769,8 +786,8 @@ const newsFeedData = { /* Provide your news feed data here */ };
 const categories = categorizeNews(newsFeedData);
 console.log('News categories:', categories);
 
-// Accessing categories from categoryProperties
-console.log('Communication categories:', categoryProperties.Communication);
-console.log('Task management categories:', categoryProperties.TaskManagement);
-console.log('Crypto categories:', categoryProperties.Crypto);
+// Accessing categories from dataVisualizationProperties
+console.log('Communication categories:', dataVisualizationProperties.Communication);
+console.log('Task management categories:', dataVisualizationProperties.TaskManagement);
+console.log('Crypto categories:', dataVisualizationProperties.Crypto);
 

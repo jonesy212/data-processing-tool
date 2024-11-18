@@ -2,6 +2,7 @@
 import path from "path";
 import { useAuth } from "../../auth/AuthContext";
 import { Phase } from "../../phases/Phase";
+import { HighlightColor } from "../styling/Palette";
 import { User, UserData } from "../../users/User";
 import {
   fetchUsersSuccess,
@@ -34,17 +35,37 @@ interface CommonTrackerProps {
   flippedY?: boolean;
   x?: number;
   y?: number;
-  updateAppearance?: (
-    updates: {
-      stroke: {
-        width: number;
-        color: string;
-      },
-    },
 
-    newStroke: { width: number; color: string },
-    newFillColor: string
+   // Update appearance function with comprehensive properties
+   updateAppearance?: (
+    updates: {
+      stroke?: Stroke;  // Optional stroke updates
+      fillColor?: string;  // Optional fill color updates
+      borderColor?: string;  // Optional border color updates
+      textColor?: string;  // Optional text color updates
+      highlightColor?: HighlightColor;  // Optional highlight settings
+      backgroundColor?: string;  // Optional background color updates
+      fontSize?: string;  // Optional font size updates
+      fontFamily?: string;  // Optional font family updates
+    },
+    newStroke: Stroke,  // New stroke to be applied
+    newFillColor: string,  // New fill color to be applied
+    newBorderColor?: string,  // Optional new border color
+    newHighlightColor?: string  // Optional new highlight color
   ) => void;
+  
+  // todo verify above works original
+  // updateAppearance?: (
+  //   updates: {
+  //     stroke: {
+  //       width: number;
+  //       color: string;
+  //     },
+  //   },
+
+  //   newStroke: { width: number; color: string },
+  //   newFillColor: string
+  // ) => void;
 }
 
 interface TrackerProps extends CommonTrackerProps {

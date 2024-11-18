@@ -176,7 +176,7 @@ const handleTransitionTo = (nextPhaseConfig: PhaseHookConfig) => {
     .then((cleanup) => {
       if (typeof cleanup === "function") {
         cleanup();
-      }
+      }Sna
     });
 
   setCurrentPhase(nextPhaseConfig);

@@ -1,8 +1,6 @@
-import { Data } from '@/app/components/models/data/Data';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { Snapshot } from "../components/snapshots";
 import endpointConfigurations, { EndpointConfig } from "./endpointConfigurations";
-
+import { BaseData } from '@/app/components/models/data/Data';
 
 
 type SnapshotCategoryType = "User" | "Todo" | "Task" | "Delegate" | "Highlight" |  "Project" |
@@ -10,16 +8,15 @@ type SnapshotCategoryType = "User" | "Todo" | "Task" | "Delegate" | "Highlight" 
     "Comment";
 
 interface SnapshotCategory<
-  T extends Data, 
-  Meta extends UnifiedMetaDataOptions,
+  T extends  BaseData<T>, 
 //   ExcludedFields extends keyof T = never, // Declare ExcludedFields first
-  K extends Data,
+  K extends T = T,
 // K extends Exclude<keyof T, ExcludedFields> = Exclude<keyof T, ExcludedFields> // Then use it in K
 > {
     id: string;
     name: SnapshotCategoryType; // Use the string literal type here
     description?: string;
-    snapshots: Snapshot<T, Meta, K>[]; 
+    snapshots: Snapshot<T, K>[]; 
     
     // snapshots: Snapshot<Omit<T, ExcludedFields>, Meta, K>[]; // This should now be valid
 }

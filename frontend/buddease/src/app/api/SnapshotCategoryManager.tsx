@@ -1,14 +1,14 @@
-import { Data } from "../components/models/data/Data";
+import { BaseData } from '@/app/components/models/data/Data';
 import { Snapshot } from "../components/snapshots";
-import { UnifiedMetaDataOptions } from "../configs/database/MetaDataOptions";
 import { SnapshotCategory, SnapshotCategoryType } from "./getSnapshotEndpoint";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
-class SnapshotCategoryManager <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
-    private categories: SnapshotCategory<T, Meta, K>[] = [];
+class SnapshotCategoryManager <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+    private categories: SnapshotCategory<T, K>[] = [];
 
     // Add a new category
-    addCategory(name: SnapshotCategoryType, description?: string): SnapshotCategory<T, Meta, K> {
-        const newCategory: SnapshotCategory<T, Meta, K> = {
+    addCategory(name: SnapshotCategoryType, description?: string): SnapshotCategory<T, K> {
+        const newCategory: SnapshotCategory<T, K> = {
             id: this.generateId(),
             name,
             description,
@@ -19,7 +19,7 @@ class SnapshotCategoryManager <T extends Data, Meta extends UnifiedMetaDataOptio
     }
 
     // Add a snapshot to a category
-    addSnapshotToCategory(categoryId: string, snapshot: Snapshot<T, Meta, K>): boolean {
+    addSnapshotToCategory(categoryId: string, snapshot: Snapshot<T, K>): boolean {
         const category = this.categories.find(cat => cat.id === categoryId);
         if (category) {
             category.snapshots.push(snapshot);
@@ -39,7 +39,7 @@ class SnapshotCategoryManager <T extends Data, Meta extends UnifiedMetaDataOptio
     }
 
     // Retrieve all snapshots in a category
-    getSnapshotsInCategory(categoryId: string): Snapshot<T, Meta, K>[] | null {
+    getSnapshotsInCategory(categoryId: string): Snapshot<T, K>[] | null {
         const category = this.categories.find(cat => cat.id === categoryId);
         return category ? category.snapshots : null;
     }

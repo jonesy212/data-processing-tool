@@ -1,6 +1,8 @@
+import { handleApiError } from '@/app/api/ApiLogs';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseData } from '@/app/components/models/data/Data';
 import { Dispatch } from '@reduxjs/toolkit';
 import { AxiosError, AxiosResponse } from 'axios';
-import dotProp from 'dot-prop';
 import { TaskHistoryEntry } from '../components/interfaces/history/TaskHistoryEntry';
 import { Task } from '../components/models/tasks/Task';
 import { historyManagerStore } from '../components/state/stores/HistoryStore';
@@ -10,7 +12,7 @@ import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
 
 // Define the API base URL
-const API_BASE_URL = dotProp.getProperty(endpoints, 'tasks.list');
+const API_BASE_URL = endpoints.tasks.list;
 
 
 interface TaskNotificationMessages {
@@ -40,6 +42,7 @@ interface TaskNotificationMessages {
   FETCH_TASK_HISTORY_ERROR: string;
   FETCH_TASKS_BY_USER_ERROR: string;
   FETCH_UPDATED_TASK_ERROR: string;
+
   // Add more keys as needed
 }
 
@@ -73,26 +76,33 @@ const taskApiNotificationMessages: TaskNotificationMessages = {
   FETCH_UPDATED_TASK_ERROR: 'Failed to fetch updated task',
   // Add more properties as needed
 };
+
+type TaskApiNotificationKeys = keyof typeof taskApiNotificationMessages
+
 // Function to handle API errors and notify for tasks
 const handleTaskApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: DataaskNotificationMessages
+  errorMessageId: TaskApiNotificationKeys
 ) => {
-  const errorMessageText = taskApiNotificationMessages[errorMessageId];
-  // Notify the error message
-  useNotification().notify(
-    errorMessageId,
-    errorMessageText,
-    null,
-    new Date(),
-    "ApiClientError" as NotificationType
-  );
-};
+  handleApiError(error, errorMessage);
+ 
+  if (errorMessageId && taskApiNotificationMessages.hasOwnProperty(errorMessageId)) {
+    const errorMessageText = taskApiNotificationMessages[errorMessageId];
+    // Notify the error message
+    useNotification().notify(
+      errorMessageId,
+      errorMessageText,
+      null,
+      new Date(),
+      "ApiClientError" as NotificationType
+    );
+  };
+}
 
 
 
-const fetchTasks = async (): Promise<Task[]> => {
+const fetchTasks = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<Task<T, K>[]> => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}`);
     return response.data.tasks;
@@ -108,7 +118,7 @@ const fetchTasks = async (): Promise<Task[]> => {
 };
 
 
-const updateTaskPositionSuccess = (task: Task) => {
+const updateTaskPositionSuccess = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(task: Task<T, K>) => {
   return {
     type: 'UPDATE_TASK_POSITION_SUCCESS',
     payload: {
@@ -118,12 +128,12 @@ const updateTaskPositionSuccess = (task: Task) => {
 };
 
 
-const updateTaskPosition = async (taskId: string, newPosition: number, dispatch: Dispatch, notify: () => void): Promise<void> => {
+const updateTaskPosition = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(taskId: string, newPosition: number, dispatch: Dispatch, notify: () => void): Promise<void> => {
   try {
     const updateTaskEndpoint = `${API_BASE_URL}/updatePosition`; // Adjust the API endpoint according to your project's API structure
-    const response: AxiosResponse<Task> = await axiosInstance.post(updateTaskEndpoint, { task: taskId, position: newPosition });
+    const response: AxiosResponse<Task<T, K>> = await axiosInstance.post(updateTaskEndpoint, { task: taskId, position: newPosition });
 
-    const updatedTask: Task = response.data;
+    const updatedTask: Task<T, K> = response.data;
 
     // Update task in task manager store (if applicable)
     const taskManagerStore = useTaskManagerStore(); // Ensure this hook is correctly used
@@ -154,7 +164,7 @@ const updateTaskPosition = async (taskId: string, newPosition: number, dispatch:
   }
 };
 
-const addTask = async (newTask: Omit<Task, 'id'>): Promise<void> => {
+const addTask = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(newTask: Omit<Task<T, K>, 'id'>): Promise<void> => {
   try {
     const addTaskEndpoint = `${API_BASE_URL}.add`;
     const response = await axiosInstance.post(addTaskEndpoint, newTask);
@@ -196,8 +206,8 @@ const removeTask = async (taskId: number): Promise<void> => {
   }
 };
 
-const toggleTask = (taskId: number): Promise<Task | void> => {
-  return new Promise<Task | void>(async (resolve, reject) => {
+const toggleTask = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(taskId: number): Promise<Task<T, K> | void> => {
+  return new Promise<Task<T, K> | void>(async (resolve, reject) => {
     try {
       const toggleTaskEndpoint = `${API_BASE_URL}.toggle.${taskId}`;
       const response = await axiosInstance.put(toggleTaskEndpoint);
@@ -217,8 +227,8 @@ const toggleTask = (taskId: number): Promise<Task | void> => {
   })
 };
 
-const updateTask = (taskId: number, newTitle: string): Promise<Task | void> => {
-  return new Promise<Task | void>(async (resolve, reject) => {
+const updateTask = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(taskId: number, newTitle: string): Promise<Task<T, K> | void> => {
+  return new Promise<Task<T, K> | void>(async (resolve, reject) => {
     try {
       const updateTaskEndpoint = `${API_BASE_URL}.update.${taskId}`;
       const response = await axiosInstance.put(updateTaskEndpoint, { title: newTitle });
@@ -304,11 +314,14 @@ const unassignTask = async (taskId: number): Promise<void> => {
 };
 
 
-const fetchTaskData = (taskId: number): Promise<Task | void> => {
-  return new Promise<Task | void>(async (resolve, reject) => {
+const fetchTaskData = <
+  T extends  BaseData<T>, 
+  K extends T = T
+>(taskId: number): Promise<Task<T, K> | void> => {
+  return new Promise<Task<T, K> | void>(async (resolve, reject) => {
     try {
       const fetchTaskEndpoint = `${API_BASE_URL}.get.${taskId}`;
-      const response = await axiosInstance.get<Task>(fetchTaskEndpoint); // Added type annotation for response
+      const response = await axiosInstance.get<Task<T, K>>(fetchTaskEndpoint); // Added type annotation for response
 
       // Perform any necessary processing here
 
@@ -326,8 +339,8 @@ const fetchTaskData = (taskId: number): Promise<Task | void> => {
 };
 
 
-const createTask = (newTask: Task): Promise<Task | void> => {
-  return new Promise<Task | void>(async (resolve, reject) => {
+const createTask = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(newTask: Task<T, K>): Promise<Task<T, K> | void> => {
+  return new Promise<Task<T, K> | void>(async (resolve, reject) => {
 
     try {
       const createTaskEndpoint = `${API_BASE_URL}.add`;
@@ -427,10 +440,10 @@ const bulkUnassignTodos = async (todoIds: number[]): Promise<void> => {
   }
 };
 
-const getTasksByUserId = async (userId: number): Promise<Task[]> => {
+const getTasksByUserId = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(userId: number): Promise<Task<T, K>[]> => {
   try {
     const getTasksByUserIdEndpoint = `${API_BASE_URL}.getByUser.${userId}`;
-    const response = await axiosInstance.get<Task[]>(getTasksByUserIdEndpoint);
+    const response = await axiosInstance.get<Task<T, K>[]>(getTasksByUserIdEndpoint);
     return response.data;
   } catch (error) {
     console.error('Error fetching tasks by user:', error);

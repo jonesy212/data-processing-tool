@@ -1,5 +1,6 @@
 // Logger.ts
-// Update the SecurityLogger class to use encryption and decryption functions
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData } from '@/app/components/models/data/Data';
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { LogData } from "@/app/components/models/LogData";
 import { Task } from "@/app/components/models/tasks/Task";
@@ -583,11 +584,11 @@ class AnimationLogger extends Logger {
     }
   }
 
-  static generateID<T extends Data, K extends Data = T>(
+  static generateID<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetaData<T, K> = StructuredMetaData<T, K>>(
     prefix: string,
     name: string,
     type: NotificationType,
-    dataDetails?: DataDetails<T, Meta, K>
+    dataDetails?: DataDetails<T, K>
   ): string {
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 10);
@@ -1043,20 +1044,27 @@ class FileLogger extends Logger {
   }
 }
 
-class TaskLogger<T extends Data, K extends Data, Meta> extends Logger {
-  // Make logTaskEvent static and provide types directly
-  static logTaskEvent<DataType extends Data, KeyType extends Data, MetaType>(
-    taskID: Task["id"],
-    event: Task,
+class TaskLogger<
+  T extends BaseData<T>, 
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> extends Logger {
+  static logTaskEvent<
+    DataType extends BaseData<DataType>, 
+    KeyType extends DataType = DataType,
+    MetaType extends StructuredMetadata<DataType, KeyType> = StructuredMetadata<DataType, KeyType>
+  >(
+    taskID: Task<DataType, KeyType, MetaType>["id"],
+    event: Task<DataType, KeyType, MetaType>,
     completionMessage: string,
     type: string,
     notify: (message: string, type: string, date: Date, id: string) => void,
-    meta: Map<string, Snapshot<DataType, MetaType, KeyType>> & Data // Use DataType, KeyType, MetaType for flexibility
+    meta: Map<string, Snapshot<DataType, KeyType, MetaType>> & DataType // Correctly correlate DataType, KeyType, and MetaType
   ) {
     // Assuming you want to log the completion message
 
     // Define the completionMessageLog using LogData interface
-    const completionMessageLog: LogData & Partial<NotificationData> = {
+    const completionMessageLog: LogData<T, K> & Partial<NotificationData> = {
       timestamp: new Date(), // Set the current timestamp
       level: "INFO", // Specify the log level, e.g., INFO, WARNING, ERROR
       message: completionMessage, // Use the completionMessage provided as the log message

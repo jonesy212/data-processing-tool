@@ -5,6 +5,7 @@ import React from 'react';
 interface ConfigurationServiceComponentProps {
   apiConfigs: ApiConfig[]
 }
+
 const ConfigurationServiceComponent: React.FC<ConfigurationServiceComponentProps> = () => {
   const apiConfig = configurationService.getCurrentApiConfig();
 

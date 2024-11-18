@@ -1,6 +1,4 @@
 // RootStores.ts
-
-
 import { action, makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
 import { CalendarActionPayload, CalendarActionType } from '../../database/CalendarActionPayload';
@@ -46,7 +44,7 @@ export interface MobXRootState {
   userManager: UserStore;
   teamManager: TeamManagerStore;
   projectOwner: ProjectManagerStore;
-  dataManager: DataStore<T, Meta, K>;
+  dataManager: DataStore<T, K>;
   dataAnalysisManager: DataAnal;
   calendarManager: CalendarManagerStore;
   todoManager: TodoManagerStore;
@@ -78,7 +76,7 @@ export class RootStores {
   taskManager: TaskManagerStore;
   trackerManager: TrackerStore;
   userManager: UserStore;
-  teamManager: TeamManagerStore<T, Meta, K>;
+  teamManager: TeamManagerStore<T, K>;
   projectOwner: ProjectManagerStore;
   dataManager: DataStore<any, any>;
   dataAnalysisManager: DataAnalysisManagerStore;
@@ -185,7 +183,7 @@ export class RootStores {
   }
 
   @action
-  public action(type: CalendarActionType, payload: CalendarActionPayload<T, Meta, K>) {
+  public action(type: CalendarActionType, payload: CalendarActionPayload<T, K>) {
     this.calendarManager.action(type, payload);
   }
 

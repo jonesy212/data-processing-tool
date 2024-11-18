@@ -1,20 +1,21 @@
 import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
-import { Meta } from './../components/models/data/dataStoreMethods';
+import { Tag } from '@/app/components/models/tracker/Tag';
+import { K, T } from './../components/models/data/dataStoreMethods';
 // ApiDocument.ts
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
 import { DocumentOptions } from "../components/documents/DocumentOptions";
 import { Presentation } from "../components/documents/Presentation";
 
 import {
-  createAsyncThunk
+    createAsyncThunk
 } from "node_modules/@reduxjs/toolkit/dist/createAsyncThunk";
 import {
-  DocumentStatusEnum,
-  DocumentTypeEnum,
+    DocumentStatusEnum,
+    DocumentTypeEnum,
 } from "../components/documents/DocumentGenerator";
 import { DocumentObject } from "../components/state/redux/slices/DocumentSlice";
 import { DatabaseConfig } from "../configs/DatabaseConfig";
@@ -25,10 +26,15 @@ import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
 
 
-import { Data } from "../components/models/data/Data";
+import { ClientInformation, CustomMediaSession } from '../components/database/ClientInformation';
+import { DocumentData } from '../components/documents/DocumentBuilder';
+import FileData from '../components/models/data/FileData';
 import { WritableDraft } from "../components/state/redux/ReducerGenerator";
-import { UnifiedMetaDataOptions } from "../configs/database/MetaDataOptions";
+import { Document } from '../components/state/stores/DocumentStore';
+import { User } from '../components/users/User';
+import { Task } from '../typings/appTypes';
 import { endpoints } from './endpointConfigurations';
+import { BaseData } from '../components/models/data/Data';
 // Define the API base URL
 const API_BASE_URL = endpoints.data.documents;
 
@@ -48,6 +54,75 @@ interface DocumentNotificationMessages {
   DELETE_DOCUMENT_SUCCESS: string;
   DELETE_DOCUMENT_ERROR: string;
   UPDATE_DOCUMENT_NAME_SUCCESS: string;
+  UPDATE_DOCUMENT_NAME_ERROR: string;
+  SEARCH_DOCUMENT_ERROR: string;
+  FILTER_DOCUMENTS_ERROR: string;
+  DOWNLOAD_DOCUMENT_ERROR: string;
+  LIST_DOCUMENTS_ERROR: string;
+  REMOVE_DOCUMENT_ERROR: string;
+  SEARCH_DOCUMENTS_ERROR: string;
+  UPLOAD_DOCUMENT_ERROR: string;
+
+  SHARE_DOCUMENT_ERROR: string; 
+LOCK_DOCUMENT_ERROR: string;
+UNLOCK_DOCUMENT_ERROR: string;
+ARCHIVE_DOCUMENT_ERROR: string;
+RESTORE_DOCUMENT_ERROR: string;
+MOVE_DOCUMENT_ERROR: string;
+MERGE_DOCUMENTS_ERROR: string;
+SPLIT_DOCUMENT_ERROR: string;
+VALIDATE_DOCUMENT_ERROR: string;
+ENCRYPT_DOCUMENT_ERROR: string;
+DECRYPT_DOCUMENT_ERROR: string;
+TRACK_DOCUMENT_CHANGES_ERROR: string;
+COMPARE_DOCUMENTS_ERROR: string;
+TAG_DOCUMENTS_ERROR: string;
+CATEGORIZE_DOCUMENTS_ERROR: string;
+CUSTOMIZE_DOCUMENT_VIEW_ERROR: string;
+COMMENT_ON_DOCUMENT_ERROR: string;
+MENTION_USER_IN_DOCUMENT_ERROR: string;
+ASSIGN_TASK_IN_DOCUMENT_ERROR: string;
+REQUEST_REVIEW_OF_DOCUMENT_ERROR: string;
+APPROVE_DOCUMENT_ERROR: string;
+REJECT_DOCUMENT_ERROR: string;
+REQUEST_FEEDBACK_ON_DOCUMENT_ERROR: string;
+PROVIDE_FEEDBACK_ON_DOCUMENT_ERROR: string;
+RESOLVE_FEEDBACK_ON_DOCUMENT_ERROR: string;
+COLLABORATIVE_EDITING_ERROR: string;
+SMART_TAGGING_ERROR: string;
+DOCUMENT_ANNOTATION_ERROR: string;
+DOCUMENT_ACTIVITY_LOGGING_ERROR: string;
+INTELLIGENT_DOCUMENT_SEARCH_ERROR: string;
+GET_DOCUMENT_VERSIONS_ERROR: string;
+UPDATE_SNAPSHOT_DETAILS_ERROR: string;
+CREATE_DOCUMENT_VERSION_ERROR: string;
+REVERT_TO_DOCUMENT_VERSION_ERROR: string;
+VIEW_DOCUMENT_HISTORY_ERROR: string;
+DOCUMENT_VERSION_COMPARISON_ERROR: string;
+GRANT_DOCUMENT_ACCESS_ERROR: string;
+REVOKE_DOCUMENT_ACCESS_ERROR: string;
+MANAGE_DOCUMENT_PERMISSIONS_ERROR: string;
+INITIATE_DOCUMENT_WORKFLOW_ERROR: string;
+AUTOMATE_DOCUMENT_TASKS_ERROR: string;
+TRIGGER_DOCUMENT_EVENTS_ERROR: string;
+
+DOCUMENT_APPROVAL_WORKFLOW_ERROR: string;
+DOCUMENT_LIFECYCLE_MANAGEMENT_ERROR: string;
+CONNECT_WITH_EXTERNAL_SYSTEM_ERROR: string;
+SYNCHRONIZE_WITH_CLOUD_STORAGE_ERROR: string;
+IMPORT_FROM_EXTERNAL_ERROR: string;
+EXPORT_TO_EXTERNAL_ERROR: string;
+GENERATE_DOCUMENT_ERROR: string;
+GENERATE_DOCUMENT_REPORT_ERROR: string;
+EXPORT_DOCUMENT_REPORT_ERROR: string;
+SCHEDULE_REPORT_GENERATION_ERROR: string;
+CUSTOMIZE_REPORT_SETTINGS_ERROR: string;
+BACKUP_DOCUMENTS_ERROR: string;
+RETRIEVE_BACKUP_ERROR: string;
+DOCUMENT_REDACTION_ERROR: string;
+DOCUMENT_ACCESS_CONTROLS_ERROR: string;
+GET_DOCUMENT_ERROR: string;
+DOCUMENT_TEMPLATES_ERROR: string;
   // Add more keys as needed
 }
 
@@ -61,25 +136,89 @@ const apiNotificationMessages: DocumentNotificationMessages = {
   UPDATE_DOCUMENT_ERROR: "Failed to update document",
   DELETE_DOCUMENT_SUCCESS: "Document deleted successfully",
   DELETE_DOCUMENT_ERROR: "Failed to delete document",
-  UPDATE_DOCUMENT_NAME_SUCCESS: "Document updated name successfully"
+  UPDATE_DOCUMENT_NAME_SUCCESS: "Document updated name successfully",
+  UPDATE_DOCUMENT_NAME_ERROR:  "Failed to update document name",
+  SEARCH_DOCUMENT_ERROR: "Failed to search document",
+  FILTER_DOCUMENTS_ERROR: "Failed to filter documents",
+  DOWNLOAD_DOCUMENT_ERROR: "Failed to download document",
+  LIST_DOCUMENTS_ERROR: "Failed to list documents",
+  REMOVE_DOCUMENT_ERROR: "Failed to remove document",
+  SEARCH_DOCUMENTS_ERROR: "Failed to search documents",
+  UPLOAD_DOCUMENT_ERROR: "Failed to upload document",
+  SHARE_DOCUMENT_ERROR: "An error occurred while sharing the document. Please check the sharing settings and try again.",
+
+  LOCK_DOCUMENT_ERROR: "Failed to lock the document. Ensure it is not already locked and retry.",
+  UNLOCK_DOCUMENT_ERROR: "An error occurred while unlocking the document. Please try again or contact support.",
+  ARCHIVE_DOCUMENT_ERROR: "Failed to archive the document. Verify the document status and retry.",
+  RESTORE_DOCUMENT_ERROR: "An error occurred while restoring the document. Please ensure the document is eligible for restoration.",
+  MOVE_DOCUMENT_ERROR: "An error occurred while moving the document. Please verify the destination and try again.",
+  MERGE_DOCUMENTS_ERROR: "Failed to merge the documents. Ensure they are compatible for merging and retry.",
+  SPLIT_DOCUMENT_ERROR: "An error occurred while splitting the document. Please verify the split criteria and try again.",
+  VALIDATE_DOCUMENT_ERROR: "Document validation failed. Please check the document's content and format.",
+  ENCRYPT_DOCUMENT_ERROR: "An error occurred while encrypting the document. Please review the encryption settings and retry.",
+  DECRYPT_DOCUMENT_ERROR: "Failed to decrypt the document. Ensure the encryption key is correct and try again.",
+  TRACK_DOCUMENT_CHANGES_ERROR: "An error occurred while tracking changes in the document. Please retry or check the document's status.",
+  COMPARE_DOCUMENTS_ERROR: "Failed to compare the documents. Ensure they are accessible and retry.",
+  TAG_DOCUMENTS_ERROR: "An error occurred while tagging the documents. Please verify the tag settings and try again.",
+  CATEGORIZE_DOCUMENTS_ERROR: "Failed to categorize the documents. Please review the categorization criteria and retry.",
+  CUSTOMIZE_DOCUMENT_VIEW_ERROR: "An error occurred while customizing the document view. Please check the view settings and try again.",
+  COMMENT_ON_DOCUMENT_ERROR: "Failed to add a comment to the document. Please retry and ensure you have permission to comment.",
+  MENTION_USER_IN_DOCUMENT_ERROR: "An error occurred while mentioning the user in the document. Please verify the user's details and try again.",
+  ASSIGN_TASK_IN_DOCUMENT_ERROR: "Failed to assign a task within the document. Ensure the task details are correct and retry.",
+  REQUEST_REVIEW_OF_DOCUMENT_ERROR: "An error occurred while requesting a review of the document. Please verify the review details and try again.",
+  APPROVE_DOCUMENT_ERROR: "Failed to approve the document. Please check the approval criteria and retry.",
+  REJECT_DOCUMENT_ERROR: "An error occurred while rejecting the document. Please verify the rejection reason and try again.",
+  REQUEST_FEEDBACK_ON_DOCUMENT_ERROR: "Failed to request feedback on the document. Please check the feedback request details and retry.",
+  PROVIDE_FEEDBACK_ON_DOCUMENT_ERROR: "An error occurred while providing feedback on the document. Please ensure the feedback meets the required format.",
+  RESOLVE_FEEDBACK_ON_DOCUMENT_ERROR: "Failed to resolve feedback on the document. Please review the feedback resolution criteria.",
+  COLLABORATIVE_EDITING_ERROR: "An error occurred during collaborative editing of the document. Please ensure all participants are connected.",
+  SMART_TAGGING_ERROR: "Failed to apply smart tagging to the document. Verify the tagging rules and try again.",
+  DOCUMENT_ANNOTATION_ERROR: "An error occurred while annotating the document. Please check the annotation details and retry.",
+  DOCUMENT_ACTIVITY_LOGGING_ERROR: "Failed to log the document activity. Please ensure the activity meets logging criteria.",
+  INTELLIGENT_DOCUMENT_SEARCH_ERROR: "An error occurred during intelligent document search. Please verify the search parameters and retry.",
+  GET_DOCUMENT_VERSIONS_ERROR: "Failed to retrieve the document versions. Please ensure the document has version history.",
+  UPDATE_SNAPSHOT_DETAILS_ERROR: "An error occurred while updating the snapshot details. Please check the snapshot settings and retry.",
+  CREATE_DOCUMENT_VERSION_ERROR: "Failed to create a new document version. Please verify the document state and retry.",
+  REVERT_TO_DOCUMENT_VERSION_ERROR: "An error occurred while reverting to a previous document version. Please verify the version details.",
+  VIEW_DOCUMENT_HISTORY_ERROR: "Failed to view the document history. Ensure the document has a history log.",
+  DOCUMENT_VERSION_COMPARISON_ERROR: "An error occurred while comparing document versions. Please verify the versions and retry.",
+  GRANT_DOCUMENT_ACCESS_ERROR: "Failed to grant access to the document. Verify the access settings and try again.",
+  REVOKE_DOCUMENT_ACCESS_ERROR: "An error occurred while revoking document access. Please check the access settings and retry.",
+  MANAGE_DOCUMENT_PERMISSIONS_ERROR: "Failed to manage the document permissions. Please review the permission settings.",
+  INITIATE_DOCUMENT_WORKFLOW_ERROR: "An error occurred while initiating the document workflow. Verify the workflow parameters and retry.",
+  AUTOMATE_DOCUMENT_TASKS_ERROR: "Failed to automate the document tasks. Please review the automation rules.",
+  TRIGGER_DOCUMENT_EVENTS_ERROR: "An error occurred while triggering document events. Please ensure the events are correctly configured.",
+  DOCUMENT_APPROVAL_WORKFLOW_ERROR: "An error occurred while processing the document approval workflow. Please try again or contact support if the issue persists.",
+  DOCUMENT_LIFECYCLE_MANAGEMENT_ERROR: "An error occurred during the document lifecycle management process. Please review the workflow and retry.",
+  CONNECT_WITH_EXTERNAL_SYSTEM_ERROR: "Failed to connect with the external system. Ensure the system is available and check your integration settings.",
+  SYNCHRONIZE_WITH_CLOUD_STORAGE_ERROR: "An error occurred while synchronizing with cloud storage. Verify the connection settings and try again.",
+  IMPORT_FROM_EXTERNAL_ERROR: "An error occurred while importing data from the external source. Please check the source format and retry.",
+  EXPORT_TO_EXTERNAL_ERROR: "Failed to export data to the external destination. Ensure the destination is accessible and check the export settings.",
+  GENERATE_DOCUMENT_ERROR: "An error occurred while generating the document. Please review the document settings and try again.",
+  GENERATE_DOCUMENT_REPORT_ERROR: "An error occurred while generating the document report. Verify the report parameters and retry.",
+  EXPORT_DOCUMENT_REPORT_ERROR: "Failed to export the document report. Ensure the export location is available and retry.",
+  SCHEDULE_REPORT_GENERATION_ERROR: "An error occurred while scheduling the report generation. Please review the schedule settings and try again.",
+  CUSTOMIZE_REPORT_SETTINGS_ERROR: "An error occurred while customizing the report settings. Verify the configuration and try again.",
+  BACKUP_DOCUMENTS_ERROR: "Failed to create a backup of the documents. Please check the backup settings and retry.",
+  RETRIEVE_BACKUP_ERROR: "An error occurred while retrieving the document backup. Ensure the backup file is available and try again.",
+  DOCUMENT_REDACTION_ERROR: "An error occurred during the document redaction process. Please check the document content and retry.",
+  DOCUMENT_ACCESS_CONTROLS_ERROR: "Failed to apply the document access controls. Verify the access settings and try again.",
+  GET_DOCUMENT_ERROR: "An error occurred while retrieving the document. Please ensure the document is accessible and try again.",
+  DOCUMENT_TEMPLATES_ERROR: "An error occurred while processing the document templates. Verify the template settings and try again.",
   // Add more properties as needed
 };
 
 // Function to handle API errors and notify
 const handleDocumentApiErrorAndNotify = (
   error: AxiosError<unknown>,
-  errorMessage: string,
-  errorMessageId: string
+  errorMessageId: keyof DocumentNotificationMessages
 ) => {
+  const errorMessage = apiNotificationMessages[errorMessageId]
   handleApiError(error, errorMessage);
   if (errorMessageId) {
-    const errorMessageText = dotProp.getProperty(
-      apiNotificationMessages,
-      errorMessageId
-    );
     useNotification().notify(
       errorMessageId,
-      errorMessageText as unknown as string,
+      'Document error',
       null,
       new Date(),
       "DocumentError" as NotificationTypeEnum
@@ -88,7 +227,7 @@ const handleDocumentApiErrorAndNotify = (
 };
 
 
-const fakeApiCall = (documentId: number): Promise<DocumentObject<Data, Meta, Data>> => {
+const fakeApiCall = (documentId: number): Promise<DocumentObject<T, K<T>>> => {
   // Simulate an API call
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -97,19 +236,19 @@ const fakeApiCall = (documentId: number): Promise<DocumentObject<Data, Meta, Dat
         status: DocumentStatusEnum.Draft,
         type: DocumentTypeEnum.Document,
         // Other properties as needed
-      } as DocumentObject<Data, Meta, Data>);
+      } as DocumentObject<T, K<T>>);
     }, 1000);
   });
 };
 
 // Define an async thunk action creator to update the document name
 const updateDocumentName = createAsyncThunk<
-  DocumentObject<Data, Meta, Data>, // Specify the type argument here
+  DocumentObject<T, K<T>>, 
   { documentId: number; newName: string }
 >(
   "documents/updateDocumentName",
    ({ documentId, newName }, { dispatch }) => {
-    return new Promise<DocumentObject<Data, Meta, Data>>((resolve, reject) => {
+    return new Promise<DocumentObject<T, K<T>>>((resolve, reject) => {
       axiosInstance
         .put(
           `${API_BASE_URL}/documents/${documentId}/name`,
@@ -127,14 +266,13 @@ const updateDocumentName = createAsyncThunk<
             new Date(),
             "DocumentSuccess" as NotificationTypeEnum
           );
-          resolve(response.data as DocumentObject<Data, Meta, Data>);
+          resolve(response.data as DocumentObject<T, K<T>>);
         })
         .catch((error) => {
-          const errorMessage = "Failed to update document name";
+          
           console.error("Error updating document name:", error);
           handleDocumentApiErrorAndNotify(
             error as AxiosError<unknown>,
-            errorMessage,
             "UPDATE_DOCUMENT_NAME_ERROR"
           );
           reject(error);
@@ -144,23 +282,23 @@ const updateDocumentName = createAsyncThunk<
 );
 
 // Define an async thunk action creator to fetch a document by ID
-const fetchDocumentById = createAsyncThunk<DocumentObject<Data, Meta, Data>, number>(
+const fetchDocumentById = createAsyncThunk<DocumentObject<T, K<T>>, number>(
   "documents/fetchDocumentById",
   (documentId: number, { dispatch }) => {
-    return new Promise<DocumentObject<Data, Meta, Data>>((resolve, reject) => {
+    return new Promise<DocumentObject<T, K<T>>>((resolve, reject) => {
       axiosInstance
         .get(`${API_BASE_URL}/documents/${documentId}`, {
           headers: headersConfig,
         })
         .then((response) => {
-          resolve(response.data as DocumentObject<Data, Meta, Data>);
+          resolve(response.data as DocumentObject<T, K<T>>);
         })
         .catch((error) => {
           console.error("Error fetching document:", error);
           const errorMessage = "Failed to fetch document";
           handleDocumentApiErrorAndNotify(
             error as AxiosError<unknown>,
-            errorMessage,
+      
             "FETCH_DOCUMENT_ERROR"
           );
           reject(error);
@@ -170,30 +308,63 @@ const fetchDocumentById = createAsyncThunk<DocumentObject<Data, Meta, Data>, num
 );
 
 // Function to convert documentData to WritableDraft<DocumentObject>
-const createDraftDocument = (data: DocumentObject<Data, Meta, Data>): WritableDraft<DocumentObject<Data, Meta, Data>> => {
+const createDraftDocument = <
+  T extends  BaseData<T>,
+  K extends T = T
+  >(
+  data: DocumentObject<T, K>
+): WritableDraft<DocumentObject<T, K>> => {
   
   // Get the languages from the window and ensure they're of type string[]
   const languages: string[] = [...window.navigator.languages];
-  const supportedLanguages = languages.filter(lang => Object.values(LanguageEnum).includes(lang as LanguageEnum));
+  const supportedLanguages = languages.filter(lang =>
+    Object.values(LanguageEnum).includes(lang as LanguageEnum)
+  );
+
   return {
     ...data,
-    artwork: data.artwork ? data.artwork.map(item => ({...item})) : [],
-    defaultView: data.defaultView ? { ...data.defaultView } : undefined,
-    clientInformation: data.clientInformation ? {
-      ...data.clientInformation,
-      mediaSession: data.clientInformation.mediaSession ? {
-        ...data.clientInformation.mediaSession,
-        metadata: data.clientInformation.mediaSession.metadata ? {
-          ...data.clientInformation.mediaSession.metadata,
-          artwork: data.clientInformation.mediaSession.metadata.artwork ? 
-            [...data.clientInformation.mediaSession.metadata.artwork] : []
-        } : undefined
-      } : undefined
-    } : undefined,
+    artwork: data.artwork ? data.artwork.map(item => ({ ...item })) : [],
+    defaultView: data.defaultView ? 
+      ({ ...data.defaultView } as unknown as WritableDraft<Window>) : 
+      undefined,
+    clientInformation: data.clientInformation
+      ? {
+          ...data.clientInformation,
+          mediaSession: data.clientInformation.mediaSession
+            ? {
+                ...data.clientInformation.mediaSession,
+                metadata: data.clientInformation.mediaSession.metadata
+                  ? {
+                      ...data.clientInformation.mediaSession.metadata,
+                      artwork: data.clientInformation.mediaSession.metadata.artwork
+                        ? [...data.clientInformation.mediaSession.metadata.artwork]
+                        : [],
+                    } as WritableDraft<MediaMetadata>
+                  : null,
+              } as WritableDraft<CustomMediaSession>
+            : undefined,
+        } as WritableDraft<ClientInformation>
+      : undefined,
+    supportedLanguages: supportedLanguages.length > 0 ? supportedLanguages : ["en"], // Default to English if none are supported
+    doctype: data.doctype ? { ...data.doctype } as unknown as WritableDraft<DocumentType> : null,
+    ownerDocument: data.ownerDocument ? { ...data.ownerDocument } as unknown as WritableDraft<Document<T, K>> : null,
+    scrollingElement: data.scrollingElement ? { ...data.scrollingElement } as unknown as WritableDraft<Element> : null,
+    
+    documentData: {
+      ...data.documentData,
+      file: data.documentData?.file ? { ...data.documentData.file } as WritableDraft<FileData> : undefined,
+      subtasks: data.documentData?.subtasks?.map((subtask: Task) => ({
+        ...subtask,
+        assignedTo: subtask.assignedTo ? { ...subtask.assignedTo } as WritableDraft<User> : null,
+        tags: subtask.tags ? Object.values(subtask.tags).map((tag: Tag<T, K<T>>) => ({ ...tag })) : [],
+      })) || undefined,
+    } as WritableDraft<DocumentData<T, K>>,
+    comments: data.comments ? {...data.comments } as WritableDraft<Comment<T, K>[]> : undefined
   };
-
 };
-const convertToDocumentObject = (draft: DocumentObject<Data, Meta, Data>): DocumentObject<Data, Meta, Data> => {
+
+
+const convertToDocumentObject = (draft: DocumentObject<T, K<T>>): DocumentObject<T, K<T>> => {
   return {
     ...draft,
     // Convert or clean up any properties as necessary to ensure strict type compatibility
@@ -208,29 +379,29 @@ const convertToDocumentObject = (draft: DocumentObject<Data, Meta, Data>): Docum
 // Mock API function for fetching a document by ID
 const fetchDocumentByIdAPI = (
   documentId: number,
-  updateDocument: (data: WritableDraft<DocumentObject<Data, Meta, Data>>) => void
-): Promise<DocumentObject<Data, Meta, Data>> => {
+  updateDocument: (data: WritableDraft<DocumentObject<T, K<T>>>) => void
+): Promise<DocumentObject<T, K<T>>> => {
   return new Promise(async (resolve, reject) => {  // Wrap in a new Promise
     try {
       // Use axios to fetch the document by ID
       const response = await axiosInstance.get(`/api/documents/${documentId}`);
       
       // Parse the document data from the response
-      const documentData: DocumentObject<Data, Meta, Data> = response.data;
+      const documentData: DocumentObject<T, K<T>> = response.data;
 
       // Create a draft document for updates
-      const draftDocument: WritableDraft<DocumentObject<Data, Meta, Data>> = createDraftDocument(documentData);
+      const draftDocument: WritableDraft<DocumentObject<T, K<T>>> = createDraftDocument(documentData);
       updateDocument(draftDocument);
 
-      // Convert draftDocument back to DocumentObject<Data, Meta, Data> before resolving
-      const finalDocument: DocumentObject<Data, Meta, Data> = convertToDocumentObject(draftDocument);
+      // Convert draftDocument back to DocumentObject<T, K<T>> before resolving
+      const finalDocument: DocumentObject<T, K<T>> = convertToDocumentObject(draftDocument);
       
       // Resolve the promise with the updated document data
       resolve(finalDocument);
     } catch (error: any) {
       console.error("Error in fetchDocumentByIdAPI:", error);
       const errorMessage = `Failed to fetch document with ID ${documentId}`;
-      handleDocumentApiErrorAndNotify(error, errorMessage, "FETCH_DOCUMENT_ERROR");
+      handleDocumentApiErrorAndNotify(error, "FETCH_DOCUMENT_ERROR");
       
       // Reject the promise with an error
       reject(new Error(errorMessage));
@@ -255,7 +426,7 @@ const fetchJsonDocumentByIdAPI = async (documentId: string,
     const errorMessage = "Failed to fetch JSON document";
     handleDocumentApiErrorAndNotify(
       error.errorMessage,
-      errorMessage,
+
       "FETCH_DOCUMENT_ERROR"
     );
   }
@@ -277,7 +448,7 @@ const fetchXmlDocumentByIdAPI = async (
     const errorMessage = "Failed to fetch XML document";
     handleDocumentApiErrorAndNotify(
       error.errorMessage,
-      errorMessage,
+
       "FETCH_DOCUMENT_ERROR"
     );
   }
@@ -322,41 +493,38 @@ const updateDocumentNameAPI = async (
     const errorMessage = "Failed to update document name";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "UPDATE_DOCUMENT_NAME_ERROR"
     );
   }
 };
 
 
-const addDocumentAPI = async (
-  documentData: DocumentObject<Data, Meta, Data>
-): Promise<DocumentObject<Data, Meta, Data>> => {
-  try {
-    const addDocumentEndpoint = `${API_BASE_URL}/documents`;
-    const response = await axiosInstance.post(
-      addDocumentEndpoint,
-      documentData,
-      {
-        headers: headersConfig,
-      }
-    );
-    return response.data as Promise<DocumentObject<Data, UnifiedMetaDataOptions, Data>>; // Ensure to cast the response data
-  } catch (error) {
-    console.error("Error adding document:", error);
-    const errorMessage = "Failed to add document";
-    handleDocumentApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      errorMessage,
-      "ADD_DOCUMENT_ERROR"
-    );
-    throw error;
-  }
+const addDocumentAPI = (
+  documentData: DocumentObject<T, K<T>>
+): Promise<DocumentObject<T, K<T>>> => {
+  const addDocumentEndpoint = `${API_BASE_URL}/documents`;
+
+  return new Promise((resolve, reject) => {
+    axiosInstance
+      .post(addDocumentEndpoint, documentData, { headers: headersConfig })
+      .then((response) => resolve(response.data as DocumentObject<T, K<T>>))
+      .catch((error) => {
+        console.error("Error adding document:", error);
+        handleDocumentApiErrorAndNotify(
+          error as AxiosError<unknown>,
+          "ADD_DOCUMENT_ERROR"
+        );
+        reject(error); // Reject the promise with the error
+      });
+  });
 };
 
 
+
+
 const loadPresentationFromDatabase = async (
-  presentationId: DocumentObject<Data, Meta, Data>
+  presentationId: DocumentObject<T, K<T>>
 ): Promise<Presentation> => {
   try {
     // Make a GET request to the API endpoint
@@ -391,7 +559,7 @@ const updateDocumentAPI = async (
     const errorMessage = "Failed to update document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "UPDATE_DOCUMENT_ERROR"
     );
     throw error;
@@ -409,7 +577,7 @@ const deleteDocumentAPI = async (documentId: string): Promise<void> => {
     const errorMessage = "Failed to delete document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "DELETE_DOCUMENT_ERROR"
     );
     throw error;
@@ -428,7 +596,7 @@ const fetchAllDocumentsAPI = async (): Promise<any[]> => {
     const errorMessage = "Failed to fetch all documents";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "FETCH_DOCUMENT_ERROR"
     );
     throw error;
@@ -450,7 +618,7 @@ const searchDocumentAPI = async (searchQuery: string): Promise<any> => {
     const errorMessage = "Failed to search documents";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "SEARCH_DOCUMENT_ERROR"
     );
     throw error;
@@ -479,7 +647,7 @@ const filterDocumentsAPI = async (
     const errorMessage = "Failed to filter documents";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "FILTER_DOCUMENTS_ERROR"
     );
     throw error;
@@ -514,7 +682,7 @@ const downloadDocument = async (
     // Handle document download error and notify
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "DOWNLOAD_DOCUMENT_ERROR"
     );
     throw error;
@@ -522,7 +690,10 @@ const downloadDocument = async (
 };
 
 // List documents API
-const listDocuments = async (): Promise<Document[]> => {
+const listDocuments = async <
+  T extends  BaseData<T>,
+  K extends T = T
+>(): Promise<Document<T, K>[]> => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}/api/documents`);
     return response.data;
@@ -531,7 +702,7 @@ const listDocuments = async (): Promise<Document[]> => {
     const errorMessage = "Failed to list documents";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "LIST_DOCUMENTS_ERROR"
     );
     throw error;
@@ -544,10 +715,9 @@ const removeDocument = async (documentId: string): Promise<void> => {
     await axiosInstance.delete(`${API_BASE_URL}/api/documents/${documentId}`);
   } catch (error) {
     console.error("Error removing document:", error);
-    const errorMessage = "Failed to remove document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "REMOVE_DOCUMENT_ERROR"
     );
     throw error;
@@ -568,7 +738,7 @@ const searchDocuments = async (searchQuery: string): Promise<any> => {
     const errorMessage = "Failed to search documents";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "SEARCH_DOCUMENTS_ERROR"
     );
     throw error;
@@ -595,7 +765,7 @@ const filterDocuments = async (
     const errorMessage = "Failed to filter documents";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "FILTER_DOCUMENTS_ERROR"
     );
     throw error;
@@ -615,7 +785,7 @@ const uploadDocument = async (document: any): Promise<any> => {
     const errorMessage = "Failed to upload document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "UPLOAD_DOCUMENT_ERROR"
     );
     throw error;
@@ -634,7 +804,7 @@ const shareDocument = async (documentId: string): Promise<any> => {
     const errorMessage = "Failed to share document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "SHARE_DOCUMENT_ERROR"
     );
     throw error;
@@ -653,7 +823,7 @@ const lockDocument = async (documentId: string): Promise<any> => {
     const errorMessage = "Failed to lock document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "LOCK_DOCUMENT_ERROR"
     );
     throw error;
@@ -672,7 +842,7 @@ const unlockDocument = async (documentId: string): Promise<any> => {
     const errorMessage = "Failed to unlock document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "UNLOCK_DOCUMENT_ERROR"
     );
     throw error;
@@ -680,7 +850,7 @@ const unlockDocument = async (documentId: string): Promise<any> => {
 };
 
 // Add document API
-const addDocument = async (newDocument: Document): Promise<Document> => {
+const addDocument = async (newDocument: Document<T, K<T>>): Promise<Document<T, K<T>>> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents`,
@@ -695,7 +865,7 @@ const addDocument = async (newDocument: Document): Promise<Document> => {
     const errorMessage = "Failed to add document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "ADD_DOCUMENT_ERROR"
     );
     throw error;
@@ -703,10 +873,12 @@ const addDocument = async (newDocument: Document): Promise<Document> => {
 };
 
 // Update document API
-const updateDocument = async (
+const updateDocument = async <
+  T extends  BaseData<T>,
+  K extends T = T>(
   documentId: string,
-  updatedDocument: Document
-): Promise<Document> => {
+  updatedDocument: Document<T, K>
+): Promise<Document<T, K>> => {
   try {
     const response = await axiosInstance.put(
       `${API_BASE_URL}/api/documents/${documentId}`,
@@ -721,7 +893,7 @@ const updateDocument = async (
     const errorMessage = "Failed to update document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "UPDATE_DOCUMENT_ERROR"
     );
     throw error;
@@ -744,7 +916,7 @@ const archiveDocument = async (documentId: string): Promise<any> => {
     const errorMessage = "Failed to archive document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "ARCHIVE_DOCUMENT_ERROR"
     );
     throw error;
@@ -767,7 +939,7 @@ const restoreDocument = async (documentId: string): Promise<any> => {
     const errorMessage = "Failed to restore document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "RESTORE_DOCUMENT_ERROR"
     );
     throw error;
@@ -793,7 +965,7 @@ const moveDocument = async (
     const errorMessage = "Failed to move document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "MOVE_DOCUMENT_ERROR"
     );
     throw error;
@@ -816,7 +988,7 @@ const mergeDocuments = async (documentIds: string[]): Promise<any> => {
     const errorMessage = "Failed to merge documents";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "MERGE_DOCUMENTS_ERROR"
     );
     throw error;
@@ -839,7 +1011,7 @@ const splitDocument = async (documentId: string): Promise<any> => {
     const errorMessage = "Failed to split document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "SPLIT_DOCUMENT_ERROR"
     );
     throw error;
@@ -861,7 +1033,7 @@ const validateDocument = async (documentId: string): Promise<any> => {
     const errorMessage = "Failed to validate document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "VALIDATE_DOCUMENT_ERROR"
     );
     throw error;
@@ -884,7 +1056,7 @@ const encryptDocument = async (documentId: string): Promise<any> => {
     const errorMessage = "Failed to encrypt document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "ENCRYPT_DOCUMENT_ERROR"
     );
     throw error;
@@ -907,7 +1079,7 @@ const decryptDocument = async (documentId: string): Promise<any> => {
     const errorMessage = "Failed to decrypt document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "DECRYPT_DOCUMENT_ERROR"
     );
     throw error;
@@ -932,7 +1104,7 @@ const trackDocumentChanges = async (
     const errorMessage = "Failed to track document changes";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "TRACK_DOCUMENT_CHANGES_ERROR"
     );
     throw error;
@@ -955,7 +1127,7 @@ const compareDocuments = async (documentIds: string[]): Promise<any> => {
     const errorMessage = "Failed to compare documents";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "COMPARE_DOCUMENTS_ERROR"
     );
     throw error;
@@ -981,7 +1153,7 @@ const tagDocuments = async (
     const errorMessage = "Failed to tag documents";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "TAG_DOCUMENTS_ERROR"
     );
     throw error;
@@ -1007,7 +1179,7 @@ const categorizeDocuments = async (
     const errorMessage = "Failed to categorize documents";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "CATEGORIZE_DOCUMENTS_ERROR"
     );
     throw error;
@@ -1029,7 +1201,7 @@ const customizeDocumentView = async (viewOptions: any): Promise<any> => {
     const errorMessage = "Failed to customize document view";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "CUSTOMIZE_DOCUMENT_VIEW_ERROR"
     );
     throw error;
@@ -1054,7 +1226,7 @@ const commentOnDocument = async (
     const errorMessage = "Failed to comment on document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "COMMENT_ON_DOCUMENT_ERROR"
     );
     throw error;
@@ -1079,7 +1251,7 @@ const mentionUserInDocument = async (
     const errorMessage = "Failed to mention user in document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "MENTION_USER_IN_DOCUMENT_ERROR"
     );
     throw error;
@@ -1104,7 +1276,7 @@ const assignTaskInDocument = async (
     const errorMessage = "Failed to assign task in document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "ASSIGN_TASK_IN_DOCUMENT_ERROR"
     );
     throw error;
@@ -1129,7 +1301,7 @@ const requestReviewOfDocument = async (
     const errorMessage = "Failed to request review of document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "REQUEST_REVIEW_OF_DOCUMENT_ERROR"
     );
     throw error;
@@ -1154,7 +1326,7 @@ const approveDocument = async (
     const errorMessage = "Failed to approve document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "APPROVE_DOCUMENT_ERROR"
     );
     throw error;
@@ -1179,7 +1351,7 @@ const rejectDocument = async (
     const errorMessage = "Failed to reject document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "REJECT_DOCUMENT_ERROR"
     );
     throw error;
@@ -1204,7 +1376,7 @@ const requestFeedbackOnDocument = async (
     const errorMessage = "Failed to request feedback on document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "REQUEST_FEEDBACK_ON_DOCUMENT_ERROR"
     );
     throw error;
@@ -1229,7 +1401,7 @@ const provideFeedbackOnDocument = async (
     const errorMessage = "Failed to provide feedback on document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "PROVIDE_FEEDBACK_ON_DOCUMENT_ERROR"
     );
     throw error;
@@ -1254,7 +1426,7 @@ const resolveFeedbackOnDocument = async (
     const errorMessage = "Failed to resolve feedback on document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "RESOLVE_FEEDBACK_ON_DOCUMENT_ERROR"
     );
     throw error;
@@ -1279,7 +1451,7 @@ const collaborativeEditing = async (
     const errorMessage = "Failed to initiate collaborative editing on document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "COLLABORATIVE_EDITING_ERROR"
     );
     throw error;
@@ -1300,7 +1472,7 @@ const smartTagging = async (documentId: string): Promise<any> => {
     const errorMessage = "Failed to initiate smart tagging on document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "SMART_TAGGING_ERROR"
     );
     throw error;
@@ -1330,7 +1502,7 @@ const documentAnnotation = async (
     const errorMessage = "Failed to annotate document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "DOCUMENT_ANNOTATION_ERROR"
     );
     throw error;
@@ -1355,7 +1527,7 @@ const documentActivityLogging = async (
     const errorMessage = "Failed to log activity on document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "DOCUMENT_ACTIVITY_LOGGING_ERROR"
     );
     throw error;
@@ -1379,7 +1551,7 @@ const intelligentDocumentSearch = async (
     const errorMessage = "Failed to perform intelligent search for documents";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "INTELLIGENT_DOCUMENT_SEARCH_ERROR"
     );
     throw error;
@@ -1404,7 +1576,7 @@ const getDocumentVersions = async (
     const errorMessage = "Failed to fetch document versions";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "GET_DOCUMENT_VERSIONS_ERROR"
     );
     throw error;
@@ -1431,12 +1603,13 @@ const updateSnapshotDetails = async (
     const errorMessage = "Failed to update snapshot details";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "UPDATE_SNAPSHOT_DETAILS_ERROR"
     );
     throw error;
   }
 };
+
 
 const createDocumentVersion = async (
   documentId: string
@@ -1455,7 +1628,7 @@ const createDocumentVersion = async (
     const errorMessage = "Failed to create document version";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "CREATE_DOCUMENT_VERSION_ERROR"
     );
     throw error;
@@ -1480,7 +1653,7 @@ const revertToDocumentVersion = async (
     const errorMessage = "Failed to revert to document version";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "REVERT_TO_DOCUMENT_VERSION_ERROR"
     );
     throw error;
@@ -1501,7 +1674,7 @@ const viewDocumentHistory = async (documentId: string): Promise<any> => {
     const errorMessage = "Failed to view document history";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "VIEW_DOCUMENT_HISTORY_ERROR"
     );
     throw error;
@@ -1526,7 +1699,7 @@ const documentVersionComparison = async (
     const errorMessage = "Failed to compare document versions";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "DOCUMENT_VERSION_COMPARISON_ERROR"
     );
     throw error;
@@ -1550,7 +1723,7 @@ const grantDocumentAccess = async (
     const errorMessage = "Failed to grant document access";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "GRANT_DOCUMENT_ACCESS_ERROR"
     );
     throw error;
@@ -1575,7 +1748,7 @@ const revokeDocumentAccess = async (
     const errorMessage = "Failed to revoke document access";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "REVOKE_DOCUMENT_ACCESS_ERROR"
     );
     throw error;
@@ -1600,7 +1773,7 @@ const manageDocumentPermissions = async (
     const errorMessage = "Failed to manage document permissions";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "MANAGE_DOCUMENT_PERMISSIONS_ERROR"
     );
     throw error;
@@ -1625,7 +1798,7 @@ const initiateDocumentWorkflow = async (
     const errorMessage = "Failed to initiate document workflow";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "INITIATE_DOCUMENT_WORKFLOW_ERROR"
     );
     throw error;
@@ -1650,7 +1823,7 @@ const automateDocumentTasks = async (
     const errorMessage = "Failed to automate document tasks";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "AUTOMATE_DOCUMENT_TASKS_ERROR"
     );
     throw error;
@@ -1675,7 +1848,7 @@ const triggerDocumentEvents = async (
     const errorMessage = "Failed to trigger document events";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "TRIGGER_DOCUMENT_EVENTS_ERROR"
     );
     throw error;
@@ -1700,7 +1873,7 @@ const documentApprovalWorkflow = async (
     const errorMessage = "Failed to initiate document approval workflow";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "DOCUMENT_APPROVAL_WORKFLOW_ERROR"
     );
     throw error;
@@ -1725,7 +1898,7 @@ const documentLifecycleManagement = async (
     const errorMessage = "Failed to manage document lifecycle";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "DOCUMENT_LIFECYCLE_MANAGEMENT_ERROR"
     );
     throw error;
@@ -1750,7 +1923,7 @@ const connectWithExternalSystem = async (
     const errorMessage = "Failed to connect with external system";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "CONNECT_WITH_EXTERNAL_SYSTEM_ERROR"
     );
     throw error;
@@ -1775,7 +1948,7 @@ const synchronizeWithCloudStorage = async (
     const errorMessage = "Failed to synchronize with cloud storage";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "SYNCHRONIZE_WITH_CLOUD_STORAGE_ERROR"
     );
     throw error;
@@ -1799,7 +1972,7 @@ const importFromExternalSource = async (
     const errorMessage = "Failed to import from external source";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "IMPORT_FROM_EXTERNAL_ERROR"
     );
     throw error;
@@ -1821,18 +1994,20 @@ const exportToExternalSystem = async (exportData: any): Promise<any> => {
     const errorMessage = "Failed to export to external system";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "EXPORT_TO_EXTERNAL_ERROR"
     );
     throw error;
   }
 };
 
-const generateDocument = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+const generateDocument = <
+  T extends  BaseData<T>,
+  K extends T = T>(
   documentData: any,
   options: DocumentOptions
-): Promise<DocumentObject<T, Meta, K>> => {
-  return new Promise<DocumentObject<T, Meta, K>>(async (resolve, reject) => {
+): Promise<DocumentObject<T, K>> => {
+  return new Promise<DocumentObject<T, K>>(async (resolve, reject) => {
     try {
       const response = await axiosInstance.post(
         `${API_BASE_URL}/api/documents/generate`,
@@ -1847,7 +2022,7 @@ const generateDocument = <T extends Data, Meta extends UnifiedMetaDataOptions, K
       const errorMessage = "Failed to generate document";
       handleDocumentApiErrorAndNotify(
         error as AxiosError<unknown>,
-        errorMessage,
+  
         "GENERATE_DOCUMENT_ERROR"
       );
       reject(error);
@@ -1870,7 +2045,7 @@ const generateDocumentReport = async (reportData: any): Promise<any> => {
     const errorMessage = "Failed to generate document report";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "GENERATE_DOCUMENT_REPORT_ERROR"
     );
     throw error;
@@ -1892,7 +2067,7 @@ const exportDocumentReport = async (reportData: any): Promise<any> => {
     const errorMessage = "Failed to export document report";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "EXPORT_DOCUMENT_REPORT_ERROR"
     );
     throw error;
@@ -1916,7 +2091,7 @@ const scheduleReportGeneration = async (
     const errorMessage = "Failed to schedule report generation";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "SCHEDULE_REPORT_GENERATION_ERROR"
     );
     throw error;
@@ -1940,7 +2115,7 @@ const customizeReportSettings = async (
     const errorMessage = "Failed to customize report settings";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "CUSTOMIZE_REPORT_SETTINGS_ERROR"
     );
     throw error;
@@ -1962,7 +2137,7 @@ const backupDocuments = async (): Promise<any> => {
     const errorMessage = "Failed to backup documents";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "BACKUP_DOCUMENTS_ERROR"
     );
     throw error;
@@ -1983,7 +2158,7 @@ const retrieveBackup = async (backupId: string): Promise<any> => {
     const errorMessage = "Failed to retrieve backup";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "RETRIEVE_BACKUP_ERROR"
     );
     throw error;
@@ -2004,7 +2179,7 @@ const documentRedaction = async (redactionData: any): Promise<any> => {
     const errorMessage = "Failed to redact document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "DOCUMENT_REDACTION_ERROR"
     );
     throw error;
@@ -2028,7 +2203,7 @@ const documentAccessControls = async (
     const errorMessage = "Failed to apply document access controls";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "DOCUMENT_ACCESS_CONTROLS_ERROR"
     );
     throw error;
@@ -2072,7 +2247,7 @@ const getDocument = async ({
     const errorMessage = "Failed to fetch document";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "GET_DOCUMENT_ERROR"
     );
     throw error;
@@ -2094,7 +2269,7 @@ const documentTemplates = async (templatesData: any): Promise<any> => {
     const errorMessage = "Failed to manage document templates";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-      errorMessage,
+
       "DOCUMENT_TEMPLATES_ERROR"
     );
     throw error;
@@ -2103,32 +2278,32 @@ const documentTemplates = async (templatesData: any): Promise<any> => {
 
 
 export {
-  addDocument, addDocumentAPI, approveDocument, archiveDocument, assignTaskInDocument, automateDocumentTasks, backupDocuments, categorizeDocuments, collaborativeEditing, commentOnDocument, compareDocuments, connectWithExternalSystem, createDocumentVersion, customizeDocumentView, customizeReportSettings, decryptDocument, deleteDocumentAPI, documentAccessControls, documentActivityLogging, documentAnnotation, documentApprovalWorkflow,
-  documentLifecycleManagement, documentRedaction,
-  documentTemplates, documentVersionComparison,
-  downloadDocument, encryptDocument, exportDocumentReport,
-  exportToExternalSystem, fakeApiCall,
-  fetchAllDocumentsAPI, fetchDocumentById, fetchDocumentByIdAPI, fetchJsonDocumentByIdAPI,
-  fetchXmlDocumentByIdAPI, filterDocuments,
-  filterDocumentsAPI, generateDocument,
-  generateDocumentReport, getDocument, getDocumentUrl,
-  getDocumentVersions, grantDocumentAccess,
-  importFromExternalSource, initiateDocumentWorkflow,
-  intelligentDocumentSearch, listDocuments,
-  loadPresentationFromDatabase, lockDocument,
-  manageDocumentPermissions, mentionUserInDocument,
-  mergeDocuments, moveDocument,
-  provideFeedbackOnDocument, rejectDocument,
-  removeDocument, requestFeedbackOnDocument,
-  requestReviewOfDocument, resolveFeedbackOnDocument,
-  restoreDocument, retrieveBackup, revertToDocumentVersion,
-  revokeDocumentAccess, scheduleReportGeneration,
-  searchDocumentAPI, searchDocuments, shareDocument,
-  smartTagging, splitDocument, synchronizeWithCloudStorage,
-  tagDocuments, trackDocumentChanges, triggerDocumentEvents,
-  unlockDocument, updateDocument, updateDocumentAPI,
-  updateDocumentNameAPI, updateSnapshotDetails,
-  uploadDocument, validateDocument,
-  viewDocumentHistory
+    addDocument, addDocumentAPI, approveDocument, archiveDocument, assignTaskInDocument, automateDocumentTasks, backupDocuments, categorizeDocuments, collaborativeEditing, commentOnDocument, compareDocuments, connectWithExternalSystem, createDocumentVersion, customizeDocumentView, customizeReportSettings, decryptDocument, deleteDocumentAPI, documentAccessControls, documentActivityLogging, documentAnnotation, documentApprovalWorkflow,
+    documentLifecycleManagement, documentRedaction,
+    documentTemplates, documentVersionComparison,
+    downloadDocument, encryptDocument, exportDocumentReport,
+    exportToExternalSystem, fakeApiCall,
+    fetchAllDocumentsAPI, fetchDocumentById, fetchDocumentByIdAPI, fetchJsonDocumentByIdAPI,
+    fetchXmlDocumentByIdAPI, filterDocuments,
+    filterDocumentsAPI, generateDocument,
+    generateDocumentReport, getDocument, getDocumentUrl,
+    getDocumentVersions, grantDocumentAccess,
+    importFromExternalSource, initiateDocumentWorkflow,
+    intelligentDocumentSearch, listDocuments,
+    loadPresentationFromDatabase, lockDocument,
+    manageDocumentPermissions, mentionUserInDocument,
+    mergeDocuments, moveDocument,
+    provideFeedbackOnDocument, rejectDocument,
+    removeDocument, requestFeedbackOnDocument,
+    requestReviewOfDocument, resolveFeedbackOnDocument,
+    restoreDocument, retrieveBackup, revertToDocumentVersion,
+    revokeDocumentAccess, scheduleReportGeneration,
+    searchDocumentAPI, searchDocuments, shareDocument,
+    smartTagging, splitDocument, synchronizeWithCloudStorage,
+    tagDocuments, trackDocumentChanges, triggerDocumentEvents,
+    unlockDocument, updateDocument, updateDocumentAPI,
+    updateDocumentNameAPI, updateSnapshotDetails,
+    uploadDocument, validateDocument,
+    viewDocumentHistory
 };
 

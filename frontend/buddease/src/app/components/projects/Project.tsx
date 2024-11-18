@@ -1,4 +1,5 @@
 //projects/Project.ts
+import { AllStatus } from '@/app/components/state/stores/DetailsListStore';
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import React, { ReactNode, useEffect, useState } from "react";
 import { Exchange } from "../crypto/Exchange";
@@ -48,14 +49,15 @@ interface Project extends Data {
   budget: number | null;
   phase: Phase | null;
   phases: Phase[];
-  type: ProjectType
+  type: ProjectType;
+  status: AllStatus
   currentPhase: Phase | null; // Provide a default value or mark as optional
   comments?: (Comment | CustomComment)[] | undefined  // Add other project-related fields as needed
   commnetBy?: User | Member;
   then?: typeof implementThen;
   data?: ProjectData;
   customProperty?: string;
-
+  projectProgress?: Progress
   // tags?: string[] | Tag[];
 
 }

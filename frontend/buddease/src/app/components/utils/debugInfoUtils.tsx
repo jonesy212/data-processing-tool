@@ -1,8 +1,13 @@
-import { Data } from "@/app/components/models/data/Data";
+import { BaseData } from '@/app/components/models/data/Data';
 import { SnapshotStoreConfig } from "@/app/components/snapshots/SnapshotStoreConfig";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
-export function addDebugInfo<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  configs: SnapshotStoreConfig<T, Meta, K>[],
+export function addDebugInfo<
+  T extends BaseData<T>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
+  configs: SnapshotStoreConfig<T, K>[],
   configId: string,
   message: string,
   operation?: string

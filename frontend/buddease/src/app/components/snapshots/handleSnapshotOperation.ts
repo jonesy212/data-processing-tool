@@ -1,18 +1,20 @@
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
-import { Data } from "../models/data/Data";
+import { BaseData } from '@/app/components/models/data/Data';
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { determineCategory } from "../libraries/categories/determineCategory";
-import { generateUniqueApiId } from "@/app/generators/generateNewApiConfig";
-import { generateSnapshotId } from "../utils/snapshotUtils";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
-function handleMapOperation<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  snapshot: Snapshot<T, Meta, K>,
-  data: Map<string, Snapshot<T, Meta, K>>,
+function handleMapOperation<
+  T extends BaseData<T>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+  >(
+  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+  data: Map<string, Snapshot<T, K, Meta, ExcludedFields>>,
   operationType: SnapshotOperationType
-): Snapshot<T, Meta, K> {
-  let result: Snapshot<T, Meta, K> = { ...snapshot };
+): Snapshot<T, K, Meta, ExcludedFields> {
+  let result: Snapshot<T, K, Meta, ExcludedFields> = { ...snapshot };
 
   switch (operationType) {
     case SnapshotOperationType.CreateSnapshot:
@@ -65,181 +67,72 @@ function handleMapOperation<T extends Data, Meta extends UnifiedMetaDataOptions,
 }
 
 // handleSnapshotOperation.ts
-const handleSnapshotOperation = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  snapshot: Snapshot<T, Meta, K>,
-  data: Map<string, Snapshot<T, Meta, K>> | SnapshotStoreConfig<T, Meta, K>,
+// Define handleSnapshotOperation
+const handleSnapshotOperation = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  snapshot: Snapshot<T, K>,
+  config: SnapshotStoreConfig<T, K>,
+  mappedData: Map<string, SnapshotStoreConfig<T, K>>,
   operation: SnapshotOperation,
   operationType: SnapshotOperationType
-  ): Promise<Snapshot<T, Meta, K>> => {
-    return new Promise((resolve, reject) => {
-      try {
-        let result: Snapshot<T, Meta, K> = { ...snapshot };
-  
-        switch (operationType) {
-          case SnapshotOperationType.CreateSnapshot:
-            // Logic for creating a snapshot
-            console.log('Creating snapshot');
-            // Example: Add a new snapshot to the existing data
-            if (data instanceof Map) {
-              const newSnapshot = { ...snapshot, id: generateSnapshotId() }; // Assume generateUniqueId is a utility function
-              data.set(newSnapshot.id, newSnapshot);
-              result = newSnapshot;
-            } else {
-              console.warn('Data is not a Map, cannot perform create operation.');
-            }
-            break;
+): Promise<Snapshot<T, K> | null> => {
+  try {
+    const snapshotId = snapshot.id;
 
-          case SnapshotOperationType.UpdateSnapshot:
-            // Logic for updating a snapshot
-            console.log('Updating snapshot');
-            // Example: Update a specific snapshot in the map
-            if (data instanceof Map && data.has(snapshot.id)) {
-              const existingSnapshot = data.get(snapshot.id);
-              if (existingSnapshot) {
-                const updatedSnapshot = { ...existingSnapshot, ...snapshot }; // Merging existing with updated values
-                data.set(snapshot.id, updatedSnapshot);
-                result = updatedSnapshot;
-              }
-            } else {
-              console.warn('Snapshot not found or data is not a Map.');
-            }
-            break;
+    if (!snapshotId) throw new Error("Snapshot ID must be a defined string.");
 
-          case SnapshotOperationType.DeleteSnapshot:
-            // Logic for deleting a snapshot
-            console.log('Deleting snapshot');
-            // Example: Remove the snapshot from the map
-            if (data instanceof Map && data.has(snapshot.id)) {
-              data.delete(snapshot.id);
-              result = { ...snapshot, deleted: true }; // Mark the snapshot as deleted
-            } else {
-              console.warn('Snapshot not found or data is not a Map.');
-            }
-            break;
+    switch (operationType) {
+      case SnapshotOperationType.CreateSnapshot:
+        const newSnapshot = await snapshotApi.createSnapshot<T, K>(config);
+        if (newSnapshot?.id) {
+          mappedData.set(newSnapshot.id, config); // Add to mappedData
+        } else {
+          throw new Error("Failed to retrieve a valid ID for the new snapshot.");
+        }
+        return newSnapshot;
 
-          case SnapshotOperationType.FindSnapshot:
-            // Logic for finding a snapshot
-            console.log('Finding snapshot');
-            // Example: Search for the snapshot by ID or some other criteria
-            if (data instanceof Map && data.has(snapshot.id)) {
-              result = data.get(snapshot.id) || snapshot;
-            } else {
-              console.warn('Snapshot not found or data is not a Map.');
-            }
-            break;
+      case SnapshotOperationType.UpdateSnapshot:
+        if (mappedData.has(snapshotId)) {
+          const updatedSnapshot = await snapshotApi.updateSnapshot<T, K>(snapshot, config);
+          mappedData.set(updatedSnapshot.id, config); // Update mappedData
+          return updatedSnapshot;
+        } else {
+          throw new Error(`Snapshot with ID ${snapshotId} does not exist for update.`);
+        }
 
-          case SnapshotOperationType.MapSnapshot:
-            // Logic for mapping over snapshots
-            console.log('Mapping snapshot');
-            if (data instanceof Map) {
-              // Example: Perform a transformation on each snapshot in the map
-              const mappedData = new Map<string, Snapshot<T, Meta, K>>();
-              data.forEach((value, key) => {
-                const mappedSnapshot = { ...value, modified: true }; // Example modification
-                mappedData.set(key, mappedSnapshot);
-              });
-              result = { ...snapshot, data: mappedData };
-            } else {
-              console.warn('Data is not a Map, cannot perform map operation.');
-            }
-            break;
+      case SnapshotOperationType.DeleteSnapshot:
+        if (mappedData.has(snapshotId)) {
+          await snapshotApi.deleteSnapshot(snapshotId);
+          mappedData.delete(snapshotId); // Remove from mappedData
+          return null;
+        } else {
+          throw new Error(`Snapshot with ID ${snapshotId} does not exist for deletion.`);
+        }
 
-  
-          case SnapshotOperationType.SortSnapshot:
-            console.log('Sorting snapshot');
-            if (data instanceof Map) {
-              // Narrowing the type to Map
-              const sortedEntries = Array.from(data.entries()).sort(/* sorting logic */);
-              const sortedData = new Map(sortedEntries);
-              result = { ...snapshot, data: sortedData };
-            } else {
-              console.warn('Data is not a Map, sorting cannot be performed.');
-            }
-            break;
-            
-            case SnapshotOperationType.CategorizeSnapshot:
-              // Logic for categorizing snapshots
-              console.log('Categorizing snapshot');
-              if (data instanceof Map) {
-                const categorizedData = new Map<string, Snapshot<T, Meta, K>>();
-                data.forEach((value, key) => {
-                  const category = determineCategory(value); // Assume determineCategory is a utility function
-                  if (!categorizedData.has(category)) {
-                    categorizedData.set(category, []);
-                  }
-                  categorizedData.get(category).push(value);
-                });
-                result = { ...snapshot, data: categorizedData };
-              } else {
-                console.warn('Data is not a Map, cannot perform categorize operation.');
-              }
-              break;
-        
-            case SnapshotOperationType.SearchSnapshot:
-              // Logic for searching snapshots
-              console.log('Searching snapshot');
-              if (data instanceof Map && criteria) {
-                const searchResults = new Map<string, Snapshot<T, Meta, K>>();
-                data.forEach((value, key) => {
-                  if (matchesCriteria(value, criteria)) { // Assume matchesCriteria is a utility function for search criteria
-                    searchResults.set(key, value);
-                  }
-                });
-                result = { ...snapshot, data: searchResults };
-              } else {
-                console.warn('Data is not a Map or criteria is missing, cannot perform search operation.');
-              }
-              break;
-        
-            case SnapshotOperationType.FilterSnapshot:
-              // Logic for filtering snapshots
-              console.log('Filtering snapshot');
-              if (data instanceof Map && criteria) {
-                const filteredData = new Map<string, Snapshot<T, Meta, K>>();
-                data.forEach((value, key) => {
-                  if (matchesCriteria(value, criteria)) { // Filter based on the criteria
-                    filteredData.set(key, value);
-                  }
-                });
-                result = { ...snapshot, data: filteredData };
-              } else {
-                console.warn('Data is not a Map or criteria is missing, cannot perform filter operation.');
-              }
-              break;
-        
-            case SnapshotOperationType.MapSnapshot:
-              // Logic for mapping over snapshots
-              console.log('Mapping snapshot');
-              if (data instanceof Map) {
-                const mappedData = new Map<string, Snapshot<T, Meta, K>>();
-                data.forEach((value, key) => {
-                  const mappedSnapshot = { ...value, modified: true }; // Example transformation
-                  mappedData.set(key, mappedSnapshot);
-                });
-                result = { ...snapshot, data: mappedData };
-              } else {
-                console.warn('Data is not a Map, cannot perform map operation.');
-              }
-              break;
-        
-            default:
-              throw new Error('Unknown operation type');
-          }
-  
-        resolve(result);
-      } catch (error) {
-        reject(error);
-      }
-    });
+      case SnapshotOperationType.FindSnapshot:
+        if (mappedData.has(snapshotId)) {
+          return snapshot;
+        } else {
+          throw new Error(`Snapshot with ID ${snapshotId} not found.`);
+        }
+
+      // Additional cases like Map, Sort, Categorize, Search can be handled here...
+      default:
+        throw new Error(`Unhandled operation type: ${operationType}`);
+    }
+  } catch (error) {
+    console.error(`Error in handleSnapshotOperation: ${error.message}`);
+    return null;
   }
+};
 
 
-function handleSnapshotStoreConfigOperation<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  snapshot: Snapshot<T, Meta, K>,
-  data: SnapshotStoreConfig<T, Meta, K>,
+
+function handleSnapshotStoreConfigOperation<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  snapshot: Snapshot<T, K>,
+  data: SnapshotStoreConfig<T, K>,
   operationType: SnapshotOperationType
-): Snapshot<T, Meta, K> {
-  let result: Snapshot<T, Meta, K> = { ...snapshot };
+): Snapshot<T, K> {
+  let result: Snapshot<T, K> = { ...snapshot };
 
   switch (operationType) {
     case SnapshotOperationType.CreateSnapshot:
@@ -279,6 +172,48 @@ function handleSnapshotStoreConfigOperation<T extends Data, Meta extends Unified
   return result;
 }
 
+
+
+// Define handleSnapshotStoreOperation
+const handleSnapshotStoreOperation = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  snapshotId: string,
+  snapshotStore: SnapshotStore<T, K>,
+  snapshot: Snapshot<T, K>,
+  operation: SnapshotOperation,
+  operationType: SnapshotOperationType,
+  callback: (snapshotStore: SnapshotStore<T, K>) => void
+): Promise<SnapshotStoreConfig<T, K> | null> => {
+  console.log("Handling SnapshotStore operation:", snapshotStore, snapshotId);
+
+  // Ensure snapshot is handled within SnapshotStore
+  const config = snapshotStore.getConfig(snapshotId); // Assume getConfig retrieves the specific config for snapshotId
+
+  if (!config) {
+    console.error(`No configuration found for snapshot with ID ${snapshotId}`);
+    return null;
+  }
+
+  const mappedData = snapshotStore.getMappedData(); // Fetch mapped data from snapshot store
+
+  // Use handleSnapshotOperation within handleSnapshotStoreOperation
+  const resultSnapshot = await handleSnapshotOperation(snapshot, config, mappedData, operation, operationType);
+
+  // Example update for SnapshotStore actions
+  if (resultSnapshot) {
+    SnapshotStoreActions<T, K>().handleSnapshotStoreSuccess({
+      snapshotStore,
+      snapshotId,
+      snapshot: resultSnapshot,
+      operation,
+      operationType
+    });
+  }
+
+  // Callback with updated snapshot store
+  callback(snapshotStore);
+
+  return config; // Return the updated configuration for further use if needed
+};
 
   export { handleMapOperation, handleSnapshotOperation, handleSnapshotStoreConfigOperation };
 

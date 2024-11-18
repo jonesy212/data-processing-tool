@@ -1,23 +1,25 @@
 import { getSnapshotId } from "@/app/api/SnapshotApi";
+import { SnapshotData } from '@/app/components/snapshots';
+import { SubscriberCollection } from '@/app/components/snapshots/SnapshotStore';
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { BaseData } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { SnapshotStoreConfig, SubscriberCollection } from "../snapshots";
+import { SnapshotStoreConfig } from "../snapshots";
 import { Snapshot, SnapshotsArray, SnapshotUnion, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
 import { SnapshotEvents } from "../snapshots/SnapshotEvents";
 import SnapshotStore from "../snapshots/SnapshotStore";
-import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { Subscriber } from "../users/Subscriber";
 import { CategoryProperties } from "./../../pages/personas/ScenarioBuilder";
 
 // createSnapshotStore.ts
-function createSnapshotStore <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  id: string,
-  snapshotData: SnapshotData<T, Meta, K>,
+function createSnapshotStore <T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  id: string,, K extends
+  snapshotData: SnapshotData<T, K>,
   category?: string | symbol | Category,
-  callback?: (snapshotStore: SnapshotStore<T, Meta, K>) => void,
-  snapshotDataConfig?: SnapshotStoreConfig<T, Meta, K> 
-): Snapshot<T, Meta, K> | null {
+  callback?: (snapshotStore: SnapshotStore<T, K>) => void,
+  snapshotDataConfig?: SnapshotStoreConfig<T, K> 
+): Snapshot<T, K> | null {
   // Validate inputs
   if (!id || !snapshotData) {
     console.error('Invalid arguments provided to createSnapshotStore');
@@ -25,9 +27,9 @@ function createSnapshotStore <T extends Data, Meta extends UnifiedMetaDataOption
   }
 
   // Create a new SnapshotStore instance
-  const snapshotStore: SnapshotStore<T, Meta, K> = {
+  const snapshotStore: SnapshotStore<T, K> = {
     id: id,
-    data: snapshotData.initialState || new Map<string, T>(),
+    data: snapshotData.getInitialState() || new Map<string, T>(),
     category: category ?? 'default-category',
     // Initialize other properties if needed
     // Provide implementation for methods if necessary
@@ -45,9 +47,9 @@ function createSnapshotStore <T extends Data, Meta extends UnifiedMetaDataOption
     getSnapshotData: () => new Map(snapshotStore.data),
     getSnapshotCategory: () => snapshotStore.category,
     setSnapshotData: (
-      data: Map<string, Snapshot<T, Meta, K>>,
+      data: Map<string, Snapshot<T, K>>,
       subscribers: Subscriber<any, any>[],
-      snapshotData: Partial<SnapshotStoreConfig<T, Meta, K>>) => {
+      snapshotData: Partial<SnapshotStoreConfig<T, K>>) => {
       snapshotStore.data = new Map(data);
     },
     setSnapshotCategory: (newCategory: string | CategoryProperties) => { snapshotStore.category = newCategory; },
@@ -55,17 +57,17 @@ function createSnapshotStore <T extends Data, Meta extends UnifiedMetaDataOption
     
     restoreSnapshot: (
       id: string,
-      snapshot: Snapshot<T, Meta, K>,
+      snapshot: Snapshot<T, K>,
       snapshotId: string,
       snapshotData: SnapshotData<T>,
       category: Category | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T, Meta>,
+      snapshots: SnapshotsArray<T>,
       type: string,
-      event: string | SnapshotEvents<T, Meta, K>,
-      subscribers: SubscriberCollection<T, Meta, K>,
+      event: string | SnapshotEvents<T, K>,
+      subscribers: SubscriberCollection<T, K>,
       snapshotContainer?: T,
-      snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData, Meta>, T> | undefined
+      snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData, Meta>, Meta, T> | undefined
         ) => {
           // Step 1: Handle `this.id` being potentially undefined
           if (!snapshot.id) {
@@ -123,21 +125,53 @@ function createSnapshotStore <T extends Data, Meta extends UnifiedMetaDataOption
           if (event && typeof event.trigger === 'function') {
             event.trigger(type, snapshotData);
           }
+    },
+    createSnapshot: () => ({ id, data: new Map<string, Snapshot<T, K>>(Object.entries(snapshotStore.data)), category: snapshotStore.category }),
+    
+        updateSnapshot: async (
+          snapshotId: string,
+          data: Map<string, Snapshot<T, K>>,
+          events: Record<string, CalendarManagerStoreClass<T, K>[]>,
+          snapshotStore: SnapshotStore<T, K>,
+          dataItems: RealtimeDataItem[],
+          newData: Snapshot<T, K>,
+          payload: UpdateSnapshotPayload<T>,
+          store: SnapshotStore<any, K>
+        ): Promise<{ snapshot: Snapshot<T, K> }> => {
+          
+          // Step 1: Check if the snapshotId exists in the data map
+          if (!data.has(snapshotId)) {
+            throw new Error(`Snapshot with id ${snapshotId} does not exist.`);
+          }
+          
+          // Step 2: Retrieve the existing snapshot
+          const existingSnapshot = data.get(snapshotId);
+          
+          // Step 3: Merge new data into the existing snapshot
+          const updatedSnapshot: Snapshot<T, K> = {
+            ...existingSnapshot,
+            ...newData, // Assuming newData contains properties to be updated
+            // You may want to update specific properties instead of a shallow merge
+            updatedAt: new Date(), // Example of adding an updated timestamp
+            // Add any other merging logic necessary
+          };
+          
+          // Step 4: Update the data map with the updated snapshot
+          data.set(snapshotId, updatedSnapshot);
+          
+          // Step 5: Optionally handle events (if applicable)
+          if (events[snapshotId]) {
+            // Implement any event handling logic, e.g., notifying listeners
+            // This is context-dependent on how you want to handle events
+            events[snapshotId].forEach(event => {
+              // Handle each event (pseudo-code, replace with actual logic)
+              // event.notify(updatedSnapshot);
+            });
+          }
+          
+          // Step 6: Return the updated snapshot
+          return { snapshot: updatedSnapshot };
         },
-    createSnapshot: () => ({ id, data: new Map<string, Snapshot<T, Meta, K>>(Object.entries(snapshotStore.data)), category: snapshotStore.category }),
-    updateSnapshot: async (
-      snapshotId: string,
-    data: Map<string, Snapshot<T, Meta, K>>,
-    events: Record<string, CalendarManagerStoreClass<T, Meta, K>[]>,
-    snapshotStore: SnapshotStore<T, Meta, K>,
-    dataItems: RealtimeDataItem[],
-    newData: Snapshot<T, Meta, K>,
-    payload: UpdateSnapshotPayload<T>,
-    store: SnapshotStore<any, Meta, K>
-  ): Promise<{ snapshot: Snapshot<T, Meta, K> }> => {
-      // Implement update logic
-      return { snapshotId, data, events, snapshotStore, dataItems, newData, payload, store };
-     },
   };
 
   // Call the provided callback if it exists
@@ -180,10 +214,30 @@ function createSnapshotStore <T extends Data, Meta extends UnifiedMetaDataOption
     getSubscribers: snapshotStore.getSubscribers,
     versionInfo: snapshotStore.versionInfo,
     transformSubscriber: snapshotStore.transformSubscriber,
-    transformDelegate, initializedState, getAllKeys, getAllValues,
-    getAllItems, getSnapshotEntries, getAllSnapshotEntries, addDataStatus,
-    removeData, updateData, updateDataTitle, updateDataDescription, 
-    updateDataStatus, addDataSuccess, getDataVersions, updateDataVersions,
-    getBackendVersion, getFrontendVersion, fetchData, defaultSubscribeToSnapshot,
+    transformDelegate: snapshotStore.transformDelegate,
+    initializedState: snapshotStore.initializedState,
+    getAllKeys: snapshotStore.getAllKeys,
+    getAllValues: snapshotStore.getAllValues,
+   
+    getAllItems: snapshotStore.getAllItems,
+    getSnapshotEntries: snapshotStore.getSnapshotEntries,
+    getAllSnapshotEntries: snapshotStore.getAllSnapshotEntries,
+    addDataStatus: snapshotStore.addDataStatus,
+   
+    removeData: snapshotStore.removeData,
+    updateData: snapshotStore.updateData,
+    updateDataTitle: snapshotStore.updateDataTitle,
+    updateDataDescription: snapshotStore.updateDataDescription,
+    
+    updateDataStatus: snapshotStore.updateDataStatus,
+    addDataSuccess: snapshotStore.addDataSuccess,
+    getDataVersions: snapshotStore.getDataVersions,
+    updateDataVersions: snapshotStore.updateDataVersions,
+   
+    getBackendVersion: snapshotStore.getBackendVersion,
+    getFrontendVersion: snapshotStore.getFrontendVersion,
+    fetchData: snapshotStore.fetchData,
+    defaultSubscribeToSnapshot: snapshotStore.defaultSubscribeToSnapshot,
+   
   };
 }

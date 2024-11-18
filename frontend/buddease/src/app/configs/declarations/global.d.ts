@@ -1,5 +1,6 @@
 declare function require(path: string): any;
 import { Presentation } from '../../components/documents/Presentation';
+import { Snapshot } from '../../components/snapshots/LocalStorageSnapshotStore';
 
 interface MyPropertiesOptions extends DocumentOptions {
   sections: any; // Add all required properties
@@ -11,6 +12,7 @@ declare global {
   interface Window {
     editor?: {
       createPresentation: (name: string, slides: Slide[]) => Presentation;
+      updateWithSnapshot: (snapshot: Snapshot<any, any>) => void;
     };
 
     mixpanel?: {

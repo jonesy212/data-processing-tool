@@ -1,25 +1,26 @@
 import { CombinedEvents } from "../hooks/useSnapshotManager";
 import { Snapshot } from "./LocalStorageSnapshotStore";
+import { BaseData } from '../data/Data';
 
-// Define SampleSnapshot implementing Snapshot<T, Meta, K>
-class SampleSnapshot <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>
-  implements Snapshot<T, Meta, K> {
+// Define SampleSnapshot implementing Snapshot<T, K>
+class SampleSnapshot <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+  implements Snapshot<T, K> {
   id: string;
-  data: Map<string, Snapshot<T, Meta, K>>;
-  meta: Map<string, Snapshot<T, Meta, K>>;
-  events: CombinedEvents<T, Meta, K>;
+  data: Map<string, Snapshot<T, K>>;
+  meta: Map<string, Snapshot<T, K>>;
+  events: CombinedEvents<T, K>;
 
   constructor(
     id: string,
-    data: Map<string, Snapshot<T, Meta, K>>,
-    meta: Map<string, Snapshot<T, Meta, K>>,
-    events?: CombinedEvents<T, Meta, K>
+    data: Map<string, Snapshot<T, K>>,
+    meta: Map<string, Snapshot<T, K>>,
+    events?: CombinedEvents<T, K>
   ) {
     this.id = id;
     this.data = data;
     this.meta = meta;
     this.events = {
-      callbacks: events?.callbacks ?? ((snapshot: Snapshot<T, Meta, K>) => {
+      callbacks: events?.callbacks ?? ((snapshot: Snapshot<T, K>) => {
         console.log("callback called");
         return { snapshots: [snapshot] };
       }),
@@ -27,7 +28,7 @@ class SampleSnapshot <T extends Data, Meta extends UnifiedMetaDataOptions, K ext
   }
 
   // Example implementation of setData
-  setData(newData: Map<string, Snapshot<T, Meta, K>>): void {
+  setData(newData: Map<string, Snapshot<T, K>>): void {
     this.data = newData;
   }
 }

@@ -3,7 +3,7 @@
 /**
  * Function to generate custom headers for API requests.
  * @param {Object} options - Header options.
- * @returns {Object} - Custom headers object.
+ * @returns {Record<string, string>} - Custom headers object.
  */
 function generateCustomHeaders(options) {
     const { apiKey, token } = options;

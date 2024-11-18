@@ -1,7 +1,7 @@
 // CalendarActionPayload.ts
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CalendarEvent } from "../calendar/CalendarEvent";
-import { Data } from "../models/data/Data";
 import { AllStatus } from "../state/stores/DetailsListStore";
 
 // Define possible actions for the CalendarManager
@@ -12,13 +12,13 @@ type CalendarActionType =
   | 'SET_EVENT_STATUS';
 
 // Define the payloads for different actions
-interface AddEventPayload<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
-  event: CalendarEvent<T, Meta, K>;
+interface AddEventPayload<T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  event: CalendarEvent<T, K>;
 }
 
-interface UpdateEventPayload<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+interface UpdateEventPayload<T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   eventId: string;
-  updatedEvent: Partial<CalendarEvent<T, Meta, K>>;
+  updatedEvent: Partial<CalendarEvent<T, K>>;
 }
 
 interface RemoveEventPayload {
@@ -31,13 +31,14 @@ interface SetEventStatusPayload {
 }
 
 // Define a union type for action payloads
-type CalendarActionPayload<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> =
-  | AddEventPayload<T, Meta, K>
-  | UpdateEventPayload<T, Meta, K>
+type CalendarActionPayload<T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
+  | AddEventPayload<T, K>
+  | UpdateEventPayload<T, K>
   | RemoveEventPayload
   | SetEventStatusPayload;
 
 
 export type {
-    AddEventPayload, CalendarActionPayload, CalendarActionType, RemoveEventPayload, SetEventStatusPayload, UpdateEventPayload
+  AddEventPayload, CalendarActionPayload, CalendarActionType, RemoveEventPayload, SetEventStatusPayload, UpdateEventPayload
 };
+

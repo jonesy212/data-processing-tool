@@ -40,7 +40,8 @@ const initialData: any = {};
 export const realtimeData = {} as RealtimeData
 
 // Updated cache data structure based on the provided tree structure
-export interface CacheData extends Data {
+export interface CacheData extends Data<CacheData> {
+  _id: string,
   lastUpdated: VersionHistory;
   userSettings: typeof userSettings;
   dataVersions: DataVersions;

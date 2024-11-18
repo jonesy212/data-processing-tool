@@ -2,7 +2,7 @@
 
 import { processAutoGPTOutputWithSpaCy } from "../../intelligence/AutoGPTSpaCyIntegration";
 import axiosInstance from "../../security/csrfToken";
-import { CalendarEvent } from "../../state/stores/CalendarEvent";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 
 // Define a class or interface for content analysis
 export interface ScheduleOptimization {

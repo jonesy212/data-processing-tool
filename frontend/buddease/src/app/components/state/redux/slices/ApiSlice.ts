@@ -213,7 +213,7 @@ export const useApiManagerSlice = createSlice({
         [Symbol.iterator]: function (): Iterator<any, any, undefined> {
           throw new Error("Function not implemented.");
         },
-        getData: function (): Promise<SnapshotStore<Snapshot<Data, Meta, Data>>[]> {
+        getData: function (): Promise<SnapshotStore<Snapshot<Data, Data>>[]> {
           throw new Error("Function not implemented.");
         }
       }));

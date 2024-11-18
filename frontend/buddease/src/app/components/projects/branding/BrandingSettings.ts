@@ -1,6 +1,7 @@
 import { Progress } from "../../models/tracker/ProgressBar";
 import { Tag } from "../../models/tracker/Tag";
 import { Resource } from "../../state/redux/slices/CollaborationSlice";
+import { T , K } from "@/app/components/models/data/dataStoreMethods";
 
 // BrandingSettings.ts
 interface BrandingSettings {
@@ -107,7 +108,7 @@ interface BrandingSettings {
 interface Label {
   text: string;
   color: string;
-  localeCompare: (otherTag: Tag) => number;
+  localeCompare?: (otherTag: Tag<T, K>) => number;
 }
 
 // Define a default branding settings object
@@ -136,13 +137,16 @@ export const label: { text: string; color: string } = {
 
 export const labels: Label[] = [
   {
-    text: "Custom Label",
+    text: "Label B",
     color: "#333",
+    localeCompare: (otherTag) => otherTag.text.localeCompare("Label B"),
   },
   {
-    text: "Custom Label 2",
+    text: "Label A",
     color: "#333",
-  },
+    localeCompare: (otherTag) => otherTag.text.localeCompare("Label A"),
+  }
+
 ];
 
 

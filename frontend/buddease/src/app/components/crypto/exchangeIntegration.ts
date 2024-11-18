@@ -6,9 +6,9 @@ import { ConfigLogger } from "../logging/Logger";
 import { BaseData, Data } from "../models/data/Data";
 import { ExchangeData } from "../models/data/ExchangeData";
 import { CustomSnapshotData, Snapshot } from "../snapshots/LocalStorageSnapshotStore";
-import { K, T } from "../snapshots/SnapshotConfig";
 import { updateUIWithSnapshotStore } from "../snapshots/updateUIWithSnapshotStore";
 import { Subscription } from "../subscriptions/Subscription";
+import { getSubscriptionLevel } from "../subscriptions/SubscriptionLevel";
 import DatabaseClient from "../todos/tasks/DatabaseClient";
 import { Subscriber } from "../users/Subscriber";
 import * as subscriptionApi from "./../../api/subscriberApi";
@@ -35,6 +35,8 @@ export enum ExchangeEnum {
   COINBASE_PRO = "Coinbase Pro",
   KRAKEN = "Kraken",
   BITFINEX = "Bitfinex",
+  BTC = "Bitcoin",
+  ETH = "Ethereum",
   // Add more exchanges as needed
 }
 
@@ -428,7 +430,7 @@ const initialData: CustomSnapshotData = {
 }
 
 // Create an instance of the Subscriber class for order book updates
-const subscription: Subscription<T, Meta, K> = {
+const subscription: Subscription<Data, Data> = {
   unsubscribe: () => {},
   portfolioUpdates: () => {},
   tradeExecutions: () => {},
@@ -437,18 +439,24 @@ const subscription: Subscription<T, Meta, K> = {
   triggerIncentives: () => { },
   determineCategory: (data:any) => data,
   portfolioUpdatesLastUpdated: {} as ModifiedDate,
+  subscribers: [],
+  data: {},
+  getSubscriptionLevel: getSubscriptionLevel
 };
 
+
+
+
 // Function to create a subscriber
-const createSubscriber = (): Subscriber<T, Meta, K> => {
+const createSubscriber = (): { subscriber: Subscriber<Data, Data>; tempSubscriber: Subscriber<Data, Data> } => {
   const name = "ExampleName"; // Define the name
   const notifyEventSystem = () => {}; // Define the notifyEventSystem function
   const updateProjectState = () => {}; // Define the updateProjectState function
   const logActivity = () => {}; // Define the logActivity function
   const triggerIncentives = () => {}; // Define the triggerIncentives function
-  const initialData: BaseData | undefined = undefined; ; // Define the initial data
+  const initialData: BaseData | undefined = undefined; // Define the initial data
   
-  const tempSubscriber = new Subscriber<T,K>(
+  const tempSubscriber = new Subscriber<Data, Data>(
     "tempSubscriber",
     name,
     subscription,
@@ -460,9 +468,10 @@ const createSubscriber = (): Subscriber<T, Meta, K> => {
     initialData
   );
 
+  // Now you can retrieve the subscriberId from tempSubscriber
   const subscriberId = subscriptionApi.getSubscriberId(tempSubscriber);
 
-  return Subscriber.createSubscriber<T, CustomSnapshotData>(
+  const subscriber = Subscriber.createSubscriber<Data, CustomSnapshotData>(
     "1",
     name,
     subscription,
@@ -473,7 +482,17 @@ const createSubscriber = (): Subscriber<T, Meta, K> => {
     triggerIncentives,
     initialData
   );
+
+  // Return both the subscriber and tempSubscriber
+  return { subscriber, tempSubscriber };
 };
+
+
+
+
+export { createSubscriber };
+
+
 
 // Create the subscriber instance
 const subscriber = createSubscriber();
@@ -488,8 +507,10 @@ export const initialSnapshot: Snapshot<BaseData> = {
   callbacksts: {}
   // Other properties as needed
 };
+
+
 // Create an instance of the Subscriber class for order book updates
-const orderBookSubscriber = new Subscriber<T, Meta, K>(
+const orderBookSubscriber = new Subscriber<Data, Data>(
   "orderBookSubscriber",
   "orderBookSubscriberName", // Assuming you have a name for this subscriber
   subscription,
@@ -514,10 +535,8 @@ const unsubscribeFromOrderBookUpdates = (
   orderBookSubscriber.unsubscribe(subscriber);
 };
 
-
-
 // update the UI with order book snapshot updates
-const handleOrderBookUpdateUI = async (snapshotStore: Snapshot<Data, Meta, Data>): Promise<void> => {
+const handleOrderBookUpdateUI = async (snapshotStore: Snapshot<Data, Data>): Promise<void> => {
   updateUIWithSnapshotStore(snapshotStore); // Use the existing function to handle snapshot store updates
 
   // Example: Get the ID as a resolved value
@@ -539,12 +558,10 @@ const handleOrderBookUpdateUI = async (snapshotStore: Snapshot<Data, Meta, Data>
 };
 
 
-
-
 // Function to notify subscribers about order book updates
 const notifyOrderBookUpdate = async (): Promise<void> => {
   // Create an empty snapshot to pass to subscribers
-  const data: Snapshot<BaseData, Meta, BaseData> = {
+  const data: Snapshot<BaseData, BaseData> = {
     timestamp: new Date(),
     data: undefined,
     category: undefined,
@@ -553,7 +570,6 @@ const notifyOrderBookUpdate = async (): Promise<void> => {
   };
 
   const subscribers = await subscriptionApi.getSubscribersAPI()
-
 
   const callback = (data: Snapshot<BaseData>) => {
     // Handle the data as needed
@@ -565,9 +581,7 @@ const notifyOrderBookUpdate = async (): Promise<void> => {
     // Notify subscribers about the update
     orderBookSubscriber.notify!(data, callback, subscribers);
   };
-
 }
-
 
 
 
@@ -577,13 +591,11 @@ const updateTicker = (tickerData: any): void => {
     if (!isValidTickerData(tickerData)) {
       throw new Error("Invalid ticker data.");
     }
-
     // Update ticker information
     tickerUpdater.updateTicker(tickerData);
 
     // Update the UI with the updated ticker data
     updateUI(tickerData, "settings"); // Use "settings" store to update settings UI
-
 
     // Log the update
     console.log("Ticker information updated successfully.");
@@ -592,8 +604,6 @@ const updateTicker = (tickerData: any): void => {
     console.error("Error updating ticker information:", error.message);
   }
 };
-
-
 
 const isValidTickerData = (tickerData: any): boolean => {
   // Check if tickerData is an object

@@ -5,8 +5,10 @@ import { saveAs } from 'file-saver'; // Ensure you have file-saver installed
 
 
 interface ExportTasksToCSVProps {
-  tasksDataSource: Task[];
+
+  tasksDataSource: Task<any>[];
 }
+
 const exportTasksToCSV: React.FC<ExportTasksToCSVProps> = ({ tasksDataSource }) => {
   // Convert tasks data to CSV format
   const tasksCSV = tasksDataSourceToCSV(tasksDataSource);

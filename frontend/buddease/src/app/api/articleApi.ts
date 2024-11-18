@@ -1,6 +1,5 @@
 // articleApi.ts
 import { AxiosError, AxiosResponse } from "axios";
-import dotProp from "dot-prop";
 import { observable, runInAction } from "mobx";
 import { addLog } from "../components/state/redux/slices/LogSlice";
 import { useArticleStore } from "../components/state/stores/ArticleStore";
@@ -76,25 +75,32 @@ export const articleApiService: ArticleApiService = observable({
     },
   },
 
+  
   createArticle: async (articleData: any): Promise<AxiosResponse> => {
     try {
-      const userApiConfig = dotProp.getProperty(
-        API_BASE_URL,
-        "getUserApiConfig"
-      );
+      // Access `getUserApiConfig` directly on `API_BASE_URL`
+      const userApiConfig = API_BASE_URL.getUserApiConfig;
+
+      if (!userApiConfig) {
+        throw new Error("API configuration for user is missing");
+      }
+
       const response: AxiosResponse = await axiosInstance.post(
         String(userApiConfig),
         articleData
       );
+      
       runInAction(() => {
         addLog(`Created article: ${articleData.title}`);
       });
 
+      // Utilize the notification system directly
       const notificationContext = useNotification();
       const message = createMessage(
         "success",
         `Article "${articleData.title}" was created successfully.`
       );
+
       notificationContext.showSuccessNotification(
         "Article Created",
         {

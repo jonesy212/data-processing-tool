@@ -4,9 +4,23 @@ import { CustomPhaseHooks, Phase } from "./Phase";
 import React from "react";
 
 
-
-
-
+export const currentPhase: Phase = {
+    name: "Current Phase",
+    startDate: new Date(),
+    endDate: new Date(),
+    subPhases: [],
+    data: {} as Data,
+  hooks: {} as CustomPhaseHooks,
+  id, description, date, createdBy,
+    component: (props: {}, context?: any): ReactNode => {
+      return (
+        <div>
+          <p>Current Phase: {currentPhase.name}</p>
+        </div>
+      );
+  },
+    duration: 0,
+  };
 export const previousPhase: Phase = {
     name: "Previous Phase",
     startDate: new Date(),
@@ -14,6 +28,7 @@ export const previousPhase: Phase = {
     subPhases: [],
     data: {} as Data,
     hooks: {} as CustomPhaseHooks,
+    id, description, date, createdBy,
     component: (props: {}, context?: any): ReactNode => {
       return (
         <div>
@@ -31,6 +46,7 @@ export const nextPhase: Phase = {
     subPhases: [],
     data: {} as Data,
     hooks: {} as CustomPhaseHooks,
+    id, description, date, createdBy,
     component: (props: {}, context?: any): ReactNode => {
       return (
         <div>

@@ -53,7 +53,7 @@ export const PersonaBuilderUtils = () => {
 
 
   // Function to handle snapshot updates with specific data type
-  const handleSnapshotUpdate = (snapshot: Snapshot<Data, Meta, Data> | undefined) => {
+  const handleSnapshotUpdate = (snapshot: Snapshot<Data, Data> | undefined) => {
     try {
 
       if (snapshot) {
@@ -84,7 +84,7 @@ export const PersonaBuilderUtils = () => {
 // Define your update callback function
 const updateCallback = (
   events: Record<string, CalendarEvent[]>,
-  snapshotStore: SnapshotStore<Snapshot<Data, Meta, Data>>
+  snapshotStore: SnapshotStore<Snapshot<Data, Data>>
 ) => {
   // Your update logic here
 

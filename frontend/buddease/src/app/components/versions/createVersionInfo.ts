@@ -1,4 +1,3 @@
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import DocumentPermissions from "../documents/DocumentPermissions";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
@@ -137,15 +136,15 @@ export const handleSnapshot = (
   snapshots: SnapshotsArray<any, any>,
   type: string,
   event: Event,
-  snapshotContainer?: SnapshotContainer<T, Meta, K>,
-  snapshotStoreConfig?: SnapshotStoreConfig<Data, Meta, BaseData>
-): Promise<Snapshot<Data, Meta, BaseData> | null> => {
+  snapshotContainer?: SnapshotContainer<T, K>,
+  snapshotStoreConfig?: SnapshotStoreConfig<Data, BaseData>
+): Promise<Snapshot<Data, BaseData> | null> => {
   try {
     if (snapshot) {
       callback(snapshot);
     }
 
-    let snapshotStore: SnapshotStore<Data, Meta, BaseData>;
+    let snapshotStore: SnapshotStore<Data, BaseData>;
 
     if (snapshotContainer) {
       // Convert the SnapshotContainer to SnapshotStore using the conversion function
@@ -155,7 +154,7 @@ export const handleSnapshot = (
       const versionInfo = createVersionInfo(snapshotStoreConfig.version || '0.0.0');
 
       // Create a new SnapshotStore with provided configuration
-      snapshotStore = new SnapshotStore<Data, Meta, BaseData>(
+      snapshotStore = new SnapshotStore<Data, BaseData>(
         snapshotStoreConfig.storeId,
         snapshotStoreConfig.name || '',
         versionInfo,  // Use the constructed version object
@@ -167,11 +166,11 @@ export const handleSnapshot = (
       );
     } else {
       // Fallback to a default or empty instance
-      snapshotStore = {} as SnapshotStore<Data, Meta, BaseData>;
+      snapshotStore = {} as SnapshotStore<Data, BaseData>;
     }
 
     // Create an object that conforms to the Snapshot interface
-    const processedSnapshot: Snapshot<Data, Meta, BaseData> = {
+    const processedSnapshot: Snapshot<Data, BaseData> = {
       id,
       category: category ?? undefined,
       timestamp: new Date(),

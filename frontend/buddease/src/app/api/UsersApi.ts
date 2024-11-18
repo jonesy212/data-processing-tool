@@ -90,9 +90,6 @@ export const saveUserProfiles = async (profiles: User[]): Promise<{ success: boo
 
 
 
-
-
-
 // Function to fetch user data (example)
 export const fetchUserData = async (req: any, res: any) => {
   try {

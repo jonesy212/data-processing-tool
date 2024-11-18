@@ -7,7 +7,7 @@ type DebugInfo = {
   additionalData?: any; // Optional, allows for more specific debugging information
 };
 
-type TempData<T, Meta, K> = {
+type TempData<T, K> = {
   tempResults?: T[]; // Array of temporary results, type based on the snapshot data
   temporaryValues?: K; // Temporary values that could be used for intermediate calculations
   cacheTime?: Date; // Time at which this temporary data was stored

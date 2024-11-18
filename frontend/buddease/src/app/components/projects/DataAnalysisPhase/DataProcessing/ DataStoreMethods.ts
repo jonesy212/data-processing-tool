@@ -1,6 +1,7 @@
 //  DataStoreMethods.ts
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { SnapshotContainer } from '@/app/components/snapshots';
+import { Data } from '@/app/components/models/data/Data';
+import { SnapshotContainer, SnapshotData } from '@/app/components/snapshots';
 import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore, { SubscriberCollection } from "@/app/components/snapshots/SnapshotStore";
 import { SnapshotStoreMethod } from "@/app/components/snapshots/SnapshotStoreMethod";
@@ -8,29 +9,35 @@ import { Subscriber } from "@/app/components/users/Subscriber";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { DataStore } from "./DataStore";
+import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
 
-interface DataStoreWithSnapshotMethods <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> extends DataStore<T, Meta, K> {
-  snapshotMethods: SnapshotStoreMethod<T, Meta, K>[] | undefined;
+interface DataStoreWithSnapshotMethods <T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> 
+  extends DataStore<T, K> {
+  snapshotMethods: SnapshotStoreMethod<T, K>[] | undefined
 }
 
 
 
 
 
-export interface DataStoreMethods <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>
-  extends DataStoreWithSnapshotMethods<T, Meta, K> {
+export interface DataStoreMethods <
+  T extends BaseData<T>,  
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+  extends DataStoreWithSnapshotMethods<T, K> { 
   mapSnapshot: (
     id: number,
-    storeId: string,
-    snapshotStore: SnapshotStore<T, Meta, K>,
-    snapshotContainer: SnapshotContainer<T, Meta, K>,
+    storeId: string | number,
+    snapshotStore: SnapshotStore<T, K>,
+    snapshotContainer: SnapshotContainer<T, K>,
     snapshotId: string,
     criteria: CriteriaType,
-    snapshot: Snapshot<T, Meta, K>,
+    snapshot: Snapshot<T, K>,
     type: string,
     event: Event
-  ) => Promise<Snapshot<T, Meta, K> | null | undefined>;
+  ) => Promise<Snapshot<T, K> | null | undefined>;
 
 
   mapSnapshots: (
@@ -39,83 +46,86 @@ export interface DataStoreMethods <T extends Data, Meta extends UnifiedMetaDataO
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
 
-    snapshot: Snapshot<T, Meta, K>,
+    snapshot: Snapshot<T, K>,
     timestamp: string | number | Date | undefined,
     type: string,
     event: Event,
     id: number,
-    snapshotStore: SnapshotStore<T, Meta, K>,
+    snapshotStore: SnapshotStore<T, K>,
     data: T,
     callback: (
       storeIds: number[],
       snapshotId: string,
       category: symbol | string | Category | undefined,
       categoryProperties: CategoryProperties | undefined,
-      snapshot: Snapshot<T, Meta, K>,
+      snapshot: Snapshot<T, K>,
       timestamp: string | number | Date | undefined,
       type: string,
-    event: Event,
+      event: Event,
       id: number,
-      snapshotStore: SnapshotStore<T, Meta, K>,
+      snapshotStore: SnapshotStore<T, K>,
       data: K,
       index: number
-    ) => SnapshotsObject<T, Meta, K>
-  ) => Promise<SnapshotsArray<T, Meta>>
+    ) => SnapshotsObject<T, K>
+  ) => Promise<SnapshotsArray<T>>
 
-  addSnapshot: (snapshot: Snapshot<T, Meta, K>,
+  addSnapshot: (snapshot: Snapshot<T, K>,
     snapshotId: string,
-    subscribers: SubscriberCollection<T, Meta, K> | undefined
-  ) => Promise<Snapshot<T, Meta, K> | undefined>;
+    subscribers: SubscriberCollection<T, K> | undefined
+  ) => Promise<Snapshot<T, K> | undefined>;
 
-  addSnapshotSuccess: (snapshot: T, subscribers: Subscriber<T, Meta, K>[]) => void;
+  addSnapshotSuccess: (snapshot: T, subscribers: Subscriber<T, K>[]) => void;
 
   getSnapshot: (
     snapshot: (id: string | number) =>
       | Promise<{
         snapshotId: number;
-        snapshotData: SnapshotData<T, Meta, K>;
+        snapshotData: SnapshotData<T, K>;
         category: Category | undefined;
         categoryProperties: CategoryProperties | undefined;
-        dataStoreMethods: DataStore<T, Meta, K> | null;
+        dataStoreMethods: DataStore<T, K> | null;
         timestamp: string | number | Date | undefined;
         id: string | number | undefined;
-        snapshot: Snapshot<T, Meta, K>;
-        snapshotStore: SnapshotStore<T, Meta, K>;
+        snapshot: Snapshot<T, K>;
+        snapshotStore: SnapshotStore<T, K>;
         data: T;
       }>
       | undefined
-  ) => Promise<Snapshot<T, Meta, K> | undefined>;
+  ) => Promise<Snapshot<T, K> | undefined>;
 
-  getSnapshotSuccess: (snapshot: Snapshot<T, Meta, K>, subscribers: Subscriber<T, Meta, K>[]) => void;
+  getSnapshotSuccess: (snapshot: Snapshot<T, K>, subscribers: Subscriber<T, K>[]) => Promise<SnapshotStore<T, K>>;
   
-  getSnapshotsByTopic: (topic: string) => Promise<Snapshots<T, Meta>>;
+  getSnapshotsByTopic: (topic: string) => Promise<Snapshots<T>>;
 
-  getSnapshotsByCategory: (category: string) => Promise<Snapshots<T, Meta>>;
-  getSnapshotsByPriority: (priority: string) => Promise<Snapshots<T, Meta>>;
+  getSnapshotsByCategory: (category: string) => Promise<Snapshots<T>>;
+  getSnapshotsByPriority: (priority: string) => Promise<Snapshots<T>>;
 
   addData: (
     id: string,
     data: T,
-    snapshotData: SnapshotData<T, Meta, K>, 
-    snapshotStore: SnapshotStore<T, Meta, K>, 
+    snapshotData: SnapshotData<T, K>, 
+    snapshotStore: SnapshotStore<T, K>, 
     category: symbol | string | Category | undefined, 
     categoryProperties: CategoryProperties | undefined,
-    dataStoreMethods: DataStoreMethods<T, Meta, K>
-  ) => Promise<SnapshotStore<T, Meta, K>>;
+    dataStoreMethods: DataStoreMethods<T, K>
+  ) => Promise<SnapshotStore<T, K>>;
 
-  getData: (id: number, snapshot: Snapshot<T, Meta, K>) => Promise<SnapshotStore<T, Meta, K>[] | undefined>;
+  getData: (
+    id: number,
+    snapshot: Snapshot<T, K>
+  ) => Promise<SnapshotStore<T, K>[] | undefined>;
   removeData: (id: number) => void;
 
-  updateData: (id: number, newData: Snapshot<T, Meta, K>) => void;
+  updateData: (id: number, newData: Snapshot<T, K>) => void;
 
-  getSnapshotsByTopicSuccess: (snapshots: Snapshots<T, Meta>) => void;
-  getSnapshotsByCategorySuccess: (snapshots: Snapshots<T, Meta>) => void;
+  getSnapshotsByTopicSuccess: (snapshots: Snapshots<T>) => void;
+  getSnapshotsByCategorySuccess: (snapshots: Snapshots<T>) => void;
   getSnapshotsByKey: (key: string) => Promise<T[]>;
-  getSnapshotsByKeySuccess: (snapshots: Snapshots<T, Meta>) => void;
+  getSnapshotsByKeySuccess: (snapshots: Snapshots<T>) => void;
 
-  getSnapshotsByPrioritySuccess: (snapshots: Snapshots<T, Meta>) => void;
+  getSnapshotsByPrioritySuccess: (snapshots: Snapshots<T>) => void;
 
-  snapshotMethods: SnapshotStoreMethod<T, Meta, K>[] | undefined;
+  snapshotMethods: SnapshotStoreMethod<T, K>[] | undefined;
   // More methods as required...
 }
 

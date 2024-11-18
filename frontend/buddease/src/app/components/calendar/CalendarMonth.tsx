@@ -1,7 +1,7 @@
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import React, { useEffect } from "react";
 import { useCryptoManager } from "../crypto/CryptoManager";
 import { Task } from "../models/tasks/Task";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { CommonCalendarProps } from "./Calendar";
 import { YearInfo } from "./CalendarYear";
 import { Month, MonthInfo } from "./Month";

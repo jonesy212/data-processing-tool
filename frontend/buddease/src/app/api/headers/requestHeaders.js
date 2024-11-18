@@ -3,7 +3,7 @@
 /**
  * Function to create request headers.
  * @param {string} authToken - The authentication token.
- * @returns {Object} - The request headers.
+ * @returns {Record<string, string>} - The request headers.
  */
 function createRequestHeaders(authToken) {
     const headers = {

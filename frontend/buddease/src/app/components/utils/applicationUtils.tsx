@@ -1,5 +1,6 @@
 // applicationUtils.tsx
-
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
 import { ApiNotificationsService } from "@/app/api/NotificationsService";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Article } from "@/app/pages/blog/Blog";
@@ -8,7 +9,8 @@ import { useDispatch } from "react-redux";
 import * as articleApi from '../../../app/api/articleApi';
 import { sendEmail } from "../communications/email/SendEmail";
 import { sendSMS } from "../communications/sendSMS";
-import { BaseData, Data } from "../models/data/Data";
+import { Content } from "../models/content/AddContent";
+import { BaseData } from "../models/data/Data";
 import { ActivityActionEnum, ActivityTypeEnum, ProjectStateEnum, StatusType } from "../models/data/StatusType";
 import { Task } from "../models/tasks/Task";
 import { Project, ProjectDetails } from "../projects/Project";
@@ -44,9 +46,9 @@ interface TriggerIncentivesParams {
 }
 
 
-interface AnalyticsEvent<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+interface AnalyticsEvent<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   type: string;
-  snapshot: Snapshot<T, Meta, K>; // Include snapshot in the type definition
+  snapshot: Snapshot<T, K>; // Include snapshot in the type definition
   date: string;
 }
 
@@ -61,10 +63,11 @@ const notificationManager = new NotificationManager({
 
 const apiNotificationsService = new ApiNotificationsService(useNotification);
 
-const notifyEventSystem = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+const notifyEventSystem = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   eventType: string,
   eventData: any,
-  source: string
+  source: string,
+  event: Event
 ) => {
   // Logic to notify the event system
   console.log(`Event '${eventType}' occurred from ${source}. Data:`, eventData);
@@ -162,8 +165,8 @@ const notifyEventSystem = <T extends Data, Meta extends UnifiedMetaDataOptions, 
         rsvpStatus: "yes",
         participants: [],
         teamMemberId: "",
-        getSnapshotStoreData: function (): Promise<SnapshotStore<T, Meta, K>[]> {
-          const snapshotStore = new SnapshotStore<T, Meta, K>(storeId, options, config, operation);
+        getSnapshotStoreData: function (): Promise<SnapshotStore<T, K>[]> {
+          const snapshotStore = new SnapshotStore<T, K>(storeId, options, config, operation);
           return Promise.resolve([snapshotStore]);
         },
         getData: function (): Promise<Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
@@ -254,7 +257,8 @@ const updateProjectState = (
   stateType: ProjectStateEnum,
   projectId: string,
   newState: Project,
-  content: any
+  content: Content,
+  state: object
 ) => {
   // Logic to update the state of the project with the provided ID
   console.log(`Updating state of project '${projectId}' to:`, newState);
@@ -390,8 +394,6 @@ const isValidStatus = (status: StatusType): boolean => {
   };
   
   
-
-  
   const logActivity = ({
     activityType,
     action,
@@ -486,18 +488,15 @@ const tradeExections = ({
 }
   
 const userId = useSecureUserId()
-const unsubscribe = (unsubscribeDetails: {
-  userId: string;
-  snapshotId: string;
-  unsubscribeType: string;
-  unsubscribeDate: Date;
-  unsubscribeReason: string;
-  unsubscribeData: any;
-}
+
+const unsubscribe = (
+  snapshotId: number,
+  unsubscribeDetails: UnsubscribeDetails,
+  callback: SubscriberCallbackType | null
 ) => {
-  // Implement logic to unsubscribe or clean up resources
-  console.log(`Unsubscribing user ${userId} from snapshot ${unsubscribeDetails.snapshotId}`);
-  
+  // Log the snapshot unsubscribe action
+  console.log(`Unsubscribing user ${unsubscribeDetails.userId} from snapshot ${unsubscribeDetails.snapshotId}`);
+
   // Example: Perform actions based on unsubscribeType
   switch (unsubscribeDetails.unsubscribeType) {
     case 'email':
@@ -510,16 +509,21 @@ const unsubscribe = (unsubscribeDetails: {
       console.warn(`Unknown unsubscribe type: ${unsubscribeDetails.unsubscribeType}`);
       break;
   }
-  // Example: Log unsubscribe details
+
+  // Log unsubscribe details for audit purposes
   console.log(`Unsubscribe Date: ${unsubscribeDetails.unsubscribeDate}`);
   console.log(`Unsubscribe Reason: ${unsubscribeDetails.unsubscribeReason}`);
   console.log(`Additional Data:`, unsubscribeDetails.unsubscribeData);
-  // Additional logic here...
+
+  // If a callback is provided, call it with a status
+  if (callback) {
+    callback('success', `User ${unsubscribeDetails.userId} successfully unsubscribed from snapshot ${snapshotId}`);
+  }
 };
 
-const triggerEvent = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+const triggerEvent = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   event: string,            // Match parameter name with the CombinedEvents interface
-  snapshot: Snapshot<T, Meta, K>, // Ensure Snapshot type is used here
+  snapshot: Snapshot<T, K>, // Ensure Snapshot type is used here
   eventDate: Date
 ) => {
   // Log the event for debugging purposes
@@ -552,8 +556,8 @@ const triggerEvent = <T extends Data, Meta extends UnifiedMetaDataOptions, K ext
 };
 
 // Example function to send event data to an analytics service
-const sendEventToAnalyticsService = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  event: AnalyticsEvent<T, Meta, K>
+const sendEventToAnalyticsService = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  event: AnalyticsEvent<T, K>
 ) => {
   // Replace with actual analytics service logic
   console.log("Sending event to analytics service:", event);
@@ -645,4 +649,5 @@ const isValidParameters = (params: any): boolean => {
     logActivity, notifyEventSystem, portfolioUpdates, tradeExections, triggerEvent, triggerIncentives, unsubscribe, updateProjectState
 };
 
-  export type { TriggerIncentivesParams };
+  export type { LogActivityParams, TriggerIncentivesParams };
+

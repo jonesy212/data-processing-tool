@@ -1,10 +1,11 @@
+import { T, K } from "@/app/components/models/data/dataStoreMethods";
 import { AllTypes } from '@/app/components/typings/PropTypes';
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UserSettings } from "@/app/configs/UserSettings";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
-import docx from "docx";
+import * as docx from "docx";
 import { ContentState } from "draft-js";
 import {
   CodingLanguageEnum,
@@ -100,7 +101,7 @@ interface Style {
   defaultZoomLevel: number;
   customProperties: CustomProperties | undefined;
   value: string;
-  metadata: StructuredMetadata | undefined;
+  metadata: StructuredMetadata<T, K<T>> | undefined;
   tableStyles?: {
     backgroundColor?: string;
     borderColor?: string;
@@ -338,7 +339,7 @@ export interface DocumentOptions {
     right: number;
   };
   visibility: AllTypes;
-  updatedDocument?: DocumentData;
+  updatedDocument?: DocumentData<T, K<T>>;
   fontSize: number;
   font: string;
   textColor: string;
@@ -470,8 +471,8 @@ export interface DocumentOptions {
   styles: {
     [key: string]: CustomStyle;
   };
-  previousMetadata: StructuredMetadata | undefined;
-  currentMetadata: StructuredMetadata | undefined;
+  previousMetadata: StructuredMetadata<T, K<T>> | undefined;
+  currentMetadata: StructuredMetadata<T, K<T>> | undefined;
   currentContent: ContentState
   previousContent: ContentState | undefined
   lastModifiedDate: ModifiedDate | undefined;
@@ -565,7 +566,7 @@ export interface DocumentOptions {
   };
   highlightColor: string;
   customSettings: Record<string, any> | undefined;
-  documents: DocumentData[];
+  documents: DocumentData<T, K<T>>[];
   includeType: { enabled: boolean, format: "all" | "selected" | "none" }
   footnote:
   | boolean
@@ -581,7 +582,7 @@ export interface DocumentOptions {
   includeContent: boolean | { enabled: boolean }; // New property to include content in the report
   includeStatus: boolean | { enabled: boolean }; // New property to include status in the report
   includeAdditionalInfo: boolean | { enabled: boolean }; // Example: include additional information
-  metadata: StructuredMetadata | undefined;
+  metadata: StructuredMetadata<T, K<T>>| undefined;
 
   // Properties specific to DocumentGenerator
   title?: string;
@@ -845,6 +846,8 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       major: 1,
       minor: 1,
       patch: 1,
+      isActive: true, 
+      releaseDate: ""
     },
     lastModifiedDate: {
       value: undefined,

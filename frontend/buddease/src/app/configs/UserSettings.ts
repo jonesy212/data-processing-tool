@@ -1,6 +1,7 @@
 import { Task } from "@/app/components/models/tasks/Task";
 import { TodoManagerStore } from "@/app/components/state/stores/TodoStore";
 import { Idea } from "@/app/components/users/Ideas";
+import { AxiosResponse } from "axios";
 import { object } from "prop-types";
 import { NestedEndpoints } from "../api/ApiEndpoints";
 import { CalendarEvent } from "../components/calendar/CalendarEvent";
@@ -12,26 +13,35 @@ import useAuthentication from "../components/hooks/useAuthentication";
 import { CollaborationOptions } from "../components/interfaces/options/CollaborationOptions";
 import { Category } from "../components/libraries/categories/generateCategoryProperties";
 import { ThemeEnum } from "../components/libraries/ui/theme/Theme";
-import { BaseData, Data } from "../components/models/data/Data";
+import { BaseData, coreData, Data } from "../components/models/data/Data";
+import { Meta } from "../components/models/data/dataStoreMethods";
+import { PriorityTypeEnum } from "../components/models/data/StatusType";
+import { Team } from "../components/models/teams/Team";
 import { Member } from "../components/models/teams/TeamMembers";
+import { TrackerProps } from "../components/models/tracker/Tracker";
 import { Phase } from "../components/phases/Phase";
 import { DataAnalysisResult } from "../components/projects/DataAnalysisPhase/DataAnalysisResult";
 import { InitializedState } from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { PrivacySettings, selectedSettings } from "../components/settings/PrivacySettings";
 import { SnapshotStoreConfig, SnapshotStoreUnion } from "../components/snapshots";
 import SnapshotStore from "../components/snapshots/SnapshotStore";
+import { ExtendedTodo } from "../components/state/AssignBaseStore";
 import { resetState } from "../components/state/redux/slices/AppSlice";
 import { CustomComment } from "../components/state/redux/slices/BlogSlice";
+import { ReassignEventResponse } from "../components/state/stores/AssignEventStore";
+import { AuthStore } from "../components/state/stores/AuthStore";
 import BrowserCheckStore from "../components/state/stores/BrowserCheckStore";
 import { CalendarManagerStore } from "../components/state/stores/CalendarEvent";
-import { DetailsItem } from "../components/state/stores/DetailsListStore";
+import { AllStatus, DetailsItem } from "../components/state/stores/DetailsListStore";
 import { IconStore } from "../components/state/stores/IconStore";
 import useSettingManagerStore, { Settings } from "../components/state/stores/SettingsStore";
 import { TrackerStore } from "../components/state/stores/TrackerStore";
 import { store } from "../components/state/stores/useAppDispatch";
 import { NotificationData } from "../components/support/NofiticationsSlice";
 import { NotificationSettings } from "../components/support/NotificationSettings";
+import { taskService } from "../components/tasks/TaskService";
 import TodoImpl, { Todo, UserAssignee } from "../components/todos/Todo";
+import { User } from "../components/users/User";
 import { VideoData } from "../components/video/Video";
 import { CategoryProperties } from "../pages/personas/ScenarioBuilder";
 
@@ -130,7 +140,7 @@ export interface UserSettings extends Settings {
     | PrivacySettings
     | NotificationData[]
     | BrowserCheckStore
-    | VideoData
+    | VideoData<BaseData, BaseData>
     | UserAssignee
     | DataAnalysisResult[]
     | Category
@@ -146,15 +156,15 @@ export interface UserSettings extends Settings {
     | HighlightEvent[]
     | Idea[]
     | SnapshotStore<SnapshotStoreUnion<Data>, Data>[]
-    | InitializedState<BaseData, Meta, BaseData>
+    | InitializedState<BaseData, BaseData>
     | Member[]
     | NotificationSettings
-    | Todo[]
     | Task[]
-    | TodoManagerStore
-    | TodoImpl<Todo, any>[]
-    | CalendarEvent<BaseData, Meta, BaseData>[]
-    | CalendarManagerStore<BaseData, Meta, BaseData>
+    | Todo<any, any, any>[] // Assuming you want flexibility here
+    | TodoManagerStore<Todo<any, any, any>, any, any> // Ensure BaseData is appropriately defined
+    | TodoImpl<Todo<any, any, any>, any, any>[] // Use `any` or specify the types as needed
+    | CalendarEvent<BaseData, BaseData>[]
+    | CalendarManagerStore<BaseData, Meta>
     | SnapshotStoreConfig<Data, Data>[]
     | Record<string, string>
     | undefined
@@ -253,15 +263,29 @@ export interface UserSettings extends Settings {
 
 const userSettings: UserSettings = {
   
-
-  calendarEvents, todos, tasks, snapshotStores, 
+ 
   
+  endpoints: {} as NestedEndpoints,
+  highlights: [],
+  results: [],
+  totalCount: 0,
+  searchData: {
+    results: [],
+    totalCount: 0
+  },
+  iconStore: {},
+  calendarStore: {},
+ 
 
   userId: 1,
   userSettings: new NodeJS.Timeout(),
   communicationMode: "text",
   enableRealTimeUpdates: true,
+  id: "",
 
+  appName: "",
+  selectDatabaseVersion: "",
+  selectAppVersion: "",
   defaultFileType: "document",
   allowedFileTypes: ["document"],
   enableGroupManagement: true,
@@ -367,17 +391,285 @@ const userSettings: UserSettings = {
   enableFileSharing: false,
   enableBlockchainCommunication: false,
   enableDecentralizedStorage: false,
-  id: "",
+  enableDatabaseEncryption: false,
+  idleTimeoutId: null,
+
+
+  calendarEvents: [],
+  todos: [],
+  tasks: [],
+  snapshotStores: [],
+  
+  currentPhase: "",
+  comment: "",
+  browserCheckStore: {} as BrowserCheckStore,
+    trackerStore: {
+      trackers: {},
+      addTracker: (newTracker: TrackerProps) => {},
+      getTracker: (id: string): TrackerProps => {
+        // Ensure you return a valid TrackerProps object
+        const tracker = coreData.settings.trackerStore.trackers[id];
+        if (!tracker) {
+          throw new Error(`Tracker with id ${id} not found.`);
+        }
+        return tracker; // Return the tracker found
+      },
+      getTrackers: (filter?: { id?: string | undefined; name?: string | undefined; } | undefined) => [],
+      
+      removeTracker:(trackerToRemove: TrackerProps) => {},
+      dispatch: (action: any) => {},
+      
+    },
+    
+    todoStore: {
+      dispatch: (action: any) => {},
+      todos: {},
+      todoList: [],
+      toggleTodo: (id: string) => {},
+      
+      assignedTaskStore: "",
+      updateTaskTitle: "",
+      updateTaskDescription: "",
+      updateTaskStatus: "",
+      
+
+    },
+    taskManagerStore: {
+      tasks: {},
+      taskTitle: "",
+      taskDescription: "",
+      taskStatus: {},
+      
+
+      fetchTasksSuccess: (payload: { tasks: Task[]; }) => {},
+      fetchTasksFailure: (payload: { error: string; }) => {},
+      fetchTasksRequest: () => {},
+      completeAllTasksSuccess: (success: string) => {},
+      
+      completeAllTasks: (payload: { task: Task[]; }) => {},
+      completeAllTasksFailure: (payload: { error: string; }) => {},
+      NOTIFICATION_MESSAGE: "",
+      NOTIFICATION_MESSAGES: {},
+      
+      setDynamicNotificationMessage: (message: string) => {},
+      takeTaskSnapshot: (taskId: string) => {},
+      markTaskAsComplete: (taskId: string) => {},
+      updateTaskPositionSuccess: (payload: { task: Task; }) => {},
+      
+      batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task[]>)  => {},
+      batchFetchTaskSnapshotsSuccess: (taskId: Record<string, Task[]>) => {},
+      batchFetchUserSnapshotsRequest: (snapshotData: Record<string, User[]>) => {},
+      
+      assignedTaskStore: {
+        snapshotStore: undefined,
+        assignedUsers: {},
+        assignedItems: {},
+        assignedTodos: {},
+        assignedTasks: {},
+        assignedTeams: {},
+        events: {},
+        assignItem: {},
+        assignUser: {},
+        assignTeam: {},
+        unassignUser: {},
+        reassignUser: {},
+        assignUsersToItems: {},
+        unassignUsersFromItems: {},
+        assignNote: {},
+        reassignUsersToItems: {},
+        assignTeamsToTodos: {},
+        unassignTeamsFromTodos: {},
+        assignNoteToTeam: {},
+        assignFileToTeam: {},
+        assignContactToTeam: {},
+        assignEventToTeam: {},
+        assignGoalToTeam: {},
+        assignBookmarkToTeam: {},
+        assignCalendarEventToTeam: {},
+        assignBoardItemToTeam: {},
+        assignBoardColumnToTeam: {},
+        assignBoardListToTeam: {},
+        assignBoardCardToTeam: {},
+        assignBoardViewToTeam: {},
+        assignBoardCommentToTeam: {},
+        assignBoardActivityToTeam: {},
+        assignBoardLabelToTeam: {},
+        assignBoardMemberToTeam: {},
+        assignBoardSettingToTeam: {},
+        assignBoardPermissionToTeam: {},
+        assignBoardNotificationToTeam: {},
+        assignBoardIntegrationToTeam: {},
+        assignBoardAutomationToTeam: {},
+        assignBoardCustomFieldToTeam: {},
+
+        assignTask: (task) => {
+          // Logic to assign a task
+        },
+        assignUsersToTasks: (taskId, userIds) => {
+          // Logic to assign users
+        },
+        unassignUsersFromTasks: (taskId, userIds) => {
+          // Logic to unassign users
+        },
+        setDynamicNotificationMessage: (message) => {
+          // Logic to set notification message
+        },
+        
+        reassignUsersToTasks: function (taskIds: string[], oldUserId: string, newUserId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        assignUserToTodo: function (todoId: string, userId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        unassignUserFromTodo: function (todoId: string, userId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        reassignUserInTodo: function (todoId: string, oldUserId: string, newUserId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        assignUsersToTodos: function (todoIds: string[], userId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        unassignUsersFromTodos: function (todoIds: string[], userId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        reassignUsersInTodos: function (todoIds: string[], oldUserId: string, newUserId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        assignUserSuccess: function (): void {
+          throw new Error("Function not implemented.");
+        },
+        assignUserFailure: function (error: string): void {
+          throw new Error("Function not implemented.");
+        },
+        
+        assignMeetingToTeam: function (meetingId: string, teamId: string): Promise<AxiosResponse> {
+          throw new Error("Function not implemented.");
+        },
+        assignProjectToTeam: function (projectId: string, teamId: string): Promise<AxiosResponse> {
+          throw new Error("Function not implemented.");
+        },
+        connectResponsesToTodos: function (todoIds: string[], assignees: string[], todos: ExtendedTodo[], eventId: string, responses: ReassignEventResponse[]): void {
+          throw new Error("Function not implemented.");
+        },
+        reassignTeamsInTodos: function (todoIds: string[], oldTeamId: string, newTeamId: string): Promise<AxiosResponse> {
+          throw new Error("Function not implemented.");
+        },
+
+        assignTaskToTeam: function (taskId: string, userId: string): Promise<void> {
+          throw new Error("Function not implemented.");
+        },
+        assignTodoToTeam: function (todoId: string, teamId: string): Promise<void> {
+          throw new Error("Function not implemented.");
+        },
+        assignTodosToUsersOrTeams: function (todoIds: string[], assignees: string[]): Promise<void> {
+          throw new Error("Function not implemented.");
+        },
+        assignTeamMemberToTeam: function (teamId: string, userId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        unassignTeamMemberFromItem: function (itemId: string, userId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        getAuthStore: function (): AuthStore {
+          throw new Error("Function not implemented.");
+        },
+        assignTeamToTodo: function (todoId: string, teamId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        unassignTeamToTodo: function (todoId: string, teamId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        reassignTeamToTodo: function (todoId: string, oldTeamId: string, newTeamId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        assignTeamToTodos: function (todoIds: Team[], teamId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        unassignTeamFromTodos: function (todoIds: string[], teamId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        reassignTeamToTodos: function (teamIds: string[], teamId: string, newTeamId: string): void {
+          throw new Error("Function not implemented.");
+        },
+        unassignNoteFromTeam: function (noteId: string, teamId: string): Promise<void> {
+          throw new Error("Function not implemented.");
+        },
+        setAssignedTaskStore: function (store: SnapshotStore<Snapshot<Data, Data>>): void {
+          throw new Error("Function not implemented.");
+        }
+      },
+      updateTaskTitle: (title: string, taskId: string) => {},
+      updateTaskDescription: (description: string, taskId: string) => {},
+      updateTaskStatus: (description: string, taskId: string) => {},
+      
+      updateTaskDueDate: (taskId: string, dueDate: Date) => {},
+      updateTaskPriority: (taskId: string, priority: PriorityTypeEnum) => {},
+      filterTasksByStatus: (status: AllStatus): Task[] => {
+        // Implement logic to filter tasks by their status
+        return coreData.tasks.filter((task: Task) => task.status === status);
+      },
+
+      getTaskCountByStatus: (status: AllStatus): number => {
+        // Implement logic to count tasks by status
+        return coreData.tasks.filter((task: Task) => task.status === status).length;
+      },
+            
+      clearAllTasks: () => {},
+      archiveCompletedTasks: () => {},
+      updateTaskAssignee: (taskId: string, assignee: User) => async (dispatch: any): Promise<void> => {
+        // Implement logic to update the assignee of a task
+        const taskIndex = coreData.tasks.findIndex((task: Task) => task._id === taskId);
+        if (taskIndex !== -1) {
+          coreData.tasks[taskIndex].assignee = assignee;
+          // Dispatch an action to update the state (assuming Redux or similar)
+          dispatch({ type: 'UPDATE_TASK_ASSIGNEE', payload: { taskId, assignee } });
+        }
+      },
+      
+      getTasksByAssignee: async (tasks: Task[], assignee: User): Promise<Task[]> => {
+        // Implement logic to get tasks assigned to a specific user
+        return tasks.filter(task => task.assignee?._id === assignee._id);
+      },
+      
+      
+      getTaskById: (taskId: string): Task | null => {
+        // Implement logic to find a task by its ID
+        return coreData.tasks.find((task: Task) => task._id === taskId) || null;
+      },
+      
+      
+      sortByDueDate: () => { },
+      exportTasksToCSV:  () => {},
+      dispatch: (action: any) => {},
+      addTaskSuccess: (payload: { task: Task; }) => {},
+      addTask: (task: Task) => {},
+      addTasks:(tasks: Task[]) => {},
+      assignTaskToUser: (taskId: string, userId: string) => {},
+      
+      removeTask: (taskId: string) => {},
+      removeTasks: (taskIds: string[]) => {},
+      fetchTasksByTaskId: async (taskId: string): Promise<string> => {
+        // Implement logic to fetch task details by ID, potentially making an API call
+        try {
+          const response = taskService.getTaskById(taskId);
+          if (response && response.data) {
+            // Handle the response data here
+            return response.data; // Assuming the response contains task data in `data`
+          }
+          throw new Error("No task data found");
+        } catch (error) {
+          console.error("Failed to fetch task", error);
+          throw new Error("Failed to fetch task");
+        }
+      }
+    },
+       
   filter: function (key: keyof Settings): void {
     // filter settings
     object;
   },
-  appName: "",
-  selectDatabaseVersion: "",
-  selectAppVersion: "",
 
-  enableDatabaseEncryption: false,
-  idleTimeoutId: null,
 };
 
 export default userSettings;

@@ -13,7 +13,7 @@ import { Data } from "../../models/data/Data";
 import { PriorityTypeEnum, TaskStatus } from "../../models/data/StatusType";
 import { Task, tasksDataSource } from "../../models/tasks/Task";
 import { CustomSnapshotData, Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
-import {  updateSnapshot } from '../../snapshots/snapshotHandlers';
+import { updateSnapshot } from '../../snapshots/snapshotHandlers';
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import { useSnapshotStore } from '../../snapshots/useSnapshotStore';
 import {
@@ -119,7 +119,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
   const assignedTaskStore = useAssignTaskStore();
   // Initialize SnapshotStore
 
-  const initSnapshot = {} as Snapshot<Data, Meta, Data>;
+  const initSnapshot = {} as Snapshot<Data, Data>;
 
   const dispatch = (action: any) => {
     const { type, payload } = action;

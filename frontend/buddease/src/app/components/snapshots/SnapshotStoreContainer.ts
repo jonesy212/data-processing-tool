@@ -1,23 +1,23 @@
-import { snapshotStoreConfig, SnapshotStoreProps } from '.';
 // SnapshotStoreContainer.ts
+import { snapshotStoreConfig, SnapshotStoreProps } from '.';
 
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
 import { LanguageEnum } from "../communications/LanguageEnum";
 import { SnapshotStoreOptions } from "../hooks/SnapshotStoreOptions";
 import { Category, generateCategoryProperties } from "../libraries/categories/generateCategoryProperties";
-import { Data } from "../models/data/Data";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotContainer } from "./SnapshotContainer";
 import { getSnapshotContainer } from "./snapshotOperations";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { BaseData } from '../data/Data';
 
-interface SnapshotStoreContainer<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+interface SnapshotStoreContainer<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
     id?: string | number | undefined;
     storeId: number;
-    snapshotStore: SnapshotStore<T, Meta, K> | null;
-    snapshotContainers: Map<string, SnapshotContainer<T, Meta, K>>;
+    snapshotStore: SnapshotStore<T, K> | null;
+    snapshotContainers: Map<string, SnapshotContainer<T, K>>;
     timestamp: string | number | Date | undefined;
     currentCategory: Category | undefined;
   
@@ -26,21 +26,21 @@ interface SnapshotStoreContainer<T extends Data, Meta extends UnifiedMetaDataOpt
   
     initializeSnapshotStore: (
       id: string | number | undefined,
-      snapshotData: Map<string, Snapshot<T, Meta, K>> | undefined, // Fix type error
+      snapshotData: Map<string, Snapshot<T, K>> | undefined, // Fix type error
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined
     ) => Promise<void>;
   
-    addSnapshotContainer: (snapshotId: string, container: SnapshotContainer<T, Meta, K>) => void;
-    getSnapshotContainer: (snapshotId: string) => SnapshotContainer<T, Meta, K> | undefined;
+    addSnapshotContainer: (snapshotId: string, container: SnapshotContainer<T, K>) => void;
+    getSnapshotContainer: (snapshotId: string) => SnapshotContainer<T, K> | undefined;
   
     // Other methods as necessary for managing snapshots and configurations
   }
   
-  export const snapshotStoreContainer =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  export const snapshotStoreContainer =  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     storeId: number,
-    storeProps?: SnapshotStoreProps<T, Meta, K>
-  ): SnapshotStoreContainer<T, Meta, K> => {
+    storeProps?: SnapshotStoreProps<T, K>
+  ): SnapshotStoreContainer<T, K> => {
     if(!storeProps){
       throw new Error("storeProps is undefined");
     }
@@ -55,10 +55,10 @@ interface SnapshotStoreContainer<T extends Data, Meta extends UnifiedMetaDataOpt
       expirationDate
      }
       = storeProps
-    const snapshotStoreContainer: SnapshotStoreContainer<T, Meta, K> = {
+    const snapshotStoreContainer: SnapshotStoreContainer<T, K> = {
       storeId,
       snapshotStore: null,
-      snapshotContainers: new Map<string, SnapshotContainer<T, Meta, K>>(),
+      snapshotContainers: new Map<string, SnapshotContainer<T, K>>(),
       timestamp: undefined,
       currentCategory: undefined,
   
@@ -83,13 +83,13 @@ interface SnapshotStoreContainer<T extends Data, Meta extends UnifiedMetaDataOpt
   
       initializeSnapshotStore: async (
         id: string | number | undefined,
-        snapshotData: Map<string, Snapshot<T, Meta, K>> | undefined,
+        snapshotData: Map<string, Snapshot<T, K>> | undefined,
         category: Category | undefined,
         categoryProperties: CategoryProperties | undefined
       ): Promise<void> => {
         const snapshotId = id !== undefined ? String(id) : null;
        
-        const options: SnapshotStoreOptions<T, Meta, K> = {
+        const options: SnapshotStoreOptions<T, K> = {
           retryDelay: 500,
           maxAge: 3600,
           staleWhileRevalidate: 1800,
@@ -205,14 +205,14 @@ interface SnapshotStoreContainer<T extends Data, Meta extends UnifiedMetaDataOpt
           criteria: {}
         };
       
-        const config: SnapshotStoreConfig<T, Meta, K> = {
+        const config: SnapshotStoreConfig<T, K> = {
           snapshots: {},
         };
 
 
 
         if (id === undefined) {
-          snapshotStoreContainer.snapshotStore = new SnapshotStore<T, Meta, K>({
+          snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K>({
             storeId,
             name,
             version,
@@ -224,7 +224,7 @@ interface SnapshotStoreContainer<T extends Data, Meta extends UnifiedMetaDataOpt
             expirationDate
           });
         } else {
-          snapshotStoreContainer.snapshotStore = new SnapshotStore<T, Meta, K>({
+          snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K>({
             storeId,
             name,
             version,
@@ -238,7 +238,7 @@ interface SnapshotStoreContainer<T extends Data, Meta extends UnifiedMetaDataOpt
         }
        
         const name = (await getSnapshotContainer(id ?? "default", snapshotFetcher)).snapshot.name;
-        snapshotStoreContainer.snapshotStore = new SnapshotStore<T, Meta, K>({
+        snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K>({
           storeId,
           name,
           version,
@@ -251,7 +251,7 @@ interface SnapshotStoreContainer<T extends Data, Meta extends UnifiedMetaDataOpt
         });
       },      
       
-      addSnapshotContainer: (snapshotId: string, container: SnapshotContainer<T, Meta, K>) => {
+      addSnapshotContainer: (snapshotId: string, container: SnapshotContainer<T, K>) => {
         snapshotStoreContainer.snapshotContainers.set(snapshotId, container);
       },
   

@@ -1,14 +1,11 @@
 // CommonDetails.tsx
-import React from "react";
-
-import { ProjectMetadata, StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { Label } from "@/app/components/projects/branding/BrandingSettings";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CacheData } from "@/app/generators/GenerateCache";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { MeetingData } from "../calendar/MeetingData";
 import { ScheduledData } from "../calendar/ScheduledData";
-import { Category } from "../components/libraries/categories/generateCategoryProperties";
 import { CryptoData } from "../crypto/parseData";
 import { ModifiedDate } from "../documents/DocType";
 import { DocumentData } from "../documents/DocumentBuilder";
@@ -16,6 +13,7 @@ import { DocumentTypeEnum } from "../documents/DocumentGenerator";
 import { FakeData } from "../intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
+import { Category } from "../libraries/categories/generateCategoryProperties";
 import { ProjectData } from "../projects/Project";
 import { TagsRecord } from "../snapshots";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
@@ -35,84 +33,171 @@ import { RealtimeDataComponent } from "./realtime/RealtimeData";
 import { Task } from "./tasks/Task";
 import TeamData from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
+import { TodoStatus, TaskStatus, TeamStatus, DataStatus, CalendarStatus, NotificationStatus, BookmarkStatus, PriorityTypeEnum } from "./data/StatusType";
+import { T, K } from "./data/dataStoreMethods";
 
-// Define a generic type for data
-  interface CommonData<T extends Data, Meta extends UnifiedMetaDataOptions = UnifiedMetaDataOptions, K extends Data = T> {
-  _id?: string;
-  id?: string | number | undefined;
-  title?: string;
-  type?: AllTypes;
 
+interface Timestamped {
   timestamp?: string | number | Date | undefined;
-  blockNumber?: number | undefined
-  transactionHash?: string | undefined
-  event?: string;
-  signature?: string;
-  email?: string;
-  username?: string;
-  name?: string
-  description?: string | null | undefined;
-  startDate?: Date;
-  value?: any
-  eventId?: string | null | undefined;
-  endDate?: Date;
-  status?: AllStatus;
-  collaborationOptions?: CollaborationOptions[] | undefined;
-  participants?: Member[];
-  metadata?: StructuredMetadata<T, Meta, K> | undefined;
-  details?: DetailsItem<T>
-  // data?: T extends CommonData<infer R> ? R : never;
-  projectId?: string;
-  tags?: TagsRecord | string[] | undefined; 
-  categories?: string[];
-  documentType?: string;
-  documentStatus?: string;
-  documentOwner?: string;
+  startDate?: string | Date;
+  endDate?: string | Date;
+  date: string | Date | undefined;
   documentCreationDate?: Date;
   documentLastModifiedDate?: Date;
-  documentVersion?: number;
-  documentContent?: string;
-  keywords?: string[];
-  options?: {
-    // ...
-    additionalOptions: readonly string[] | string | number | any[] | undefined;
-    // documentOptions: DocumentOptions
-    // ...
-  };
-  folderPath?: string;
-  previousMetadata?: StructuredMetadata<T, Meta, K>;
-  currentMetadata?: StructuredMetadata<T, Meta, K>;
-  accessHistory?: AccessHistory[];
-  folders?: FolderData[];
   lastModifiedDate?: ModifiedDate;
-  documentAccess?: string;
-  documentSharing?: string;
-  documentSecurity?: string;
-  documentRetention?: string;
-  documentLifecycle?: string;
-  documentWorkflow?: string;
-  documentIntegration?: string;
-  documentReporting?: string;
-  documentBackup?: string;
-  date?: Date | undefined;
-  completed?: boolean;
-  then?: <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(callback: (newData: Snapshot<BaseData, Meta, K>) => void) => Snapshot<Data, Meta, K> | undefined;
-  // then?: <T extends Data, Meta extends UnifiedMetaDataOptions, K extends keyof BaseData = keyof BaseData>(callback: (newData: Snapshot<BaseData, Meta, K>) => void) => Snapshot<Data, Meta, K> | undefined;
+}
+
+interface StatusTrackable {
+  status?: AllStatus | null;
+  documentStatus?: string;
+  todoStatus?: TodoStatus | null;
+  taskStatus?: TaskStatus | null;
+  teamStatus?: TeamStatus | null;
+  dataStatus?: DataStatus | null;
+  calendarStatus?: CalendarStatus | null;
+  notificationStatus?: NotificationStatus | null;
+  bookmarkStatus?: BookmarkStatus | null;
+  priorityType?: PriorityTypeEnum | null;
+}
+
+interface CounterTrackable {
+  viewsCount?: number;
+  likesCount?: number;
+  commentsCount?: number;
+}
 
 
-  // Moved from VideoCommonData
-  createdBy?: string; // Moved to common data
-  updatedAt?: Date; // Moved to common data
-  viewsCount?: number; // Could be generalized if relevant across content types
-  likesCount?: number; // Could be generalized if relevant across content types
-  commentsCount?: number; // Could be generalized if relevant across content types
-  category?: symbol | string | Category | undefined,
-  isPrivate?: boolean; // General property
-  isUnlisted?: boolean; // General property
-  isLicensedContent?: boolean; // General property
-  isFamilyFriendly?: boolean; // General property
-  isEmbeddable?: boolean; // General property
-  isDownloadable?: boolean; // General property
+
+interface Identifiable {
+  id?: string | number | undefined;
+  _id?: string;
+}
+
+interface UserOwned {
+  createdBy: string | undefined;
+  assignedUser?: string | null;
+  documentOwner?: string;
+}
+
+
+interface Taggable {
+  tags?: TagsRecord<T, K<T>> | string[] | undefined;
+  categories?: string[];
+  keywords?: string[];
+}
+
+interface Describable {
+  title?: string;
+  description?: string | null | undefined;
+}
+
+interface DocumentContent {
+  documentType?: DocumentTypeEnum | string | null;
+  documentContent?: string;
+  documentVersion?: number;
+  options?: {
+    additionalOptions: readonly string[] | string | number | any[] | undefined;
+  };
+}
+
+
+interface AccessControlled {
+  isPrivate?: boolean;
+  isUnlisted?: boolean;
+  isLicensedContent?: boolean;
+  isFamilyFriendly?: boolean;
+  isEmbeddable?: boolean;
+  isDownloadable?: boolean;
+}
+
+
+// Define a generic type for data
+interface CommonData<
+  T extends BaseData<T>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> 
+  extends Identifiable,
+  UserOwned,
+  Describable,
+  Timestamped,
+  Taggable,
+  DocumentContent,
+  AccessControlled,
+  CounterTrackable {
+    _id?: string;
+    id?: string | number | undefined;
+    title?: string;
+    type?: AllTypes;
+    label: Label;
+    timestamp?: string | number | Date | undefined;
+    blockNumber?: number | undefined
+    transactionHash?: string | undefined
+    event?: string;
+    signature?: string;
+    email?: string;
+    username?: string;
+    name?: string
+    description?: string | null | undefined;
+    startDate?: Date;
+    value?: any
+    eventId?: string | null | undefined;
+    endDate?: Date;
+    status?: AllStatus | null;
+    collaborationOptions?: CollaborationOptions[] | undefined;
+    participants?: Member[];
+    metadata?: StructuredMetadata<T, K> | undefined;
+    details?: DetailsItem<T>
+    // data?: T extends CommonData<infer R> ? R : never;
+    projectId?: string;
+    tags?: TagsRecord<T, K> | string[] | undefined; 
+    categories?: string[];
+    documentType?: DocumentTypeEnum | string | null;
+    documentStatus?: string;
+    documentOwner?: string;
+    documentCreationDate?: Date;
+    documentLastModifiedDate?: Date;
+    documentVersion?: number;
+    documentContent?: string;
+    keywords?: string[];
+    options?: {
+      // ...
+      additionalOptions: readonly string[] | string | number | any[] | undefined;
+      // documentOptions: DocumentOptions
+      // ...
+    };
+    folderPath?: string;
+    previousMetadata?: StructuredMetadata<T, K>;
+    currentMetadata?: StructuredMetadata<T, K>;
+    accessHistory?: AccessHistory[];
+    folders?: FolderData[];
+    lastModifiedDate?: ModifiedDate;
+    documentAccess?: string;
+    documentSharing?: string;
+    documentSecurity?: string;
+    documentRetention?: string;
+    documentLifecycle?: string;
+    documentWorkflow?: string;
+    documentIntegration?: string;
+    documentReporting?: string;
+    documentBackup?: string;
+    date: string | Date | undefined;
+    completed?: boolean;
+    then?: <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<T, K> | undefined;
+    // then?: <T extends  BaseData<T>, K extends keyof BaseData = keyof BaseData>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
+
+    // Moved from VideoCommonData
+    createdBy: string | undefined; // Moved to common data
+    updatedAt?: Date; // Moved to common data
+    viewsCount?: number; // Could be generalized if relevant across content types
+    likesCount?: number; // Could be generalized if relevant across content types
+    commentsCount?: number; // Could be generalized if relevant across content types
+    category?: symbol | string | Category | undefined,
+    isPrivate?: boolean; // General property
+    isUnlisted?: boolean; // General property
+    isLicensedContent?: boolean; // General property
+    isFamilyFriendly?: boolean; // General property
+    isEmbeddable?: boolean; // General property
+    isDownloadable?: boolean; // General property
 }
 interface Customizations<T> {
   [key: string]: (value: any) => React.ReactNode;
@@ -122,21 +207,25 @@ export type DataType = NotificationType | string | DocumentTypeEnum | AnimationT
 export type TaskType = "addTask" | "removeTask" | "bug" | "feature" | "epic" | "story" | "task";
 
 // Define a union type for the supported data types
-type SupportedData<T extends Data, Meta extends UnifiedMetaDataOptions> = UserData &
-  Data &
-  Todo &
-  Task &
+type SupportedData<
+  T extends  BaseData<T>,
+  K extends T = T,
+
+> = UserData &
+  Data<T> &
+  Todo<T, K> &
+  Task<T, K> &
   // TaskType & 
   CommunityData &
-  DocumentData<T, Meta, K> &
+  DocumentData<T, K> &
   ProjectData &
-  TeamData &
+  TeamData<T, K> &
   CacheData &
   ScheduledData &
   MeetingData &
   CryptoData &
   LogData &
-  DataDetails<T, Meta, K> &
+  DataDetails<T, K> &
   DataType &
   TradeData &
   CommonData<T> &
@@ -259,4 +348,5 @@ const CommonDetails = <T extends SupportedData<T>>({
 };
 
 export default CommonDetails;
-export type { CommonData, Customizations, SupportedData };
+export type { CommonData, Customizations, StatusTrackable, SupportedData, Timestamped };
+

@@ -223,7 +223,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     // Add more messages for the DataLoading type
   },
 
-
+  
 
   Database: {
     DEFAULT: "Database loading...",
@@ -329,8 +329,16 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     ONBOARDING_ERROR: "Error in the onboarding process. Please try again",
     ERROR_FETCHING_TASK: "Error fetching task. Please try again",
     TASK_NOT_FOUND: "Task not found",
-    DELETE_HIGHLIGHT_ERROR: "Error deleting highlight. Please try again",
-    
+    DELETE_HIGHLIGHT_ERROR: "Error deleting highlight. Please try again", 
+  },
+
+  Event: {
+    FETCH_EVENT_DETAILS_SUCCESS: "Event details fetched successfully",
+    FETCH_EVENT_DETAILS_ERROR: "Failed to fetch event details",
+    CREATE_EVENT_SUCCESS: "Event created successfully",
+    CREATE_EVENT_ERROR: "Failed to create event",
+    FETCH_EVENT_DATA_ERROR_ID: "Failed to fetch event data",
+    // Add more event-related messages here if needed
   },
 
   // Event-related

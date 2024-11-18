@@ -1,9 +1,10 @@
 // DocumentBuilder.tsx
 import {
-    createContentStateFromText,
-    fetchContentIdFromAPI
+  createContentStateFromText,
+  fetchContentIdFromAPI
 } from "@/app/api/ApiContent";
 import { endpoints } from "@/app/api/ApiEndpoints";
+import { BaseData } from '@/app/components/models/data/Data';
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
@@ -16,11 +17,11 @@ import Clipboard from "@/app/ts/clipboard";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import crypto from "crypto";
 import {
-    ContentState,
-    Editor,
-    EditorState,
-    Modifier,
-    RichUtils,
+  ContentState,
+  Editor,
+  EditorState,
+  Modifier,
+  RichUtils,
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import React, { useState } from "react";
@@ -33,7 +34,8 @@ import { useMovementAnimations } from "../libraries/animations/movementAnimation
 import { determineDocumentType } from "../libraries/categories/determineDocumentType";
 import { CustomContentState } from "../libraries/ui/CustomContentState";
 import { CommonData } from "../models/CommonData";
-import { Data } from "../models/data/Data";
+import { Content } from "../models/content/AddContent";
+import { Data, TodoSubtasks } from "../models/data/Data";
 import FileData from "../models/data/FileData";
 import FolderData from "../models/data/FolderData";
 import { DocumentSize, ProjectPhaseTypeEnum } from "../models/data/StatusType";
@@ -46,8 +48,8 @@ import SharingOptions from "../shared/SharingOptions";
 import { TagsRecord } from "../snapshots";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import {
-    DocumentObject,
-    addDocumentSuccess
+  DocumentObject,
+  addDocumentSuccess
 } from "../state/redux/slices/DocumentSlice";
 import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
 import { AllStatus } from "../state/stores/DetailsListStore";
@@ -57,7 +59,7 @@ import { DatasetModel } from "../todos/tasks/DataSetModel";
 import { AllTypes } from "../typings/PropTypes";
 import { getMetadataFromPlainText } from "../utils/metadataUtils";
 import AccessHistory, {
-    convertAccessRecordToHistory,
+  convertAccessRecordToHistory,
 } from "../versions/AccessHistory";
 import AppVersionImpl from "../versions/AppVersion";
 import Version from "../versions/Version";
@@ -66,15 +68,15 @@ import { getCurrentAppInfo } from "../versions/VersionGenerator";
 import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
 import { ModifiedDate } from "./DocType";
 import {
-    getFormattedOptions
+  getFormattedOptions
 } from "./DocumentCreationUtils";
 import { DocumentPath, DocumentTypeEnum, FinancialReport } from "./DocumentGenerator";
 import { DocumentOptions } from "./DocumentOptions";
 import DocumentPermissions from "./DocumentPermissions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 import {
-    DocumentAnimationOptions,
-    DocumentBuilderProps,
+  DocumentAnimationOptions,
+  DocumentBuilderProps,
 } from "./SharedDocumentProps";
 import { ToolbarOptionsComponent, ToolbarOptionsProps } from "./ToolbarOptions";
 import { ResearchReport, TechnicalReport } from "./documentation/report/Report";
@@ -90,22 +92,26 @@ function computeChecksum(data: string): string {
 const versionData = "content of version 1.0.0";
 const checksum = computeChecksum(versionData);
 
-type ContentStructuredMetadata = StructuredMetadata & ContentState;
-// DocumentData.tsx
+type ContentStructuredMetadata<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = StructuredMetadata<T, K> & ContentState;// DocumentData.tsx
 
-export interface DocumentData<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> extends DocumentBase<T>, 
-CommonData<T>, 
-DatasetModel<T> {
+// Define a mapped type to convert TodoSubtasks to WritableDraft equivalent
+type WritableTodoSubtasks = WritableDraft<TodoSubtasks>;
+
+
+export interface DocumentData<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+  extends DocumentBase<T, K>, CommonData<T>, 
+DatasetModel<T, K> {
   id: string | number;
   _id: string;
   title: string;
-  content: string;
-  documents: WritableDraft<DocumentObject<T>>[];
+  content: Content<T, K>
+  documents: WritableDraft<DocumentObject<T, K>>[];
   permissions: DocumentPermissions | undefined;
   topics?: string[] | undefined;
   highlights?: string[] | undefined;
   keywords?: string[] | undefined;
   load?(content: any): void;
+  subtasks?: TodoSubtasks
   file?: FileData;
   files?: FileData[]; // Array of FileData associated with the document
   folder?: FolderData;
@@ -124,8 +130,8 @@ DatasetModel<T> {
   folderPath: string;
   previousContent?: string | ContentState;
   currentContent?: ContentState;
-  previousMetadata: StructuredMetadata | undefined;
-  currentMetadata: StructuredMetadata | undefined;
+  previousMetadata: StructuredMetadata<T, K> | undefined;
+  currentMetadata: StructuredMetadata<T, K> | undefined;
   accessHistory: AccessHistory[];
   documentPhase:
     | string
@@ -143,7 +149,7 @@ DatasetModel<T> {
         copyright?: string;
         license?: string;
         links?: string[];
-        tags?: TagsRecord | string[] | undefined; 
+        tags?: TagsRecord<T, K> | string[] | undefined; 
         phaseType: ProjectPhaseTypeEnum;
         customProp1: string;
         customProp2: number;
@@ -154,7 +160,7 @@ DatasetModel<T> {
   versionData: VersionData | undefined;
   visibility: AllTypes;
   url?: string;
-  updatedDocument?: DocumentData<T>;
+  updatedDocument?: DocumentData<T, K>;
   documentSize: DocumentSize;
   lastModifiedDate: ModifiedDate | undefined;
   lastModifiedBy: string;
@@ -165,8 +171,8 @@ DatasetModel<T> {
   createdByRenamed: string | undefined;
   createdDate: string | Date | undefined
   documentType: string | DocumentTypeEnum;
-  documentData?: DocumentData<T>;
-  document: DocumentObject<T> | undefined;
+  documentData?: DocumentData<T, K>;
+  document: DocumentObject<T, K> | undefined;
   _rev: string | undefined;
   _attachments?: Record<string, any> | undefined;
   _links?: Record<string, any> | undefined;
@@ -452,15 +458,28 @@ const resetEditorContent = () => {
 // Assuming you have some way to retrieve or maintain your metadata
 const getMetadataForContentState = (
   contentState: CustomContentState
-): StructuredMetadata => {
+): StructuredMetadata<T, K> => {
   // Replace this with your actual logic to extract or retrieve metadata based on contentState
   return {
     description: "",
     apiEndpoint: "",
     apiKey: "",
-    timeout: "",
+    timeout: 0,
    
-
+    id: "", 
+    
+    retryAttempts: 0,
+    name: "",
+    category: "", 
+    timestamp: "",
+    createdBy: "",
+    tags: "",
+    metadata: "",
+    
+    initialState: "",
+    meta: "",
+    events: "",
+   
     metadataEntries: {
       fileOrFolderId1: {
         originalPath: "path1",
@@ -516,7 +535,7 @@ interface ThunkAPI {
 export const saveDocument = createAsyncThunk(
   'document/saveDocument',
   async (
-    { documentData, content, }: { documentData: DocumentData; content: string }, 
+    { documentData, content, }: { documentData: DocumentData<T, K>; content: string }, 
     { rejectWithValue }: ThunkAPI
   ) => {
     try {
@@ -541,8 +560,8 @@ const extractMetadata = async (
 };
 
 // Initial state or default values for metadata
- const [currentMetadata, setCurrentMetadata] = useState<UnifiedMetaDataOptions>(selectedmetadata);
- const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetaDataOptions>(selectedmetadata);
+ const [currentMetadata, setCurrentMetadata] = useState<UnifiedMetaDataOptions(selectedmetadata);
+ const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetaDataOptions(selectedmetadata);
 
 
 
@@ -634,7 +653,7 @@ const documentBuilderProps: DocumentBuilderProps = {
     content: contentState.toString(),
     versionNumber: versionNumber,
     appVersion: appVersion,
-    data: [] as Data[],
+    data: [] as Data<T>[],
     appName: "Buddease",
     releaseDate: new Date().toISOString(),
     releaseNotes: [],
@@ -708,6 +727,7 @@ const documentBuilderProps: DocumentBuilderProps = {
         checksum: "",
         
         frontend: {
+          versions, versionData, structureHash, getStructureHash,
           id: "",
           name: "",
           type: "",
@@ -801,7 +821,7 @@ const documentBuilderProps: DocumentBuilderProps = {
     workspaceVersion: "1.0.0",
     workspaceVersionHistory: ["1.0.0", "1.1.0"],
   }),
-    buildDocument: async (documentData: DocumentData): Promise<void> => {
+    buildDocument: async (documentData: DocumentData<T, K>): Promise<void> => {
       // Implementation of buildDocument function
       const dispatch = useAppDispatch(); // Assuming you're using useDispatch from react-redux
       const { handleError } = useErrorHandling();
@@ -859,6 +879,7 @@ const documentBuilderProps: DocumentBuilderProps = {
             author: "default-author",
             dataFormat: "DD-MM-YYYY",
           },
+          allow: ""
         }));
 
         // Dispatch the saveDocument thunk with proper arguments
@@ -1229,7 +1250,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
     });
     
     // Create a document object
-    const documentObject: DocumentObject<T, Meta, K> = {
+    const documentObject: DocumentObject<T, K> = {
       // Document Identification & Versioning
       id: "", // Document unique identifier
       _id: "", // Internal document identifier
@@ -1626,4 +1647,4 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 };
 
 export default DocumentBuilder;
-export type { RevisionOptions };
+export type { RevisionOptions, WritableTodoSubtaskss };

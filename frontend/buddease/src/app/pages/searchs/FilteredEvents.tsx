@@ -1,12 +1,12 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { RootState } from "@/app/components/state/redux/slices/RootSlice";
 import { initialState } from "@/app/components/state/redux/slices/FilteredEventsSlice";
+import { RootState } from "@/app/components/state/redux/slices/RootSlice";
 import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { FilterState } from "./FilterState";
 
 // Define a selector function to get filtered events from the state
 // Define your selector to get the filtered events from the state
-export const selectFilteredEvents = (state: RootState): FilteredEventsState<T, Meta, K> => {
+export const selectFilteredEvents = (state: RootState): FilteredEventsState<T, K> => {
   return state.filteredEvents; // Adjust this according to your state shape
 };
 

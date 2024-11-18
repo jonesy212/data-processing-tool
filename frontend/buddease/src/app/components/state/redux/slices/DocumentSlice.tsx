@@ -3,7 +3,7 @@ import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { fetchDocumentById, fetchDocumentByIdAPI } from "@/app/api/ApiDocument";
 import { ModifiedDate } from "@/app/components/documents/DocType";
 import DocumentBuilder, {
-    DocumentData
+    DocumentData, WritableTodoSubtasks
 } from "@/app/components/documents/DocumentBuilder";
 import {
     DocumentStatusEnum,
@@ -36,33 +36,37 @@ import { BaseData, Data } from "@/app/components/models/data/Data";
 import TodoImpl, { Todo } from "@/app/components/todos/Todo";
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import getAppPath from "appPath";
+import { ClientInformation } from '@/app/components/database/ClientInformation';
+import { Meta } from '@/app/components/models/data/dataStoreMethods';
 
 
 const {versionNumber, appVersion} = getCurrentAppInfo()
 const API_BASE_URL = getAppPath(versionNumber, appVersion);
 
-interface DocumentSliceState {
-  documentList: DocumentObject[];
-  selectedDocument: DocumentData | null;
-  filteredDocuments: DocumentData[];
-  searchResults: DocumentData[];
+interface DocumentSliceState<
+  T extends  BaseData<T>, 
+  K extends T = T
+> {
+  documentList: DocumentObject<T, K, Meta>[]; // Specify type arguments for DocumentObject
+  selectedDocument: DocumentData<T, K, Meta> | null; // Specify type arguments for DocumentData
+  filteredDocuments: DocumentData<T, K, Meta>[]; // Specify type arguments for DocumentData
+  searchResults: DocumentData<T, K, Meta>[]; // Specify type arguments for DocumentData
   loading: boolean; // Add this line to include the initial state for loading
   error: Error | null; // Add this line to include the initial state for error
   changes?: boolean | string | string[];
   documentBuilder?: typeof DocumentBuilder;
 }
 
-const initialDocumentSliceState: DocumentSliceState<Data> = {
+const initialDocumentSliceState: DocumentSliceState<BaseData, Meta> = {
   documentList: [],
   selectedDocument: null,
   filteredDocuments: [],
-  loading: false, // Add this line if it's not already present
+  loading: false,
   error: null,
   changes: false,
   searchResults: [],
   documentBuilder: undefined,
 };
-
 
 interface ArtworkItem {
   url: string;
@@ -77,20 +81,22 @@ interface ArtworkItem {
 }
 
 
-
-
-
-interface DocumentObject<T extends Data, Meta
-  extends UnifiedMetaDataOptions, K extends Data = T>
-  extends Document<T, Meta, K>, DocumentData<T, Meta, K>, 
-  DocumentSliceState {
+interface DocumentObject<
+    T extends  BaseData<T>,
+    K extends T = T,
+    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  >
+  extends Document<T, K, Meta>, 
+  DocumentData<T, K, Meta>, 
+  DocumentSliceState<T, K, Meta> {
   // Optionally add additional fields here if needed
   description?: string | null; // Reintroduce with the original name
   createdBy: string | undefined; // Reintroduce with the original name
   alinkColor: string
-  subtasks?: WritableDraft<TodoImpl<Todo, any>>[];
+  subtasks?: WritableTodoSubtasks;  
   artwork?: ArtworkItem[];
   clientInformation?: ClientInformation; 
+  supportedLanguages: string[]
 }
 
 interface ViewTransition {
@@ -100,22 +106,33 @@ interface ViewTransition {
 }
 
 
-function toObject(document: DocumentObject<T, Meta, K>): object {
+function toObject(document: DocumentObject<T, K, Meta>): object {
   return { ...document };
 }
 
 
 
 
-const initialState: DocumentObject<BaseData, Meta, BaseData> = {
+const initialState: DocumentObject<BaseData, BaseData> = {
   // _id: uuidv4(),
   id: "",
   title: "New Document",
 
   content: {
-  id, title, description, subscriberId, 
-  category, categoryProperties, timestamp, length, 
-
+  id: "",
+  title: "",
+  description: "",
+  subscriberId: "",
+  
+  category: "",
+  categoryProperties: "",
+  timestamp: "",
+  length: "",
+  
+  items: "",
+  data: "",
+  contentItems: "",
+ 
   },
   topics: [],
   highlights: [],
@@ -382,7 +399,7 @@ const initialState: DocumentObject<BaseData, Meta, BaseData> = {
   bgColor: "",
   documentURI: "",
   currentScript: null,
-  defaultView: null,
+  defaultView: undefined,
   doctype: null,
   ownerDocument: null,
   scrollingElement: null,
@@ -411,12 +428,17 @@ const initialState: DocumentObject<BaseData, Meta, BaseData> = {
 };
 
 
-function createNewDocument(documentId: string): DocumentObject {
-  const newDocument: DocumentObject = {
+function createNewDocument(
+  documentId: string
+): DocumentObject<T, K, Meta> {
+  const newDocument: DocumentObject<T, K, Meta> = {
     // _id: uuidv4(),
     id: documentId,
     title: "New Document",
-    content: "This is a new document",
+    content: {
+      
+      "This is a new document"
+    },
     topics: [],
     highlights: [],
     files: [],
@@ -1556,41 +1578,41 @@ const transformations = {
   },
 
   scheduleReportGeneration: (
-    document: WritableDraft<DocumentObjectt>,
+    document: WritableDraft<DocumentObject>,
     report: string
   ) => {
     document.content = `${report} Scheduled: ${document.content}`;
   },
 
   customizeReportSettings: (
-    document: WritableDraft<DocumentObjectt>,
+    document: WritableDraft<DocumentObject>,
     report: string
   ) => {
     document.content = `${report} Customized: ${document.content}`;
   },
 
-  backupDocuments: (document: WritableDraft<DocumentObjectt>, backup: string) => {
+  backupDocuments: (document: WritableDraft<DocumentObject>, backup: string) => {
     document.content = `${backup} Backed up: ${document.content}`;
   },
 
-  retrieveBackup: (document: WritableDraft<DocumentObjectt>, backup: string) => {
+  retrieveBackup: (document: WritableDraft<DocumentObject>, backup: string) => {
     document.content = `${backup} Retrieved: ${document.content}`;
   },
 
-  redaction: (document: WritableDraft<DocumentObjectt>, redaction: string) => {
+  redaction: (document: WritableDraft<DocumentObject>, redaction: string) => {
     document.content = `${redaction} Redacted: ${document.content}`;
   },
 
-  accessControls: (document: WritableDraft<DocumentObjectt>, access: string) => {
+  accessControls: (document: WritableDraft<DocumentObject>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
-  templates: (document: WritableDraft<DocumentObjectt>, template: string) => {
+  templates: (document: WritableDraft<DocumentObject>, template: string) => {
     document.content = `${template} Templates: ${document.content}`;
   },
 
   updateDocumentVersion: (
-    document: WritableDraft<DocumentObjectt>,
+    document: WritableDraft<DocumentObject>,
     version: string
   ) => {
     document.content = `${version} Version updated: ${document.content}`;

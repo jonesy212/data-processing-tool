@@ -1,19 +1,19 @@
+import * as snapshotApi from '@/app/api/SnapshotApi';
 import { addSnapshot, mergeSnapshots, snapshotContainer, takeSnapshot } from "@/app/api/SnapshotApi";
 import React, { useRef, useState } from "react";
+import { useSnapshotManager } from "../../hooks/useSnapshotManager";
 import useStorageManager from "../../hooks/useStorageManager";
 import { BaseData, Data } from "../../models/data/Data";
 import { Task } from "../../models/tasks/Task";
-import SnapshotStore, {
-} from "../../snapshots/SnapshotStore";
-import {
-  deleteSnapshot,
-  updateSnapshot,
-} from "../../snapshots/snapshotHandlers";
-import { Snapshot, snapshots, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
-import { SnapshotContainer, SnapshotOperation, SnapshotOperationType, SnapshotStoreConfig } from "../../snapshots";
-import { useSnapshotManager } from "../../hooks/useSnapshotManager";
-import * as snapshotApi from '@/app/api/SnapshotApi'
+import { SnapshotContainer, SnapshotOperation, SnapshotOperationType, SnapshotStoreConfig, SnapshotStoreProps } from "../../snapshots";
+import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import SnapshotManagerOptions from "../../snapshots/SnapshotManagerOptions";
+import SnapshotStore from "../../snapshots/SnapshotStore";
+import {
+    deleteSnapshot,
+    updateSnapshot,
+} from "../../snapshots/snapshotHandlers";
+import { useSnapshotStore } from "./useSnapshotStore";
 // Define project phases
 enum ProjectPhase {
   PHASE_1 = "Phase 1",
@@ -24,27 +24,39 @@ enum ProjectPhase {
 
 
 // Define Data for the snapshot
-interface ProjectData extends BaseData {
+interface ProjectData<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends BaseData {
   currentPhase: ProjectPhase;
-  tasks: Task[];
+  tasks: Task<T, K>[];
 }
 
-const ProjectManager: React.FC = async () => {
+
+interface ProjectManagerProps {
+  storeProps: SnapshotStoreProps<ProjectData<T, K>>; // Adjust type according to your structure
+}
+
+const ProjectManager: React.FC<ProjectManagerProps> = async ({ storeProps }) => {
   const storageManager = useStorageManager("project-phase-data");
   const initialData = storageManager.getItem() as ProjectData | undefined;
   const [currentPhase, setCurrentPhase] = useState<ProjectPhase>(
     initialData?.currentPhase || ProjectPhase.PHASE_1
   );
+  const {
+    states,
+    currentState,
+    handleSelectSnapshot,
+    handleAddSnapshot,
+    handleDeleteSnapshot,
+    restoreSnapshot,
+    clearSnapshots,
+  } = useSnapshotStore(initialStates);
 
-
-
-  
+  const snapshot = snapshotApi.getSnapshot()
   const criteria = await snapshotApi.getSnapshotCriteria(
-    snapshotContainer as unknown as SnapshotContainer<Data, Data>, 
+    snapshotContainer as unknown as SnapshotContainer<Data<BaseData<any>>, Data<BaseData<any>>>, 
     snapshot
   );
   const snapshotId = await snapshotApi.getSnapshotId(criteria);
-  const storeId = await snapshotApi.getSnapshotStoreId(Number(snapshotId)); 
+  const storeId = await snapshotApi.getSnapshotStoreId(snapshotId); 
   const operation: SnapshotOperation = {
     // Provide the required operation details
     operationType: SnapshotOperationType.TaskSnapshotReference
@@ -54,8 +66,24 @@ const ProjectManager: React.FC = async () => {
   : {};
 
   
-  const [tasks, setTasks] = useState<Task[]>(initialData?.tasks || []);
-  const snapshotStoreRef = useRef(new SnapshotStore<ProjectData>( storeId, options, category, config, operation));
+  const [tasks, setTasks] = useState<Task<T, K>[]>(initialData?.tasks || []);
+  const {
+    toreId, 
+    name, 
+    version, 
+    schema, 
+
+    category, 
+    config, 
+
+    expirationDate, 
+    payload, 
+    callback, 
+
+    endpointCategory 
+  } = storeProps
+
+  const snapshotStoreRef = useRef(new SnapshotStore<ProjectData>({storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, endpointCategory }))
 
   const advanceToNextPhase = () => {
     const nextPhase = getNextPhase(currentPhase);
@@ -77,7 +105,7 @@ const ProjectManager: React.FC = async () => {
     updateLocalStorage(previousPhase, tasks);
   };
 
-  const updateLocalStorage = (phase: ProjectPhase, taskList: Task[]) => {
+  const updateLocalStorage = (phase: ProjectPhase, taskList: Task<T, K>[]) => {
     storageManager.setItem({ currentPhase: phase, tasks: taskList });
   };
 
@@ -151,6 +179,6 @@ const ProjectManager: React.FC = async () => {
       </ul>
     </div>
   );
-};
 
+};
 export default ProjectManager;

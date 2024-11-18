@@ -1,12 +1,20 @@
 // Communication.tsx
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import React from "react";
+import { UserRoleEnum } from "../../users/UserRoles";
+import { User } from "@/app/components/users/User";
 
-interface Sender {
+
+// Fix the Sender type with the correct role type
+interface Sender extends User {
   id: string;
-  name: string;
-  // Add any other properties specific to the sender
+  tags: string[];
+  isUserMessage: boolean;
+  tier: string;
+  createdAt: string;
+  updatedAt: string;
 }
+
 
 interface Communication {
     id: string;
@@ -23,7 +31,7 @@ interface CommunicationProps {
 const CommunicationPage: React.FC<CommunicationProps> = ({ message, sender, timestamp }) => {
   return (
     <div className="communication">
-      <div className="communication-sender">{sender.name}</div>
+      <div className="communication-sender">{sender.username}</div>
       <div className="communication-message">{message.content}</div>
       <div className="communication-timestamp">{timestamp.toLocaleString()}</div>
     </div>
@@ -31,4 +39,4 @@ const CommunicationPage: React.FC<CommunicationProps> = ({ message, sender, time
 };
 
 export default CommunicationPage;
-export type { Communication };
+export type { Communication, Sender };

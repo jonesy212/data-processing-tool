@@ -1,15 +1,15 @@
-import SnapshotStoreOptions from "../hooks/SnapshotStoreOptions";
-import { Data } from "../models/data/Data";
+import { BaseData } from '@/app/components/models/data/Data';
+import { SnapshotStoreOptions } from "../hooks/SnapshotStoreOptions";
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { subscribeToSnapshot, subscribeToSnapshots } from "./snapshotHandlers";
 
-class SnapshotManagerOptions<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
-  private options: SnapshotStoreOptions<T, Meta, K> | undefined;
+class SnapshotManagerOptions<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  private options: SnapshotStoreOptions<T, K> | undefined;
 
-  constructor(initialOptions: Partial<SnapshotStoreOptions<T, Meta, K>> = {}) {
+  constructor(initialOptions: Partial<SnapshotStoreOptions<T, K>> = {}) {
       this.options = {
-          data: new Map<string, Snapshot<T, Meta, K>>(),
+          data: new Map<string, Snapshot<T, K>>(),
           initialState: null,
           snapshotId: "",
           category: {
@@ -42,27 +42,27 @@ class SnapshotManagerOptions<T extends Data, Meta extends UnifiedMetaDataOptions
           subscribeToSnapshots: subscribeToSnapshots,
           subscribeToSnapshot: subscribeToSnapshot,
           delegate: [],
-          dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, Meta, K>,
+          dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K>,
           getDelegate: [],
-          getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, Meta, K> {
+          getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K> {
               throw new Error("Function not implemented.");
           },
           snapshotMethods: [],
           eventRecords: null,
           ...initialOptions, // Overwrite defaults with provided options
-      } as SnapshotStoreOptions<T, Meta, K>;
+      } as SnapshotStoreOptions<T, K>;
   }
 
-  get(): SnapshotStoreOptions<T, Meta, K> {
+  get(): SnapshotStoreOptions<T, K> {
       if (this.options === undefined) {
           throw new Error("Options have not been initialized");
       }
       return this.options;
   }
 
-  set(options: Partial<SnapshotStoreOptions<T, Meta, K>>) {
+  set(options: Partial<SnapshotStoreOptions<T, K>>) {
       if (this.options) {
-          this.options = { ...this.options, ...options } as SnapshotStoreOptions<T, Meta, K>;
+          this.options = { ...this.options, ...options } as SnapshotStoreOptions<T, K>;
       } else {
           throw new Error("Options have not been initialized");
       }

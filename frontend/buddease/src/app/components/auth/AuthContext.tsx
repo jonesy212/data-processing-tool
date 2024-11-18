@@ -145,7 +145,10 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         ...state,
         id: "0",
         isAuthenticated: true,
-        user: action.payload?.user || null,
+        user: action.payload?.user || state.user,
+        authToken: action.payload?.authToken || state.authToken,
+        userRoles: action.payload?.roles || state.userRoles,
+        userNFTs: action.payload?.nfts || state.userNFTs, 
       };
     case "LOGOUT":
       return initialState;

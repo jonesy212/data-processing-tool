@@ -1,10 +1,11 @@
+import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import { NotificationType } from '@/app/components/support/NotificationContext';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { metadata } from '@/app/layout';
 import generateFakeData, { FakeDataPartial } from "../../intelligence/FakeDataGenerator";
-import { Data, BaseData } from "../../models/data/Data";
+import { BaseData, Data } from "../../models/data/Data";
 import { Member } from '../../models/teams/TeamMembers';
-import { SnapshotWithCriteria } from '../../routing/SearchCriteria';
-import SnapshotStoreConfig from '../../snapshots/SnapshotConfig';
+import { SnapshotData } from '../../snapshots/SnapshotData';
 import SnapshotStore, { Snapshot } from "../../snapshots/SnapshotStore";
 import { useSecureDocumentId } from '../../utils/useSecureDocumentId';
 import { useSecureStoreId } from '../../utils/useSecureStoreId';
@@ -13,7 +14,6 @@ import CalendarManagerStoreClass, {
     CalendarEvent,
     useCalendarManagerStore,
 } from "./CalendarEvent";
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
 
 const eventIds: string[] = [];
 const events: Record<string, CalendarEvent[]> = {};
@@ -26,7 +26,7 @@ const convertToPartialFakeDataEvent = (fakeData: FakeDataPartial): PartialFakeDa
   id: "fakeId",
   title: "", // Provide default values or leave them empty
   date: new Date, // Provide default values or leave them empty
-  metadata: {}, // Provide default values or leave them empty
+  metadata: metadata, // Provide default values or leave them empty
   status: "scheduled", // Provide default values or leave them empty
   rsvpStatus: "notResponded", // Provide default values or leave them empty
   host: {} as Member, // Provide default values or leave them empty
@@ -38,7 +38,7 @@ const convertToPartialFakeDataEvent = (fakeData: FakeDataPartial): PartialFakeDa
   priority: '',
   participants: [],
   teamMemberId: '',
-  then: function (callback: (newData: Snapshot<Data, Meta, Data>) => void): void {
+  then: function (callback: (newData: Snapshot<Data, Data>) => void): void {
     throw new Error('Function not implemented.');
   },
   
@@ -88,7 +88,7 @@ const convertToPartialFakeDataEvent = (fakeData: FakeDataPartial): PartialFakeDa
             highlights: [],
             files: [],
             rsvpStatus: "yes",
-            then: function <T extends Data>(callback: (newData: Snapshot<BaseData, Meta, BaseData>) => void): Snapshot<Data, Meta, Data> | undefined {
+            then: function <T extends Data>(callback: (newData: Snapshot<BaseData, BaseData>) => void): Snapshot<Data, Data> | undefined {
               // Implement the then function here
               // Example implementation, you might need to adapt this
               callback({
@@ -171,7 +171,7 @@ describe("CalendarManagerStoreClass", () => {
       priority: "",
       participants: [],
       teamMemberId: "",
-      then: function (callback: (newData: Snapshot<Data, Meta, Data>) => void): void {
+      then: function (callback: (newData: Snapshot<Data, Data>) => void): void {
         throw new Error("Function not implemented.");
       },
     };
@@ -199,7 +199,7 @@ describe("CalendarManagerStoreClass", () => {
       priority: "",
       participants: [],
       teamMemberId: "",
-      then: function (callback: (newData: Snapshot<Data, Meta, Data>) => void): void {
+      then: function (callback: (newData: Snapshot<Data, Data>) => void): void {
         throw new Error("Function not implemented.");
       },
     };
@@ -229,7 +229,7 @@ describe("CalendarManagerStoreClass", () => {
       priority: "",
       participants: [],
       teamMemberId: "",
-      then: function (callback: (newData: Snapshot<Data, Meta, Data>) => void): void {
+      then: function (callback: (newData: Snapshot<Data, Data>) => void): void {
         throw new Error("Function not implemented.");
       },
     };
@@ -320,31 +320,31 @@ describe("CalendarManagerStoreClass", () => {
     // Additional assertions or mock implementations may be required depending on implementation details
   });
 
-  const mockConfig: SnapshotStoreConfig<Snapshot<Data, Meta, Data>> = {
+  const mockConfig: SnapshotStoreConfig<Snapshot<Data, Data>> = {
     key: "mockKey",
-    initialState: {} as Snapshot<Data, Meta, Data>,
-    onSnapshot: {} as (snapshot: SnapshotStore<Snapshot<Data, Meta, Data>>) => void,
+    initialState: {} as Snapshot<Data, Data>,
+    onSnapshot: {} as (snapshot: SnapshotStore<Snapshot<Data, Data>>) => void,
     clearSnapshots: {},
-    snapshots: [] as SnapshotStore<Snapshot<Data, Meta, Data>>[],
+    snapshots: [] as SnapshotStore<Snapshot<Data, Data>>[],
     initSnapshot: {} as () => void,
-    updateSnapshot: {} as (snapshot: Snapshot<Data, Meta, Data>) => void,
-    takeSnapshot: {} as (snapshot: Snapshot<Data, Meta, Data>) => void,
-    getSnapshot: {} as (snapshot: string) => Promise<Snapshot<Data, Meta, Data>>,
-    getSnapshots: {} as () => Snapshot<Snapshot<Data, Meta, Data>>[],
+    updateSnapshot: {} as (snapshot: Snapshot<Data, Data>) => void,
+    takeSnapshot: {} as (snapshot: Snapshot<Data, Data>) => void,
+    getSnapshot: {} as (snapshot: string) => Promise<Snapshot<Data, Data>>,
+    getSnapshots: {} as () => Snapshot<Snapshot<Data, Data>>[],
     getAllSnapshots: {} as (
       data: (data: Data) => void,
-      snapshot: Snapshot<Data, Meta, Data>,
-    ) => Snapshot<Data, Meta, Data>[],
+      snapshot: Snapshot<Data, Data>,
+    ) => Snapshot<Data, Data>[],
     clearSnapshot: {} as () => void,
-    configureSnapshotStore: {} as (snapshot: Snapshot<Data, Meta, Data>) => void,
-    takeSnapshotSuccess: {} as (snapshot: Snapshot<Data, Meta, Data>) => void,
+    configureSnapshotStore: {} as (snapshot: Snapshot<Data, Data>) => void,
+    takeSnapshotSuccess: {} as (snapshot: Snapshot<Data, Data>) => void,
     updateSnapshotFailure: {} as (payload: { error: string }) => void,
-    takeSnapshotsSuccess: {} as (snapshots: Snapshot<Data, Meta, Data>[]) => void,
-    fetchSnapshot: {} as (snapshotId: Snapshot<Data, Meta, Data>) => void,
-    updateSnapshotSuccess: {} as (snapshot: Snapshot<Data, Meta, Data>[]) => void,
-    updateSnapshotsSuccess: {} as (snapshots: Snapshot<Data, Meta, Data>[]) => void,
-    fetchSnapshotSuccess: {} as (snapshot: Snapshot<Data, Meta, Data>[]) => void,
-    createSnapshotSuccess: {} as (snapshot: Snapshot<Data, Meta, Data>[]) => void,
+    takeSnapshotsSuccess: {} as (snapshots: Snapshot<Data, Data>[]) => void,
+    fetchSnapshot: {} as (snapshotId: Snapshot<Data, Data>) => void,
+    updateSnapshotSuccess: {} as (snapshot: Snapshot<Data, Data>[]) => void,
+    updateSnapshotsSuccess: {} as (snapshots: Snapshot<Data, Data>[]) => void,
+    fetchSnapshotSuccess: {} as (snapshot: Snapshot<Data, Data>[]) => void,
+    createSnapshotSuccess: {} as (snapshot: Snapshot<Data, Data>[]) => void,
     createSnapshotFailure: {} as (error: string) => void,
     batchUpdateSnapshotsSuccess: {} as (snapshotData: SnapshotData<Data>[]) => void,
     batchFetchSnapshotsRequest: {} as (snapshotData: SnapshotData<Data>[]) => void,
@@ -353,7 +353,7 @@ describe("CalendarManagerStoreClass", () => {
     batchUpdateSnapshotsFailure: {} as (payload: { error: string }) => void,
     notifySubscribers: {} as (subscribers: (data: Data) => void) => void,
     [Symbol.iterator]: {} as () => IterableIterator<
-      SnapshotStore<Snapshot<Data, Meta, Data>>
+      SnapshotStore<Snapshot<Data, Data>>
     >,
   };
   describe("Concurrent Operations in CalendarManagerStoreClass", () => {
@@ -418,8 +418,8 @@ describe("CalendarManagerStoreClass", () => {
     const documentId = useSecureDocumentId()
     const eventId = useSecureEventId()
     const events: Record<string, CalendarEvent[]> = {}; // Mocked events data
-    const snapshotData: SnapshotData<Snapshot<Data, Meta, Data>> = new SnapshotStore<
-      Snapshot<Data, Meta, Data>
+    const snapshotData: SnapshotData<Snapshot<Data, Data>> = new SnapshotStore<
+      Snapshot<Data, Data>
     >(mockConfig, notify); // Mocked snapshot data
     calendarManagerStore.handleRealtimeUpdate(
       storeId,

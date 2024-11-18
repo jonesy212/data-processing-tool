@@ -51,24 +51,43 @@ export const blogApiService = observable({
 
   createBlog: async (blogData: any): Promise<AxiosResponse> => {
     try {
-      const userApiConfig = dotProp.getProperty(API_BASE_URL, "getUserApiConfig");
+      // Use optional chaining to safely access nested properties or a default value
+      const userApiConfig = API_BASE_URL?.getUserApiConfig || '';
+
+      if (!userApiConfig) {
+        throw new Error('API configuration is missing.');
+      }
+
+      // Make the POST request to create the blog
       const response: AxiosResponse = await axiosInstance.post(String(userApiConfig), blogData);
+
       runInAction(() => {
         addLog(`Created blog: ${blogData.title}`);
       });
 
+      // Show a success notification
       const notificationContext = useNotification();
-      const message = createMessage("success", `Blog "${blogData.title}" was created successfully.`);
+      const message = createMessage(
+        'success',
+        `Blog "${blogData.title}" was created successfully.`
+      );
+
       notificationContext.showSuccessNotification(
-        "Blog Created",
-        { ...message, id: "blog-created", sender: undefined, senderId: undefined } as Message,
+        'Blog Created',
+        {
+          ...message,
+          id: 'blog-created',
+          sender: undefined,
+          senderId: undefined,
+        } as Message,
         `Blog "${blogData.title}" was created successfully.`,
         blogData
       );
 
       return response.data;
     } catch (error) {
-      handleApiError(error as AxiosError<unknown>, "Failed to create blog");
+      // Handle any errors that occur during the API call
+      handleApiError(error as AxiosError<unknown>, 'Failed to create blog');
       throw error;
     }
   },

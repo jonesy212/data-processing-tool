@@ -1,8 +1,7 @@
-import { Data } from '@/app/components/models/data/Data';
-import { FolderData } from '@/app/components/models/data/FolderData';
-import TrackerClass from '@/app/components/models/tracker/Tracker';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 // DrawingSlice.ts
+import FolderData from '@/app/components/models/data/FolderData';
+import TrackerClass from '@/app/components/models/tracker/Tracker';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { autosaveDrawing } from "@/app/components/documents/editing/autosaveDrawing";
 import { useMovementAnimations } from "@/app/components/libraries/animations/movementAnimations/MovementAnimationActions";
 import { TrackerProps } from "@/app/components/models/tracker/Tracker";
@@ -28,7 +27,8 @@ import FileData from "@/app/components/models/data/FileData";
 import { useDrag } from "@/app/libraries/animations/DraggableAnimation/useDrag";
 import useText from "@/app/libraries/animations/DraggableAnimation/useText";
 import { ContentItem } from "../../stores/ContentStore";
-
+import { BaseData } from '@/app/components/models/data/Data';
+  
 interface Guide {
   id: string;               // Unique identifier for the guide
   type: 'horizontal' | 'vertical'; // Type of the guide (horizontal or vertical)
@@ -106,20 +106,23 @@ interface DrawingElement {
 }
 
 
-interface DrawingTemplate<T, Meta = UnifiedMetaDataOptions, K extends Data = any> {
+interface DrawingTemplate<
+  T extends  BaseData<T>, 
+  K extends T = T, 
+  StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   id: string;               // Unique identifier for the template
   name: string;             // Name of the template
   description?: string;     // Optional description of the template
   imageUrl?: string;        // Optional URL to an image representing the template
   elements: any[];          // List of elements or patterns included in the template
-  content: Content<DrawingElement, Meta, K>
+  content: Content<DrawingElement, K>
 }
 
 type TrackerDrawingElement = TrackerProps & DrawingElement;
 
 
 // Define interface for drawing state
-interface DrawingState<T extends Data, K extends Data = T> {
+interface DrawingState<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   id: string;
   selectedDrawingId: number | null;
   isDrawing: boolean;
@@ -174,7 +177,7 @@ interface DrawingState<T extends Data, K extends Data = T> {
   };                           // Resolution of the canvas
   stroke: Stroke;              // Current stroke settings
   brushes: Brush[];            // List of available brushes
-  templates: DrawingTemplate<T, Meta, K>[]; // List of drawing templates
+  templates: DrawingTemplate<T, K>[]; // List of drawing templates
   gridSize: number;
   canvasWidth: number;     // Canvas width
   canvasHeight: number;    // Canvas height

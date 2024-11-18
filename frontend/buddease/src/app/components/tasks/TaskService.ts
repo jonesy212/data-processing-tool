@@ -24,12 +24,12 @@ class TaskService {
     return this.instance;
   }
 
-  @observable tasks: Task[] = [];
+  @observable tasks: Task<T, K>[] = [];
   @observable loading = false;
   @observable error: string | null = null;
 
   @action
-  createTask = async (task: Task, name: string,  title: string, type: NotificationTypeEnum, requestData: string) => {
+  createTask = async (task: Task<T, K>, name: string,  title: string, type: NotificationTypeEnum, requestData: string) => {
     try {
       task.id = UniqueIDGenerator.generateTaskID(name, title, type);
 
@@ -78,10 +78,10 @@ class TaskService {
   };
 
   @action
-  fetchTask = (taskId: number, requestData: string): Promise<AxiosResponse<Task, any>> => {
+  fetchTask = (taskId: number, requestData: string): Promise<AxiosResponse<Task<T, K>, any>> => {
     const endpoint = `${API_BASE_URL}/${taskId}`; // Construct the endpoint URL
     return apiService.callApi(endpoint, requestData)
-      .then(apiEndpoint => axiosInstance.get<AxiosResponse<Task, any>>(apiEndpoint))
+      .then(apiEndpoint => axiosInstance.get<AxiosResponse<Task<T, K>, any>>(apiEndpoint))
       .then(response => response.data)
       .catch(error => {
         throw new Error(`Failed to fetch task with ID ${taskId}`);
@@ -130,10 +130,10 @@ class TaskService {
   };
 
   @action
-  addTask = (newTask: Task, requestData: string): Promise<AxiosResponse<Task, any>> => {
+  addTask = (newTask: Task<T, K>, requestData: string): Promise<AxiosResponse<Task<T, K>, any>> => {
     const endpoint = API_BASE_URL.add;
     return apiService.callApi(`${endpoint}`, requestData)
-      .then(apiEndpoint => axiosInstance.post<AxiosResponse<Task, any>>(apiEndpoint, newTask, {
+      .then(apiEndpoint => axiosInstance.post<AxiosResponse<Task<T, K>, any>>(apiEndpoint, newTask, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -162,7 +162,7 @@ class TaskService {
 
 
   @action
-  processTasks = async (updatedTasks: Task[], taskType: string) => {
+  processTasks = async (updatedTasks: Task<T, K>[], taskType: string) => {
     try {
       const requestData = {
         taskIds: updatedTasks.map((task) => task.id),
@@ -183,10 +183,10 @@ class TaskService {
   };
 
   @action
-  updateTask = (taskId: number, requestData: any): Promise<AxiosResponse<Task, any>> => {
+  updateTask = (taskId: number, requestData: any): Promise<AxiosResponse<Task<T, K>, any>> => {
     const endpoint = `${API_BASE_URL}/${taskId}`; // Construct the endpoint URL
 
-    return axiosInstance.put<AxiosResponse<Task, any>>(endpoint, requestData, {
+    return axiosInstance.put<AxiosResponse<Task<T, K>, any>>(endpoint, requestData, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -211,7 +211,7 @@ class TaskService {
 
 
   @action
-  getTasks = async (requestData: string): Promise<Task[]> => {
+  getTasks = async (requestData: string): Promise<Task<T, K>[]> => {
     try {
       const response = await axiosInstance.get(
         await apiService.callApi(
@@ -219,7 +219,7 @@ class TaskService {
           requestData
         )
       );
-      return response.data as Task[];
+      return response.data as Task<T, K>[];
     } catch (error) {
       runInAction(() => {
         this.error = "Failed to fetch tasks";
@@ -277,7 +277,7 @@ class TaskService {
   };
 
   @action
-  getTaskById(id: string): Task | null {
+  getTaskById(id: string): Task<T, K> | null {
     const task = this.tasks.find((task) => task.id === id);
     if (task) {
       return task;
@@ -286,11 +286,11 @@ class TaskService {
   }
 
   @action
-  fetchTaskData(taskId: number): Promise<Task> {
+  fetchTaskData(taskId: number): Promise<Task<T, K>> {
     return new Promise(async (resolve, reject) => {
       axiosInstance.get(await apiService.callApi(`${API_BASE_URL}/${taskId}`, ""))
         .then(response => {
-          resolve(response.data as Task);
+          resolve(response.data as Task<T, K>);
         })
         .catch(error => {
           reject(new Error("Failed to fetch task data"));
@@ -331,7 +331,7 @@ class TaskService {
     } catch (error: any) {
       Logger.error(error);
       apiNotificationsService.error(
-        NOTIFICATION_MESSAGES.Task.TASK_MARKED_IN_PROGRESS_FAILED
+        NOTIFICATION_MESSAGES.Task<T, K>.TASK_MARKED_IN_PROGRESS_FAILED
       );
     }
   }

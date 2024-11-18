@@ -1,8 +1,8 @@
 import axiosInstance from "@/app/api/axiosInstance";
-import { Data } from "../../models/data/Data";
+import { BaseData } from '@/app/components/models/data/Data';
 import { Snapshot } from "../../snapshots";
 
-const sendToAnalytics = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(eventName: string, eventData: Record<string, any>, snapshot: Snapshot<T, Meta, K>) => {
+const sendToAnalytics = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(eventName: string, eventData: Record<string, any>, snapshot: Snapshot<T, K>) => {
   try {
     // Example: Interacting with a third-party analytics platform (like Mixpanel)
     if (window.mixpanel) {

@@ -9,7 +9,7 @@ interface ContentDetails {
   title: string;
   description: string;
   status: string;
-  startDate: string;
+  startDate?: string | Date;
   endDate: string;
   phaseName: string;
   phaseDescription: string;
@@ -25,7 +25,7 @@ interface ContentDetails {
   cryptocurrencyEventDetails?: {
     title: string;
     description: string;
-    startDate: string;
+    startDate?: string | Date;
     endDate: string;
     // Add more properties as needed
   };

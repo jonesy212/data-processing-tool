@@ -332,5 +332,5 @@ var ConfigurationService = /** @class */ (function () {
     return ConfigurationService;
 }());
 // Create an instance of the configuration service
-var configurationService = ConfigurationService.getInstance();
-exports.default = configurationService;
+var configServiceInstance = ConfigurationService.getInstance();
+exports.default = configServiceInstance;

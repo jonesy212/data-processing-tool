@@ -1,5 +1,4 @@
 // CacheManager.ts
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import axios from "axios";
 import { promises as fs } from 'fs';
 import { create } from "mobx-persist";
@@ -326,12 +325,12 @@ export const writeAndUpdateCache = async (key: string, newCacheData: any) => {
     isActive: false,
     tags: [],
     phase: null,
-    then: function (callback: (newData: Snapshot<Data, Meta, Data>) => void): void {
+    then: function (callback: (newData: Snapshot<Data, Data>) => void): void {
       throw new Error("Function not implemented.");
     },
     analysisType: "",
     analysisResults: [],
-    videoData: {} as VideoData<Data, Meta, Data>
+    videoData: {} as VideoData<Data, Data>
   });
 };
 

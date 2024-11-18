@@ -1,8 +1,8 @@
 
 // Interface for the subscription
-interface Subscription<T, Meta, K> {
+interface Subscription<T, K> {
   subscriberType: SubscriberTypeEnum;
-  data: Snapshot<T, Meta, K>;
+  data: Snapshot<T, K>;
   getSubscriptionLevel: () => SubscriptionLevel;
 }
 

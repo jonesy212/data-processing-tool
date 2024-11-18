@@ -1,9 +1,11 @@
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseData } from '@/app/components/models/data/Data';
 import { useDispatch } from 'react-redux';
-import { Data } from "../models/data/Data";
+import { Snapshot } from './LocalStorageSnapshotStore';
 
 const dispatch = useDispatch()
 // updateUIWithSnapshotStore.ts
-const updateUIWithSnapshotStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(snapshotStore: Snapshot<T, Meta, K>) => {
+const updateUIWithSnapshotStore = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(snapshotStore: Snapshot<T, K>) => {
     try {
       // Perform a UI update with the snapshotStore data
       const snapshotContent = snapshotStore.getData(); // Retrieve the data from snapshotStore
@@ -32,5 +34,6 @@ const updateUIWithSnapshotStore = <T extends Data, Meta extends UnifiedMetaDataO
     } catch (error) {
       console.error("Error updating UI with snapshot store:", error);
     }
-  };
+};
+  
   export { updateUIWithSnapshotStore };

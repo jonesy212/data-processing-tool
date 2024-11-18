@@ -12,7 +12,7 @@ import { User, UserData } from "../components/users/User";
     channelId: string | undefined;
     content: string;
     additionalData?: string;
-    tags: string[] | Tag[] ;
+    tags: string[] | Tag<T, K<T>>[] ;
     userId?: number
     timestamp?:Date | string;
     text: string;
@@ -30,8 +30,8 @@ import { User, UserData } from "../components/users/User";
     website: string,
     location: string,
     coverImageUrl: string,
-    following: [],
-    followers: [],
+    following: User[],
+    followers: User[],
     chatRooms: ChatRoom[],
     blockedUsers: User[],
     blockedBy: User[],

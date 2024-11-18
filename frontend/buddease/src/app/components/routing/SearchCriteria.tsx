@@ -79,14 +79,14 @@ interface SearchCriteria extends BaseData {
 
 
 // Extending the DocumentData interface
-interface SupportedSearchResult<T extends Data> extends Entity, DocumentData<T> {
+interface SupportedSearchResult<T extends  BaseData<T>> extends Entity, DocumentData<T> {
   // Now you can access all properties from both Entity and DocumentData
 }
 
 
 
 // You can also make SupportedData extend SearchResult
-type EnhancedSupportedData<T extends Data = Data> = SupportedData<T> & SupportedSearchResult<T>;
+type EnhancedSupportedData<T extends  BaseData<T>> = SupportedData<T> & SupportedSearchResult<T>;
 
 
 
@@ -299,7 +299,10 @@ const SearchCriteriaComponent: React.FC<{
               description: result.description !== undefined && result.description !== null ? result.description.toString(): "",
               source: result.source !== undefined && result.source !== null ? result.source.toString(): "",
             }))}
-            documentData={searchResults
+            documentData={
+
+
+              searchResults
               .filter((result) => result.source === "global")
               .map((result) => ({
                 createdAt: result.createdAt || new Date(), // Use the actual value or default to now
@@ -346,7 +349,7 @@ const SearchCriteriaComponent: React.FC<{
                   updateProgress: (team: Team, project: Project) => {},
                   }, 
                 
-                selectedDocument: {} as DocumentData<Data>,
+                selectedDocument: {} as DocumentData< BaseData<T>>,
                 id: result.id,  // Assuming this can be a number or string
                 _id: result.id.toString(), // Assuming you convert it to string
                 // Map 'name' to 'title'
@@ -424,7 +427,11 @@ const SearchCriteriaComponent: React.FC<{
                 _routing_values_as_array_of_objects_with_key: [], // Default to empty array
                 _routing_values_as_array_of_objects_with_key_and_value: [], // Default to empty array
                 _routing_values_as_array_of_objects_with_key_and_value_and_value: [], // Default to empty array
-              }))}
+              }
+            ))
+            label={}
+            date={}
+          }
               searchQuery={searchQuery || searchTerm}
               />
       </div>

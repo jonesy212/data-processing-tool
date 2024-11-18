@@ -1,78 +1,85 @@
+import { StatusType } from "@/app/components/models/data/StatusType";
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { UnifiedMetaDataOptions } from '../../configs/database/MetaDataOptions';
-import { Data } from '../models/data/Data';
-import { EventManager } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { Snapshot } from '../snapshots';
 // Assume selectedmetadata is derived based on your logic (e.g., API call, user action, etc.)
 // Usage Example
 
 
 
-const selectedmetadata: UnifiedMetaDataOptions = {
-  id: "123",
-  title: "Sample Metadata",
-  description: "Some description",
-  createdBy: "UserA",
-  createdAt: new Date(),
-  structuredMetadata: {
+const selectedmetadata: UnifiedMetaDataOptions<T, K<T>> = {
+  videoMetadata: {
+    title: "",
+    url: "",
+    duration: 0,
+    sizeInBytes: 0,
+    format: "",
+    resolution: "",
+    frameRate: 0,
+    bitRate: 0,
+    codec: "",
+    aspectRatio: "",
+    creationDate: new Date(),
+    lastModifiedDate: new Date(),
+    author: "",
+    copyright: "",
     description: "",
-    id: "",
-    apiEndpoint: "",
-    apiKey: "",
-    timeout: 0,
-    retryAttempts: 0,
-    name: "",
-    category: "",
-    timestamp: "",
-    createdBy: "",
     tags: [],
-    metadata: {},
-   
-    initialState: "",
-    meta: new Map<string, Snapshot<Data, Meta, Data>>(),
-    events: {} as EventManager<Data, Data>,
-   
-
-    metadataEntries: {
-      "123": {
-        originalPath: "/path/to/file",
-        alternatePaths: ["/alternate/path"],
-        author: "AuthorName",
-        timestamp: new Date(),
-        fileType: "text",
-        title: "Document Title",
-        description: "A detailed description of the document.",
-        keywords: ["doc", "metadata"],
-        authors: ["AuthorName"],
-        contributors: ["Contributor1"],
-        publisher: "PublisherName",
-        copyright: "2023",
-        license: "CC-BY",
-        links: ["http://link.com"],
-        tags: ["tag1", "tag2"]
-      }
-    }
+    thumbnailUrl: "",
+    captions: [],
+    audioTracks: [],
+    chapters: [],
+    metadataEntries: {},
+    relatedVideos: [],
+    comments: 0
   },
-  simulatedDataSource: { key: "value" },
-  videos: [],
-  metadataEntries: {},
-  startDate: undefined,
-  endDate: undefined,
-  budget: 0,
-  status: '',
-  teamMembers: [],
-  tasks: [],
-  milestones: []
-};
+  mediaMetadata: {
+    title: "",
+    artist: "",
+    album: "",
+    artwork: [] // Assuming MediaImage is defined elsewhere
 
-const MetadataComponent: React.FC = () => {
+    // Fill in properties for MediaMetadata
+  },
+  projectMetadata: {
+    startDate: new Date(),
+    endDate: new Date(),
+    budget: 0,
+    status: StatusType,
+   
+    teamMembers: [],
+    tasks: [],
+    milestones: [],
+    videos: [],
+    projectId: "",
+   
+    // Fill in required properties for ProjectMetadata
+  },
+  taskMetadata: {
+    taskId, priority, assignedTo, id,
+
+    // Fill in required properties for TaskMetadata<T, K>
+  },
+  meetingMetadata: {
+    // Fill in properties for MeetingMetadata
+    createdAt: "",
+    lastModifiedAt: "",
+    createdBy: "",
+    status: "",
+    isRecurring: "",
+   
+
+  }
+}
+
+  const MetadataComponent: React.FC = () => {
   // Initialize state with selectedmetadata
-  const [currentMetadata, setCurrentMetadata] = useState<UnifiedMetaDataOptions>(selectedmetadata);
-  const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetaDataOptions>(selectedmetadata);
+  const [currentMetadata, setCurrentMetadata] = useState<UnifiedMetaDataOptions<T, K<T>>(selectedmetadata);
+  const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetaDataOptions<T, K<T>>(selectedmetadata);
 
   // If you need to update the metadata, for example on a user action or API call
-  const updateMetadata = (newMetadata: UnifiedMetaDataOptions) => {
+  const updateMetadata = (newMetadata: UnifiedMetaDataOptions<T, K<T>>) => {
     // Save current metadata as previous before updating
     setPreviousMetadata(currentMetadata);
     // Update the current metadata
@@ -83,7 +90,7 @@ const MetadataComponent: React.FC = () => {
     // Example logic if metadata changes come from external sources like API
     // Call to fetch metadata, then set the metadata state
     const fetchMetadata = async () => {
-      const fetchedMetadata: UnifiedMetaDataOptions = await getMetadataFromAPI(); // Replace with real API call
+      const fetchedMetadata: UnifiedMetaDataOptions<T, K<T>> = await getMetadataFromAPI(); // Replace with real API call
       updateMetadata(fetchedMetadata);
     };
     fetchMetadata();

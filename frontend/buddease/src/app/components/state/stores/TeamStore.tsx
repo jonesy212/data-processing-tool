@@ -1,17 +1,20 @@
 // TeamManagerStore.tsx
 import { videoService } from "@/app/api/ApiVideo";
 import teamManagementService from "@/app/api/TeamManagementApi";
+import { Meta } from "@/app/components/models/data/dataStoreMethods";
+import { ConfigureSnapshotStorePayload, SnapshotOperation, SnapshotOperationType, SnapshotStoreProps } from '@/app/components/snapshots';
+import { createSnapshotInstance } from '@/app/components/snapshots/snapshot';
 import { useNotification } from "@/app/components/support/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import { useSnapshotManager } from "../../hooks/useSnapshotManager";
-import { Data } from "../../models/data/Data";
+import { SnapshotStoreOptions, useSnapshotManager } from "../../hooks/useSnapshotManager";
+import { BaseData, Data } from "../../models/data/Data";
+import { RealtimeDataItem } from '../../models/realtime/RealtimeData';
 import { Team } from "../../models/teams/Team";
 import TeamData from "../../models/teams/TeamData";
 import { Phase } from "../../phases/Phase";
 import { Project } from "../../projects/Project";
 import { Snapshot, SnapshotStoreConfig, TagsRecord } from "../../snapshots";
-import { K, T } from "../../snapshots/SnapshotConfig";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import userService from "../../users/ApiUser";
@@ -23,18 +26,17 @@ import {
 } from "./AssignTeamMemberStore";
 import useVideoStore from "./VideoStore";
 
-interface CustomData extends Data {
+interface CustomData<T extends  BaseData<T>, K extends T> extends Data<T> {
   _id: string;
   id: number;
   title: string;
   status: "pending" | "inProgress" | "completed";
   isActive: boolean;
-  tags: TagsRecord
-  phase: Phase | null;
+  tags: TagsRecord;
+  phase: Phase<CustomData<T, K>, BaseData> | null;
   // Add other properties as needed to match the structure of Data
 }
-
-export interface TeamManagerStore <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+export interface TeamManagerStore <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   teams: Record<string, Team[]>;
   teamName: string;
   teamDescription: string;
@@ -65,7 +67,7 @@ export interface TeamManagerStore <T extends Data, Meta extends UnifiedMetaDataO
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   setDynamicNotificationMessage: (message: string) => void;
-  snapshotStore: SnapshotStore<T, Meta, K>; // Include a SnapshotStore for teams
+  snapshotStore: SnapshotStore<T, K>; // Include a SnapshotStore for teams
   takeTeamSnapshot: (teamId: string, userIds: string[]) => void;
   getTeamId: (
     teamId: Team["id"],
@@ -73,9 +75,11 @@ export interface TeamManagerStore <T extends Data, Meta extends UnifiedMetaDataO
   ) => number;
   // Add more methods or properties as needed
 }
-const config = {} as typeof SnapshotStoreConfigComponent<SnapshotStore<T, Meta, K>>;
-const useTeamManagerStore = async (initialStoreId: number): Promise<TeamManagerStore<T, Meta, K>> => {
+const config = {} as typeof SnapshotStoreConfigComponent<SnapshotStore<T, K>>;
+
+const useTeamManagerStore = async <T extends  BaseData<T>, K = T>(initialStoreId: number): Promise<TeamManagerStore<T, K>> => {
   const { notify } = useNotification();
+
 
   const [teams, setTeams] = useState<Record<string, Team[]>>({
     active: [],
@@ -91,12 +95,57 @@ const useTeamManagerStore = async (initialStoreId: number): Promise<TeamManagerS
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>(""); // Initialize it with an empty string
 
   const storeId = useSnapshotManager(initialStoreId)
-  const options = 
+  
   // Include the AssignTeamMemberStore
   const assignedTeamMemberStore = useAssignTeamMemberStore();
+
+  // Define storeProps
+  const storeProps: SnapshotStoreProps<T, K> = {
+    storeId: "yourStoreId",
+    configureSnapshotStore: async (
+      snapshotStore: SnapshotStore<T, T>,
+      snapshotId: string,
+      data: Map<string, Snapshot<T, T>>,
+      events: Record<string, any>,
+      dataItems: RealtimeDataItem[],
+      newData: Snapshot<T, T>,
+      payload: ConfigureSnapshotStorePayload<T, Meta>,
+      store: SnapshotStore<T, T>,
+      callback?: (snapshotStore: SnapshotStore<T, T>) => void
+    ) => {
+      // Example configuration logic
+      return {
+        snapshotStore,
+        storeConfig: {
+          snapshotConfigId: storeId,
+          data,
+          events,
+          dataItems,
+        },
+        updatedStore: snapshotStore,
+      };
+    }
+  };
+
+  const {name, version, schema, options, category, config, expirationDate, payload, callback, endpointCategory} = storeProps
+
+
+  // Define the snapshot store options with storeProps
+  const options: SnapshotStoreOptions<T, K<T>> = {
+    initialConfig: {
+      category: "TeamManager",
+      expirationDate: new Date(),
+      storeId,
+    },
+  };
   // Initialize SnapshotStore
-  const initSnapshot = {} as SnapshotStoreConfig<Data, Meta, K>;
-  const snapshotStore = new SnapshotStore(Number(storeId), options, category, config, operation);
+  const initSnapshot = {} as SnapshotStoreConfig<T, K>;
+  let operation: SnapshotOperation= {
+    operationType: SnapshotOperationType.TeamManagerSnapshot
+  }
+
+  const snapshotStore = new SnapshotStore<T, K>({ storeId, name, version, schema, options, category, config, expirationDate, payload, callback, storeProps, endpointCategory })
+
 
   const updateTeamName = (name: string) => {
     setTeamName(name);
@@ -124,7 +173,7 @@ const useTeamManagerStore = async (initialStoreId: number): Promise<TeamManagerS
   };
   
 
-  const getTeamData = (teamId: string, data: TeamData, color: string | null) => {
+  const getTeamData = (teamId: string, data: TeamData<T, K>, color: string | null) => {
     const teamData: Team = {
       id: teamId,
       color: color,
@@ -162,7 +211,7 @@ const useTeamManagerStore = async (initialStoreId: number): Promise<TeamManagerS
         team.assignedProjects = team.assignedProjects.filter(p => p !== project);
       },
       updateProgress: function (team: Team, project: Project): void {
-        team.progress = project.progress;
+        team.progress = project.projectProgress.progress;
 
       },
       percentage: 0
@@ -170,7 +219,7 @@ const useTeamManagerStore = async (initialStoreId: number): Promise<TeamManagerS
     return teamData;
   };
 
-  const getTeamsData = (teamId: string, data: TeamData[]): Team[] => {
+  const getTeamsData = (teamId: string, data: TeamData<T, K>[]): Team[] => {
     // Retrieve the team corresponding to the provided teamId
     const team = teams[teamId];
     if (!team) {
@@ -211,12 +260,12 @@ const useTeamManagerStore = async (initialStoreId: number): Promise<TeamManagerS
       console.error(`Team with ID ${teamId} does not exist.`);
       return;
     }
-    const snapshotConfig: SnapshotStoreConfig<T, Meta, Data> = {} as SnapshotStoreConfig<T, Meta, Data>;
+    const snapshotConfig: SnapshotStoreConfig<T, Data<BaseData<any>>> = {} as SnapshotStoreConfig<T, Data<BaseData<any>>>;
 
     // Create a snapshot of the current teams for the specified teamId
-    const teamSnapshotStore = new SnapshotStore(storeId, options, category, config, operation);
+    const teamSnapshotStore = new SnapshotStore<T, K>(storeId, options, category, config, operation);
 
-    const teamSnapshot = new Snapshot
+    const teamSnapshot = createSnapshotInstance(teamData);
 
     // Store the snapshot in the SnapshotStore
     snapshotStore.takeSnapshot(teamSnapshot);
@@ -246,8 +295,8 @@ const useTeamManagerStore = async (initialStoreId: number): Promise<TeamManagerS
       });
 
       videoData = await videosDataPromise;
-      const teamAssignmentsSnapshot: SnapshotStore<Snapshot<Data, Meta, Data>> =
-        new SnapshotStore<Snapshot<Data, Meta, Data>>(snapshotConfig, null, undefined, []);
+      const teamAssignmentsSnapshot: SnapshotStore<Snapshot<Data, Data>> =
+        new SnapshotStore<Snapshot<Data, Data>>(snapshotConfig, null, undefined, []);
       snapshotStore.takeSnapshot(teamAssignmentsSnapshot);
     }
   };

@@ -3,6 +3,8 @@ import { Pool, QueryResult } from 'pg';
 
 import clientApiService from "@/app/api/ApiClient";
 import { DatabasePool } from './DatabasePool';
+import { ClientInformation } from './ClientInformation';
+import { mapLanguageToEnum } from '../communications/Language';
 
 // Define the structure for ClientConfig
 export interface ClientConfig {
@@ -139,7 +141,7 @@ export class Client {
       userAgent: navigator.userAgent,
       screenWidth: window.screen.width,
       screenHeight: window.screen.height,
-      language: navigator.language,
+      language: mapLanguageToEnum(navigator.language),
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
   }

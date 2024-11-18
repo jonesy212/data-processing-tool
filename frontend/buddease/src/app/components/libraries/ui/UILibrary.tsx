@@ -42,8 +42,6 @@ const renderCustomComponent = (): JSX.Element => {
 }
 
 
-
-
 export const useUIComponent = (options: UIComponentOptions): JSX.Element | null => {
   const [uiComponent, setUIComponent] = useState<JSX.Element | null>(null);
 

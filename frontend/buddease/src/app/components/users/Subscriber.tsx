@@ -1,80 +1,82 @@
 import apiNotificationsService from "@/app/api/NotificationsService";
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { addSnapshot } from "@/app/api/SnapshotApi";
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { config } from "process";
 import { SubscriptionActions } from "../actions/SubscriptionActions";
 import { ModifiedDate } from "../documents/DocType";
 import {
-    CombinedEvents,
-    SnapshotStoreOptions,
-    convertSnapshotToContent,
+  CombinedEvents,
+  SnapshotStoreOptions,
+  convertSnapshotToContent,
 } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Content } from "../models/content/AddContent";
 import { BaseData, Data } from "../models/data/Data";
 import {
-    NotificationStatus,
-    SubscriberTypeEnum,
-    SubscriptionTypeEnum,
+  NotificationStatus,
+  SubscriberTypeEnum,
+  SubscriptionTypeEnum,
 } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import {
-    CustomSnapshotData,
-    K,
-    SnapshotConfig,
-    SnapshotItem,
-    SnapshotStoreConfig,
-    SnapshotWithCriteria
+  CustomSnapshotData,
+  K,
+  SnapshotConfig,
+  SnapshotData,
+  SnapshotItem,
+  SnapshotStoreConfig,
+  SnapshotWithCriteria
 } from "../snapshots";
 import { FetchSnapshotPayload } from "../snapshots/FetchSnapshotPayload";
 import {
-    Payload,
-    Snapshot,
-    Snapshots,
-    SnapshotsArray,
-    UpdateSnapshotPayload,
-    createSnapshotOptions,
+  Snapshot,
+  Snapshots,
+  SnapshotsArray,
+  createSnapshotOptions,
 } from "../snapshots/LocalStorageSnapshotStore";
+import { Payload, UpdateSnapshotPayload } from "@/app/components/database/Payload";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { SnapshotStorePublicMethods } from "../snapshots/SnapshotStorePublicMethods";
 import SnapshotStoreSubset from "../snapshots/SnapshotStoreSubset";
 import {
-    addSnapshotSuccess,
-    createInitSnapshot,
-    createSnapshotFailure,
-    createSnapshotSuccess,
-    updateSnapshot,
-    updateSnapshotFailure,
-    updateSnapshotSuccess,
-    updateSnapshots,
-    updateSnapshotsSuccess,
+  addSnapshotSuccess,
+  createInitSnapshot,
+  createSnapshotFailure,
+  createSnapshotSuccess,
+  updateSnapshot,
+  updateSnapshotFailure,
+  updateSnapshotSuccess,
+  updateSnapshots,
+  updateSnapshotsSuccess,
 } from "../snapshots/snapshotHandlers";
 import {
-    clearSnapshots,
-    removeSnapshot,
+  clearSnapshots,
+  removeSnapshot,
 } from "../state/redux/slices/SnapshotSlice";
-import CalendarManagerStoreClass from "../state/stores/CalendarEvent";
 import {
-    FetchSnapshotByIdCallback,
-    Subscription,
+  FetchSnapshotByIdCallback,
+  Subscription,
 } from "../subscriptions/Subscription";
+import { SubscriptionLevel } from "../subscriptions/SubscriptionLevel";
 import {
-    NotificationType,
-    NotificationTypeEnum,
+  NotificationType,
+  NotificationTypeEnum,
 } from "../support/NotificationContext";
 import {
-    YourSpecificSnapshotType,
-    convertMapToSnapshot,
-    convertSnapshotToStore,
+  YourSpecificSnapshotType,
+  convertMapToSnapshot,
+  convertSnapshotToStore,
 } from "../typings/YourSpecificSnapshotType";
 import { isSnapshotStoreConfig } from "../utils/snapshotUtils";
 import { sendNotification } from "./UserSlice";
+import { BaseDatabaseService } from "@/app/configs/DatabaseConfig";
 
-type SnapshotStoreDelegate <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> = (
-  snapshot: Snapshot<T, Meta, K>,
-  initialState: Snapshot<T, Meta, K>,
+type SnapshotStoreDelegate <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = (
+  snapshot: Snapshot<T, K>,
+  initialState: Snapshot<T, K>,
   snapshotConfig: SnapshotStoreConfig<
     SnapshotWithCriteria<any, BaseData>,
     Data
@@ -82,6 +84,13 @@ type SnapshotStoreDelegate <T extends Data, Meta extends UnifiedMetaDataOptions,
 ) => void;
 
 type Subscribers = Subscriber<CustomSnapshotData, Data>[];
+
+type SubscribeResult<T, K> = {
+  subscriber: Subscriber<T, K> | null;
+  snapshots: SnapshotsArray<T>;
+};
+
+
 interface AuditRecord {
   timestamp: Date;
   userId: string;
@@ -104,13 +113,13 @@ const delegateFunction: SnapshotStoreDelegate<CustomSnapshotData, Data> = (
   console.log("Snapshot config:", snapshotConfig);
 };
 
-function convertSnapshotToSpecificType <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  snapshot: Snapshot<T, Meta, K>
-): Snapshot<T, Meta, K> {
-  const newData = new Map<string, Snapshot<T, Meta, K>>();
+function convertSnapshotToSpecificType <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  snapshot: Snapshot<T, K>
+): Snapshot<T, K> {
+  const newData = new Map<string, Snapshot<T, K>>();
 
   if (snapshot.data instanceof Map) {
-    snapshot.data.forEach((value: Snapshot<T, Meta, K>, key: string) => {
+    snapshot.data.forEach((value: Snapshot<T, K>, key: string) => {
       if (typeof value === "object" && value !== null) {
         newData.set(key, value);
       }
@@ -118,11 +127,11 @@ function convertSnapshotToSpecificType <T extends Data, Meta extends UnifiedMeta
   }
 
   const newStore = snapshot.store
-    ? convertSnapshotStore<T, Meta, K>(snapshot.store as SnapshotStore<T, Meta, K>)
+    ? convertSnapshotStore<T, K>(snapshot.store as SnapshotStore<T, K>)
     : null;
 
   const snapshotItems = snapshot.snapshotItems ?? [];
-  const mappedSnapshotItems = snapshotItems.map((item: SnapshotItem<T, Meta, K>) => {
+  const mappedSnapshotItems = snapshotItems.map((item: SnapshotItem<T, K>) => {
     return convertSnapshotItem(item);
   });
 
@@ -134,9 +143,9 @@ function convertSnapshotToSpecificType <T extends Data, Meta extends UnifiedMeta
   };
 }
 
-function convertSnapshotItem <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  item: SnapshotItem<T, Meta, K>
-): SnapshotItem<T, Meta, K> {
+function convertSnapshotItem <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  item: SnapshotItem<T, K>
+): SnapshotItem<T, K> {
   // Ensure that `message` is a string and not undefined
   if (typeof item.message === "undefined") {
     throw new Error("Message is required and cannot be undefined");
@@ -320,15 +329,15 @@ function convertSnapshotItem <T extends Data, Meta extends UnifiedMetaDataOption
     meta: item.meta,
     subscribers: item.subscribers,
     // Add additional properties or conversions if needed
-  } as Snapshot<T, Meta, K>;
+  } as Snapshot<T, K>;
 }
 
 
 
 
-function convertSnapshotStore<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  store: SnapshotStore<T, Meta, K>
-): SnapshotStorePublicMethods<T, Meta, K> {
+function convertSnapshotStore<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  store: SnapshotStore<T, K>
+): SnapshotStorePublicMethods<T, K> {
   // Get the snapshot items array using the public method
   const snapshotItems = store.getSnapshotItems();
 
@@ -337,10 +346,10 @@ function convertSnapshotStore<T extends Data, Meta extends UnifiedMetaDataOption
     if (isSnapshotStoreConfig(item)) {
       // Use a type assertion here if you're sure about the types
       return convertSnapshotStoreConfig(
-          item as unknown as SnapshotStoreConfig<SnapshotWithCriteria<any, Meta, BaseData>, Meta, K>,
+          item as unknown as SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K>,
       );
       } else {
-        return item as unknown as Snapshot<T, Meta, K>;
+        return item as unknown as Snapshot<T, K>;
       }
     });
 
@@ -475,13 +484,14 @@ function convertSnapshotStore<T extends Data, Meta extends UnifiedMetaDataOption
     getParentId: store.getParentId.bind(store),
     getChildIds: store.getChildIds.bind(store),
     snapshotItems: newSnapshotItems,
-  } as SnapshotStorePublicMethods<T, Meta, K>;
+  } as SnapshotStorePublicMethods<T, K>;
 }
 
-const createSnapshotConfig =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  snapshotStore: SnapshotStore<T, Meta, K>,
-  snapshotContent?: Snapshot<T, Meta, K>
-): SnapshotStoreConfig<SnapshotWithCriteria<any, Meta, BaseData>, Meta, K>, => {
+const createSnapshotConfig =  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  snapshotStore: SnapshotStore<T, K>,
+  snapshotContent?: Snapshot<T, K>
+): SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K> => {
+
   const content = snapshotContent
     ? convertSnapshotToContent(snapshotContent)
     : undefined;
@@ -497,37 +507,41 @@ const createSnapshotConfig =  <T extends Data, Meta extends UnifiedMetaDataOptio
     data: {} as T,
     initialState: null,
     handleSnapshot: (
-      snapshotId: string,
-      snapshot: Snapshot<T, Meta, K> | null,
-      snapshots: Snapshots<T, Meta>,
+      id: string | number,
+      snapshotId: string | null,
+      snapshot: Snapshot<T, K> | null,
+      snapshots: Snapshots<T>,
+      category: string | symbol | Category | undefined,
       type: string,
-      event: Event
-    ) => {
+      event: Event,
+      snapshotContainer?: T,
+      snapshotStoreConfig?: SnapshotStoreConfig<T, K> | null, 
+    ): Promise<Snapshot<T, K> | null> => {
       if (snapshot) {
         console.log(`Handling snapshot with ID: ${snapshotId}`);
       } else {
         console.log(`No snapshot to handle for ID: ${snapshotId}`);
       }
-      return null;
+      return Promise.resolve(null);
     },
     state: null,
     snapshots: [],
     subscribers: [],
     category: "default-category",
-    getSnapshotId: () => "default-id",
-    snapshot: async  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+    getSnapshotId: async () => "default-id",
+    snapshot: async  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
       id: string,
       snapshotId: string | null,
-      snapshotData: SnapshotData<T, Meta, K>,
+      snapshotData: SnapshotData<T, K>,
       category: symbol | string | Category | undefined,
-      callback: (snapshot: Snapshot<T, Meta, K>) => void,
-      snapshotContainer?: SnapshotStore<T, Meta, K> | Snapshot<T, Meta, K> | null,
+      callback: (snapshot: Snapshot<T, K>) => void,
+      snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null,
       snapshotStoreConfigData?: SnapshotStoreConfig<
         SnapshotWithCriteria<any, BaseData>,
         K
       >
-    ): Promise<{ snapshot: Snapshot<T, Meta, K> | null }> => {
-      const snapshot: Snapshot<T, Meta, K> | null =
+    ): Promise<{ snapshot: Snapshot<T, K> | null }> => {
+      const snapshot: Snapshot<T, K> | null =
         snapshotStoreConfigData?.createSnapshot?.(
           id,
           snapshotData,
@@ -538,13 +552,13 @@ const createSnapshotConfig =  <T extends Data, Meta extends UnifiedMetaDataOptio
       if (snapshot) {
         callback(snapshot);
         const snapshotStore = convertSnapshotToStore(snapshot);
-        const options: SnapshotStoreOptions<T, Meta, K> = createSnapshotOptions<T, Meta, K>(
+        const options: SnapshotStoreOptions<T, K> = createSnapshotOptions<T, K>(
           snapshotStore
         );
         const config = Array.isArray(options.snapshotStoreConfig)
           ? options.snapshotStoreConfig[0]
           : options.snapshotStoreConfig;
-        const newSnapshotStore = new SnapshotStore<T, Meta, K>(options, config);
+        const newSnapshotStore = new SnapshotStore<T, K>(options, config);
         return {
           snapshot: snapshot,
           snapshotStore: newSnapshotStore,
@@ -564,26 +578,26 @@ const createSnapshotConfig =  <T extends Data, Meta extends UnifiedMetaDataOptio
       category?: string | Category,
       categoryProperties?: string | CategoryProperties,
       callback?: (snapshot: Snapshot<SnapshotWithCriteria<any, BaseData>, K>) => void,
-      SnapshotData?: SnapshotStore<T, Meta, K>,
+      SnapshotData?: SnapshotStore<T, K>,
       snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
       snapshotStoreConfigSearch?: SnapshotStoreConfig<
         SnapshotWithCriteria<any, BaseData>,
         K
       >
-    ): Snapshot<T, Meta, K> | null => {
-      const newSnapshot: Snapshot<T, Meta, K> = {
+    ): Snapshot<T, K> | null => {
+      const newSnapshot: Snapshot<T, K> = {
         id: id,
-        data: new Map<string, Snapshot<T, Meta, K>>(),
+        data: new Map<string, Snapshot<T, K>>(),
         timestamp: new Date(),
         category: typeof category === "string" ? category : "default-category",
         subscriberId: "default-subscriber-id",
-        meta: new Map<string, Snapshot<T, Meta, K>>(),
-        events: {} as CombinedEvents<T, Meta, K>,
+        meta: new Map<string, Snapshot<T, K>>(),
+        events: {} as CombinedEvents<T, K>,
         snapshotStoreConfig: snapshotStoreConfig || null,
         snapshotStoreConfigSearch: snapshotStoreConfigSearch || null,
         getSnapshotItems: () => [],
         defaultSubscribeToSnapshots: () => {},
-        transformSubscriber: (sub: Subscriber<T, Meta, K>): Subscriber<T, Meta, K> => {
+        transformSubscriber: (sub: Subscriber<T, K>): Subscriber<T, K> => {
           
         },
         // Add other required properties and methods here
@@ -598,9 +612,9 @@ const createSnapshotConfig =  <T extends Data, Meta extends UnifiedMetaDataOptio
   };
 };
 
-function convertSnapshotStoreConfig <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  config: SnapshotStoreConfig<SnapshotWithCriteria<any, Meta, BaseData>, Meta, K>,
-): SnapshotStoreConfig<SnapshotWithCriteria<any, Meta, BaseData>, Meta, K>, {
+function convertSnapshotStoreConfig <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K>,
+): SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K> {
   // Map or transform the fields as needed to match T and K types
   return {
     ...config,
@@ -610,37 +624,51 @@ function convertSnapshotStoreConfig <T extends Data, Meta extends UnifiedMetaDat
   };
 }
 
-interface SubscriberCallback <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+interface SubscriberCallback <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   id: string;
   _id: string;
-  handleCallback: (data: Snapshot<T, Meta, K>) => void;
-  snapshotCallback: (data: Snapshot<T, Meta, K>) => void; // Ensure this is a function type
+  handleCallback: (data: Snapshot<T, K>) => void;
+  snapshotCallback: (data: Snapshot<T, K>) => void; // Ensure this is a function type
 }
 
-class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
-  public data: Partial<SnapshotStore<T, Meta, K>> | null = {};
-  // public callback: Callback<Snapshot<T, Meta, K>>,
+
+// Type guard to check if triggerIncentives is defined and has the correct signature
+function hasTriggerIncentives(
+  subscriber: Subscriber<any, any>
+): subscriber is Subscriber<any, any> & { triggerIncentives: Subscription<any>['triggerIncentives'] } {
+  return typeof subscriber.triggerIncentives === 'function';
+}
+
+
+class Subscriber<
+  T extends BaseData<T>,
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
+  > {
+  public data: Partial<SnapshotStore<T, K>> | null = {};
+  // public callback: Callback<Snapshot<T, K>>,
   private _id: string | undefined;
   private readonly name: string;
-  private subscription: Subscription<T, Meta, K>;
+  private subscription: Subscription<T, K>;
+  private subscriptionLevel: SubscriptionLevel; // Updated to hold a subscription level
 
   private subscriberId: string;
-  private subscribersById: Map<string, Subscriber<T, Meta, K>> | undefined =
+  private subscribersById: Map<string, Subscriber<T, K>> | undefined =
     new Map();
-  private subscribers: SubscriberCallback<T, Meta, K>[] = []; // Use the SubscriberCallback type here
-  private onSnapshotCallbacks: SubscriberCallback<T, Meta, K>[] = []; // Updated to SubscriberCallback
-  private internalState: Map<string, Snapshot<T, Meta, K>> = new Map();
+  private subscribers: SubscriberCallback<T, K>[] = []; // Use the SubscriberCallback type here
+  private onSnapshotCallbacks: SubscriberCallback<T, K>[] = []; // Updated to SubscriberCallback
+  private internalState: Map<string, Snapshot<T, K>> = new Map();
   private internalCache: Map<string, T>;
 
   private onErrorCallbacks: ((error: Error) => void)[] = [];
-  private onUnsubscribeCallbacks: ((data: Snapshot<T, Meta, K>) => void)[] = [];
+  private onUnsubscribeCallbacks: ((data: Snapshot<T, K>) => void)[] = [];
   private state?: T | null = null;
-  private callbackFunction?: (data: Snapshot<T, Meta, K>) => void;
+  private callbackFunction?: (data: Snapshot<T, K>) => void;
 
   private notifyEventSystem: Function | undefined;
   private updateProjectState: Function | undefined;
   private logActivity: Function | undefined;
-  private triggerIncentives: Function | undefined;
+  private triggerIncentives: (({ userId, incentiveType, params }: TriggerIncentivesParams) => void) | undefined;
   private optionalData: CustomSnapshotData | null;
 
   private email: string = "";
@@ -665,7 +693,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     });
   }
 
-  private callback?: (data: Snapshot<T, Meta, K>) => void = (data: Snapshot<T, Meta, K>) => {
+  private callback?: (data: Snapshot<T, K>) => void = (data: Snapshot<T, K>) => {
     if (data.data instanceof Map) {
       // Handle the case where data.data is a Map
       console.error("Unexpected data type: Map");
@@ -684,6 +712,36 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     this.notifyEventSystem && this.notifyEventSystem(data);
     this.triggerIncentives && this.triggerIncentives(data);
   };
+
+
+
+  public callTriggerIncentives(params: TriggerIncentivesParams) {
+    if (hasTriggerIncentives(this)) {
+      this.triggerIncentives(params);
+    } else {
+      console.warn("triggerIncentives function is not defined");
+    }
+  }
+
+  public async fetchSnapshotIds(): Promise<string[]> {
+    // Simulate an asynchronous operation to fetch snapshot IDs
+    return new Promise<string[]>((resolve, reject) => {
+      setTimeout(async () => {
+        // Example: Fetching snapshot IDs from an API or database
+        const fetchedSnapshotIds = await snapshotApi.fetchSnapshotIds(this.getUniqueId!);
+        // Resolve with fetched snapshot IDs
+        resolve(fetchedSnapshotIds);
+        1000}); // Simulating a delay of 1 second (adjust as needed)
+        resolve(fetchedSnapshotIds);
+    
+        // Reject with an error if fetching snapshot IDs fails
+        reject(new Error("Failed to fetch snapshot IDs")
+      );
+      }, 1000); // Simulating a delay of 1 second (adjust as needed)
+    }
+ 
+
+  // Define a method to subscribe to snapshots
 
   // Define a getter method to access the sendNotification method
   public get sentNotification(): (
@@ -728,7 +786,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
    *
    * @param snapshot - The snapshot to update with.
    */
-  update(snapshot: Snapshot<T, Meta, K>): void {
+  update(snapshot: Snapshot<T, K>): void {
     // Log the snapshot details
     console.log("Subscriber updated with snapshot:", snapshot);
     console.log("Snapshot ID:", snapshot.id);
@@ -751,9 +809,9 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
 
     // Notify about the update if notify method exists
     if (this.notify && snapshot.id) {
-      const callback = (data: Snapshot<T, Meta, K>) =>
+      const callback = (data: Snapshot<T, K>) =>
         console.log("Callback invoked with data:", data);
-      const subscribers: Subscriber<T, Meta, K>[] = []; // Use actual subscribers if available
+      const subscribers: Subscriber<T, K>[] = []; // Use actual subscribers if available
       this.notify(snapshot, callback, subscribers);
     } else {
       console.error(
@@ -769,7 +827,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
    */
 
   private processData(
-    data: T | Map<string, Snapshot<T, Meta, K>> | null | undefined
+    data: T | Map<string, Snapshot<T, K>> | null | undefined
   ): void {
     // Log the start of data processing
     console.log("Starting data processing for:", data);
@@ -845,7 +903,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
    * @param data - The data to validate.
    * @returns - True if data is valid, false otherwise.
    */
-  private validateData(data: T | Map<string, Snapshot<T, Meta, K>>): boolean {
+  private validateData(data: T | Map<string, Snapshot<T, K>>): boolean {
     // Check if the data is not null or undefined
     if (!data) {
       console.error("Data is null or undefined.");
@@ -908,14 +966,14 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
   constructor(
     id: string,
     name: string,
-    subscription: Subscription<T, Meta, K>,
+    subscription: Subscription<T, K>,
     subscriberId: string,
     notifyEventSystem: Function,
     updateProjectState: Function,
     logActivity: Function,
     triggerIncentives: Function,
     optionalData: CustomSnapshotData | null = null,
-    // data: Partial<SnapshotStore<T, Meta, K>>,
+    // data: Partial<SnapshotStore<T, K>>,
     payload: T | null = null
   ) {
     this.id = id;
@@ -927,6 +985,8 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     this.logActivity = logActivity;
     this.triggerIncentives = triggerIncentives;
     this.optionalData = optionalData;
+    this.subscriptionLevel = subscriptionLevel;
+
     // Initialize the internal cache as a Map
     this.internalCache = new Map<string, T>();
     // this.data = data;
@@ -964,7 +1024,10 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     }
   
 
-
+    // Method to retrieve the SubscriptionLevel information
+    public getSubscriptionLevel(): SubscriptionLevel {
+      return this.subscriptionLevel;
+    }
 
     /**
    * Public method to update internal store with processed data.
@@ -976,14 +1039,12 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
       this.updateInternalStore(data);
     }
 
-
-  
   /**
    * Public method to process the data.
    *
    * @param data - The data to process.
    */
-  public getProcessData(data: T | Map<string, Snapshot<T, Meta, K>> | null | undefined): void {
+  public getProcessData(data: T | Map<string, Snapshot<T, K>> | null | undefined): void {
     this.processData(data);
   }
 
@@ -993,7 +1054,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
    * @param data - The data to validate.
    * @returns - True if data is valid, false otherwise.
    */
-  public getValidateData(data: T | Map<string, Snapshot<T, Meta, K>>): boolean {
+  public getValidateData(data: T | Map<string, Snapshot<T, K>>): boolean {
     return this.validateData(data);
   }
 
@@ -1065,7 +1126,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     return data && typeof data === "object" && "id" in data;
   }
 
-  newData(data: Snapshot<T, Meta, K>): Snapshot<T, Meta, K> {
+  newData(data: Snapshot<T, K>): Snapshot<T, K> {
     // Ensure data.data is of type T
     if (this.isDataType(data.data)) {
       this.state = data.data; // Safe to assign as T
@@ -1112,7 +1173,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     return this.tags;
   }
 
-  get getInternalState(): Map<string, Snapshot<T, Meta, K>> { 
+  get getInternalState(): Map<string, Snapshot<T, K>> { 
     return this.internalState
   }
 
@@ -1121,7 +1182,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
   }
     
 
-  get getCallback(): ((data: Snapshot<T, Meta, K>) => void) | undefined {
+  get getCallback(): ((data: Snapshot<T, K>) => void) | undefined {
     return this.callbackFunction;
   }
 
@@ -1138,7 +1199,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     return this.snapshotIds;
   }
 
-  get getSubscribers(): SubscriberCallback<T, Meta, K>[] {
+  get getSubscribers(): SubscriberCallback<T, K>[] {
     return this.subscribers;
   }
 
@@ -1147,12 +1208,12 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     return (
       event: string,
       snapshotId: string,
-      snapshot: Snapshot<T, Meta, K>,
-      snapshotStore: SnapshotStore<T, Meta, K>,
+      snapshot: Snapshot<T, K>,
+      snapshotStore: SnapshotStore<T, K>,
       dataItems: T[],
       criteria: any,
       category: any
-    ): Subscriber<BaseData, Meta, BaseData> => {
+    ): Subscriber<BaseData, BaseData> => {
       // You can add your transformation logic based on event and criteria here
       const transformedSubscriber = Subscriber.transformSubscriber(this);
       
@@ -1168,20 +1229,20 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     };
   }
 
-  get transformSubscribers(): SubscriberCallback<T, Meta, K>[] {
+  get transformSubscribers(): SubscriberCallback<T, K>[] {
     return this.subscribers;
   }
 
-  set setSubscribers(subscribers: SubscriberCallback<T, Meta, K>[]) {
+  set setSubscribers(subscribers: SubscriberCallback<T, K>[]) {
     this.subscribers = subscribers;
   }
 
   // Corrected return type to match `onSnapshotCallbacks` type
-  get getOnSnapshotCallbacks(): SubscriberCallback<T, Meta, K>[] {
+  get getOnSnapshotCallbacks(): SubscriberCallback<T, K>[] {
     return this.onSnapshotCallbacks;
   }
 
-  set setOnSnapshotCallbacks(callbacks: SubscriberCallback<T, Meta, K>[]) {
+  set setOnSnapshotCallbacks(callbacks: SubscriberCallback<T, K>[]) {
     this.onSnapshotCallbacks = callbacks;
   }
 
@@ -1193,11 +1254,11 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     this.onErrorCallbacks = callbacks;
   }
 
-  get getOnUnsubscribeCallbacks(): ((data: Snapshot<T, Meta, K>) => void)[] {
+  get getOnUnsubscribeCallbacks(): ((data: Snapshot<T, K>) => void)[] {
     return this.onUnsubscribeCallbacks;
   }
 
-  set setOnUnsubscribeCallbacks(callbacks: ((data: Snapshot<T, Meta, K>) => void)[]) {
+  set setOnUnsubscribeCallbacks(callbacks: ((data: Snapshot<T, K>) => void)[]) {
     this.onUnsubscribeCallbacks = callbacks;
   }
 
@@ -1233,7 +1294,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     return this.payload;
   }
 
-  handleSnapshot(data: Snapshot<T, Meta, K>): void {
+  handleSnapshot(data: Snapshot<T, K>): void {
     if (typeof this.callbackFunction === "function") {
       this.callbackFunction(data);
     }
@@ -1254,7 +1315,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
   }
 
   // Method to handle the callback
-  handleCallback(data: Snapshot<T, Meta, K>): void {
+  handleCallback(data: Snapshot<T, K>): void {
     if (this.callbackFunction) {
       this.callbackFunction(data);
     } else {
@@ -1263,13 +1324,13 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
   }
 
   // Static method to transform Subscriber
-  static transformSubscriber <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-    sub: Subscriber<T, Meta, K>
-  ): Subscriber<BaseData, Meta, BaseData> {
-    const transformedSub = new Subscriber<BaseData, Meta, BaseData>(
+  static transformSubscriber <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+    sub: Subscriber<T, K>
+  ): Subscriber<BaseData, BaseData> {
+    const transformedSub = new Subscriber<BaseData, BaseData>(
       sub.getUniqueId!,
       sub.name,
-      sub.subscription as Subscription<BaseData, Meta, BaseData>,
+      sub.subscription as Subscription<BaseData, BaseData>,
       sub.subscriberId,
       sub.notifyEventSystem ? sub.notifyEventSystem : SubscriptionActions,
       sub.updateProjectState ? sub.updateProjectState : SubscriptionActions,
@@ -1290,6 +1351,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     // Copy any other methods and properties as needed...
     transformedSub.subscription = sub.subscription as Subscription<
       BaseData,
+      Meta,
       BaseData
     >;
 
@@ -1303,7 +1365,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     transformedSub.updateProjectState = sub.updateProjectState;
     transformedSub.logActivity = sub.getLogActivity?.() || undefined;
     transformedSub.triggerIncentives =
-      sub.getTriggerIncentives?.() || undefined;
+    sub.getTriggerIncentives?.() || undefined;
     transformedSub.optionalData = sub.getOptionalData?.();
     transformedSub.data = sub.data;
     transformedSub.email = "";
@@ -1386,7 +1448,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     return transformedSub;
   }
 
-  snapshotCallback(data: Snapshot<T, Meta, K>): void {
+  snapshotCallback(data: Snapshot<T, K>): void {
     console.log("Snapshot callback called with data:", data);
 
     // Safely assign state
@@ -1425,11 +1487,15 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     return this.email;
   }
 
-  subscribe(callback: (data: Snapshot<T, Meta, K>) => void) {
+  subscribe(callback: SubscriberCallback<T, K>) {
     this.subscribers.push(callback);
   }
 
-  unsubscribe(callback: (data: Snapshot<T, Meta, K>) => void) {
+  unsubscribe(
+    snapshotId: number, 
+    unsubscribe: UnsubscribeDetails, 
+    callback: SubscriberCallback<T, K>
+  ) {
     const index = this.subscribers.indexOf(callback);
     if (index !== -1) {
       this.subscribers.splice(index, 1);
@@ -1449,16 +1515,16 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     return this.snapshotIds;
   }
 
-  getData(): Partial<Snapshot<T, Meta, K>> | null {
+  getData(): Partial<Snapshot<T, K>> | null {
     return this.data;
   }
 
-  getInitialData(): Partial<SnapshotStore<T, Meta, K>> | null {
+  getInitialData(): Partial<SnapshotStore<T, K>> | null {
     return this.initialData;
   }
 
   // New method to fetch and process new data
-  async getNewData(): Promise<Partial<SnapshotStore<T, Meta, K>> | null> {
+  async getNewData(): Promise<Partial<SnapshotStore<T, K>> | null> {
     try {
       // Fetch the latest snapshot IDs
       const newSnapshotIds = await this.fetchSnapshotIds();
@@ -1467,14 +1533,14 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
       this.snapshotIds = newSnapshotIds;
 
       // Optionally, fetch and process the latest snapshots based on the new IDs
-      const newSnapshots: Snapshot<T, Meta, K>[] = await Promise.all(
-        newSnapshotIds.map((id): Promise<Snapshot<T, Meta, K>> => {
+      const newSnapshots: Snapshot<T, K>[] = await Promise.all(
+        newSnapshotIds.map((id): Promise<Snapshot<T, K>> => {
           return snapshotApi.fetchSnapshotById(id);
         })
       );
 
       // Update the subscriber's data with the new snapshots
-      const newData: Partial<SnapshotStore<T, Meta, K>> = {
+      const newData: Partial<SnapshotStore<T, K>> = {
         ...this.data,
         snapshots: newSnapshots,
       };
@@ -1488,7 +1554,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
   }
   async getDefaultSubscribeToSnapshots(
     snapshotIds: string[]
-  ): Promise<Partial<SnapshotStore<T, Meta, K>> | null> {
+  ): Promise<Partial<SnapshotStore<T, K>> | null> {
     try {
       // Fetch the latest snapshot IDs
       const newSnapshotIds = await this.fetchSnapshotIds();
@@ -1496,7 +1562,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
       console.log("this.snapshotIds", this.snapshotIds);
 
       // Assuming you process newSnapshotIds and this.snapshotIds to form the result
-      const result: Partial<SnapshotStore<T, Meta, K>> = {
+      const result: Partial<SnapshotStore<T, K>> = {
         snapshotIds: newSnapshotIds, // Example property
         // Add other properties as necessary
       };
@@ -1509,7 +1575,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
   }
 
   async getSubscribeToSnapshots(): Promise<Partial<
-    SnapshotStore<T, Meta, K>
+    SnapshotStore<T, K>
   > | null> {
     try {
       // Fetch the latest snapshot IDs
@@ -1519,13 +1585,13 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
       // Process the new snapshot IDs (if needed)
       this.snapshotIds = newSnapshotIds;
       // Optionally, fetch and process the latest snapshots based on the new IDs
-      const newSnapshots: Snapshot<T, Meta, K>[] = await Promise.all(
-        newSnapshotIds.map((id): Promise<Snapshot<T, Meta, K>> => {
+      const newSnapshots: Snapshot<T, K>[] = await Promise.all(
+        newSnapshotIds.map((id): Promise<Snapshot<T, K>> => {
           return snapshotApi.fetchSnapshotById(id);
         })
       );
       // Update the subscriber's data with the new snapshots
-      const newData: Partial<SnapshotStore<T, Meta, K>> = {
+      const newData: Partial<SnapshotStore<T, K>> = {
         ...this.data,
         snapshots: newSnapshots,
       };
@@ -1539,13 +1605,13 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
   }
 
   // Fetch transform subscribers asynchronously
-  async fetchTransformSubscribers(): Promise<BaseDatabase | null> {
+  async fetchTransformSubscribers(): Promise<BaseDatabaseService | null> {
     try {
       // Await if transformSubscribers is a promise
       const result = await (this.transformSubscribers instanceof Promise
         ? this.transformSubscribers
         : Promise.resolve(this.transformSubscribers));
-      return result as BaseDatabase;
+      return result as BaseDatabaseService;
     } catch (error) {
       // Log the error for debugging
       console.error("Failed to fetch transform subscribers:", error);
@@ -1557,7 +1623,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
   }
 
   // Get transform subscribers synchronously
-  getTransformSubscribers(): SubscriberCallback<T, Meta, K>[] {
+  getTransformSubscribers(): SubscriberCallback<T, K>[] {
     if (Array.isArray(this.transformSubscribers)) {
       return this.transformSubscribers;
     } else {
@@ -1572,7 +1638,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
 
   // Method to initialize or set transformSubscribers
   setTransformSubscribers(
-    subscribers: SubscriberCallback<T, Meta, K>[] | Promise<BaseDatabase>
+    subscribers: SubscriberCallback<T, K>[] | Promise<BaseDatabaseService>
   ): void {
     (this as any).transformSubscribers = subscribers;
   }
@@ -1597,7 +1663,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     this.onSnapshotCallbacks.push(callback);
   }
 
-  initialData(data: Snapshot<T, Meta, K>) {
+  initialData(data: Snapshot<T, K>) {
     this.state = data.state as T | null | undefined;
     if (this.notifyEventSystem) {
       this.notifyEventSystem(NotificationTypeEnum.SUBSCRIBER_INITIAL_DATA, {
@@ -1611,7 +1677,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     return this.name;
   }
 
-  getDetermineCategory(data: Snapshot<T, Meta, K>): string | CategoryProperties | null {
+  getDetermineCategory(data: Snapshot<T, K>): string | CategoryProperties | null {
     return this.subscription.determineCategory(data);
   }
 
@@ -1619,15 +1685,15 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
   fetchSnapshotById(
     userId: string,
     snapshotId: string
-  ): Promise<Snapshot<T, Meta, K>> {
+  ): Promise<Snapshot<T, K>> {
     return new Promise((resolve, reject) => {
       if (
         this.subscription &&
         typeof this.subscription.fetchSnapshotById === "function"
       ) {
-        const callback: FetchSnapshotByIdCallback<T, Meta, K> = {
-          onSuccess: (snapshot: Snapshot<T, Meta, K>) => {
-            const specificSnapshot = convertSnapshotToSpecificType<T, Meta, K>(
+        const callback: FetchSnapshotByIdCallback<T, K> = {
+          onSuccess: (snapshot: Snapshot<T, K>) => {
+            const specificSnapshot = convertSnapshotToSpecificType<T, K>(
               snapshot
             );
             resolve(specificSnapshot);
@@ -1649,7 +1715,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     });
   }
 
-  // Type guard to check if snapshot is of type Snapshot<T, Meta, K>
+  // Type guard to check if snapshot is of type Snapshot<T, K>
   private isSnapshotOfType<X extends Data, Y extends Data>(
     snapshot: Snapshot<any, any>
   ): snapshot is Snapshot<X, Y> {
@@ -1662,7 +1728,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     );
   }
 
-  async snapshots(): Promise<SnapshotConfig<BaseData, Meta, K>[]> {
+  async snapshots(): Promise<SnapshotConfig<BaseData, K>[]> {
     try {
       // Fetch snapshot IDs asynchronously
       const snapshotIds = await this.fetchSnapshotIds();
@@ -1672,7 +1738,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
         snapshotIds.map(async (id: string) => {
           return new Promise((resolve, reject) => {
             // Define a way to handle the asynchronous behavior
-            const callback = (snapshot: Snapshot<T, Meta, K>) => resolve(snapshot);
+            const callback = (snapshot: Snapshot<T, K>) => resolve(snapshot);
             const errorCallback = (error: any) => reject(error);
             // Ensure fetchSnapshotById method returns a valid promise
             const snapshot = this.fetchSnapshotById(this.email, id);
@@ -1681,14 +1747,14 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
         })
       );
 
-      return snapshotData as SnapshotConfig<BaseData, Meta, K>[]; // Ensure the correct type is returned
+      return snapshotData as SnapshotConfig<BaseData, K>[]; // Ensure the correct type is returned
     } catch (error) {
       console.error("Error fetching snapshot IDs:", error);
       throw new Error("Failed to fetch snapshot IDs");
     }
   }
 
-  async snapshotStores(): Promise<SnapshotStoreConfig <Data, Data>[]> {
+  async snapshotStores(): Promise<SnapshotStoreConfig <T, Data>[]> {
     try {
       // Fetch snapshot IDs asynchronously
       const snapshotIds = await this.fetchSnapshotIds();
@@ -1698,7 +1764,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
         snapshotIds.map(async (id: string) => {
           return new Promise((resolve, reject) => {
             // Define a way to handle the asynchronous behavior
-            const callback = (snapshot: Snapshot<T, Meta, K>) => resolve(snapshot);
+            const callback = (snapshot: Snapshot<T, K>) => resolve(snapshot);
             const errorCallback = (error: any) => reject(error);
             // Ensure fetchSnapshotById method returns a valid promise
             const snapshot = this.fetchSnapshotById(this.email, id);
@@ -1707,7 +1773,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
         })
       );
 
-      return snapshotData as SnapshotStoreConfig <Data, Data>[]; // Ensure the correct type is returned
+      return snapshotData as SnapshotStoreConfig <T, Data>[]; // Ensure the correct type is returned
     } catch (error) {
       console.error("Error fetching snapshot IDs:", error);
       throw new Error("Failed to fetch snapshot IDs");
@@ -1715,10 +1781,10 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
   }
 
   toSnapshotStore(
-    initialState: Snapshot<T, Meta, K> | undefined,
-    snapshotConfig: SnapshotStoreConfig <Data, Data>[],
-    delegate: SnapshotStoreDelegate<T, Meta, K>
-  ): SnapshotStore<T, Meta, K>[] | undefined {
+    initialState: Snapshot<T, K> | undefined,
+    snapshotConfig: SnapshotStoreConfig <T, K>[],
+    delegate: SnapshotStoreDelegate<T, K>
+  ): SnapshotStore<T, K>[] | undefined {
     let snapshotString: string | undefined;
     if (initialState !== undefined) {
       snapshotString = initialState.id?.toString();
@@ -1726,16 +1792,18 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     if (initialState && snapshotString !== undefined) {
       // Ensure initialState is defined
       const category = this.determineCategory(initialState);
+
       // Retrieve options for SnapshotStore initialization using the helper function
-      const options: SnapshotStoreOptions<T, Meta, K> = createSnapshotOptions(
+      const options: SnapshotStoreOptions<T, K> = createSnapshotOptions(
         snapshotObj,
         snapshot
       );
 
-      const delegateFunction: SnapshotStoreSubset<T, Meta, K> = {
+      const delegateFunction: SnapshotStoreSubset<T, K> = {
+        
         onSnapshot: (
-          snapshot: Snapshot<T, Meta, K>,
-          config: SnapshotStoreConfig<SnapshotWithCriteria<any, Meta, BaseData>, Meta, K>[]
+          snapshot: Snapshot<T, K>,
+          config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K>[]
         ) => {
           delegate(snapshot, initialState, config);
         },
@@ -1745,13 +1813,13 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
         addSnapshotSuccess: addSnapshotSuccess,
         updateSnapshot: updateSnapshot as (
           snapshotId: string,
-          data: SnapshotStore<T, Meta, K>,
-          events: Record<string, CalendarManagerStoreClass<T, Meta, K>[]>,
-          snapshotStore: SnapshotStore<T, Meta, K>,
+          data: SnapshotStore<T, K>,
+          events: Record<string, CalendarManagerStoreClass<T, K>[]>,
+          snapshotStore: SnapshotStore<T, K>,
           dataItems: RealtimeDataItem[],
           newData: T | Data,
           payload: UpdateSnapshotPayload<any>
-        ) => Promise<{ snapshot: SnapshotStore<T, Meta, K>[] }>,
+        ) => Promise<{ snapshot: SnapshotStore<T, K>[] }>,
         removeSnapshot: removeSnapshot,
         clearSnapshots: clearSnapshots,
         createInitSnapshot: createInitSnapshot,
@@ -1806,13 +1874,13 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
         // batchTakeSnapshot: batchTakeSnapshot
       };
 
-      return [new SnapshotStore<T, Meta, K>(options, config)];
+      return [new SnapshotStore<T, K>(options, config)];
     }
 
     return undefined;
   }
 
-  private determineCategory(initialState: Snapshot<T, Meta, K>): string {
+  private determineCategory(initialState: Snapshot<T, K>): string {
     if (initialState instanceof YourSpecificSnapshotType) {
       return "SpecificCategory";
     } else {
@@ -1820,7 +1888,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     }
   }
 
-  getDeterminedCategory(data: Snapshot<T, Meta, K>): string | CategoryProperties {
+  getDeterminedCategory(data: Snapshot<T, K>): string | CategoryProperties {
     const category = this.subscription.determineCategory(data);
     if (category === undefined || category === null) {
       // Provide a fallback value in case category is undefined or null
@@ -1833,16 +1901,16 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
   async processNotification(
     id: string,
     message: string,
-    snapshotContent: Map<string, Snapshot<T, Meta, K>> | null | undefined,
+    snapshotContent: Map<string, Snapshot<T, K>> | null | undefined,
     date: Date,
     type: NotificationType,
-    store: SnapshotStore<T, Meta, K>
+    store: SnapshotStore<T, K>
   ): Promise<void> {
     const content = snapshotContent
       ? convertMapToSnapshot(snapshotContent, date)
       : null;
     return new Promise<void>((resolve, reject) => {
-      const snapshotData: SnapshotData<T, Meta, K> = {
+      const snapshotData: SnapshotData<T, K> = {
         id,
         message: message,
         initialState: content,
@@ -1852,8 +1920,8 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
           ? (content.content as string | Content<T> | undefined)
           : undefined,
         data: content
-          ? (content.data as T | Map<string, Snapshot<T, Meta, K>> | null | undefined)
-          : new Map<string, Snapshot<T, Meta, K>>(),
+          ? (content.data as T | Map<string, Snapshot<T, K>> | null | undefined)
+          : new Map<string, Snapshot<T, K>>(),
         type,
         store: store,
         unsubscribe: () => {
@@ -1863,7 +1931,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
           callback: (
             snapshotId: string,
             payload: FetchSnapshotPayload<K>,
-            snapshotStore: SnapshotStore<T, Meta, K>,
+            snapshotStore: SnapshotStore<T, K>,
             payloadData: Data | T
           ) => void
         ) => {
@@ -1877,12 +1945,12 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
           snapshotData: T,
           category: Category | undefined,
           callback: (snapshot: T) => void,
-          snapshots: SnapshotsArray<T, Meta>,
+          snapshots: SnapshotsArray<T>,
           type: string,
           event: Event,
           snapshotContainer?: T,
           snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null
-        ): Promise<Snapshot<T, Meta, K> | null> => {
+        ): Promise<Snapshot<T, K> | null> => {
           console.log("handleSnapshot");
           return Promise.resolve(null);
         },
@@ -1895,12 +1963,12 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
                 content.events as {
                   eventRecords: Record<
                     string,
-                    CalendarManagerStoreClass<T, Meta, K>[]
+                    CalendarManagerStoreClass<T, K>[]
                   > | null;
                 }
               ).eventRecords,
               callbacks: {}, // Initialize empty or based on your logic
-              subscribers: new SubscriberCollection<T, Meta, K>(), // Replace with actual logic or initialization
+              subscribers: new SubscriberCollection<T, K>(), // Replace with actual logic or initialization
               eventIds: [], // Initialize or populate based on your logic
               onSnapshotAdded: () => {
                 /* Implement the function */
@@ -1908,7 +1976,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
               onSnapshotRemoved: () => {
                 /* Implement the function */
               },
-              initialConfig: {} as SnapshotConfig<T, Meta, K>, // Replace with actual config
+              initialConfig: {} as SnapshotConfig<T, K>, // Replace with actual config
               removeSubscriber: () => {
                 /* Implement the function */
               },
@@ -1949,7 +2017,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
                 /* Implement the function */
               },
               eventsDetails: content.events as
-                | CalendarManagerStoreClass<T, Meta, K>[]
+                | CalendarManagerStoreClass<T, K>[]
                 | undefined,
             }
           : undefined,
@@ -2005,7 +2073,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     return this.subscriberId;
   }
 
-  getSubscribersById(): Map<string, Subscriber<T, Meta, K>> | undefined {
+  getSubscribersById(): Map<string, Subscriber<T, K>> | undefined {
     return this.subscribersById;
   }
 
@@ -2018,7 +2086,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
       : undefined;
   }
 
-  getSubscription(): Subscription<T, Meta, K> {
+  getSubscription(): Subscription<T, K> {
     return this.subscription;
   }
 
@@ -2035,11 +2103,11 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
       : undefined;
   }
 
-  onUnsubscribe(callback: (data: Snapshot<T, Meta, K>) => void) {
+  onUnsubscribe(callback: (data: Snapshot<T, K>) => void) {
     this.onUnsubscribeCallbacks.push(callback);
   }
 
-  onSnapshot(callback: (snapshot: Snapshot<T, Meta, K>) => void | Promise<void>) {
+  onSnapshot(callback: (snapshot: Snapshot<T, K>) => void | Promise<void>) {
     this.onSnapshotCallbacks.push(callback);
   }
 
@@ -2047,18 +2115,18 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     this.onErrorCallbacks.push(callback);
   }
 
-  onSnapshotUnsubscribe(callback: (data: Snapshot<T, Meta, K>) => Snapshot<T, Meta, K>) {
+  onSnapshotUnsubscribe(callback: (data: Snapshot<T, K>) => Snapshot<T, K>) {
     this.onUnsubscribeCallbacks.push(callback);
   }
 
-  triggerOnSnapshot(snapshot: Snapshot<T, Meta, K>) {
+  triggerOnSnapshot(snapshot: Snapshot<T, K>) {
     this.onSnapshotCallbacks.forEach((callback) => callback(snapshot));
   }
 
   notify?(
-    data: Snapshot<T, Meta, K>,
-    callback: (data: Snapshot<T, Meta, K>) => void,
-    subscribers: Subscriber<T, Meta, K>[] = []
+    data: Snapshot<T, K>,
+    callback: (data: Snapshot<T, K>) => void,
+    subscribers: Subscriber<T, K>[] = []
   ) {
     if (callback) { // Check if callback is provided
       callback(data);
@@ -2082,10 +2150,10 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
   }
   
 
-  static createSubscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  static createSubscriber<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     id: string,
     name: string,
-    subscription: Subscription<T, Meta, K>,
+    subscription: Subscription<T, K>,
     subscriberId: string,
     notifyEventSystem: Function,
     updateProjectState: Function,
@@ -2094,7 +2162,7 @@ class Subscriber<T extends Data, Meta extends UnifiedMetaDataOptions, K extends 
     optionalData: CustomSnapshotData | null = null,
     data: T | null = null
   ) {
-    return new Subscriber<T, Meta, K>(
+    return new Subscriber<T, K>(
       id,
       name,
       subscription,
@@ -2162,6 +2230,9 @@ export const payload: Payload = {
   },
 };
 
+
+
+
 const subscription = {
   subscriberId: "1",
   subscriberType: SubscriberTypeEnum.STANDARD,
@@ -2177,12 +2248,12 @@ const subscription = {
   portfolioUpdatesLastUpdated: {} as ModifiedDate,
   getId: () => "1",
   subscribers: [],
-  data: {} as Snapshot<BaseData, Meta, K>,
+  data: {} as Snapshot<BaseData, K>,
   getSubscriptionLevel: () => ({}),
  
 };
 
-const subscriber = new Subscriber<BaseData, Meta, K>(
+const subscriber = new Subscriber<BaseData, K>(
   payload.meta.id,
   payload.meta.name,
   subscription,
@@ -2195,6 +2266,27 @@ const subscriber = new Subscriber<BaseData, Meta, K>(
   payload.meta.data
 );
 
+
+
+const result = subscribeToSnapshots(snapshoStore,
+  snapshotId,
+  snapshotData,
+  category,
+  snapshotConfig,
+  snapshots,
+  callback,
+);
+
+if (result.subscriber) {
+  // You can manage the subscription, e.g., unsubscribe
+  result.subscriber.unsubscribe();
+}
+
+// Use the snapshots array directly
+result.snapshots.forEach(snapshot => {
+  // Do something with each snapshot
+});
+
 const sampleSnapshot: CustomSnapshotData = {
   timestamp: new Date().toISOString(),
   value: "42",
@@ -2203,6 +2295,7 @@ const sampleSnapshot: CustomSnapshotData = {
 subscriber.receiveSnapshot(sampleSnapshot);
 
 console.log("Subscriber state:", subscriber.getState("state"));
+
 export { Subscriber, subscriber };
-export type { AuditRecord, SubscriberCallback, Subscribers };
+export type { AuditRecord, SubscribeResult, SubscriberCallback, Subscribers };
 

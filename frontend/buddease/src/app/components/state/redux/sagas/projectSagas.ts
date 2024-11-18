@@ -1,6 +1,6 @@
 // Import necessary dependencies and actions
 import { ProjectActions } from "@/app/components/actions/ProjectActions";
-import Project from "@/app/components/projects/Project";
+import { Project } from "@/app/components/projects/Project";
 import axios, { AxiosResponse } from "axios";
 import { call, put, takeLatest } from "redux-saga/effects";
 import NOTIFICATION_MESSAGES from "../../../support/NotificationMessages";
@@ -14,7 +14,7 @@ const fetchProjectsAPI = () => axios.get('/api/projects');
 // Fetch projects saga
 function* fetchProjectsSaga(): Generator {
   try {
-    yield put(ProjectActions.fetchProjectsRequest());
+    yield put(ProjectActions.fetchProjectsRequest(payload));
     const response: AxiosResponse<Project[]> = yield call(fetchProjectsAPI);
     yield put(ProjectActions.fetchProjectsSuccess({ projects: response.data }));
   } catch (error) {

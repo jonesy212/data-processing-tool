@@ -1,5 +1,4 @@
 // TaskManagerComponent.tsx
-import { Meta } from '../models/data/dataStoreMethods';
 import { checkTodoCompletion, updateTodo } from "@/app/api/ApiTodo";
 import { handleTaskApiErrorAndNotify, updateTask } from "@/app/api/TasksApi";
 import { ProjectDetails } from "@/app/components/projects/Project";
@@ -91,7 +90,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       recurring: null,
       dependencies: [],
       subtasks: [],
-      snapshot: {} as Snapshot<Data, Meta, Data>,
+      snapshot: {} as Snapshot<Data, Data>,
       analysisType: AnalysisTypeEnum.DEFAULT,
       analysisResults: {} as DataAnalysisResult[],
       videoData: {} as VideoData,

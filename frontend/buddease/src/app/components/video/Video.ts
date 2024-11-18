@@ -1,9 +1,8 @@
-import { T, Meta, K } from '@/app/components/models/data/dataStoreMethods';
 import { CommonData } from '@/app/components/models/CommonData';
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { Data, DataDetails } from "../models/data/Data";
 import { TagsRecord } from "../snapshots";
-import { Tag } from "./../models/tracker/Tag";
 
 interface BaseVideoProperties {
   id?: string | number | undefined;
@@ -28,7 +27,7 @@ interface BaseVideoProperties {
   videoTitle?: string;
   videoDescription?: string;
   videoTags?: string[];
-  category?: string;
+  category: symbol | string | Category | undefined,
   resolution?: string;
   aspectRatio?: string;
   language?: string;
@@ -98,10 +97,11 @@ interface Video extends BaseVideoProperties {
   updatedAt?: Date;
   createdBy?: string;
   thumbnail?: string;
+  uploadedAt?: string
 }
 
 
-interface VideoData<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data> extends DataDetails<T, Meta, K>, VideoCommonData, BaseVideoProperties {
+interface VideoData<T extends Data<T>, K extends Data<T>> extends DataDetails<T, K>, VideoCommonData, BaseVideoProperties {
   // Additional properties specific to `VideoData`
   size?: string; // Size of the video file in bytes
   codec?: string;
@@ -155,7 +155,7 @@ class BasicVideoGenerator {
       isFamilyFriendly: false,
       isEmbeddable: false,
       isDownloadable: false,
-      videoData: {} as VideoData<Data, UnifiedMetaDataOptions, Data>,
+      videoData: {} as VideoData<Data, Data>,
     };
 
     const video: Video = {
@@ -274,4 +274,4 @@ const videoData: VideoData<T, Meta, K> = {
 export default BasicVideoGenerator;
 export { videoData };
 
-export type { VideoData }
+  export type { VideoData };

@@ -18,9 +18,34 @@ enum UserRoleEnum {
   UXUIDesigner = 'UXUIDesigner',
   Member = 'Member',
   Verified_User = 'Verified_User',
+  System = 'System',
+  Editor = 'Editor',
 }
 
 const UserRoles: { [key in UserRoleEnum]: UserRole } = {
+  System: {
+    role: UserRoleEnum.System,
+    responsibilities: [
+      'Automate maintenance tasks',
+      'Monitor system health and performance',
+      'Handle system-level events and alerts',
+      'Perform data backups and restore operations',
+      'Provide support for automated scripts',
+    ],
+    permissions: [
+      'Access system logs',
+      'Manage server configurations',
+      'Initiate system-wide maintenance',
+      'Access all automated scripts and tasks',
+      'Restart services or applications',
+    ],
+    positions: [], // System role may not have traditional position titles
+    salary: 0, // Typically, a system role doesn't have a salary as it is not a human position
+    includes: [
+      'Full system access',
+      'Automated administrative privileges',
+    ],
+  },
   Administrator: {
     role: UserRoleEnum.Administrator,
     responsibilities: [
@@ -39,6 +64,27 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     salary: 100000 // Example salary for Administrator
     ,
     includes: []
+  },
+  Editor: { // Define the Editor role
+    role: UserRoleEnum.Editor,
+    responsibilities: [
+      'Review and edit content before publication',
+      'Ensure adherence to style guides and standards',
+      'Collaborate with writers and designers',
+      'Manage editorial calendars and deadlines',
+    ],
+    permissions: [
+      'Edit published content',
+      'Approve new content submissions',
+      'Manage user-generated content',
+      'Access editorial tools and resources',
+    ],
+    positions: [], // Define specific positions if necessary
+    salary: 75000, // Example salary for Editor
+    includes: [
+      'Editorial privileges',
+      'Collaboration with the content team',
+    ],
   },
   
   Developer: {

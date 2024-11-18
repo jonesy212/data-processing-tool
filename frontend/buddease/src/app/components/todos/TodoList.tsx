@@ -1,4 +1,3 @@
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import axios from "axios";
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
@@ -32,7 +31,7 @@ const TodoList: React.FC = observer(() => {
           } as Todo;
         });
 
-        const todoSnapShotData = {} as SnapshotStore<Snapshot<Data, Meta, Data>>;
+        const todoSnapShotData = {} as SnapshotStore<Snapshot<Data, Data>>;
 
         todoStore.addTodos(mappedTodos, todoSnapShotData); // Remove the unnecessary cast
       } catch (error) {
@@ -186,7 +185,7 @@ const TodoList: React.FC = observer(() => {
         recurringDaysOfWeek: [1, 3, 5], // Monday, Wednesday, Friday
         recurringDaysOfMonth: [],
         recurringMonthsOfYear: [],
-        snapshot: {} as Snapshot<Data, Meta, Data>,
+        snapshot: {} as Snapshot<Data, Data>,
         entities: [],
         timestamp: new Date().toISOString(),
         category: "Task",

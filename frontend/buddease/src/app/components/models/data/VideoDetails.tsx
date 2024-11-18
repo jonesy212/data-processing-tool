@@ -1,8 +1,10 @@
 // VideoDetails.tsx
 import { Todo } from "../../todos/Todo";
+import * as React from 'react'
+import { VideoData } from "../../video/Video";
 
 interface VideoDetailsProps {
-  videoData: Todo["videoData"];
+  videoData: VideoData
 }
 
 const VideoDetails: React.FC<VideoDetailsProps> = ({ videoData }) => {

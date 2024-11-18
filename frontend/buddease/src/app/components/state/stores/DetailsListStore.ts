@@ -1,5 +1,5 @@
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 // DetailsListStore.ts
+import { BaseData } from '@/app/components/models/data/Data';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { makeAutoObservable } from "mobx";
 import { FC } from "react";
@@ -8,33 +8,36 @@ import { Team } from "../../models/teams/Team";
 import { Phase } from "../../phases/Phase";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import {
-    NotificationTypeEnum,
-    useNotification,
+  NotificationTypeEnum,
+  useNotification,
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
+import { Tag } from '@/app/components/models/tracker/Tag';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CommunicationActionTypes } from "../../community/CommunicationActions";
 import { Attachment } from "../../documents/Attachment/attachment";
 import { DocumentStatus } from "../../documents/types";
 import { DataDetails } from "../../models/data/Data";
 import {
-    DataStatus,
-    PriorityTypeEnum,
-    ProductStatus,
-    StatusType,
-    TaskStatus,
-    TeamStatus,
-    TodoStatus,
+  DataStatus,
+  MeetingStatus,
+  PriorityTypeEnum,
+  ProductStatus,
+  StatusType,
+  TaskStatus,
+  TeamStatus,
+  TodoStatus,
 } from "../../models/data/StatusType";
 import { Member, TeamMember } from "../../models/teams/TeamMembers";
-import { Tag } from "../../models/tracker/Tag";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Project } from "../../projects/Project";
 import { SnapshotConfig, SnapshotDataType, SnapshotStoreProps, TagsRecord } from "../../snapshots";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
+import { InitializedConfig, } from "../../snapshots/SnapshotStoreConfig";
 
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { AllTypes } from "../../typings/PropTypes";
 import { createSnapshotStoreOptions } from "../../typings/YourSpecificSnapshotType";
 const { notify } = useNotification();
@@ -46,51 +49,56 @@ export type AllStatus =
   | TodoStatus
   | DataStatus
   | TeamStatus
+  | MeetingStatus
   | DocumentStatus
   | PriorityTypeEnum
   | ProductStatus;
-// Define a generic interface for details
-// isActive
 
-interface DetailsItem<T extends Data> {
+
+
+// Define a generic interface for details
+interface DetailsItem<
+  T extends BaseData<T>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  > {
   _id?: string;
   id: string | number;
   title?: string;
   type?: AllTypes;
   status?: AllStatus;
   communication?: CommunicationActionTypes;
-  teammembers?: Array<TeamMember>
+  teammembers?: Array<TeamMember>;
   description?: string | null | undefined;
   startDate?: Date;
   endDate?: Date;
   updatedAt?: Date;
-  Phase?: Phase | null;
+  phase?: Phase<T, K> | null; // Updated to match DetailsItemExtended
   subtitle: string;
   author?: string;
   date?: Date;
   label?: string;
   value: string;
-  phase?: Phase;
   collaborators?: Member[];
-  tags?:  string[] | Tag[]
-  analysisResults?: DataAnalysisResult[];
+  tags?: string[] | Tag<T>[];
+  analysisResults?: DataAnalysisResult<T>[];
   tracker?: string;
   participants?: Member[];
   // Core properties...
-}
-
-interface DetailsItemExtended extends DataDetails{
+}interface DetailsItemExtended<
+  T extends  BaseData<T>,
+  K extends T = T> extends DataDetails<T, K> {
   id: string | number;
   _id?: string;
   title?: string;
   name?: string;
   isRecurring?: boolean;
   type?: AllTypes; //todo verif we match types
-  status?: AllStatus; // Use enums for status property
+  status?: AllStatus | null; // Use enums for status property
   participants?: Member[];
   description?: string | null | undefined;
   assignedProjects?: Project[];
-  analysisType?: AnalysisTypeEnum | undefined;
+  analysisType?: AnalysisTypeEnum | null;
   isVisible?: boolean;
   query?: string;
   reassignedProjects?: {
@@ -103,9 +111,12 @@ interface DetailsItemExtended extends DataDetails{
   dueDate?: Date | null | undefined;
 
   endDate?: Date;
-  phase?: Phase | null;
+
+
+  analysisResults: string | DataAnalysisResult<T>[] | undefined;
+  phase?: Phase<T, K> | null;
   isActive?: boolean;
-  tags?: TagsRecord | string[] | undefined
+  tags?: TagsRecord<T, K> | string[] | undefined
   subtitle?: string;
   date?: Date;
   author?: string;
@@ -123,10 +134,9 @@ interface DetailsItemExtended extends DataDetails{
   setCurrentProject?: (project: Project) => void;
   setCurrentTeam?: (team: Team) => void;
   clearCurrentProject?: () => void;
-}
 
-export interface DetailsListStore <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
-  details: Record<string, DetailsItemExtended[]>;
+}export interface DetailsListStore <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  details: Record<string, DetailsItemExtended<T, K>[]>;
   detailsTitle: string;
   detailsDescription: string;
   detailsStatus:
@@ -135,14 +145,14 @@ export interface DetailsListStore <T extends Data, Meta extends UnifiedMetaDataO
     | TaskStatus.Completed
     | TaskStatus.Tentative
     | TaskStatus.Confirmed
-    | TaskStatus.Cancelled
+    | TaskStatus.Canceled
     | TaskStatus.Scheduled
     | undefined;
-  snapshotStore: SnapshotStore<T, Meta, K>;
+  snapshotStore: SnapshotStore<T, K>;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   updateDetailsTitle: (title: string, newTitle: string) => void;
-  subscribe(callback: (snapshot: Snapshot<T, Meta, K>) => void): void;
+  subscribe(callback: (snapshot: Snapshot<T, K>) => void): void;
 
   toggleDetails: (detailsId: string) => void;
 
@@ -153,46 +163,47 @@ export interface DetailsListStore <T extends Data, Meta extends UnifiedMetaDataO
       | StatusType.Completed
       | StatusType.Tentative
       | StatusType.Confirmed
-      | StatusType.Cancelled
+      | StatusType.Canceled
       | StatusType.Scheduled
   ) => void;
   addDetails: (id: string, description: string) => void;
-  addDetail: (newDetail: Data) => void;
-  addDetailsItem: (detailsItem: DetailsItemExtended) => void;
-  setDetails: (details: Record<string, DetailsItemExtended[]>) => void;
+  addDetail: (newDetail: Data<T>) => void;
+  addDetailsItem: (detailsItem: DetailsItemExtended<T, K>) => void;
+  setDetails: (details: Record<string, DetailsItemExtended<T, K>[]>) => void;
   removeDetails: (detailsId: string) => void;
   removeDetailsItems: (detailsIds: string[]) => void;
   setDynamicNotificationMessage: (message: string) => void;
 }
 
-class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>
-  implements DetailsListStore<T, Meta, K>
+class DetailsListStoreClass <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+  implements DetailsListStore<T, K>
 {
-  details: Record<string, DetailsItemExtended[]> = {
+  details: Record<string, DetailsItemExtended<T, K>[]> = {
     pending: [],
     inProgress: [],
     completed: [],
   };
   detailsTitle = "";
   detailsDescription = "";
+  createdBy = "";
   detailsStatus:
     | TaskStatus.Pending
     | TaskStatus.InProgress
     | TaskStatus.Completed
     | TaskStatus.Tentative
     | TaskStatus.Confirmed
-    | TaskStatus.Cancelled
+    | TaskStatus.Canceled
     | TaskStatus.Scheduled
     | undefined = undefined;
-  snapshotStore!: SnapshotStore<T, Meta, K>;
+  snapshotStore!: SnapshotStore<T, K>;
 
-  subscribe = (callback: (snapshot: Snapshot<T, Meta, K>) => void) => {};
+  subscribe = (callback: (snapshot: Snapshot<T, K>) => void) => {};
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
 
   constructor( 
-    storeProps: SnapshotStoreProps<T, Meta, K>,
-    snapConfig: SnapshotConfig<T, Meta, K>
+    storeProps: SnapshotStoreProps<T, K>,
+    snapConfig: SnapshotConfig<T, K>
   ) {
     makeAutoObservable(this);
     this.initSnapshotStore(storeProps, snapConfig);
@@ -200,16 +211,27 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
 
   
 
-  determineCategory(snapshot: Snapshot<T, Meta, K> | null | undefined): string {
+  determineCategory(snapshot: Snapshot<T, K> | null | undefined): string {
     if (snapshot && snapshot.store) {
       return snapshot.store.toString();
     }
     return "";
   }
 
-  private async initSnapshotStore(storeProps: SnapshotStoreProps<T, Meta, K>, snapConfig: SnapshotConfig<T, Meta, K>) {
+    private createDefaultPhase(): Phase<T, K> {
+    return {
+      id: "",
+      name: "",
+      description: "",
+      startDate: "",
+      subPhases: [], // Set subPhases as an empty array to meet the expected type
+      // Initialize any other required properties of Phase here, based on Phase<T, K> structure
+    } as Phase<T, K>;
+  }
+
+  private async initSnapshotStore(storeProps: SnapshotStoreProps<T, K>, snapConfig: SnapshotConfig<T, K>) {
     const initialState = null;
-    const snapshotStoreProps: SnapshotStoreProps<T, Meta, K> = {
+    const snapshotStoreProps: SnapshotStoreProps<T, K> = {
       id: storeProps.storeId.toString(), // Assuming ID needs to be a string
       storeId: storeProps.storeId,
       name: storeProps.name, // Assuming this relates to the store's name
@@ -217,16 +239,22 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
       category: storeProps.category || 'default-category', // Default category
       timestamp: storeProps.timestamp || new Date(), // Default timestamp
       message: storeProps.message || '', // Default message
-      eventRecords: [], // Default event records
+      eventRecords: {}, // Default event records
       version: storeProps.version,
       schema: storeProps.schema,
       options: storeProps.options,
       config: storeProps.config,
       operation: storeProps.operation,
+      expirationDate: storeProps.expirationDate,
+      payload: storeProps.payload,
+      callback: storeProps.callback,
+      storeProps: storeProps.storeProps,
+      endpointCategory: storeProps.endpointCategory,
+     
     }
     
     // Initialize the snapshot store using snapshotStoreProps
-    this.snapshotStore = new SnapshotStore<T, Meta, K>({
+    this.snapshotStore = new SnapshotStore<T, K>({
       storeId: snapshotStoreProps.storeId,
       name: snapshotStoreProps.name,
       version: snapshotStoreProps.version,
@@ -237,7 +265,9 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
       operation: snapshotStoreProps.operation,
     });
 
-    const snapshotConfig: SnapshotConfig<T, Meta, K> = {
+    const snapshotConfig: SnapshotConfig<T, K> = {
+      
+
         id: snapConfig?.id || 'default-id', // Default or generate an ID
         store: snapConfig?.store || undefined, // Initialize appropriately
         state: snapConfig?.state || initialState, // Initialize state as needed
@@ -249,12 +279,12 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
         // Other properties you want to default or initialize
         initialState: snapConfig?.initialState || undefined,
         isCore: snapConfig?.isCore || false,
-        initialConfig: snapConfig?.initialConfig || undefined,
+        initialConfig: snapConfig?.initialConfig || ({} as InitializedConfig),
         removeSubscriber: snapConfig?.removeSubscriber || (() => {}),
         onInitialize: snapConfig?.onInitialize || (() => {}),
         onError: snapConfig?.onError || (() => {}),
         taskIdToAssign: snapConfig?.taskIdToAssign || undefined,
-        schema: snapConfig?.schema || undefined,
+        schema: snapConfig?.schema ? JSON.stringify(snapConfig.schema) : "",
         currentCategory: snapConfig?.currentCategory || undefined,
         mappedSnapshotData: snapConfig?.mappedSnapshotData || new Map(),
         storeId: snapConfig?.storeId || 0,
@@ -262,7 +292,7 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
         setCategory: snapConfig?.setCategory || (() => {}),
         applyStoreConfig: snapConfig?.applyStoreConfig || (() => {}),
         generateId: snapConfig?.generateId || (() => 'default-generated-id'),
-        snapshotData: snapConfig?.snapshotData || (() => ({} as SnapshotDataType<T, Meta, K>)),
+        snapshotData: snapConfig?.snapshotData || (() => ({} as SnapshotDataType<T, K>)),
         getSnapshotItems: snapConfig?.getSnapshotItems || (() => []),
 
 
@@ -451,12 +481,33 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
         hasChildren: snapConfig?.hasChildren,
         isDescendantOf: snapConfig?.isDescendantOf,
         getSnapshotById: snapConfig?.getSnapshotById,
-     
+        snapshotContainer: snapConfig?.snapshotContainer || null,
+        fetchStoreData: snapConfig?.fetchStoreData,
+        snapshotMethods: snapConfig?.snapshotMethods,
+        getSnapshotsBySubscriber: snapConfig?.getSnapshotsBySubscriber,
+       
+        snapshotSubscriberId: snapConfig?.snapshotSubscriberId || null,
+        isSubscribed: snapConfig?.isSubscribed,
+        clearSnapshotSuccess: snapConfig?.clearSnapshotSuccess,
+        addToSnapshotList: snapConfig?.addToSnapshotList || Promise.resolve(null),
+       
+        getSnapshotsBySubscriberSuccess: snapConfig?.getSnapshotsBySubscriberSuccess,
+        isExpired: snapConfig?.isExpired,
+        find: snapConfig?.find || undefined,
+        handleSnapshotFailure: snapConfig?.handleSnapshotFailure,
+        
+        snapshotCategory: snapConfig?.snapshotCategory || undefined,
+        initializeWithData: snapConfig?.initializeWithData || undefined,
+        hasSnapshots: snapConfig?.hasSnapshots,
+        equals: snapConfig?.equals || null,
+       
+
       };
 
 
-      // Ensure delegate is correctly typed as Snapshot<T, Meta, K>
-      const delegateSnapshot: Snapshot<T, Meta, K> = {
+      // Ensure delegate is correctly typed as Snapshot<T, K>
+      const delegateSnapshot: Snapshot<T, K> = {
+        
         // Provide appropriate default values for the snapshot
         id: snapshotConfig.id, // Default or generate an ID
         store: snapshotConfig.store, // Initialize appropriately
@@ -695,6 +746,23 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
         hasChildren: snapshotConfig.hasChildren,
         isDescendantOf: snapshotConfig.isDescendantOf,
         getSnapshotById: snapshotConfig.getSnapshotById,
+
+        snapshotSubscriberId: snapshotConfig.snapshotSubscriberId,
+        isSubscribed: snapshotConfig.isSubscribed,
+        clearSnapshotSuccess: snapshotConfig.clearSnapshotSuccess,
+        addToSnapshotList: snapshotConfig.addToSnapshotList,
+        isExpired: snapshotConfig.isExpired,
+        find: snapshotConfig.find,
+        handleSnapshotFailure: snapshotConfig.handleSnapshotFailure,
+        getSnapshotsBySubscriberSuccess: snapshotConfig.getSnapshotsBySubscriberSuccess,
+        snapshotCategory: snapshotConfig.snapshotCategory,
+        initializeWithData: snapshotConfig.initializeWithData,
+        hasSnapshots: snapshotConfig.hasSnapshots,
+        equals: snapshotConfig.equals,
+        snapshotContainer: snapshotConfig.snapshotContainer,
+        fetchStoreData: snapshotConfig.fetchStoreData,
+        snapshotMethods: snapshotConfig.snapshotMethods,
+        getSnapshotsBySubscriber: snapshotConfig.getSnapshotsBySubscriber,
         // Add all other necessary properties with default values
       };
 
@@ -708,7 +776,7 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
         NotificationTypeEnum.InvalidCredentials
       );
 
-      const options = createSnapshotStoreOptions<T, Meta, K>({
+      const options = createSnapshotStoreOptions<T, K>({
         initialState,
         snapshotId: "snapshot_123", // Example snapshot ID, replace with actual ID
         category: category as unknown as CategoryProperties,
@@ -759,7 +827,7 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
         throw new Error("Name, operation and version are required for SnapshotStore");
       }
 
-      this.snapshotStore = new SnapshotStore<T, Meta, K>({storeId, name, version, schema, options, category, config, operation});
+      this.snapshotStore = new SnapshotStore<T, K>({storeId, name, version, schema, options, category, config, operation});
     }
 
   updateDetailsTitle(id: string, newTitle: string): void {
@@ -807,6 +875,7 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
         id: detailsId,
         description: this.detailsDescription,
         title: this.detailsTitle,
+        createdBy: this.createdBy,
         status: this.detailsStatus as
           | TaskStatus.Pending
           | TaskStatus.InProgress
@@ -817,11 +886,18 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
           name: "Phase Name",
           color: "#000000",
           status: "",
+          description: "Phase Description", 
+          createdBy: "Phase creator",
+          label: {
+            text: "Phase Label",
+            color: "#000000",
+          }, 
+          date: new Date(),
           createdAt: undefined,
           updatedAt: undefined,
           startDate: undefined,
           endDate: undefined,
-          subPhases: [] as Phase[],
+          subPhases: [] as Phase<T, K>[],
           component: {} as FC<any>,
           hooks: {
             onPhaseStart: [],
@@ -846,10 +922,10 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
           },
           duration: 0,
         },
-        data: {} as DetailsItemExtended["data"],
+        data: {} as DetailsItemExtended<T, K>["data"],
         isActive: false,
         type: "details",
-        analysisResults: {} as DetailsItemExtended["analysisResults"],
+        analysisResults: {} as DetailsItemExtended<T, K>["analysisResults"],
         updatedAt: undefined,
       });
     }
@@ -902,8 +978,8 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
         this.detailsStatus = TaskStatus.Confirmed;
         // Handle Confirmed status if needed
         break;
-      case StatusType.Cancelled:
-        this.detailsStatus = TaskStatus.Cancelled;
+      case StatusType.Canceled:
+        this.detailsStatus = TaskStatus.Canceled;
         break;
       case StatusType.Scheduled:
         this.detailsStatus = TaskStatus.Scheduled;
@@ -914,7 +990,7 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
     }
   }
 
-  addDetailsItem(detailsItem: DetailsItemExtended): void {
+  addDetailsItem(detailsItem: DetailsItemExtended<T, K>): void {
     let status: AllStatus = detailsItem.status || TaskStatus.Pending;
 
     this.details = {
@@ -935,13 +1011,14 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
       return;
     }
 
-    const newDetailsItem: DetailsItemExtended = {
+    const newDetailsItem: DetailsItemExtended<T, K> = {
       id: Date.now().toString(),
       title: this.detailsTitle,
       status: TaskStatus.Pending,
       description: this.detailsDescription,
+      createdBy: this.createdBy,
       // data: {} as Data,
-      phase: {} as DetailsItemExtended["phase"],
+      phase: {} as DetailsItemExtended<T, K>["phase"],
       isActive: false,
       type: "details",
       _id: "",
@@ -957,7 +1034,7 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
     this.detailsStatus = TaskStatus.Pending;
   }
 
-  setDetails(details: Record<string, DetailsItemExtended[]>): void {
+  setDetails(details: Record<string, DetailsItemExtended<T, K>[]>): void {
     this.details = details;
   }
 
@@ -980,16 +1057,17 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
     this.setDynamicNotificationMessage(message);
   };
 
-  addDetail(detail: Data): void {
+  addDetail(detail: Data<T>): void {
     // Assuming 'detail' is a valid Data object to be added
     let status: AllStatus = detail.status || TaskStatus.Pending;
 
     // Ensure detail.id is not null or undefined before assigning
     const id: string = String(detail.id) ?? "";
 
+
     // Ensure detail.description is always a string or undefined
     const description: string = detail.description || ""; // Provide a default empty string if description is null or undefined
-    const phase: Phase = detail.phase || ({} as Phase); // Provide a default empty object if phase is null or undefined
+    const phase: Phase<T, K> = detail.phase || this.createDefaultPhase();
 
     // Create a copy of the current state of details
     const updatedDetails = { ...this.details };
@@ -1005,6 +1083,7 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
         title: detail.title,
         status: detail.status,
         description: description,
+        createdBy: detail.createdBy,
         phase: phase,
         type: "detail",
         isActive: false,
@@ -1020,7 +1099,13 @@ class DetailsListStoreClass <T extends Data, Meta extends UnifiedMetaDataOptions
   }
 }
 
-const useDetailsListStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(storeProps: SnapshotStoreProps<T, Meta, K>, snapConfig: SnapshotConfig<T, Meta, K>): DetailsListStore<T,K> => {
+const useDetailsListStore = <T extends  BaseData<T>,
+   
+  K extends T = T
+>(
+    storeProps: SnapshotStoreProps<T, K>,
+    snapConfig: SnapshotConfig<T, K>
+  ): DetailsListStore<T, K> => {
   return new DetailsListStoreClass(storeProps, snapConfig);
 };
 

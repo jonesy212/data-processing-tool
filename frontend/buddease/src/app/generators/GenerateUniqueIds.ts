@@ -5,6 +5,7 @@ import {
   NotificationType,
   useNotification,
 } from "../components/support/NotificationContext";
+import { K, Meta, T } from "../components/models/data/dataStoreMethods";
 
 // Extract notify function from useNotification hook
 const { notify } = useNotification();
@@ -25,8 +26,9 @@ export function generateUserID(userName: string) {
 
 class UniqueIDGenerator {
   static generateSnapshoItemID(arg0: string): string {
-    throw new Error("Method not implemented.");
+    return `${arg0}_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
   }
+  
   static notifyFormatted(
     id: string,
     message: string,
@@ -195,7 +197,7 @@ class UniqueIDGenerator {
     id?: string,
     title?: string,
     notificationType?: NotificationType,
-    dataDetails?: DataDetails<any, any, any>
+    dataDetails?: DataDetails<any, any>
   ): string {
     const generatedID = `${prefix || 'presentation'}_${name}_${type}_${Date.now()}`;
 
@@ -304,7 +306,7 @@ class UniqueIDGenerator {
     chatThreadName?: string,
     chatMessageId?: string,
     chatThreadId?: string,
-    dataDetails?: DataDetails,
+    dataDetails?: DataDetails<T, K<T>>,
     generatorType?: string
   ): string {
     switch (type) {
@@ -385,10 +387,23 @@ class UniqueIDGenerator {
           .substring(2, 10)}`;
     }
   }
+
+  static generateVersionNumber(): string {
+    // Use timestamp and possibly randomization for a unique version number
+    const timestamp = Date.now();
+    const randomSuffix = Math.floor(Math.random() * 1000); // Optional random suffix
+    return `ver_${timestamp}_${randomSuffix}`;
+  }
+  
+  static generateIDForCache(categoryName?: string, userName?: string): string {
+    // Use category name if provided; otherwise, fallback to userName
+    const baseID = categoryName ? `category_${categoryName}` : userName ? `user_${userName}` : `default_id`;
+    return `${baseID}_${Date.now()}`;
+  }
 }
 
 
-const videoDataDetails: DataDetails = {
+const videoDataDetails: DataDetails<T, K<T>> = {
   _id: "",
   id: "video1",
   title: "Video Title",
@@ -400,10 +415,9 @@ const videoDataDetails: DataDetails = {
   createdAt: new Date(),
   uploadedAt: new Date(),
   analysisResults: [],
-  updatedAt: undefined
-};
-
-export default UniqueIDGenerator;
+  updatedAt: undefined,
+  createdBy: "",
+};export default UniqueIDGenerator;
 
 const videoDetailsString = JSON.stringify(videoDataDetails);
 

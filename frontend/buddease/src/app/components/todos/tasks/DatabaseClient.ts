@@ -1,3 +1,4 @@
+import { BaseData } from '@/app/components/models/data/Data';
 import { AxiosResponse } from "axios";
 import axiosInstance from "../../security/csrfToken";
 
@@ -33,9 +34,14 @@ class DatabaseClient {
       console.error("Error connecting to the database:", error);
       throw error;
     }
-  }async insert(
+  }
+  
+  
+  async insert<
+    T extends  BaseData<T>, 
+    K extends T = T>(
     tableName: string,
-    data: DatasetModel,
+    data: DatasetModel<T, K>,
     additionalString?: string
   ): Promise<any> {
     try {
@@ -105,9 +111,12 @@ class DatabaseClient {
   }
 
   // Method to upload a dataset
-  static async uploadDataset(formData: FormData): Promise<DatasetModel | null> {
+  static async uploadDataset<
+    T extends  BaseData<T>,
+    K extends T = T
+  >(formData: FormData): Promise<DatasetModel<T, K> | null> {
     try {
-      const response: AxiosResponse<DatasetModel> = await axiosInstance.post(
+      const response: AxiosResponse<DatasetModel<T, K>> = await axiosInstance.post(
         "/api/upload",
         formData
       );

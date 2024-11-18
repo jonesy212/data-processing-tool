@@ -1,4 +1,5 @@
 // useRealtimeData.tsx
+import { isArrayOfTypeT } from '@/app/components/utils/snapshotUtils';
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -7,21 +8,21 @@ import { Data } from "../../models/data/Data";
 import { RealtimeData, RealtimeDataItem } from "../../models/realtime/RealtimeData";
 import axiosInstance from "../../security/csrfToken";
 import SnapshotStore from "../../snapshots/SnapshotStore";
-import { CalendarEvent } from "../../state/stores/CalendarEvent";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 
 export const ENDPOINT = endpoints.backend
 
-export type RealtimeUpdateCallback<T extends RealtimeData, K extends Data = T> = (
+export type RealtimeUpdateCallback<T extends RealtimeData, K extends T = T> = (
   id: string,
-  data: SnapshotStore<T, Meta, K>,
+  data: SnapshotStore<T, K>,
   events: Record<string, CalendarEvent[]>,
-  snapshotStore: SnapshotStore<T, Meta, K>,
+  snapshotStore: SnapshotStore<T, K>,
   dataItems: T[]
 ) => void;
 
-const useRealtimeData = <T extends RealtimeDataItem, K extends Data = T>(
+const useRealtimeData = <T extends RealtimeDataItem, K extends T = T>(
   initialData: RealtimeDataItem[],
-  updateCallback: RealtimeUpdateCallback<RealtimeDataItem, Meta, Data>
+  updateCallback: RealtimeUpdateCallback<T, K>
 ) => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [realtimeData, setRealtimeData] = useState<RealtimeDataItem[]>(initialData);
@@ -50,16 +51,24 @@ const useRealtimeData = <T extends RealtimeDataItem, K extends Data = T>(
       "updateData",
       (
         id: string,
-        data: SnapshotStore<RealtimeDataItem, Meta, Data>,
+        data: SnapshotStore<T, K>,
         events: Record<string, CalendarEvent[]>,
-        snapshotStore: SnapshotStore<RealtimeDataItem, Meta, Data>, // Also fix type here
+        snapshotStore: SnapshotStore<T, K>, // Also fix type here
         dataItems: RealtimeDataItem[]
       ) => {
-        updateCallback(id, data, events, snapshotStore, dataItems);
+
+        
+        if (isArrayOfTypeT<T>(dataItems)) {
+          updateCallback(id, data, events, snapshotStore, dataItems);
+          setRealtimeData(dataItems);
+        } else {
+          console.error("Received dataItems do not match the expected type T");
+        }
+
         setRealtimeData(dataItems);
         socket.emit("realtimeUpdate", data);
       }
-    );
+    );  
 
     socket.on("connect_error", (error) => {
       console.error("WebSocket connection error:", error);

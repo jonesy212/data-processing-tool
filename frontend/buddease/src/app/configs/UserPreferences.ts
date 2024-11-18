@@ -1,3 +1,4 @@
+// userPreferences.ts
 import { apiService } from "../api/ApiDetails";
 import { LanguageEnum } from "../components/communications/LanguageEnum";
 import { NotificationPreferences } from "../components/communications/chat/ChatSettingsModal";
@@ -167,8 +168,7 @@ export type ModuleType =
   | "teams"
   | "todos";
 
-// userPreferences.ts
-const userPreferences = {
+const userPreferences: UserPreferences = {
   modules: "modules" as ModuleType,
   actions: [],
   reducers: [],
@@ -333,7 +333,14 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
           dataSharing: {
             sharingLevel: 'public', // Or other sharing levels if needed
             sharingScope: 'team', // Or other sharing scopes if needed
-            sharingOptions: [], // Define sharing options if needed
+            sharingFrequency: 'daily', // Set default sharing frequency
+            sharingDuration: '30 days', // Set default sharing duration
+            sharingPermissions: ['read'], // Set default sharing permissions if needed
+            sharingAccess: 'private', // Set default sharing access if needed
+            sharingLocation: 'global', // Set default sharing location if needed
+            sharingTags: [], // Optional tags
+            sharingGroups: [], // Optional groups
+            sharingUsers: [], // Optional users
             allowSharing: true,
             allowSharingWith: [], // Define users or groups if needed
             allowSharingWithTeams: [], // Define teams if needed
@@ -345,6 +352,35 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
             allowSharingWithPublicAndTeamsAndGroups: false, // Or other sharing options if needed
             allowSharingWithPublicAndTeamsAndGroupsAndPublic: false, // Or other sharing options if needed
             allowSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: false, // Or other sharing options if needed
+
+            isAllowingSharingWithPublic: [], // Initialize empty if needed
+            isAllowingingSharingWithTeamsAndGroups: [], // Initialize empty if needed
+            isAllowingSharingWithPublicAndTeamsAndGroups: [], // Initialize empty if needed
+            isAllowingingSharingWithPublicAndTeams: [], // Initialize empty if needed
+            isAllowingSharingWithPublicAndTeamsAndGroupsAndPublic: [], // Initialize empty if needed
+            isAllowingSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: [], // Initialize empty if needed
+            isAllowingSharingWithTeamsAndGroups: [], // Initialize empty if needed
+            isAllowingSharingingWithPublicAndTeamsAndGroups: [], // Initialize empty if needed
+            isAllowingSharingWithPublicAndTeams: [], // Initialize empty if needed
+
+            enableDatabaseEncryption: false, // Set default encryption preference
+            sharingOptions: [], // Define additional sharing options if needed
+            sharingPreferences: { 
+              email: false,
+              push: false,
+              sms: false,
+              chat: false,
+              calendar: false,
+              audioCall: false,
+              videoCall: false,
+              fileSharing: false,
+              blockchainCommunication: false,
+              decentralizedStorage: false,
+              databaseEncryption: false,
+              databaseVersion: '',
+              appVersion: '',
+              enableDatabaseEncryption: false
+             }, // Populate SharingPreferences
           },
           thirdPartyTracking: false
         },
@@ -476,8 +512,8 @@ getUserPreferences()
     console.error("Error fetching user preferences:", error);
     // Handle errors
   });
-export default userPreferences;
-export { getUserPreferences };
+
+export { getUserPreferences, userPreferences };
 export type { UserPreferences, CryptoPreferences };
 
 
@@ -513,12 +549,16 @@ const file: FileData = {
   createdBy: ""
 };
 
-userPreferences.trackFileChanges(file); // Updates lastModified and logs changes
 
-// Updating appearance
-userPreferences.updateAppearance(
-  { stroke: { width: 5, color: "#FF0000" } }, // updates (stroke object)
-  "#00FF00", // fillColor
-  { width: 3, color: "#0000FF" }, // newStroke
-  "#FFFF00" // newFillColor
-);
+if (userPreferences.trackFileChanges) {
+  userPreferences.trackFileChanges(file);
+}
+
+if (userPreferences.updateAppearance) {
+  userPreferences.updateAppearance(
+    { stroke: { width: 5, color: "#FF0000" } },
+    "#00FF00",
+    { width: 3, color: "#0000FF" },
+    "#FFFF00"
+  );
+}

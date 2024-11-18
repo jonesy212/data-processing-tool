@@ -1,5 +1,5 @@
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { ReassignEventResponse } from "../state/stores/AssignEventStore";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { NotificationTypeEnum } from "../support/NotificationContext";
 import { User } from "../users/User";

@@ -1,17 +1,16 @@
 import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import userSettings from "@/app/configs/UserSettings";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { ColorPalettes } from "antd/es/theme/interface";
+import { AxiosResponse } from "axios";
 import React from "react";
-import { LanguageEnum } from "../../communications/LanguageEnum";
 import { CustomTransaction } from "../../crypto/SmartContractInteraction";
 import { Attachment } from "../../documents/Attachment/attachment";
 import { createCustomTransaction } from "../../hooks/dynamicHooks/createCustomTransaction";
 import { FakeData } from "../../intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
 import { Category } from "../../libraries/categories/generateCategoryProperties";
-import { ThemeEnum } from "../../libraries/ui/theme/Theme";
 import { Phase } from "../../phases/Phase";
 import { Label } from "../../projects/branding/BrandingSettings";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
@@ -24,11 +23,15 @@ import {
   SnapshotWithCriteria,
   TagsRecord,
 } from "../../snapshots/SnapshotWithCriteria";
+import { ExtendedTodo } from "../../state/AssignBaseStore";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
+import { Stroke } from "../../state/redux/slices/DrawingSlice";
+import { ReassignEventResponse } from "../../state/stores/AssignEventStore";
+import { AuthStore } from "../../state/stores/AuthStore";
 import BrowserCheckStore from "../../state/stores/BrowserCheckStore";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
-import { Settings } from "../../state/stores/SettingsStore";
 import { NotificationSettings } from "../../support/NotificationSettings";
+import { taskService } from "../../tasks/TaskService";
 import TodoImpl, { Todo, UserAssignee } from "../../todos/Todo";
 import { AllTypes } from "../../typings/PropTypes";
 import { Idea } from "../../users/Ideas";
@@ -36,11 +39,12 @@ import { User } from "../../users/User";
 import UserRoles from "../../users/UserRoles";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
-import { Content } from "../content/AddContent";
 import { Task } from "../tasks/Task";
+import { Team } from "../teams/Team";
 import { Member } from "../teams/TeamMembers";
 import { TrackerProps } from "../tracker/Tracker";
-import { Meta, T } from "./dataStoreMethods";
+import { Comment } from "./Comments";
+import { K, Meta, T } from "./dataStoreMethods";
 import FileData from "./FileData";
 import {
   PriorityTypeEnum,
@@ -48,13 +52,12 @@ import {
   StatusType,
   SubscriptionTypeEnum,
 } from "./StatusType";
-import { taskService } from "../../tasks/TaskService";
 
 
 // Define the interface for DataDetails
-interface DataDetails<T extends Data,
-  Meta extends UnifiedMetaDataOptions,
-  K extends Data
+interface DataDetails<
+  T extends  BaseData<T>,
+  K extends T = T
 > extends CommonData<T> {
   _id?: string;
   title?: string;
@@ -62,27 +65,27 @@ interface DataDetails<T extends Data,
 
   details?: DetailsItem<T>;
   completed?: boolean | undefined;
-  startDate?: Date;
-  endDate?: Date;
-  createdAt?: Date | undefined;
-  updatedAt?: Date | undefined;
+  startDate?: string | Date | undefined;
+  endDate?: string | Date | undefined;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
   type?: AllTypes;
-  tags?: TagsRecord | string[] | undefined; 
+  tags?: TagsRecord<T, K> | string[] | undefined; 
   isActive?: boolean;
-  status?: AllStatus;
+  status?: AllStatus | null;
   uploadedAt?: Date | undefined; //
-  phase?: Phase<T> | null;
+  phase?: Phase<T, K> | null;
   fakeData?: FakeData;
-  comments?: (Comment<T, Meta, K> | CustomComment)[] | undefined;
-  todos?: Todo[];
+  comments?: (Comment<T, K> | CustomComment)[] | undefined;
+  todos?: Todo<T, K>[];
   analysisData?: {
-    snapshots?: SnapshotStore<BaseData, Meta, BaseData>[];
-    analysisResults?: DataAnalysisResult[];
+    snapshots?: SnapshotStore<T, K>[];
+    analysisResults?: DataAnalysisResult<T>[];
   };
-  data?: Data;
+  data?: Data<T>;
   analysisType?: AnalysisTypeEnum;
-  analysisResults?: string | DataAnalysisResult[] | undefined;
-  todo?: Todo;
+  analysisResults?: string | DataAnalysisResult<T>[] | undefined;
+  todo?: Todo<T, StructuredMetadata<T, K>>;
   // Add other properties as needed
 }
 
@@ -91,9 +94,14 @@ interface DataDetailsProps<T> {
   data: T;
 }
 
-type TodoSubtasks = Todo[] & Task[];
+type TodoSubtasks = Todo<BaseData<any>, Meta<any>, BaseData<any>>[]  & Task<any, any>[];
 
-interface BaseData {
+interface BaseData<
+  T extends BaseData<T> = any,
+  K extends T = T,
+  Meta = any,
+  > {
+
   _id?: string;
   id?: string | number | undefined;
   type?: AllTypes;
@@ -108,25 +116,25 @@ interface BaseData {
   status?: AllStatus | null;
   timestamp?: string | number | Date | undefined;
   isActive?: boolean;
-  tags?: TagsRecord | string[] | undefined; // Update as needed based on your schema
+  tags?: TagsRecord<T, K> | string[] | undefined; // Update as needed based on your schema
 
   // | Tag[];
-  phase?: Phase<BaseData> | null;
+  phase?: Phase<T, K> | null;
   phaseType?: ProjectPhaseTypeEnum;
   key?: string;
 
-  value?: number | string | Snapshot<BaseData, Meta, BaseData> | null;
-  initialState?: InitializedState<BaseData, Meta, BaseData>;
+  value?: number | string | Snapshot<T, K> | null;
+  initialState?: InitializedState<T, K>;
   dueDate?: Date | null;
   priority?: string | AllStatus | null;
   assignee?: UserAssignee | null;
   collaborators?: string[];
-  comments?: (Comment<BaseData, Meta, BaseData> | CustomComment)[] | undefined;
+  comments?: (Comment<T, K> | CustomComment)[] | undefined;
   attachments?: Attachment[];
   subtasks?: TodoImpl<any, any>[];
   createdAt?: string | Date | undefined;
   updatedAt?: string | Date | undefined;
-  createdBy?: string | Date | undefined;
+  createdBy?: string | undefined;
   updatedBy?: string;
   updatedDetails?: DetailsItem<T>;
   isArchived?: boolean;
@@ -136,55 +144,54 @@ interface BaseData {
   isBeingCompleted?: boolean;
   isBeingReassigned?: boolean;
   analysisType?: AnalysisTypeEnum | null;
-  analysisResults?: DataAnalysisResult[] | string;
+  analysisResults?: DataAnalysisResult<T>[] | string;
 
   audioUrl?: string;
   videoUrl?: string;
   videoThumbnail?: string;
   videoDuration?: number;
   collaborationOptions?: CollaborationOptions[]; // Or whatever type is appropriate
-  videoData?: VideoData;
+  videoData?: VideoData<T, K>;
   additionalData?: any;
   ideas?: Idea[];
   members?: number[] | string[] | Member[];
   leader?: User | null;
-  snapshotStores?: SnapshotStore<BaseData, Meta, BaseData>[];
-  snapshots?: Snapshots<BaseData, Meta>;
+  snapshotStores?: SnapshotStore<T, K>[];
+  snapshots?: Snapshots<BaseData<T, K>>;
   text?: string;
-  category?: Category;
+  category?: symbol | string | Category | undefined;
 
   notificationTypes?: NotificationSettings;
   categoryProperties?: CategoryProperties;
   [key: string]: any;
   // getData?: (id: number) => Promise<Snapshot<
-  //   SnapshotWithCriteria<BaseData>,
-  //   SnapshotWithCriteria<BaseData>>>;
+  //   SnapshotWithCriteria<Data<T>>,
+  //   SnapshotWithCriteria<Data<T>>>>;
 
   // // Implement the `then` function using the reusable function
-  // then?: <T extends Data, K extends Data>(callback: (newData: Snapshot<BaseData, Meta, K>) => void) => Snapshot<Data, K> | undefined;
+  // then?: <T extends  BaseData<T>, K extends Data<T>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
 }
 
-interface Data extends BaseData {
-  category?: string | Category;
+
+interface Data<T extends BaseData<T>> extends BaseData<T> {
+  category?: symbol | string | Category | undefined;
   categoryProperties?: CategoryProperties;
-  subtasks?: TodoImpl<Todo, any>[];
-  actions?: SnapshotStoreConfig<Data, Meta, Data>[]; // Use Data instead of BaseData
-  snapshotWithCriteria?: SnapshotWithCriteria<Data, any>;
+  subtasks?: TodoImpl<T, Todo<T, K, Meta>>[];
+  actions?: SnapshotStoreConfig<T, K>[];
+  snapshotWithCriteria?: SnapshotWithCriteria<T, K>;
   value?: any;
   label?: any;
-  metadata?: Meta | {};
+  metadata?: UnifiedMetaDataOptions<T, K, Meta, ExcludeKeys> | {};
   [key: string]: any;
 }
-
 // Define the UserDetails component
 
-const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => {
+const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
   
-  const getTagNames = (tags: TagsRecord | string[]): string[] => {
+  const getTagNames = (tags: TagsRecord<T, K<T>> | string[]): string[] => {
     if (Array.isArray(tags)) {
       return tags; // If it's an array, return it directly
     }
-
     return Object.values(tags).map((tag) => tag.name); // If it's a TagsRecord
   };
 
@@ -201,6 +208,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => {
         _id: data._id,
         id: data.id ? data.id.toString() : "",
         title: data.title,
+        createdBy: data.createdBy,
         description: data.description,
         phase: data.phase,
         isActive: data.isActive,
@@ -215,7 +223,9 @@ const DataDetailsComponent: React.FC<DataDetailsProps<Data>> = ({ data }) => {
   );
 };
 
-const coreData: Data = {
+
+
+const coreData: Data<BaseData, Meta, K<BaseData>> = {
   _id: "1",
   id: "data1",
   title: "Sample Data",
@@ -243,6 +253,8 @@ const coreData: Data = {
     },
   },
   phase: {
+    label: "",
+    date: "",
     id: "phase1",
     name: "Phase 1",
     description: "Phase 1 description",
@@ -266,6 +278,7 @@ const coreData: Data = {
       },
     }, // This should match the type defined in Tag
     subPhases: [],
+    createdBy: "creator1",
   },
   phaseType: ProjectPhaseTypeEnum.Ideation,
   dueDate: new Date(),
@@ -274,6 +287,9 @@ const coreData: Data = {
     id: "assignee1",
     username: "Assignee Name",
   } as User,
+
+
+
   collaborators: ["collab1", "collab2"],
   comments: [],
   attachments: [],
@@ -289,6 +305,9 @@ const coreData: Data = {
   videoDuration: 60,
   collaborationOptions: [],
   videoData: {
+    label: {},
+     date: new Date(),
+
     id: "video1",
     campaignId: 123,
     resolution: "1080p",
@@ -362,6 +381,17 @@ const coreData: Data = {
     isUploading: false,
     isDownloading: false,
     isDeleting: false,
+    video: {
+      id: "video1",
+      title: "Sample Video Title",
+      description: "Sample video description",
+      url: "https://example.com/sample-video-url",
+      thumbnailUrl: "https://example.com/sample-thumbnail-url",
+      duration: 60,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      category: "Sample Category",
+    },
   },
   additionalData: {},
   ideas: [],
@@ -395,6 +425,9 @@ const coreData: Data = {
     blockedUsers: [],
     persona: new Persona(PersonaTypeEnum.Default),
     followers: [],
+    activityStatus: "Active",
+    isAuthorized: false,
+    
     preferences: {
       
       id: "",
@@ -427,9 +460,9 @@ const coreData: Data = {
       y: 0,
          // Update the method signature to match the expected type
       updateAppearance: (
-        updates: { stroke: { width: number; color: string; } },
         newStroke: { width: number; color: string; },
-        newFillColor: string
+        newFillColor: string,
+        updates?: { stroke: Stroke },
       ) => {
       // Implement your logic here
       // Example implementation (adjust as necessary):
@@ -440,18 +473,33 @@ const coreData: Data = {
     },
 
     settings: {
+      ...userSettings,
       calendarEvents: [],
       todos: [],
       tasks: [],
       snapshotStores: [],
      
-      currentPhase: "",
+      currentPhase: {
+        id: "",
+        name: "",
+        description: "",
+        startDate: new Date(),
+        endDate: new Date(),
+        subPhases: []
+      },
       comment: "",
       browserCheckStore: {} as BrowserCheckStore,
       trackerStore: {
         trackers: {},
         addTracker: (newTracker: TrackerProps) => {},
-        getTracker: (id: string): TrackerProps => {},
+        getTracker: (id: string): TrackerProps => {
+          // Ensure you return a valid TrackerProps object
+          const tracker = coreData.settings.trackerStore.trackers[id];
+          if (!tracker) {
+            throw new Error(`Tracker with id ${id} not found.`);
+          }
+          return tracker; // Return the tracker found
+        },
         getTrackers: (filter?: { id?: string | undefined; name?: string | undefined; } | undefined) => [],
        
         removeTracker:(trackerToRemove: TrackerProps) => {},
@@ -478,28 +526,188 @@ const coreData: Data = {
         taskDescription: "",
         taskStatus: {},
        
-        assignedTaskStore: {},
+
+        fetchTasksSuccess: (payload: { tasks: Task<T, K<T>>[]; }) => {},
+        fetchTasksFailure: (payload: { error: string; }) => {},
+        fetchTasksRequest: () => {},
+        completeAllTasksSuccess: (success: string) => {},
+       
+        completeAllTasks: (payload: { task: Task<T, K<T>>[]; }) => {},
+        completeAllTasksFailure: (payload: { error: string; }) => {},
+        NOTIFICATION_MESSAGE: "",
+        NOTIFICATION_MESSAGES: {},
+       
+        setDynamicNotificationMessage: (message: string) => {},
+        takeTaskSnapshot: (taskId: string) => {},
+        markTaskAsComplete: (taskId: string) => {},
+        updateTaskPositionSuccess: (payload: { task: Task<T, K<T>> }) => {},
+       
+        batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task<T, K<T>>[]>)  => {},
+        batchFetchTaskSnapshotsSuccess: (taskId: Record<string, Task<T, K<T>>[]>) => {},
+        batchFetchUserSnapshotsRequest: (snapshotData: Record<string, User[]>) => {},
+       
+
+        assignedTaskStore: {
+          snapshotStore: undefined,
+          assignedUsers: {},
+          assignedItems: {},
+          assignedTodos: {},
+          assignedTasks: {},
+          assignedTeams: {},
+          events: {},
+          assignItem: {},
+          assignUser: {},
+          assignTeam: {},
+          unassignUser: {},
+          reassignUser: {},
+          assignUsersToItems: {},
+          unassignUsersFromItems: {},
+          assignNote: {},
+          reassignUsersToItems: {},
+          assignTeamsToTodos: {},
+          unassignTeamsFromTodos: {},
+          assignNoteToTeam: {},
+          assignFileToTeam: {},
+          assignContactToTeam: {},
+          assignEventToTeam: {},
+          assignGoalToTeam: {},
+          assignBookmarkToTeam: {},
+          assignCalendarEventToTeam: {},
+          assignBoardItemToTeam: {},
+          assignBoardColumnToTeam: {},
+          assignBoardListToTeam: {},
+          assignBoardCardToTeam: {},
+          assignBoardViewToTeam: {},
+          assignBoardCommentToTeam: {},
+          assignBoardActivityToTeam: {},
+          assignBoardLabelToTeam: {},
+          assignBoardMemberToTeam: {},
+          assignBoardSettingToTeam: {},
+          assignBoardPermissionToTeam: {},
+          assignBoardNotificationToTeam: {},
+          assignBoardIntegrationToTeam: {},
+          assignBoardAutomationToTeam: {},
+          assignBoardCustomFieldToTeam: {},
+
+          assignTask: (task) => {
+            // Logic to assign a task
+          },
+          assignUsersToTasks: (taskId, userIds) => {
+            // Logic to assign users
+          },
+          unassignUsersFromTasks: (taskId, userIds) => {
+            // Logic to unassign users
+          },
+          setDynamicNotificationMessage: (message) => {
+            // Logic to set notification message
+          },
+          
+          reassignUsersToTasks: function (taskIds: string[], oldUserId: string, newUserId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          assignUserToTodo: function (todoId: string, userId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          unassignUserFromTodo: function (todoId: string, userId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          reassignUserInTodo: function (todoId: string, oldUserId: string, newUserId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          assignUsersToTodos: function (todoIds: string[], userId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          unassignUsersFromTodos: function (todoIds: string[], userId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          reassignUsersInTodos: function (todoIds: string[], oldUserId: string, newUserId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          assignUserSuccess: function (): void {
+            throw new Error("Function not implemented.");
+          },
+          assignUserFailure: function (error: string): void {
+            throw new Error("Function not implemented.");
+          },
+          
+          assignMeetingToTeam: function (meetingId: string, teamId: string): Promise<AxiosResponse> {
+            throw new Error("Function not implemented.");
+          },
+          assignProjectToTeam: function (projectId: string, teamId: string): Promise<AxiosResponse> {
+            throw new Error("Function not implemented.");
+          },
+          connectResponsesToTodos: function (todoIds: string[], assignees: string[], todos: ExtendedTodo[], eventId: string, responses: ReassignEventResponse[]): void {
+            throw new Error("Function not implemented.");
+          },
+          reassignTeamsInTodos: function (todoIds: string[], oldTeamId: string, newTeamId: string): Promise<AxiosResponse> {
+            throw new Error("Function not implemented.");
+          },
+
+          assignTaskToTeam: function (taskId: string, userId: string): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          assignTodoToTeam: function (todoId: string, teamId: string): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          assignTodosToUsersOrTeams: function (todoIds: string[], assignees: string[]): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          assignTeamMemberToTeam: function (teamId: string, userId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          unassignTeamMemberFromItem: function (itemId: string, userId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          getAuthStore: function (): AuthStore {
+            throw new Error("Function not implemented.");
+          },
+          assignTeamToTodo: function (todoId: string, teamId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          unassignTeamToTodo: function (todoId: string, teamId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          reassignTeamToTodo: function (todoId: string, oldTeamId: string, newTeamId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          assignTeamToTodos: function (todoIds: Team[], teamId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          unassignTeamFromTodos: function (todoIds: string[], teamId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          reassignTeamToTodos: function (teamIds: string[], teamId: string, newTeamId: string): void {
+            throw new Error("Function not implemented.");
+          },
+          unassignNoteFromTeam: function (noteId: string, teamId: string): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
+          setAssignedTaskStore: function (store: SnapshotStore<Snapshot< BaseData<T>, BaseData<T>>>
+          ): void {
+            throw new Error("Function not implemented.");
+          }
+        },
         updateTaskTitle: (title: string, taskId: string) => {},
         updateTaskDescription: (description: string, taskId: string) => {},
         updateTaskStatus: (description: string, taskId: string) => {},
         
         updateTaskDueDate: (taskId: string, dueDate: Date) => {},
         updateTaskPriority: (taskId: string, priority: PriorityTypeEnum) => {},
-        filterTasksByStatus: (status: AllStatus): Task[] => {
+        filterTasksByStatus: (status: AllStatus): Task<T, K<T>>[] => {
           // Implement logic to filter tasks by their status
-          return coreData.tasks.filter(task => task.status === status);
+          return coreData.tasks.filter((task: Task<T, K<T>>) => task.status === status);
         },
 
         getTaskCountByStatus: (status: AllStatus): number => {
           // Implement logic to count tasks by status
-          return coreData.tasks.filter(task => task.status === status).length;
+          return coreData.tasks.filter((task: Task<T, K<T>>) => task.status === status).length;
         },
              
         clearAllTasks: () => {},
         archiveCompletedTasks: () => {},
         updateTaskAssignee: (taskId: string, assignee: User) => async (dispatch: any): Promise<void> => {
           // Implement logic to update the assignee of a task
-          const taskIndex = coreData.tasks.findIndex(task => task._id === taskId);
+          const taskIndex = coreData.tasks.findIndex((task: Task<T, K<T>>) => task._id === taskId);
           if (taskIndex !== -1) {
             coreData.tasks[taskIndex].assignee = assignee;
             // Dispatch an action to update the state (assuming Redux or similar)
@@ -507,35 +715,33 @@ const coreData: Data = {
           }
         },
         
-        getTasksByAssignee: async (tasks: Task[], assignee: User): Promise<Task[]> => {
+        getTasksByAssignee: async (tasks: Task<T, K<T>>[], assignee: User): Promise<Task<T, K<T>>[]> => {
           // Implement logic to get tasks assigned to a specific user
-          return tasks.filter(task => task.assignee?._id === assignee._id);
+          return tasks.filter(task => task.assigneeId === assignee._id);
         },
         
         
-        getTaskById: (taskId: string): Task | null => {
+        getTaskById: (taskId: string): Task<T, K<T>> | null => {
           // Implement logic to find a task by its ID
-          return coreData.tasks.find(task => task._id === taskId) || null;
+          return coreData.tasks.find((task: Task<T, K<T>>) => task._id === taskId) || null;
         },
         
         
         sortByDueDate: () => { },
         exportTasksToCSV:  () => {},
         dispatch: (action: any) => {},
-        addTaskSuccess: (payload: { task: Task; }) => {},
-        addTask: (task: Task) => {},
-        addTasks:(tasks: Task[]) => {},
+        addTaskSuccess: (payload: { task: Task<T, K<T>> }) => {},
+        addTask: (task: Task<T, K<T>>) => {},
+        addTasks:(tasks: Task<T, K<T>>[]) => {},
         assignTaskToUser: (taskId: string, userId: string) => {},
        
         removeTask: (taskId: string) => {},
         removeTasks: (taskIds: string[]) => {},
-        fetchTasksByTaskId: async (taskId: string): Promise<string> => {
-          // Implement logic to fetch task details by ID, potentially making an API call
+        fetchTasksByTaskId: async (taskId: string): Promise<Task<T, K<T>> | null> => {
           try {
-            const response = taskService.getTaskById(taskId);
-            if (response && response.data) {
-              // Handle the response data here
-              return response.data; // Assuming the response contains task data in `data`
+            const response = await taskService.getTaskById(taskId);
+            if (response?.data) {
+              return response.data as Task<T, K<T>>; // Cast to the expected type
             }
             throw new Error("No task data found");
           } catch (error) {
@@ -544,148 +750,248 @@ const coreData: Data = {
           }
         }
       }
+        
+        
+        // fetchTasksSuccess: (payload: { tasks: Task[]; }) => { },
+        
+        // fetchTasksFailure: (payload: { error: string; }) => {},
+        // fetchTasksRequest: () => {},
+        // completeAllTasksSuccess: (success: string) => {},
+        // completeAllTasks: (payload: { task: Task[]; }) =>  {},
+       
+        // completeAllTasksFailure: (payload: { error: string; }) => {},
+        // NOTIFICATION_MESSAGE: "",
+        // NOTIFICATION_MESSAGES: {},
+        // setDynamicNotificationMessage: (message: string) => {},
+       
+        // takeTaskSnapshot: (taskId: string) => {},
+        // markTaskAsComplete: (taskId: string) => {},
+        // updateTaskPositionSuccess: (payload: { task: Task; }) => {},
+        // batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task[]>) => {},
+       
+
+      },
+     
+      // iconStore: {
+      //   dispatch: "",
+      // },
+     
+      // calendarStore: {
+      //   openScheduleEventModal: "",
+      //   openCalendarSettingsPage: "",
+      //   getData: async (): Promise<SnapshotStore<T, K>[]> => {
+      //     // Implement logic to get the data
+      //     try {
+      //       // Fetch or generate data for SnapshotStore instances
+      //       const snapshotStores = await snapshotApi.getSnapshotStores();
+      //       // someDataFetchingFunction();
+      //       return snapshotStores;
+      //     } catch (error) {
+      //       console.error("Failed to get data", error);
+      //       return [];
+      //     }
+      //   },
+      //   // updateDocumentReleaseStatus: "",
+       
+      //   // getState: "",
+      //   // action: "",
+      //   // events: "",
+      //   // eventTitle: "",
+      //   // eventDescription: "",
+      //   // eventStatus: "",
+      //   // assignedEventStore: "",
+      //   // snapshotStore: "",
+      // },
+     
+      // enableGroupManagement: true,
+      // enableTeamManagement: false,
+      // idleTimeout: undefined,
+      bannerUrl: "",
+      interests: [],
+      privacySettings: {
+        isDataSharingEnabled: true,
+        dataSharing: {
+            sharingLevel: "", // 'public', 'private', etc.
+            sharingScope: "", // 'team', 'organization', 'all', etc.
+            sharingFrequency: "", // e.g., 'daily', 'weekly'
+            sharingDuration: "", // e.g., '30 days'
+            sharingPermissions: [], // e.g., 'read', 'write', 'delete'
+            sharingAccess: "", // e.g., 'public', 'private'
+            sharingLocation: "", // e.g., 'global', 'local'
+            sharingTags: [], // Optional: tags for categorization
+            sharingGroups: [], // Optional: specify groups involved
+            sharingUsers: [], // Optional: specify individual users
+            allowSharing: false,
+            allowSharingWith: [], // Users, groups, or teams allowed to share with
+            allowSharingWithTeams: [], // Teams allowed for sharing
+            allowSharingWithGroups: [], // Groups allowed for sharing
+            allowSharingWithPublic: false, // Allows sharing with the public
+            allowSharingWithTeamsAndGroups: false, // Allows sharing with both teams and groups
+            isAllowingSharingWithPublic: [],
+            isAllowingingSharingWithTeamsAndGroups: [],
+            isAllowingSharingWithPublicAndTeamsAndGroups: [],
+            isAllowingingSharingWithPublicAndTeams: [],
+            isAllowingSharingWithPublicAndTeamsAndGroupsAndPublic: [],
+            isAllowingSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: [],
+            isAllowingSharingWithTeamsAndGroups: [],
+            isAllowingSharingingWithPublicAndTeamsAndGroups: [],
+            isAllowingSharingWithPublicAndTeams: [],
+            enableDatabaseEncryption: false,
+            sharingOptions: [], // Define additional sharing options if needed
+            sharingPreferences: {
+              email: false,
+              push: false,
+              sms: false,
+              chat: false,
+              calendar: false,
+              audioCall: false,
+              videoCall: false,
+              fileSharing: false,
+              blockchainCommunication: false,
+              decentralizedStorage: false,
+              databaseEncryption: false,
+              databaseVersion: '',
+              appVersion: '',
+              enableDatabaseEncryption: false
+            }, // Add the corresponding sharing preferences
+            allowSharingWithPublicAndTeams: false,
+            allowSharingWithPublicAndGroups: false,
+            allowSharingWithPublicAndTeamsAndGroups: false,
+            allowSharingWithPublicAndTeamsAndGroupsAndPublic: false,
+            allowSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: false,                },
+            thirdPartyTracking: true,
+       
+      },
+      notifications: {
+        channels: {
+          email: false,
+          push: false,
+          sms: false,
+          chat: false,
+          calendar: false,
+          audioCall: false,
+          videoCall: false,
+          screenShare: false,
         },
-        
-        
-        fetchTasksSuccess: (payload: { tasks: Task[]; }) => { },
-        
-        fetchTasksFailure: (payload: { error: string; }) => {},
-        fetchTasksRequest: () => {},
-        completeAllTasksSuccess: (success: string) => {},
-        completeAllTasks: (payload: { task: Task[]; }) =>  {},
-       
-        completeAllTasksFailure: (payload: { error: string; }) => {},
-        NOTIFICATION_MESSAGE: "",
-        NOTIFICATION_MESSAGES: {},
-        setDynamicNotificationMessage: (message: string) => {},
-       
-        takeTaskSnapshot: (taskId: string) => {},
-        markTaskAsComplete: (taskId: string) => {},
-        updateTaskPositionSuccess: (payload: { task: Task; }) => {},
-        batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task[]>) => {},
-       
-
-      },
-     
-      iconStore: {
-        dispatch: "",
-      },
-     
-      calendarStore: {
-        openScheduleEventModal: "",
-        openCalendarSettingsPage: "",
-        getData: async (): Promise<SnapshotStore<BaseData, Meta, BaseData>[]> => {
-          // Implement logic to get the data
-          try {
-            // Fetch or generate data for SnapshotStore instances
-            const snapshotStores = await snapshotStores
-            // someDataFetchingFunction();
-            return snapshotStores;
-          } catch (error) {
-            console.error("Failed to get data", error);
-            return [];
-          }
+      types: {
+        mention: false,
+        reaction: false,
+        follow: false,
+        poke: false,
+        activity: false,
+        thread: false,
+        inviteAccepted: false,
+        task: false,
+        file: false,
+        meeting: false,
+        directMessage: false,
+        announcement: false,
+        reminder: false,
+        project: false,
+        inApp: false,
+        // Add additional properties if they are not included in the NotificationTypes interface
+        comment: false,
+        like: false,
+        dislike: false,
+        bookmark: false,
         },
-        updateDocumentReleaseStatus: "",
-       
-        getState: "",
-        action: "",
-        events: "",
-        eventTitle: "",
-        eventDescription: "",
-        eventStatus: "",
-        assignedEventStore: "",
-        snapshotStore: "",
-       
-
+      enabled:  true,
+      notificationType: "all" 
       },
+      activityLog: [],
+      socialLinks: {},
+      relationshipStatus: "",
      
-      id: "0",
-      userId: 123,
-      userSettings: setTimeout(() => {}, 1000),
-      communicationMode: "email",
-      enableRealTimeUpdates: true,
-      filter: (key: keyof Settings) => "defaultFilter",
-      appName: "MyApp",
-
-      defaultFileType: "pdf",
-      allowedFileTypes: ["pdf", "docx", "xlsx"],
-      enableGroupManagement: true,
-      enableTeamManagement: false,
-      idleTimeout: undefined,
-
-      startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {},
-      idleTimeoutDuration: 300,
-      activePhase: "development",
-      realTimeChatEnabled: true,
-      todoManagementEnabled: false,
-      notificationEmailEnabled: true,
-      analyticsEnabled: true,
-      twoFactorAuthenticationEnabled: true,
-      projectManagementEnabled: true,
-      documentationSystemEnabled: false,
-      versionControlEnabled: true,
-      userProfilesEnabled: true,
-      accessControlEnabled: true,
-      taskManagementEnabled: true,
-      loggingAndNotificationsEnabled: true,
-      securityFeaturesEnabled: true,
-      theme: ThemeEnum.DARK,
-      language: LanguageEnum.English,
-      fontSize: 14,
-      darkMode: true,
-      enableEmojis: true,
-      enableGIFs: true,
-      emailNotifications: true,
-      pushNotifications: true,
-      notificationSound: "ding",
-      timeZone: "UTC",
-      dateFormat: "YYYY-MM-DD",
-      timeFormat: "24-hour",
-      defaultProjectView: "list",
-      taskSortOrder: "priority",
-      showCompletedTasks: true,
-      projectColorScheme: "blue",
-      showTeamCalendar: false,
-      teamViewSettings: [],
-      defaultTeamDashboard: "overview",
-      passwordExpirationDays: 90,
-      privacySettings: [],
-      thirdPartyApiKeys: { key1: "value1", key2: "value2" },
-      externalCalendarSync: true,
-      dataExportPreferences: [],
-      dashboardWidgets: [],
-      customTaskLabels: [],
-      customProjectCategories: [],
-      customTags: [],
-      formHandlingEnabled: true,
-      paginationEnabled: true,
-      modalManagementEnabled: true,
-      sortingEnabled: true,
-      notificationSoundEnabled: true,
-      localStorageEnabled: true,
-      clipboardInteractionEnabled: true,
-      deviceDetectionEnabled: true,
-      loadingSpinnerEnabled: true,
-      errorHandlingEnabled: true,
-      toastNotificationsEnabled: true,
-      datePickerEnabled: true,
-      themeSwitchingEnabled: true,
-      imageUploadingEnabled: true,
-      passwordStrengthEnabled: true,
-      browserHistoryEnabled: true,
-      geolocationEnabled: true,
-      webSocketsEnabled: true,
-      dragAndDropEnabled: true,
-      idleTimeoutEnabled: true,
-      enableAudioChat: true,
-      enableVideoChat: true,
-      enableFileSharing: true,
-      enableBlockchainCommunication: true,
-      enableDecentralizedStorage: true,
-      selectDatabaseVersion: "v1.0",
-      selectAppVersion: "v1.0",
-      enableDatabaseEncryption: true,
+      hobbies: ["Reading", "Traveling"],
+    skills: ["Project Management", "Software Development"],
+    achievements: ["Completed 100 projects", "Employee of the Month"],
+    profileVisibility: "Public",
+    profileAccessControl: {
+      friendsOnly: true,
+      allowTagging: true,
+      blockList: [],
+      allowMessagesFromNonContacts: true,
+      shareProfileWithSearchEngines: false,
+      isPrivate: true,
+      isPrivateOnly: false,
+      isPrivateOnlyForContacts: false,
+      isPrivateOnlyForGroups: false,
+      allowMessagesFromFriendContacts: false,
+      activityStatus: "active",
+      isAuthorized: false,
+    },
+      // startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {},
+      // idleTimeoutDuration: 300,
+      // activePhase: "development",
+      // realTimeChatEnabled: true,
+      // todoManagementEnabled: false,
+      // notificationEmailEnabled: true,
+      // analyticsEnabled: true,
+      // twoFactorAuthenticationEnabled: true,
+      // projectManagementEnabled: true,
+      // documentationSystemEnabled: false,
+      // versionControlEnabled: true,
+      // userProfilesEnabled: true,
+      // accessControlEnabled: true,
+      // taskManagementEnabled: true,
+      // loggingAndNotificationsEnabled: true,
+      // securityFeaturesEnabled: true,
+      // theme: ThemeEnum.DARK,
+      // language: LanguageEnum.English,
+      // fontSize: 14,
+      // darkMode: true,
+      // enableEmojis: true,
+      // enableGIFs: true,
+      // emailNotifications: true,
+      // pushNotifications: true,
+      // notificationSound: "ding",
+      // timeZone: "UTC",
+      // dateFormat: "YYYY-MM-DD",
+      // timeFormat: "24-hour",
+      // defaultProjectView: "list",
+      // taskSortOrder: "priority",
+      // showCompletedTasks: true,
+      // projectColorScheme: "blue",
+      // showTeamCalendar: false,
+      // teamViewSettings: [],
+      // defaultTeamDashboard: "overview",
+      // passwordExpirationDays: 90,
+      
+      // thirdPartyApiKeys: { key1: "value1", key2: "value2" },
+      // externalCalendarSync: true,
+      // dataExportPreferences: [],
+      // dashboardWidgets: [],
+      // customTaskLabels: [],
+      // customProjectCategories: [],
+      // customTags: [],
+      // formHandlingEnabled: true,
+      // paginationEnabled: true,
+      // modalManagementEnabled: true,
+      // sortingEnabled: true,
+      // notificationSoundEnabled: true,
+      // localStorageEnabled: true,
+      // clipboardInteractionEnabled: true,
+      // deviceDetectionEnabled: true,
+      // loadingSpinnerEnabled: true,
+      // errorHandlingEnabled: true,
+      // toastNotificationsEnabled: true,
+      // datePickerEnabled: true,
+      // themeSwitchingEnabled: true,
+      // imageUploadingEnabled: true,
+      // passwordStrengthEnabled: true,
+      // browserHistoryEnabled: true,
+      // geolocationEnabled: true,
+      // webSocketsEnabled: true,
+      // dragAndDropEnabled: true,
+      // idleTimeoutEnabled: true,
+      // enableAudioChat: true,
+      // enableVideoChat: true,
+      // enableFileSharing: true,
+      // enableBlockchainCommunication: true,
+      // enableDecentralizedStorage: true,
+      // selectDatabaseVersion: "v1.0",
+      // selectAppVersion: "v1.0",
+      // enableDatabaseEncryption: true,
     },
     interests: [],
     privacySettings: {
@@ -775,47 +1081,33 @@ const coreData: Data = {
         screenShare: false,
       
       },
-      types: [],
+      types: {},
       enabled: true,
       notificationType: "push",
     },
     activityLog: [
       {
         action: "Logged in",
-        timestamp: new Date(),
+        timestamp: "2023-05-10T12:00:00Z",
         id: "",
         activity: "",
       },
       {
         action: "Updated profile",
-        timestamp: new Date(),
+        timestamp: "2023-05-10T12:00:00Z",
         id: "",
         activity: "",
       },
     ],
-    socialLinks: {
-      facebook: "https://facebook.com/leader",
+  socialLinks: {
+    facebook: "https://facebook.com/leader",
       twitter: "https://twitter.com/leader",
       website: "",
       linkedin: "",
       instagram: "",
     },
     relationshipStatus: "Single",
-    hobbies: ["Reading", "Traveling"],
-    skills: ["Project Management", "Software Development"],
-    achievements: ["Completed 100 projects", "Employee of the Month"],
-    profileVisibility: "Public",
-    profileAccessControl: {
-      friendsOnly: true,
-      allowTagging: true,
-      blockList: [],
-      allowMessagesFromNonContacts: true,
-      shareProfileWithSearchEngines: false,
-      isPrivate: true,
-      isPrivateOnly: false,
-      isPrivateOnlyForContacts: false,
-      isPrivateOnlyForGroups: false,
-    },
+    
     activityStatus: "Online",
     isAuthorized: true,
     notificationPreferences: {
@@ -899,8 +1191,9 @@ const coreData: Data = {
   emailVerificationStatus: true,
   phoneVerificationStatus: true,
   walletAddress: "0x123456789abcdef",
+  
   transactionHistory: [
-    createCustomTransaction({
+     createCustomTransaction({
       id: "tx1",
       amount: 100,
       date: new Date(),
@@ -924,7 +1217,7 @@ const coreData: Data = {
       unsignedHash: "",
       from: null,
       fromPublicKey: null,
-
+     
       isSigned(): boolean {
         return !!(this.type && this.typeName && this.from && this.signature);
       },
@@ -968,16 +1261,16 @@ const coreData: Data = {
         );
       },
       isCancun() {
-        return (
-          this.type === 3 &&
-          this.to !== null &&
-          this.accessList !== null &&
-          this.maxFeePerGas !== null &&
-          this.maxPriorityFeePerGas !== null &&
-          this.maxFeePerBlobGas !== null &&
-          this.blobVersionedHashes !== null
-        );
-      },
+      return (
+        this.type === 3 &&
+        this.to !== null &&
+        this.accessList !== null &&
+        this.maxFeePerGas !== null &&
+        this.maxPriorityFeePerGas !== null &&
+        this.maxFeePerBlobGas !== null &&
+        this.blobVersionedHashes !== null
+      );
+    } ,
 
       clone(): CustomTransaction {
         const clonedData: CustomTransaction = {
@@ -1071,6 +1364,8 @@ const coreData: Data = {
         return clonedData;
       },
       toJSON(): CustomTransaction {
+
+        let myBigInt: bigint = this.value as bigint;
         const customTransaction: CustomTransaction = {
           id: this.id ?? null,
           type: this.type ?? null,
@@ -1089,7 +1384,7 @@ const coreData: Data = {
           date: this.date,
           data: this.data || "",
           description: this.description ?? null,
-          value: this.value ?? null,
+          value: myBigInt,
           unsignedHash: this.unsignedHash ?? null,
           notificationsEnabled: this.notificationsEnabled ?? false,
           amount: 0,
@@ -1103,8 +1398,7 @@ const coreData: Data = {
       },
     }),
   ],
-  getData: function (): Promise<SnapshotStore<BaseData, Meta, BaseData>[]> {
-    // Implement logic to get the data
+  getData: function (): Promise<SnapshotStore< BaseData<T>, BaseData<T>, Meta<T, K<T>>>[]> {
     return Promise.resolve([]);
   },
 };
@@ -1114,7 +1408,8 @@ export type {
   Data,
   DataDetails,
   DataDetailsComponent,
-  DataDetailsProps
+  DataDetailsProps,
+  TodoSubtasks
 };
 
   export { coreData };

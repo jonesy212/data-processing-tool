@@ -1,3 +1,4 @@
+import { T, K } from "@/app/components/models/data/dataStoreMethods";
 import { authToken } from "../components/auth/authToken";
 import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
 import { RealtimeData } from "../components/models/realtime/RealtimeData";
@@ -34,7 +35,7 @@ interface CacheResponse {
   brainstormingPhaseHook: AsyncHook
   projectManagementPhaseHook: AsyncHook
   meetingsPhaseHook: AsyncHook
-  darkModeTogglePhaseHook: AsyncHook; // Define the type of darkModeTogglePhaseHook
+  darkModeTogglePhaseHook: AsyncHook<T>; // Define the type of darkModeTogglePhaseHook
   authenticationPhaseHook: AsyncHook
   // notificationBarPhaseHook: 
   // Add other properties as needed
@@ -72,7 +73,7 @@ const constructCacheData = (
     productLaunchPhaseHook: data.notificationBarPhaseHook,
     dataAnalysisPhaseHook: data.notificationBarPhaseHook,
     generalCommunicationFeaturesPhaseHook: data.notificationBarPhaseHook,
-    fileType: "",
+    fileType: data.fileType,
     calendarEvent: {} as CalendarEvent,
     _id: "",
     id: "",
@@ -83,7 +84,7 @@ const constructCacheData = (
     phase: null,
     analysisResults: [],
     analysisType: {} as AnalysisTypeEnum,
-    videoData: {} as VideoData,
+    videoData: {} as VideoData<T, K>,
     // Construct other properties here
   };
   return constructedData;

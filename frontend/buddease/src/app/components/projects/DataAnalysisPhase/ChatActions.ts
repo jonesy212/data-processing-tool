@@ -4,7 +4,7 @@ import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { createAction } from "@reduxjs/toolkit";
 import { ChatRoom } from "../../calendar/CalendarSlice";
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
-import { CalendarEvent } from "../../state/stores/CalendarEvent";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 
 export const ChatActions = {
   // Actions for sending messages

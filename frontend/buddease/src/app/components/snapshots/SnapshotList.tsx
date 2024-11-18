@@ -1,28 +1,68 @@
+import { BaseData } from '@/app/components/models/data/Data';
+import { Label } from "@/app/components/projects/branding/BrandingSettings";
+import { createSnapshotInstance } from '@/app/components/snapshots/createSnapshotInstance';
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
+import { User } from "@/app/components/users/User";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { ChatRoom } from "../calendar/CalendarSlice";
 import { ContentItem } from "../cards/DummyCardLoader";
+import { Sender } from "../communications/chat/Communication";
+import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { Data } from "../models/data/Data";
+import { NotificationType } from "../support/NotificationContext";
+import { createMessage } from "../utils/createMessage";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { createSnapshotInstance } from "./snapshot";
- 
+import { SnapshotStoreProps } from "./useSnapshotStore";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
-interface SnapshotItem<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> extends Snapshot<T, Meta, K> {
-  message?: string | undefined;
+interface SnapshotItem<
+  T extends  BaseData<T>, 
+  K extends T = T
+> extends Snapshot<T, K> {
+  id: string;
+  value: string;
+  message?: (
+    type: NotificationType, 
+    content: string, 
+    additionalData?: string, 
+    userId?: number, 
+    sender?: Sender, 
+    channel?: ChatRoom
+  ) => Message
   itemContent?: ContentItem; 
-  data: T | Map<string, Snapshot<T, Meta, K>> | null | undefined; // Data associated with the snapshot
+  data: T | Map<string, Snapshot<T, K>> | null | undefined; // Data associated with the snapshot
+  value?: {
+    timestamp?: Date;
+    tags?: string[];
+  };
+  user?: User;
+  categories?: Category[];
+  label: Label | undefined;
 }
 
 
-class SnapshotList<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
-  private snapshots: SnapshotItem<T, Meta, K>[];
+class SnapshotList<
+  T extends  BaseData<T>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  private snapshots: SnapshotItem<T, K>[];
   private id: string;
   public category: string;
   constructor() {
     this.id = UniqueIDGenerator.generateSnapshoItemID(Date.now().toString());
     this.snapshots = [];
     this.category = "";
+  }
+
+  private sortSnapshotsBy(attribute: keyof SnapshotItem<T, K>) {
+    this.snapshots.sort((a, b) => {
+      if (a[attribute] && b[attribute]) {
+        return a[attribute].localeCompare(b[attribute]); // Assuming the attribute is a string
+      }
+      return 0; // Handle undefined values
+    });
   }
 
   sortSnapshotByDate() {
@@ -60,16 +100,16 @@ class SnapshotList<T extends Data, Meta extends UnifiedMetaDataOptions, K extend
     });
   }
 
-  getSnapshotList(snapshots: SnapshotItem<T, Meta, K>[]) {
+  getSnapshotList(snapshots: SnapshotItem<T, K>[]) {
     return snapshots;
   }
 
 
-  getSnapshot(index: number): SnapshotItem<T, Meta, K> | undefined {
+  getSnapshot(index: number): SnapshotItem<T, K> | undefined {
     return this.snapshots[index];
   }
 
-  getSnapshots(): SnapshotItem<T, Meta, K>[] {
+  getSnapshots(): SnapshotItem<T, K>[] {
     return this.snapshots;
   }
 
@@ -113,12 +153,12 @@ class SnapshotList<T extends Data, Meta extends UnifiedMetaDataOptions, K extend
   }
 
   // Methods to manipulate snapshot items
-  addSnapshot(snapshot: SnapshotItem<T, Meta, K>) {
+  addSnapshot(snapshot: SnapshotItem<T, K>) {
     snapshot.id = UniqueIDGenerator.generateSnapshoItemID(this.id);
     this.snapshots.push(snapshot);
   }
 
-  fetchSnaphostById(id: string): SnapshotItem<T, Meta, K> | undefined {
+  fetchSnaphostById(id: string): SnapshotItem<T, K> | undefined {
     return this.snapshots.find((snapshot) => snapshot.id === id);
   }
 
@@ -140,7 +180,7 @@ class SnapshotList<T extends Data, Meta extends UnifiedMetaDataOptions, K extend
     const snapshots = this.snapshots;
 
     return {
-      next(): IteratorResult<SnapshotItem<T, Meta, K>> {
+      next(): IteratorResult<SnapshotItem<T, K>> {
         if (index < snapshots.length) {
           const value = snapshots[index++];
           return { value, done: false };
@@ -151,27 +191,61 @@ class SnapshotList<T extends Data, Meta extends UnifiedMetaDataOptions, K extend
     };
   }
 
-  toArray(): SnapshotItem<T, Meta, K>[] {
+  toArray(): SnapshotItem<T, K>[] {
     return this.snapshots;
   }
+  
   // Other methods as needed
 }
 
 
 
-const createSnapshotItem = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+const createSnapshotItem = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string | null,
   data: T,
   category: symbol | string | Category | undefined,
-  snapshotStore: SnapshotStore<T, Meta, K> | null,
-  snapshotStoreConfig: SnapshotStoreConfig<T, Meta, K> | null
-): SnapshotItem<T, Meta, K> => {
-  const baseSnapshot = createSnapshotInstance(snapshotId, data, category, snapshotStore, snapshotStoreConfig);
+  snapshotStore: SnapshotStore<T, K> | null,
+  snapshotStoreConfig: SnapshotStoreConfig<T, K> | null,
+  snapshotManager: SnapshotManager<T, K> | null,  // Add snapshotManager as a parameter
+  storeProps?: SnapshotStoreProps<T, K>  // Optional
+): SnapshotItem<T, K> => {
+  
+  const baseMeta = new Map<string, Snapshot<T, K>>();
 
+  // Ensure that all arguments are passed
+  const baseSnapshot = createSnapshotInstance(
+    data,              // baseData
+    baseMeta,          // baseMeta
+    snapshotId,        // snapshotId
+    category,          // category
+    snapshotStore,     // snapshotStore
+    snapshotManager,   // snapshotManager (pass this argument)
+    snapshotStoreConfig, // snapshotStoreConfig (pass this argument)
+    storeProps         // storeProps (optional)
+  );
+
+  const {     
+    type,
+    content,
+    additionalData,
+    userId,
+    sender,
+    channel, 
+  } = storeProps
+
+  const message = createMessage(
+    type,
+    content,
+    additionalData,
+    userId,
+    sender,
+    channel,
+ )
+  
   // Extend baseSnapshot with additional properties for SnapshotItem
-  const snapshotItem: SnapshotItem<T, Meta, K> = {
+  const snapshotItem: SnapshotItem<T, K> = {
     ...baseSnapshot, // Spread the baseSnapshot properties
-    message: "Custom message",
+    message: message,
     itemContent: undefined, // Add additional fields specific to SnapshotItem
     data, // This could be adjusted based on specific requirements
   };

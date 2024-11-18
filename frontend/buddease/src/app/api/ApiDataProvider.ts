@@ -31,7 +31,9 @@ export const fetchProviderData = async (params: any, token: string) => {
   }
 };
 
-export const fetchProviderRecord = async (id: number, token: string) => {
+export const fetchProviderRecord = async (
+  id: number, token: string
+) => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}/single/${id}`, {
       headers: {

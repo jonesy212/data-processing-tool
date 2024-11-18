@@ -330,6 +330,9 @@ const historyManagerStore = (): HistoryStore => {
           profileAccessControl: profile.profileAccessControl,
           activityStatus: profile.activityStatus,
           isAuthorized: profile.isAuthorized,
+          bannerUrl: profile.bannerUrl,
+          roles: profile.roles,
+          storeId: profile.storeId,
           // Add more properties as needed
         }));
 

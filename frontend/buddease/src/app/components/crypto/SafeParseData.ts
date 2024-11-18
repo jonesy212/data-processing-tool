@@ -1,14 +1,13 @@
 import useErrorHandling from "../hooks/useErrorHandling";
 import { sanitizeComments } from "../security/SanitizationFunctions";
 import { ParsedData, parseData } from "./parseData";
-import { Data } from "../models/data/Data"; // Import the Data type
-
+import { BaseData } from '@/app/components/models/data/Data';
 // Define a specific type that extends T to include the comment property
-interface DataWithComment extends Data {
+interface DataWithComment<T extends   BaseData<T>> {
   comment: string;
 }
 
-const safeParseData = <T extends DataWithComment>(
+const safeParseData = <T extends DataWithComment<T>>(
   data: T[],
   threshold: number
 ): ParsedData<T>[] => {
@@ -30,4 +29,4 @@ const safeParseData = <T extends DataWithComment>(
 };
 
 export default safeParseData;
-export type {DataWithComment}
+export type { DataWithComment };

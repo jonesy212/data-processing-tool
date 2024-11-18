@@ -76,7 +76,6 @@ import { UIApi } from "../users/APIUI";
 import * as apiSnapshot from "./../../api/SnapshotApi";
 import { BaseCustomEvent } from "./BaseCustomEvent";
 import { CustomMouseEvent } from "./EventService";
-import { Meta } from "../models/data/dataStoreMethods";
 
 const dispatch = useDispatch();
 // State and other logic...
@@ -299,7 +298,7 @@ const resetStateVariables = () => {
 
 const clearResources = (
   socket: WebSocket | null,
-  subscription: Subscription<T, Meta, K> | null,
+  subscription: Subscription<T, K> | null,
   unsubscribeDetails?: UnsubscribeDetails
 ) => {
 
@@ -329,12 +328,13 @@ const cleanupState = (subscription: any) => {
 };
 
 const cleanupSubscriptions = (
-  subscription: Subscription<T, Meta, K> | null,
+  subscription: Subscription<T, K> | null,
   unsubscribeDetails?: UnsubscribeDetails,
 ) => {
+
   // Clean up any subscriptions
   if (subscription && unsubscribeDetails) {
-    subscription.unsubscribe(unsubscribeDetails);
+    subscription.unsubscribe(snapshotId, unsubscribeDetails, callback);
   }
 };
 
@@ -346,7 +346,7 @@ const cleanupSocketConnection = (socket: WebSocket) => {
 
 const closeConnections = (
   socket: WebSocket,
-  subscription: Subscription<T, Meta, K>| null,
+  subscription: Subscription<T, K>| null,
   unsubscribeDetails?: UnsubscribeDetails
 ) => {
   // Close any open connections
@@ -1170,7 +1170,7 @@ const DynamicEventHandlerService = ({
   handleSorting,
 }: {
   handleSorting: (
-    snapshotList: Promise<SnapshotList<T, Meta, K>>,
+    snapshotList: Promise<SnapshotList<T, K>>,
     event: SyntheticEvent<Element, Event> | MouseEvent
   ) => void;
 }) => {
@@ -1181,10 +1181,10 @@ const DynamicEventHandlerService = ({
 
   // State to track messages
   const [messages, setMessages] = useState<string[]>([]);
-  const snapshhotListRef = useRef<Promise<SnapshotList<T, Meta, K>>>();
+  const snapshhotListRef = useRef<Promise<SnapshotList<T, K>>>();
   let sentiment: AxiosResponse<any, any>;
 
-  const handleSortingWrapper = (snapshotList: Promise<SnapshotList<T, Meta, K>>) => {
+  const handleSortingWrapper = (snapshotList: Promise<SnapshotList<T, K>>) => {
     // Handle sorting logic
     // Assuming snapshotList is an array or object with sorting functionality
     (async () => {
@@ -2500,7 +2500,7 @@ const DynamicEventHandlerService = ({
         });
     
         // Fetch the sorted list using the constructed Target
-        const snapshotList: Promise<SnapshotList<T, Meta, K>> = apiSnapshot.getSortedList(targetConfig);
+        const snapshotList: Promise<SnapshotList<T, K>> = apiSnapshot.getSortedList(targetConfig);
         handleSorting(snapshotList, event);
       }
     );

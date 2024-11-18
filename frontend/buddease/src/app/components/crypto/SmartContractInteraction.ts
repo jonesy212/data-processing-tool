@@ -9,7 +9,7 @@ interface SmartContractInteraction {
   description: string | null;
 }
 
-interface CustomTransactionProps extends SmartContractInteraction {
+interface CustomTransactionProps extends SmartContractInteraction,  BaseTransaction {
   _id: string | undefined;
   date: Date | undefined;
   startDate: Date | undefined;
@@ -65,6 +65,8 @@ interface CustomTransactionProps extends SmartContractInteraction {
   ];
   notificationsEnabled: boolean;
 }
+
+
 type CustomTransaction = Transaction & {
   isLegacy?: (() => boolean) | undefined;
   isBerlin?: (() => boolean) | undefined;
@@ -78,7 +80,7 @@ type CustomTransaction = Transaction & {
   nonce?: number | null;
   gasLimit?: bigint | null;
   data: ""; // Added data here
-  value: bigint | null;
+  value: bigint;
   chainId?: bigint | null;
   hash?: null | undefined; // Added hash here
   unsignedHash: "" | null; // Added unsignedHash here
@@ -220,4 +222,4 @@ function createCustomTransaction(
   };
 }
 
-export type { CustomTransaction, SmartContractInteraction };
+export type { CustomTransaction, SmartContractInteraction , CustomTransactionProps};

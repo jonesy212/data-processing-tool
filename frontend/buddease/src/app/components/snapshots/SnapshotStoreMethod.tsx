@@ -1,8 +1,8 @@
 // // SnapshotStoreMethod.tsx
+import { BaseData } from '@/app/components/models/data/Data';
 import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { Data } from "../models/data/Data";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Subscription } from "../subscriptions/Subscription";
@@ -17,26 +17,26 @@ import { SnapshotStoreProps } from "./useSnapshotStore";
 
 
 // Define the necessary types
-interface SnapshotStoreMethod<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+interface SnapshotStoreMethod<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   snapshot: (
     id: string | number | undefined,
     snapshotId: string | null,
-    snapshotData: SnapshotData<T, Meta, K>,
+    snapshotData: SnapshotData<T, K>,
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
-    callback: (snapshotStore: SnapshotStore<T, Meta, K>) => void,
-    dataStore: DataStore<T, Meta, K>,
-    dataStoreMethods: DataStoreMethods<T, Meta, K>,
-    // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, Meta, K>,
+    callback: (snapshotStore: SnapshotStore<T, K>) => void,
+    dataStore: DataStore<T, K>,
+    dataStoreMethods: DataStoreMethods<T, K>,
+    // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
     metadata: UnifiedMetaDataOptions,
     subscriberId: string, // Add subscriberId here
     endpointCategory: string | number,// Add endpointCategory here
-    storeProps: SnapshotStoreProps<T, Meta, K>,
-    snapshotConfigData: SnapshotConfig<T, Meta, K>,
-    subscription: Subscription<T, Meta, K>,
-    snapshotStoreConfigData?: SnapshotStoreConfig<T, Meta, K>,
-    snapshotContainer?: SnapshotStore<T, Meta, K> | Snapshot<T, Meta, K> | null,
-  ) => Promise<{snapshot: Snapshot<T, Meta, K>}>,
+    storeProps: SnapshotStoreProps<T, K>,
+    snapshotConfigData: SnapshotConfig<T, K>,
+    subscription: Subscription<T, K>,
+    snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
+    snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null,
+  ) => Promise<{snapshot: Snapshot<T, K>}>,
   // Add other required properties here
 }
 

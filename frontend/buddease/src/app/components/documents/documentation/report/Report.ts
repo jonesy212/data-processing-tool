@@ -9,6 +9,15 @@ export interface BaseReport {
   reportFileName: string;
 }
 
+
+interface AddReportBase extends BaseReport {
+  createdBy: string;
+  content: string;
+  tags?: string[];
+  createdAt: Date;
+}
+
+
 interface ReportOptions {
   type?: 'financial' | 'technical' | 'research';
   fiscalYear?: number;
@@ -17,20 +26,29 @@ interface ReportOptions {
   // Add more options as needed
 }
 
+// Define custom types (optional, depending on your needs)
+type FinancialMetrics = string | { amount: number, currency: string };  // Example object type
+type TechnicalSpecifications = string | { version: string, platform: string };  // Example object type
+type ResearchFindings = string | { conclusion: string, sampleSize: number };  // Example object type
+
+
 interface FinancialReport extends BaseReport {
-  financialMetrics: string;
+  reportType: "financial";
+  financialMetrics: FinancialMetrics;
   fiscalYear: number;
 }
 
 interface TechnicalReport extends BaseReport {
-  technicalSpecifications: string;
+  reportType: "technical";
+  technicalSpecifications: TechnicalSpecifications;
   projectCode: string;
 }
 
 interface ResearchReport extends BaseReport {
-  researchFindings: string;
+  reportType: "research";
+  researchFindings: ResearchFindings;
   experimentDate: Date;
 }
 
 
-export type { FinancialReport, ResearchReport, TechnicalReport, ReportOptions };
+export type { FinancialReport, ResearchReport, TechnicalReport, ReportOptions, AddReportBase, TechnicalSpecifications };

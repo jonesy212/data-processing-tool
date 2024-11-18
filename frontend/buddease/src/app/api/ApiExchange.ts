@@ -6,6 +6,7 @@ import {
   fetchData,
   handleApiErrorAndNotify,
 } from "./ApiData";
+import useSecureExchangeId from "../components/utils/useSecureExchangeId";
 
 // Define your notification messages interface
 interface DataNotificationMessages {
@@ -16,8 +17,14 @@ interface DataNotificationMessages {
 // Function to fetch exchange data
 export const fetchExchangeData = async (): Promise<ExchangeData[]> => {
   try {
+    
+    const id = useSecureExchangeId(); // Use the newly created hook here
+    if (!id) {
+      throw new Error("Exchange ID is not available.");
+    }
+    
     const endpoint = `${process.env.REACT_APP_API_BASE_URL}/exchangeData`; // Replace with your actual exchange data endpoint
-    const response = await fetchData(endpoint);
+    const response = await fetchData(endpoint, id);
 
     if (!response || !response.data) {
       throw new Error(

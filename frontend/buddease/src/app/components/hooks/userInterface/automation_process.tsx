@@ -10,6 +10,7 @@ import { notify } from '../../utils/snapshotUtils';
 import { Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '../../snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '../../snapshots/SnapshotWithCriteria';
+import { K, T } from '../../models/data/dataStoreMethods';
 
 
 // Define a custom hook to handle errors and notifications
@@ -80,9 +81,9 @@ const useErrorHandling = () => {
 
 
 // Automated system setup process
-const config: SnapshotStoreConfigType<Snapshot<Data, K>, K> = new SnapshotStoreConfig({} as SnapshotStoreConfig<Snapshot<Data, K>, K>, notify).configure();
+const config: SnapshotStoreConfigType<Snapshot<Data, K<T>>, K<T>> = new SnapshotStoreConfig({} as SnapshotStoreConfig<Snapshot<Data, K<T>>, K<T>>, notify).configure();
 
-const setupAutomationSystem = (config: SnapshotStoreConfigType<Snapshot<Data, K>, K>, notify: (message: string, content: any, date: Date, type: NotificationType) => void) => {
+const setupAutomationSystem = (config: SnapshotStoreConfigType<Snapshot<Data, K<T>>, K<T>>, notify: (message: string, content: any, date: Date, type: NotificationType) => void) => {
   // Configure SnapshotStore
   typeof SnapshotStoreConfig === "function" && new SnapshotStoreConfig(config, notify);
 

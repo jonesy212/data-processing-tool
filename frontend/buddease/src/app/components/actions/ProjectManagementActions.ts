@@ -1,8 +1,8 @@
 // ProjectManagementActions.ts
+import { BaseData } from '@/app/components/models/data/Data';
 import { createAction } from "@reduxjs/toolkit";
-import {  Data } from "../models/data/Data";
 import { CustomSnapshotData } from '../snapshots';
-export const ProjectManagementActions = <T extends Data, K extends CustomSnapshotData>() => ({
+export const ProjectManagementActions = <T extends  BaseData<T>, K extends CustomSnapshotData<T> = T>() => ({
 
   // Tenant-related actions
   addTenantToProject: createAction<{ projectId: number, tenantId: number }>("addTenantToProject"),

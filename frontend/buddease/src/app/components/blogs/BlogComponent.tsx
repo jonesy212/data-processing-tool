@@ -1,17 +1,18 @@
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
+import { BaseMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import React, { useEffect, useState } from 'react';
-import { Content } from '../models/content/AddContent';
-import { Data } from '../models/data/Data';
 import { BlogData } from '../lists/BlogList';
-import {  Snapshot } from '../snapshots/LocalStorageSnapshotStore';
+import { Content } from '../models/content/AddContent';
+import { BaseData, Data } from '../models/data/Data';
+import { Snapshot } from '../snapshots/LocalStorageSnapshotStore';
 import { CustomSnapshotData, SnapshotData } from '../snapshots/SnapshotData';
-import SnapshotStore from '..w/snapshots/SnapshotStore';
+import SnapshotStore from '../snapshots/SnapshotStore';
 import { Subscription } from '../subscriptions/Subscription';
 import { NotificationType, useNotification } from '../support/NotificationContext';
-import { Subscriber } from '../users/Subscriber';
+import { Subscriber, SubscriberCallback } from '../users/Subscriber';
 import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '../utils/applicationUtils';
+import { snapshotId } from '../utils/snapshotUtils';
 import * as subscriberApi from './../../api/subscriberApi';
-import { UnifiedMetaDataOptions, BaseMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
 
 type BlogContentType = {
   body: string;                     // Main content of the blog post
@@ -19,6 +20,10 @@ type BlogContentType = {
   tags?: string[];                  // Optional tags for categorization
   length: number;                   // Length of the content in terms of word count
   relatedLinks?: { title: string; url: string }[]; // Related articles or resources
+  _id: string,
+  date: Date,
+  subtitle: string,
+  data?: Content<T, K<T>> | Snapshot<Data<T, K<T>>, Meta>,
 };  
 
 type BlogOptionalType = {
@@ -32,9 +37,16 @@ type BlogOptionalType = {
 };
 
 
-interface BlogProps<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = Data> {
-  title: string;
-  content: string | Content<T, Meta, K> | undefined;  // Use Content with the required type parameters
+type BlogContentMeta = BlogContentType & Meta & {
+  content: string | Content<T, K<T>> | undefined;
+  // Add more properties as needed (date, author, etc.)
+};
+
+interface BlogProps<
+  T extends  BaseData<T>, 
+K extends T = T> {
+  title?: string;
+  content: string | Content<T, K> | undefined;  // Use Content with the required type parameters
   subscriberId: string;
   metaData?: BlogMetaType;
   optionalData?: BlogOptionalType; // Add optionalData to use BlogOptionalType
@@ -42,7 +54,7 @@ interface BlogProps<T extends Data, Meta extends UnifiedMetaDataOptions, K exten
 }  
 
 
-type BlogMetaType = BaseMetaDataOptions<BlogContentType, Meta> & {
+type BlogMetaType = BaseMetaDataOptions<BlogContentType, BlogContentMeta> & {
   author: string;                  // Name of the author
   publishedDate: Date;             // Date when the blog post was published
   modifiedDate?: Date;             // Optional date when the post was last modified
@@ -52,27 +64,37 @@ type BlogMetaType = BaseMetaDataOptions<BlogContentType, Meta> & {
   commentsCount?: number;           // Optional count of comments
 };  
 
+type BlogDataMeta = BlogContentMeta & BlogOptionalType & BlogMetaType;
 
-const BlogComponent: React.FC<BlogProps<BlogData, Meta, BlogData>> = ({
+
+// SnapshotData that includes the required BlogData properties
+type SnapshotDataWithBlogData = SnapshotData<BlogData<Data<BaseData<any>>, BlogDataMeta>, BlogDataMeta>;
+
+
+const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataMeta>> = ({
   title,
   content,
   subscriberId,
+  metaData,
 }) => {
-  const [subscriptionData, setSubscriptionData] = useState<Subscription<BlogData, Meta> | undefined>(); 
+  const [subscriptionData, setSubscriptionData] = useState<Subscription<BlogData<Data<BaseData<any>>>, BlogDataMeta> | undefined>(); 
   const { sendNotification } = useNotification(); 
-  const optionalData: CustomSnapshotData | null = null;
+  const optionalData: CustomSnapshotData<BaseData> | null = null;
   const name = "Blog"; 
 
-  let snapshotData: SnapshotData<Data, Meta> | null = null;
+
+  // Make sure your snapshotData has the required fields
+  let snapshotData: SnapshotDataWithBlogData | null = null;
   let id: string | number | undefined = undefined;
-  let data: Partial<SnapshotStore<Data>> = {
+  let data: Partial<SnapshotStore<BlogData<Data<BaseData<any>>>>> = {
     id: String(id || ""),
     // Add other properties as needed
   };
   
-  if (optionalData !== null) {
+  if (optionalData !== null && snapshotData!.snapshotId !== undefined) {
     snapshotData = {
       id: id,
+      snapshotId: snapshotId,
       data: optionalData,
       timestamp: new Date(),
       subscriberId: subscriberId,
@@ -125,38 +147,43 @@ const BlogComponent: React.FC<BlogProps<BlogData, Meta, BlogData>> = ({
       restore: () => {},
       getHistory: () => [],
       clearHistory: () => {},
-    } as unknown as Snapshot<Data, Meta, Data>;
+    } as unknown as Snapshot<BlogData<Data<BaseData<any>>>, BlogDataMeta>;
   }
-  const subscribedId = subscriberApi.getSubscriberById(subscriberId).toString();
 
-  const subscriber = new Subscriber<BlogData, Meta, BlogData>(
-    String(id || ""), 
-    name, 
-    subscriptionData || ({} as Subscription<BlogData, Meta>), 
-    subscribedId, 
-    notifyEventSystem, 
-    updateProjectState, 
-    logActivity, 
-    triggerIncentives, 
-    optionalData, 
-    data,
+  
+  const subscribedId = subscriberApi.getSubscriberById(subscriberId).toString();
+  // Ensure that subscriptionData is set properly
+  const subscription = subscriptionData || ({} as Subscription<BlogData<Data<BaseData<any>>>, BlogDataMeta>);
+  
+  const subscriber = new Subscriber<BlogData<Data<BaseData<any>>, BlogDataMeta>>(
+    String(id), // id
+    name, // name
+    subscription, // subscription
+    subscribedId, // subscriberId
+    notifyEventSystem, // notifyEventSystem
+    updateProjectState, // updateProjectState
+    logActivity, // logActivity
+    triggerIncentives, // triggerIncentives
+    optionalData, // optionalData
+    snapshotData // payload
   );
 
   useEffect(() => {
-    subscriber.subscribe((data: Snapshot<Data, Meta, Data>) => {
-      const subscription = data.data as unknown as Subscription<BlogData, Meta>;
+    subscriber.subscribe(((data: Snapshot<BlogData<Data<BaseData<any>>>, BlogDataMeta>) => {
+      const subscription = data.data as Subscription<BlogData<Data<BaseData<any>>>, BlogDataMeta>;
       setSubscriptionData(subscription);
-
+  
       sendNotification(
         "BlogUpdated" as NotificationType,
         `Blog "${title}" has been updated.`
       );
-    });
-
+    }) as unknown as SubscriberCallback<
+    BlogData<Data<BaseData<any, any, any>>, Meta>, BlogDataMeta>);
+  
     return () => {
       if (subscriber) {
-        const data = {} as Snapshot<Data, Meta, Data>;
-        const callback = (data: Snapshot<BlogData, Meta, BlogData>) => {
+        const data = {} as Snapshot<BlogData<Data<BaseData<any>>>, BlogData<Data<BaseData<any>>>>;
+        const callback = (data: Snapshot<BlogData<Data<BaseData<any>>>, BlogDataMeta>) => {
           console.log("Received snapshot:", data);
           // Add more logic as needed
         };
@@ -172,4 +199,5 @@ const BlogComponent: React.FC<BlogProps<BlogData, Meta, BlogData>> = ({
     </div>
   );
 };
+
 export default BlogComponent;

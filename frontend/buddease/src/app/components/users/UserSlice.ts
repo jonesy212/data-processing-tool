@@ -1,4 +1,3 @@
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import { UserSettings } from "@/app/configs/UserSettings";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -418,17 +417,17 @@ export const userManagerSlice = createSlice({
             data: task.data as WritableDraft<TaskData> | null,
             tags: task.tags as WritableDraft<TagsRecord> | undefined,
             subtasks: task.subtasks as WritableDraft<TodoImpl<Todo, any>>[] | undefined,
-            actions: task.actions as WritableDraft<SnapshotStoreConfig<T, Meta, Data>[]> | undefined,
+            actions: task.actions as WritableDraft<SnapshotStoreConfig<T, Data>[]> | undefined,
             snapshotWithCriteria: task.snapshotWithCriteria as WritableDraft<SnapshotWithCriteria<Data, any>> | undefined,
             phase: task.phase as WritableDraft<Phase> | null | undefined,
-            initialState: task.initialState as WritableDraft<InitializedState<Data, Meta, BaseData>> | null | undefined,
+            initialState: task.initialState as WritableDraft<InitializedState<Data, BaseData>> | null | undefined,
             comments: task.comments as (WritableDraft<Comment> | WritableDraft<CustomComment>)[] | undefined,
             updatedDetails: task.updatedDetails as WritableDraft<DetailsItem<BaseData>> | undefined,
             videoData: task.videoData as WritableDraft<VideoData> | undefined,
             members: task.members as string[] | WritableDraft<Member>[] | number[] | undefined,
             leader: task.leader as WritableDraft<User> | null | undefined,
             followers: task.followers as WritableDraft<User>[] | undefined,
-            snapshotStores: task.snapshotStores as WritableDraft<SnapshotStore<BaseData, Meta, BaseData>>[] | undefined,
+            snapshotStores: task.snapshotStores as WritableDraft<SnapshotStore<BaseData, BaseData>>[] | undefined,
             snapshots: task.snapshots as WritableDraft<Snapshots<BaseData> | undefined> | undefined,
             // Add other properties here
           }));

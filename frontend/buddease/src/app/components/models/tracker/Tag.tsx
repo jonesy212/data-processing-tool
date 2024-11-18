@@ -1,13 +1,17 @@
 import React from 'react';
 import { TagsRecord } from '../../snapshots';
-import { Data } from '../data/Data';
+import { BaseData } from '../data/Data';
 
 // Define the Tag interface and TagOptions interface
-interface Tag extends Data {
+interface Tag<
+  T extends  BaseData<T>,
+  K extends T = T> {
   id: string;
   name: string;
   color: string;
-  relatedTags: string[]
+  relatedTags: string[];
+  description?: string
+  // attribs:
 }
 
 interface TagOptions {
@@ -17,7 +21,7 @@ interface TagOptions {
   description: string;
   enabled: boolean;
   type: string;
-  tags?: TagsRecord | string[] | undefined; 
+  tags?: TagsRecord<T, K> | string[] | undefined; 
   createdAt?: Date;
   updatedAt?: Date;
   createdBy: string;
@@ -121,9 +125,7 @@ const sortTags = (tags: TagOptions[]) => {
 
 // Function to create a tag
 export const createTag = (id: string, name: string, color: string, p0: {
-  tags: (string[] | Tag[]
-
-  ) & TagsRecord; description: string; enabled: boolean;
+  tags: (string[] | Tag<any, any>[]) & TagsRecord; description: string; enabled: boolean;
 }): TagOptions => ({
   id,
   name,

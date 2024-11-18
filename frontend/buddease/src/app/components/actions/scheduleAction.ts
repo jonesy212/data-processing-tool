@@ -22,7 +22,7 @@ import { DataActions } from '../projects/DataAnalysisPhase/DataActions';
 import { DataAnalysisActions } from '../projects/DataAnalysisPhase/DataAnalysisActions';
 import { PromptActions } from '../prompts/PromptActions';
 import { ValidationActions } from '../security/ValidationActions';
-import { SnapshotActions } from '../snapshots/SnapshotActions';
+import { SnapshotActions } from '@/app/components/snapshots/SnapshotActions';
 import { DetailsListActions } from '../state/redux/actions/DetailsListActions';
 import { MarkerActions } from '../state/redux/actions/MarkerActions';
 import { NotificationActions } from '../support/NotificationActions';

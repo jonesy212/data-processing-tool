@@ -1,4 +1,5 @@
 import * as snapshotApi from '@/app/api/SnapshotApi';
+import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { SnapshotConfig } from '@/app/components/snapshots';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { K, Snapshot, snapshot, snapshotContainer, SnapshotOperation, SnapshotOperationType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotWithCriteria, subscribeToSnapshot, subscribeToSnapshots, T } from ".";
@@ -9,29 +10,26 @@ import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/Data
 import SnapshotManagerOptions from "./SnapshotManagerOptions";
 import SnapshotStore from "./SnapshotStore";
 
-
-
-const snapConfig: SnapshotConfig<T, Meta, K> | undefined = /* your snapshot configuration logic here */;
-
+const snapConfig: SnapshotConfig<T, K> | undefined = {/* your snapshot configuration logic here */}
 
 // newStoreUtils.ts
-export const createSnapshotStores = async <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  snapshot: Snapshot<T, Meta, K>,
-  snapshotStore: SnapshotStore<T, Meta, K>,
-  snapshotManager: SnapshotManager<T, Meta, K>,
-  payload: CreateSnapshotStoresPayload<T, Meta, K>,
-  callback: (snapshotStore: SnapshotStore<T, Meta, K>[]) => void | null,
-  snapshotStoreData?: SnapshotStore<T, Meta, K>[],
+export const createSnapshotStores = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  snapshot: Snapshot<T, K>,
+  snapshotStore: SnapshotStore<T, K>,
+  snapshotManager: SnapshotManager<T, K>,
+  payload: CreateSnapshotStoresPayload<T, K>,
+  callback: (snapshotStore: SnapshotStore<T, K>[]) => void | null,
+  snapshotStoreData?: SnapshotStore<T, K>[],
   category?: string | symbol | Category,
-  snapshotStoreDataConfig?: SnapshotStoreConfig<T, Meta, K> | undefined,
+  snapshotStoreDataConfig?: SnapshotStoreConfig<T, K> | undefined,
 ) => {
   const snapshotStoreConfigData = snapshotStoreDataConfig || undefined;
   const snapshotId = snapshot?.store?.snapshotId ?? undefined;
   const storeId = await snapshotApi.getSnapshotStoreId(Number(snapshotId));
-  const config: SnapshotStoreConfig<T, Meta, K> | SnapshotStoreConfig<any, any>[] | undefined = snapshotStoreConfigData;
+  const config: SnapshotStoreConfig<T, K> | SnapshotStoreConfig<any, any>[] | undefined = snapshotStoreConfigData;
   // Use dynamic properties with SnapshotManagerOptions
-  const options = await useSnapshotManager<T, Meta, K>(storeId)
-    ? new SnapshotManagerOptions<T, Meta, K>({
+  const options = await useSnapshotManager<T, K>(storeId)
+    ? new SnapshotManagerOptions<T, K>({
         baseURL: "custom-base-url",
         enabled: true,
         maxRetries: 5,
@@ -48,27 +46,27 @@ export const createSnapshotStores = async <T extends Data, Meta extends UnifiedM
           return snapConfig ? snapConfig : undefined;
         },
         // handleSnapshotOperation: (
-        //   snapshot: Snapshot<T, Meta, K>, 
-        //   data: Map<string, Snapshot<T, Meta, K>>, 
+        //   snapshot: Snapshot<T, K>, 
+        //   data: Map<string, Snapshot<T, K>>, 
         //   operation: SnapshotOperation,
         //   operationType: SnapshotOperationType
         // )
-        //   // : Promise<Snapshot<T, Meta, K>>
+        //   // : Promise<Snapshot<T, K>>
         //   => 
         //     {
         //   // Custom operation handling logic
           
-        //   // Make sure to return a valid Promise<Snapshot<T, Meta, K>>
+        //   // Make sure to return a valid Promise<Snapshot<T, K>>
         //   return Promise.resolve(snapshot); // Example return, adjust to your logic
         // },
     
         handleSnapshotStoreOperation: async (
           snapshotId: string, 
-          snapshotStore: SnapshotStore<T, Meta, K>, 
-          snapshot: Snapshot<T, Meta, K>,
+          snapshotStore: SnapshotStore<T, K>, 
+          snapshot: Snapshot<T, K>,
           operation: SnapshotOperation,
           operationType: SnapshotOperationType, 
-          callback: (snapshotStore: SnapshotStore<T, Meta, K>) => void
+          callback: (snapshotStore: SnapshotStore<T, K>) => void
         ): Promise<void> => { /* custom store operation handling */ },
         displayToast: (message) => console.log("Toast message:", message),
         addToSnapshotList: (snapshot) => { /* custom logic to add snapshot */ },
@@ -86,16 +84,16 @@ export const createSnapshotStores = async <T extends Data, Meta extends UnifiedM
         category: '',
         date: new Date(),
         type: '',
-        data: new Map<string, Snapshot<T, Meta, K>>(),
+        data: new Map<string, Snapshot<T, K>>(),
         initialState: null,
         snapshotId: '',
         snapshotConfig: [],
         subscribeToSnapshots: subscribeToSnapshots,
         subscribeToSnapshot: subscribeToSnapshot,
         delegate: [],
-        dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, Meta, K>,
+        dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K>,
         getDelegate: [],
-        getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, Meta, K> {
+        getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K> {
           throw new Error('Function not implemented.');
         },
         snapshotMethods: [],
@@ -105,7 +103,7 @@ export const createSnapshotStores = async <T extends Data, Meta extends UnifiedM
     operationType: SnapshotOperationType.FindSnapshot,
   };
 
-  const newStore = new SnapshotStore<T, Meta, K>(storeId, options, category, config, operation);
+  const newStore = new SnapshotStore<T, K>(storeId, options, category, config, operation);
   callback([newStore]);
   // Simulate a delay before receiving the update
   setTimeout(() => {
@@ -134,7 +132,7 @@ const snapshotManagerResponse = await useSnapshotManager(storeId);
 const options = snapshotManagerResponse && snapshotManagerResponse.snapshotManager
   ? snapshotManagerResponse.snapshotManager.getData(data)
   : {
-    data: new Map<string, Snapshot<T, Meta, K>>(),
+    data: new Map<string, Snapshot<T, K>>(),
     initialState: null,
     snapshotId: "",
     category: { /* Default category values */ },
@@ -144,9 +142,9 @@ const options = snapshotManagerResponse && snapshotManagerResponse.snapshotManag
     subscribeToSnapshots: subscribeToSnapshots,
     subscribeToSnapshot: subscribeToSnapshot,
     delegate: [],
-    dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, Meta, K>,
+    dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K>,
     getDelegate: [],
-    getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, Meta, K> {
+    getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K> {
       throw new Error("Function not implemented.");
     },
     snapshotMethods: [],
@@ -157,4 +155,4 @@ const operation: SnapshotOperation = {
   operationType: SnapshotOperationType.FindSnapshot,
 };
 
-export const newStore = new SnapshotStore<T, Meta, K>(storeId, options, category, config, operation);
+export const newStore = new SnapshotStore<T, K>(storeId, options, category, config, operation);

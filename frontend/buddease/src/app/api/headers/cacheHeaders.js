@@ -1,6 +1,6 @@
 /**
  * Function to create cache headers.
- * @returns {Object} - The cache headers.
+ * @returns {Record<string, string>} - The cache headers.
  */
 function createCacheHeaders() {
   const headers = {

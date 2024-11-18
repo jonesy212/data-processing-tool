@@ -1,4 +1,5 @@
 import { getSubscriberId } from "@/app/api/subscriberApi";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { useUser } from "@/app/context/UserContext";
 import React, { useEffect, useState } from "react";
 import useRealtimeData, {
@@ -14,7 +15,6 @@ import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { K, T } from "../snapshots/SnapshotConfig";
 import SnapshotStore from "../snapshots/SnapshotStore";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { Subscriber } from "../users/Subscriber";
 import {
     logActivity,
@@ -42,11 +42,11 @@ const SubscriptionComponent: React.FC<Props> = async ({
   );
   const data = useRealtimeData(initialData, updateCallback);
   const snapshotStore = useSnapshotManager();
-  const events = {} as Record<string, CalendarEvent<T, Meta, K>[]>;
+  const events = {} as Record<string, CalendarEvent<T, K>[]>;
   useEffect(() => {
     if (user) {
       // Create a subscription object
-      const subscription: Subscription<T, Meta, K> = {
+      const subscription: Subscription<T, K> = {
         unsubscribe: () => {},
         portfolioUpdates: () => {},
         tradeExecutions: () => {},
@@ -54,7 +54,7 @@ const SubscriptionComponent: React.FC<Props> = async ({
         triggerIncentives: () => {},
         communityEngagement: () => {},
         portfolioUpdatesLastUpdated: null,
-        determineCategory: (data: Snapshot<T, Meta, K> | null | undefined) => "",
+        determineCategory: (data: Snapshot<T, K> | null | undefined) => "",
         subscriberId: user._id,
         subscriptionId: "sub-123-id",
         subscriberType: SubscriberTypeEnum.Individual,
@@ -80,8 +80,8 @@ const SubscriptionComponent: React.FC<Props> = async ({
       setSubscriptionData(subscription as unknown as Data);
 
       // Subscribe to the data service
-      const callback = (data: SnapshotStore<T, Meta, K>) => {
-        // Transform data from SnapshotStore<Snapshot<Data, Meta, Data>> to Data
+      const callback = (data: SnapshotStore<T, K>) => {
+        // Transform data from SnapshotStore<Snapshot<Data, Data>> to Data
         const extractedData =
           Array.isArray(data.snapshots) && data.snapshots.length > 0 && Array.isArray(data.snapshots[0].snapshots)
             ? data.snapshots[0].snapshots[0]

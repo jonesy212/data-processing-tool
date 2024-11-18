@@ -9,7 +9,7 @@ import {
   SimpleCalendarEvent,
   useCalendarContext,
 } from "../components/calendar/CalendarContext";
-import { CalendarEvent } from "../components/state/stores/CalendarEvent";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import UniqueIDGenerator from "../generators/GenerateUniqueIds";
 import clientApiService from "./ApiClient";
 import { endpoints } from "./ApiEndpoints";

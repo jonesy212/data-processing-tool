@@ -78,6 +78,11 @@ export interface NotificationTypes {
   reminder: boolean;
   project: boolean;
   inApp: boolean;
+  comment: boolean,
+  like: boolean,
+  dislike: boolean,
+  bookmark: boolean,
+
 }
 export type NOTIFICATION_TYPES =
   (typeof NOTIFICATION_TYPES)[keyof typeof NOTIFICATION_TYPES];

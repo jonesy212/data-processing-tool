@@ -1,4 +1,5 @@
 // ApiConfigComponent.tsx
+import { NotificationTypeEnum } from '@/app/components/support/NotificationContext';
 import { User } from "@/app/components/users/User";
 import { backendConfig } from "@/app/configs/BackendConfig";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
@@ -6,7 +7,7 @@ import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceCom
 import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
 import { frontendConfig } from "@/app/configs/FrontendConfig";
 import MainConfig from "@/app/configs/MainConfig";
-import UserPreferences from "@/app/configs/UserPreferences";
+import {UserPreferences} from "@/app/configs/UserPreferences";
 import UserSettings from "@/app/configs/UserSettings";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
@@ -33,19 +34,22 @@ import UniqueIDGenerator from "../generators/GenerateUniqueIds";
 import { id_ID } from "@faker-js/faker";
 import { TrackerProps } from "../components/models/tracker/Tracker";
 import userPreferences from "@/app/configs/UserPreferences";
+ 
 
 
 const handleFileChanges = (file: FileData): FileData => file; // Handles file change logic
 
+const ApiConfigComponent: React.FC = () => {
   // Access API configurations from Redux state
   const apiConfigsFromRedux = useSelector(selectApiConfigs);
   const [filePath, setFilePath] = useState<string>('');
-  const [apiConfigs, setApiConfigs] = 
+  const [apiConfigs, setApiConfigs] = useState<ApiConfig[]>([]); // Initialize as empty array
   const { versionNumber, appVersion } = getCurrentAppInfo();
   const projectPath = getAppPath(versionNumber, appVersion);
   const frontendStructure = new FrontendStructure(projectPath);
   const backendStructure = new BackendStructure(projectPath);
-  
+  const [showProfileSetup, setShowProfileSetup] = useState<boolean>(false); // Initialize state
+
   // Update local state with API configurations from Redux state
   useEffect(() => {
 
@@ -85,10 +89,13 @@ const handleFileChanges = (file: FileData): FileData => file; // Handles file ch
 
 
   const generateTrackerID = UniqueIDGenerator.generateTrackerID(
-    name, type, id)
+    "Sample Tracker", // Provide a meaningful name
+    NotificationTypeEnum.GeneratedID, // Replace with actual NotificationTypeEnum value
+    undefined // Pass undefined or a valid id
+  );
    
 // Function to generate dynamic tracker props based on user preferences or conditions
-const getDynamicTrackerProps = (userPreferences: typeof UserPreferences): TrackerProps => {
+const getDynamicTrackerProps = (userPreferences: UserPreferences): TrackerProps => {
   return {
     id: userPreferences.trackerId || generateTrackerID, // Function to dynamically generate or fetch the tracker ID
     name: "dynamic-task-tracker", // You can set this dynamically based on preferences
@@ -176,23 +183,28 @@ const getDynamicTrackerProps = (userPreferences: typeof UserPreferences): Tracke
   };
 
   const renderActionContent = () => {
-    switch (userPreferences.actions) {
-      case "create":
+    if (userPreferences.actions && userPreferences.actions.length > 0) {
+      // Check for the presence of specific action types
+      if (userPreferences.actions.includes("create")) {
         return <CreateComponentForm ComponentActions={ComponentActions} />;
-
-      case "update":
+      }
+  
+      if (userPreferences.actions.includes("update")) {
         return <UpdateComponent />;
-      case "delete":
+      }
+  
+      if (userPreferences.actions.includes("delete")) {
         return <DeleteComponent />;
-      // Add cases for other action types
-      default:
-        return null; // Default content if action type is not specified
+      }
     }
+  
+    return null; // Default content if no actions are specified
   };
+  
 
   // Example usage of API configurations
   const renderApiContent = () => {
-    return apiConfigs.map((config) => (
+    return apiConfigs.map((config: ApiConfig) => (
       <div key={config.id}>
         {/* Render content based on API configurations */}
         <p>{config.name}</p>

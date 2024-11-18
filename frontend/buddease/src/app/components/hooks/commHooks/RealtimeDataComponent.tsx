@@ -1,12 +1,12 @@
 // RealtimeDataComponent.tsx
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { ExchangeActions } from "@/app/components/actions/ExchangeActions";
 import useRealtimeData, { RealtimeUpdateCallback } from "@/app/components/hooks/commHooks/useRealtimeData";
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
-import { Data } from "@/app/components/models/data/Data";
+import { BaseData } from '@/app/components/models/data/Data';
 import { ExchangeData } from "@/app/components/models/data/ExchangeData";
 import { fetchDEXData } from "@/app/components/models/data/fetchExchangeData";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import React, { useEffect } from "react";
 import { RealtimeData, RealtimeDataItem } from "../../models/realtime/RealtimeData"; // Adjust path as needed
 import { Snapshot } from "../../snapshots";
@@ -17,11 +17,11 @@ interface RealtimeDataProps extends RealtimeDataItem  {
   value: string;
 }
 
-const processSnapshotStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  snapshotStore: SnapshotStore<T, Meta, K>
+const processSnapshotStore = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  snapshotStore: SnapshotStore<T, K>
 ) => {
   Object.keys(snapshotStore).forEach((snapshotId) => {
-    const typedSnapshotId = snapshotId as keyof SnapshotStore<Snapshot<T, Meta, K>>;
+    const typedSnapshotId = snapshotId as keyof SnapshotStore<Snapshot<T, K>>;
     const snapshotData = snapshotStore[typedSnapshotId];
     console.log(`Processing snapshot with ID ${String(typedSnapshotId)}:`, snapshotData);
   });
@@ -31,7 +31,7 @@ const RealtimeDataComponent: React.FC<RealtimeDataProps> = ({ userId, dispatch, 
   const initialData: RealtimeDataItem[] = [];
   const { error, handleError, clearError } = useErrorHandling();
 
-  const updateCallback: RealtimeUpdateCallback<RealtimeData, K, M> = (
+  const updateCallback: RealtimeUpdateCallback<RealtimeData, K> = (
     data,
     events,
     snapshotStore,
@@ -84,4 +84,5 @@ const RealtimeDataComponent: React.FC<RealtimeDataProps> = ({ userId, dispatch, 
 };
 
 export default RealtimeDataComponent;
-export type { RealtimeDataProps };
+export type { processSnapshotStore, RealtimeDataProps };
+

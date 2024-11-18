@@ -6,10 +6,9 @@ import { StatusType } from "../data/StatusType";
 import { Tag } from "../tracker/Tag";
 
 // Check if the tag is an instance of Tag
-function isTagObject(tag: string | Tag): tag is Tag {
-  return (tag as Tag).id !== undefined;
+function isTagObject(tag: string | Tag<any>): tag is Tag<any> {
+  return (tag as Tag<any>).id !== undefined;
 }
-
 
 // Define the type for the data property
 interface ContentData {
@@ -47,7 +46,7 @@ interface ContentItemProps {
   title?: string;
   content?: string;
   // Specific props
-  item?: DetailsItem<Data>;
+  item?: DetailsItem<Data<any>>;
 }
 
 const ContentItemComponent: React.FC<ContentItemProps> = ({

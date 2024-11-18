@@ -32,8 +32,9 @@ import { NotificationTypeEnum } from "@/app/components/support/NotificationConte
 import { IdeaCreationPhaseEnum } from "@/app/components/users/userJourney/IdeaCreationPhase";
 import { MessageType } from "@/app/generators/MessaageType";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Timestamped, StatusTrackable } from '@/pages/searches/FilterCriteria';
 
-interface FilterState {
+interface FilterState extends Timestamped, StatusTrackable {
   startDate?: Date;
   endDate?: Date;
   status?: StatusType | null;
@@ -53,7 +54,7 @@ interface FilterState {
   subscriberType?: SubscriberTypeEnum | null;
   subscriptionType?: SubscriptionTypeEnum | null;
   analysisType?: AnalysisTypeEnum | null;
-  documentType?: DocumentTypeEnum | null;
+  documentType?: DocumentTypeEnum | string | null;
   fileType?: FileTypeEnum | null;
   tenantType?: TenantManagementPhaseEnum | null;
   ideaCreationPhaseType?: IdeaCreationPhaseEnum | null;

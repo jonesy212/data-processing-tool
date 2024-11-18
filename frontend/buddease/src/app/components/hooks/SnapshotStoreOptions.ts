@@ -1,233 +1,323 @@
+import { BaseData } from '@/app/components/models/data/Data';
+import { K } from "@/app/components/models/data/dataStoreMethods";
+import { SnapshotStoreConfig } from '@/app/components/snapshots';
+import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { ProjectMetadata, StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { Category } from '../libraries/categories/generateCategoryProperties';
-import { BaseData, Data } from '../models/data/Data';
-import { DataStoreWithSnapshotMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-import { ConfigureSnapshotStorePayload, MultipleEventsCallbacks, Snapshot, SnapshotConfig, SnapshotData, SnapshotOperation, SnapshotOperationType, Snapshots, SnapshotsArray, SnapshotStoreConfig, SnapshotStoreMethod, SnapshotUnion, SnapshotWithCriteria } from '../snapshots/index';
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import {
+  ConfigureSnapshotStorePayload, MultipleEventsCallbacks, Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotOperation, SnapshotOperationType, Snapshots,
+  SnapshotsArray, SnapshotStoreMethod, SnapshotStoreProps, SnapshotUnion, SnapshotWithCriteria
+} from '../snapshots/index';
+  
+  import { SchemaField } from './../database/SchemaField';
 
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
-import { K, Meta, T } from '../models/data/dataStoreMethods';
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import { DataStore, EventRecord, InitializedState } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
-import CalendarManagerStoreClass from '../state/stores/CalendarEvent';
+import { Subscription } from '../subscriptions/Subscription';
 import { AllTypes } from '../typings/PropTypes';
-import { Subscriber } from '../users/Subscriber';
+import { Subscriber, SubscribeResult } from '../users/Subscriber';
 
-type MetaDataOptions = StructuredMetadata<T, Meta, K> | ProjectMetadata
-type InitializedData = T | Map<string, Snapshot<T, Meta, K>> | null
-type InitializedDataStore = T | DataStore<T, Meta, K> | Map<string, SnapshotStore<T, Meta, K>> | null;
 
+type MetaDataOptions<T extends  BaseData<T>> = StructuredMetadata<T, K<T>> | ProjectMetadata<T, K<T>>;
+
+// Define InitializedData with T and K<T>
+type InitializedData<T extends  BaseData<T>> = T | Map<string, Snapshot<T, K<T>>> | null;
+
+// Define InitializedDataStore with T and K<T>
+type InitializedDataStore<T extends  BaseData<T>> = T | DataStore<T, K<T>> | Map<string, SnapshotStore<T, K<T>>> | null;
 
 // Renaming SnapshotStoreConfig to InitializedDelegate
-type InitializedDelegate<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> =
-    SnapshotStoreConfig<T, Meta, K>[] | (() => Promise<SnapshotStoreConfig<T, Meta, K>[]>);
+type InitializedDelegate<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
+    SnapshotStoreConfig<T, K>[] | (() => Promise<SnapshotStoreConfig<T, K>[]>);
 
 // New type for InitializedDelegateSearch
-type InitializedDelegateSearch<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> =
-    () => Promise<SnapshotWithCriteria<T, Meta, K>[] | null>;
+type InitializedDelegateSearch<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
+    () => Promise<SnapshotWithCriteria<T, K>[] | null>;
 
-interface SnapshotStoreOptions<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
-  id: string | number | null
-  storeId: number
-  data?: InitializedData | null
-  baseURL: string,
-  enabled: boolean,
-  maxRetries: number,
-  retryDelay: number,
-  maxAge: string | number,
-  staleWhileRevalidate: number,
-  cacheKey: string,
-  initialState: InitializedState<T, Meta, K> | {};
-  snapshotObj?: Snapshot<T, Meta, K> | null;
-  snapshots?: Snapshots<T, Meta>;
-  eventRecords: Record<string, EventRecord<T, Meta, K>[]> | null;
-  records: Record<string, CalendarManagerStoreClass<T, Meta, K>[]> | []; // Store calendar records
-  snapshotRecords?: Record<string, Snapshot<T, Meta, K>[]>; // Add snapshotRecords to store snapshots
 
-  category: Category
+
+interface SnapshotInstanceProps<
+  T extends  BaseData<T>,
+  K extends T = T
+> extends SnapshotStoreCore<T, K> {
+  name: string;
+  schema: Record<string, SchemaField>;
+  additionalData?: CustomSnapshotData<T>
+  description?: string; 
+  priority?: string;
+  expirationDate: Date;
+  version?: string;
+  operation: SnapshotOperation;     
+  id?: string | number;             
+  localStorage?: Storage;           
+  additionalHeaders?: Record<string, string>,
+  configureSnapshot: (
+    id: string,
+    storeId: number,
+    snapshotId: string,
+    snapshotData: SnapshotData<T, K>,
+    dataStoreMethods: DataStore<T, K>,
+    category?: string | symbol | Category,
+    categoryProperties?: CategoryProperties | undefined,
+    callback?: (snapshot: Snapshot<T, K>) => void,
+    SnapshotData?: SnapshotStore<T, K>,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, K>,
+  ) => Promise<SnapshotStore<T, K>>,
+}
+
+interface SnapshotConfigOption<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+  extends Omit<SnapshotInstanceProps<T, K>, 'configureSnapshot'> {  // Exclude configureSnapshot
+  snapshotStore: SnapshotStoreConfig<T, K> | null; // Define as config option
+  taskIdToAssign: string;
+  clearSnapshots: () => void;
+  getParentId: (snapshot: Snapshot<T, K>) => string | null;
+  getChildIds: (childSnapshot: Snapshot<T, K>) => string[];
+}
+
+
+interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  id: string | number | null;
+  storeId: number;
+  data?: InitializedData<T> | null;
+  baseURL: string;
+  enabled: boolean;
+  maxRetries: number;
+  retryDelay: number;
+  maxAge: string | number;
+  staleWhileRevalidate: number;
+  cacheKey: string;
+  initialState: InitializedState<T, K> | {};
+  key?: string;
+  keys?: string[];
+  snapshotObj?: Snapshot<T, K> | null;
+  snapshots?: Snapshots<T>;
+  eventRecords: Record<string, EventRecord<T, K>[]> | null;
+  records: Record<string, CalendarManagerStoreClass<T, K>[]> | []; // Store calendar records
+  snapshotRecords?: Record<string, Snapshot<T, K>[]>; // Add snapshotRecords to store snapshots
+
+  category: Category;
   date: string | number | Date | undefined;
   type: AllTypes;
-  snapshotId: string | number | null | undefined;
-  snapshotStoreConfig: SnapshotStoreConfig<T, Meta, K> | undefined;
+  snapshotId?: string | number | null;
+  snapshotStoreConfig?: SnapshotStoreConfig<T, K> | undefined;
   metadata?: UnifiedMetaDataOptions | {}
   criteria: CriteriaType;
-  callbacks: MultipleEventsCallbacks<Snapshot<T, Meta, K>>;
-  snapshotConfig?: SnapshotConfig<T, Meta, K>[] | undefined;
+  callbacks: MultipleEventsCallbacks<Snapshot<T, K>>;
+  snapshotConfig?: SnapshotConfig<T, K>[] | undefined;
+  
   subscribeToSnapshots: (
-    snapshotStore: SnapshotStore<T, Meta, K>,
+    snapshotStore: SnapshotStore<T, K>,
     snapshotId: string,
-    snapshotData: SnapshotData<T, Meta, K>,
-    category: Category | undefined,
-    snapshotConfig: SnapshotStoreConfig<T, Meta, K>,
-    callback: (snapshots: SnapshotsArray<T, Meta>) => Subscriber<T, Meta, K> | null,
-    snapshots: SnapshotsArray<T, Meta>,
+    snapshotData: SnapshotData<T, K>,
+    category: symbol | string | Category | undefined,    
+    snapshotConfig: SnapshotStoreConfig<T, K>,
+    callback: (
+      snapshotStore: SnapshotStore<T, K>, 
+      snapshots: SnapshotsArray<T>
+    ) => Subscriber<T, K> | null,
+    snapshots: SnapshotsArray<T>,
     unsubscribe?: UnsubscribeDetails, 
-  ) => SnapshotsArray<T, Meta> | [];
+  ) => SnapshotsArray<T> | [];
 
   subscribeToSnapshot: (
     snapshotId: string,
-    callback: (snapshot: Snapshot<T, Meta, K>) => Subscriber<T, Meta, K> | null,
-    snapshot: Snapshot<T, Meta, K>
-  ) =>  Subscriber<T, Meta, K> | null 
+    callback: (snapshot: Snapshot<T, K>) => Subscriber<T, K> | null,
+    snapshot: Snapshot<T, K>
+  ) =>  Subscriber<T, K> | null 
    
   unsubscribeToSnapshots: (
     snapshotId: string,
-    snapshot: Snapshot<T, Meta, K>,
+    snapshot: Snapshot<T, K>,
     type: string,
     event: Event,
-    callback: (snapshot: Snapshot<T, Meta, K>) => void
+    callback: (snapshot: Snapshot<T, K>) => void
   ) => void;
   unsubscribeToSnapshot: (
     snapshotId: string,
-    snapshot: Snapshot<T, Meta, K>,
+    snapshot: Snapshot<T, K>,
     type: string,
     event: Event,
-    callback: (snapshot: Snapshot<T, Meta, K>) => void
+    callback: (snapshot: Snapshot<T, K>) => void
   ) => void;
-  delegate: InitializedDelegate<T, Meta, K> | null;
-  searchDelegate?: InitializedDelegateSearch<T, Meta, K>;
+  delegate: InitializedDelegate<T, K> | null;
+  searchDelegate?: InitializedDelegateSearch<T, K>;
   getDelegate: (
     | []
     | (
       (context: {
         useSimulatedDataSource: boolean;
-        simulatedDataSource: SnapshotStoreConfig<T, Meta, K>[];
-      }) => SnapshotStoreConfig<T, Meta, K>[]
+        simulatedDataSource: SnapshotStoreConfig<T, K>[];
+      }) => SnapshotStoreConfig<T, K>[]
     )
   );
-
+  
   getCategory: (
     snapshotId: string,
-    snapshot: Snapshot<T, Meta, K>,
+    snapshot: Snapshot<T, K>,
     type: string,
-    event: Event
-  ) => CategoryProperties | undefined;
+    event: Event,
+    snapshotConfig: SnapshotConfig<T, K>,
+    additionalHeaders?: Record<string, string>
+  ) => Promise<{ categoryProperties?: CategoryProperties; snapshots: Snapshot<T, K>[] }>;
 
-  // getSnapshotConfig: (
-  //   snapshotId: string | null,
-  //   snapshotContainer: SnapshotContainer<T, Meta, K>,
-  //   criteria: CriteriaType,
-  //   category: symbol | string | Category | undefined,
-  //   categoryProperties: CategoryProperties | undefined,
-  //   delegate: any,
-  //   snapshotData: SnapshotData<T, Meta, K>,
-  //   snapshot: (
-  //     id: string,
-  //     snapshotId: string | null,
-  //     snapshotData: SnapshotData<T, Meta, K>,
-  //     category: symbol | string | Category | undefined,
-  //     categoryProperties: CategoryProperties,
-  //     callback: (snapshotStore: Snapshot<T, Meta, K>) => void,
-  //     dataStore: DataStore<T, Meta, K>,
-  //     dataStoreMethods: DataStoreMethods<T, Meta, K>,
-  //     // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, Meta, K>,
-  //     metadata: UnifiedMetaDataOptions,
-  //     subscriberId: string, // Add subscriberId here
-  //     endpointCategory: string | number ,// Add endpointCategory here
-  //     storeProps: SnapshotStoreProps<T, Meta, K>,
-  //     snapshotConfigData: SnapshotConfig<T, Meta, K>,
-  //     snapshotStoreConfigData?: SnapshotStoreConfig<T, Meta, K>,
-  //     snapshotContainer?: SnapshotStore<T, Meta, K> | Snapshot<T, Meta, K> | null,
-  //   ) => Promise<Snapshot<T, Meta, K>>,
-  
+
     initSnapshot: (
-      snapshot: SnapshotStore<T, Meta, K> | Snapshot<T, Meta, K> | null,
+      snapshot: SnapshotStore<T, K> | Snapshot<T, K> | null,
       snapshotId: string | null,
-      snapshotData: SnapshotData<T, Meta, K>,
+      snapshotData: SnapshotData<T, K>,
       category: symbol | string | Category | undefined,
-      snapshotConfig: SnapshotStoreConfig<T, Meta, K>,
-      callback: (snapshotStore: SnapshotStore<T, Meta, K>) => void
+      snapshotConfig: SnapshotStoreConfig<T, K>,
+      callback: (snapshotStore: SnapshotStore<T, K>) => void
     ) => void,
-  
-
-    createSnapshot: (
-      id: string,
-      snapshotData: SnapshotData<T, Meta, K>,
-      category: symbol | string | Category | undefined,
-      categoryProperties: CategoryProperties | undefined,
-      callback?: (snapshot: Snapshot<T, Meta, K>) => void,
-      snapshotStore?: SnapshotStore<T, Meta, K>,
-      snapshotStoreConfig?: SnapshotStoreConfig<T, Meta, K> | null,
-      snapshotStoreConfigSearch?: SnapshotStoreConfig<
-      SnapshotWithCriteria<any, Meta, BaseData>, Meta, K>
-    ) => Snapshot<T, Meta, K> | null,
   
     createSnapshotStore: (
       id: string,
       storeId: number,
       snapshotId: string,
-      snapshotStoreData: SnapshotStore<T, Meta, K>[],
+      snapshotStoreData: SnapshotStore<T, K>[],
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
-      callback?: (snapshotStore: SnapshotStore<T, Meta, K>) => void,
-      snapshotDataConfig?: SnapshotStoreConfig<T, Meta, K>[]
-    ) => Promise<SnapshotStore<T, Meta, K> | null>,
+      callback?: (snapshotStore: SnapshotStore<T, K>) => void,
+      snapshotDataConfig?: SnapshotStoreConfig<T, K>[]
+    ) => Promise<SnapshotStore<T, K> | null>,
   
     configureSnapshot: (
       id: string,
       storeId: number,
       snapshotId: string,
-      snapshotData: SnapshotData<T, Meta, K>,
-      dataStoreMethods: DataStore<SnapshotUnion<BaseData, Meta>, Meta, K>,
+      snapshotData: SnapshotData<T, K>,
+      dataStoreMethods: DataStore<T, K>,
       category?: string | symbol | Category,
       categoryProperties?: CategoryProperties | undefined,
-      callback?: (snapshot: Snapshot<T, Meta, K>) => void,
-      SnapshotData?: SnapshotStore<T, Meta, K>,
-      snapshotStoreConfig?: SnapshotStoreConfig<T, Meta, K>,
-    ) => Promise<SnapshotStore<T, Meta, K>>,
+      callback?: (snapshot: Snapshot<T, K>) => void,
+      snapshotStore?: SnapshotStore<T, K>,
+      snapshotStoreConfig?: SnapshotStoreConfig<T, K>,
+    ) => Promise<SnapshotStore<T, K>>,
   
     configureSnapshotStore: (
-      snapshotStore: SnapshotStore<T, Meta, K>,
+      snapshotStore: SnapshotStore<T, K>,
       snapshotId: string,
-      data: Map<string, Snapshot<T, Meta, K>>,
-      events: Record<string, CalendarManagerStoreClass<T, Meta, K>[]>,
+      data: Map<string, Snapshot<T, K>>,
+      events: Record<string, CalendarManagerStoreClass<T, K>[]>,
       dataItems: RealtimeDataItem[],
-      newData: Snapshot<T, Meta, K>,
-      payload: ConfigureSnapshotStorePayload<T, Meta, K>,
-      store: SnapshotStore<any, Meta, K>,
+      newData: Snapshot<T, K>,
+      payload: ConfigureSnapshotStorePayload<T, K>,
+      store: SnapshotStore<any, K>,
       callback?: (
-        snapshotStore: SnapshotStore<T, Meta, K>) => void
+        snapshotStore: SnapshotStore<T, K>) => void
     ) => Promise<{
-      snapshotStore: SnapshotStore<T, Meta, K>, 
-      storeConfig: SnapshotStoreConfig<T, Meta, K>,
-      updatedStore?: SnapshotStore<T, Meta, K>
+      snapshotStore: SnapshotStore<T, K>, 
+      storeConfig: SnapshotStoreConfig<T, K>,
+      updatedStore?: SnapshotStore<T, K>
     }>
-  dataStoreMethods?: Partial<DataStoreWithSnapshotMethods<T, Meta, K>> | undefined;
+  dataStoreMethods?: Partial<DataStoreWithSnapshotMethods<T, K>> | undefined;
   getDataStoreMethods: (
-    snapshotStoreConfig: SnapshotStoreConfig<T, Meta, K>[],
-    dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, Meta, K>>
-  ) => Partial<DataStoreWithSnapshotMethods<T, Meta, K>>
+    snapshotStoreConfig: SnapshotStoreConfig<T, K>[],
+    dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K>>
+  ) => Partial<DataStoreWithSnapshotMethods<T, K>>
 
-  snapshotMethods: SnapshotStoreMethod<T, Meta, K>[] | undefined;
-  configOption?: string | SnapshotStoreConfig<T, Meta, K> | null;
+  snapshotMethods: SnapshotStoreMethod<T, K>[] | undefined;
+  configOption?: string | SnapshotStoreConfig<T, K> | null;
 
   handleSnapshotOperation: (
-    snapshot: Snapshot<T, Meta, K>,
-    data: SnapshotStoreConfig<T, Meta, K>,
+    snapshot: Snapshot<T, K>,
+    data: SnapshotStoreConfig<T, K>,
+    mappedData: Map<string, SnapshotStoreConfig<T, K>>,
     operation: SnapshotOperation,
     operationType: SnapshotOperationType
-  ) => Promise<Snapshot<T, Meta, K> | null> ;
+  ) => Promise<Snapshot<T, K> | null> ;
 
   // Added handleSnapshotOperation
   handleSnapshotStoreOperation: (
     snapshotId: string,
-    snapshotStore: SnapshotStore<T, Meta, K>,
-    snapshot: Snapshot<T, Meta, K>,
+    snapshotStore: SnapshotStore<T, K>,
+    snapshot: Snapshot<T, K>,
     
     operation: SnapshotOperation,
     operationType: SnapshotOperationType,
-    callback: (snapshotStore: SnapshotStore<T, Meta, K>) => void,
-  ) => void;
+    callback: (snapshotStore: SnapshotStore<T, K>) => void,
+  ) => Promise<SnapshotStoreConfig<T, K> | null>;
   // Added handleSnapshotOperation
   displayToast: (message: string, type: string, duration: number, onClose: () => void) => Promise<void> | null
 
   addToSnapshotList: (
-    snapshot: Snapshot<T, Meta, K>,
-    subscribers: Subscriber<T, Meta, K>[]
-  ) => void;
+    snapshot: Snapshot<T, K>,
+    subscribers: Subscriber<T, K>[],
+    storeProps?: SnapshotStoreProps<T, K>
+  ) =>  Promise<Subscription<T, K> | null>;
+
+  getSnapshotConfig: (
+    id: string | number,
+    snapshotId: string | null,
+    criteria: CriteriaType,
+    category: symbol | string | Category | undefined,
+    categoryProperties: CategoryProperties | undefined,
+    subscriberId: string | undefined,
+    delegate: SnapshotWithCriteria<T, K>[],
+    snapshotData: SnapshotData<T, K>,
+    snapshot: (
+      id: string | number | undefined,
+      snapshotId: string | null,
+      snapshotData: SnapshotData<T, K>,
+      category: symbol | string | Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
+      callback: (snapshotStore: Snapshot<T, K>) => void,
+      dataStore: DataStore<T, K>,
+      dataStoreMethods: DataStoreMethods<T, K>,
+      // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
+      metadata: UnifiedMetaDataOptions,
+      subscriberId: string, // Add subscriberId here
+      endpointCategory: string | number,// Add endpointCategory here
+      storeProps: SnapshotStoreProps<T, K>,
+      snapshotConfigData: SnapshotConfig<T, K>,
+      subscription: Subscription<T, K>,
+      snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
+      snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null,
+    ) => Promise<Snapshot<T, K>>,
+    data: Map<string, Snapshot<T, K>>,
+    events: Record<string, CalendarManagerStoreClass<T, K>[]>, // Added prop
+    dataItems: RealtimeDataItem[], // Added prop
+    newData: Snapshot<T, K>, // Added prop
+    payload: ConfigureSnapshotStorePayload<T, K>, // Added prop
+    store: SnapshotStore<T, K>, // Added prop
+    callback: (snapshot: SnapshotStore<T, K>) => void, // Added prop
+    storeProps: SnapshotStoreProps<T, K>,
+    endpointCategory: string | number,
+    snapshotContainer: Promise<SnapshotContainer<T, K>>,
+  ) => SnapshotConfig<T, K> ;
+
+  createSnapshot: (
+    id: string,
+    snapshotData: SnapshotData<T, K>,
+    category: symbol | string | Category | undefined,
+    categoryProperties: CategoryProperties | undefined,
+    callback?: (snapshot: Snapshot<T, K>) => void,
+    snapshotStore?: SnapshotStore<T, K>,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, K> | null,
+    snapshotStoreConfigSearch?: SnapshotStoreConfig<T, T>
+   
+  ) => Snapshot<T, K> | null,
+
+  configureSnap: (
+    id: string,
+    storeId: number,
+    snapshotId: string,
+    snapshotData: SnapshotData<T, K>,
+    dataStoreMethods: DataStore<T, K>,
+    category?: string | symbol | Category,
+    categoryProperties?: CategoryProperties | undefined,
+    callback?: (snapshot: Snapshot<T, K>) => void,
+    snapshotStore?: SnapshotStore<T, K>,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, K>,
+  ) => SnapshotConfig<T, K> | undefined,
+
   isAutoDismiss?: boolean;
   isAutoDismissable?: boolean;
   isAutoDismissOnNavigation?: boolean;
@@ -241,8 +331,9 @@ interface SnapshotStoreOptions<T extends Data, Meta extends UnifiedMetaDataOptio
   simulatedDataSource: any;
 }
 
-export type { InitializedData, InitializedDataStore, MetaDataOptions, SnapshotStoreOptions,
-  InitializedDelegate,
-InitializedDelegateSearch,
- };
+export type {
+  InitializedData, InitializedDataStore, InitializedDelegate,
+  InitializedDelegateSearch, MetaDataOptions, SnapshotInstanceProps, SnapshotStoreOptions,
+  
+};
 

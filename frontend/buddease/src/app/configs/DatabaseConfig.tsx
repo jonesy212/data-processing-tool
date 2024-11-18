@@ -1,8 +1,8 @@
-import { Client } from "pg"; // Import the Client class
+import { Client, Pool } from 'pg';
+import { getAuthToken } from "../components/auth/getAuthToken";
 import performDatabaseOperation from "../components/database/DatabaseOperations";
 import { sanitizeInput } from "../components/security/SanitizationFunctions";
 import { database } from "../generators/GenerateDatabase";
-import { getAuthToken } from "../components/auth/getAuthToken";
 
 // Call getAuthToken without passing any arguments
 const YOUR_AUTH_TOKEN = getAuthToken();
@@ -59,24 +59,62 @@ interface DatabaseService {
   create(data: any): Promise<any>;
 
   insert(data: any, modelData: any): Promise<any>;
-
+  disconnect(): void;
+  confirmDisconnect(message: string): Promise<boolean>;
   findAll(tableName: string): Promise<any[]>;
   count(): Promise<number>;
   bulkCreate(data: any[]): Promise<any[]>;
-  findAllByAttribute(attribute: string, value: any): Promise<any[]>;
-  findByAttribute(attribute: string, value: any): Promise<any>;
+  findAllByAttribute(table: string, column: string, value: any): Promise<any[]>;
+  findByAttribute(table: string, column: string, value: any): Promise<any>;
   aggregate(aggregation: any): Promise<any>;
   upsert(data: any): Promise<any>;
   transaction(operations: any[]): Promise<any>;
   batchInsert(data: any[]): Promise<any[]>;
+  
   // Add other database operations as needed (e.g., insert, update, delete, query)
 }
+
 export abstract class BaseDatabaseService implements DatabaseService {
   protected client: any; // Declare a client property to hold the database connection
+
+  private pool: Pool = new Pool();
 
   constructor(config: DatabaseConfig) {
     // Initialize the database connection
     this.client = new Client(config);
+  }
+
+  private validTables: Set<string> = new Set(['users', 'orders', 'products']);  // Define allowed tables
+
+   // Validate that the table name is in the allowed set
+   private validateTableName(table: string): string {
+    if (!this.validTables.has(table)) {
+      throw new Error(`Invalid table name: ${table}`);
+    }
+    return table;
+  }
+
+  // Basic validation for column names (could use more specific criteria)
+  private validateColumnName(column: string): string {
+    if (!/^[a-zA-Z0-9_]+$/.test(column)) {
+      throw new Error(`Invalid column name: ${column}`);
+    }
+    return column;
+  }
+
+  public async findAllByAttributes(
+    table: string,
+    column1: string,
+    value1: any,
+    column2: string,
+    value2: any
+  ): Promise<any[]> {
+    const sanitizedTable = this.validateTableName(table);
+    const sanitizedColumn1 = this.validateColumnName(column1);
+    const sanitizedColumn2 = this.validateColumnName(column2);
+  
+    const queryText = `SELECT * FROM ${sanitizedTable} WHERE ${sanitizedColumn1} = $1 AND ${sanitizedColumn2} = $2`;
+    return await this.executeQuery(queryText, [value1, value2]);
   }
 
   async createDatabase(config: DatabaseConfig): Promise<any> {
@@ -321,37 +359,6 @@ export abstract class BaseDatabaseService implements DatabaseService {
     }
   }
 
-  async findAllByAttribute(attribute: string, value: any): Promise<any[]> {
-    try {
-      // Construct the SELECT query to find records by attribute and value
-      const query = `SELECT * FROM your_table WHERE ${attribute} = $1`;
-
-      // Execute the query with the provided value
-      const result = await this.client.query(query, [value]);
-
-      // Return the retrieved data
-      return result.rows;
-    } catch (error) {
-      console.error("Error in findAllByAttribute method:", error);
-      throw error;
-    }
-  }
-
-  async findByAttribute(attribute: string, value: any): Promise<any> {
-    try {
-      // Construct the SELECT query to find a single record by attribute and value
-      const query = `SELECT * FROM your_table WHERE ${attribute} = $1`;
-
-      // Execute the query with the provided value
-      const result = await this.client.query(query, [value]);
-
-      // Return the first retrieved row, if any
-      return result.rows[0] || null;
-    } catch (error) {
-      console.error("Error in findByAttribute method:", error);
-      throw error;
-    }
-  }
 
   async aggregate(aggregation: any): Promise<any> {
     try {
@@ -412,33 +419,20 @@ export abstract class BaseDatabaseService implements DatabaseService {
     }
   }
 
-  async transaction(operations: any[]): Promise<any> {
+  async transaction(operations: (() => Promise<any>)[]): Promise<any> {
     try {
-      // Implementing transaction logic depends on the specific database system you're using.
-      // In PostgreSQL and MySQL, you can use transaction blocks to group multiple operations into a single transaction.
-
-      // Start a transaction
       await this.client.query("BEGIN");
-
-      // Execute the operations within the transaction
       for (const operation of operations) {
-        // Execute each operation in the array
-        await operation(); // Assuming each operation is an asynchronous function
+        await operation();
       }
-
-      // Commit the transaction if all operations succeed
       await this.client.query("COMMIT");
-
-      // Return any relevant data or confirmation
-      return "Transaction completed successfully";
     } catch (error) {
-      // Rollback the transaction if any operation fails
       await this.client.query("ROLLBACK");
-
-      console.error("Error in transaction method:", error);
+      console.error("Transaction error:", error);
       throw error;
     }
   }
+  
 
   async batchInsert(data: any[]): Promise<any[]> {
     try {
@@ -483,6 +477,47 @@ export abstract class BaseDatabaseService implements DatabaseService {
       throw error;
     }
   }
+
+  // Example method to find by attribute, with sanitization
+  public async findByAttribute(table: string, column: string, value: any): Promise<any> {
+    const sanitizedTable = this.validateTableName(table);
+    const sanitizedColumn = this.validateColumnName(column);
+    
+    const queryText = `SELECT * FROM ${sanitizedTable} WHERE ${sanitizedColumn} = $1`;
+    return await this.executeQuery(queryText, [value]);
+  }
+
+  public async findAllByAttribute(table: string, column: string, value: any): Promise<any[]> {
+    const sanitizedTable = this.validateTableName(table);
+    const sanitizedColumn = this.validateColumnName(column);
+
+    const queryText = `SELECT * FROM ${sanitizedTable} WHERE ${sanitizedColumn} = $1`;
+    return await this.executeQuery(queryText, [value]);
+  }
+
+  // Close the pool when the service is no longer needed
+  public async disconnect(): Promise<void> {
+    await this.pool.end();
+  }
+
+  // Generic method to execute queries
+  protected async executeQuery(queryText: string, params: any[]): Promise<any> {
+    const client = await this.pool.connect();
+    try {
+      const res = await client.query(queryText, params);
+      return res.rows;
+    } finally {
+      client.release();
+    }
+  }
+
+  async confirmDisconnect(message: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      const confirmed = window.confirm(message);
+      resolve(confirmed);
+    });
+  }
+
 }
 
 export class PostgresDatabaseService extends BaseDatabaseService {
@@ -528,3 +563,4 @@ if (database.success) {
 
 export { databaseConfig, databaseQuery };
 export type { DatabaseConfig, DatabaseService };
+

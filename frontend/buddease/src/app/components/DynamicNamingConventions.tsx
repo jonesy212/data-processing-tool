@@ -1,5 +1,5 @@
 // components/DynamicNamingConventions.tsx
-import configurationService from '@/configs/ConfigurationService';
+import configServiceInstance from '@/configs/ConfigurationService';
 import React from 'react';
 import { NamingConventionsError } from '../shared/shared_error';
 import { useDynamicComponents } from './DynamicComponentsContext';
@@ -50,7 +50,7 @@ const DynamicNamingConventions: React.FC<DynamicNamingConventionsProps> = ({
 
     const conventions =
       dynamicConfig.namingConventions ||
-      configurationService.getConfigurationOptions().namingConventions;
+      configServiceInstance.getConfigurationOptions().namingConventions;
 
     const handleDynamicContentClick = () => {
       if (dynamicConfig) {

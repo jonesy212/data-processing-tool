@@ -1,5 +1,5 @@
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { WritableDraft } from "../state/redux/ReducerGenerator";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { SimpleCalendarEvent } from "./CalendarContext";
 
 // Function to format calendar data as CSV string

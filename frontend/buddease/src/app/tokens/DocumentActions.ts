@@ -1,4 +1,5 @@
 // DocumentActions.ts
+import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { createAction } from "@reduxjs/toolkit";
 import { DocumentEditingPermissions } from "../components/users/Permission";
@@ -8,14 +9,14 @@ import { UserIdea } from "../components/users/Ideas";
 
 export const DocumentActions = {
   // Single Document Actions
-  addDocument: createAction<DocumentData>("addDocument"),
+  addDocument: createAction<DocumentData<any, Meta>>("addDocument"),
   addDocumentSuccess: createAction<{ id: number, title: string }>("addDocumentSuccess"),
   addDocumentFailure: createAction<string>("addDocumentFailure"),
 
-  createDocument: createAction<DocumentData<T, Meta, K>>("createDocument"),
-  updateDocument: createAction<Partial<DocumentData>>("updateDocument"),
-  updateDocumentDetails: createAction<Partial<DocumentData>>("updateDocumentDetails"),
-  updateDocumentDetailsSuccess: createAction<Partial<DocumentData>>("updateDocumentDetailsSuccess"),
+  createDocument: createAction<DocumentData<any, Meta>>("createDocument"),
+  updateDocument: createAction<Partial<DocumentData<any, Meta>>>("updateDocument"),
+  updateDocumentDetails: createAction<Partial<DocumentData<any, Meta>>>("updateDocumentDetails"),
+  updateDocumentDetailsSuccess: createAction<Partial<DocumentData<any, Meta>>>("updateDocumentDetailsSuccess"),
   updateDocumentDetailsFailure: createAction<string>("updateDocumentDetailsFailure"),
   updateDocumentDetailsReset: createAction("updateDocumentDetailsReset"),
   showOptionsForSelectedText: createAction<{ selectedText: { id: number; text: string, startIndex: number, endIndex: number } }>("showOptionsForSelectedText"),
@@ -64,14 +65,14 @@ export const DocumentActions = {
   saveDocumentEditingPermissions: createAction<{ id: number, userId: string, permissions: DocumentEditingPermissions[] }>("saveDocumentEditingPermissions"),
 
   // Bulk Document Actions
-  addDocuments: createAction<DocumentData[]>("addDocuments"),
-  updateDocuments: createAction<Partial<DocumentData>[]>("updateDocuments"),
+  addDocuments: createAction<DocumentData<any, Meta>[]>("addDocuments"),
+  updateDocuments: createAction<Partial<DocumentData<any, Meta>>[]>("updateDocuments"),
   deleteDocuments: createAction<number[]>("deleteDocuments"),
 
 
   // Fetch Documents Actions
   fetchDocumentsRequest: createAction<{ id: number, status: DocumentStatus }>("fetchDocumentsRequest"),
-  fetchDocumentsSuccess: createAction<{ documents: DocumentData[] }>("fetchDocumentsSuccess"),
+  fetchDocumentsSuccess: createAction<{ documents: DocumentData<any, Meta>[] }>("fetchDocumentsSuccess"),
   fetchDocumentsFailure: createAction<{ error: string }>("fetchDocumentsFailure"),
 
   // UserIdea Actions
@@ -80,7 +81,6 @@ export const DocumentActions = {
   updateUserIdea: createAction<Partial<UserIdea>>("updateUserIdea"),
   deleteUserIdea: createAction<number>("deleteUserIdea"),
 };
-
 
 
 

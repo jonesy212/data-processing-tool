@@ -1,3 +1,6 @@
+import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { SnapshotData } from '@/app/components/snapshots';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Snapshot } from "../../snapshots";
@@ -118,9 +121,9 @@ function getCategoryLabelForSnapshot(context: string): CategoryKeys | null {
   }
 }
 
-function getOrSetCategoryForSnapshot <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+function getOrSetCategoryForSnapshot <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string,
-  snapshot: Snapshot<T, Meta, K>,
+  snapshot: Snapshot<T, K>,
   type: string,
   event: Event,
   categoryProps?: Category
@@ -184,25 +187,24 @@ function getOrSetCategoryForSnapshot <T extends Data, Meta extends UnifiedMetaDa
 
 
 // Update the logic to handle ID assignment and verification
-function generateOrVerifySnapshotId <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+function generateOrVerifySnapshotId <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   id: string | number | undefined,
-  snapshotData: SnapshotData<T, Meta, K>,
+  snapshotData: SnapshotData<T, K>,
   category: Category
 ): string {
   if (typeof id === 'number') {
     // Convert number to string
     return id.toString();
-  } else if (id === undefined) {
+  } else if (id === undefined && category !== undefined) {
     // Provide a default string value based on category or label
-    const categoryLabel = getCategoryLabelForSnapshot(category.name) || 'default-id';
+    
+    const categoryLabel = typeof category === 'string' ? category : getCategoryLabelForSnapshot(`${String(category)}`) || 'default-id';
     return UniqueIDGenerator.generateSnapshotIDWithCategory(categoryLabel);
   } else {
     // Return the id if it's already a string
-    return id;
+    return id || '';
   }
 }
-
-
 export { generateCategoryProperties, generateOrVerifySnapshotId, getCategoryLabelForSnapshot, getOrSetCategoryForSnapshot, isCategoryProperties };
 
     export type { Category, CategoryIdentifier };

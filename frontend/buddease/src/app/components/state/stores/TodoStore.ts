@@ -1,7 +1,6 @@
 import { generateSnapshotId } from './../../utils/snapshotUtils';
 // TodoManagerStore.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { makeAutoObservable } from "mobx";
 import { MutableRefObject, useRef, useState } from "react";
 import { useSnapshotManager } from "../../hooks/useSnapshotManager";
@@ -17,6 +16,7 @@ import { Todo } from "../../todos/Todo";
 import { todoService } from "../../todos/TodoService";
 import useSecureStoreId from '../../utils/useSecureStoreId';
 import { AllStatus } from './DetailsListStore';
+import { BaseData } from '@/app/components/models/data/Data';
 
 const { notify } = useNotification();
 
@@ -24,9 +24,9 @@ interface TodoManagerStoreProps {
   initialTodos?: Record<string, Todo>; // Optional initial todos
 }
 
-export interface TodoManagerStore<T extends Data,
-Meta extends UnifiedMetaDataOptions,
-K extends Data = T> {
+export interface TodoManagerStore<T extends  BaseData<T>,
+ 
+K extends T = T> {
   dispatch: (action: any) => void;
   todos: Record<string, Todo>;
   todoList: Todo[];
@@ -70,8 +70,8 @@ K extends Data = T> {
   
 }
 
-const useTodoManagerStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  props: TodoManagerStoreProps): TodoManagerStore => {
+const useTodoManagerStore = <T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  props: TodoManagerStoreProps): TodoManagerSt, K extends
   const [todos, setTodos] = useState<Record<string, Todo>>(props.initialTodos || {});
   const [subscriptions, setSubscriptions] = useState<
     Record<string, () => void>
@@ -164,7 +164,7 @@ const useTodoManagerStore = <T extends Data, Meta extends UnifiedMetaDataOptions
   const addTodos = (
     newTodos: Todo[],
     data: SnapshotStore<Todo>,
-    subscribers?: SubscriberCollection<T, Meta, K>
+    subscribers?: SubscriberCollection<T, K>
   ): void => {
     setTodos((prevTodos: Record<string, Todo>) => {
       const updatedTodos = { ...prevTodos };

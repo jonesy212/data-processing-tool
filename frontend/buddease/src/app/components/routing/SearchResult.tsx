@@ -2,7 +2,8 @@
 import { searchDocumentAPI } from '@/app/api/ApiDocument'; // Import the searchDocumentAPI method
 import SearchResultItem from '@/app/components/models/data/SearchResultItem';
 import ListGenerator from '@/app/generators/ListGenerator';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import * as React 'react';
 import { DocumentOptions } from '../documents/DocumentOptions';
 import FolderData from '../models/data/FolderData';
 import SearchHistory from '../versions/SearchHistory';

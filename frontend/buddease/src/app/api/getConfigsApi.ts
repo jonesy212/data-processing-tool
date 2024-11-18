@@ -1,5 +1,5 @@
 import { PoolConfig } from 'pg';
-import configurationService from '../configs/ConfigurationService';
+import configServiceInstance from '../configs/ConfigurationService';
 import axiosInstance from './axiosInstance';
 import { SystemConfigs } from './systemConfigs';
 import { UserConfigs } from './userConfigs';
@@ -15,9 +15,9 @@ interface ConfigsData {
 export const getConfigsData = async (): Promise<ConfigsData | undefined> => {
   try {
     const systemConfigs: typeof SystemConfigs =
-      await configurationService.getSystemConfigs();
+      await configServiceInstance.getSystemConfigs();
     const userConfigs: typeof UserConfigs =
-      await configurationService.getUserConfigs();
+      await configServiceInstance.getUserConfigs();
 
     // Make API requests using the obtained configurations
     const systemApiResponse = await axiosInstance.get(

@@ -1,9 +1,10 @@
 // import { AccessList, Signature } from './path-to-types'; // Adjust import path
-
+import  { CustomTransactionProps } from '@/app/components/crypto/SmartContractInteraction'
 import { AccessList, Signature } from "ethers";
 
-interface Transaction {
-  _id?: string | undefined;
+
+interface BaseTransaction {
+  _id?: string;
   id: string | null;
   type: number | null;
   typeName: string | null;
@@ -11,13 +12,23 @@ interface Transaction {
   signature: Signature | null;
   maxFeePerGas: bigint | null;
   maxFeePerBlobGas: bigint | null;
-  blobVersionedHashes: string | null
+  blobVersionedHashes: string | null;
   maxPriorityFeePerGas: bigint | null;
   gasPrice: bigint | null;
   date: Date | undefined;
   description: string | null;
-  
+  value: bigint;
 }
+
+// `Transaction` extends `BaseTransaction` with specific fields
+interface Transaction extends BaseTransaction {
+  amount?: number | null;
+}
+
+
+// Additional type for `TransactionData` to unify both types
+type TransactionData = Transaction & CustomTransactionProps;
+
 
 class TransactionProcessor implements Transaction {
   _id: string | undefined = undefined;
@@ -34,8 +45,8 @@ class TransactionProcessor implements Transaction {
   blobVersionedHashes: string | null = null;
   maxPriorityFeePerGas: bigint | null = null;
   accessList: AccessList | null = null;
-
-  // Example constructor (adjust as necessary)
+  value: bigint = BigInt(0);
+  
   constructor(data: Partial<Transaction>) {
     Object.assign(this, data);
   }
@@ -98,7 +109,9 @@ class TransactionProcessor implements Transaction {
       maxFeePerBlobGas: null,
       blobVersionedHashes: null,
       date: undefined,
-      description: null
+      description: null,
+      value: BigInt(0),
+      
     };
     return clonedTransaction;
   }
@@ -119,4 +132,4 @@ class TransactionProcessor implements Transaction {
 }
 
 export default TransactionProcessor;
-export type { Transaction };
+export type { Transaction, TransactionData, CustomTransactionProps, BaseTransaction };

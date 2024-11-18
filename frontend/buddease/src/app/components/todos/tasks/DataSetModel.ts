@@ -1,5 +1,4 @@
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { Meta } from './../../models/data/dataStoreMethods';
 // Assuming you have an interface for the User and Team models as well
 import { ModifiedDate } from "../../documents/DocType";
 import { DocumentData } from "../../documents/DocumentBuilder";
@@ -14,8 +13,8 @@ import { DocumentObject } from "../../state/redux/slices/DocumentSlice";
 import { DocumentBase } from "../../state/stores/DocumentStore";
 import { AllTypes } from "../../typings/PropTypes";
 
-interface DatasetModel<T extends Data, K extends Data = T>
-  extends BaseEntity, DocumentBase<T, Meta, K> {
+interface DatasetModel<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+  extends BaseEntity, DocumentBase<T, K> {
   filePathOrUrl: string;
   uploadedBy: string; // Assuming this is the user ID
   uploadedAt?: string; // Assuming the date is sent as a string
@@ -34,20 +33,20 @@ interface DatasetModel<T extends Data, K extends Data = T>
   lastModifiedByTeamId?: number | null; // Assuming this is the team ID
   lastModifiedByTeam?: Team | null;
   filePath?: DocumentPath;
-  tags?: TagsRecord | string[] | undefined; 
-  createdBy: string | undefined;
+  tags?: TagsRecord<T, K> | string[] | undefined; 
+  createdBy: string;
   updatedBy: string;
-  documents: WritableDraft<DocumentObject<T, Meta, K>>[];
+  documents: WritableDraft<DocumentObject<T, UnifiedMetaDataOptions<T>>>[];
   createdAt: string | Date | undefined;
   updatedAt?: string | Date; 
-  selectedDocument: DocumentData<T, Meta, K> | null;
-  selectedDocuments?: DocumentData<T, Meta, K>[];
-  content: Content<T, Meta, BaseData>
+  selectedDocument: DocumentData<T, K> | null;
+  selectedDocuments?: DocumentData<T, K>[];
+  content: Content<T, K>
   // Optional: Add other relationships as needed
 }
 
 // Example usage:
-const dataset: DatasetModel<Data, UnifiedMetaDataOptions, Data> = {
+const dataset: DatasetModel<Data<BaseData>> = {
   id: 1,
   name: "Example Dataset",
   title: "Example Dataset",
@@ -88,6 +87,7 @@ const dataset: DatasetModel<Data, UnifiedMetaDataOptions, Data> = {
     contentItems: []
   }
 };
+
 export { dataset };
 export type { DatasetModel };
 

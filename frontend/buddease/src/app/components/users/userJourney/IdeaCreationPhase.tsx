@@ -17,7 +17,7 @@ interface IdeaFormProps {
   duration: number
 }
 
-type PhaseConfig = PhaseHookConfig & Phase;
+type PhaseConfig = PhaseHookConfig & Phase<PhaseData, PhaseMeta>;
 
 const handlePhaseTransition = async (nextPhase: PhaseConfig) => {
   try {

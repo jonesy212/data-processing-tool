@@ -68,7 +68,7 @@ const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
   );
   
   
-  const snapshotDetails: DetailsItem<T, Meta, K> = {
+  const snapshotDetails: DetailsItem<T, K> = {
     id: "",
     title: "",
     label: "",
@@ -84,7 +84,7 @@ const DataFilterForm: React.FC<DataFilterFormProps> = async ({ onSubmit }) => {
   
 const snapshotListArray: DetailsItem<Data, Data>[] = Array.from(snapshotList).map(
   (value: unknown) => {
-    const snapshot = value as Snapshot<Data, Meta, Data> | null;
+    const snapshot = value as Snapshot<Data, Data> | null;
     const snapshotDetails: DetailsItem<Data, Data> = {
       id: "",
       subtitle: "",

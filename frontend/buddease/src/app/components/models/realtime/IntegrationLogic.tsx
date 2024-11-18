@@ -39,7 +39,7 @@ interface IntegrateComponentsProps extends CommonCalendarProps {
   onChangeSpeed: (newSpeed: number) => void;
   container: NotificationContextProps;
   view: string;
-  tasks: Task[];
+  tasks: Task<T, K>[];
   event: any;
   milestones: Milestone[];
   dependencies: Dependency[];
@@ -107,7 +107,7 @@ const integrateComponents: React.FC<IntegrateComponentsProps> = ({
   // Retrieve the calendarManager state from your Redux store
   const calendarManagerState: CalendarManagerState = {
     entities: {}, // You need to provide values for all properties defined in CalendarManagerState
-    events: rootStores.calendarStore.events,
+    events: rootStores.calendarManager.events,
     milestones: {},
     notifications: {},
     loading: false,
@@ -166,22 +166,25 @@ const integrateComponents: React.FC<IntegrateComponentsProps> = ({
     eventRiskAssessment: null,
     attendeeAvailabilityAnalysis: {
       event: null,
+      attendeeId: undefined,
       analyze: () => ({}),
       eventId:"",
       attendeeBusyTimes:{},
       attendeeAvailability: {
         attendeeId: "",
         availability: "",
+        busyTimes: []
       },
       confidenceScore:0,
       
-      attendeeAvailabilityPrediction:[],
-      attendeeAvailabilityPredictionConfidenceScore:0,
-      attendeeAvailabilityPredictionConfidenceInterval:[],
-      attendeeAvailabilityPredictionConfidenceIntervalLower:0,
-      attendeeAvailabilityPredictionConfidenceIntervalUpper:0,
-      attendeeAvailabilityPredictionConfidenceIntervalLower95:0,
-      attendeeAvailabilityPredictionConfidenceIntervalUpper95:0,
+      //todo implemment predictions
+      // attendeeAvailabilityPrediction:[],
+      // attendeeAvailabilityPredictionConfidenceScore:0,
+      // attendeeAvailabilityPredictionConfidenceInterval:[],
+      // attendeeAvailabilityPredictionConfidenceIntervalLower:0,
+      // attendeeAvailabilityPredictionConfidenceIntervalUpper:0,
+      // attendeeAvailabilityPredictionConfidenceIntervalLower95:0,
+      // attendeeAvailabilityPredictionConfidenceIntervalUpper95:0,
       attendees: [],
       busyHours: [],
       freeTimes: [],

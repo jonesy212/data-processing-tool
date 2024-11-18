@@ -4,14 +4,14 @@ import RandomWalkSuggestions from '@/app/components/hooks/userInterface/RandomWa
 import { Data } from '@/app/components/models/data/Data';
 import SnapshotStore, { Snapshot } from '@/app/components/snapshots/SnapshotStore';
 import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
-import configurationService from '@/app/configs/ConfigurationService';
+import configServiceInstance from '@/app/configs/ConfigurationService';
 import ReactDOM from 'react-dom';
 
 
 
 // Automated system setup process
 const setupAutomationSystem = (
-  config: SnapshotStoreConfigType<SnapshotStore<Snapshot<Data, Meta, Data>>>
+  config: SnapshotStoreConfigType<SnapshotStore<Snapshot<Data, Data>>>
 ) => {
   const { notify } = useNotification();
   typeof SnapshotStoreConfig === "function" &&
@@ -30,7 +30,7 @@ const setupAutomationSystem = (
 
 
 // Run the setup process with a valid config object
-const config = configurationService.getSnapshotConfig(); // Example: Get the config from a service or provide a valid config object
+const config = configServiceInstance.getSnapshotConfig(); // Example: Get the config from a service or provide a valid config object
 setupAutomationSystem(config); // Pass the config object as an argument
 
 

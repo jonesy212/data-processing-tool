@@ -8,7 +8,7 @@ import { CourseDevelopmentPhase } from './CourseDevelopmentPhaseManager';
 interface CourseLearningPhaseProps{
   onSubmit: (data: any) => void;
   setCurrentPhase: React.Dispatch<React.SetStateAction<CourseDevelopmentPhase>>
-  userData: SnapshotStore<Snapshot<Data, Meta, Data>>[]
+  userData: SnapshotStore<Snapshot<Data, Data>>[]
 }
 const CourseLearningPhase: React.FC<CourseLearningPhaseProps> = ({ onSubmit, userData }) => {
   // State to manage learning phase data

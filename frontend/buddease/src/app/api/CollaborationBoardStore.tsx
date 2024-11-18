@@ -12,7 +12,7 @@ type CollaborationBoardContextType = {
 // Create the context with initial values
 const CollaborationBoardContext = createContext<CollaborationBoardContextType>({
   boardData: [],
-  addData: () => {}, // Placeholder method
+  addData: () => {},
 });
 
 // Custom hook to access the CollaborationBoardContext

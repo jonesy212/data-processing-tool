@@ -2,7 +2,7 @@
 
 /**
  * Function to create security headers.
- * @returns {Object} - The security headers.
+ * @returns {Record<string, string>} - The security headers.
  */
 function createSecurityHeaders() {
     const headers = {

@@ -1,18 +1,20 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from "@/app/api/axiosInstance";
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import { useAuth } from "@/app/components/auth/AuthContext";
+import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { DocumentId, DocumentStatus } from "@/app/components/documents/types";
+import { Drawing } from "@/app/components/libraries/drawing/generateDrawingJSON";
+import { BaseData } from '@/app/components/models/data/Data';
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import DatabaseClient from "@/app/components/todos/tasks/DatabaseClient";
 import { DatasetModel } from "@/app/components/todos/tasks/DataSetModel";
 import { AxiosError, AxiosResponse } from "axios";
 import { PoolConfig } from 'pg';
 import configData from "../configData";
-import { DocumentData } from "@/app/components/documents/DocumentBuilder";
-import { Drawing } from "@/app/components/libraries/drawing/generateDrawingJSON";
-import DatabaseClient from "@/app/components/todos/tasks/DatabaseClient";
 
 const { notify } = useNotification();
 
@@ -26,6 +28,47 @@ const config: PoolConfig = {
   user: configData.database.username,
   password: configData.database.password
 }
+
+
+
+
+// Unified persistSnapshot function to handle both types (Snapshot, SnapshotData) and database operations
+async function persistSnapshot<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  snapshotData: SnapshotDataType<T, K>,
+  config: DatabaseConfig,
+  snapshotId: string,
+  operationType: "insert" | "upsert" = "upsert"
+): Promise<void> {
+  const dbClient = new DatabaseClient(config); // Initialize DatabaseClient with config
+
+  // Step 1: Sanitize input
+  const sanitizedData = sanitizeInput(snapshotData);
+
+  try {
+    // Step 2: Connect to the database
+    await dbClient.connect();
+
+    // Step 3: Choose operation based on operationType
+    if (operationType === "upsert") {
+      await dbClient.upsertData("snapshots", sanitizedData); // Upsert data
+    } else {
+      await dbClient.insertData("snapshots", sanitizedData); // Insert data
+    }
+
+    // Step 4: Notify success
+    notify("snapshotSaveSuccess", "Snapshot saved successfully", `Snapshot ID ${snapshotId} saved`, new Date(), "SUCCESS");
+  } catch (error) {
+    // Step 5: Handle errors and notify failure
+    handleApiError(error, "persistSnapshot");
+    notify("snapshotSaveError", "Error saving snapshot", `Failed to save Snapshot ID ${snapshotId}`, new Date(), "ERROR");
+    throw error; // Re-throw to propagate error
+  } finally {
+    // Step 6: Close the database connection
+    await dbClient.close();
+  }
+}
+
+
 const fetchDocumentFromArchive = async (documentId: DocumentId): Promise<void> => {
   try {
     const documentUrl = `${API_BASE_URL}/documents/${documentId}`;
@@ -215,12 +258,10 @@ const saveTodoToDatabase = async (todoData: any): Promise<void> => {
 };
 
 export {
-  fetchDocumentFromArchive,
-  loadDrawingFromDatabase,
-  saveDocumentToDatabase,
-  saveTodoToDatabase,
-  saveTradeToDatabase,
-  updateDocumentInDatabase,
-  addDocumentFailure
+    addDocumentFailure, fetchDocumentFromArchive,
+    loadDrawingFromDatabase, persistSnapshot, saveDocumentToDatabase,
+    saveTodoToDatabase,
+    saveTradeToDatabase,
+    updateDocumentInDatabase
 };
 

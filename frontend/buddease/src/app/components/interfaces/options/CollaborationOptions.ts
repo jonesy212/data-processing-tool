@@ -3,7 +3,6 @@ interface CollaborationOptions {
   name: string;
   description: string;
 }
-
 // Define the type for TeamCollaborationAnalysis
 interface TeamCollaborationAnalysis {
   teamId: string; // ID of the team being analyzed
@@ -12,10 +11,9 @@ interface TeamCollaborationAnalysis {
   // Add more properties as needed
 }
 
-export default TeamCollaborationAnalysis;
-
 // Define types/interfaces for collaboration options
 interface CommunicationOption {
+  id: string;
   name: string;
   description: string;
 }
@@ -246,5 +244,9 @@ const collaborationOptions: CollaborationOptions[] =
   generateCollaborationOptions();
 console.log(collaborationOptions);
 
-export type { CollaborationOptions, CommunityEngagementFeature, DataAnalysisTool, Decision, MonetizationAndIncentiveOption, VisualizationResult, CommunicationOption, RealTimeCollaborationTool };
+export type {
+  TeamCollaborationAnalysis, CommunityEngagementFeature, DataAnalysisTool, Decision, MonetizationAndIncentiveOption, VisualizationResult, CommunicationOption, RealTimeCollaborationTool,
+  CollaborationOptions
+};
+
 

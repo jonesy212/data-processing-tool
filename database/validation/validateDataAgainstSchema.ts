@@ -1,8 +1,8 @@
-import { BaseData } from '@/app/components/models/data/Data';
-import { Data } from '@/app/components/models/data/Data';
-import { SnapshotStoreConfig } from '@/app/components/snapshots';
-import { SchemaField } from './../../frontend/buddease/src/app/components/snapshots/SchemaField';
 // validateDataAgainstSchema.ts
+import { Data } from './../../components/models/data/Data';
+import { SnapshotStoreConfig } from './../../frontend/buddease/src/app/components/snapshots/SnapshotStoreConfig';
+import { SchemaField } from './../../database/SchemaField';
+
 // Function to validate data against a schema
 
 function validateDataAgainstSchema(data: any, schema: Record<string, SchemaField>): boolean {
@@ -76,11 +76,18 @@ const exampleSchema: Record<string, SchemaField> = {
 // Example SnapshotStoreConfig using the schema
 const snapshotStoreConfig: SnapshotStoreConfig<Data, Data> = {
     name: 'exampleStore',
-    version: 1,
+    version: "1",
     schema: exampleSchema,
-    options: {}
-};
 
+
+    options: {
+        id: 'exampleStoreId',
+        storeId: 0,
+        baseURL: 'https://example.com/api',
+        enabled: true,
+        // Add other required properties here
+    }
+};
 
 
 const isValidSchema = validateDataAgainstSchema({

@@ -1,11 +1,13 @@
-import { Data } from '@/app/components/models/data/Data';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 // subscribeToSnapshotsImplementation.ts
+
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Subscriber } from "../users/Subscriber";
-import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from "./LocalStorageSnapshotStore";
-import SnapshotStore from "./SnapshotStore";
+import { BaseData } from "../models/data/Data";
+import { Snapshot, SnapshotsArray, SnapshotUnion, Snapshots } from "./LocalStorageSnapshotStore";
+
 
 type Callback<T> = (snapshot: T) => void;
+type UnifiedCallback<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = (snapshot: Snapshot<T, K>) => Subscriber<T, K> | Snapshot<T, K> | null;
 
 type SingleEventCallbacks<T> = {
   [event: string]: Callback<T>[];
@@ -16,103 +18,121 @@ type MultipleEventsCallbacks<T> = {
   [event: string]: Callback<T>[];
 };
 
+// Type guard to check if subscriber is a function
+const isFunction = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(fn: any): fn is (snap: Snapshot<T, K>) => void => {
+  return typeof fn === 'function';
+};
 
 const snapshotSubscribers: Map<string, Callback<Snapshot<any, any>>[]> =
   new Map();
 
 
-  const addSubscriptionMethods = <T extends Snapshot<any, any>>(callback: Callback<T>, snapshotId: string): Callback<T> & { subscribe: (cb: Callback<T>) => void; unsubscribe: (cb: Callback<T>) => void } => {
-    const wrappedCallback = ((snapshot: T) => callback(snapshot)) as Callback<T> & { subscribe: (cb: Callback<T>) => void; unsubscribe: (cb: Callback<T>) => void };
+const addSubscriptionMethods = <T extends Snapshot<any, any>>(callback: Callback<T>, snapshotId: string): Callback<T> & { subscribe: (cb: Callback<T>) => void; unsubscribe: (cb: Callback<T>) => void } => {
+  const wrappedCallback = ((snapshot: T) => callback(snapshot)) as Callback<T> & { subscribe: (cb: Callback<T>) => void; unsubscribe: (cb: Callback<T>) => void };
 
-    wrappedCallback.subscribe = (cb: Callback<T>) => {
-      if (!snapshotSubscribers.has(snapshotId)) {
-        snapshotSubscribers.set(snapshotId, []);
-      }
-      snapshotSubscribers.get(snapshotId)?.push(cb as Callback<Snapshot<any, any>>);
-    };
-
-    wrappedCallback.unsubscribe = (cb: Callback<T>) => {
-      const subscribers = snapshotSubscribers.get(snapshotId);
-      if (subscribers) {
-        const index = subscribers.indexOf(cb as Callback<Snapshot<any, any>>);
-        if (index > -1) {
-          subscribers.splice(index, 1);
-        }
-      }
-    };
-
-    return wrappedCallback;
-  };
-  
-  const subscribeToSnapshotsImpl =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-    snapshotId: string,
-    snapshotCallback: (snapshots: Snapshots<T, Meta>) => Subscriber<T, Meta, K> | null,
-    snapshot: SnapshotsArray<T, Meta>
-  ) => {
+  wrappedCallback.subscribe = (cb: Callback<T>) => {
     if (!snapshotSubscribers.has(snapshotId)) {
       snapshotSubscribers.set(snapshotId, []);
     }
+    snapshotSubscribers.get(snapshotId)?.push(cb as Callback<Snapshot<any, any>>);
+  };
 
-    const typedCallback = addSubscriptionMethods<SnapshotUnion<T, Meta>>((snapshot) => {
-      snapshotCallback([snapshot as unknown as SnapshotStore<T, Meta, K>] as unknown as Snapshots<T, Meta>);
-    }, snapshotId);
+  wrappedCallback.unsubscribe = (cb: Callback<T>) => {
+    const subscribers = snapshotSubscribers.get(snapshotId);
+    if (subscribers) {
+      const index = subscribers.indexOf(cb as Callback<Snapshot<any, any>>);
+      if (index > -1) {
+        subscribers.splice(index, 1);
+      }
+    }
+  };
 
-    snapshotSubscribers.get(snapshotId)?.push(typedCallback);
+  return wrappedCallback;
+};
+
+
+const subscribeToSnapshotsImpl = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  snapshotId: string,
+  snapshotCallback: (
+    snapshotStore: SnapshotStore<T, K>, 
+    snapshots: SnapshotsArray<T>
+  ) => Subscriber<T, K> | null,
+  snapshotStore: SnapshotStore<T, K>, 
+  snapshot: SnapshotsArray<T>
+) => {
+  if (!snapshotSubscribers.has(snapshotId)) {
+    snapshotSubscribers.set(snapshotId, []);
+  }
   
-    // Process each snapshot in the array
+  const typedCallback = addSubscriptionMethods<SnapshotUnion<T>>((snapshot) => {
+    snapshotCallback([snapshot as unknown as SnapshotStore<T, K>] as unknown as Snapshots<T>);
+  }, snapshotId);
+
+  snapshotSubscribers.get(snapshotId)?.push(typedCallback);
+
+  // Process each snapshot in the array
+  snapshot.forEach((snap: SnapshotUnion<T>) => {
+    typedCallback(snap);
+  });
+
+  const snapshots: Snapshots<T> = [];
+
+  snapshots.forEach(snap => {
+    if (snap.type !== null && snap.type !== undefined && snap.timestamp !== undefined) {
+      typedCallback({
+        ...snap,
+        type: snap.type as string,
+        timestamp: typeof snap.timestamp === 'number' ? new Date(snap.timestamp) : snap.timestamp,
+        store: snap.store,
+        dataStore: snap.dataStore,
+        events: snap.events ?? [],
+        meta: snap.meta,
+        data: snap.data ?? ({} as T)
+      } as SnapshotUnion<T>);
+    }
+  });
+};
+
+
+const subscribeToSnapshotImpl = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  snapshotId: string,
+  callback: (snapshot: Snapshot<T, K>) => Subscriber<T, K> | null,
+  snapshot: Snapshot<T, K> | Snapshots<T> | SnapshotsArray<T>
+): Subscriber<T, K> | null => {
+  if (!snapshotSubscribers.has(snapshotId)) {
+    snapshotSubscribers.set(snapshotId, []);
+  }
+
+  const subscriber = callback(snapshot as Snapshot<T, K>);
+  if (subscriber) {
+    const callbackWrapper: Callback<Snapshot<any, any>> = (snap) => {
+      if (isFunction(subscriber)) {
+        subscriber(snap as Snapshot<T, K>);
+      }
+    };
+    snapshotSubscribers.get(snapshotId)?.push(callbackWrapper);
+  }
+
+  // Process each snapshot in the array
+  if (Array.isArray(snapshot)) {
     snapshot.forEach(snap => {
-      typedCallback(snap);
-    });
-
-    const snapshots: Snapshots<T, Meta> = []; // Replace with actual logic to get snapshots
-
-    snapshots.forEach(snap => {
-      if (snap.type !== null && snap.type !== undefined && snap.timestamp !== undefined) {
-        typedCallback({
-          ...snap,
-          type: snap.type as string,
-          timestamp: typeof snap.timestamp === 'number' ? new Date(snap.timestamp) : snap.timestamp,
-          store: snap.store,
-          dataStore: snap.dataStore,
-          events: snap.events ?? [],
-          meta: snap.meta,
-          data: snap.data ?? ({} as T)
-        } as SnapshotUnion<T, Meta>);
+      const subscriber = callback(snap as Snapshot<T, K>);
+      if (subscriber) {
+        const callbackWrapper: Callback<Snapshot<any, any>> = (s) => {
+          if (isFunction(subscriber)) {
+            subscriber(snap as Snapshot<T, K>);
+          }
+        };
+        snapshotSubscribers.get(snapshotId)?.push(callbackWrapper);
       }
     });
-  };
-  
+  }
 
-
-  const subscribeToSnapshotImpl =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-    snapshotId: string,
-    callback: (snapshot: Snapshot<T, Meta, K>) => Subscriber<T, Meta, K> | null,
-    snapshot: Snapshot<T, Meta, K> | Snapshots<T, Meta> | SnapshotsArray<T, Meta>
-  ): Subscriber<T, Meta, K> | null => {
-    if (!snapshotSubscribers.has(snapshotId)) {
-      snapshotSubscribers.set(snapshotId, []);
-    }
-  
-    const subscriber = callback(snapshot as Snapshot<T, Meta, K>); // Ensure callback returns Subscriber or null
-    if (subscriber) {
-      snapshotSubscribers.get(snapshotId)?.push(subscriber);
-    }
-  
-    // Process each snapshot in the array
-    if (Array.isArray(snapshot)) {
-      snapshot.forEach(snap => {
-        const subscriber = callback(snap as Snapshot<T, Meta, K>);
-        if (subscriber) {
-          snapshotSubscribers.get(snapshotId)?.push(subscriber);
-        }
-      });
-    }
-  
-    return subscriber; // Return the Subscriber or null
-  };
+  return subscriber;
+};
 
 // Function to trigger callbacks when a snapshot is updated
-export const updateSnapshot = (snapshotId: string, snapshot: Snapshot<any, any>) => {
+const updateSnapshot = (snapshotId: string, snapshot: Snapshot<any, any>) => {
   const subscribers = snapshotSubscribers.get(snapshotId);
   if (subscribers) {
     subscribers.forEach((callback: Callback<Snapshot<any, any>>) =>
@@ -121,6 +141,6 @@ export const updateSnapshot = (snapshotId: string, snapshot: Snapshot<any, any>)
   }
 };
 
-export { subscribeToSnapshotImpl, subscribeToSnapshotsImpl };
-export type { Callback, MultipleEventsCallbacks, SingleEventCallbacks };
+export { subscribeToSnapshotImpl, subscribeToSnapshotsImpl, updateSnapshot };
+export type { Callback, MultipleEventsCallbacks, SingleEventCallbacks, UnifiedCallback };
 

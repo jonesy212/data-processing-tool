@@ -1,3 +1,4 @@
+import { CommentData, CommentMeta, CommentType } from '@/app/components/models/data/Comments';
 import React, { useState } from 'react';
 
 interface Comment<T = CommentData, Meta = CommentMeta, K = CommentType> {

@@ -27,7 +27,7 @@ const CourseDevelopmentPhaseManager: React.FC = () => {
     CourseDevelopmentPhase.PLANNING // Initial phase
   );
 
-  const userData = {} as SnapshotStore<Snapshot<Data, Meta, Data>>[];
+  const userData = {} as SnapshotStore<Snapshot<Data, Data>>[];
 
   // Additional logic specific to the Course Development Phase
 

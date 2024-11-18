@@ -117,9 +117,6 @@ type AllCategoryValues = typeof userIsDeveloper extends true
     ? AllCategoryValuesWithoutDeveloper | DeveloperCategoryValues 
     : AllCategoryValuesWithoutDeveloper;
 
-
-
-
 // Merge all categories
 export const allCategories = {
     ...dataCategories,

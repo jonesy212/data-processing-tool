@@ -3,15 +3,24 @@ import { useEffect } from "react";
 import { ExchangeEnum } from "../../crypto/exchangeIntegration";
 import { RealtimeData } from "../../models/realtime/RealtimeData";
 import useRealtimeData, { RealtimeUpdateCallback } from "./useRealtimeData";
+import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
-const useRealtimeExchangeData = <T>(
+
+const useRealtimeExchangeData = <
+  T extends BaseData<T>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
+>(
   initialData: any,
-  updateCallback: RealtimeUpdateCallback<RealtimeData>,
+  updateCallback: RealtimeUpdateCallback<RealtimeData, Meta>,
   processExchangeData: (exchangeData: any[]) => any[],
-  exchangeList: ExchangeEnum[] // Adjust parameter to accept an array of Exchange enums
+  exchangeList: ExchangeEnum[], // Adjust parameter to accept an array of Exchange enums
+  dispatch: Dispatch<UnknownAction> // Accept dispatch here
+
 ) => {
   const { fetchData: fetchDataFromRealtimeData } = useRealtimeData(initialData, updateCallback);
-
+  
   const fetchExchangeData = async (
     exchange: ExchangeEnum,
     dispatch: Dispatch<UnknownAction>
@@ -37,13 +46,13 @@ const useRealtimeExchangeData = <T>(
         // Handle realtime data updates if needed
         console.log("Realtime data updated:", action);
       });
+      // Fetch exchange data and dispatch
+      fetchExchangeData(exchange, dispatch);
     });
-  }, [exchangeList, fetchDataFromRealtimeData]);
+  }, [exchangeList, fetchDataFromRealtimeData, dispatch]);
 
   return { fetchExchangeData };
-};
-
-export default useRealtimeExchangeData;
+};export default useRealtimeExchangeData;
 
 // Example function to fetch exchange data for a specific exchange
 const fetchDataForExchange = async (exchange: ExchangeEnum): Promise<any[]> => {

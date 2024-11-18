@@ -1,6 +1,5 @@
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { Data } from '@/app/components/models/data/Data';
 // ApiContent.ts
+import { BaseData } from '@/app/components/models/data/Data';
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
 import { ContentState } from "draft-js";
@@ -87,16 +86,15 @@ const fetchContentIdFromAPI = async (contentState: ContentState): Promise<string
     throw error; // Propagate the error to the caller
   }
 };
-
 // Fetch content data
-const fetchContent = (): Promise<YourResponseType> => {
+const fetchContent = (): Promise<YourResponseType<any>> => {
   // Initialize the useErrorHandling hook
   const { handleError } = useErrorHandling();
 
-  return new Promise<YourResponseType>((resolve, reject) => {
+  return new Promise<YourResponseType<any>>((resolve, reject) => {
     try {
       const fetchContentEndpoint = `${API_BASE_URL}/fetch`; // Adjust the endpoint as needed
-      axiosInstance.get<YourResponseType>(fetchContentEndpoint, {
+      axiosInstance.get<YourResponseType<any>>(fetchContentEndpoint, {
         headers: headersConfig,
       })
       .then(response => {
@@ -240,10 +238,10 @@ const createContentStateFromText = (text: string): any => {
 };
 
  
-const getMetadataForContent = async <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data>(
+const getMetadataForContent = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   contentId: string,
   contentState: ContentState // Include contentState in the function parameters
-): Promise<StructuredMetadata<T, Meta, K>> => {
+): Promise<StructuredMetadata<T, K>> => {
   try {
     // Make API call to fetch metadata for the content
     const getMetadataEndpoint = `${API_BASE_URL}/metadata/${contentId}`;
@@ -305,17 +303,9 @@ const getContentIdFromURL = (url: string): string => {
   return contentId;
   };
 
-  export {handleContentApiErrorAndNotify,
-    fetchContentIdFromAPI,
-    fetchContent,
-    updateContent,
-    createContent,
-    deleteContent,
-    saveTaskHistoryToDatabase,
-    createContentStateFromText,
-    getMetadataForContent,
-    getTaskHistoryFromDatabase,
-    fetchContentDataFromAPI,
-    fetchContentId,
-  getContentIdFromURL,
-}
+  export {
+  createContent, createContentStateFromText, deleteContent, fetchContent, fetchContentDataFromAPI,
+  fetchContentId, fetchContentIdFromAPI, getContentIdFromURL, getMetadataForContent,
+  getTaskHistoryFromDatabase, handleContentApiErrorAndNotify, saveTaskHistoryToDatabase, updateContent
+};
+

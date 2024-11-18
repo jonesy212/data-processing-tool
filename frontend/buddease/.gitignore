@@ -58,7 +58,6 @@ next-env.d.ts
 logs/
 
 
-# Ignore specific files added in this commit
 
 # Ignore specific files added in this commit
 src/app/pages/forms/FormInputComponent.tsx

@@ -1,18 +1,23 @@
 // transformDataToSnapshot.ts
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseData } from '@/app/components/models/data/Data';
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { SnapshotConfig, SnapshotStoreConfig } from ".";
-import { Data } from "../models/data/Data";
+import { InitializedData } from "../hooks/SnapshotStoreOptions";
+import { CombinedEvents } from "../hooks/useSnapshotManager";
 import { CoreSnapshot, Snapshot } from "./LocalStorageSnapshotStore";
+import { SnapshotEvents } from "./SnapshotEvents";
 
-const transformDataToSnapshot =  <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-  item: CoreSnapshot<T, Meta, K>,
-  snapshotConfig: SnapshotConfig<T, Meta, K>,
-  snapshotStoreConfig: SnapshotStoreConfig<T, Meta, K>
-): Snapshot<T, Meta, K> => {
-  const snapshotItem: Snapshot<T, Meta, K> = {
+const transformDataToSnapshot =  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  item: CoreSnapshot<T, K>,
+  snapshotConfig: SnapshotConfig<T, K>,
+  snapshotStoreConfig: SnapshotStoreConfig<T, K>
+): Snapshot<T, K> => {
+  const snapshotItem: Snapshot<T, K> = {
     // Core Properties
     id: item.id?.toString() ?? '',
-    data: item.data as T | Map<string, Snapshot<T, Meta, K>> | null | undefined,
-    initialState: item.initialState as unknown as Snapshot<T, Meta, K> | null,
+    data: item.data as InitializedData | undefined,
+    initialState: item.initialState as unknown as Snapshot<T, K> | null,
     timestamp: item.timestamp ? new Date(item.timestamp) : new Date(),
     meta: item.meta,
     label: item.label,
@@ -49,7 +54,7 @@ const transformDataToSnapshot =  <T extends Data, Meta extends UnifiedMetaDataOp
       onSnapshotAdded: item.events?.onSnapshotAdded ?? (() => { }),
       onSnapshotRemoved: item.events?.onSnapshotRemoved ?? (() => { }),
       onSnapshotUpdated: item.events?.onSnapshotUpdated ?? (() => { }),
-      initialConfig: item.events?.initialConfig ?? {} as SnapshotConfig<T, Meta, K>,
+      initialConfig: item.events?.initialConfig ?? {} as SnapshotConfig<T, K>,
       removeSubscriber: item.events?.removeSubscriber ?? (() => { }),
       onInitialize: item.events?.onInitialize ?? (() => { }),
       onError: item.events?.onError ?? (() => { }),
@@ -58,7 +63,7 @@ const transformDataToSnapshot =  <T extends Data, Meta extends UnifiedMetaDataOp
       emit: item.events?.emit ?? (() => { }),
       once: item.events?.once ?? (() => { }),
       addRecord: item.events?.addRecord ?? (() => { }),
-      removeAllListeners: item.events?.removeAllListeners ?? (() => { }),
+      removeAllListeners: item.events?.repmoveAllListeners ?? (() => { }),
       subscribe: item.events?.subscribe ?? (() => { }),
       unsubscribe: item.events?.unsubscribe ?? (() => { }),
       trigger: item.events?.trigger ?? (() => { }),
@@ -66,8 +71,8 @@ const transformDataToSnapshot =  <T extends Data, Meta extends UnifiedMetaDataOp
     
     // Configuration & State Management
     initialConfig: item.events?.initialConfig,
-    removeSubscriber: item.snapshotStoreConfig?.removeSubscriber,
-    onInitialize: item.events?.onInitialize,
+    removeSubscriber: item.snapshotStoreConfig?.removeSubscriber ? item.snapshotStoreConfig?.removeSubscriber : undefined,
+    onInitialize: item.events?.onInitialize ? item.events?.onInitialize : undefined,
     onError: snapshotConfig.onError,
     snapshot: snapshotConfig.snapshot,
     setCategory: snapshotConfig.setCategory,
@@ -261,21 +266,21 @@ const transformDataToSnapshot =  <T extends Data, Meta extends UnifiedMetaDataOp
 
 export default transformDataToSnapshot;
 
-function transformToCalendarManagerStoreClassMap<T, Meta, K>(
-  events: (SnapshotEvents<T, Meta, K> & CombinedEvents<T, Meta, K>) | {}
-): Record<string, CalendarManagerStoreClass<T, Meta, K>[]> {
-  const result: Record<string, CalendarManagerStoreClass<T, Meta, K>[]> = {};
+function transformToCalendarManagerStoreClassMap<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  events: (SnapshotEvents<T, K> & CombinedEvents<T, K>) | {}
+): Record<string, CalendarManagerStoreClass<T, K>[]> {
+  const result: Record<string, CalendarManagerStoreClass<T, K>[]> = {};
 
   // Iterate over each key in the `events` object if it's not an empty object
   if (events && typeof events === 'object' && Object.keys(events).length > 0) {
     Object.keys(events).forEach((key) => {
       const value = events[key as keyof typeof events];
       
-      // Perform a type check to ensure value is of type `CalendarManagerStoreClass<T, Meta, K>[]`
+      // Perform a type check to ensure value is of type `CalendarManagerStoreClass<T, K>[]`
       if (Array.isArray(value) && value.every(item => item instanceof CalendarManagerStoreClass)) {
-        result[key] = value as CalendarManagerStoreClass<T, Meta, K>[];
+        result[key] = value as CalendarManagerStoreClass<T, K>[];
       } else {
-        // Handle cases where the value is not a `CalendarManagerStoreClass<T, Meta, K>[]`
+        // Handle cases where the value is not a `CalendarManagerStoreClass<T, K>[]`
         result[key] = []; // or handle differently if needed
       }
     });

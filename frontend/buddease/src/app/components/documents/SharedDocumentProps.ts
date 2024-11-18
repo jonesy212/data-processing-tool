@@ -6,6 +6,7 @@ import { EditorState } from "draft-js";
 import { Dispatch, SetStateAction } from "react";
 import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
 import { Phase } from "../phases/Phase";
+import { TagsRecord } from '../snapshots';
 import { WritableDraft } from '../state/redux/ReducerGenerator';
 import { DocumentObject } from '../state/redux/slices/DocumentSlice';
 import AccessHistory from '../versions/AccessHistory';
@@ -16,7 +17,6 @@ import { DocumentData } from "./DocumentBuilder";
 import { DocumentTypeEnum } from './DocumentGenerator';
 import { DocumentOptions } from "./DocumentOptions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
-import { TagsRecord } from '../snapshots';
 
 export interface CommonAnimationOptions {
   type: "slide" | "fade" | "show" | "custom" | "none"; // Add more animation types as needed
@@ -60,7 +60,7 @@ export interface DocumentBuilderProps extends DocumentData  {
         copyright?: string;
         license?: string;
         links?: string[];
-         tags?: TagsRecord | string[] | undefined; 
+         tags?: TagsRecord<T, K> | string[] | undefined; 
         phaseType: ProjectPhaseTypeEnum;
         customProp1: string;
         customProp2: number;

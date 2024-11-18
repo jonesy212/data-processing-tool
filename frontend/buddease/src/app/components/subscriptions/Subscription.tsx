@@ -1,5 +1,7 @@
+import { dataStoreMethods } from "../models/data/dataStoreMethods";
+
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { SubscriptionLevel } from '@/app/components/crypto/SubscriptionLevel';
+import { determineUsage, SubscriptionLevel, subscriptionLevels } from '@/app/components/subscriptions/SubscriptionLevel';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import React, { useEffect, useState } from "react";
 import { ModifiedDate } from "../documents/DocType";
@@ -13,31 +15,49 @@ import { getSnapshotId } from "@/app/api/SnapshotApi";
 import { userId } from "../users/ApiUser";
 import { TriggerIncentivesParams } from "../utils/applicationUtils";
 
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
+import { storeProps } from '../hooks/YourComponent';
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Data } from "../models/data/Data";
 import { Callback, snapshotContainer, SubscriberCollection, useSnapshotStore } from "../snapshots";
+import { getSubscribersAPI } from '@/app/api/subscriberApi';
+import { addToSnapshotList } from '../utils/snapshotUtils';
+import useSecureStoreId from '../utils/useSecureStoreId';
 
 
-type FetchSnapshotByIdCallback<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>  = {
-  onSuccess: (snapshot: Snapshot<T, Meta, K>) => void;
+type FetchSnapshotByIdCallback<T extends Data<T>, K extends T = T>  = {
+  onSuccess: (snapshot: Snapshot<T, K>) => void;
   onError: (error: any) => void;
 };
 
-type Subscription<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> = {
+type SubscriberCallbackType<T extends Data<T>, K extends T = T> =
+  | Callback<Snapshot<T, K>>
+  | SubscriberCallback<T, K>;
+
+
+  type TriggerIncentivesParams = {
+    userId: string;
+    incentiveType: string;
+    params: Record<string, unknown>;
+  };
+  
+type Subscription<T extends Data<T>, K extends T = T> = {
   name?: string;
   subscriberId?: string;
   subscriptionId?: string;
   subscriberType?: SubscriberTypeEnum;
   subscriptionType?: SubscriptionTypeEnum;
-  subscribers: SubscriberCollection<T, Meta, K>;
-  data: Snapshot<T, Meta, K>; // Added
-  getSubscriptionLevel: () => SubscriptionLevel; // Added
+  subscribers: SubscriberCollection<T, K>;
+  data?: Snapshot<T, K>; // Added
+  triggerIncentives: ({ userId, incentiveType, params }: TriggerIncentivesParams) => void;
+  
+  getSubscriptionLevel: (price: number) => SubscriptionLevel | undefined; // Added
   unsubscribe: (
     snapshotId: number, 
     unsubscribe: UnsubscribeDetails, 
-    callback: Callback<Snapshot<T, Meta, K>> | null
+    callback: SubscriberCallbackType | null
   ) => void;
   portfolioUpdates: (
     { userId, snapshotId }: {
@@ -61,7 +81,7 @@ type Subscription<T extends Data, Meta extends UnifiedMetaDataOptions, K extends
     }
   ) => void;
 
-  triggerIncentives: ({ userId, incentiveType, params }: TriggerIncentivesParams) => void;
+  
   communityEngagement: (
     { userId, snapshotId }: {
       userId: string;
@@ -77,7 +97,7 @@ type Subscription<T extends Data, Meta extends UnifiedMetaDataOptions, K extends
   ) => SubscriberTypeEnum;
   portfolioUpdatesLastUpdated: number | ModifiedDate | null;
   getId?: () => string;
-  determineCategory: (data: Snapshot<T, Meta, K>) => string | CategoryProperties | null;
+  determineCategory: (data: Snapshot<T, K>) => string | CategoryProperties | null;
   category?: Category | null;
   categoryProperties?: CategoryProperties | null;
   fetchSnapshotById?: (
@@ -91,17 +111,17 @@ type Subscription<T extends Data, Meta extends UnifiedMetaDataOptions, K extends
       userId: string;
       snapshotId: string;
     },
-    callback: FetchSnapshotByIdCallback<T, Meta, K>
+    callback: FetchSnapshotByIdCallback<T, K>
   ) => void; // Adjust this type according to the actual implementation
 
 };
 
-const SubscriptionComponent = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+const SubscriptionComponent = <T extends RealtimeDataItem, K extends T = T>(
   initialData: RealtimeDataItem[],
   updateCallback: RealtimeUpdateCallback<RealtimeDataItem, K>,
   hookName: string
 ) => {
-  const [subscriptionData, setSubscriptionData] = useState<Subscription<T, Meta, K> | null>(
+  const [subscriptionData, setSubscriptionData] = useState<Subscription<T, K> | null>(
     null
   );
   const [unsubscribeType, setUnsubscribeType] = useState<string>(""); // Initialize with empty string
@@ -110,7 +130,8 @@ const SubscriptionComponent = <T extends Data, Meta extends UnifiedMetaDataOptio
   const [unsubscribeData, setUnsubscribeData] = useState<any>({}); // Initialize with empty object
   const [snapshot, setSnapshot] = useState<Snapshot<any, any> | null>(null); // Add state for snapshot
 
-  const data = useRealtimeData<T, Meta, K>(initialData, updateCallback);
+  const data = useRealtimeData<T>(initialData, updateCallback);
+  const subscriptionLevelsConfig: SubscriptionLevel[] = subscriptionLevels;
 
   useEffect(() => {
     // Subscribe to the data service
@@ -132,10 +153,20 @@ const SubscriptionComponent = <T extends Data, Meta extends UnifiedMetaDataOptio
   
       // Further actions can be added here if needed
     };
+    
     // Your subscription usage
     const subscribeToData = async () => {
   
-      const subscriptionUsage: Subscription<T, Meta, K> | undefined = subscription.subscribe(
+      const subscribers = await getSubscribersAPI(); // Assuming this fetches a list of subscribers
+      const currentSubscriber = subscribers.find(sub => sub.id === hookName); // Example: find the matching subscriber by `hookName`
+      // Set `usage` based on a property from the `currentSubscriber`
+      const usage = currentSubscriber ? determineUsage(currentSubscriber.getSubscriptionLevel()) : undefined;
+
+      if(usage === undefined){
+        throw new Error("Usage is undefined");  
+      }
+
+      const subscriptionUsage: Subscription<T, K> | undefined = subscription.subscribe(
         hookName,
         async (data: RealtimeDataItem) => {
           if (data.type === "snapshot" && data.data && data.data.subscriberId === hookName) {
@@ -145,7 +176,7 @@ const SubscriptionComponent = <T extends Data, Meta extends UnifiedMetaDataOptio
             setSnapshot(snapshotData); // Update snapshot state
          
             const snapshotStore = await useSnapshotStore(addToSnapshotList, storeProps);
-            const subscriptionData: Subscription<T, Meta, K> | null = snapshot.data ? {
+            const subscriptionData: Subscription<T, K> | null = snapshot.data ? {
               ...snapshot.data,
               unsubscribe: () => { },
               portfolioUpdates: () => { },
@@ -170,19 +201,40 @@ const SubscriptionComponent = <T extends Data, Meta extends UnifiedMetaDataOptio
             } : null;
             setSubscriptionData(subscriptionData);
           }
-        }
-      ) as Subscription<T, Meta, K> | undefined;
+        },
+        usage
+      ) as Subscription<T, K> | undefined;
       
       
       // Ensure subscriptionUsage is defined before accessing unsubscribe
       if (subscriptionUsage) {
         async function fetchCriteria() {
-          const snapshotContainerResult = await snapshotContainer(snapshotId, storeId);
-          const criteria: CriteriaType = await snapshotApi.getSnapshotCriteria(
+
+          const storeId = useSecureStoreId()
+          const storeConfig = dataStoreMethods?.config                                                                    
+
+              // Ensure snapshot is not null before accessing its properties
+          if (!snapshot) {
+            throw new Error("Snapshot is null");
+          }
+
+          const snapshotId = snapshot.id; // Ensure this is a string
+          if (typeof snapshotId !== "string") {
+              throw new Error("Snapshot ID must be a string");
+          }
+
+          // Check if storeId is null and handle accordingly
+          if (storeId === null) {
+              throw new Error("Store ID cannot be null");
+          }
+
+          const snapshotContainerResult = snapshotContainer<T, K>(String(snapshotId), storeId, storeConfig);
+          const criteria: CriteriaType = await snapshotApi.getSnapshotCriteria<T, K>(
             snapshotContainerResult,
             snapshot
           );
-          const snapshotId = getSnapshotId(criteria).toString();
+
+          // const snapshotId = getSnapshotId(criteria).toString();
       
           // Cleanup: Unsubscribe when the component unmounts
           return () => {
@@ -203,26 +255,43 @@ const SubscriptionComponent = <T extends Data, Meta extends UnifiedMetaDataOptio
         }
         fetchCriteria();
       }
-      subscribeToData();
-      // If subscriptionUsage is undefined, return a no-op function
-      return () => {};
     }
-  }, [hookName, unsubscribeType, unsubscribeDate, unsubscribeReason, unsubscribeData]); // Depend on relevant variables
+    
+    subscribeToData();
+    // If subscriptionUsage is undefined, return a no-op function
+    return () => {};
+  }, [hookName, unsubscribeType, unsubscribeDate, unsubscribeReason, unsubscribeData]) // Depend on relevant variables  const addToSnapshotList = async (
+
+
 
   const addToSnapshotList = async (
-    snapshot: Snapshot<T, Meta, K>) => {
-    console.log("Snapshot added to snapshot list: ", snapshot);    setSubscriptionData(snapshot.data? {
+  snapshot: Snapshot<T, K>
+  ): Promise<Subscription<T, K> | null> => {
+    console.log("Snapshot added to snapshot list: ", snapshot);
+    setSubscriptionData(snapshot.data ? {
       unsubscribe: () => {},
+      subscribers: {} as SubscriberCollection<T, K>, 
+      getSubscriptionLevel: (price: number): SubscriptionLevel | undefined => {
+        return subscriptionLevelsConfig.find(level => level.price === price);
+      },
       portfolioUpdates: () => {},
       tradeExecutions: () => {},
       marketUpdates: () => {},
       triggerIncentives: () => {},
       communityEngagement: () => {},
-      determineCategory: (await useSnapshotStore(addToSnapshotList)).determineCategory,
+      determineCategory: (await useSnapshotStore(addToSnapshotList, storeProps)).determineCategory,
       portfolioUpdatesLastUpdated: {} as ModifiedDate,
-     ...snapshot.data
+          ...snapshot.data
     } : null);
+
+
+    // Set the subscription data
+    setSubscriptionData(subscriptionData);
+    
+    // Return the subscription data or null
+    return subscriptionData as Subscription<T, K> | null;
   };
+
   const handleUnsubscribe = () => {
     // Example: Set unsubscribe parameters dynamically
     setUnsubscribeType("actualType");
@@ -234,17 +303,20 @@ const SubscriptionComponent = <T extends Data, Meta extends UnifiedMetaDataOptio
   
   // Function to handle subscribe action
   const handleSubscribe = () => {
-    // Implement subscription logic here
-    // For example:
-    subscriptionService.subscribe(hookName, handleSubscriptionCallback);
+
+    const subscribers = await getSubscribersAPI(); // Assuming this fetches a list of subscribers
+    const currentSubscriber = subscribers.find(sub => sub.id === hookName); // Example: find the matching subscriber by `hookName`
+
+    const usage = currentSubscriber ? determineUsage(currentSubscriber.getSubscriptionLevel()) : undefined;
+
+    subscriptionService.subscribe(hookName, handleSubscriptionCallback, usage);
   };
 
-  // Callback function for subscription update
    // Callback function for subscription update
 const handleSubscriptionCallback = async (data: RealtimeDataItem) => {
   // Handle incoming subscription data here
   // Transform RealtimeDataItem to Subscription or null
-  const transformedData: Subscription<T, Meta, K> | null = data.type === "snapshot" && data.data && data.data.subscriberId === hookName
+  const transformedData: Subscription<T, K> | null = data.type === "snapshot" && data.data && data.data.subscriberId === hookName
     ? {
         portfolioUpdates: () => {},
         tradeExecutions: () => {},
@@ -262,19 +334,20 @@ const handleSubscriptionCallback = async (data: RealtimeDataItem) => {
             unsubscribeReason: string;
             unsubscribeData: any;
           },
-          callback: Callback<Snapshot<T, Meta, K>> | null
+          callback: Callback<Snapshot<T, K>> | null
         ) => {
           if (data.data?.unsubscribe) {
             data.data.unsubscribe(unsubscribeDetails, callback);
           }
         },
-        determineCategory: (await useSnapshotStore(addToSnapshotList)).determineCategory
+        determineCategory: (await useSnapshotStore(addToSnapshotList, storeProps)).determineCategory
       }
     : null;
 
   // Update state with transformed data
   setSubscriptionData(transformedData);
 };
+
   // Render your component JSX with subscribe/unsubscribe actions
   return (
     <div>
@@ -295,6 +368,8 @@ const handleSubscriptionCallback = async (data: RealtimeDataItem) => {
   );
 };
 
+
+
 export default SubscriptionComponent;
-export type { FetchSnapshotByIdCallback, Subscription };
+export type { FetchSnapshotByIdCallback, Subscription, SubscriberCallbackType };
 

@@ -2,21 +2,22 @@ import * as snapshotApi from '@/app/api/SnapshotApi';
 import { Data } from '../models/data/Data';
 import { Snapshot } from './LocalStorageSnapshotStore';
 import { SnapshotContainer } from './SnapshotContainer';
+import { BaseData } from '@/app/components/models/data/Data';
 
-interface DelegateType<T, Meta, K> {
-    processSnapshot: (snapshot: Snapshot<T, Meta, K>) => void;
+interface DelegateType<T, K> {
+    processSnapshot: (snapshot: Snapshot<T, K>) => void;
     anotherTask: () => void;
   }
   
 
 // Define the delegate function that retrieves the delegate based on the snapshot ID and store ID
-async function getSnapshotDelegate<T, Meta, K>(
+async function getSnapshotDelegate<T, K>(
   snapshotId: string,
   storeId: number
-): Promise<DelegateType<T, Meta, K> | null> {
+): Promise<DelegateType<T, K> | null> {
   try {
     // You may need to fetch the snapshot container first
-    const snapshotContainer = await snapshotApi.getSnapshotContainer<T, Meta, K>(snapshotId, storeId);
+    const snapshotContainer = await snapshotApi.getSnapshotContainer<T, K>(snapshotId, storeId);
 
     if (!snapshotContainer) {
       console.error("Snapshot container not found for snapshotId:", snapshotId);
@@ -40,9 +41,9 @@ async function getSnapshotDelegate<T, Meta, K>(
 }
 
 // Helper function to create a delegate from a container if needed
-function createDelegateFromContainer<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(container: SnapshotContainer<T, Meta, K>): DelegateType<T, Meta, K> {
+function createDelegateFromContainer<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(container: SnapshotContainer<T, K>): DelegateType<T, K> {
   return {
-    processSnapshot: (snapshot: Snapshot<T, Meta, K>) => {
+    processSnapshot: (snapshot: Snapshot<T, K>) => {
       try {
         const snapshotId = snapshot.id;
 
@@ -86,3 +87,6 @@ function createDelegateFromContainer<T extends Data, Meta extends UnifiedMetaDat
     }
   };
 }
+
+
+xport { getSnapshotDelegate }

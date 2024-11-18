@@ -1,4 +1,6 @@
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { endpoints } from "@/app/api/ApiEndpoints";
+import { BaseData } from '@/app/components/models/data/Data';
 import { useNotification } from '@/app/components/support/NotificationContext';
 import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -8,7 +10,7 @@ import { useMemo, useState } from "react";
 import { DocumentData } from "../../documents/DocumentBuilder";
 import { DocumentPath } from "../../documents/DocumentGenerator";
 import { Content } from "../../models/content/AddContent";
-import { BaseData, Comment, Data } from "../../models/data/Data";
+import { Comment } from "../../models/data/Comments";
 import axiosInstance from "../../security/csrfToken";
 import { TagsRecord } from "../../snapshots";
 import { NotificationTypeEnum } from "../../support/NotificationContext";
@@ -16,34 +18,41 @@ import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { AllTypes } from "../../typings/PropTypes";
 import { userService } from "../../users/ApiUser";
 import { UserRoleEnum } from "../../users/UserRoles";
- 
+
 
 
 // Define the type for the document content
-interface DocumentContent<T extends Data, Meta extends UnifiedMetaDataOptions> {
+interface DocumentContent<
+  T extends  BaseData<T>, 
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+> {
   eventId: string;
-  content: Content<T, Meta, BaseData>
+  content: Content<T, K>,
+  meta: Meta; 
+  metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludeFields>; 
   // Add more properties as needed
 }
 
-interface DocumentBase<T extends Data,
-  Meta extends UnifiedMetaDataOptions,
-  K extends Data,> {
+interface DocumentBase<
+  T extends  BaseData<T>,
+  K extends T = T> {
   id: string | number;
   title: string;
-  content: Content<T, Meta, BaseData>
+  content: Content<T, K>;
   description?: string | null | undefined;
-  tags?: TagsRecord | string[] | undefined; 
+  tags?: TagsRecord<T, K> | string[] | undefined; 
   createdAt: string | Date | undefined;
   updatedAt?: string | Date;
   createdBy: string | undefined;
   updatedBy: string;
   visibility: AllTypes;
 
-  documentData?: DocumentData<T, Meta, K>;
-  comments?: Comment<T, Meta, K>[];
+  documentData?: DocumentData<T, K>;
+  comments?: Comment<T, K>[];
   // selectedDocument: DocumentData<T> | null;
-  selectedDocuments?: DocumentData<T, Meta, K>[];
+  selectedDocuments?: DocumentData<T, K>[];
   
 }
 
@@ -72,14 +81,14 @@ interface DocumentStatus {
   visibilityState?: string;
 }
 
-interface DocumentAdditionalProps <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+interface DocumentAdditionalProps <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   URL: string;
   bgColor: string;
   documentURI: string;
   currentScript: string | null;
-  defaultView: Window | null;
+  defaultView: Window | undefined;
   doctype: DocumentType | null;
-  ownerDocument: Document<T, Meta, K> | null;
+  ownerDocument: Document<T, K> | null;
   scrollingElement: Element | null;
   readyState: string;
   timeline: DocumentTimeline | undefined;
@@ -95,13 +104,13 @@ interface DocumentAdditionalProps <T extends Data, Meta extends UnifiedMetaDataO
   implementation?: DOMImplementation;
   links?: any;
   location?: Location;
-  onfullscreenchange?: ((this: Document<T, Meta, K>, ev: Event) => any) | null;
-  onfullscreenerror?: ((this: Document<T, Meta, K>, ev: Event) => any) | null;
+  onfullscreenchange?: ((this: Document<T, K>, ev: Event) => any) | null;
+  onfullscreenerror?: ((this: Document<T, K>, ev: Event) => any) | null;
 
-  onpointerlockerror?: ((this: Document<T, Meta, K>, ev: Event) => any) | null;
-  onpointerlockchange?: ((this: Document<T, Meta, K>, ev: Event) => any) | null
-  onreadystatechange?: ((this: Document<T, Meta, K>, ev: Event) => any) | null;
-  onvisibilitychange?: ((this: Document<T, Meta, K>, ev: Event) => any) | null;
+  onpointerlockerror?: ((this: Document<T, K>, ev: Event) => any) | null;
+  onpointerlockchange?: ((this: Document<T, K>, ev: Event) => any) | null
+  onreadystatechange?: ((this: Document<T, K>, ev: Event) => any) | null;
+  onvisibilitychange?: ((this: Document<T, K>, ev: Event) => any) | null;
   pictureInPictureEnabled?: boolean;
 
   plugins?: any;
@@ -115,20 +124,20 @@ interface DocumentAdditionalProps <T extends Data, Meta extends UnifiedMetaDataO
 
 
 
-interface Document<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>
-  extends DocumentBase<T, Meta, K>, DocumentMetadata, DocumentStatus, DocumentAdditionalProps<T, Meta, K>  {
+interface Document<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+  extends DocumentBase<T, K>, DocumentMetadata, DocumentStatus, DocumentAdditionalProps<T, K>  {
   // name: string | undefined;
   bgColor: string;
   documentURI: string;
   currentScript: string | null;
-  defaultView: Window | null;
+  defaultView: Window | undefined;
   doctype: DocumentType | null;
-  ownerDocument: Document<T, Meta, K> | null;
+  ownerDocument: Document<T, K> | null;
   scrollingElement: Element | null;
   requiredRole?: UserRoleEnum;
   timeline: DocumentTimeline | undefined;
   filePath?: DocumentPath;
-  documentData?: DocumentData<T, Meta, K>;
+  documentData?: DocumentData<T, K>;
   isPrivate?: boolean;
   _rev: string | undefined;
   _attachments?: Record<string, any> | undefined;
@@ -164,24 +173,24 @@ interface Document<T extends Data, Meta extends UnifiedMetaDataOptions, K extend
 }
 
   
-export interface DocumentStore <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
-  documents: Record<string, Document<T, Meta, K>>;
+export interface DocumentStore <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  documents: Record<string, Document<T, K>>;
   fetchDocuments: () => void;
   getSnapshotDataKey: (documentId: string, eventId: number, userId: string) => string;
   updateDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
-  getData: (id: string) => Document<T, Meta, K> | undefined;
-  addDocument: (document: Document<T, Meta, K>, content: Content<T, Meta, K>) => void;
+  getData: (id: string) => Document<T, K> | undefined;
+  addDocument: (document: Document<T, K>, content: Content<T, K>) => void;
   setDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
-  updateDocument: (id: number, updatedDocument: Document<T, Meta, K>) => void;
+  updateDocument: (id: number, updatedDocument: Document<T, K>) => void;
   deleteDocument: (id: number) => void;
   updateDocumentTags: (id: number, newTags: string[]) => void;
-  selectedDocument: Document<T, Meta, K> | undefined;
-  selectedDocuments: Document<T, Meta, K>[] | undefined;
+  selectedDocument: Document<T, K> | undefined;
+  selectedDocuments: Document<T, K>[] | undefined;
   // Add more methods as needed
 }
 
-const useDocumentStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(): DocumentStore<T, Meta, K> => {
-  const [documents, setDocuments] = useState<Record<string, Document<T, Meta, K>>>({});
+const useDocumentStore = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): DocumentStore<T, K> => {
+  const [documents, setDocuments] = useState<Record<string, Document<T, K>>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { notify } = useNotification();
@@ -205,7 +214,7 @@ const useDocumentStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K
     }
   };
 
-  const addDocument = (document: Document<T, Meta, K>) => {
+  const addDocument = (document: Document<T, K>) => {
     setDocuments((prevDocuments) => ({
       ...prevDocuments,
       [document.id]: document,
@@ -239,7 +248,7 @@ const useDocumentStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K
 
 
  // Function to load document content for calendar events
- const loadCalendarEventsDocumentContent = async (eventId: string): Promise<DocumentContent<T, Meta>> => {
+ const loadCalendarEventsDocumentContent = async (eventId: string): Promise<DocumentContent<T, K, Meta>> => {
   try {
     // Fetch document content from the backend based on the event ID
     const response = await axiosInstance.get(`/api/calendar-events/${eventId}/document-content`);
@@ -250,7 +259,9 @@ const useDocumentStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K
     // Return the document content along with the event ID
     return {
       eventId: eventId,
-      content: content
+      content: content,
+      meta: meta, 
+      metadata: metadata
     };
   } catch (error) {
     // Handle errors
@@ -286,7 +297,7 @@ const useDocumentStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K
     }
   };
 
-  const updateDocument = (id: number, updatedDocument: Document<T, Meta, K>) => {
+  const updateDocument = (id: number, updatedDocument: Document<T, K>) => {
     setDocuments((prevDocuments) => ({
       ...prevDocuments,
       [id]: updatedDocument,
@@ -401,7 +412,7 @@ const useDocumentStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K
     }
   };
 
-  const store: DocumentStore<T, Meta, K> = makeAutoObservable({
+  const store: DocumentStore<T, K> = makeAutoObservable({
     documents,
     isLoading,
     error,
@@ -425,5 +436,5 @@ const useDocumentStore = <T extends Data, Meta extends UnifiedMetaDataOptions, K
 };
 
 export default useDocumentStore;
-export type { Document, DocumentBase };
+export type { Document, DocumentBase, DocumentMetadata };
 

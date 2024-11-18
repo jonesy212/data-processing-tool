@@ -1,12 +1,11 @@
 // ApiDataAnalysis.ts
 import {
-  NotificationType,
-  useNotification
+    NotificationType,
+    useNotification
 } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
 import { useDispatch } from "react-redux";
-import { BaseData, Data } from "../components/models/data/Data";
-import { Meta } from "../components/models/data/dataStoreMethods";
+import { BaseData } from "../components/models/data/Data";
 import { PriorityTypeEnum } from "../components/models/data/StatusType";
 import { DataAnalysisResult } from "../components/projects/DataAnalysisPhase/DataAnalysisResult";
 import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
@@ -78,19 +77,22 @@ export const handleDataAnalysisApiErrorAndNotify = (
 };
 
 // Function to fetch data analysis
-export function fetchDataAnalysis(
+export function fetchDataAnalysis<T extends BaseData, K extends T = T>(
   endpoint: string,
   text?: string
-): Promise<YourResponseType | Snapshot<Data, Meta, Data>> {
+): Promise<YourResponseType | Snapshot<T, K>> {
   const fetchDataAnalysisEndpoint = `${DATA_ANALYSIS_BASE_URL}${endpoint}`;
   const config = {
     headers: headersConfig,
-    params: text ? { text } : undefined, // Add text as params if provided
+    params: text ? { text } : undefined,
   };
 
   return axiosInstance
-    .get<YourResponseType | Snapshot<Data, Meta, Data>>(fetchDataAnalysisEndpoint, config)
-    .then((response) => response.data as Snapshot<Data, Meta, Data>)
+    .get<YourResponseType | Snapshot<T, K>>(fetchDataAnalysisEndpoint, config)
+    .then((response) => {
+      // Return the response data which matches the expected type
+      return response.data as YourResponseType | Snapshot<T, K>;
+    })
     .catch((error) => {
       console.error("Error fetching data analysis:", error);
       const errorMessage = "Failed to fetch data analysis";
@@ -105,39 +107,45 @@ export function fetchDataAnalysis(
 
 
 
+
 // Function to fetch analysis results
-export const fetchAnalysisResults = (): Promise<any> => {
+export const fetchAnalysisResults = <
+  T extends  BaseData<T>,
+  K extends T = T
+>(): Promise<any> => {
   const endpoint = DATA_ANALYSIS_BASE_URL.getAnalysisResults;
 
   if (typeof endpoint !== "string") {
     return Promise.reject(new Error("Endpoint is not a string"));
   }
 
-  return fetchDataAnalysis(endpoint)
-    .then((response: YourResponseType | Snapshot<Data, Meta, Data>) => {
-      const analysisResults = response.data;
+  return fetchDataAnalysis<T, K>(endpoint)
+    .then((response) => {
+      // Type guard to check if response is a Snapshot or YourResponseType
+      if ("data" in response && response.data) {
+        const analysisResults = response.data;
 
-      // Check if analysisResults is of type DataAnalysisResult
-      if (!isDataAnalysisResult(analysisResults)) {
-        return Promise.reject(new Error("Invalid response data"));
-      }
+        // Check if analysisResults is of type DataAnalysisResult
+        if (!isDataAnalysisResult(analysisResults)) {
+          return Promise.reject(new Error("Invalid response data"));
+        }
 
-      // Destructure analysisResults safely
-      const { description, phase, priority, sentiment, sentimentAnalysis, ...rest } = analysisResults;
+        // Destructure analysisResults safely
+        const { description, phase, priority, sentiment, sentimentAnalysis, ...rest } = analysisResults;
 
-      if(analysisResults.snapshotStores === undefined && analysisResults?.snapshotStores![0] === undefined) {
+        if (
+          analysisResults.snapshotStores === undefined ||
+          !analysisResults?.snapshotStores![0]
+        ) {
           return Promise.reject(new Error("No snapshots available"));
         }
+
         // Return processed data
-      return {
-        // General Properties
-        
-       
-        
-        ...rest,
-        description: description ?? undefined,
-        phase: phase ?? undefined,
-        priority: priority as PriorityTypeEnum | undefined,
+        return {    
+          ...rest,
+          description: description ?? undefined,
+          phase: phase ?? undefined,
+          priority: priority as PriorityTypeEnum | undefined,
 
         schema: analysisResults.snapshotStores[0].getSchema(),
         storeId: analysisResults.snapshotStores[0].storeId,
@@ -147,6 +155,9 @@ export const fetchAnalysisResults = (): Promise<any> => {
         snapConfig: analysisResults.snapConfig,
         snapshotCategory: analysisResults.snapshotCategory,
         snapshotSubscriberId: analysisResults.snapshotSubscriberId,
+        initialState: analysisResults.initialState,
+        timestamp: analysisResults.timestamp,
+        label: analysisResults.label,
        
 
 
@@ -378,16 +389,21 @@ export const fetchAnalysisResults = (): Promise<any> => {
         initializeWithData: analysisResults.snapshotStores[0].initializeWithData,
         hasSnapshots: analysisResults.snapshotStores[0].hasSnapshots,
         equals: analysisResults.snapshotStores[0].equals
-      } as Snapshot<BaseData, Meta, BaseData>
-    })
-    .catch((error) => {
-      handleDataAnalysisApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        NOTIFICATION_MESSAGES.errorMessage.FETCH_ANALYSIS_RESULTS_ERROR,
-        "FETCH_ANALYSIS_RESULTS_ERROR"
-      );
-      return Promise.reject(error);
-    });
+      } as Snapshot<BaseData, BaseData>
+      
+    } else {
+      // Handle YourResponseType case if different processing is required
+      return Promise.reject(new Error("Unexpected response format"));
+    }
+  })
+  .catch((error) => {
+    handleDataAnalysisApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      NOTIFICATION_MESSAGES.errorMessage.FETCH_ANALYSIS_RESULTS_ERROR,
+      "FETCH_ANALYSIS_RESULTS_ERROR"
+    );
+    return Promise.reject(error);
+  });
 };
 
 // Function to check if an object conforms to DataAnalysisResult interface

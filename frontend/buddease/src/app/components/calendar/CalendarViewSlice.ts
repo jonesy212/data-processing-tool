@@ -1,3 +1,4 @@
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import React from "react";
@@ -8,7 +9,6 @@ import { SetCustomEventNotificationsPayload } from "../notifications/SetEventNot
 import axiosInstance from "../security/csrfToken";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { RootState } from "../state/redux/slices/RootSlice";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { SendStatus } from "../support/NofiticationsSlice";
 import { NotificationTypeEnum } from "../support/NotificationContext";

@@ -1,10 +1,11 @@
 // EventService.ts
 
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import {
-  BaseSyntheticEvent,
-  ModifierKey,
-  MouseEvent,
-  SyntheticEvent,
+    BaseSyntheticEvent,
+    ModifierKey,
+    MouseEvent,
+    SyntheticEvent,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { EventActions } from "../actions/EventActions";
@@ -15,7 +16,6 @@ import { Progress } from "../models/tracker/ProgressBar";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { RootState } from "../state/redux/slices/RootSlice";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
 import { CustomEventExtension } from "./BaseCustomEvent";

@@ -11,6 +11,7 @@ import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { ProjectMetadata } from "../configs/StructuredMetadata";
 import ProjectModel from "../../../models/ProjectModel";
 import { Product } from "../components/products/Product";
+import { K, T } from '../components/models/data/dataStoreMethods';
 
 const API_BASE_URL = endpoints.projects;
 
@@ -25,9 +26,8 @@ class ProjectService {
     try {
       // Check if the project already exists in the database
       const existingProject = await ProjectModel.findOne({
-        criteria: {tableName: ProjectModel.tableName,
+          tableName: ProjectModel.tableName,
           where: { id: projectData.id },
-        }
         // Optionally specify the tableName here
       });
 
@@ -49,10 +49,7 @@ class ProjectService {
 
   createProject = async (newProject: Project) => { 
     try {
-      const response = await axiosInstance.post(
-        dotProp.getProperty(API_BASE_URL, 'add') as string, 
-        newProject
-      );
+      const response = await axiosInstance.post(API_BASE_URL.add as string, newProject);
       ProjectActions.createProjectSuccess({ project: response.data });
       sendNotification(`Project ${newProject.name} created successfully`);
       return response.data;
@@ -62,15 +59,15 @@ class ProjectService {
       console.error('Error creating project:', error);
       throw error;
     }
-  }
-  
+
+  };  
   fetchProject = async (projectId: number) => {
     try {
       ProjectActions.fetchProjectsRequest({
-        request: NOTIFICATION_MESSAGES.Projects.FETCH_PROJECT_DETAILS_SUCCESS
+        request: NOTIFICATION_MESSAGES.Projects.FETCH_PROJECT_DETAILS_SUCCESS,
       });
       const response = await axiosInstance.get(
-        dotProp.getProperty(API_BASE_URL, 'single', [projectId]) as string
+        `${API_BASE_URL.single}/${projectId}`
       );
       ProjectActions.fetchProjectSuccess({ project: response.data });
       sendNotification(`Project with ID ${projectId} fetched successfully`);
@@ -81,20 +78,14 @@ class ProjectService {
       console.error('Error fetching project:', error);
       throw error;
     }
-  }
+  };
   
-
-  
-  
-
   fetchProjectList = async () => {
     try {
       ProjectActions.fetchProjectsRequest({
         request: NOTIFICATION_MESSAGES.Projects.FETCH_PROJECT_LIST_SUCCESS,
       });
-      const response = await axiosInstance.get(
-        dotProp.getProperty(API_BASE_URL, "all") as string // Type assertion to specify the return type as string
-      );
+      const response = await axiosInstance.get(API_BASE_URL.all as string);
       ProjectActions.fetchProjectsSuccess({ projects: response.data });
       sendNotification(`Project list fetched successfully`);
       return response.data;
@@ -104,13 +95,10 @@ class ProjectService {
       console.error("Error fetching project list:", error);
       throw error;
     }
-  };
-  
-
-    
+  };    
   updateProjectData = async (
     id: string,
-    metadata: ProjectMetadata
+    metadata: ProjectMetadata<T, K<T>>
   ): Promise<{ project: Project }> => {
     try {
       const response = await axiosInstance.put(`${API_BASE_URL}/${id}`, {
@@ -297,7 +285,7 @@ class ProjectService {
     }
   };
   
-  addTaskToProject = async (projectId: number, task: Task): Promise<void> => {
+  addTaskToProject = async (projectId: number, task: Task<T, ProjectData>): Promise<void> => {
     try {
       const response = await axiosInstance.post(`${API_BASE_URL}/${projectId}/tasks`, task);
       ProjectActions.addTaskToProject({ projectId: projectId, task: response.data });
@@ -309,9 +297,7 @@ class ProjectService {
       throw error;
     }
   };
-
-  removeTaskFromProject = async (projectId: number, taskId: number): Promise<void> => {
-    try {
+  removeTaskFromProject = async (projectId: number, taskId: number): Promise<void> => {    try {
       await axiosInstance.delete(`${API_BASE_URL}/${projectId}/tasks/${taskId}`);
       ProjectActions.removeTaskFromProject({ projectId: projectId, taskId: taskId });
       sendNotification(`Task removed from project with ID ${projectId}`);

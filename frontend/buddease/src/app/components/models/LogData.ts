@@ -4,7 +4,10 @@ import { Highlight } from "../documents/NoteData";
 import CustomFile from "../documents/File";
 import {  Snapshot} from "../snapshots";
 
-interface LogData {
+interface LogData<
+  T extends BaseData<T>, 
+  K extends T = T>
+  {
   date: Date | string | number;
   timestamp: Date | number;
   level: string; // Log level (e.g., INFO, WARNING, ERROR)

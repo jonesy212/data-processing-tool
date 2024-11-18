@@ -1,12 +1,9 @@
-import { Data } from "../../models/data/Data";
-import { DataStatus } from "../../models/data/StatusType";
-import { Phase } from "../../phases/Phase";
-import { Snapshot } from "../../snapshots";
 import { AllStatus } from "../../state/stores/DetailsListStore";
 import { AnalysisTypeEnum } from "./AnalysisType";
+import { BaseData } from '@/app/components/models/data/Data';
 
 // DataAnalysisResult.ts
-export interface DataAnalysisResult extends Data {
+export interface DataAnalysisResult<T extends  BaseData<T>> {
   id: string | number; // Unique identifier for the data analysis result
   title: string; // Title of the data analysis result
   insights: string[]; // Array of insights gained from the data analysis

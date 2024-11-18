@@ -6,7 +6,7 @@ import { Phase } from "../phases/Phase";
 import { Product } from "../products/Product";
 import { Project, ProjectDetails } from "../projects/Project";
 import { User } from "../users/User";
-
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
 export const ProjectActions = {
   // Standard actions
   add: createAction<Project>("addProject"),
@@ -144,7 +144,7 @@ export const ProjectActions = {
     "removeProjectPhase"
   ),
 
-  addTaskToProject: createAction<{ projectId: number; task: Task }>(
+  addTaskToProject: createAction<{ projectId: number; task: Task<T, K<T>> }>(
     "addTaskToProject"
   ),
   removeTaskFromProject: createAction<{ projectId: number; taskId: number }>(

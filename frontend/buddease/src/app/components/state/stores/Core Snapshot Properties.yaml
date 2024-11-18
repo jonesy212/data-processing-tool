@@ -12,7 +12,7 @@ setCategory: retrievedSnapshot.setCategory
 determineCategory: retrievedSnapshot.determineCategory
 Data:
 
-data: retrievedSnapshot.data as T | Map<string, Snapshot<T, Meta, K>> | null | undefined
+data: retrievedSnapshot.data as T | Map<string, Snapshot<T, K>> | null | undefined
 newData: retrievedSnapshot.newData
 dataItems: retrievedSnapshot.dataItems
 getData: retrievedSnapshot.getData

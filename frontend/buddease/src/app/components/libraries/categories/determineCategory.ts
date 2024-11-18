@@ -1,30 +1,27 @@
 // determinCategory.ts
-
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData } from '@/app/components/models/data/Data';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { Data } from "../../models/data/Data";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { isCategoryProperties } from "./generateCategoryProperties";
 
 // determineCategory function
-function determineCategory<T extends Data>(
-  data: Snapshot<T, T> | null | undefined
+function determineCategory<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  data: Snapshot<T, K> | null | undefined
 ): string | CategoryProperties | null {
   if (!data) {
     return null; // If data is null or undefined, return null
   }
 
-  // Narrowing the type of data.data
-  const snapshotData = data.data;
-
+  const snapshotData = data.data; // Narrow the type of data.data
+  
   if (snapshotData instanceof Map) {
-    // Handle Map case if necessary
+    // Handle the Map case if necessary
     return null; // Adjust this based on your logic
   }
 
-  // Now snapshotData is of type T
-  const category = (snapshotData as T).category; // Ensure snapshotData is T
+  const category = (snapshotData as T).category; // Ensure snapshotData is of type T
 
-  // Return the category if it exists
   if (typeof category === 'string') {
     return category; // If category is a string, return it
   } else if (isCategoryProperties(category)) {
@@ -34,7 +31,5 @@ function determineCategory<T extends Data>(
   }
 }
 
-
-  
-  export { determineCategory };
+export { determineCategory };
   

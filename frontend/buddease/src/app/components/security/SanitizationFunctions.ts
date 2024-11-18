@@ -174,6 +174,29 @@ export const sanitizeInput = (input: string): string => {
   return sanitizedInput;
 };
 
+// Generic sanitize function using your existing sanitize logic
+function sanitize(input: any): string {
+  // Implement the actual sanitization logic (e.g., stripping unsafe characters)
+  return input?.toString().replace(/[^\w\s]/gi, '') ?? '';
+}
+
+
+// Unified sanitization logic for SnapshotData and Snapshot
+function sanitizeSnapshotData<T>(snapshotData: SnapshotDataType<T>) {
+  if (isSnapshotData(snapshotData)) {
+    // Sanitize SnapshotData fields
+    snapshotData.title = sanitize(snapshotData.title || '');
+    snapshotData.description = sanitize(snapshotData.description || '');
+    // Other sanitization logic for SnapshotData
+  } else {
+    // Sanitize Snapshot fields
+    snapshotData.title = sanitize(snapshotData.title || '');
+    snapshotData.description = sanitize(snapshotData.description || '');
+    // Other sanitization logic for Snapshot
+  }
+  return snapshotData;
+}
+
 // Function to filter and sanitize user data
 export const sanitizeData = (data: string): string => {
   if (typeof data !== "string") {
@@ -275,4 +298,3 @@ app.post('/database-request', async (req: any, res: any) => {
     res.status(401).json({ error: 'Unauthorized' });
   }
 });
-

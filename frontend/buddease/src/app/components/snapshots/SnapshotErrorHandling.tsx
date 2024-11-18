@@ -1,13 +1,12 @@
 import { createErrorNotificationContent, errorLogger } from "@/app/components/logging/Logger";
 import React, { useState } from 'react';
-import { Data } from '../models/data/Data';
-import { YourResponseType } from "../typings/types";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import useErrorHandling from '../hooks/useErrorHandling';
 import { NotificationTypeEnum, useNotification } from '../support/NotificationContext';
+import { YourResponseType } from "../typings/types";
 import { Payload } from './LocalStorageSnapshotStore';
+import { BaseData } from '../data/Data';
 
-interface SnapshotErrorHandling<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+interface SnapshotErrorHandling<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
     onError?: (error: Payload) => void;
     clearSnapshotFailure(): unknown;
     logError: (error: Error, extraInfo?: any) => void;

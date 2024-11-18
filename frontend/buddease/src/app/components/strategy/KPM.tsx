@@ -21,12 +21,12 @@ document.addEventListener('keypress', () => {
 // Function to calculate KPM
 function calculateKPM(startTime: number | undefined) {
   if (!startTime) {
-    throw new Error("startTime is not initialized.");
+    return 0; // or log a warning
   }
   
   const elapsedTime = (Date.now() - startTime) / 60000; // Convert milliseconds to minutes
-  const kpm = keystrokes / elapsedTime;
-  return kpm.toFixed(2); // Round to 2 decimal places
+  return (keystrokes / elapsedTime).toFixed(2);
+  // Round to 2 decimal places
 }
 
 // Usage example:

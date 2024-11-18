@@ -190,7 +190,7 @@ const versionData: VersionData = {
     timestamp: new Date(),
   },
   isActive: versionInfo.isActive,
-  releaseDate: versionInfo.releaseDate,
+  releaseDate: versionInfo.releaseDate ? versionInfo.releaseDate : undefined,
   versionData: [], 
   checksum: versionInfo.checksum,
   versionNumber: versionInfo.versionNumber,

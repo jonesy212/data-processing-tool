@@ -1,12 +1,10 @@
 // fileCategoryMapping.ts
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { FileCategory, fileMapping } from "../../documents/FileType";
 import { determineFileCategoryLogger } from "../../logging/determineFileCategoryLogger";
-import { Data } from "../../models/data/Data";
+import { T } from "../../models/data/dataStoreMethods";
 import { Snapshot } from "../../snapshots";
 import { getAllSnapshotEntries } from "../../snapshots/getSnapshotEntries";
-import { T } from "../../models/data/dataStoreMethods";
-
+import { BaseData } from '@/app/components/models/data/Data';
 // Define a mapping of file categories to their corresponding snapshot entries
 const fileCategoryMapping: { [category in FileCategory]: string[] } = {
     [FileCategory.Component]: ["tsx", "jsx"],
@@ -56,8 +54,8 @@ function getEntriesByCategory(snapshot: Map<string, T>, category: FileCategory):
 
   
 // Integrated function to process all snapshots and filter by file category
-function processSnapshotsByCategory<T extends Data, Meta extends UnifiedMetaDataOptions>(
-  snapshot: Snapshot<T, Meta, any>,
+function processSnapshotsByCategory<T extends  BaseData<T>>(
+  snapshot: Snapshot<T, any>,
   category: FileCategory
 ): Snapshot<T, any> | undefined {
   // Check if snapshot data is a valid Map
@@ -106,7 +104,7 @@ function isValidFileCategory(fileName: string, extension: string): fileName is s
 
 
 
-export {fileCategoryMapping, processSnapshotsByCategory, getEntriesByCategory}
+export { fileCategoryMapping, getEntriesByCategory, processSnapshotsByCategory };
 
 
 

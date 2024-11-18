@@ -25,7 +25,7 @@ export enum PersonaTypeEnum {
   CryptoEnthusiast = "Crypto Enthusiast",
   StockTrader = "Stock Trader",
   ForexTrader = "Forex Trader",
-
+  Professional = "Professional"
 }
 
 export class PersonaBuilder {

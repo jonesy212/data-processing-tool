@@ -1,5 +1,5 @@
-import {generateAllHeaders} from '@/app/api/generateAllHeaders'
 import appTreeApiService from "@/app/api/appTreeApi";
+import { generateAllHeaders } from '@/app/api/generateAllHeaders';
 import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
 import YourClass from "@/app/utils/YourClass";
 import React, { FC } from "react";
@@ -13,6 +13,7 @@ import { DocumentOptions } from "../../documents/DocumentOptions";
 import useSocialAuthentication from "../../hooks/commHooks/useSocialAuthentication";
 import useErrorHandling from "../../hooks/useErrorHandling";
 import { DataLogger } from "../../logging/Logger";
+import { DocumentSize } from "../../models/data/StatusType";
 import { Team } from "../../models/teams/Team";
 import { TeamMember } from "../../models/teams/TeamMembers";
 import { Project } from "../../projects/Project";
@@ -23,7 +24,6 @@ import FluencePlugin from "../pluginSystem/plugins/fluencePlugin";
 import { AquaConfig } from "../web_configs/AquaConfig";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
 import { manageDocuments } from "./functionality/DocumentManagement";
-import { DocumentSize } from "../../models/data/StatusType";
 
 export type CustomDocumentOptionProps = DocumentOptions & DappProps;
 
@@ -73,7 +73,7 @@ class CustomDAppAdapter<T extends DappProps> extends YourClass {
       manageDocuments(
         {
           /* newDocument */
-        } as DocumentData<T, Meta, K>,
+        } as DocumentData<T, K>,
         dappProps
       );
       // Use initiateSocialLogin from useSocialAuthentication

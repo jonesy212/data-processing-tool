@@ -1,49 +1,49 @@
-import { CustomApp } from "@/app/components/web3/dAppAdapter/DApp";
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { Data } from '@/app/components/models/data/Data';
-import * as snapshotApi from '@/app/api/SnapshotApi';
-import {generateAllHeaders} from '@/app/api/headers/generateAllHeaders'
 import { handleApiError } from "@/app/api/ApiLogs";
-import { calendarEvent } from '@/app/components/state/stores/CalendarEvent';
+import { generateAllHeaders, snapshot } from '@/app/api/headers/generateAllHeaders';
+import { BaseData, Data } from '@/app/components/models/data/Data';
+import { CustomApp } from "@/app/components/web3/dAppAdapter/DApp";
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { AxiosError, AxiosRequestConfig } from "axios";
+import { Style as DocxStyle } from 'docx';
+import { ContentState } from 'draft-js';
+import { getAuthToken } from '../components/auth/getAuthToken';
+import { CodingLanguageEnum, LanguageEnum } from '../components/communications/LanguageEnum';
+import { ModifiedDate } from "../components/documents/DocType";
+import DocumentPermissions from '../components/documents/DocumentPermissions';
+import { DocumentAnimationOptions } from '../components/documents/SharedDocumentProps';
 import { useBrainstormingPhase, useMeetingsPhase, useProjectManagementPhase, useTeamBuildingPhase } from "../components/hooks/phaseHooks/CollaborationPhaseHooks";
 import { authenticationPhaseHook, dataAnalysisPhaseHook, generalCommunicationFeaturesPhaseHook, ideationPhaseHook, jobSearchPhaseHook, productBrainstormingPhaseHook, productLaunchPhaseHook, recruiterDashboardPhaseHook, teamCreationPhaseHook } from "../components/hooks/phaseHooks/PhaseHooks";
 import useErrorHandling from "../components/hooks/useErrorHandling";
 import { darkModeTogglePhaseHook, notificationBarPhaseHook } from "../components/hooks/userInterface/UIPhaseHooks";
+import { SupportedData } from "../components/models/CommonData";
 import FileData from "../components/models/data/FileData";
+import { BorderStyle, DocumentSize } from '../components/models/data/StatusType';
+import { Meta } from "../components/models/data/dataStoreMethods";
+import { DataSharingPreferences } from '../components/settings/PrivacySettings';
+import { AlignmentOptions } from '../components/state/redux/slices/toolbarSlice';
+import { Settings } from "../components/state/stores/SettingsStore";
 import { useNotification } from '../components/support/NotificationContext';
+import UserRoles from '../components/users/UserRoles';
+import useSecureStoreId from '../components/utils/useSecureStoreId';
+import { currentAppName } from "../components/versions/AppVersion";
 import { VersionData, versionHistory } from "../components/versions/VersionData";
 import { backendConfig } from "../configs/BackendConfig";
+import {  ConfigurationService } from "../configs/ConfigurationService";
 import { DataVersions, dataVersions } from '../configs/DataVersionsConfig';
 import { determineFileType } from '../configs/DetermineFileType';
 import { frontendConfig } from "../configs/FrontendConfig";
+import { StructuredMetadata } from '../configs/StructuredMetadata';
 import userSettings, { UserSettings } from "../configs/UserSettings";
 import BackendStructure, { backendStructure } from "../configs/appStructure/BackendStructure";
 import FrontendStructure, { frontendStructure } from "../configs/appStructure/FrontendStructure";
 import { CacheData, realtimeData } from "../generators/GenerateCache";
+import { getBackendStructureFilePath, STORE_KEYS, writeAndUpdateCache } from "../utils/CacheManager";
+import { calendarEvent } from './../components/state/stores/CalendarManagerStore';
 import { endpoints } from "./ApiEndpoints";
 import axiosInstance from "./axiosInstance";
-import { SupportedData } from "../components/models/CommonData";
-import UserRoles from '../components/users/UserRoles';
-import DocumentPermissions from '../components/documents/DocumentPermissions';
-import { StructuredMetadata } from '../configs/StructuredMetadata';
-import { BorderStyle, DocumentSize } from '../components/models/data/StatusType';
-import { CodingLanguageEnum, LanguageEnum } from '../components/communications/LanguageEnum';
-import { DocumentAnimationOptions } from '../components/documents/SharedDocumentProps';
-import { AlignmentOptions } from '../components/state/redux/slices/toolbarSlice';
-import { Style as DocxStyle } from 'docx';
-import { ContentState } from 'draft-js';
-import { ModifiedDate } from "../components/documents/DocType";
-import { CacheWriteOptions, getBackendStructureFilePath, STORE_KEYS, writeAndUpdateCache } from "../utils/CacheManager";
-import { Settings } from "../components/state/stores/SettingsStore";
-import { snapshotContainer, snapshotStoreConfig } from "../components/snapshots";
-import useSecureStoreId from '../components/utils/useSecureStoreId';
-import { getAuthToken } from '../components/auth/getAuthToken';
-import { DataSharingPreferences } from '../components/settings/PrivacySettings';
-import configurationService, { ConfigurationService } from "../configs/ConfigurationService";
-import { currentAppName } from "../components/versions/AppVersion";
-import { appConfig } from "../configs/AppConfig";
+import headersConfig from "./headers/HeadersConfig";
+import { getSnapshotsAndCategory } from "./SnapshotApi";
 
 
 // Define the API base URL
@@ -51,16 +51,21 @@ const API_BASE_URL = endpoints.data; // Assuming 'endpoints' has a property 'dat
 const { notify } = useNotification();
 
 
-type CacheReadOptions<T extends Data> = {
+type CacheReadOptions<T extends  BaseData<T>> = {
   filePath: string;
   apiKey: string;
   token: string;
 };
 
 // Define the structure of the response data
-interface CacheResponse<T extends Data, Meta extends UnifiedMetaDataOptions> {
+interface CacheResponse<
+  T extends  BaseData<T>,
+  K extends T = T,
+  M extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Metadata type
+  ExcludedFields extends keyof T = never
+> {
   id?: string | number | undefined;
-  data: SupportedData<T, Meta>;
+  data: SupportedData<T>;
 }
 
 
@@ -157,12 +162,13 @@ const filePath = getBackendStructureFilePath(cacheKey);
 
 
 // Instantiate configuration service
-const configurationService = new ConfigurationService();
+const configServiceInstance = ConfigurationService.getInstance();
+
 
 // Retrieve values
-const apiKey = configurationService.getApiKey();
-const appId = configurationService.getAppId();
-const appDescription = configurationService.getAppDescription();
+const apiKey = configServiceInstance.getApiKey();
+const appId = configServiceInstance.getAppId();
+const appDescription = configServiceInstance.getAppDescription();
 // Create an instance of AppSettings
 const appSettings = new AppSettings(apiKey, appId, appDescription);
 
@@ -177,23 +183,19 @@ const appData: CustomApp = {
 };
 
 // Generate headers with the authToken
-const options:  CacheReadOptions<Data> = {
+const options: CacheReadOptions<CustomApp> = {
   apiKey: appData.apiKey, // Assuming `appData` has an apiKey property
   token: authToken,
   filePath: filePath,
 };
 
 
+// Example usage when calling getSnapshot
+const additionalHeaders: Record<string, string> = generateAllHeaders({ additionalHeaders: { 'Custom-Header': 'value' } }, authToken);
 
-const additionalHeaders = generateAllHeaders(options, authToken);
-  
-const snapshotObj =   snapshotStoreConfig.getSnapshot(snapshot)
-const criteria = snapshotApi.getSnapshotCriteria(snapshotContainer, snapshotObj)
-const snapshotId = snapshotApi.getSnapshotId(criteria)
-const snapshot = snapshotApi.getSnapshot(String(snapshotId), storeId, additionalHeaders)
 
 // Usage example:
-const cacheData: SupportedData<Data, Meta> = {
+const cacheData: SupportedData<Data<BaseData<any>>> = {
 
   options: {
     previousContent: {} as ContentState,
@@ -201,15 +203,15 @@ const cacheData: SupportedData<Data, Meta> = {
     accessHistory: [],
     tableCells: {
       enabled: true,
-      padding: 10, // Example value for padding
-      fontSize: 12, // Example value for fontSize
+      padding: 10,
+      fontSize: 12,
       alignment: "left",
       borders: {
         top: {
           style: BorderStyle.SOLID,
           width: 1,
           color: "black"
-        }, // Use BorderStyle enum value
+        },
         bottom: {
           style: BorderStyle.SOLID,
           width: 1,
@@ -237,7 +239,7 @@ const cacheData: SupportedData<Data, Meta> = {
     },
 
     blockquote: {
-      enabled: true, // Example value
+      enabled: true,
     },
     codeInline: {
 
@@ -247,67 +249,62 @@ const cacheData: SupportedData<Data, Meta> = {
       enabled: true,
     },
     todoList: {
-      enabled: true, // Example value
+      enabled: true,
     },
 
     orderedTodoList: {
-      enabled: true, // Example value
+      enabled: true,
     },
     unorderedTodoList: {
-      enabled: true, // Example value
+      enabled: true,
     },
 
-    color: "red", // Example string
+    color: "red",
     colorCoding: {
-      primary: "#ff0000", // Example key-value pair
+      primary: "#ff0000",
       secondary: "#00ff00",
     },
 
     highlight: {
       enabled: true,
       colors: {
-        important: "#ffff00", // Example color mapping
+        important: "#ffff00",
         note: "#ff00ff",
       },
     },
 
 
     customSettings: {
-      customOption1: "value1", // Example custom settings
+      customOption1: "value1",
       customOption2: 42,
     },
 
     documents: [],
 
-    includeType: { enabled: true, format: "none" }, // Example value matching expected type
+    includeType: { enabled: true, format: "none" },
 
-    // Expecting a specific type, update accordingly:
-    footnote: { enabled: true, format: "standard" }, // Example of correct type, assuming it expects a similar object
-    defaultZoomLevel: 1.5, // Assign a number if it's expecting a numeric zoom level
+    footnote: { enabled: true, format: "standard" },
+    defaultZoomLevel: 1.5,
 
-    // Expecting 'Record<string, any>'
     customProperties: {
       property1: "value1",
       property2: 42,
     },
 
-    // Expecting 'boolean | { enabled: boolean; }'
-    value: true, // Example value
-    includeTitle: { enabled: true }, // Correct type, either boolean or object
-    includeContent: { enabled: false }, // Correct type
-    includeStatus: true, // Use a boolean or object as required
+    value: true,
+    includeTitle: { enabled: true },
+    includeContent: { enabled: false },
+    includeStatus: true,
 
-    includeAdditionalInfo: { enabled: true }, // Example value with correct type
+    includeAdditionalInfo: { enabled: true },
 
-    // Expecting 'StructuredMetadata | undefined'
     metadata: {
-      key1: "value1", // Assuming this matches 'StructuredMetadata' structure
+      key1: "value1",
       key2: "value2",
     },
 
     userSettings: {
-      // UI Settings
-      theme: "dark", // Example value matching UserSettings type
+      theme: "dark",
       darkMode: true,
       fontSize: 14,
       language: LanguageEnum.English,
@@ -335,7 +332,6 @@ const cacheData: SupportedData<Data, Meta> = {
       loggingAndNotificationsEnabled: true,
       toastNotificationsEnabled: true,
 
-      // Security Settings
       userId: 123,
       sessionTimeout: 300,
       twoFactorAuthenticationEnabled: true,
@@ -350,7 +346,6 @@ const cacheData: SupportedData<Data, Meta> = {
       enableDatabaseEncryption: true,
       passwordStrengthEnabled: true,
 
-      // Communication Settings
       communicationMode: "chat",
       enableRealTimeUpdates: true,
       realTimeChatEnabled: true,
@@ -360,7 +355,6 @@ const cacheData: SupportedData<Data, Meta> = {
       enableBlockchainCommunication: true,
       enableDecentralizedStorage: true,
 
-      // User Interaction Settings
       idleTimeout: {
         intervalId: 0,
         isActive: false,  
@@ -380,7 +374,6 @@ const cacheData: SupportedData<Data, Meta> = {
       clipboardInteractionEnabled: true,
       dragAndDropEnabled: true,
 
-      // Collaboration & Project Management
       enableGroupManagement: true,
       enableTeamManagement: true,
       projectManagementEnabled: true,
@@ -392,7 +385,6 @@ const cacheData: SupportedData<Data, Meta> = {
       enableScreenSharing: true,
       enableWhiteboard: true,
 
-      // System Features
       selectDatabaseVersion: "v2.1",
       selectAppVersion: "1.0.0",
       versionControlEnabled: true,
@@ -402,7 +394,6 @@ const cacheData: SupportedData<Data, Meta> = {
       securityFeaturesEnabled: true,
       deviceDetectionEnabled: true,
 
-      // Miscellaneous Settings
       appName: "Project Manager",
       id: "user_123",
       customProperties: {},
@@ -423,16 +414,12 @@ const cacheData: SupportedData<Data, Meta> = {
       imageUploadingEnabled: true,
       webSocketsEnabled: true,
       geolocationEnabled: true,
-      // # todo
-      // collaborationToolsEnabled, projectManagementEnabled, taskManagementEnabled,
-      // enableScreenSharing, enableWhiteboard, enableScreenRecording, enableScreenCapture,
 
     },
 
-    // Expecting 'DataVersions | undefined'
     dataVersions: {
-      backend: { result: 1, hydrated: true }, // Example value for IHydrateResult<number>
-      frontend: Promise.resolve("2.0.0"), // Example value for Promise<string>
+      backend: { result: 1, hydrated: true },
+      frontend: Promise.resolve("2.0.0"),
     },
 
 
@@ -454,19 +441,19 @@ const cacheData: SupportedData<Data, Meta> = {
     },
     footer: "",
     watermark: {
-      enabled: true, // or false, depending on whether the watermark should be active
-      text: "Your Watermark Text", // The text for the watermark
-      color: "rgba(0, 0, 0, 0.5)", // Color of the watermark
-      opacity: 0.5, // Opacity of the watermark (0 to 1)
-      fontSize: 12, // Font size for the watermark
-      size: "100px", // Size of the watermark
-      x: 10, // X position of the watermark
-      y: 10, // Y position of the watermark
-      rotation: 0, // Rotation angle of the watermark
-      borderStyle: "solid", // Border style if applicable
+      enabled: true,
+      text: "Your Watermark Text",
+      color: "rgba(0, 0, 0, 0.5)",
+      opacity: 0.5,
+      fontSize: 12,
+      size: "100px",
+      x: 10,
+      y: 10,
+      rotation: 0,
+      borderStyle: "solid",
     },
     headerFooterOptions: {
-      enabled: true, // Change based on whether you want it enabled
+      enabled: true,
       showHeader: true,
       showFooter: true,
 
@@ -477,20 +464,20 @@ const cacheData: SupportedData<Data, Meta> = {
       differentOddEven: false,
     },
     zoom: {
-      enabled: true, // If you want to enable zoom options
-      value: 1, // Example value; adjust based on your needs
+      enabled: true,
+      value: 1,
       levels: [
         { name: "100%", value: 1 },
         { name: "125%", value: 1.25 },
         { name: "150%", value: 1.5 },
       ],
     },
-    showRuler: true, // Set to true or false
-    showDocumentOutline: true, // Set to true or false
-    showComments: true, // Set to true or false
-    showRevisions: true, // Set to true or false
-    spellCheck: true, // Set to true or false
-    grammarCheck: true, // Set to true or false
+    showRuler: true,
+    showDocumentOutline: true,
+    showComments: true,
+    showRevisions: true,
+    spellCheck: true,
+    grammarCheck: true,
 
     visibility: "",
     fontSize: 0,
@@ -504,15 +491,15 @@ const cacheData: SupportedData<Data, Meta> = {
 
     indentSize: 0,
     bulletList: {
-      symbol: "•", // The bullet symbol
-      style: "disc", // The style of the bullet
+      symbol: "•",
+      style: "disc",
     },
     numberedList: {
-      style: "bullet", // or "numbered", depending on your needs
-      format: "decimal", // e.g., "decimal", "lower-alpha", "upper-alpha", etc.
+      style: "bullet",
+      format: "decimal",
     },
     headingLevel: {
-      enabled: true, // Change to true or false based on your needs
+      enabled: true,
     },
     toc: {
 
@@ -527,51 +514,51 @@ const cacheData: SupportedData<Data, Meta> = {
       enabled: true,
     },
     italic: {
-      enabled: true, // Set to true to enable italic
+      enabled: true,
     },
     underline: {
-      enabled: true, // Set to true to enable underline
+      enabled: true,
     },
     strikethrough: {
-      enabled: true, // Set to true to enable strikethrough
+      enabled: true,
     },
     subscript: {
-      enabled: true, // Set to true to enable subscript
+      enabled: true,
     },
     superscript: {
-      enabled: true, // Set to true to enable superscript
+      enabled: true,
     },
 
     hyperlink: "",
 
     textStyles: {
       heading: {
-        fontSize: "16px", // Example property of Style
+        fontSize: "16px",
         fontWeight: "bold",
       } as CustomStyle,
       paragraph: {
-        fontSize: "14px", // Example property of Style
+        fontSize: "14px",
         lineHeight: "1.5",
       } as CustomStyle,
     },
-    image: { enabled: true, allow: true }, // if you want to use an object
-    links: true, // or { enabled: true, allow: true } if you want to use an object
+    image: { enabled: true, allow: true },
+    links: true,
     embeddedContent: {
       enabled: true,
       allow: true,
-      language: CodingLanguageEnum.Javascript, // Adjust based on your use case
+      language: CodingLanguageEnum.Javascript,
     },
     bookmarks: {
-      enabled: true, // Set to true or false based on your needs
+      enabled: true,
     },
-    crossReferences: true, // or { enabled: true, allow: true }
+    crossReferences: true,
     footnotes: {
       enabled: true,
-      format: "superscript", // or other format types as needed
+      format: "superscript",
     },
     endnotes: {
       enabled: true,
-      format: "numerical", // or other format types as needed
+      format: "numerical",
     },
     comments: {
       enabled: true,
@@ -592,7 +579,7 @@ const cacheData: SupportedData<Data, Meta> = {
     },
     embeddedCode: {
       enabled: true,
-      language: CodingLanguageEnum.Javascript, // Adjust based on your use case
+      language: CodingLanguageEnum.Javascript,
       allow: true,
     },
     styles: {
@@ -602,13 +589,13 @@ const cacheData: SupportedData<Data, Meta> = {
         fontFamily: "Arial",
       } as CustomStyle,
       heading: {
-        fontSize: "20px", // Example property of Style
+        fontSize: "20px",
         fontWeight: "bold",
       } as CustomStyle,
     },
 
-    previousMetadata: {} as StructuredMetadata,
-    currentMetadata: {} as StructuredMetadata,
+    previousMetadata: {} as StructuredMetadata<any, any>,
+    currentMetadata: {} as StructuredMetadata<any, any>,
     currentContent: {} as ContentState,
     additionalOptionsLabel: "",
     uniqueIdentifier: "",
@@ -629,8 +616,8 @@ const cacheData: SupportedData<Data, Meta> = {
         main: "",
         styles: [
           {
-            format: [], // Adjust according to your actual data type
-            separator: [], // Adjust according to your actual data type
+            format: [],
+            separator: [],
             style: {
               format: [""],
               separator: [""],
@@ -640,10 +627,8 @@ const cacheData: SupportedData<Data, Meta> = {
         ],
       }
     },
-    // showGridLines, showPageBorders,
-    // textDirection, textAlignment, textColor, backgroundColor,
-    // tableColumns, tableRows, tableColumns, tableRows, tableColumns,
-  },
+  },  
+  
   language: "",
   documentPhase: "",
 
@@ -754,7 +739,7 @@ const cacheData: SupportedData<Data, Meta> = {
   dataVersions: {} as DataVersions,
   folderPath: "",
 
-  // Provide actual data for SupportedData<Data> type
+  // Provide actual data for SupportedData< BaseData<T>> type
   userId: 0, // Example property from UserData
   title: 'Sample Todo', // Example property from Todo
   taskId: 'task-1', // Example property from Task
@@ -811,6 +796,26 @@ const cacheData: SupportedData<Data, Meta> = {
 };
 
 
+const getUserByUsername = async (username: string): Promise<any> => {
+  try {
+    // Send a GET request with axiosInstance to fetch user data by username
+    const response = await axiosInstance.get(
+      `${API_BASE_URL}/api/users/${username}`,
+      {
+        headers: headersConfig,
+      }
+    );
+    
+    // Return the user data received from the API response
+    return response.data;
+  } catch (error: Error) {
+    console.error("Error fetching user by username:", error);
+    handleApiError(error, errorMessage);
+    throw error; // Propagate the error to the calling code
+  }
+};
+
+
 const writePath = './path/to/cache/data'; // Replace with the actual file path
 
 writeAndUpdateCache(writePath, cacheData)
@@ -822,16 +827,22 @@ writeAndUpdateCache(writePath, cacheData)
   });
 
 
-
-
-
 // Update readCache to return SupportedData<T>
-const readCache = async <T extends Data>(
+const readCache = async <T extends  BaseData<T>>(
   { filePath }: CacheReadOptions<T>
 ): Promise<SupportedData<T> | undefined> => {
   try {
+
+    // Resolve category dynamically using getSnapshotsAndCategory or another suitable method
+    const dynamicCategory = await getSnapshotsAndCategory(filePath); // Assuming this method fetches the correct category
+ 
+    const userName = 
+    // Fetch user information dynamically by username
+    const userData = await getUserByUsername(username); // Assuming this returns user data including userName
+    const foundUserName = userData?.userName; // Access the userName property
+    
     // Fetch cache data using the file path
-    const cacheResponse: CacheResponse<T> | undefined = await fetchCacheData(filePath);
+    const cacheResponse: CacheResponse<T, Meta> | undefined = await fetchCacheData(filePath, dynamicCategory, userName);
 
     if (cacheResponse) {
       // Example: Extract relevant data from cacheResponse
@@ -846,7 +857,6 @@ const readCache = async <T extends Data>(
   return undefined; // Explicitly return undefined if no cacheResponse is found
 };
 
-
 readCache(options)
   .then((data) => {
     console.log("Cache data:", data);
@@ -855,20 +865,27 @@ readCache(options)
     console.error("Failed to read cache:", error);
   });
 
+
 // Function to fetch cache data (mock implementation)
-const fetchCacheData = async (filePath: string): Promise<CacheResponse> => {
+const fetchCacheData = async <
+  T extends BaseData<T>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
+>(filePath: string, categoryName: string, userName: string): Promise<CacheResponse<T, M>> => {
   // Initialize the useErrorHandling hook
   const { handleError } = useErrorHandling();
 
   try {
     // Simulate fetching data from a server by delaying execution for a certain period (e.g., 1 second)
     await new Promise((resolve) => setTimeout(resolve, 1000));
-
+    
     const fileType = determineFileType(filePath); // Assuming determineFileType takes filePath
+
+    const generatedID = UniqueIDGenerator.generateIDForCache(categoryName, userName);
 
     // Mock cache data object using the CacheResponse interface
     const mockCacheData: CacheData = {
-      _id: "", // Example data for CacheData
+      _id: generatedID, // Example data for CacheData
       id: "",
       lastUpdated: versionHistory,
       userSettings: userSettings,
@@ -899,17 +916,18 @@ const fetchCacheData = async (filePath: string): Promise<CacheResponse> => {
       data: {}, // Adjust based on your SupportedData<T> structure
     };
 
-    const cacheResponse: CacheResponse = {
+    // Correct usage of T and M based on constraints
+    const cacheResponse: CacheResponse<T, Meta> = {
       id: "exampleId",
-      data: mockCacheData as SupportedData<T>
+      data: mockCacheData as SupportedData<T>, // Ensure data matches SupportedData<T>
     };
 
     // Return a Promise that resolves to the mock cache data
-    return Promise.resolve<CacheResponse>(
-      {
-        id: "exampleId",
-        data: cacheResponse as SupportedData<T>
-      });
+    return Promise.resolve<CacheResponse<T, Meta>>({
+      id: "exampleId",
+      data: cacheResponse.data as SupportedData<T>, // Ensure type consistency
+    });
+
   } catch (error: any) {
     // Handle any errors that occur during the mock fetch
     console.error("Error fetching cache data:", error);
@@ -921,6 +939,9 @@ const fetchCacheData = async (filePath: string): Promise<CacheResponse> => {
     throw error;
   }
 };
+
+
+
 
 // Class to manage API calls and cache data
 class ApiService {
@@ -991,5 +1012,6 @@ class ApiService {
 }
 
 export default ApiService;
-export {readCache}
-export type { CustomStyle }
+export { getUserByUsername, readCache };
+export type { CustomStyle };
+

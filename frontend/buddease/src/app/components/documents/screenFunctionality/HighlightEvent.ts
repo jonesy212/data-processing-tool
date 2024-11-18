@@ -8,6 +8,8 @@ interface HighlightEvent extends CommonEvent {
     highlightedText: string;
     documentId: DocumentData;
     userId: number;
+    userIds: number[];
+    taskId: number;
   }
   
   export default HighlightEvent;

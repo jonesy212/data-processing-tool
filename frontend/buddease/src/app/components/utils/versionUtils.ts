@@ -1,6 +1,10 @@
-import { Data } from "../models/data/Data";
-
 // versionUtils.ts
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { hasPriority } from '@/app/api/processSnapshotData';
+import { BaseData } from '@/app/components/models/data/Data';
+import { SnapshotData } from '@/app/components/snapshots';
+
+
 interface DataWithVersion {
   version?: string;
   priority?: string
@@ -24,13 +28,10 @@ function hasVersion<T extends Partial<DataWithVersion>>(data: T): data is T & Da
     return (data as DataWithVersion).version !== undefined;
 }
 
-// Type guard to check if an object has the 'priority' property
-function hasPriority<T extends Partial<DataWithPriority>>(data: T): data is T & DataWithPriority {
-    return (data as DataWithPriority).priority !== undefined;
-}
 
-const processSnapshotData = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-    snapshotData: SnapshotData<T, Meta, K>
+
+const processSnapshotData = <T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+    snapshotData: SnapshotData<T, K>
   ): void => {
     const dataWithPriority: Partial<DataWithPriority> = {
       priority: (snapshotData.data as T & { priority?: string })?.priority, // Use optional chaining and type assertion
@@ -45,7 +46,9 @@ const processSnapshotData = <T extends Data, Meta extends UnifiedMetaDataOptions
   };
   
 export {
-    hasPriority, hasVersion, processSnapshotData
+    hasVersion, processSnapshotData
 };
 
+
     export type { DataWithPriority, DataWithTimestamp, DataWithVersion, SnapshotDataTypeVersion };
+

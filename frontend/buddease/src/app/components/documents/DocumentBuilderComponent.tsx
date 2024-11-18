@@ -1,18 +1,17 @@
 // DocumentBuilderComponent.tsx
+import { BaseData } from '@/app/components/models/data/Data';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { DocumentObject } from "../state/redux/slices/DocumentSlice";
 import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
 import DocumentBuilder, { saveDocument } from "./DocumentBuilder";
 import { getDefaultDocumentOptions } from "./DocumentOptions";
-import { Data } from '@/app/components/models/data/Data';
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
 const dispatch = useDispatch()
 
-function formatDocument<T extends Data, K extends Data = T>(
-  documentObject: DocumentObject<T, Meta, K>,
+function formatDocument<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  documentObject: DocumentObject<T, K>,
   options: DocumentFormattingOptions
-): DocumentObject<T, Meta, K> {
+): DocumentObject<T, K> {
   // Apply formatting options to the document (e.g., page size, margins, styles)
   documentObject.size = options.pageSize;
   documentObject.margins = options.margins;
@@ -26,9 +25,9 @@ function validateDocumentType(documentType: string): string | null {
 }
 
 // Define the buildDocument function
-const buildDocument = async <T extends Data, K extends Data = T>(
+const buildDocument = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   options: DocumentFormattingOptions,
-  documentObject: DocumentObject<T, Meta, K>,
+  documentObject: DocumentObject<T, K>,
   documentType: string
 ): Promise<void> => {
   try {

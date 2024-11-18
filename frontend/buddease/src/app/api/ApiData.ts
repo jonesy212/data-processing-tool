@@ -1,5 +1,7 @@
 // ApiData.ts
 // import { endpoints } from './ApiEndpoints';
+
+import { fetchUserIdsFromDatabase } from "../api/ApiDatabase";
 import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError, AxiosResponse } from 'axios';
 import HighlightEvent from '../components/documents/screenFunctionality/HighlightEvent';
@@ -30,7 +32,7 @@ interface DataNotificationMessages {
 }
 
 // Define API notification messages
-export const apiNotificationMessages: DataNotificationMessages = {
+const apiNotificationMessages: DataNotificationMessages = {
   FETCH_DATA_DETAILS_SUCCESS: NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_SUCCESS,
   FETCH_DATA_DETAILS_ERROR: NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_ERROR,
   UPDATE_DATA_DETAILS_SUCCESS: NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_SUCCESS,
@@ -41,7 +43,7 @@ export const apiNotificationMessages: DataNotificationMessages = {
   // Add more properties as needed
 };
 // Function to handle API errors and notify
-export const handleApiErrorAndNotify = (
+const handleApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
   errorMessageId: keyof DataNotificationMessages
@@ -61,7 +63,7 @@ export const handleApiErrorAndNotify = (
 
 
 
-export const fetchData = async (endpoint: string, id: number): Promise<{ data: YourResponseType } | null> => {
+const fetchData = async (endpoint: string, id: number): Promise<{ data: YourResponseType } | null> => {
   try {
     const response = await fetch(endpoint);
 
@@ -81,7 +83,7 @@ export const fetchData = async (endpoint: string, id: number): Promise<{ data: Y
 };
 
 
-export const getBackendVersion = async (): Promise<string> => {
+const getBackendVersion = async (): Promise<string> => {
   try {
     const response = await axiosInstance.get(endpoints.version.backend);
     return response.data;
@@ -93,20 +95,31 @@ export const getBackendVersion = async (): Promise<string> => {
 
 
 // Use fetchData to fetch highlights
-export const fetchHighlights = async (): Promise<HighlightEvent[]> => {
+const fetchHighlights = async (id: number): Promise<HighlightEvent[]> => {
   try {
-    // Access the endpoint directly from the endpoints object
     const endpoint = endpoints.highlights.list;
-
+    
     if (typeof endpoint !== "string") {
       throw new Error("Endpoint is not a string");
     }
 
-    const response = await fetchData(endpoint);
+    const response = await fetchData(endpoint, id);
     if (!response || !response.data) {
       throw new Error("Response or response.data is null");
     }
+    
     const highlights = response.data.highlights as HighlightEvent[];
+
+    // Fetch user IDs if highlights contain user references
+    for (const highlight of highlights) {
+      // Convert taskId to string when calling fetchUserIdsFromDatabase
+      const userIds = await fetchUserIdsFromDatabase(highlight.taskId.toString());
+
+      // If userIds is an array of strings or numbers, assign it directly to highlight.userIds
+      highlight.userIds = userIds.map(id => Number(id)); // Convert each userId to a number
+
+    }
+
     return highlights;
   } catch (error: any) {
     handleApiError(
@@ -118,7 +131,8 @@ export const fetchHighlights = async (): Promise<HighlightEvent[]> => {
 };
 
 
-export const addData = async (newData: Omit<any, 'id'>, highlight: Omit<HighlightEvent, 'id'>): Promise<void> => {
+
+const addData = async (newData: Omit<any, 'id'>, highlight: Omit<HighlightEvent, 'id'>): Promise<void> => {
   try {
     // Ensure the endpoint is accessed correctly using dot notation
     const addDataEndpoint = `${API_BASE_URL}.addData`; 
@@ -143,7 +157,7 @@ export const addData = async (newData: Omit<any, 'id'>, highlight: Omit<Highligh
 };
 
 
-export const removeData = async (dataId: number): Promise<void> => {
+const removeData = async (dataId: number): Promise<void> => {
   try {
     const deleteDataEndpoint = `${API_BASE_URL}.deleteData.${dataId}`;
     if (deleteDataEndpoint) {
@@ -160,7 +174,7 @@ export const removeData = async (dataId: number): Promise<void> => {
   }
 };
 
-export const getDataVersions = async (
+const getDataVersions = async (
   versionId: number
 ): Promise<Version[]> => {
   try {
@@ -186,27 +200,30 @@ export const getDataVersions = async (
 
 
 // Function to update data
-export const updateData = async (dataId: number, newData: any): Promise<any> => {
+const updateData = async (dataId: number, newData: any): Promise<any> => {
   try {
     const dataUpdateUrl = `${API_BASE_URL}.updateData.${dataId}`;
     if (!dataUpdateUrl) {
       throw new Error(`Update data endpoint not found for data ID: ${dataId}`);
     }
 
-    // Integrate header management
+    // Fetch necessary user IDs before proceeding with the update
+    const userIds = await fetchUserIdsFromDatabase(newData.taskId); // Assuming newData has taskId
+    newData.userIds = userIds; // Attach user IDs to new data
+
     const response = await axiosInstance.put(
       dataUpdateUrl,
       newData,
-      { headers: headersConfig } 
+      { headers: headersConfig }
     );
-
-    const updatedData = response.data;
 
     // Notify success message
     const successMessage = apiNotificationMessages.UPDATE_DATA_DETAILS_ERROR;
     if (!successMessage) {
       throw new Error('Success message not found for update data operation');
     }
+    
+    // Notify success
     useNotification().notify(
       'UpdateDataSuccessId',
       successMessage,
@@ -215,17 +232,13 @@ export const updateData = async (dataId: number, newData: any): Promise<any> => 
       NotificationTypeEnum.Success
     );
 
-    addLog(`Data updated: ${JSON.stringify(updatedData)}`); // Log successful data update
-
-    return updatedData;
+    addLog(`Data updated: ${JSON.stringify(response.data)}`);
+    return response.data;
   } catch (error: any) {
-    // Handle error and notify failure message
     const errorMessage = 'Failed to update data';
     handleApiError(error, errorMessage);
     const errorMessageId = apiNotificationMessages.UPDATE_DATA_DETAILS_ERROR;
-    if (!errorMessageId) {
-      throw new Error('Error message ID not found for update data operation');
-    }
+    
     useNotification().notify(
       'UpdateDataErrorId',
       errorMessageId,
@@ -239,7 +252,8 @@ export const updateData = async (dataId: number, newData: any): Promise<any> => 
 };
 
 
-export const getStoreIds = async (storeId: number): Promise<void> => {
+
+const getStoreIds = async (storeId: number): Promise<void> => {
   try {
     const storeIdEndpoint = `${API_BASE_URL}/store/${storeId}`;
     const response = await axiosInstance.get(storeIdEndpoint);
@@ -272,7 +286,7 @@ export const getStoreIds = async (storeId: number): Promise<void> => {
 
 
 
-export const getStoreId = async (storeId: number): Promise<void> => {
+const getStoreId = async (storeId: number): Promise<void> => {
   try {
     const storeIdEndpoint = `${API_BASE_URL}/store/${storeId}`;
     const response = await axiosInstance.get(storeIdEndpoint);
@@ -305,7 +319,7 @@ export const getStoreId = async (storeId: number): Promise<void> => {
 
 
 // Function to fetch updated dynamic data from API
-export const fetchUpdatedDynamicData = async () => {
+const fetchUpdatedDynamicData = async () => {
   try {
     const updatedDynamicDataEndpoint = `${API_BASE_URL}/your-api-endpoint`; // Update with your API endpoint
     const response = await axiosInstance.get(updatedDynamicDataEndpoint);
@@ -322,7 +336,7 @@ export const fetchUpdatedDynamicData = async () => {
 };
 
 
-export const getFrontendVersion = async (): Promise<string> => {
+const getFrontendVersion = async (): Promise<string> => {
   try {
     // Adjust the endpoint path as necessary
     const response = await axiosInstance.get(endpoints.version.frontend);
@@ -335,7 +349,7 @@ export const getFrontendVersion = async (): Promise<string> => {
 };
 
 
-export const getAllKeys = async (): Promise<string[]> => {
+const getAllKeys = async (): Promise<string[]> => {
   try {
     const allKeysEndpoint = `${API_BASE_URL}.getAllKeys`;
     const response = await axiosInstance.get(allKeysEndpoint);
@@ -347,4 +361,30 @@ export const getAllKeys = async (): Promise<string[]> => {
     handleApiErrorAndNotify(error, "Failed to fetch all keys", "GetAllKeysErrorId" as keyof DataNotificationMessages)
     return [];
   }
+}
+
+
+
+const fetchApiData = async <T>(endpoint: string): Promise<T[]> => {
+  const response = await axiosInstance.get<T[]>(endpoint);
+  return response.data;
+};
+
+
+export {
+  apiNotificationMessages,
+  handleApiErrorAndNotify,
+  fetchData,
+  getBackendVersion,
+  fetchHighlights,
+  addData,
+  removeData,
+  getDataVersions,
+  updateData,
+  getStoreIds,
+  getStoreId,
+  fetchUpdatedDynamicData,
+  getFrontendVersion,
+  getAllKeys,
+  fetchApiData,
 }

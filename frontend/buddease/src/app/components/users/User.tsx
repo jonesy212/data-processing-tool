@@ -33,6 +33,7 @@ import { ActivityLogEntry } from "./UserSlice";
 import { UserPreferences } from "@/app/configs/UserPreferences";
 import { SnapshotStoreConfig } from "../snapshots";
 import { NotificationSettings } from "../support/NotificationSettings";
+import { Product } from "../products/Product";
 
 export interface User extends UserData {
   _id?: string; 
@@ -113,7 +114,32 @@ export interface User extends UserData {
   decentralizedMessagingKeys?: any;
   decentralizedAuthentication?: any;
   twitterData?: TwitterData
-  preferences: UserPreferences;
+  preferences: UserPreferences | undefined;
+}
+
+
+
+interface ExtendedUser extends User {
+  workspaceUrl: string;
+  workspaces: any[]; // Specify type as needed
+  products: Product[]; // Specify type as needed
+  roles: any[]; // Specify type as needed
+  permissions: any[]; // Specify type as needed
+  status: string;
+  statusText: string;
+  activeProduct: string;
+  activeWorkspace: string;
+  activeRole: string;
+  activePermissions: any[]; // Specify type as needed
+  activeWorkspacePermissions: any[]; // Specify type as needed
+  activeProductPermissions: any[]; // Specify type as needed
+  activeRolePermissions: any[]; // Specify type as needed
+  activeWorkspaceRoles: any[]; // Specify type as needed
+  activeProductRoles: any[]; // Specify type as needed
+  activeWorkspaceProducts: any[]; // Specify type as needed
+  activeProductWorkspaces: any[]; // Specify type as needed
+  activeRoleWorkspaces: any[]; // Specify type as needed
+  activeRoleProducts: any[]; // Specify type as needed
 }
 
 
@@ -296,7 +322,7 @@ export interface UserData {
   dataDeleted?: boolean | null;
   deletedReason?: string | null;
   deletedBy?: string | null;
-  updatedAt?: Date;
+  updatedAt?: string | Date | undefined;
   createdAt?: string | Date;
   createdBy?: string;
   modifiedAt?: Date;
@@ -703,4 +729,4 @@ export const usersDataSource: Record<string, User> = {
 };
 
 export default UserDetails;
-export type { Address, Education, Employment, SocialLinks };
+export type { Address, Education, Employment, SocialLinks, ExtendedUser };

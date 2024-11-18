@@ -1,18 +1,17 @@
 // CalendarActions.ts
-import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData"
+import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { createAction } from "@reduxjs/toolkit";
 import { default as CustomFile, default as File } from "../documents/File";
 import { Theme } from "../libraries/ui/theme/Theme";
+import { BaseData } from "../models/data/Data";
 import { PriorityTypeEnum } from "../models/data/StatusType";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { NotificationData } from "../support/NofiticationsSlice";
-import { BaseData, Data } from "../models/data/Data";
 
 // Define the action using createAction
 export const setEventColor = createAction<{ eventId: string; color: Theme }>(
   "setEventColor"
 );
-
 
 type DefaultCalendarEvent = CalendarEvent<BaseData, CustomSnapshotData>;
 
@@ -370,4 +369,4 @@ export const CalendarActions = {
   selectMilestones: createAction<string[]>("selectMilestones"),
 };
 
-export type {DefaultCalendarEvent}
+export type { DefaultCalendarEvent };

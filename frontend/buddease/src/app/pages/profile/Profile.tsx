@@ -10,6 +10,7 @@ interface ProfileProps {
   props: ProfileAccessControl;
 }
 
+type ActivityStatus =  "active" | "inactive" | "away" | "busy" | "offline";
 
 // Define the profile access control interface
 interface ProfileAccessControl {
@@ -22,7 +23,9 @@ interface ProfileAccessControl {
   isPrivateOnly: boolean; 
   isPrivateOnlyForContacts: boolean; 
   isPrivateOnlyForGroups: boolean; 
-  allowMessagesFromFriendContacts: boolean
+  allowMessagesFromFriendContacts: boolean;
+  activityStatus: ActivityStatus;
+  isAuthorized: boolean;
 }
 
 const Profile: React.FC<ProfileProps> = ({ user, props }) => {
@@ -51,4 +54,4 @@ const Profile: React.FC<ProfileProps> = ({ user, props }) => {
 };
 
 export default Profile;
-export type {ProfileAccessControl}
+export type {ProfileAccessControl, ActivityStatus}

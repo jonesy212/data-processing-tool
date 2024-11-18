@@ -1,5 +1,6 @@
+import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { Data } from "../models/data/Data";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { CategoryProperties } from './../../pages/personas/ScenarioBuilder';
@@ -11,32 +12,37 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
 
 
-interface SnapshotCommonProps<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
-  criteria?: any; // Define a more specific type if you have one
+
+
+
+// SnapshotCommonProps for properties specific to snapshots, extending BaseEntity for common properties
+interface SnapshotCommonProps<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends BaseEntity {
+  criteria?: any; // Define a more specific type if needed
   category?: string | symbol | Category; // Optional category
   categoryProperties?: CategoryProperties; // Define the type as needed
   delegate?: any; // Specify the type if known
-  snapshot?: Snapshot<T, Meta, K>; // Optional snapshot
+  snapshot?: Snapshot<T, K>; // Optional snapshot
   events?: Event[]; // Specify the type for events if known
   dataItems?: T[]; // Define the type based on your data structure
   newData?: T; // Define what type newData should be
   payload?: any; // Specify the type if known
-  store?: SnapshotStore<T, Meta, K>; // Optional store to retrieve from
+  store?: SnapshotStore<T, K>; // Optional store to retrieve from
   callback?: (data: T) => void; // Define the callback type as needed
 }
 
 
-interface SnapshotConfigProps<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> extends SnapshotCommonProps<T, Meta, K> {
+
+interface SnapshotConfigProps<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends SnapshotCommonProps<T, K> {
   id: string;
   subscriberId: string;
-  dataStoreMethods: DataStoreMethods<T, Meta, K>; // Replace `any` with the appropriate type
-  dataStore: DataStore<T, Meta, K>; // Replace `any` with the appropriate type
+  dataStoreMethods: DataStoreMethods<T, K>; // Replace `any` with the appropriate type
+  dataStore: DataStore<T, K>; // Replace `any` with the appropriate type
   metadata: any; // Replace `any` with the appropriate type
   endpointCategory: string; // Adjust the type as necessary
-  storeProps: SnapshotStoreProps<T, Meta, K>; // Replace `any` with the appropriate type
-  snapshotConfigData: SnapshotConfig<T, Meta, K>; // Replace `any` with the appropriate type
-  snapshotStoreConfigData: SnapshotStoreConfig<T, Meta, K>; // Replace `any` with the appropriate type
-  snapshotContainer: SnapshotContainer<T, Meta, K>; // Replace `any` with the appropriate type
+  storeProps: SnapshotStoreProps<T, K>; // Replace `any` with the appropriate type
+  snapshotConfigData: SnapshotConfig<T, K>; // Replace `any` with the appropriate type
+  snapshotStoreConfigData: SnapshotStoreConfig<T, K>; // Replace `any` with the appropriate type
+  snapshotContainer: SnapshotContainer<T, K>; // Replace `any` with the appropriate type
 }
 
 

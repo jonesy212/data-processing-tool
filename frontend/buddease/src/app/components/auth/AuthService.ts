@@ -17,6 +17,8 @@ class AuthService {
     this.databaseService = new PostgresDatabaseService(databaseConfig); // Assuming you're using PostgreSQL
   }
 
+  
+
     // Public wrapper method to save authentication providers
     public async saveAuthenticationProviders(providers: AuthenticationProvider[]): Promise<void> {
       return this.saveAuthenticationProvidersInternal(providers);
@@ -41,12 +43,14 @@ class AuthService {
       body: JSON.stringify({ username, password }),
     });
 
-    if (response.ok) {
-      const data = await response.json();
-      return { accessToken: data.accessToken };
-    } else {
-      throw new Error("Login failed");
+
+    if (!response.ok) {
+      const errorMsg = await response.text();
+      throw new Error(`Login failed: ${errorMsg}`);
     }
+  
+    const data = await response.json();
+    return { accessToken: data.accessToken };
   }
 
   async adminLogin(
@@ -140,7 +144,7 @@ class AuthService {
         preferences: payload.preferences,
         storeId: payload.storeId,
        
-
+        bannerUrl: payload.bannerUrl
         // Add other claims as needed
       };
       
@@ -272,18 +276,10 @@ class AuthService {
   }
 
   async integrateAuthenticationProviders(providers: AuthenticationProvider[]): Promise<void> {
-    // Example logic to integrate authentication providers
-    // This could involve storing them in a database or cache
-
-    // For demonstration purposes, let's assume we have a list of authentication providers in the state
-    // We'll merge the new providers into the existing list
-    const existingProviders = this.getAuthenticationProviders(); // Assuming this function retrieves existing providers
-    const mergedProviders = [...await existingProviders, ...providers];
-
-    // Assuming we have a method to save the merged providers
-    this.saveAuthenticationProviders(mergedProviders);
+    const existingProviders = await this.getAuthenticationProviders();
+    const mergedProviders = Array.from(new Set([...existingProviders, ...providers]));
+    await this.saveAuthenticationProviders(mergedProviders);
   }
-
   
   // Private method to save authentication providers
   private async saveAuthenticationProvidersInternal(providers: AuthenticationProvider[]): Promise<void> {

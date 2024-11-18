@@ -2,7 +2,7 @@ import { getStructureAsArray } from '@/app/configs/declarations/traverseBackend'
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
-import { Comment, Data } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 import { getCurrentAppInfo } from "./VersionGenerator";
 import { T } from "../models/data/dataStoreMethods";
 import { BuildVersion } from "./Version";
@@ -81,10 +81,12 @@ interface VersionData extends ExtendedVersionData {
   _structure?: any; // Adjust as per actual type
   frontendStructure?: Promise<AppStructureItem[]>; // Adjust as per actual type
   backendStructure?: Promise<AppStructureItem[]>; // Adjust as per actual type
-  data: Data | undefined;
+  data: Data<BaseData<any>> | undefined;
   backend: BackendStructure | undefined;
   frontend: FrontendStructure | undefined;
 }
+
+
 // Example usage and data
 const updatedContent = "Updated file content here...";
 const author = "John Doe";
@@ -252,7 +254,8 @@ const versionData: VersionData = (() => {
         return {};
       },
       getStructureAsArray: async (): Promise<AppStructureItem[]> => {
-        return []; // Always return an array
+        const structure = await this.getStructure(); // Assuming this method returns a structure object
+        return getStructureAsArray(structure); // Call the imported helper function
       },
       traverseDirectoryPublic: async (dir: string, fs: typeof import("fs")): Promise<AppStructureItem[]> => {
         return [];
@@ -280,23 +283,26 @@ const versionData: VersionData = (() => {
 
       
 
-      // Corrected method: Generate the structure checksum (Example: Returns a dummy checksum for now)
+      // Generate the structure checksum (Example: Returns a dummy checksum for now)
       getStructureChecksum: async (): Promise<string> => {
-        
         try {
-
-          // Step 1: Retrieve the structure as an array
-          const structureArray =  await this.getStructureAsArray()
-
-          if (!structureArray) {
-            throw new Error("Structure array is undefined");
+          // Ensure `getStructureAsArray` is callable
+          if (!getStructureAsArray) {
+            throw new Error("getStructureAsArray is not defined");
           }
-
+      
+          // Step 1: Retrieve the structure as an array
+          const structureArray = await getStructureAsArray();
+      
+          if (!structureArray) {
+            throw new Error("Structure array is undefined or empty");
+          }
+      
           // Step 2: Convert the array to JSON
           const structureString = JSON.stringify(structureArray);
-
-          // Step 3: Generate and return a checksum (Hashing logic would go here)
-          const checksum = "dummyChecksum"; // Placeholder checksum for now
+      
+          // Step 3: Generate and return a checksum (Dummy logic used here)
+          const checksum = "dummyChecksum"; // Replace with real hash generation logic if needed
           return checksum;
         } catch (error: any) {
           throw new Error(`Failed to generate structure checksum: ${error.message}`);

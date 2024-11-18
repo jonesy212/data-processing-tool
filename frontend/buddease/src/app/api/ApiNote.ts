@@ -1,8 +1,10 @@
 // ApiNotes.ts
-
+import { BaseData } from '@/app/components/models/data/Data';
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { Tag } from '@/app/components/models/tracker/Tag';
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
 import { ModifiedDate } from "../components/documents/DocType";
@@ -10,6 +12,7 @@ import { NoteData } from "../components/documents/NoteData";
 import FolderData from "../components/models/data/FolderData";
 import { Encryption } from "../components/security/Encryption";
 import { YourResponseType } from "../components/typings/types";
+import AccessHistory from "../components/versions/AccessHistory";
 import SearchHistory from "../components/versions/SearchHistory";
 import Version from "../components/versions/Version";
 import { StructuredMetadata } from "../configs/StructuredMetadata";
@@ -18,8 +21,6 @@ import { handleApiError } from "./ApiLogs";
 import { SearchResponseData } from "./ApiSearch";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
-import { Tag } from "../components/models/tracker/Tag";
-import AccessHistory from "../components/versions/AccessHistory";
 
 // Define the API base URL
 const API_BASE_URL = endpoints.notes;
@@ -69,12 +70,15 @@ const apiNotificationMessages: NoteNotificationMessages = {
 // Extend SearchNotesResponse with attributes from YourResponseType
 type SearchNotesResponse = {
   // Add specific attributes related to search notes if needed
-  results: Note[]; // Assuming an array of Note objects in the response
+  results: Note<T, K<T>>[]; // Assuming an array of Note objects in the response
   totalCount: number; // Total count of search results
-  searchData: SearchResponseData;
+  searchData: SearchResponseData<T, K<T>>;
 };
 
-interface Note {
+interface Note<
+  T extends  BaseData<T>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   id: number;
   title: string;
   content: string;
@@ -87,8 +91,9 @@ interface Note {
   options: any;
   folderPath: string;
   createdAt: Date | undefined;
+  createdBy?: string
   updatedAt: Date | undefined;
-  tags: Tag[];
+  tags: Tag<T, K>[];
   previousMetadata: string;
   currentMetadat: string;
   accessHistory: AccessHistory[];
@@ -458,7 +463,11 @@ export const filterNotesAPI = async (
   }
 };
 
-export const searchNotes = async (keyword: string): Promise<Note[]> => {
+export const searchNotes = async <
+  T extends  BaseData<T>,
+  K extends T = T>(
+    keyword: string
+  ): Promise<Note<T, K>[]> => {
   try {
     const response = await axiosInstance.get(
       `${API_BASE_URL}/api/notes/search`,

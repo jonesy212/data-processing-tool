@@ -1,24 +1,32 @@
-import { Data } from "ws";
+// ContentHelpers.ts
+import { BaseData } from '@/app/components/models/data/Data';
 import { Task } from "../../models/tasks/Task";
 import { Project } from "../../projects/Project";
 import { SnapshotData } from "../../snapshots";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { Todo } from "../../todos/Todo";
 
-// ContentHelpers.ts
-export function isTask(content: Task | Project): content is Task {
-  return (content as Task).status !== undefined;
+export function isTask<
+  T extends  BaseData<T>, 
+  K extends T = T>(content: Task<T, K> | Project): content is Task<T, K> {
+  return (content as Task<T, K>).status !== undefined;
 }
 
-export function isProject(content: Task | Project): content is Project {
+export function isProject<
+  T extends  BaseData<T>, 
+  K extends T = T>(content: Task<T, K> | Project): content is Project {
   return (content as Project).startDate !== undefined;
 }
 
-  export function isTodo <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(content: Task | Todo): content is Todo {
-    return (content as Todo).title !== undefined;
+export function isTodo<
+  T extends  BaseData<T>,
+  K extends T = T>(content: Task<T, K> | Todo<T, K>): content is Todo<T, K> {
+    return (content as Todo<T, K>).title !== undefined;
   }
 
   
- export function isMap <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(data: SnapshotData<T, Meta, K>): data is SnapshotData<T, Meta, K> & Map<string, Snapshot<T, Meta, K>> {
+export function isMap<
+  T extends  BaseData<T>,
+  K extends T = T>(data: SnapshotData<T, K>): data is SnapshotData<T, K> & Map<string, Snapshot<T, K>> {
     return data instanceof Map;
   }

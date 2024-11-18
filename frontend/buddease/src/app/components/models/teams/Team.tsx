@@ -26,6 +26,7 @@ import { Progress } from "../tracker/ProgressBar";
 import TeamData from "./TeamData";
 import { Member, TeamMember } from "./TeamMembers";
 
+import { BaseDataOperations } from '';
 import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
 import { assignProject, unassignProject, updateProgress } from "../../calendar/CalendarApp";
 import {
@@ -130,7 +131,7 @@ interface Team extends Data {
   percentage: number;
   data?: TeamData;
   members?: Member[];
-  then?: <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(callback: (newData: Snapshot<BaseData, Meta, K>) => void) => Snapshot<Data, Meta, K> | undefined;
+  then?: <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
   pointOfContact?: TeamMember | null;
   currentProject?: Project | null;
   currentTeam?: Team | null;
@@ -201,7 +202,7 @@ const team: Team = {
       memberName: "Sam Smith",
       teams: [] as Team[],
       persona: {} as Persona,
-      snapshots: [] as SnapshotStore<Snapshot<Data, Meta, Data>>[],
+      snapshots: [] as SnapshotStore<Snapshot<Data, Data>>[],
       token: null,
       avatarUrl: null,
       createdAt: new Date(),
@@ -465,7 +466,7 @@ const team: Team = {
       roleInTeam: "moderator",
       memberName: "Jane English",
       persona: {} as Persona,
-      snapshots: [] as SnapshotStore<Snapshot<Data, Meta, Data>>[],
+      snapshots: [] as SnapshotStore<Snapshot<Data, Data>>[],
       token: null,
       avatarUrl: null,
       createdAt: new Date(),
@@ -734,7 +735,7 @@ const team: Team = {
     role: UserRoles.Guest,
     timeBasedCode: timeBasedCode,
     persona: {} as Persona,
-    snapshots: [] as SnapshotStore<Snapshot<Data, Meta, Data>>[],
+    snapshots: [] as SnapshotStore<Snapshot<Data, Data>>[],
   } as User,
 
   then(callback: (newData: Team) => void) {

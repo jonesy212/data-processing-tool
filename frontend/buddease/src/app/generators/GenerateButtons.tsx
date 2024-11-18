@@ -8,7 +8,7 @@ import {
   stopVoiceRecognition,
 } from "../components/intelligence/VoiceControl";
 import ReusableButton from "../components/libraries/ui/buttons/ReusableButton";
-import RealtimeData from "../components/models/realtime/RealtimeData";
+import { RealtimeData, RealtimeDataComponent } from "../components/models/realtime/RealtimeData";
 import useNotificationManagerService from "../components/notifications/NotificationService";
 import { Phase } from "../components/phases/Phase";
 import {
@@ -280,7 +280,7 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
         Activate Voice Control
       </button>
       {/* Include RealtimeData component */}
-      <RealtimeData
+      <RealtimeDataComponent
         userId={userId}
         dispatch={dispatch}
       />

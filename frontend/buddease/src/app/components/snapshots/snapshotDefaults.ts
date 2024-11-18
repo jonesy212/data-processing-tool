@@ -1,9 +1,10 @@
-import { Data } from "../models/data/Data";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseData } from '@/app/components/models/data/Data';
 import { StatusType } from "../models/data/StatusType";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 
 // snapshotDefaults.ts
-function defaultTransformDelegate<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(snapshot: Snapshot<T, Meta, K>): Snapshot<T, Meta, K> {
+function defaultTransformDelegate<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(snapshot: Snapshot<T, K>): Snapshot<T, K> {
     // Example transformation logic
     // You can modify the snapshot data here, e.g., adding metadata or modifying existing fields.
     snapshot.metadata = {
@@ -13,10 +14,10 @@ function defaultTransformDelegate<T extends Data, Meta extends UnifiedMetaDataOp
   
     return snapshot;
   }
-  function defaultAddDataStatus<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  function defaultAddDataStatus<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     id: number,
     status: StatusType | undefined,
-    snapshot: Snapshot<T, Meta, K>
+    snapshot: Snapshot<T, K>
   ): void {
     if (!status) {
       console.error(`Status is undefined for ID ${id}.`);
@@ -42,9 +43,9 @@ function defaultTransformDelegate<T extends Data, Meta extends UnifiedMetaDataOp
 
   
 
-  function defaultRemoveData<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  function defaultRemoveData<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     id: number,
-    snapshot: Snapshot<T, Meta, K>
+    snapshot: Snapshot<T, K>
   ): void {
     if (snapshot.data && snapshot.data instanceof Map) {
       if (snapshot.data.delete(id.toString())) {
@@ -57,10 +58,10 @@ function defaultTransformDelegate<T extends Data, Meta extends UnifiedMetaDataOp
     }
   }
     
-  function defaultUpdateData<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  function defaultUpdateData<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     id: number,
-    newData: Snapshot<T, Meta, K>,
-    snapshot: Snapshot<T, Meta, K>
+    newData: Snapshot<T, K>,
+    snapshot: Snapshot<T, K>
   ): void {
     if (snapshot.data && snapshot.data instanceof Map) {
       if (snapshot.data.has(id.toString())) {
@@ -74,10 +75,10 @@ function defaultTransformDelegate<T extends Data, Meta extends UnifiedMetaDataOp
     }
   }
 
-  function defaultUpdateDataTitle<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  function defaultUpdateDataTitle<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   id: number,
   title: string,
-  snapshot: Snapshot<T, Meta, K>
+  snapshot: Snapshot<T, K>
 ): void {
   if (snapshot.data && snapshot.data instanceof Map) {
     const item = snapshot.data.get(id.toString());
@@ -93,10 +94,10 @@ function defaultTransformDelegate<T extends Data, Meta extends UnifiedMetaDataOp
 }
 
   
-function defaultUpdateDataDescription<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+function defaultUpdateDataDescription<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     id: number,
     description: string,
-    snapshot: Snapshot<T, Meta, K>
+    snapshot: Snapshot<T, K>
   ): void {
     if (snapshot.data && snapshot.data instanceof Map) {
       const item = snapshot.data.get(id.toString());
@@ -113,10 +114,10 @@ function defaultUpdateDataDescription<T extends Data, Meta extends UnifiedMetaDa
 
   
 
-  function defaultUpdateDataStatus<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
+  function defaultUpdateDataStatus<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     id: number,
     status: StatusType | undefined,
-    snapshot: Snapshot<T, Meta, K>
+    snapshot: Snapshot<T, K>
   ): void {
     if (!status) {
       console.error(`Status is undefined for ID ${id}.`);
@@ -140,9 +141,9 @@ function defaultUpdateDataDescription<T extends Data, Meta extends UnifiedMetaDa
   }
 
   
-  function defaultAddDataSuccess<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-    payload: { data: Snapshot<T, Meta, K>[] },
-    snapshot: Snapshot<T, Meta, K>
+  function defaultAddDataSuccess<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+    payload: { data: Snapshot<T, K>[] },
+    snapshot: Snapshot<T, K>
   ): void {
     if (snapshot.data && snapshot.data instanceof Map) {
       payload.data.forEach(item => {
@@ -164,3 +165,4 @@ function defaultUpdateDataDescription<T extends Data, Meta extends UnifiedMetaDa
     defaultAddDataStatus, defaultAddDataSuccess, defaultRemoveData, defaultTransformDelegate, defaultUpdateData, defaultUpdateDataDescription,
     defaultUpdateDataStatus, defaultUpdateDataTitle
 };
+

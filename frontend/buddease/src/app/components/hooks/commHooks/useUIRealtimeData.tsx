@@ -1,4 +1,5 @@
 // useUIRealtimeData.tsx
+import { BaseData } from '@/app/components/models/data/Data';
 import { fetchData } from '@/app/api/ApiData';
 import axiosInstance from '@/app/api/axiosInstance';
 import { endpoints } from '@/app/api/endpointConfigurations';
@@ -7,7 +8,6 @@ import { TokenActionTypes } from '@/app/tokens/TokenActions';
 import { Dispatch, useEffect, useState } from 'react';
 import socketIOClient from 'socket.io-client';
 import { AppActions, AppActionsType } from '../../actions/AppActions';
-import { Data } from "../../models/data/Data";
 import { RealtimeData, RealtimeDataItem } from '../../models/realtime/RealtimeData';
 import SnapshotStore from '../../snapshots/SnapshotStore';
 import CalendarEvent from '../../state/stores/CalendarEvent';
@@ -265,10 +265,10 @@ const handleTokenActions = (action: TokenActionTypes) => {
 
 
 
-const useUIRealtimeData = <T extends Data, K extends RealtimeData = any>(
+const useUIRealtimeData = <T extends  BaseData<T>, K extends RealtimeData = any>(
   initialData: RealtimeDataItem[],
-  updateCallback: (events: Record<string, CalendarEvent<T, Meta, K>[]>,
-    snapshotStore: SnapshotStore<T, Meta, K>, dataItems: RealtimeDataItem[],
+  updateCallback: (events: Record<string, CalendarEvent<T, K>[]>,
+    snapshotStore: SnapshotStore<T, K>, dataItems: RealtimeDataItem[],
     updateCallback: (dispatch: Dispatch<AppActionsType>) => void
 
   ) => void
@@ -324,8 +324,8 @@ const useUIRealtimeData = <T extends Data, K extends RealtimeData = any>(
       'updateData',
       (
         data: any,
-        events: Record<string, CalendarEvent<T, Meta, K>[]>,
-        snapshotStore: SnapshotStore<T, Meta, K>,
+        events: Record<string, CalendarEvent<T, K>[]>,
+        snapshotStore: SnapshotStore<T, K>,
         dataItems: RealtimeDataItem[]
       ) => {
         // Call the provided updateCallback with the updated data, events, snapshotStore, and dataItems
@@ -383,8 +383,8 @@ const useUIRealtimeData = <T extends Data, K extends RealtimeData = any>(
 
 
 // Define your update callback function
-const updateCallback =<T extends Data, K extends RealtimeData = any>
-  (events: Record<string, CalendarEvent<T, Meta, K>[]>,
+const updateCallback =<T extends  BaseData<T>, K extends RealtimeData = any>
+  (events: Record<string, CalendarEvent<T, K>[]>,
   snapshotStore: SnapshotStore<RealtimeData, K>,
   dataItems: RealtimeDataItem[]
 
@@ -396,7 +396,7 @@ const updateCallback =<T extends Data, K extends RealtimeData = any>
   Object.keys(events).forEach((eventId: string) => {
     const calendarEvents = events[eventId];
     // Perform actions based on each calendar event
-    calendarEvents.forEach((event: CalendarEvent<T, Meta, K>) => {
+    calendarEvents.forEach((event: CalendarEvent<T, K>) => {
       // Example: Update UI or trigger notifications based on the event
       console.log(`Updated event with ID ${eventId}:`, event);
     });

@@ -12,7 +12,7 @@ import { NotificationTypeEnum } from '../../support/NotificationContext';
 import { DocumentTypeEnum } from '../../documents/DocumentGenerator';
 import { UserSettings } from '@/app/configs/UserSettings';
 import Version from '../../versions/Version';
-import docx, { IContext, IXmlableObject, XmlComponent } from 'docx';
+import { docx, IContext, IXmlableObject, XmlComponent } from 'docx';
 import { frontendStructure } from '@/app/configs/appStructure/FrontendStructure';
 import { AppStructureItem } from '@/app/configs/appStructure/AppStructure';
 import { DocumentSize } from '../../models/data/StatusType';
@@ -109,7 +109,9 @@ export default class MobXEntityStore {
       "uniqueIdentifier",
       NotificationTypeEnum.GeneratedID
     ),
-    includeType: "all",
+    includeType: { 
+      enabled: 
+      format:"all"},
     includeTitle: true,
     includeContent: true,
     animations: {} as DocumentAnimationOptions,

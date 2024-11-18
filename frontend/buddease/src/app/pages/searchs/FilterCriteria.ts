@@ -1,15 +1,17 @@
-import {
-    CodingLanguageEnum,
-    LanguageEnum,
-} from "@/app/components/communications/LanguageEnum";
-import { Meta } from '@/app/components/models/data/dataStoreMethods';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { extractCriteria } from '@/app/api/SnapshotApi';
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import {
+  CodingLanguageEnum,
+  LanguageEnum,
+} from "@/app/components/communications/LanguageEnum";
 import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import { FileTypeEnum } from "@/app/components/documents/FileType";
 import FormatEnum from "@/app/components/form/FormatEnum";
 import AnimationTypeEnum from "@/app/components/libraries/animations/AnimationLibrary";
 import { Category, CategoryIdentifier } from "@/app/components/libraries/categories/generateCategoryProperties";
+import { StatusTrackable, Timestamped } from "@/app/components/models/CommonData";
 import { BaseData, Data } from "@/app/components/models/data/Data";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
@@ -17,36 +19,45 @@ import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "@/app/components/phases/TenantManagementPhase";
 import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
 import { SecurityFeatureEnum } from "@/app/components/security/SecurityFeatureEnum";
-import { SnapshotStoreConfig, SnapshotWithCriteria, } from "@/app/components/snapshots";
+import { SnapshotData, SnapshotStoreConfig, SnapshotWithCriteria } from '@/app/components/snapshots';
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
+import { FilterState } from "@/app/components/state/redux/slices/FilterSlice";
 import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
 import UserRoles from "@/app/components/users/UserRoles";
 import { IdeaCreationPhaseEnum } from "@/app/components/users/userJourney/IdeaCreationPhase";
 import { MessageType } from "@/app/generators/MessaageType";
-import { SnapshotData } from '.';
 import { CategoryProperties } from "../personas/ScenarioBuilder";
 import {
-    BookmarkStatus,
-    CalendarStatus,
-    DataStatus,
-    DevelopmentPhaseEnum,
-    NotificationStatus,
-    PriorityTypeEnum,
-    PrivacySettingEnum,
-    ProjectPhaseTypeEnum,
-    StatusType,
-    SubscriberTypeEnum,
-    SubscriptionTypeEnum,
-    TaskStatus,
-    TeamStatus,
-    TodoStatus,
+  BookmarkStatus,
+  CalendarStatus,
+  DataStatus,
+  DevelopmentPhaseEnum,
+  NotificationStatus,
+  PriorityTypeEnum,
+  PrivacySettingEnum,
+  ProjectPhaseTypeEnum,
+  StatusType,
+  SubscriberTypeEnum,
+  SubscriptionTypeEnum,
+  TaskStatus,
+  TeamStatus,
+  TodoStatus,
 } from "./../../components/models/data/StatusType";
-import { CalendarEvent } from "./../../components/state/stores/CalendarEvent";
 import { CriteriaType } from "./CriteriaType";
 
 
-interface FilterCriteria {
+
+interface FilterCriteria extends Timestamped, StatusTrackable {
+  description?: string | null | undefined;
+  priority?: string | PriorityTypeEnum | null;
+  notificationType?: NotificationTypeEnum | null;
+  projectPhase?: ProjectPhaseTypeEnum | null;
+  // other existing properties unique to FilterCriteria
+  // ...
+}
+
+interface FilterCriteria extends Timestamped, StatusTrackable {
   description?: string | null | undefined;
   startDate?: Date;
   endDate?: Date;
@@ -84,7 +95,7 @@ interface FilterCriteria {
   categoryCriteria?: CategoryIdentifier | CategoryProperties; // Add categoryCriteria here
 }
 
-type CalendarEventWithCriteria = SnapshotWithCriteria<CalendarEvent, BaseData> & CriteriaType;
+type CalendarEventWithCriteria = SnapshotWithCriteria<CalendarEvent, CalendarEvent> & CriteriaType;
 
 const applyFilters = (
   events: CalendarEvent[],
@@ -228,8 +239,7 @@ const applyFilters = (
 
   if (criteria.ideaCreateionPhaseType !== null) {
     filteredEvents = filteredEvents.filter(
-      (event) =>
-        event.ideaCreateionPhaseType === criteria.ideaCreateionPhaseType
+      (event) => event.ideaCreateionPhaseType === criteria.ideaCreateionPhaseType
     );
   }
   if (criteria.securityFeatureType !== null) {
@@ -286,6 +296,23 @@ const applyFilters = (
   return filteredEvents;
 };
 
+
+
+
+// Utility function to check if a snapshot matches the provided criteria
+function matchesCriteria<T, K>(
+  snapshot: Snapshot<T, K>,
+  criteria: Partial<FilterState>
+): boolean {
+  // Extract criteria properties from the snapshot
+  const snapshotCriteria = extractCriteria(snapshot, Object.keys(criteria) as Array<keyof FilterState>);
+  
+  // Compare each property in criteria to the corresponding property in snapshotCriteria
+  return Object.entries(criteria).every(([key, value]) => {
+    return snapshotCriteria[key as keyof FilterState] === value;
+  });
+}
+
 const criteria: FilterCriteria = {
   description: "Sample Event",
   startDate: new Date("2023-08-01"),
@@ -316,6 +343,8 @@ const criteria: FilterCriteria = {
   taskPhaseType: TaskPhaseEnum.TASK_CREATING,
   animationType: AnimationTypeEnum.Notification,
 }
+
+
 
 // Sample CalendarEvent data
 const events: CalendarEvent[] = [
@@ -364,6 +393,7 @@ const events: CalendarEvent[] = [
       id: "",
       roles: [], 
       followers: [],
+      bannerUrl: "",
       preferences: {
         refreshUI: () => {},
       }, 
@@ -460,12 +490,12 @@ const events: CalendarEvent[] = [
           }
         })
       },
-    meta:{} as Data,
-      getData(): Promise<SnapshotWithCriteria<BaseData, Meta, BaseData>> {
+    meta:{} as Data<T>,
+      getData(): Promise<SnapshotWithCriteria<BaseData, BaseData>> {
       return new Promise((resolve, reject) => {
         try {
           // Sample data implementing SnapshotWithCriteria
-          const data: SnapshotWithCriteria<BaseData, Meta, BaseData>[] = [
+          const data: SnapshotWithCriteria<BaseData, BaseData>[] = [
           {
               description: "This is a sample event",
               startDate: new Date("2024-06-01"),
@@ -518,11 +548,13 @@ const events: CalendarEvent[] = [
         }
       })
     },
-    then: function <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data>(
-      callback: (newData: Snapshot<T, Meta, K>) => void
-    ): Snapshot<T, Meta, K> {
+    
+    then: function <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+      callback: (newData: Snapshot<T, K>) => void
+    ): Snapshot<T, K> {
+     
       // Simulate fetching data
-      const snapshot: Snapshot<T, Meta, K>  = {
+      const snapshot: Snapshot<T, K>  = {
         description: "This is a sample event",
         // startDate: new Date("2024-06-01"),
         // endDate: new Date("2024-06-05"),
@@ -564,11 +596,11 @@ const events: CalendarEvent[] = [
         files: [],
         rsvpStatus: "yes",
         getData: function (id: number | string, 
-          snapshotStore: SnapshotStore<T, Meta, K>
-        ): Data | Map<string, Snapshot<T, Meta, K>> | null | undefined {
+          snapshotStore: SnapshotStore<T, K>
+        ): Data<T> | Map<string, Snapshot<T, K>> | null | undefined {
           // Simulate fetching data
           // Fetch or create the snapshot data
-          const snapshot: Snapshot<T, Meta, K> = {
+          const snapshot: Snapshot<T, K> = {
             description: "This is a sample event",
             startDate: new Date("2024-06-01"),
             endDate: new Date("2024-06-05"),
@@ -609,7 +641,7 @@ const events: CalendarEvent[] = [
             highlights: [],
             files: [],
             rsvpStatus: "yes",
-          } as Snapshot<T, Meta, K>;
+          } as Snapshot<T, K>;
 
           if (typeof callback === 'function') {
             callback(snapshot);
@@ -625,14 +657,14 @@ const events: CalendarEvent[] = [
         },
         createSnapshot(
           id: string,
-          snapshotData: SnapshotData<T, Meta, K>,
+          snapshotData: SnapshotData<T, K>,
           additionalData: any,
           category?: string | symbol | Category,
-          callback?: (snapshot: Snapshot<Data, Meta, K>) => void,
-          SnapshotData?: SnapshotStore<T, Meta, K>,
-          snapshotStoreConfig?: SnapshotStoreConfig<Data, Meta, K>,
-        ): Snapshot<T, Meta, K> | null {
-          const newSnapshot: Snapshot<T, Meta, K> = {
+          callback?: (snapshot: Snapshot<T, K>) => void,
+          snapshotStore?: SnapshotStore<T, K>,
+          snapshotStoreConfig?: SnapshotStoreConfig<T, K>,
+        ): Snapshot<T, K> | null {
+          const newSnapshot: Snapshot<T, K> = {
             id,
             ...snapshotData,  // Assuming you want to include data from the existing snapshotData
             additionalData,
@@ -649,7 +681,7 @@ const events: CalendarEvent[] = [
         },
         callback(snapshot: any) { },
       }
-      return snapshot as unknown as Snapshot<T, Meta, K>
+      return snapshot as unknown as Snapshot<T, K>
     },
 
   },
@@ -696,9 +728,11 @@ const filterCriteria: FilterCriteria = {
   // Add more filter criteria as needed
 };
 
+
 // Applying filters
 const filteredEvents = applyFilters(events, filterCriteria);
 
 console.log(filteredEvents);
+export { criteria, matchesCriteria };
 export type { CalendarEventWithCriteria, FilterCriteria };
 

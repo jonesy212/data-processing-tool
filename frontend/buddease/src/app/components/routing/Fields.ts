@@ -1,37 +1,101 @@
+import { Project } from "@/app/components/projects/Project";
+import { TaskMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { ProjectMetadata } from '@/app/configs/StructuredMetadata';
-    type Fields<T, K extends Data = T> = Pick<T, K>;
+import { BaseData, Data } from '../models/data/Data';
+import {  } from '@/app/typings/appTypes';
+import { K, Meta } from '../models/data/dataStoreMethods';
+import { TaskData, Task} from '../models/tasks/Task';
 
-    // Define a utility type that excludes specific keys
-    type ExcludeKeys<T, K extends Data> = Omit<T, K>;
+type Fields<T, K extends keyof T> = Pick<T, K>;
+type ExcludeFields<T, K extends keyof T> = Omit<T, K>;
+type IncludeFields<T, K extends keyof T> = Pick<T, K>;
 
-    export type { ExcludeKeys, Fields };
+// Define a utility type that excludes specific keys
+type ExcludeKeys<T, K extends keyof T> = Omit<T, K>;
+type IncludeKeys<T, K extends keyof T> = Pick<T, K>;
 
 
+type InclusiveExclusiveFields<
+  T,
+  Include extends keyof T = never,
+  Exclude extends keyof T = never
+> = Include extends never
+  ? ExcludeKeys<T, Exclude>
+  : IncludeFields<T, Include> & ExcludeKeys<T, Exclude>;
 
 
 
 // Example of using Fields and ExcludeKeys with UnifiedMetaDataOptions
 // Use the Fields utility type to get specific fields from UnifiedMetaDataOptions
-type ProjectFields = Fields<ProjectMetadata, 'projectId'>; // { projectId: string }
+type ProjectFields = Fields<ProjectMetadata<Task<TaskData>, Project>, 'projectId'>; // { projectId: string }
 
 // Use ExcludeKeys to create a type without specific keys
-type TaskWithoutId = ExcludeKeys<TaskMetaData, 'taskId'>; // { taskName: string }
+type TaskWithoutId = ExcludeKeys<TaskMetadata<Task<TaskData>,
+  Task<any, any>>, 'taskId'>; // { taskName: string }
+
+// If needed, we can also define ExcludedFields as a generic utility for clarity
+type ExcludedFields<T, K extends keyof T> = ExcludeKeys<T, K>;
+
+type MapExcludedFieldsToMetaKeys<
+  T extends BaseData<T>,
+  Meta extends StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T
+> = ExcludedFields extends keyof Meta ? ExcludedFields : never;
+
+// Example utility function to add source tracking for shared fields
+function addSource<T>(metadata: T, source: string): T & { source: string } {
+  return { ...metadata, source };
+}
+
+// Type guard functions to determine the origin
+function isTaskMetadata<T>(metadata: any): metadata is TaskMetadata<T, Meta> {
+  return metadata?.source === 'TaskMetadata';
+}
+
+
+function isProjectMetadata<T>(metadata: any): metadata is ProjectMetadata<T, Meta> {
+  return metadata?.source === 'ProjectMetadata';
+}
+
 
 // Example function to demonstrate how to use the union and utility types
 function processMetadata<T extends UnifiedMetaDataOptions>(metadata: T) {
-  // Example of using Fields utility type to pick specific fields
-  const fields = Fields(metadata, 'taskName');
-  
-  // Example of using ExcludeKeys utility type
-  const excludedFields = ExcludeKeys(metadata, 'projectId');
+  // Example of using Fields utility type with task metadata fields
+  if ('taskMetadata' in metadata) {
+    const taskFields: Fields<TaskMetadata<any, any>, 'taskId' | 'taskName'> = {
+      taskId: metadata.taskMetadata!.taskId,
+      taskName: metadata.taskMetadata!.taskName,
+    };
+    console.log("Task Metadata Fields:", taskFields);
+  }
 
-  console.log(fields, excludedFields);
+  // Example of using Fields utility type with project metadata fields
+  if ('projectMetadata' in metadata) {
+    const projectFields: Fields<ProjectMetadata<T, K<T>>, 'projectId' | 'projectName'> = {
+      projectId: metadata.projectMetadata!.projectId,
+      projectName: metadata.projectMetadata!.projectName,
+    };
+    console.log("Project Metadata Fields:", projectFields);
+  }
+
+  // Use ExcludeKeys utility type with UnifiedMetaDataOptions for other fields
+  const excludedFields: ExcludeKeys<T, 'projectMetadata' | 'taskMetadata'> = { ...metadata };
+  delete (excludedFields as any).projectMetadata;
+  delete (excludedFields as any).taskMetadata;
+
+  console.log("Excluded Fields:", excludedFields);
 }
 
-// Example of calling the function
-const exampleTaskMeta: TaskMetaData = {
-  taskId: '123',
-  taskName: 'Complete documentation',
+// Creating an example task metadata object that satisfies UnifiedMetaDataOptions
+const exampleTaskMeta: UnifiedMetaDataOptions = {
+  taskMetadata: {
+    taskId: '123',
+    taskName: 'Complete documentation',
+  },
+  source: 'TaskMetadata', // If needed, adjust this according to your type definitions
 };
 
+// Call the function with the example metadata
 processMetadata(exampleTaskMeta);
+
+export type { ExcludeKeys, Fields, ExcludedFields, InclusiveExclusiveFields, MapExcludedFieldsToMetaKeys};

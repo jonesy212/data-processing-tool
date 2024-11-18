@@ -1,16 +1,18 @@
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseData } from '@/app/components/models/data/Data';
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import React from "react";
 import DatePickerComponent from "react-datepicker";
 import { CryptoHolding } from "../crypto/CryptoHolding";
 import CryptoTransaction from "../crypto/CryptoTransaction";
 import { ContentPost } from "../models/content/ContentPost";
-import { Data } from "../models/data/Data";
 import { Task } from "../models/tasks/Task";
 import { Project } from "../projects/Project";
 import { Label } from "../projects/branding/BrandingSettings";
 import { Resource } from "../state/redux/slices/CollaborationSlice";
 import { RootState } from "../state/redux/slices/RootSlice";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
 import MonthView from "./CalendarMonthView";
 import Milestone, { CalendarManagerState } from "./CalendarSlice";
 import WeekView from "./CalendarWeek";
@@ -24,40 +26,41 @@ interface CommonCalendarProps{
   year?: YearInfo[] | number;
   month?: MonthInfo[] | number;
   events: CalendarEvent<any, any>[];
-  tasks: Task[];
+  tasks: Task<T, K<T>>[];
   milestones: Milestone[];
   projectId: string; // Add projectId prop
   projects: Project[];
   
   selectedProject: (state: RootState, projectId: string) => Project | null
+  onChangeSpeed: (newSpeed: number) => void;
 
-  onTaskClick: (task: Task) => void;
-  onTaskDoubleClick: (task: Task) => void;
-  onTaskContextMenu: (task: Task, event: React.MouseEvent) => void;
-  onTaskDragStart: (task: Task) => void;
-  onTaskDragEnd: (task: Task) => void;
-  onTaskResizingStart: ( task: Task, newSize: number) => void;
-  onTaskResizingEnd: (task: Task, newSize: number) => void;
-  onTaskResize: (task: Task, newSize: number) => void;
-  onTaskDrop: (task: Task) => void;
-  onTaskChange: (task: Task) => void;
-  onTaskCreate: (task: Task) => void;
-  onTaskDelete: (task: Task) => void;
-  onTaskTitleChange: (task: Task) => void;
-  onTaskStatusChange: (task: Task) => void;
-  onTaskProgressChange: (task: Task) => void;
-  onTaskDependencyChange: (task: Task) => void;
-  onTaskFilterChange: (task: Task) => void;
-  onTaskLabelChange: (task: Task) => void;
-  onTaskParentChange: (task: Task) => void;
-  onTaskExpandedChange: (task: Task) => void;
-  onTaskLinkAdd: (task: Task) => void;
-  onTaskLinkRemove: (task: Task) => void;
-  onTaskDependencyAdd: (task: Task) => void;
-  onTaskDependencyRemove: (task: Task) => void;
-  onTaskProgressAdd: (task: Task) => void;
-  onTaskProgressRemove: (task: Task) => void;
-  onTaskLabelAdd: (task: Task) => void;
+  onTaskClick: (task: Task<T, K<T>>) => void;
+  onTaskDoubleClick: (task: Task<T, K<T>>) => void;
+  onTaskContextMenu: (task: Task<T, K<T>>, event: React.MouseEvent) => void;
+  onTaskDragStart: (task: Task<T, K<T>>) => void;
+  onTaskDragEnd: (task: Task<T, K<T>>) => void;
+  onTaskResizingStart: ( task: Task<T, K<T>>, newSize: number) => void;
+  onTaskResizingEnd: (task: Task<T, K<T>>, newSize: number) => void;
+  onTaskResize: (task: Task<T, K<T>>, newSize: number) => void;
+  onTaskDrop: (task: Task<T, K<T>>) => void;
+  onTaskChange: (task: Task<T, K<T>>) => void;
+  onTaskCreate: (task: Task<T, K<T>>) => void;
+  onTaskDelete: (task: Task<T, K<T>>) => void;
+  onTaskTitleChange: (task: Task<T, K<T>>) => void;
+  onTaskStatusChange: (task: Task<T, K<T>>) => void;
+  onTaskProgressChange: (task: Task<T, K<T>>) => void;
+  onTaskDependencyChange: (task: Task<T, K<T>>) => void;
+  onTaskFilterChange: (task: Task<T, K<T>>) => void;
+  onTaskLabelChange: (task: Task<T, K<T>>) => void;
+  onTaskParentChange: (task: Task<T, K<T>>) => void;
+  onTaskExpandedChange: (task: Task<T, K<T>>) => void;
+  onTaskLinkAdd: (task: Task<T, K<T>>) => void;
+  onTaskLinkRemove: (task: Task<T, K<T>>) => void;
+  onTaskDependencyAdd: (task: Task<T, K<T>>) => void;
+  onTaskDependencyRemove: (task: Task<T, K<T>>) => void;
+  onTaskProgressAdd: (task: Task<T, K<T>>) => void;
+  onTaskProgressRemove: (task: Task<T, K<T>>) => void;
+  onTaskLabelAdd: (task: Task<T, K<T>>) => void;
 
   onAudioCallStart: (participantIds: string[]) => void;
   onAudioCallEnd: (participantIds: string[]) => void;
@@ -84,12 +87,10 @@ interface CommonCalendarProps{
   onContentPostPerformanceTrack: (post: ContentPost) => void;
 }
 
-interface CalendarProps<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> extends CommonCalendarProps {
+interface CalendarProps<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends CommonCalendarProps {
   view: string | CalendarManagerState;
   container: any;
   speed: number;
-  onChangeSpeed: (newSpeed: number) => void;
-  selectedProject: (state: RootState, projectId: string) => Project | null
   month: MonthInfo[];
   year: YearInfo[];
   dependencies: any;
@@ -100,7 +101,7 @@ interface CalendarProps<T extends Data, Meta extends UnifiedMetaDataOptions, K e
   onDateSelect: (date: Date) => void;
 }
 
-const Calendar = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>({
+const Calendar = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>({
   view,
   container,
   speed,
@@ -114,7 +115,7 @@ const Calendar = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends
   milestones,
   onDateSelect,
   ...taskHandlers
-}: CalendarProps<T, Meta, K>) => {
+}: CalendarProps<T, K>) => {
   return (
     <div>
       {view === "day" && (
@@ -125,6 +126,7 @@ const Calendar = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends
           projects={projects}
           milestones={milestones}
           selectedProject={selectedProject}
+          onChangeSpeed={onChangeSpeed}
           {...taskHandlers}
         />
       )}
@@ -148,6 +150,7 @@ const Calendar = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends
           projects={projects}
           milestones={milestones}
           selectedProject={selectedProject}
+          onChangeSpeed={onChangeSpeed}
           {...taskHandlers}
         />
       )}
@@ -159,6 +162,7 @@ const Calendar = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends
           events={events}
           milestones={milestones}
           selectedProject={selectedProject}
+          onChangeSpeed={onChangeSpeed}
           {...taskHandlers}
         />
       )}

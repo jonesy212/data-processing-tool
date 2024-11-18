@@ -1,7 +1,8 @@
-import DocumentPermissions  from '@/app/components/documents/DocumentPermissions';
+// CollaborationSlice.ts
+import { BaseData } from '@/app/components/models/data/Data';
+import DocumentPermissions from '@/app/components/documents/DocumentPermissions';
 import { Data } from '@/app/components/models/data/Data';
 import { Participant } from '@/app/pages/management/ParticipantManagementPage';
-// CollaborationSlice.ts
 import Milestone from "@/app/components/calendar/CalendarSlice";
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import { CryptoHolding } from "@/app/components/crypto/CryptoHolding";
@@ -11,6 +12,8 @@ import { DocumentBuilderOptions } from "@/app/components/documents/DocumentOptio
 import { Change } from "@/app/components/documents/NoteData";
 import { mergeChanges } from "@/app/components/documents/editing/autosave";
 import { CollaborationOptions } from "@/app/components/interfaces/options/CollaborationOptions";
+import { StatusType } from '@/app/components/models/data/StatusType';
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { Task } from "@/app/components/models/tasks/Task";
 import { Member } from "@/app/components/models/teams/TeamMembers";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
@@ -49,9 +52,10 @@ enum ResourceType {
   Link,
   Other,
 }
-interface CollaborationState<T extends Data, Meta extends UniffiedMetaDataOptions, K extends Data = T> {
+interface CollaborationState<T extends  BaseData<T>, Meta extends UniffiedMetaDataOptions, K extends T = T> {
   sharedProjects: Project[];
   sharedMeetings: Meeting[];
+  participants: Participants[]
   tasks: Task[];
   communications: Communication[];
   sharedResources: Resource[];
@@ -65,14 +69,14 @@ interface CollaborationState<T extends Data, Meta extends UniffiedMetaDataOption
   ideas: Idea[];
   collaborationOptions: CollaborationOptions[];
   collaborationSettings: (typeof CollaborationSettings)[];
-  selectedTask: Task | null;
+  selectedTask: Task<T, K> | null;
   isLoadingTaskDetails: boolean;
   error: string | null;
   whiteboards: Whiteboard[];
   isBrainstorming: boolean;
   brainstormingTopic: string;
   brainstormingIdeas: Idea[];
-  documents: Document<T, Meta, K>[];
+  documents: Document<T, K>[];
   comments: Feedback[];
   todos: Progress[];
   resources: Resource[];
@@ -84,7 +88,7 @@ interface CollaborationState<T extends Data, Meta extends UniffiedMetaDataOption
   selectedProject: (state: RootState, projectId: string) => Project | null;
 
   collaboration: {
-    documentData: DocumentData<T, Meta, K>;
+    documentData: DocumentData<T, K>;
     uiManager: ReturnType<typeof useUIManager>;
     userService: UserService;
   };
@@ -159,7 +163,7 @@ const initialState: CollaborationState<Data, UniffiedMetaDataOptions> = {
   }
 };
 const handleCommunicationChange = (
-  state: WritableDraft<CollaborationState>,
+  state: WritableDraft<CollaborationState<T, Meta, K>>,
   action: PayloadAction<WritableDraft<Communication>>
 ) => {
   switch (action.type) {
@@ -744,7 +748,7 @@ export const useCollaborationSlice = createSlice({
         startDate: Date;
         endDate: Date;
       }>
-    ): WritableDraft<CollaborationState> => {
+    ): WritableDraft<CollaborationState<T, Meta, K>> => {
       const { startDate, endDate } = action.payload;
 
       // Logic to analyze collaboration data
@@ -774,7 +778,7 @@ export const useCollaborationSlice = createSlice({
 
         // Calculate total completed tasks
         projectStats.totalTasksCompleted += project.tasks.filter(
-          (task) => task.status === "COMPLETED"
+          (task: Task<T, K>) => task.status === StatusType.COMPLETED
         ).length;
 
         // Calculate average task time
@@ -845,10 +849,10 @@ export const useCollaborationSlice = createSlice({
       state,
       action: PayloadAction<{
         projectStats: any;
-        startDate: string;
+        startDate?: string | Date;
         endDate: string;
       }>
-    ): WritableDraft<CollaborationState> => {
+    ): WritableDraft<CollaborationState<T, Meta, K>> => {
       const { projectStats, startDate, endDate } = action.payload;
       const interpretation = {
         projectStatistics: projectStats,
@@ -892,7 +896,7 @@ export const useCollaborationSlice = createSlice({
       action: PayloadAction<{
         options: WritableDraft<CollaborationOptions>[];
       }>
-    ): WritableDraft<CollaborationState> => {
+    ): WritableDraft<CollaborationState<T, Meta, K>> => {
       const { options } = action.payload;
 
       return {
@@ -906,7 +910,7 @@ export const useCollaborationSlice = createSlice({
       action: PayloadAction<{
         settings: (typeof CollaborationSettings)[];
       }>
-    ): WritableDraft<CollaborationState> => {
+    ): WritableDraft<CollaborationState<T, Meta, K>> => {
       const { settings } = action.payload;
 
       // Validate settings

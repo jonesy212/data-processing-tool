@@ -1,8 +1,7 @@
 //snapshots/SnapshotActions.ts
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
-import { BaseData, Data } from '../models/data/Data';
+import { BaseData } from '../models/data/Data';
 import { Snapshot } from './LocalStorageSnapshotStore';
 
 const dispatch = useDispatch()
@@ -37,15 +36,21 @@ export enum SnapshotOperationType {
   DeleteSnapshot =  'deleteSnapshot',
   FindSnapshot = 'findSnapshot',
   MapSnapshot = 'mapSnapshot',
+  Map = 'map',
+
   SortSnapshot = 'sortSnapshot',
+  Sort = 'sort',
   CategorizeSnapshot = 'categorizeSnapshot',
+  Categorize = 'categorize',
   SearchSnapshot = 'searchSnapshot',
+  Search = 'search',
   CalendarSnapshot = 'calendarEvent',
   NewSnapshotResult = 'newSnapshotResult',
   TaskSnapshotReference = 'taskSnapshotReference',
   CategorizeSnapshots = 'categorizeSnapshot',
-  HandleSnapshot = 'handleSnapshot'
-  FilterSnapshot = 'filterSnapshot'
+  HandleSnapshot = 'handleSnapshot',
+  FilterSnapshot = 'filterSnapshot',
+  TeamManagerSnapshot = 'teamManagerSnapshot'
 }
 
 
@@ -58,29 +63,31 @@ type SnapshotOperation = {
 
 
 // Define generic action types
-interface SnapshotActionsTypes<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
-  addSnapshot: ActionCreatorWithPayload<Snapshot<T, Meta, K>>;
+interface SnapshotActionsTypes<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  setSnapshots: ActionCreatorWithPayload<Snapshot<T, K>[]>;
+
+  addSnapshot: ActionCreatorWithPayload<Snapshot<T, K>>;
   removeSnapshot: ActionCreatorWithPayload<string>;
   updateSnapshot: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
   fetchSnapshotData: ActionCreatorWithPayload<string>;
-  handleSnapshotSuccess: ActionCreatorWithPayload<{ snapshot: Snapshot<T, Meta, K>; snapshotId: string }>;
+  handleSnapshotSuccess: ActionCreatorWithPayload<{ snapshot: Snapshot<T, K>; snapshotId: string }>;
   handleSnapshotFailure: ActionCreatorWithPayload<string>;
   handleTaskSnapshotSuccess: ActionCreatorWithPayload<{message: string,
-    snapshot: Snapshot<T, Meta, K> | null,
+    snapshot: Snapshot<T, K> | null,
     snapshotId: string
   }, string>;
 }
 
 
 // // Define action types with generics
-// interface SnapshotStoreActionsTypes<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
-//   addSnapshotToStore: ActionCreatorWithPayload<Snapshot<T, Meta, K>>;
+// interface SnapshotStoreActionsTypes<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+//   addSnapshotToStore: ActionCreatorWithPayload<Snapshot<T, K>>;
 //   removeSnapshotFromStore: ActionCreatorWithPayload<string>; // Snapshot ID
 //   updateSnapshotInStore: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
 //   fetchSnapshotStoreData: ActionCreatorWithPayload<string>; // Store ID
 //   handleSnapshotStoreSuccess: ActionCreatorWithPayload<{
-//     snapshotStore: SnapshotStore<T, Meta, K>;
-//     snapshot: Snapshot<T, Meta, K>;
+//     snapshotStore: SnapshotStore<T, K>;
+//     snapshot: Snapshot<T, K>;
 //     snapshotId: string;
 //     operation: SnapshotOperation,
 //     operationType: SnapshotOperationType,
@@ -89,7 +96,7 @@ interface SnapshotActionsTypes<T extends Data, Meta extends UnifiedMetaDataOptio
 // }
 
 
-// interface TaskWithSubtasksSnapshotActionsTypes<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>  {
+// interface TaskWithSubtasksSnapshotActionsTypes<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>  {
 //   addTaskWithSubtasksSnapshot: ActionCreatorWithPayload<Snapshot<TaskData, SubtaskData>>;
 //   removeTaskWithSubtasksSnapshot: ActionCreatorWithPayload<string>;
 //   updateTaskWithSubtasksSnapshot: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
@@ -103,36 +110,39 @@ interface SnapshotActionsTypes<T extends Data, Meta extends UnifiedMetaDataOptio
 
 
 // Create action creators with generics
-export const SnapshotActions = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(): SnapshotActionsTypes<T, Meta, K> => ({
-  addSnapshot: createAction<Snapshot<T, Meta, K>>('addSnapshot'),
+export const SnapshotActions = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): SnapshotActionsTypes<T, K> => ({
+ // Add the setSnapshots action
+ setSnapshots: createAction<Snapshots<T>>('setSnapshots'),
+ addSnapshot: createAction<Snapshot<T, K>>('addSnapshot'),
   removeSnapshot: createAction<string>('removeSnapshot'),
   updateSnapshot: createAction<{ snapshotId: string; newData: any }>('updateSnapshot'),
   fetchSnapshotData: createAction<string>('fetchSnapshotData'),
-  handleSnapshotSuccess: createAction<{ snapshot: Snapshot<T, Meta, K>; snapshotId: string }>('handleSnapshotSuccess'),
+  handleSnapshotSuccess: createAction<{ snapshot: Snapshot<T, K>; snapshotId: string }>('handleSnapshotSuccess'),
   handleSnapshotFailure: createAction<string>('handleSnapshotFailure'),
-  handleTaskSnapshotSuccess: createAction<{ message: string; snapshot: Snapshot<T, Meta, K> | null; snapshotId: string; }, string>('handleTaskSnapshotSuccess'),
+  handleTaskSnapshotSuccess: createAction<{ message: string; snapshot: Snapshot<T, K> | null; snapshotId: string; }, string>('handleTaskSnapshotSuccess'),
 });
 
 
-// export const SnapshotStoreActions = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(): SnapshotStoreActionsTypes<T, Meta, K> => ({
-//   addSnapshotToStore: createAction<Snapshot<T, Meta, K>>('addSnapshotToStore'),
+
+// export const SnapshotStoreActions = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): SnapshotStoreActionsTypes<T, K> => ({
+//   addSnapshotToStore: createAction<Snapshot<T, K>>('addSnapshotToStore'),
 //   removeSnapshotFromStore: createAction<string>('removeSnapshotFromStore'),
 //   updateSnapshotInStore: createAction<{ snapshotId: string; newData: any }>('updateSnapshotInStore'),
 //   fetchSnapshotStoreData: createAction<string>('fetchSnapshotStoreData'),
 //   handleSnapshotStoreSuccess: createAction<{
-//     snapshotStore: SnapshotStore<T, Meta, K>;
-//     snapshot: Snapshot<T, Meta, K>;
+//     snapshotStore: SnapshotStore<T, K>;
+//     snapshot: Snapshot<T, K>;
 //     snapshotId: string;
 //   }>('handleSnapshotStoreSuccess'),
 //   handleSnapshotStoreFailure: createAction<string>('handleSnapshotStoreFailure'),
 // });
 
 
-// // export type SnapshotStoreActionsTypes<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> = ReturnType<typeof SnapshotStoreActions<T, Meta, K>>;
+// // export type SnapshotStoreActionsTypes<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = ReturnType<typeof SnapshotStoreActions<T, K>>;
 
 
 // // Actions for managing task snapshots with subtasks
-// export const TaskWithSubtasksSnapshotActions = <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(): TaskWithSubtasksSnapshotActionsTypes<T, Meta, K> => ({
+// export const TaskWithSubtasksSnapshotActions = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): TaskWithSubtasksSnapshotActionsTypes<T, K> => ({
 //   addTaskWithSubtasksSnapshot: createAction<Snapshot<TaskData, SubtaskData>>('addTaskWithSubtasksSnapshot'),
 //   removeTaskWithSubtasksSnapshot: createAction<string>("removeTaskWithSubtasksSnapshot"),
 //   updateTaskWithSubtasksSnapshot: createAction<{ snapshotId: string, newData: any }>("updateTaskWithSubtasksSnapshot"),
@@ -187,8 +197,8 @@ export const SnapshotActions = <T extends Data, Meta extends UnifiedMetaDataOpti
     
 //   },
 //   meta: new Map<string, Snapshot<Task, K>>(),
-//   getSnapshotId: <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-//     key: string | SnapshotData<T, Meta, K>
+//   getSnapshotId: <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+//     key: string | SnapshotData<T, K>
 //   ): unknown => {
 //     if (typeof key === 'string') {
 //       // If key is a string, use it to generate a new snapshot ID
@@ -200,7 +210,7 @@ export const SnapshotActions = <T extends Data, Meta extends UnifiedMetaDataOpti
 //         "SnapshotCreation" as NotificationType
 //       );
 //     } else {
-//       // If key is SnapshotData<T, Meta, K>, extract and return the ID from the snapshot data
+//       // If key is SnapshotData<T, K>, extract and return the ID from the snapshot data
 //       return key._id;
 //     }
 //   },

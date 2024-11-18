@@ -94,14 +94,14 @@
 
 //     handleSnapshot: async (id, snapshotId, snapshot, snapshotData, category, callback, snapshots, type, event, snapshotContainer, snapshotStoreConfigData) => {
 //     // Implementation for staging environment
-//     const processedSnapshot = {} as Snapshot<Data, Meta, Data>;
+//     const processedSnapshot = {} as Snapshot<Data, Data>;
 //     callback(processedSnapshot);
 //     return { snapshot: processedSnapshot };
 //   },
 //   snapshot: async (id, snapshotData, category) => {
 //     // Implementation for staging environment
 
-//     return { snapshot: {} as Snapshot<Data, Meta, Data> };
+//     return { snapshot: {} as Snapshot<Data, Data> };
 //   },
 //   subscribers: [],
 //   createSnapshot: (id, snapshotData, category) => {},
@@ -137,15 +137,15 @@
 //         snapshot: snapshotData,
 //         category: category,
 //       }
-//     } as Snapshot<Data, Meta, K>;
+//     } as Snapshot<Data, K>;
      
 //   },
   
 //   configureSnapshotStore: (snapshot) => {},
 //   createSnapshotSuccess: () => {},
 //   createSnapshotFailure: (    snapshotId: string,
-//     snapshotManager: SnapshotManager<T, Meta, K>,
-//     snapshot: Snapshot<T, Meta, K>,
+//     snapshotManager: SnapshotManager<T, K>,
+//     snapshot: Snapshot<T, K>,
 //     payload: { error: Error }
 //   ) => {
 //     console.log(error);

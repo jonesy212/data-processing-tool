@@ -1,19 +1,17 @@
-import { SnapshotWithCriteria } from '@/app/components/snapshots/SnapshotWithCriteria';
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { projectMetadata, transformProjectToStructured } from "@/app/configs/StructuredMetadata";
 import { useState } from "react";
 import { getDefaultDocumentOptions } from "../documents/DocumentOptions";
 import { BaseData, Data } from "../models/data/Data";
-import  {StatusType, PriorityTypeEnum } from "../models/data/StatusType";
+import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { Team } from "../models/teams/Team";
 import { Member } from "../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
-import SnapshotStore from "../snapshots/SnapshotStore";
-import { CalendarEvent } from "../state/stores/CalendarEvent";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
 import useAttendancePrediction from "./AttendancePrediction";
 import { CalendarManagerState } from "./CalendarSlice";
-import { projectMetadata, transformProjectToStructured} from "@/app/configs/StructuredMetadata";
 
 
 interface Attendee {
@@ -69,7 +67,8 @@ interface AttendeeAvailabilityAnalysis {
   attendeeBusyTimes: AttendeeBusyTimes; 
   attendeeAvailability: AttendeeAvailability;
   confidenceScore: number;
-  attendeeId: string;
+  attendeeId: string | undefined;
+  //todo implemment predictions
   // busyTimes: BusyTime[];
   // attendeeAvailabilityPrediction: AttendeeAvailabilityPrediction[];
   // attendeeAvailabilityPredictionConfidenceScore: number;
@@ -148,7 +147,7 @@ const useAttendeeAvailabilityAnalysis = (
       // Add more busy times as needed
     ];
 
-    event.attendees?.forEach((attendee) => {
+    event.attendees?.forEach((attendee: Member["memberName"]) => {
       attendeeBusyTimes[attendee.email] = busyTimes;
     });
 
@@ -197,7 +196,7 @@ const event: CalendarEvent = {
   then: implementThen,
   analysisType: {} as AnalysisTypeEnum,
   analysisResults: [],
-  videoData: {} as VideoData,
+  videoData: {} as VideoData<Data, K>,
   content: "Event content",
   topics: [],
   highlights: [],
@@ -205,7 +204,7 @@ const event: CalendarEvent = {
   options: getDefaultDocumentOptions(),
   attendees: [],
   location: "Event location",
-  getData: () => Promise.resolve([]) as Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]>,
+  getData: () => Promise.resolve({}) as Promise<Snapshot<BaseData, BaseData<any, any, any>>>,
 };
 
 const calendarManagerState: CalendarManagerState = {

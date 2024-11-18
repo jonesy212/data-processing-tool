@@ -35,7 +35,7 @@ const takeTeamSnapshot = (teamId: string, userIds?: string[], teams?: Team[]) =>
   useSnapshotManager().takeSnapshot(teamSnapshot);
 
   if (userIds) {
-    const teamAssignmentsSnapshot: Snapshot<Data, Meta, Data> = {
+    const teamAssignmentsSnapshot: Snapshot<Data, Data> = {
       timestamp: new Date(), // Add a timestamp to the snapshot
       data: {
         [teamId]: [

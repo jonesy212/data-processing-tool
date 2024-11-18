@@ -17,6 +17,7 @@ const ProjectProgress: React.FC<ProjectProgressProps> = ({
     id: projectId,
     value: projectProgress,
     label: `Project Progress: ${projectProgress}%`,
+    name, color, description, current,
   };
 
   return (
@@ -27,7 +28,11 @@ const ProjectProgress: React.FC<ProjectProgressProps> = ({
         duration={0}
         animationID={""}
         uniqueID={""}
-        phase={{} as ProgressPhase}
+        phase={{
+          type: "determinate",
+          duration: 0,
+          value: tracker.progress,
+        }}
       />
       <button onClick={onUpdateProgress}>Update Progress</button>
     </div>

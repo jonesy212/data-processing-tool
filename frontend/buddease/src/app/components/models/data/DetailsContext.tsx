@@ -1,11 +1,12 @@
 import React, { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
 import { DetailsItem } from '../../state/stores/DetailsListStore';
 import { Data } from './Data';
-
+import { DocumentMetadata } from '@/app/components/state/stores/DocumentStore'
 // Define the shape of your context data
 interface DetailsContextData {
-  detailsData: DetailsItem<Data>[];
-  updateDetailsData: Dispatch<SetStateAction<DetailsItem<Data>[]>>;
+  detailsData: DetailsItem<Data<DocumentData, DocumentMetadata>>[]; // Use concrete types
+  updateDetailsData: Dispatch<SetStateAction<DetailsItem<Data<DocumentData, DocumentMetadata>>[]>>;
+
 }
 
 // Create the context
@@ -18,10 +19,10 @@ interface DetailsProviderProps {
 
 export const DetailsProvider: React.FC<DetailsProviderProps> = ({ children }: DetailsProviderProps) => {
   // State to manage detailsData
-  const [detailsData, setDetailsData] = useState<DetailsItem<Data>[]>([]);
+  const [detailsData, setDetailsData] = useState<DetailsItem<Data<DocumentData, DocumentMetadata>>[]>([]);
 
   // Function to update detailsData
-  const updateDetailsData: Dispatch<SetStateAction<DetailsItem<Data>[]>> = (callback) => {
+  const updateDetailsData: Dispatch<SetStateAction<DetailsItem<Data<DocumentData, DocumentMetadata>>[]>> = (callback) => {
     setDetailsData((prevData) => {
       if (typeof callback === 'function') {
         return callback([...prevData]);
@@ -41,6 +42,7 @@ export const DetailsProvider: React.FC<DetailsProviderProps> = ({ children }: De
   return <DetailsContext.Provider value={value}>{children}</DetailsContext.Provider>;
 };
 
+
 // Custom hook to consume the context
 export const useDetailsContext = (): DetailsContextData => {
   const context = useContext(DetailsContext);
@@ -50,4 +52,32 @@ export const useDetailsContext = (): DetailsContextData => {
   }
 
   return context;
+};
+
+
+
+
+
+const exampleDocument: DocumentContent<Data<DocumentData, DocumentMetadata>> = {
+  eventId: "event123",
+  content: {
+    /* content structure here */
+  },
+  meta: {
+    documentMetadata: {
+      characterSet: "UTF-8",
+      charset: "UTF-8",
+      compatMode: "on",
+      contentType: "text/html",
+      cookie: "cookieString",
+      designMode: "design",
+      dir: "ltr",
+      domain: "example.com",
+      inputEncoding: "UTF-8",
+      lastModified: "2024-11-06",
+      linkColor: "#0000FF",
+      referrer: "referrerInfo",
+      vlinkColor: "#8A2BE2",
+    },
+  },
 };

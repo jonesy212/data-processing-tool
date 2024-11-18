@@ -1,3 +1,5 @@
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseData } from '@/app/components/models/data/Data';
 import { useNotification } from '@/app/components/support/NotificationContext';
 import { SystemConfigs } from "../api/systemConfigs";
 import { UserConfigs } from "../api/userConfigs";
@@ -9,19 +11,16 @@ import {
     backendConfig,
 } from "./BackendConfig";
 
+import fs from 'fs';
 import { getConfigsData } from '../api/getConfigsApi';
-import { K, T } from '../components/models/data/dataStoreMethods';
 import { EventRecord } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { VersionHistory } from '../components/versions/VersionData';
 import { API_VERSION_HEADER } from './AppConfig';
 import dataVersions from "./DataVersionsConfig";
 import { frontendConfig } from "./FrontendConfig";
 import LazyLoadScriptConfigImpl from "./LazyLoadScriptConfig";
-import userPreferences, { ModuleType } from "./UserPreferences";
+import { ModuleType, userPreferences } from "./UserPreferences";
 import userSettings from "./UserSettings";
-import fs from 'fs'
-import { Data } from '../components/models/data/Data';
-import { UnifiedMetaDataOptions } from './database/MetaDataOptions';
 
 interface BaseRetryConfig {
   maxRetries?: number;
@@ -34,13 +33,10 @@ interface BaseCacheConfig {
 }
 
 
-interface BaseMetadataConfig<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+interface BaseMetadataConfig<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   enableSnapshot?: boolean;
-  eventRecords?: EventRecord<T, Meta, K>[] | []
-  
+  eventRecords?: EventRecord<T, K>[] | []
 }
-
-
 
 export interface RetryConfig {
   enabled: boolean;
@@ -455,8 +451,8 @@ async getSystemConfigs(): Promise<typeof SystemConfigs> {
   }
 }
 // Create an instance of the configuration service
-const configurationService = ConfigurationService.getInstance();
+const configServiceInstance = ConfigurationService.getInstance();
 
-export default configurationService;
-export type {  BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, ConfigurationOptions };
+export { configServiceInstance };
+export type { BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, ConfigurationOptions };
 

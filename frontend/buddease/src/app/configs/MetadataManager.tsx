@@ -1,24 +1,45 @@
 // MetadataManager.tsx
+import { BaseMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 
 let fs: any;
 if (typeof window === 'undefined') {
   fs = require('fs');
 }
+
 import * as path from 'path'
 import * as React from 'react';
 import useErrorHandling from '../components/hooks/useErrorHandling';
 import determineFileType from './DetermineFileType';
 import { StructuredMetadata, getStructureMetadataPath, useUndoRedo } from './StructuredMetadata';
+import { Snapshot } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 
-// Define your initial state for StructuredMetadata
-const initialState: StructuredMetadata = {
+
+// Define any extended metadata type if needed
+interface ExtendedMetadata extends BaseMetadata {
+  extraField?: string; // Add any additional fields
+}
+
+
+const initialState: StructuredMetadata<BaseMetadata, UnifiedMetaDataOptions<BaseMetadata>> = {
   name: 'metadata',
+  id: '',
+  category: '',
+  timestamp: '',
+  createdBy: '',
+  tags: [],
+  metadata: {},
+  initialState: '',
+  meta: new Map<
+    string,
+    Snapshot<BaseMetadata, UnifiedMetaDataOptions<BaseMetadata>, StructuredMetadata<BaseMetadata, UnifiedMetaDataOptions<BaseMetadata>>, never>
+  >(),
+  events: { eventRecords: {} },
   description: 'Metadata description',
   metadataEntries: {},
   apiEndpoint: '',
   apiKey: '',
   timeout: 0,
-  retryAttempts: 0
+  retryAttempts: 0,
 };
 
 // Define your metadata management component
@@ -30,7 +51,7 @@ const MetadataManager: React.FC = () => {
   (state as any).undo = undo;
 
   // Function to read metadata from a file
-  const readMetadata = (filename: string): StructuredMetadata => {
+  const readMetadata = (filename: string): StructuredMetadata<BaseMetadata, UnifiedMetaDataOptions<BaseMetadata>> => {
     try {
       const structureMetadataPath = getStructureMetadataPath(filename);
       const data = fs.readFileSync(structureMetadataPath, 'utf-8');
@@ -42,7 +63,10 @@ const MetadataManager: React.FC = () => {
   };
 
   // Function to write metadata to a file
-  const writeMetadata = (filename: string, metadata: StructuredMetadata): void => {
+  const writeMetadata = (
+    filename: string,
+    metadata: StructuredMetadata<BaseMetadata, UnifiedMetaDataOptions<BaseMetadata>>
+  ): void => {
     try {
       const structureMetadataPath = getStructureMetadataPath(filename);
       const data = JSON.stringify(metadata, null, 2);
@@ -62,25 +86,25 @@ const MetadataManager: React.FC = () => {
       for (const file of files) {
         const filePath = path.join(dir, file);
         const isDirectory = fs.statSync(filePath).isDirectory();
-        const fileOrFolderId = Buffer.from(filePath).toString("base64");
+        const fileOrFolderId = Buffer.from(filePath).toString('base64');
 
         if (!metadata.metadataEntries[fileOrFolderId]) {
           const fileType = determineFileType({ filePath });
 
           metadata.metadataEntries[fileOrFolderId] = {
-            author: "",
+            author: '',
             timestamp: new Date(),
             originalPath: filePath,
             alternatePaths: [],
-            fileType: (fileType as string) || "Unknown",
-            title: "",
-            description: "",
+            fileType: (fileType as string) || 'Unknown',
+            title: '',
+            description: '',
             keywords: [],
             authors: [],
             contributors: [],
-            publisher: "",
-            copyright: "",
-            license: "",
+            publisher: '',
+            copyright: '',
+            license: '',
             links: [],
             tags: [],
           };
@@ -102,7 +126,7 @@ const MetadataManager: React.FC = () => {
 
     // Update state with the latest metadata
     setState(metadata);
-  }
+  };
 
   // Example usage
   const metadataFilePath = 'structure-metadata.json';
@@ -112,10 +136,8 @@ const MetadataManager: React.FC = () => {
   return (
     <div>
       <h1>Metadata Manager</h1>
-      {/* You can render UI components and use undo/redo functionality here */}
       <button onClick={undo}>Undo</button>
       <button onClick={redo}>Redo</button>
-      {/* Render your metadata or other UI here */}
     </div>
   );
 };

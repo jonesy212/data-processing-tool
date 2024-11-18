@@ -1,3 +1,5 @@
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
+//CalendarEvent.ts
 import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { CalendarEventWithCriteria } from "@/app/pages/searchs/FilterCriteria";
 import { DocumentOptions } from "../documents/DocumentOptions";
@@ -12,13 +14,13 @@ import CommonEvent from "../state/stores/CommonEvent";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { NotificationType } from "../support/NotificationContext";
 import { Attendee } from "./Attendee";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
-//CalendarEvent.t
-interface CalendarEvent<T extends Data = BaseData,
-  Meta extends UnifiedMetaDataOptions = UnifiedMetaDataOptions,
-  K extends Data = T>
+interface CalendarEvent<
+  T extends  BaseData<T> = BaseData,
+  K extends T = T>
   extends CommonEvent,
-    CommonData<T> {
+    CommonData<T, K> {
   id: string;
   title: string;
   content: string;
@@ -30,20 +32,21 @@ interface CalendarEvent<T extends Data = BaseData,
   locked?: boolean;
   action?: string;
   changes?: string[];
-  date: Date | undefined;
-  tags?: TagsRecord | string[] | undefined; 
-  meta: Data | undefined;
+  date: string | Date | undefined;
+  tags?: TagsRecord<T, K> | string[] | undefined; 
+  meta: T | undefined;
 
   options?: {
     // ...
     additionalOptions: readonly string[] | string | number | any[] | undefined;
     additionalDocumentOptions?: DocumentOptions;
     additionalOptionsLabel?: string;
-    // ...
+    // ...  
   };
   documentPhase?: WritableDraft<Phase<T>>;
   // Add more properties if needed
   status?: AllStatus;
+  isCompleted?: boolean;
   rsvpStatus: "yes" | "no" | "maybe" | "notResponded";
   priority?: AllStatus;
   location?: string;
@@ -60,16 +63,38 @@ interface CalendarEvent<T extends Data = BaseData,
   pinned?: boolean;
   archived?: boolean;
   documentReleased?: boolean;
-  metadata?: UnifiedMetaDataOptions;
+  metadata?: UnifiedMetaDataOptions<T, K>
   getSnapshotStoreData?: () => Promise<CalendarEventWithCriteria[]> ;
 
   
   getData?: () => Promise<
-    Snapshot<T, Meta, K>
+    Snapshot<T, K>
   >;
 
-  then?: <T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-    callback: (newData: Snapshot<T, Meta, K>) => void
-  ) => Snapshot<T, Meta, K> | undefined;
+  then?: <
+    T extends BaseData<T>,
+    K extends T = T,
+    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+    callback: (newData: Snapshot<T, K>) => void
+  ) => Snapshot<T, K> | undefined;
 }
+
+
+const calendarEvent: CalendarEvent = {
+  date: undefined,
+  meta: undefined,
+  rsvpStatus: "notResponded",
+  participants: [],
+  teamMemberId: "",
+  id: "",
+  title: "",
+  content: "",
+  topics: [],
+  highlights: [],
+  files: [],
+  label: {} as Label,
+  createdBy: undefined
+}
+
 export type { CalendarEvent };
+export { calendarEvent }

@@ -1,11 +1,12 @@
-import { ModifiedDate } from '@/app/components/documents/DocType';
 // DynamicHooks.tsx
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { ModifiedDate } from '@/app/components/documents/DocType';
+import { BaseData } from '@/app/components/models/data/Data';
+import { SubscriberCollection } from '@/app/components/snapshots/SnapshotStore';
 import { performLogin } from "@/app/pages/forms/utils/CommonLoginLogic";
 import { useEffect, useState } from "react";
 import { loadDashboardState } from "../../dashboards/LoadDashboard";
-import { Data } from '../../models/data/Data';
 import { generatePrompt } from "../../prompts/promptGenerator";
-import { SubscriberCollection } from '../../snapshots';
 import useAqua from "../../web3/aquaIntegration/hooks/useAqua";
 import useFluence from "../../web3/fluenceProtocoIntegration/src/fluence/useFuence";
 import Web3Provider from '../../web3/Web3Provider';
@@ -261,9 +262,9 @@ useAsyncHookLinker({
 
 const subscriptionService = {
   subscriptions: new Map<string, { callback: (message: any) => void; usage: string }>(),
-   // Add generic types <T, Meta, K> to the subscribers method
-   subscribers<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(name: string, id: string): SubscriberCollection<T, Meta, K> {
-    // Return an empty array or mock data for the subscribers as a placeholder
+   // Add generic types <T, K> to the subscribers method
+   subscribers<T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(name: string, id: string): SubscriberCollection<T, K> {
+    // Return an empty array or , K extends the subscribers as a placeholder
     return [];
   },   
   subscribe:
@@ -347,5 +348,7 @@ const subscription = subscriptionService.subscriptions.get('snapshot') ?? {
   callback: () => {},
   usage: '',
 };
+
+
 export { subscriptionService };
 export default dynamicHooks;

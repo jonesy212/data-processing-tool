@@ -1,5 +1,5 @@
 // NotificationSlice.tsx
-import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 import { DocumentOptions } from '../documents/DocumentOptions';
 import { BaseData, Data } from '../models/data/Data';
@@ -84,7 +84,7 @@ export const dispatchNotification = (
         participants: [],
         teamMemberId: '',
         meta: undefined,
-        getSnapshotStoreData: function (): Promise<SnapshotStore<T, Meta, K>[]> {
+        getSnapshotStoreData: function (): Promise<SnapshotStore<T, K>[]> {
           throw new Error('Function not implemented.');
         }
       })

@@ -37,6 +37,10 @@ function isPrivacySettings(obj: any): obj is PrivacySettings {
   
       // Map the current settings to PrivacySettings interface
       const currentSettings: PrivacySettings = {
+        isDataSharingEnabled: currentSettingsFromAPI?.currentSettingsFromAPI ?? false,
+        dataSharing: currentSettingsFromAPI?.currentSettingsFromAPI ?? false,
+        thirdPartyTracking: currentSettingsFromAPI?.currentSettingsFromAPI ?? false,
+       
         hidePersonalInfo: currentSettingsFromAPI?.hidePersonalInfo ?? false,
         enablePrivacyMode: currentSettingsFromAPI?.enablePrivacyMode ?? false,
         enableTwoFactorAuth: currentSettingsFromAPI?.enableTwoFactorAuth ?? false,

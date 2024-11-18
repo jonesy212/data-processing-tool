@@ -1,6 +1,6 @@
 import AttendancePrediction, { EventAttendance } from "../../calendar/AttendancePrediction";
 import { Attendee } from "../../calendar/Attendee";
-import { CalendarEvent } from "../../state/stores/CalendarEvent"; // Assuming Attendee is imported from CalendarEvent
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent'; // Assuming Attendee is imported from CalendarEvent
 
 // Define the interface for AttendancePredictionResult
 interface AttendancePredictionResult {

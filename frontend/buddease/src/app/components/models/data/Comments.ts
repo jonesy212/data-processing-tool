@@ -1,13 +1,13 @@
+// Comments.ts
 import { Content } from '@/app/components/models/content/AddContent';
-import { Data } from '@/app/components/models/data/Data';
+import { BaseData, Data } from '@/app/components/models/data/Data';
+import { T } from "@/app/components/models/data/dataStoreMethods";
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { ColorPalettes } from 'antd/es/theme/interface';
 import { TagsRecord } from '../../snapshots/SnapshotWithCriteria';
 import { Attachment } from './../../documents/Attachment/attachment';
-// Comments.ts
-
 // Define a basic type for the data associated with a comment
-type CommentData = Data & {
+type CommentData =  BaseData<T> & {
     id: string;
     content: string;
     author: string;
@@ -28,20 +28,19 @@ type CommentData = Data & {
   
   
  interface Comment<
-  T extends Data = CommentData,
-  Meta extends UnifiedMetaDataOptions = CommentMeta,
- K extends Data = T
+  T extends  BaseData<T>,
+  K extends T = T
     > {
     id?: string;
     text?: string | Content<T, K>;
     editedAt?: Date;
     editedBy?: string;
     attachments?: Attachment[];
-    replies?: Comment<T, Meta, K>[];
+    replies?: Comment<T, K>[];
     likes?: number;
     watchLater?: boolean;
     highlightColor?: ColorPalettes;
-    tags?: TagsRecord | string[] | undefined; 
+    tags?: TagsRecord<T, K> | string[] | undefined; 
     highlights?: string[];
     // Consolidating commentBy and author into one field
     author?: string | number | readonly string[] | undefined;
@@ -51,7 +50,7 @@ type CommentData = Data & {
     pinned?: boolean;
     // Consolidating upvotes into likes if they serve the same purpose
     postId?: string | number;
-    data?: string | Data | undefined;
+    data?: string | Data<T> | undefined;
     customProperty?: string;
     // Add other properties as needed
   }

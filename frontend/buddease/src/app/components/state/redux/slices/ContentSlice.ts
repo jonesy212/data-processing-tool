@@ -11,6 +11,7 @@ import {
     StatusType,
     TaskStatus,
 } from "@/app/components/models/data/StatusType";
+import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import ExportTasksPayload from "@/app/components/models/tasks/ExportTasksPayload";
 import ImportTasksPayload from "@/app/components/models/tasks/ImportTasksPayload";
 import TaskDetails, { Task, TaskData } from "@/app/components/models/tasks/Task";
@@ -529,7 +530,7 @@ export const useContentSlice = createSlice({
         then: function (arg0: (newTask: any) => void): unknown {
           throw new Error("Function not implemented.");
         },
-        getData: function (): Promise<SnapshotStore<Snapshot<Data, Meta, Data>>[]> {
+        getData: function (): Promise<SnapshotStore<Snapshot<Data, Data>>[]> {
           throw new Error("Function not implemented.");
         },
       });
@@ -654,7 +655,7 @@ export const useContentSlice = createSlice({
               : existingTask.subtasks,
             actions: changes.actions
               ? Array.isArray(changes.actions)
-                ? changes.actions.map((action) => ({ ...action } as WritableDraft<SnapshotStoreConfig<BaseData, Meta, BaseData>>))
+                ? changes.actions.map((action) => ({ ...action } as WritableDraft<SnapshotStoreConfig<BaseData, BaseData>>))
                 : existingTask.actions
               : existingTask.actions,
             status: changes.status ?? existingTask.status,
@@ -677,7 +678,7 @@ export const useContentSlice = createSlice({
               : existingTask.updatedSubtasks,
             updatedActions: changes.updatedActions
               ? Array.isArray(changes.updatedActions)
-                ? changes.updatedActions.map((updatedAction) => ({ ...updatedAction } as WritableDraft<SnapshotStoreConfig<BaseData, Meta, BaseData>>))
+                ? changes.updatedActions.map((updatedAction) => ({ ...updatedAction } as WritableDraft<SnapshotStoreConfig<BaseData, BaseData>>))
                 : existingTask.updatedActions
               : existingTask.updatedActions,
             updatedComments: changes.updatedComments

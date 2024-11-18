@@ -21,6 +21,9 @@ import { Snapshot, SnapshotStoreUnion } from "../snapshots";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { User, UserData } from "../users/User";
 import { Settings } from "../state/stores/SettingsStore";
+import { BaseData } from "../models/data/Data";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { ExcludedFields } from "../routing/Fields";
 
 
 interface BaseResponseType {
@@ -54,22 +57,26 @@ type UserDataResponseType = User & BaseResponseType & YourSettingsResponseType
 
 
 // Define the structure of YourResponseType based on the actual response from the backend
-interface YourResponseType extends BaseResponseType, DataWithComment, SearchNotesResponse {
+interface YourResponseType<T extends BaseData<T>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> extends BaseResponseType, DataWithComment<T>,
+  SearchNotesResponse {
   id?: string;
   forEach?: (arg0: (notification: import("../support/NofiticationsSlice").NotificationData) => void) => void;
   length?: number;
   // pageNumber: number
   calendarEvents: CalendarEvent[]; // Assuming CalendarEvent is a type/interface for calendar events
-  todos: Todo[]; // Assuming Todo is a type/interface for todos
-  tasks: Task[]; // Assuming Task is a type/interface for tasks
+  todos: Todo<T, K, Meta>[]; // Assuming Todo is a type/interface for todos
+  tasks: Task<T, K, Meta>[]; // Assuming Task is a type/interface for tasks
   snapshotStores: SnapshotStore<SnapshotStoreUnion<T>, K>[]
   currentPhase: Phase | null; // Assuming a string representing the current project phase
   comment: string; // Additional comment field
-
+  excludedData?: ExcludedFields<T, keyof T>; 
   // Add field from RootStores
   browserCheckStore: BrowserCheckStore;
   trackerStore: TrackerStore;
-  todoStore: TodoManagerStore;
+  todoStore: TodoManagerStore<T, K>;
   taskManagerStore: TaskManagerStore;
   iconStore: IconStore;
   calendarStore: CalendarManagerStore;
@@ -103,7 +110,7 @@ interface YourResponseType extends BaseResponseType, DataWithComment, SearchNote
     exchangeData: ExchangeData[];
     averagePrice: number;
   };
-  analysisResults?: string | DataAnalysisResult[];
+  analysisResults?: string | DataAnalysisResult<T>[];
   // Add other properties if necessary
 }
 

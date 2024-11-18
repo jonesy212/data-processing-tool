@@ -3,24 +3,33 @@ import { Team } from "../components/models/teams/Team";
 import { Project } from "../components/projects/Project";
 
 let currentTeamId = 1;
-
 export const generateNewTeam = (): Team => {
   const teamId = `team_${currentTeamId}`;
   currentTeamId++;
 
   return {
     id: teamId,
-    teamName: "",
+    teamName: "Sample Team Name", 
     team: {
-      value: 0,
-      label: "Active",
+      id: "",
+      current: false, 
+      name: "Team Sample Name", 
+      color: "#FFFFFF", 
+      max: 100, 
+      min: 0, 
+      label: "Sample Label", 
+      percentage: 0, 
+      value: 0, 
+      description: "Sample Description", 
+      done: false, 
+      label: "Active", 
     },
     _id: "",
-    projects: [],
-    creationDate: new Date(),
-    teamDescription: "",
-    teamLogo: "",
-    teamMembers: [],
+    projects: [], 
+    creationDate: new Date(), 
+    teamDescription: "Sample description for the team", 
+    teamLogo: "", 
+    teamMembers: [], 
     teamAdmins: [],
     teamTags: [],
     teamInvites: [],

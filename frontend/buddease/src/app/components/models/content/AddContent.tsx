@@ -1,21 +1,25 @@
 // AddContent.tsx
+import { BaseData } from '@/app/components/models/data/Data';
 
 import ContentItemComponent, { ContentItem } from '@/app/components/models/content/ContentItem';
+import { TaskMetadata } from '@/app/configs/database/MetaDataOptions';
 import { Persona } from "@/app/pages/personas/Persona";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import React, { FormEvent, useState } from "react";
 import { Category } from '../../libraries/categories/generateCategoryProperties';
 import { CustomSnapshotData, ItemUnion, SnapshotWithCriteria } from '../../snapshots';
 import UserRoles from "../../users/UserRoles";
-import { Data } from '../data/Data';
 import { StatusType } from '../data/StatusType';
 import { TaskData } from '../tasks/Task';
 import ContentDetailsListItem from "./ContentDetailsListItem";
 import ContentToolbar from "./ContentToolbar";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 
 
-interface Content<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T> {
+interface Content<
+T extends  BaseData<T>,
+ K extends T = T,
+ Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, k>
+ > {
   id: string | number | undefined;
   title: string;
   description: string;
@@ -25,8 +29,8 @@ interface Content<T extends Data, Meta extends UnifiedMetaDataOptions, K extends
   timestamp: string | number | Date,
   length: number,
   items: ItemUnion[],
-  data: T | SnapshotWithCriteria<T, Meta, Data> | CustomSnapshotData | null | undefined,
-  contentItems: ContentItem[]
+  data: T | SnapshotWithCriteria<T, K> | CustomSnapshotData | null | undefined,
+  contentItems?: ContentItem[]
 }
 
 interface ContentProps {
@@ -61,7 +65,8 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
       length: 0,
       data: undefined,
       categoryProperties: undefined,
-      items: []
+      items: [],
+      contentItems: []
     };
 
     // Send new content to server or perform other actions
@@ -488,6 +493,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               profilePicture: null,
               processingTasks: [],
               role: UserRoles.Administrator,
+              bannerUrl: "",
               persona: {} as Persona,
               snapshots: [],
               token: null,
@@ -561,7 +567,7 @@ export type { Content, ContentProps };
 
 
 
-const taskContent: Content<TaskData, Data> = {
+const taskContent: Content<TaskData, TaskMetadata> = {
   id: "task-001",
   title: "Develop Feature X",
   description: "Implement the new feature as per the requirements.",
@@ -603,5 +609,6 @@ const taskContent: Content<TaskData, Data> = {
     },
   ],
   data: null,
+  contentItems: []
 };
 

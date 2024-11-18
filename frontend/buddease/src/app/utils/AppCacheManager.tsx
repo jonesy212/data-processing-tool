@@ -1,4 +1,3 @@
-import { Meta } from '../models/data/dataStoreMethods';
 import { Data } from "../components/models/data/Data";
 import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
 import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
@@ -110,12 +109,12 @@ const backendData: {
     tags: [],
     data: {
       then: function <T extends Data>(
-        callback: (newData: Snapshot<Snapshot<T, Meta, K>>) => void
+        callback: (newData: Snapshot<Snapshot<T, K>>) => void
       ): void {
         // Fetch existing data from backend cache
         appCacheManager.getBackendCache("backendCache").then((cachedData) => {
           if (cachedData !== null) {
-            callback(cachedData as Snapshot<Snapshot<T, Meta, K>>);
+            callback(cachedData as Snapshot<Snapshot<T, K>>);
           }
         });
       },

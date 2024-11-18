@@ -30,8 +30,9 @@ enum StatusType {
   Tentative = "tentative",
   InProgress = "inProgress",
   Confirmed = "confirmed",
-  Cancelled = "cancelled",
+  Canceled = "canceled",
   Scheduled = "scheduled",
+  Rescheduled = 'rescheduled',
   Completed = "completed",
   Upcoming = "upcoming",
   Status = "status",
@@ -85,9 +86,21 @@ enum TaskStatus {
   Completed = StatusType.Completed,
   Tentative = StatusType.Tentative,
   Confirmed = StatusType.Confirmed,
-  Cancelled = StatusType.Cancelled,
+  Canceled = StatusType.Canceled,
   Scheduled = StatusType.Scheduled,
+  Rescheduled = StatusType.Rescheduled
 }
+
+enum MeetingStatus {
+  Pending = StatusType.Pending,
+  InProgress = StatusType.InProgress,
+  Completed = StatusType.Completed,
+  Tentative = StatusType.Tentative,
+  Confirmed = StatusType.Confirmed,
+  Canceled = StatusType.Canceled,
+  Scheduled = StatusType.Scheduled,
+  Rescheduled = StatusType.Rescheduled
+ }// General status for scheduling
 
 enum TodoStatus {
   Pending = StatusType.Pending,
@@ -388,6 +401,6 @@ export {
   OutcomeType,
   PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType,
   StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus,
-  TodoStatus
+  TodoStatus, MeetingStatus
 };
 

@@ -8,13 +8,13 @@ import { User } from "../components/users/User";
 import { UserRole } from "../components/users/UserRole";
 import { AppVersion, currentAppName } from "../components/versions/AppVersion";
 import Version from "../components/versions/Version";
-import configurationService, { ApiConfig, CacheConfig, RetryConfig } from "./ConfigurationService";
+import configServiceInstance, { ApiConfig, CacheConfig, RetryConfig } from "./ConfigurationService";
 import AppStructure, { AppStructureItem } from "./appStructure/AppStructure";
 import { frontendStructure } from "./appStructure/FrontendStructure";
 
 // Define the API version header constant
-const API_VERSION_HEADER: string = configurationService.getApiVersionHeader()
-const DATA_PATH: string = configurationService.getDataPath()
+const API_VERSION_HEADER: string = configServiceInstance.getApiVersionHeader()
+const DATA_PATH: string = configServiceInstance.getDataPath()
 
 
 // Define the AppConfig interface
@@ -77,14 +77,14 @@ interface AppConfig {
 // Define the function to retrieve AppConfig
 export const getAppConfig = (): AppConfig => {
   // Implement the logic to retrieve AppConfig here
-  const config = configurationService.getApiConfig();
+  const config = configServiceInstance.getApiConfig();
 
   config.name = "Mock Config";
   // For example, you can fetch it from local storage or a server
   // For demonstration purposes, let's return a mock AppConfig object
   currentAppName;
   return {
-    appName: current(configurationService.getAppName(currentAppName)),
+    appName: current(configServiceInstance.getAppName(currentAppName)),
     appVersion: {
       major: 1,
       minor: 0,
@@ -278,7 +278,7 @@ export const getAppConfig = (): AppConfig => {
     },
     changeTheme: () => {},
     navigateTo: () => {},
-    getApiKey: () => configurationService.getApiKey(), // Implementing the method
+    getApiKey: () => configServiceInstance.getApiKey(), // Implementing the method
  
     // Add other necessary props specific to your application
   };

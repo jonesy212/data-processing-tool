@@ -76,8 +76,8 @@ const tradingNotificationMessages: TradingNotificationMessages = {
     FETCH_TECHNICAL_ANALYSIS_ERROR: 'Failed to fetch technical analysis data',
     FETCH_NEWS_ERROR: 'Failed to fetch news',
   FETCH_HISTORICAL_DATA_ERROR: 'Failed to fetch historical data',
-  CONFIRM_TRADE_CREATION_ERROR: 'Failed to create trade'
-};
+  CONFIRM_TRADE_CREATION_ERROR: 'Failed to create trade',
+ };
 
   // Define API notification messages for trading
   
@@ -85,7 +85,7 @@ const tradingNotificationMessages: TradingNotificationMessages = {
 const handleTradingApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: DataradingNotificationMessages
+  errorMessageId: TradingNotificationMessages
 ) => {
   handleApiError(error, errorMessage);
   if (errorMessageId) {

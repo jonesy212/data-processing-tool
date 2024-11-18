@@ -86,7 +86,7 @@ const DocumentFormattingOptionsComponent: React.FC<
         Text Color:
         <input
           type="color"
-          value={tex   tColor}
+          value={textColor}
           onChange={handleTextColorChange}
         />
       </label>

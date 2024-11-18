@@ -1,27 +1,32 @@
 // Task.ts
 import { User } from "@/app/components/users/User";
-import { FC } from "react";
+import React from "react";
 import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
+import { TagsRecord } from "../../snapshots";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import { AllTypes } from "../../typings/PropTypes";
 import { Idea } from "../../users/Ideas";
+import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
-import { Data } from "../data/Data";
+import { BaseData, Data } from "../data/Data";
+import { K, Meta, T } from "../data/dataStoreMethods";
 import { PriorityTypeEnum, TaskStatus } from "../data/StatusType";
-import { Team, TeamDetails } from "../teams/Team";
-import { TaskMetadata } from './../../../configs/database/MetaDataOptions'
-import React from "react";
-import { TagsRecord } from "../../snapshots";
+import { TaskMetadata } from './../../../configs/database/MetaDataOptions';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
-export type TaskData = SupportedData<Task, Task>;
+export type TaskData = SupportedData<T, Meta>;
 
 // Remove the 'then' method from the Task interface
-interface Task extends Data, TaskMetadata<Task, UnifiedMetaDataOptions> {
+interface Task<
+  T extends  BaseData<T>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
+  > extends
+  TaskMetadata<T, K> {
   id: string;
   title: string;
   description: string;
-  name?: string | null;
   projectName?: string;
   assignedTo: User | User[] | null;
   assigneeId: User["id"];
@@ -33,21 +38,21 @@ interface Task extends Data, TaskMetadata<Task, UnifiedMetaDataOptions> {
   estimatedHours?: number | null;
   actualHours?: number | null;
   completionDate?: Date | null;
-  dependencies?: Task[] | null;
+  dependencies?: Task<T, K>[] | null;
   previouslyAssignedTo: User[];
   done: boolean;
-  // data: TaskData | undefined;
+  data: TaskData | undefined;
   [Symbol.iterator]?(): Iterator<any, any, undefined>;
   source: "user" | "system";
   some?: (
-    callbackfn: (value: Task, index: number, array: Task[]) => unknown,
+    callbackfn: (value: Task<T, K>, index: number, array: Task<T, K>[]) => unknown,
     thisArg?: any
   ) => boolean;
-  details?: DetailsItem<Task> | undefined;
+  details?: DetailsItem<BaseData<Data<Task<any>>>> | undefined;
   startDate: Date | undefined;
   endDate: Date | undefined;
   isActive: boolean;
-  tags?: TagsRecord
+  tags?: TagsRecord<T, K> | string[] | undefined;
   analysisType?: AnalysisTypeEnum;
   analysisResults?: any[];
   videoThumbnail?: string;
@@ -58,9 +63,12 @@ interface Task extends Data, TaskMetadata<Task, UnifiedMetaDataOptions> {
 }
 
 // using commong detais we genrate detais for components by mapping through the objects.
-const TaskDetails: React.FC<{ task: Task; completed: boolean }> = ({
+const TaskDetails = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>({
   task,
   completed,
+}: {
+  task: Task<T, K>;
+  completed: boolean;
 }) => (
   <CommonDetails
     data={{ id: task.id, completed }}
@@ -71,9 +79,10 @@ const TaskDetails: React.FC<{ task: Task; completed: boolean }> = ({
       description: task.description,
       status: task.status,
       participants: task.participants,
+      createdBy: task.createdBy,
       updatedAt: task.updatedAt,
       createdAt: task.createdAt,
-      startDate: task.createdAt,
+      startDate: task.startDate,
       uploadedAt: task.uploadedAt,
       type: task.type,
       tags: task.tags,
@@ -88,12 +97,22 @@ const TaskDetails: React.FC<{ task: Task; completed: boolean }> = ({
 );
 
 // Define the tasks data source as an object where keys are task IDs and values are task objects
-const tasksDataSource: Record<string, Task> = {
+const tasksDataSource: Record<string, Task<T, K>> = {
   "1": {
+    taskId: "",
+    metadataEntries: {},
+    apiEndpoint: "",
+    apiKey: "",
+    
+    timeout: "",
+    retryAttempts: 3,
+    meta: new Map<string, Snapshot<T, K>>(),
+    events: {},
+   
     id: "1",
     _id: "taskData",
-    phase: {} as Phase<Task>,
-    videoData: {} as VideoData<any, any>,
+    phase: {} as Phase<Task<T, K<T>>>,
+    videoData: {} as VideoData<T, K<T>>,
     ideas: {} as Idea[],
     timestamp: new Date(),
     category: "default",
@@ -115,7 +134,7 @@ const tasksDataSource: Record<string, Task> = {
     done: false,
     data: {} as TaskData,
     source: "user",
-    some: (callbackfn) => false,
+    some: (callbackfn: (value: Task<T, T>, index: number, array: Task<T, T>[]) => unknown, thisArg?: any) => false,
     startDate: new Date(),
     endDate: new Date(),
     isActive: true,
@@ -154,7 +173,7 @@ const tasksDataSource: Record<string, Task> = {
     videoThumbnail: "thumbnail.jpg",
     videoDuration: 60,
     videoUrl: "https://example.com/video",
-    details: {} as DetailsItem<Task>,
+    details: {} as DetailsItem<BaseData<T>>,
     [Symbol.iterator]: () => {
       return {
         next: () => {
@@ -162,7 +181,7 @@ const tasksDataSource: Record<string, Task> = {
             done: true,
             value: {
               _id: "taskData",
-              phase: {} as Phase<Task>,
+              phase: {} as Phase<Task<T, K<T>>>,
               videoData: {} as VideoData<any, any>,
             },
           };
@@ -170,7 +189,7 @@ const tasksDataSource: Record<string, Task> = {
       };
     },
   },
-  "2": {
+    "2": {
     id: "2",
     title: "Task 2",
     name: "Unique Task Identifier",
@@ -180,6 +199,27 @@ const tasksDataSource: Record<string, Task> = {
     dueDate: new Date(),
     payload: {},
     type: "bug",
+    taskId, taskName, 
+    metadataEntries: {
+      "file1": {
+        originalPath: "/path/to/file1",
+        alternatePaths: ["/alt/path1", "/alt/path2"],
+        author: "John Doe",
+        timestamp: new Date(),
+        fileType: "document",
+        title: "File 1 Title",
+        description: "Description of file 1",
+        keywords: ["keyword1", "keyword2"],
+        authors: ["Author 1", "Author 2"],
+        contributors: ["Contributor 1"],
+        publisher: "Publisher Name",
+        copyright: "2024",
+        license: "License Info",
+        links: ["http://example.com"],
+        tags: ["tag1", "tag2"]
+      }
+    }, apiEndpoint,
+    //  apiKey, timeout, retryAttempts, meta, events,
     status: TaskStatus.InProgress,
     priority: PriorityTypeEnum.Medium,
     estimatedHours: 5,
@@ -190,7 +230,7 @@ const tasksDataSource: Record<string, Task> = {
     done: false,
     data: {} as TaskData,
     source: "system",
-    some: (callbackfn) => false,
+    some: (callbackfn: (value: Task<T, T>, index: number, array: Task<T, T>[]) => unknown, thisArg?: any) => false,
     startDate: new Date(),
     endDate: new Date(),
     isActive: true,
@@ -239,7 +279,7 @@ const tasksDataSource: Record<string, Task> = {
             value: {
               _id: "taskData2",
 
-              phase: {} as Phase<Task>,
+              phase: {} as Phase<Task<T, K<T>>>,
               videoData: {} as VideoData<any, any>,
             },
           };
@@ -247,7 +287,7 @@ const tasksDataSource: Record<string, Task> = {
       };
     },
     _id: "taskData2",
-    phase: {} as Phase<Task>,
+    phase: {} as Phase<T, K<T>>,
     videoData: {} as VideoData<any, any>,
     ideas: {} as Idea[],
     timestamp: new Date(), // Add timestamp property

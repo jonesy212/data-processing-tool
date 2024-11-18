@@ -1,3 +1,4 @@
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { DEX } from '@/app/components/crypto/DEX';
 import { Exchange } from '@/app/components/crypto/Exchange';
 import { RealtimeUpdateCallback } from '@/app/components/hooks/commHooks/useRealtimeData';
@@ -5,20 +6,19 @@ import useRealtimeDextData from '@/app/components/hooks/commHooks/useRealtimeDex
 import useRealtimeExchangeData from '@/app/components/hooks/commHooks/useRealtimeExchangeData';
 import DEXData from '@/app/components/models/data/DEXData';
 import { ExchangeData } from '@/app/components/models/data/ExchangeData';
-import SnapshotStore  from '@/app/components/snapshots/SnapshotStore';
-import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
+import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { processExchangeData } from '../models/data/fetchExchangeData';
-import { RealtimeData, RealtimeDataItem } from '../models/realtime/RealtimeData';
-import { createSnapshotOptions, UpdateSnapshotPayload } from "./../snapshots/LocalStorageSnapshotStore";
-import { ExchangeEnum, DEXEnum } from "./../crypto/exchangeIntegration";
-import { BaseData, Data } from "../models/data/Data";
- import * as snapshotApi from '../../api/SnapshotApi'
-import { StatusType } from '../models/data/StatusType';
-import { updateSnapshot } from '../snapshots';
+import * as snapshotApi from '../../api/SnapshotApi';
+import { BaseData } from "../models/data/Data";
 import { K, T } from '../models/data/dataStoreMethods';
+import { processExchangeData } from '../models/data/fetchExchangeData';
+import { StatusType } from '../models/data/StatusType';
+import { RealtimeData, RealtimeDataItem } from '../models/realtime/RealtimeData';
+import { updateSnapshot } from '../snapshots';
+import { DEXEnum, ExchangeEnum } from "./../crypto/exchangeIntegration";
+import { createSnapshotOptions, UpdateSnapshotPayload } from "./../snapshots/LocalStorageSnapshotStore";
 // Define the price comparison component or function
 interface PriceComparisonProps {
   // Define your component props here
@@ -38,11 +38,11 @@ const RealTimePriceComparison: React.FC<PriceComparisonProps> = ({ key }) => {
   ];
 
   // Define a custom update callback function to process fetched data
-  const updateCallback: RealtimeUpdateCallback<RealtimeData, Data> = async (
+  const updateCallback: RealtimeUpdateCallback<RealtimeData,  BaseData<T>> = async (
     id: string,
-    data: SnapshotStore<RealtimeData, Data>,
+    data: SnapshotStore<RealtimeData,  BaseData<T>>,
     events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<RealtimeData, Data>,
+    snapshotStore: SnapshotStore<RealtimeData,  BaseData<T>>,
     dataItems: RealtimeData[]
   ) => {
     // Example: Log received data
@@ -111,7 +111,7 @@ const RealTimePriceComparison: React.FC<PriceComparisonProps> = ({ key }) => {
   // Fetch data from exchanges and DEXs using custom hooks
   useEffect(() => {
     // Fetch data from exchanges using the custom hook for exchange data
-    const { fetchExchangeData } = useRealtimeExchangeData<ExchangeData>(
+    const { fetchExchangeData } = useRealtimeExchangeData<ExchangeData<T, K>>(
       [], // Pass an empty initialData array
       updateCallback, // Pass the custom update callback
       processExchangeData,

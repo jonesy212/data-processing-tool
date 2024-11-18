@@ -1,9 +1,9 @@
-import { Data } from "../models/data/Data";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { BaseData } from '../data/Data';
 
 // Assume you have a way to get default values based on type U
-function getDefaultValueForField<T extends Data, Meta extends UnifiedMetaDataOptions, K extends Data = T>(
-    field: keyof SnapshotStoreConfig<T, Meta, K>
+function getDefaultValueForField<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+    field: keyof SnapshotStoreConfig<T, K>
   ): T | K | string | number | boolean | null {
     switch (field) {
       case 'id':

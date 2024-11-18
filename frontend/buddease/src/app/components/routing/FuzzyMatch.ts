@@ -5,15 +5,18 @@ import { useAuth } from "../auth/AuthContext";
 import { processTextWithSpaCy } from "../intelligence/AutoGPTSpaCyIntegration";
 import { AllTypes } from "../typings/PropTypes";
 
-interface BaseEntity { id: string | number;
-  name: string | undefined;
+interface BaseEntity {
+  id: string | number;
+  name?: string | undefined;
   description?: string | null | undefined;
-  createdAt?: string | Date;
-  createdBy?: string;
+  createdAt: string | Date | undefined;
+  createdBy: string;
   updatedBy?: string;
   filePathOrUrl?: string;
   source?: string;
 }
+
+
 // Define a type for your entities
 interface Entity extends BaseEntity {
  
@@ -63,9 +66,21 @@ export const fuzzyMatchEntities = async (
 };
 
 const entities: Entity[] = [
-  { id: 1, name: "Apple Inc.", description: "Tech company", source: "local", type: "company" },
-  { id: 2, name: "Microsoft Corporation", description: "Tech company", source: "global", type: "company" },
-  { id: 3, name: "Project X", description: "Development project", source: "local", type: "project" },
+  {
+    id: 1, name: "Apple Inc.", description: "Tech company", source: "local", type: "company",
+    createdBy: undefined,
+    createdAt: undefined
+  },
+  {
+    id: 2, name: "Microsoft Corporation", description: "Tech company", source: "global", type: "company",
+    createdBy: undefined,
+    createdAt: undefined
+  },
+  {
+    id: 3, name: "Project X", description: "Development project", source: "local", type: "project",
+    createdBy: undefined,
+    createdAt: undefined
+  },
 ];
 
 // Query for fuzzy matching with NLP processing
