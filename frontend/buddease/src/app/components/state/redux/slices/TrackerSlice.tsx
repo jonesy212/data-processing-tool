@@ -25,7 +25,7 @@ export const trackerManagerSlice = createSlice({
     // Example: Update tracker
     updateTracker: (state, action: PayloadAction<Tracker>) => {
       const index = state.trackers.findIndex(
-        (tracker) => tracker.id === action.payload.id.toString()
+        (tracker: Tracker) => tracker.id === action.payload.id.toString()
       );
       if (index !== -1) {
         state.trackers[index] = action.payload;
@@ -35,8 +35,7 @@ export const trackerManagerSlice = createSlice({
     // Example: Remove tracker
     removeTracker: (state, action: PayloadAction<number>) => {
       state.trackers = state.trackers.filter(
-        (tracker) => tracker.id.toString() !== action.payload.toString()
-      );
+        (tracker: Tracker) => tracker.id.toString() !== action.payload.toString()      );
     },
 
     // Implement logic to create a milestone for tracking project progress

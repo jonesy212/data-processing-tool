@@ -34,7 +34,7 @@ import {
 } from "../components/hooks/userInterface/ThemeCustomization";
 import { LogData } from "../components/models/LogData";
 import ContentItemComponent from "../components/models/content/ContentItem";
-import { Data } from "../components/models/data/Data";
+import { BaseData, Data } from "../components/models/data/Data";
 import OnboardingComponent from "../components/onboarding/OnboardingComponent";
 import { CustomPhaseHooks, Phase } from "../components/phases/Phase";
 import undoLastAction from "../components/projects/projectManagement/ProjectManager";
@@ -85,6 +85,8 @@ import steps from "../components/phases/steps/steps";
 import DetermineFileType from "../configs/DetermineFileType";
 import FilePreview from "../components/documents/FilePreview";
 import { authProvider } from "../components/interfaces/provider/authProviderInstance";
+import { StructuredMetadata } from "../configs/StructuredMetadata";
+import { createLastUpdatedWithVersion, createLatestVersion } from "../components/versions/createLatestVersion";
 
 interface ExtendedAppProps extends AppProps {
   brandingSettings: BrandingSettings;
@@ -96,12 +98,11 @@ interface ExtendedAppProps extends AppProps {
     generateUtilityFunctions: () => void;
   };
   phases: Phase[];
-  contentItem: DetailsItem<Data>;
+  contentItem: DetailsItem<BaseData>;
 }
 
 export const {
   themeConfig,
-
   setThemeConfig,
   setPrimaryColor,
   setSecondaryColor,
@@ -121,14 +122,74 @@ const phases: Phase[] = [
     subPhases: ["Research", "Planning", "Design"],
     component: {} as (props: {}, context?: any) => React.ReactElement,
     duration: 100,
-    hooks: {} as CustomPhaseHooks,
+    hooks: {} as CustomPhaseHooks<T, K>,
     data: undefined,
     lessons: [] as Lesson[],
+    description: "", label: {
+      text: "",
+      color: "#1a1a1a"
+    },
+    currentMeta: {
+      metadataEntries: {},
+      version: {},
+      lastUpdated: createLastUpdatedWithVersion(),
+      isActive: false,
+      config: {},
+      permissions: [],
+      customFields: {},
+      versionData: [],
+      latestVersion: createLatestVersion({
+        id: 1,
+        name: "Initial Release", // Original name, may include phase-level specifics if needed
+        versionNumber: "1.0.0",
+        userId: "user123", // User initiating the phase (can differ in different phases)
+        content: "Initial version of the content, tailored for Phase 1.", // Context-specific content
+        metadata: {
+          author: "Author Name",
+          timestamp: new Date(), // Phase-level timestamp for creation
+        },
+        releaseDate: "2024-11-24", // Original release date may now reflect a phase-specific release
+        major: 1, // Phase-level semantic versioning
+        minor: 0,
+        patch: 0,
+        isPublished: true, // Contextualized by Phase completion stage
+        publishedAt: new Date(), // Reflects Phase-specific publication event
+        source: "Phase 1 Generated Content", // Adjusted source for Phase
+        status: "Active", // Reflects if this version is still valid for this phase
+        comments: [
+          {
+            id: "1",
+            text: "Initial release completed under Phase 1.", // Context-specific to phase completion
+            timestamp: new Date(),
+          },
+        ],
+        workspaceName: "Phase 1 Workspace", // The workspace used during this phase
+      }),
+      id: "",
+      apiEndpoint: "",
+      apiKey: undefined,
+      timeout: 0,
+      retryAttempts: 0,
+      name: "",
+      category: "",
+      timestamp: undefined,
+      createdBy: "",
+      tags: [],
+      metadata: {},
+      initialState: undefined,
+      meta: {},
+      events: {}
+    }, currentMetadata: {
+      area: "",
+      currentMeta: undefined,
+      metadataEntries: {}
+    },
   },
   // Add more phases
 ];
 
-const contentItem: DetailsItem<Data> = {  _id: uuidVFour(),
+const contentItem: DetailsItem<Data<BaseData>> = {
+  _id: uuidVFour(),
   id: "1",
   title: "Sample Content",
   description: "This is a sample content item.",
@@ -250,7 +311,10 @@ async function MyApp({
       rsvpStatus: "yes",
       participants: [],
       teamMemberId: "",
-      meta: {}
+      meta: {},
+      title: "",
+      currentMeta: undefined,
+      currentMetadata: undefined
     };
 
     // Update notifications state by appending the new notification
@@ -308,7 +372,46 @@ async function MyApp({
     rollbackToPreviousPhase();
 
     // Example: Undo the last action
-    undoLastAction({}, utilities);
+    undoLastAction({
+      storeProps: {
+        storeId: "",
+        category: undefined,
+        name: "",
+        criteria: undefined,
+        timestamp: undefined,
+        eventRecords: undefined,
+        snapshotStoreConfig: undefined,
+        schema: undefined,
+        options: undefined,
+        config: undefined,
+        initialState: undefined,
+        operation: {
+          operationType: "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/snapshots/SnapshotActions".CreateSnapshot,
+          query: undefined,
+          action: undefined,
+          criteria: undefined,
+          description: undefined
+        },
+        id: undefined,
+        snapshots: undefined,
+        message: undefined,
+        state: undefined,
+        existingConfigs: undefined,
+        description: undefined,
+        priority: undefined,
+        version: undefined,
+        additionalData: undefined,
+        expirationDate: undefined,
+        localStorage: undefined,
+        payload: undefined,
+        callback: function (data: ProjectData<T, K, StructuredMetadata<T, K>>): void {
+          throw new Error("Function not implemented.");
+        },
+        storeProps: undefined,
+        endpointCategory: "",
+        findIndex: undefined
+      }
+    }, utilities);
   };
 
   const getNextPhase = (currentPhase: Phase): Phase => {

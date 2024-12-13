@@ -32,6 +32,7 @@ interface HistoryEntry {
   id: string;
   timestamp: number;
   data: any; // Data representing the state or action captured in the history entry
+  changes: string[];
 }
 
 interface HistoryStore {
@@ -136,6 +137,7 @@ const historyManagerStore = (): HistoryStore => {
       id: uuidv4(),
       timestamp: Date.now(),
       data: data,
+      changes: []
     };
     setHistory([...history, newEntry]);
   };
@@ -333,6 +335,8 @@ const historyManagerStore = (): HistoryStore => {
           bannerUrl: profile.bannerUrl,
           roles: profile.roles,
           storeId: profile.storeId,
+          currentMetadata: profile.currentMetadata, 
+          currentMeta: profile.currentMeta
           // Add more properties as needed
         }));
 

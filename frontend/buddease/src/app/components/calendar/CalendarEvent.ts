@@ -1,10 +1,11 @@
-import { Label } from '@/app/components/projects/branding/BrandingSettings';
 //CalendarEvent.ts
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
 import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CalendarEventWithCriteria } from "@/app/pages/searchs/FilterCriteria";
 import { DocumentOptions } from "../documents/DocumentOptions";
 import { CommonData } from "../models/CommonDetails";
-import { BaseData, Data } from "../models/data/Data";
+import { BaseData } from "../models/data/Data";
 import { Team } from "../models/teams/Team";
 import { Member } from "../models/teams/TeamMembers";
 import { Phase } from "../phases/Phase";
@@ -14,10 +15,9 @@ import CommonEvent from "../state/stores/CommonEvent";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { NotificationType } from "../support/NotificationContext";
 import { Attendee } from "./Attendee";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 interface CalendarEvent<
-  T extends  BaseData<T> = BaseData,
+  T extends  BaseData<any> = BaseData,
   K extends T = T>
   extends CommonEvent,
     CommonData<T, K> {
@@ -47,6 +47,7 @@ interface CalendarEvent<
   // Add more properties if needed
   status?: AllStatus;
   isCompleted?: boolean;
+  isActive?: boolean;
   rsvpStatus: "yes" | "no" | "maybe" | "notResponded";
   priority?: AllStatus;
   location?: string;
@@ -72,7 +73,7 @@ interface CalendarEvent<
   >;
 
   then?: <
-    T extends BaseData<T>,
+    T extends BaseData<any>,
     K extends T = T,
     Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     callback: (newData: Snapshot<T, K>) => void
@@ -93,8 +94,10 @@ const calendarEvent: CalendarEvent = {
   highlights: [],
   files: [],
   label: {} as Label,
-  createdBy: undefined
+  createdBy: undefined,
+  currentMeta: currentMeta, 
+  currentMetadata: currentMetadata
 }
 
+export { calendarEvent };
 export type { CalendarEvent };
-export { calendarEvent }

@@ -8,7 +8,9 @@ interface BasePermissions {
 // Permission.ts
 interface Permission {
   userId: string;
-  permissions: UserPermissions; // Use UserPermissions directly here
+  permissions: UserPermissions; // Using UserPermissions as the structure
+  rolePermissions?: Permissions; // Optionally include role-specific permissions
+  permissionType: 'read' | 'write'
 }
 
 interface EncryptionSetting {
@@ -156,6 +158,7 @@ interface UserPermissions {
   developer?: DeveloperPermissions;
   blockchain?: BlockchainPermissions;
   documentEditing?: DocumentEditingPermissions;
+
 }
 
 

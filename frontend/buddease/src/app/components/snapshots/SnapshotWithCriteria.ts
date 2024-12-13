@@ -14,7 +14,7 @@ import { NotificationType } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 import { Payload, Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
 import { handleSnapshotSuccess } from "./snapshotHandlers";
-import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
+import SnapshotStore from "./SnapshotStore";
 
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
@@ -29,13 +29,15 @@ import { SnapshotEvents } from './SnapshotEvents';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 // Define BaseData interface
-interface TagsRecord<T extends BaseData<T>, K extends T = T> {
+interface TagsRecord<
+  T extends BaseData<any> = BaseData<any>,
+  K extends T = T> {
   [key: string]: Tag<T, K>;
 }
 
 // Define SnapshotWithCriteria type
 type SnapshotWithCriteria<
-  T extends  BaseData<T>, 
+  T extends  BaseData<any> = BaseData<any, any>, 
   K extends T = T
   > = Snapshot<T, K> & Omit<SearchCriteria, 'analysisType'> & {
   criteria: FilterCriteria;
@@ -43,13 +45,14 @@ type SnapshotWithCriteria<
   events?: CombinedEvents<T, K>;  // Update as needed based on your schema
   subscribers?: SubscriberCollection<T, K>[];  // Update as needed based on your schema
   tags?: TagsRecord<T, K> | string[] | undefined;   // Update as needed based on your schema
-  timestamp: string | number | Date | undefined
+  timestamp: string | number | Date | undefined;
+  snapshots?: Snapshots<BaseData<any, any, StructuredMetadata<any, any>>>; // Ensure correct snapshot type
 };
 
 
 
 export class SnapshotStoreWithCriteria<
-    T extends  BaseData<T>,  
+    T extends  BaseData<any>,  
     K extends T = T,  
     Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends SnapshotStore<T, K> {
   config: Promise<SnapshotStoreConfig<T, K> | null>
@@ -61,7 +64,7 @@ export class SnapshotStoreWithCriteria<
     options: SnapshotStoreOptions<T, K>,
     category: symbol | string | Category | undefined,
     config: Promise<SnapshotStoreConfig<T, K> | null>,
-    operation: SnapshotOperation,
+    operation: SnapshotOperation<T, K>,
     expirationDate: Date,
     payload: Payload,
     callback: (data: T) => void,
@@ -472,7 +475,7 @@ const exampleSnapshotStore: SnapshotStore<BaseData, BaseData> = {
   getDataStoreMethods: undefined,
   getDelegate: undefined,
   determineCategory: undefined,
-  determinePrefix: function <T extends  BaseData<T>>(
+  determinePrefix: function <T extends  BaseData<any>>(
     snapshot: T | null | undefined, category: string
   ): string {
     throw new Error("Function not implemented.");

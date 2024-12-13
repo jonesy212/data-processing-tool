@@ -1,11 +1,14 @@
 import React, { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
 import { DetailsItem } from '../../state/stores/DetailsListStore';
-import { Data } from './Data';
+import { Data, BaseData } from './Data';
 import { DocumentMetadata } from '@/app/components/state/stores/DocumentStore'
+import { DocumentData } from '../../documents/DocumentBuilder';
+import { DocumentContent } from '../CommonData';
+
 // Define the shape of your context data
 interface DetailsContextData {
-  detailsData: DetailsItem<Data<DocumentData, DocumentMetadata>>[]; // Use concrete types
-  updateDetailsData: Dispatch<SetStateAction<DetailsItem<Data<DocumentData, DocumentMetadata>>[]>>;
+  detailsData: DetailsItem<BaseData<DocumentData<T, K, Meta>, DocumentMetadata>>[]; // Use concrete types
+  updateDetailsData: Dispatch<SetStateAction<DetailsItem<BaseData<DocumentData, DocumentMetadata>>[]>>;
 
 }
 

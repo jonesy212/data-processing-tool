@@ -1,17 +1,19 @@
 // MetadataManager.tsx
-import { BaseMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-
 let fs: any;
 if (typeof window === 'undefined') {
   fs = require('fs');
 }
 
-import * as path from 'path'
+import { Snapshot } from '@/app/components/snapshots/LocalStorageSnapshotStore';
+import { version } from '@/app/components/versions/Version';
+import { BaseMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimmensions';
+import * as path from 'path';
 import * as React from 'react';
 import useErrorHandling from '../components/hooks/useErrorHandling';
+import { K, T } from '../components/models/data/dataStoreMethods';
 import determineFileType from './DetermineFileType';
 import { StructuredMetadata, getStructureMetadataPath, useUndoRedo } from './StructuredMetadata';
-import { Snapshot } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 
 
 // Define any extended metadata type if needed
@@ -20,19 +22,36 @@ interface ExtendedMetadata extends BaseMetadata {
 }
 
 
+
+const area = fetchUserAreaDimensions().toString()
+const metadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(area)
+const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
+
 const initialState: StructuredMetadata<BaseMetadata, UnifiedMetaDataOptions<BaseMetadata>> = {
   name: 'metadata',
   id: '',
   category: '',
   timestamp: '',
   createdBy: '',
-  tags: [],
-  metadata: {},
-  initialState: '',
-  meta: new Map<
+  tags: {},
+  metadata: {
+    area: area, 
+    currentMeta: currentMeta,
+    metadataEntries: {}
+  },
+  initialState: {},
+  version: version,
+
+  lastUpdated: new Date(),
+  isActive: false,
+  config: {},
+ 
+
+  mappedMeta: new Map<
     string,
     Snapshot<BaseMetadata, UnifiedMetaDataOptions<BaseMetadata>, StructuredMetadata<BaseMetadata, UnifiedMetaDataOptions<BaseMetadata>>, never>
   >(),
+  meta: {} as StructuredMetadata<BaseMetadata<T>, UnifiedMetaDataOptions<BaseMetadata<T>, BaseMetadata<T>, StructuredMetadata<BaseMetadata<T>, BaseMetadata<T>>, never>>,
   events: { eventRecords: {} },
   description: 'Metadata description',
   metadataEntries: {},
@@ -40,8 +59,10 @@ const initialState: StructuredMetadata<BaseMetadata, UnifiedMetaDataOptions<Base
   apiKey: '',
   timeout: 0,
   retryAttempts: 0,
-};
+  childIds: [], relatedData: []
 
+
+};
 // Define your metadata management component
 const MetadataManager: React.FC = () => {
   const { state, setState, undo, redo } = useUndoRedo(initialState);

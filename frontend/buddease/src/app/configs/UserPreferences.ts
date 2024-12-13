@@ -5,7 +5,6 @@ import { NotificationPreferences } from "../components/communications/chat/ChatS
 import FileData from "../components/models/data/FileData";
 import FolderData from "../components/models/data/FolderData";
 import { CommonTrackerProps } from "../components/models/tracker/Tracker";
-import { CryptoNotificationTypes } from "../components/settings/NotificationChannels";
 import { PrivacySettings } from "../components/settings/PrivacySettings";
 import { NotificationData } from "../components/support/NofiticationsSlice";
 import { User } from "../components/users/User";
@@ -123,7 +122,15 @@ interface UserPreferences extends Partial<CommonTrackerProps> {
     teamIncentivesEnabled?: boolean; // Whether team incentives are enabled
     revenueContributionEnabled?: boolean; // Whether revenue contribution is enabled
   };
-  refreshUI: () => void,
+  refreshUI: (updates: {
+    stroke?: { width: number; color: string };
+    strokeWidth?: number;
+    fillColor?: string;
+    isFlippedX?: boolean;
+    isFlippedY?: boolean;
+    x?: number;
+    y?: number;
+  }) => void,
   // Other Preferences
   otherPreferences?: any; // Placeholder for any other preferences
 }
@@ -481,8 +488,8 @@ const getUserPreferences = async (): Promise<UserPreferences> => {
         },
         strokeWidth: 3,
         fillColor: "#FFFFFF",
-        flippedX: false,
-        flippedY: false,
+        isFlippedX: false,
+        isFlippedY: false,
         x: 0,
         y: 0,
         // Method to update appearance by modifying stroke width/color and fill color
@@ -514,7 +521,7 @@ getUserPreferences()
   });
 
 export { getUserPreferences, userPreferences };
-export type { UserPreferences, CryptoPreferences };
+export type { CryptoPreferences, UserPreferences };
 
 
 

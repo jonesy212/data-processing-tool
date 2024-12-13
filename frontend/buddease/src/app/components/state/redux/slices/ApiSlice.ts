@@ -1,8 +1,10 @@
+import { createVersionInfo } from "@/app/components/versions/createVersionInfo";
+import { Draft, produce  } from "immer";
 import CommunicationAPI from "@/app/api/CommunicationAPI";
 import { CrossCulturalCommunication, Language, TimeZone } from "@/app/components/communications/Language";
 import { DataAnalysisTool, Decision, VisualizationResult } from "@/app/components/interfaces/options/CollaborationOptions";
 import { CloudStorageProvider } from "@/app/components/interfaces/provider/CloudStorageProvider";
-import { Data } from "@/app/components/models/data/Data";
+import { BaseData, Data } from "@/app/components/models/data/Data";
 import { PriorityTypeEnum } from "@/app/components/models/data/StatusType";
 import { Phase } from "@/app/components/phases/Phase";
 import { AnalyticsTool } from "@/app/components/projects/DataAnalysisPhase/AnalyticsTool";
@@ -16,6 +18,15 @@ import { useDispatch } from "react-redux";
 import { DetailsItem } from "../../stores/DetailsListStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { addTask } from "./TaskSlice";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { Task } from "@/app/components/models/tasks/Task";
+import { T, K } from "@/app/components/models/data/dataStoreMethods";
+import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { fetchUserAreaDimensions, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { useMetadata } from "@/app/configs/useMetadata";
+import Version, { version } from "@/app/components/versions/Version";
+import { VersionHistory } from "@/app/components/versions/VersionData";
+import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 
 interface CommunityEvent {
   id: string;
@@ -142,7 +153,23 @@ const initialState: ApiManagerState = {
   analyticsTools: undefined
 };
 
+
+
 const dispatch = useDispatch();
+
+
+const area = fetchUserAreaDimensions().toString()
+const currentMetadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(area)
+
+const initializedState: InitializedState<T, K<T>> = {
+  metadata: currentMetadata,
+  initialized: false,
+  initializedState: initialState,
+  initializedStateType: "ApiManagerState"
+}
+
+const mutableVersion = version as WritableDraft<Version>; // Cast to WritableDraft
+  
 export const useApiManagerSlice = createSlice({
   name: "apiManager",
   initialState,
@@ -186,8 +213,11 @@ export const useApiManagerSlice = createSlice({
     },
 
 
-    enableRealTimeCollaboration: (
-      state,
+    enableRealTimeCollaboration: <
+      T extends BaseData<any> = BaseData<any, any>, 
+      K extends T = T
+    >(
+      state: Draft<ApiManagerState>,
       action: PayloadAction<void>
     ) => {
       // logic to enable real-time collaboration
@@ -210,16 +240,46 @@ export const useApiManagerSlice = createSlice({
         endDate: undefined,
         isActive: false,
         tags: {},
+        version: mutableVersion,
+        lastUpdated: {} as WritableDraft<VersionHistory>,
+        config: {} as WritableDraft<Record<string, any>>,
+        permissions: [],
+
         [Symbol.iterator]: function (): Iterator<any, any, undefined> {
           throw new Error("Function not implemented.");
         },
-        getData: function (): Promise<SnapshotStore<Snapshot<Data, Data>>[]> {
+        getData: function (): Promise<Task<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K>>> {
           throw new Error("Function not implemented.");
-        }
+        },
+        taskId: "",
+        taskName: "",
+        _id: "",
+        createdBy: "",
+        timestamp: undefined,
+        metadataEntries: {},
+        customFields: {},
+        versionData: [],
+        latestVersion: createLatestVersion(),
+        apiEndpoint: "",
+        apiKey: undefined,
+        timeout: 0,
+        retryAttempts: 0,
+        name: "",
+        category: "",
+        metadata: {} as WritableDraft<UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K>, never>>,
+        initialState: initializedState,
+        meta: undefined,
+        mappedSnapshot: undefined,
+        events: undefined,
+        participants: [],
+        uploadedAt: undefined,
+        phase: undefined,
+        currentMeta: undefined,
+        currentMetadata: undefined,
+        label: undefined
       }));
       state.realTimeCollaboration = true;
     },
-
 
     // New reducers
     disableRealTimeCollaboration: (state) => {
@@ -480,11 +540,12 @@ trackRevenue: (state, action: PayloadAction<Revenue>) => {
     ) => {
       state.rewardParameters = action.payload;
     },
+
     managePermissions: (
       state,
       action: PayloadAction<Permission>
     ) => {
-      const { userId, permissions } = action.payload;
+      const { userId, permissions, permissionType } = action.payload;
       const userIndex =
         state.permissions?.findIndex((p: Permission) => p.userId === userId) ?? -1;
     
@@ -502,7 +563,7 @@ trackRevenue: (state, action: PayloadAction<Revenue>) => {
         if (!newState.permissions) {
           newState.permissions = [];
         }
-        newState.permissions.push({ userId, permissions });
+        newState.permissions.push({ userId, permissions, permissionType });
       }
     
       return newState;
@@ -666,8 +727,25 @@ export const {
 } = useApiManagerSlice.actions;
 
 // Extend the method to mark tasks as complete
-// Extend the method to mark tasks as complete
+function convertToWritableMetadata<
+  T extends BaseData<any>,
+  K extends T
+>(
+  metadata: UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, never>
+): WritableDraft<UnifiedMetaDataOptions<BaseData<any>, BaseData<any>, StructuredMetadata<any>, never>> {
+  const mutableMetadata: WritableDraft<UnifiedMetaDataOptions<BaseData<any>, BaseData<any>, StructuredMetadata<any>, never>> = {
+    ...metadata,
+    childIds: metadata.childIds?.map((child) => ({ ...child } as WritableDraft<BaseData<any>>)),
+  };
+
+  return mutableMetadata;
+}
+
 export const markTaskAsComplete = (taskId: string, title: string) => async (dispatch: any) => {
+   // Assuming `version` is the current immutable version object
+  const mutableMetadata = convertToWritableMetadata(currentMetadata);
+
+
   dispatch(addTask({
     id: taskId,
     title: title,
@@ -685,7 +763,18 @@ export const markTaskAsComplete = (taskId: string, title: string) => async (disp
     endDate: undefined,
     isActive: false,
     tags: {},
-  }));
+    _id: "",
+    timestamp: new Date(),
+    initialState: "",
+    createdBy: "",
+   
+    category: "",
+    name: "",
+    metadata: mutableMetadata,
+    version: mutableVersion,
+ 
+    })
+  );
 };
 
 
@@ -708,6 +797,39 @@ export const markTodoAsComplete = (todoId: string, title: string) => async (disp
     endDate: undefined,
     isActive: false,
     tags: {},
+    getData: function (): Promise<Task<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>>> {
+      throw new Error("Function not implemented.");
+    },
+    _id: "",
+    timestamp: undefined,
+    category: "",
+    createdBy: "",
+    name: "",
+    metadata: undefined,
+    initialState: undefined,
+    meta: undefined,
+    permissions: [],
+    taskId: "",
+    taskName: "",
+    metadataEntries: undefined,
+    version: undefined,
+    lastUpdated: undefined,
+    config: undefined,
+    customFields: undefined,
+    versionData: [],
+    latestVersion: undefined,
+    apiEndpoint: "",
+    apiKey: undefined,
+    timeout: 0,
+    retryAttempts: 0,
+    mappedSnapshot: undefined,
+    events: undefined,
+    participants: [],
+    uploadedAt: undefined,
+    phase: undefined,
+    currentMeta: undefined,
+    currentMetadata: undefined,
+    label: undefined
   }));
 };
 

@@ -8,11 +8,13 @@ import {
   import axiosInstance from "./axiosInstance";
   import headersConfig from "./headers/HeadersConfig";
   import { endpoints } from './endpointConfigurations';
+import { User } from "../components/users/User";
   
   // Define API notification messages for user fetch operations
   const userApiNotificationMessages = {
     FETCH_USERS_SUCCESS: "Users fetched successfully",
     FETCH_USERS_ERROR: "Failed to fetch users",
+    FETCH_USER_ERROR: "Failed to fetch user"
   };
   
   type UserApiNotificationKeys = keyof typeof userApiNotificationMessages;
@@ -35,7 +37,10 @@ const handleUserApiErrorAndNotify = (
       "UserError" as NotificationTypeEnum
     );
   }
-};  // Fetch user IDs from the database
+};
+
+
+// Fetch user IDs from the database
   const fetchUserIdsFromDatabase = async (taskId: string): Promise<string[]> => {
     try {
       const response = await axiosInstance.get(`${endpoints.data.users}/task/${taskId}`, {
@@ -56,6 +61,28 @@ const handleUserApiErrorAndNotify = (
     }
   };
   
+
+  const fetchUserFromDatabase = async (userId: string): Promise<User | null> => {
+    try {
+      const response = await axiosInstance.get(`${endpoints.data.user}/${userId}`, {
+        headers: headersConfig,
+      });
+  
+      if (!response.data) return null;
+  
+      // Assume the API response directly maps to the User interface
+      return response.data as User;
+    } catch (error) {
+      console.error(`Error fetching user with ID ${userId}:`, error);
+      handleUserApiErrorAndNotify(
+        error as AxiosError<unknown>,
+        "Failed to fetch user details",
+        "FETCH_USER_ERROR"
+      );
+      return null; // Return null if the user is not found or an error occurs
+    }
+  };
+  
   // Exporting the function to use in other parts of the application
-  export { fetchUserIdsFromDatabase };
+  export { fetchUserIdsFromDatabase, fetchUserFromDatabase };
   

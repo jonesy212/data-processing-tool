@@ -459,7 +459,7 @@ export const userManagerSlice = createSlice({
       action: PayloadAction<{
         userId: string;
         projectId: string;
-        collaborators: string[];
+        collaborators: Collaborator[];
       }>
     ) => {
       const { userId, projectId, collaborators } = action.payload;

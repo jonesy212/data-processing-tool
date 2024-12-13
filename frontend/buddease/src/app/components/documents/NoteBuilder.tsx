@@ -3,7 +3,7 @@ import { Editor, EditorState, RichUtils } from "draft-js";
 import "draft-js/dist/Draft.css";
 import { NoteAttachment, NoteData, NoteStatus, Change, NoteOptions } from "./NoteData"; // Assuming you have a NoteData interface
 import { addNoteAPI, updateNoteAPI } from "@/app/api/ApiNote";
-import { Attachment } from "./Attachment/attachment";
+import { Attachment } from '@/app/components/documents/Attachment/attachment''
 import Version from "../versions/Version";
 import { NoteVersion } from './NoteData'
 import { Collaborator } from "../models/teams/TeamMembers";

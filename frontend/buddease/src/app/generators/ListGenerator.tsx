@@ -1,14 +1,13 @@
 import { BaseData } from '@/app/components/models/data/Data';
-import React from "react";
 import DetailsListItem, { AllProperties } from "../components/models/data/DetailsListItem";
 import { DetailsItem } from "../components/state/stores/DetailsListStore";
 import { StructuredMetadata } from "../configs/StructuredMetadata";
 
 // Define a new type for DetailsItem with optional properties
-type DetailsItemCommon<T extends BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = DetailsItem<Partial<AllProperties<T, K>>>;
+type DetailsItemCommon<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = DetailsItem<Partial<AllProperties<T, K>>>;
 
 interface ListGeneratorProps<
-  T extends BaseData<T>,
+  T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > {
@@ -17,7 +16,7 @@ interface ListGeneratorProps<
 }
 
 const ListGenerator = <
-  T extends BaseData<T>, 
+  T extends BaseData<any>, 
 K extends T = T, 
 Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >({

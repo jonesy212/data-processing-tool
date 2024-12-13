@@ -1,5 +1,6 @@
 import { SnapshotData } from '@/app/components/snapshots';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
@@ -14,7 +15,7 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 
 // // SnapshotStoreSubset.ts
-interface SnapshotStoreSubset<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface SnapshotStoreSubset<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   snapshotId: string | null;
   taskIdToAssign: Snapshot<T, K> | undefined;
 
@@ -57,7 +58,7 @@ interface SnapshotStoreSubset<T extends  BaseData<T>, K extends T = T, Meta exte
   createSnapshotFailure: (snapshot: Snapshot<T, K>, error: any) => Promise<void>;
 
   // Updates multiple snapshots and returns a result.
-  updateSnapshots: (snapshots: Snapshots<T>) => Promise<any>;
+  updateSnapshots: (snapshots: Snapshots<T, K>) => Promise<any>;
 
   // Called when a snapshot update is successful.
   updateSnapshotSuccess: (
@@ -125,13 +126,13 @@ interface SnapshotStoreSubset<T extends  BaseData<T>, K extends T = T, Meta exte
   setSnapshot: (snapshot: Snapshot<T, K>) => void;
 
   // Sets multiple snapshots.
-  setSnapshots: (snapshots: Snapshots<T>) => void;
+  setSnapshots: (snapshots: Snapshots<T, K>) => void;
 
   // Clears a snapshot by ID.
   clearSnapshot: (snapshotId: string) => void;
 
   // Merges multiple snapshots into one.
-  mergeSnapshots: (snapshots: Snapshots<T>) => void;
+  mergeSnapshots: (snapshots: Snapshots<T, K>) => void;
 
   // Reduces a collection of snapshots to a single value.
   reduceSnapshots: <U>(callback: (acc: U, snapshot: Snapshot<T, K>) => U, initialValue: U) => U;
@@ -176,16 +177,16 @@ interface SnapshotStoreSubset<T extends  BaseData<T>, K extends T = T, Meta exte
   getSnapshot: (id: string) => Snapshot<T, K> | undefined;
 
   // Gets snapshots with optional category and filter.
-  getSnapshots: (category?: string, filter?: (snapshot: Snapshot<T, K>) => boolean) => Promise<Snapshots<T>>;
+  getSnapshots: (category?: string, filter?: (snapshot: Snapshot<T, K>) => boolean) => Promise<Snapshots<T, K>>;
 
   // Gets all snapshots with optional filter.
-  getAllSnapshots: (filter?: (snapshot: Snapshot<T, K>) => boolean) => Promise<Snapshots<T>>;
+  getAllSnapshots: (filter?: (snapshot: Snapshot<T, K>) => boolean) => Promise<Snapshots<T, K>>;
 
   // Generates a unique ID.
   generateId: () => string;
 
   // Batch fetches snapshots.
-  batchFetchSnapshots: () => Promise<Snapshots<T>>;
+  batchFetchSnapshots: () => Promise<Snapshots<T, K>>;
 
   // Requests to batch take snapshots.
   batchTakeSnapshotsRequest: () => Promise<void>;
@@ -194,13 +195,13 @@ interface SnapshotStoreSubset<T extends  BaseData<T>, K extends T = T, Meta exte
   batchUpdateSnapshotsRequest: () => Promise<void>;
 
   // Called when batch fetching snapshots succeeds.
-  batchFetchSnapshotsSuccess: (snapshots: Snapshots<T>) => void;
+  batchFetchSnapshotsSuccess: (snapshots: Snapshots<T, K>) => void;
 
   // Called when batch fetching snapshots fails.
   batchFetchSnapshotsFailure: (error: any) => void;
 
   // Called when batch updating snapshots succeeds.
-  batchUpdateSnapshotsSuccess: (snapshots: Snapshots<T>) => void;
+  batchUpdateSnapshotsSuccess: (snapshots: Snapshots<T, K>) => void;
 
   // Called when batch updating snapshots fails.
   batchUpdateSnapshotsFailure: (error: any) => void;

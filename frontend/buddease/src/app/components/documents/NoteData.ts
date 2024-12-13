@@ -7,6 +7,8 @@ import { Progress } from "../models/tracker/ProgressBar";
 import Version from "../versions/Version";
 
 import {CommonAnimationOptions} from './SharedDocumentProps'
+import { BaseData } from "../models/data/Data";
+import { Attachment } from '@/app/components/documents/Attachment/attachment''
 
 export interface Change {
   id: number;
@@ -30,7 +32,11 @@ interface Highlight {
   // Additional properties as needed
 }
 
-export interface NoteData {
+export interface NoteData<
+  T extends BaseData<any> = BaseData<any, any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> 
+  extends BaseData<T, K> {
   id: number;
   title: string;
   content: string;
@@ -46,8 +52,8 @@ export interface NoteData {
   folderPath: string;
   previousContent?: string;
   currentContent?: string;
-  previousMetadata: StructuredMetadata;
-  currentMetadata: StructuredMetadata;
+  previousMetadata: StructuredMetadata<T, K>;
+  currentMetadata: StructuredMetadata<T, K>;
   accessHistory: any[];
   lastModifiedDate: Date;
   version: Version;
@@ -59,12 +65,16 @@ export interface NoteData {
   geolocation?: NoteGeolocation;
 }
 
-export interface NoteAttachment {
-  id: number;
+export interface NoteAttachment extends Attachment {
+  id: string;
   type: AttachmentType;
   url: string;
+  purpose?: AttachmentPurpose; // Optional role within the note
+
   // Additional properties as needed
 }
+
+
 
 export enum NoteStatus {
   ACTIVE = "Active",
@@ -77,6 +87,13 @@ export enum AttachmentType {
   FILE = "File",
   LINK = "Link",
 }
+
+export enum AttachmentPurpose {
+  COVER_IMAGE = "Cover Image",
+  SUPPLEMENTARY_FILE = "Supplementary File",
+  REFERENCE_LINK = "Reference Link",
+}
+
 
 export interface NoteOptions {
   size: DocumentSize;

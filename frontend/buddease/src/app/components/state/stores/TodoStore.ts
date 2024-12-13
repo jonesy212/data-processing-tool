@@ -1,12 +1,17 @@
+import { NotificationType } from '@/app/components/support/NotificationContext';
+import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { generateSnapshotId } from './../../utils/snapshotUtils';
 // TodoManagerStore.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
+import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { makeAutoObservable } from "mobx";
 import { MutableRefObject, useRef, useState } from "react";
 import { useSnapshotManager } from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { Snapshot, Snapshots } from '../../snapshots/LocalStorageSnapshotStore';
-import SnapshotStore, { SubscriberCollection } from "../../snapshots/SnapshotStore";
+import SnapshotStore from "../../snapshots/SnapshotStore";
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import {
     NotificationTypeEnum,
     useNotification,
@@ -16,51 +21,53 @@ import { Todo } from "../../todos/Todo";
 import { todoService } from "../../todos/TodoService";
 import useSecureStoreId from '../../utils/useSecureStoreId';
 import { AllStatus } from './DetailsListStore';
-import { BaseData } from '@/app/components/models/data/Data';
+import { T, K, Meta} from "@/app/components/models/data/dataStoreMethods";
 
 const { notify } = useNotification();
 
 interface TodoManagerStoreProps {
-  initialTodos?: Record<string, Todo>; // Optional initial todos
+  initialTodos?: Record<string, Todo<T, K, Meta>>; // Optional initial todos
 }
 
-export interface TodoManagerStore<T extends  BaseData<T>,
- 
-K extends T = T> {
+export interface TodoManagerStore<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
+> {
   dispatch: (action: any) => void;
-  todos: Record<string, Todo>;
-  todoList: Todo[];
+  todos: Record<string, Todo<T, K, Meta>>;
+  todoList: Todo<T>[];
   toggleTodo: (id: string) => void;
-  addTodo: (todo: Todo) => void;
+  addTodo: (todo: Todo<T>) => void;
   loading: MutableRefObject<boolean>;
   error: string | null;
   addTodos: (
-    newTodos: Todo[],
+    newTodos: Todo<T>[],
     data: SnapshotStore<Snapshot<any, any, any>>
   ) => void;
   removeTodo: (id: string) => void;
   assignTodoToUser: (todoId: string, userId: string) => void;
   updateTodoTitle: (payload: { id: string; newTitle: string }) => void;
-  fetchTodosSuccess: (payload: { todos: Todo[] }) => void;
+  fetchTodosSuccess: (payload: { todos: Todo<T>[] }) => void;
   fetchTodosFailure: (payload: { error: string }) => void;
   openTodoSettingsPage: (todoId: number, teamId: number) => void;
-  getTodoId: (todo: Todo) => string | null;
-  getTeamId: (todo: Todo) => string | null;
+  getTodoId: (todo: Todo<T>) => string | null;
+  getTeamId: (todo: Todo<T>) => string | null;
   fetchTodosRequest: () => void;
   completeAllTodosSuccess: () => void;
   completeAllTodos: () => void;
   completeAllTodosFailure: (payload: { error: string }) => void;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
-  setDynamicNotificationMessage: (message: string) => void;
+   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
   
   subscribeToSnapshot: (
     id: string,
-    callback: (snapshot: Snapshot<Todo, Meta, Data>) => void,
-    snapshot: Snapshot<Todo, Meta, Data>
+    callback: (snapshot: Snapshot<Todo<T, K, Meta>, Meta, Data>) => void,
+    snapshot: Snapshot<Todo<T, K, Meta>, Meta, Data>
   ) => void;
   
-  batchFetchTodoSnapshotsRequest: (payload: Record<string, Todo[]>) => void;
+  batchFetchTodoSnapshotsRequest: (payload: Record<string, Todo<T>[]>) => void;
   assignedTaskStore: (id: string, assignedTo: string) => void;
   updateTaskTitle: (id: string, newTitle: string) => void;
   updateTaskDescription: (id: string, newDescription: string) => void;
@@ -69,9 +76,12 @@ K extends T = T> {
 
   
 }
-
-const useTodoManagerStore = <T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  props: TodoManagerStoreProps): TodoManagerSt, K extends
+const useTodoManagerStore = <
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(props: TodoManagerStoreProps): TodoManagerStore<T, K> => {
+  
   const [todos, setTodos] = useState<Record<string, Todo>>(props.initialTodos || {});
   const [subscriptions, setSubscriptions] = useState<
     Record<string, () => void>
@@ -82,30 +92,6 @@ const useTodoManagerStore = <T extends  BaseData<T>,  K extends T = T,  Meta ext
     loading: boolean;
     error: string | null;
   }>({ loading: false, error: null });
-
-  const assignTodoToUser = async (todoId: string, userId: string) => {
-    setUIState({ loading: true, error: null });
-    try {
-      await todoService.assignTodoToUser(todoId, userId);
-      notify(
-        "assignTodoToUser",
-        "Todo assigned successfully!",
-        NOTIFICATION_MESSAGES.Todos.TODO_ASSIGNED_SUCCESSFULLY,
-        new Date(),
-        NotificationTypeEnum.Success
-      );
-    } catch (error: any) {
-      setUIState({ loading: false, error: error.message });
-      notify(
-        "assignTodoToUserFailure",
-        error.message,
-        NOTIFICATION_MESSAGES.Todos.TODO_ASSIGN_ERROR,
-        new Date(),
-        NotificationTypeEnum.Error
-      );
-    }
-  };
-
   const [NOTIFICATION_MESSAGE, setNotificationMessage] = useState<string>("");
 
   const storeId = useSecureStoreId()
@@ -115,7 +101,7 @@ const useTodoManagerStore = <T extends  BaseData<T>,  K extends T = T,  Meta ext
   // Inside useTodoManagerStore function
   const snapshotStore = useSnapshotManager(storeId);
   // Initialize SnapshotStore
-  const onSnapshotCallbacks: ((snapshot: Snapshot<Todo, Meta, K>) => void)[] = [];
+  const onSnapshotCallbacks: ((snapshot: Snapshot<Todo<T, K, Meta>, Meta, K>) => void)[] = [];
 
   const dispatch = (action: any) => {
     switch (action.type) {
@@ -163,7 +149,7 @@ const useTodoManagerStore = <T extends  BaseData<T>,  K extends T = T,  Meta ext
 
   const addTodos = (
     newTodos: Todo[],
-    data: SnapshotStore<Todo>,
+    data: SnapshotStore<Todo<T, K, Meta>>,
     subscribers?: SubscriberCollection<T, K>
   ): void => {
     setTodos((prevTodos: Record<string, Todo>) => {
@@ -175,7 +161,7 @@ const useTodoManagerStore = <T extends  BaseData<T>,  K extends T = T,  Meta ext
         // Take snapshot for each todo
         if (data) {
           // Convert todo to snapshot format
-          const snapshot: Snapshot<Todo, Meta, Todo> = {
+          const snapshot: Snapshot<Todo<T, K, Meta>, Meta, Todo> = {
             todoSnapshotId: generateSnapshotId,
             initialState: todo,
             category: "todo",
@@ -203,8 +189,8 @@ const useTodoManagerStore = <T extends  BaseData<T>,  K extends T = T,  Meta ext
   const todoList = Object.values(todos);
   const subscribeToSnapshot = (
     id: string,
-    callback: (snapshot: Snapshot<Todo, Meta, Todo>) => void,
-    snapshot: Snapshot<Todo, Meta, Todo> // Add 'snapshot' as an argument
+    callback: (snapshot: Snapshot<Todo<T, K, Meta>, Meta, Todo>) => void,
+    snapshot: Snapshot<Todo<T, K, Meta>, Meta, Todo> // Add 'snapshot' as an argument
   ) => {
     // Define the conversion functions
     const todoToData = (todo: Todo): Data => {
@@ -261,7 +247,7 @@ const useTodoManagerStore = <T extends  BaseData<T>,  K extends T = T,  Meta ext
     // Check the type of 'data' and 'convertedTodo' to determine the correct conversion
     if ('id' in data && 'id' in convertedTodo) {
       // Perform conversion logic specific to Todo
-      const convertedSnapshot: Snapshot<Todo, Meta, Todo> = {
+      const convertedSnapshot: Snapshot<Todo<T, K, Meta>, Meta, Todo> = {
         ...snapshot, // Spread the 'snapshot' passed as an argument
         id,
         data: {
@@ -341,7 +327,7 @@ const useTodoManagerStore = <T extends  BaseData<T>,  K extends T = T,  Meta ext
 
       
       // Perform conversion logic specific to Data
-      const convertedSnapshot: Snapshot<Todo, Meta, Todo> = {
+      const convertedSnapshot: Snapshot<Todo<T, K, Meta>, Meta, Todo> = {
         ...snapshot, // Spread the 'snapshot' passed as an argument
         data: {
           ...snapshot.data,

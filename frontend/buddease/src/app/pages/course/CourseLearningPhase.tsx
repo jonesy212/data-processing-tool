@@ -1,15 +1,17 @@
 // CourseLearningPhase.tsx
 import { Data } from '@/app/components/models/data/Data';
-import SnapshotStore, { Snapshot } from '@/app/components/snapshots/SnapshotStore';
+import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import React, { useState } from 'react';
 import { CourseDevelopmentPhase } from './CourseDevelopmentPhaseManager';
 
-
-interface CourseLearningPhaseProps{
+interface CourseLearningPhaseProps {
   onSubmit: (data: any) => void;
-  setCurrentPhase: React.Dispatch<React.SetStateAction<CourseDevelopmentPhase>>
-  userData: SnapshotStore<Snapshot<Data, Data>>[]
+  setCurrentPhase: React.Dispatch<React.SetStateAction<CourseDevelopmentPhase>>;
+  userData: SnapshotStore<Snapshot<Data<any>, Data<any>>>[];
 }
+
+
+
 const CourseLearningPhase: React.FC<CourseLearningPhaseProps> = ({ onSubmit, userData }) => {
   // State to manage learning phase data
   const [learningData, setLearningData] = useState({

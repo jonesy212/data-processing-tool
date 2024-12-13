@@ -1,14 +1,15 @@
+import { RootState } from "@/app/components/state/redux/slices/RootSlice";
 import {
   clearFilteredEvents as clearFilteredEventsAction,
   selectFilteredEvents,
-} from "../../app/components/state/redux/slices/FilteredEventsSlice";
+} from "@/app/components/state/redux/slices/FilteredEventsSlice";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux"; // Import useSelector and useDispatch
 import { FilterActions } from "../../actions/FilterActions";
 import { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
 import HighlightEvent from "../../documents/screenFunctionality/HighlightEvent";
-import { CalendarEvent } from "./CalendarEvent";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 
 
 interface FilteredEventsState {
@@ -27,11 +28,12 @@ class FilterStore {
   // Define methods to interact with filtered events
   applyFilter = () => {
      // Use useSelector with the correct type
-      const filtered = useSelector<FilteredEventsState>(selectFilteredEvents);
-      const filteredEvents = filtered.payload; // Extracting the payload
-      this.setFilteredEvents(filteredEvents); // Pass the extracted filtered events to setFilteredEvents
-  
-  };
+
+// Update this line to specify the type of the state
+const filtered = useSelector<RootState, FilteredEventsState>((state) => state.filterManager);      
+  const filteredEvents = filtered.payload; // Extracting the payload
+  this.setFilteredEvents(filteredEvents); // Pass the extracted filtered events to setFilteredEvents
+};
 
   clearFilter = () => {
     // Implement logic to clear filtering
@@ -44,13 +46,24 @@ class FilterStore {
     this.dispatch(FilterActions.selectFilteredEventsAction(selectedIds));
   };
 
-  // Other methods as needed
-
- 
   setFilteredEvents = (
     events: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[]
   ) => {
     this.filteredEvents = events;
+  };
+
+
+
+  addFilteredEvent = (event: ExtendedCalendarEvent | CalendarEvent | HighlightEvent) => {
+    this.filteredEvents = [...this.filteredEvents, event];
+  };
+
+  removeFilteredEvent = (eventId: string) => {
+    this.filteredEvents = this.filteredEvents.filter(event => event.id !== eventId);
+  };
+
+  clearFilteredEvents = () => {
+    this.filteredEvents = [];
   };
 }
 

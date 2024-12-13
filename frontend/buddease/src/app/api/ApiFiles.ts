@@ -71,7 +71,7 @@ export const determineFileTypeAPI = async (file: any) => {
 
 
 
-export const getFileDetails = async (fileId: string): Promise<FileData> => {
+export const getFileDetails = async (fileId: string): Promise<FileData<any>> => {
   try {
     const response = await fetchFileAPI(fileId); // Call the API to fetch the file details
     return response; // Assuming the response contains the file data

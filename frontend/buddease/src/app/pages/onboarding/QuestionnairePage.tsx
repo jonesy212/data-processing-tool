@@ -43,14 +43,19 @@ const QuestionnairePage: React.FC<QuestionnairePageProps> = ({
 
     // Collect user responses and call the onSubmit function
     const userResponses: UserData = {
-      id: ""
+      id: "",
+      username: "",
+      storeId: 0,
+      role: undefined,
+      childIds: [],
+      relatedData: [],
     };
 
     questions.forEach((question) => {
-      userResponses[question.id as keyof UserData] = handleQuestionResponse(
-        question.id,
-        ""
-      );
+      const response = handleQuestionResponse(question.id, "");
+      if (response !== undefined) {
+        userResponses[question.id as keyof UserData] = response;
+      }
     });
 
     onSubmit(userResponses);

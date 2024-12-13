@@ -4,6 +4,8 @@ import React from "react";
 import { Progress } from "../models/tracker/ProgressBar";
 import { SearchResultWithQuery } from "../routing/SearchResult";
 import { CollaborationState } from "../state/redux/slices/CollaborationSlice";
+import { CollaborationData } from "../pages/commuunityCollaborationDate";
+import { K } from "@/app/components/models/data/dataStoreMethods";
 
 
 interface FetchUserDataPayload {
@@ -19,7 +21,7 @@ export type GesterEvent = React.TouchEvent<HTMLDivElement> & React.PointerEvent<
 
 
 export const UIActions = {
-  updateCollaborationState: createAction<CollaborationState<T, K>>("updateCollaborationState"),
+  updateCollaborationState: createAction<CollaborationState<CollaborationData, K>>("updateCollaborationState"),
   setIsGestureInProgress: createAction<boolean>("setIsGestureInProgress"),
   setGestureStartPosition: createAction<{ x: number; y: number }>("setGestureStartPosition"),
   setGestureCurrentPosition: createAction<{ x: number; y: number }>("setGestureCurrentPosition"),

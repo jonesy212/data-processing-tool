@@ -1,6 +1,16 @@
 // CourseBuilder.tsx
 
-import { CustomPhaseHooks, Phase } from "../phases/Phase";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { CustomPhaseHooks, Phase, PhaseData, PhaseMeta } from "../phases/Phase";
+import { fetchUserAreaDimensions, FetchOptions } from '@/app/pages/layouts/fetchUserAreaDimmensions';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { NotificationTypeEnum } from '@/app/components/support/NotificationContext';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { K, T } from "../models/data/dataStoreMethods";
+import { useMetadata } from "@/app/configs/useMetadata";
+import { usePhaseMeta } from "@/app/configs/metadata/usePhaseMeta";
+import { BaseData } from "../models/data/Data";
+import { createMeta } from "@/app/configs/metadata/createMetadataState";
 
 // Interfaces for course structure
 interface Lesson {
@@ -13,6 +23,10 @@ interface Course {
   phases: Phase[];
 }
 
+
+type AdaptedPhaseData = PhaseData & BaseData<any, any>;
+
+
 // Class generator to create course structure
 class CourseBuilder {
   private course: Course;
@@ -24,19 +38,95 @@ class CourseBuilder {
   getCourse(): Course {
     return this.course;
   }
-  addPhase(phaseTitle: string): void {
-    this.course.phases.push({
-      id: "",
-      title: phaseTitle,
-      lessons: [],
-      name: "",
-      startDate: new Date(),
-      endDate: new Date(),
-      subPhases: [],
-      component: {} as React.FC, // Use React.FC as the type
-      hooks: {} as CustomPhaseHooks,
-      duration: 0,
+  
+
+    addCoursePhase(phaseTitle: string): void {
+      this.addPhase<AdaptedPhaseData>(phaseTitle);
+    }
+  
+  addPhase<
+    T extends PhaseData<BaseData<any, any, StructuredMetadata<any, any>>>,
+    K extends T = T,
+    Meta extends PhaseMeta = PhaseMeta
+  >(
+    phaseTitle: string
+  ): void {
+     // Get the area dimensions (with optional properties)
+    const dimensions = fetchUserAreaDimensions();
+
+      // Construct the area object with optional properties
+      const area = {
+        prefix: 'USER',
+        name: 'JohnDoe',
+        type: NotificationTypeEnum.UserID,
+        id: '12345',
+        title: 'UserAccount',
+        dimensions: dimensions, // Add the dimensions to the area object
+        chatThreadName: 'GeneralChat', // Optional
+        chatMessageId: 'msg-1', // Optional
+        chatThreadId: 'thread-1', // Optional
+        dataDetails: { key: 'value' }, // Optional
+        generatorType: 'customType', // Optional
+      };
+
+
+    // Dynamically set the FetchOptions using properties from the `area` object
+    const options: FetchOptions = {
+      elementId: area.id, // Use `area.id` as the `elementId`
+      listenForResize: true, // Set to true to listen for resize
+      onChange: (dimensions) => {
+        console.log(`Updated dimensions for area "${area.name}":`, dimensions);
+      }
+    };
+
+    // Call the fetchUserAreaDimensions function using the dynamically created options
+    const areaDimensions = fetchUserAreaDimensions(options);
+    // Use 'useMeta' for currentMeta with PhaseMeta constraints
+    const currentMeta: Meta = createMeta<T, K>({
+      id: 'meta-id',
+      description: 'Phase Meta',
     });
+
+    // Use `useMetadata` with appropriate type arguments for UnifiedMetaDataOptions
+    const currentMetadata: UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>> = 
+      useMetadata<T, K, Meta>({ area: 'phase-area' });
+
+    
+
+    const generateUniqueId = UniqueIDGenerator.generateID(
+      area.prefix,
+      area.name,
+      area.type,
+      area.id,
+      area.title,
+      area.chatThreadName,
+      area.chatMessageId,
+      area.chatThreadId,
+      area.dataDetails,
+      area.generatorType
+    );
+    // Example logic for adding a phase
+    this.course.phases.push({
+      id: generateUniqueId,
+        title: phaseTitle,
+        description: "",
+        label: {
+          text: "",
+          color: "" 
+        },
+        currentMeta: currentMeta,
+        currentMetadata: currentMetadata,
+        date: new Date(),
+        lessons: [],
+        name: "",
+        startDate: new Date(),
+        endDate: new Date(),
+        subPhases: [],
+        component: {} as React.FC, // Use React.FC as the type
+        hooks: {} as CustomPhaseHooks<T, K>,
+        duration: 0,
+    }
+    );
   }
 
   addLesson(phaseIndex: number, lesson: Lesson): void {

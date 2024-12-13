@@ -1,3 +1,5 @@
+import { version } from '@/app/components/versions/Version';
+
 import { T, K } from "@/app/components/models/data/dataStoreMethods";
 import { AllTypes } from '@/app/components/typings/PropTypes';
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
@@ -18,19 +20,23 @@ import {
   PrivacySettingEnum,
   ProjectPhaseTypeEnum,
 } from "../models/data/StatusType";
-import { Phase } from "../phases/Phase";
+import { Phase, PhaseData, PhaseMeta } from "../phases/Phase";
 import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
 import { CustomProperties, HighlightColor } from "../styling/Palette";
 import { UserIdea } from "../users/Ideas";
 import Version from "../versions/Version";
 import { VersionData } from "../versions/VersionData";
 import { ModifiedDate } from "./DocType";
-import { DocumentData, RevisionOptions } from "./DocumentBuilder";
+import { computeChecksum, DocumentData, RevisionOptions } from "./DocumentBuilder";
 import { DocumentTypeEnum } from "./DocumentGenerator";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 import { NoteAnimationOptions, NoteOptions } from "./NoteData";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
 import { CustomStyle } from '@/app/api/ApiService';
+import { Document } from "../state/stores/DocumentStore";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { BaseData } from "../models/data/Data";
+import { createLastUpdatedWithVersion } from '../versions/createLatestVersion';
 
 export interface CustomDocument extends docx.Document {
   createSection(): docx.SectionProperties;
@@ -115,7 +121,11 @@ interface Style {
 }
 
 // Define the interface for DocumentBuilderOptions extending DocumentOptions
-export interface DocumentBuilderOptions extends DocumentOptions {
+export interface DocumentBuilderOptions<
+  T extends BaseData<any> = BaseData<any, any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> 
+extends DocumentOptions<T, K, Meta> {
   canComment: boolean;
   canView: boolean;
   canEdit: boolean;
@@ -149,8 +159,11 @@ export const getDefaultNoteOptions = (): NoteOptions => {
 };
 
 // documentOptions.ts
-export interface DocumentOptions {
-  // additionalDocumentOptions: [],
+export interface DocumentOptions<
+T extends BaseData<any> = BaseData<any, any>,
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> {  // additionalDocumentOptions: [],
   additionalOptionsLabel: string,
   uniqueIdentifier: string;
   documentType: string | DocumentTypeEnum; // Add documentType property
@@ -188,7 +201,7 @@ export interface DocumentOptions {
     };
   };
   additionalOptions: readonly string[] | string | number | any[] | undefined;
-  documentOptions?: DocumentOptions | undefined;
+  documentOptions?: DocumentOptions<T, K, Meta> | undefined;
   language: LanguageEnum;
   setDocumentPhase?: (
     phase:
@@ -339,7 +352,7 @@ export interface DocumentOptions {
     right: number;
   };
   visibility: AllTypes;
-  updatedDocument?: DocumentData<T, K<T>>;
+  updatedDocument?: DocumentData<T, K, Meta>;
   fontSize: number;
   font: string;
   textColor: string;
@@ -372,7 +385,7 @@ export interface DocumentOptions {
     format: string; // Add default format for TOC
     levels: number;
   };
-  bold:
+  bold?:
   | boolean
   | {
     enabled: boolean;
@@ -471,8 +484,10 @@ export interface DocumentOptions {
   styles: {
     [key: string]: CustomStyle;
   };
-  previousMetadata: StructuredMetadata<T, K<T>> | undefined;
-  currentMetadata: StructuredMetadata<T, K<T>> | undefined;
+  previousMeta: StructuredMetadata<T, K> | undefined;
+  currentMeta: StructuredMetadata<T, K>;
+  previousMetadata?: UnifiedMetaDataOptions<T, K> | undefined;
+  currentMetadata?: UnifiedMetaDataOptions<T, K> | undefined;
   currentContent: ContentState
   previousContent: ContentState | undefined
   lastModifiedDate: ModifiedDate | undefined;
@@ -566,7 +581,7 @@ export interface DocumentOptions {
   };
   highlightColor: string;
   customSettings: Record<string, any> | undefined;
-  documents: DocumentData<T, K<T>>[];
+  documents: DocumentData<T, K>[];
   includeType: { enabled: boolean, format: "all" | "selected" | "none" }
   footnote:
   | boolean
@@ -582,7 +597,7 @@ export interface DocumentOptions {
   includeContent: boolean | { enabled: boolean }; // New property to include content in the report
   includeStatus: boolean | { enabled: boolean }; // New property to include status in the report
   includeAdditionalInfo: boolean | { enabled: boolean }; // Example: include additional information
-  metadata: StructuredMetadata<T, K<T>>| undefined;
+  metadata: StructuredMetadata<T, K>| undefined;
 
   // Properties specific to DocumentGenerator
   title?: string;
@@ -599,162 +614,17 @@ export interface DocumentOptions {
 
 // export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
 export const getDefaultDocumentOptions = (): DocumentOptions => {
+  // todo update dynamic conent version
+  const versionData = "document of version 1.0.0";
+  const checksum = computeChecksum(versionData);
+
   return {
+    previousMeta: {} as StructuredMetadata<T, K<T>>,
+    currentMeta: {} as StructuredMetadata<T, K<T>>,
     documentOptions: {
 
-      uniqueIdentifier: "",
-      documentType: "default",
-      userIdea: undefined,
-      documentSize: DocumentSize.Letter,
-      name: "Document",
-      description: "Default Document",
-      createdBy: "Buddease",
-      createdDate: new Date().toISOString(),
-      lastModifiedBy: "Buddease",
-      _rev: "1-1234567890",
-      _attachments: {},
-      _links: {},
-      limit: 0,
-      page: 1,
-      levels: {
-        enabled: true,
-        startLevel: 2,
-        endLevel: 4,
-        format: "PDF",
-        separator: ",",
-        style: {
-          main: "bold",
-          styles: [
-            {
-              format: ["bold", "italic"],
-              separator: [",", ";"],
-              style: {
-                format: ["underline", "strikethrough"],
-                separator: [" ", "-"],
-                style: ["bold", "italic", "underline", "strikethrough"],
-              }
-            }
-          ]
-        }
-      },
-      language: LanguageEnum.English,
-      documentPhase: '',
-      versionData: undefined,
-      isDynamic: undefined,
-      size: DocumentSize.A4,
-      animations: undefined,
-      layout: undefined,
-      panels: undefined,
-      pageNumbers: false,
-      footer: '',
-      watermark: {
-        enabled: false,
-        text: '',
-        color: '',
-        opacity: 0,
-        fontSize: 0,
-        size: '',
-        x: 0,
-        y: 0,
-        rotation: 0,
-        borderStyle: ''
-      },
-      headerFooterOptions: {
-        enabled: false,
-        headerContent: undefined,
-        footerContent: undefined,
-        showHeader: false,
-        showFooter: false,
-        dateFormat: undefined,
-        differentFirstPage: false,
-        differentOddEven: false,
-        headerOptions: undefined,
-        footerOptions: undefined
-      },
-      zoom: 0,
-      showRuler: false,
-      showDocumentOutline: false,
-      showComments: false,
-      showRevisions: false,
-      spellCheck: false,
-      grammarCheck: false,
-      visibility: undefined,
-      fontSize: 0,
-      font: '',
-      textColor: '',
-      backgroundColor: '',
-      fontFamily: '',
-      lineSpacing: 0,
-      alignment: AlignmentOptions.LEFT,
-      indentSize: 0,
-      bulletList: false,
-      numberedList: false,
-      headingLevel: 0,
-      toc: false,
-      bold: false,
-      italic: false,
-      underline: false,
-      strikethrough: false,
-      subscript: false,
-      superscript: false,
-      hyperlink: '',
-      textStyles: {},
-      image: '',
-      links: false,
-      embeddedContent: false,
-      bookmarks: false,
-      crossReferences: false,
-      footnotes: false,
-      endnotes: false,
-      comments: false,
-      revisions: undefined,
-      embeddedMedia: false,
-      embeddedCode: false,
-      styles: {},
-      previousMetadata: undefined,
-      currentMetadata: undefined,
-      currentContent: new ContentState,
-      previousContent: undefined,
-      lastModifiedDate: undefined,
-      accessHistory: [],
-      tableCells: {
-        enabled: false,
-        padding: 0,
-        fontSize: 0,
-        alignment: 'left',
-        borders: undefined
-      },
-      table: false,
-      tableRows: 0,
-      tableColumns: 0,
-      codeBlock: false,
-      blockquote: false,
-      codeInline: false,
-      quote: '',
-      todoList: false,
-      orderedTodoList: false,
-      unorderedTodoList: false,
-      color: '',
-      colorCoding: undefined,
-      highlight: false,
-      highlightColor: '',
-      customSettings: undefined,
-      documents: [],
-      includeType: { enabled: false, format: 'all'},
-      footnote: false,
-      defaultZoomLevel: 0,
-      customProperties: undefined,
-      value: undefined,
-      includeTitle: false,
-      includeContent: false,
-      includeStatus: false,
-      includeAdditionalInfo: false,
-      metadata: undefined,
-      userSettings: undefined,
-      dataVersions: undefined,
-      additionalOptions: [],
-      additionalOptionsLabel: "", // Add this line
-    },
+    previousMeta: {} as StructuredMetadata<T, K<T>>,
+    currentMeta: {} as StructuredMetadata<T, K<T>>,
     uniqueIdentifier: "",
     documentType: "default",
     userIdea: undefined,
@@ -783,144 +653,66 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
             separator: [",", ";"],
             style: {
               format: ["underline", "strikethrough"],
-              separator: [",", ";"],
-              style: ["underline", "strikethrough"]
-            },
-          },
-        ],
-      },
+              separator: [" ", "-"],
+              style: ["bold", "italic", "underline", "strikethrough"],
+            }
+          }
+        ]
+      }
     },
-    accessHistory: [],
-    versionData: {
-      id: 0,
-      parentId: "0",
-      parentType: "",
-      parentVersion: "",
-      parentTitle: "",
-      parentContent: "",
-      parentName: "",
-      parentUrl: "",
-      parentChecksum: "",
-      parentAppVersion: "",
-      parentVersionNumber: "",
-      isLatest: false,
-      isPublished: false,
-      publishedAt: null,
-      source: "",
-      status: "",
-      workspaceId: "",
-      workspaceName: "",
-      workspaceType: "",
-      workspaceUrl: "",
-      workspaceViewers: [],
-      workspaceAdmins: [],
-      workspaceMembers: [],
-      data: [],
-      name: "",
-      url: "",
-      versionNumber: "1.0.0",
-      documentId: "",
-      draft: false,
-      userId: "",
-      content: "",
-      metadata: {
-        author: "",
-        timestamp: new Date().toISOString(),
-        revisionNotes: undefined,
-      },
-      versionData: [],
-      backend: undefined,
-      frontend: undefined,
-
-      checksum: "",
-      version: "1.0.0",
-      timestamp: new Date().toISOString(),
-      user: "Buddease",
-      comments: [],
-      changes: [],
-      buildVersions: {
-        data: undefined,
-        frontend: undefined,
-        backend: undefined,
-      },
-      major: 1,
-      minor: 1,
-      patch: 1,
-      isActive: true, 
-      releaseDate: ""
-    },
-    lastModifiedDate: {
-      value: undefined,
-      isModified: false,
-    } as ModifiedDate,
-    isDynamic: true,
-    currentMetadata: undefined,
-    previousMetadata: undefined,
-    currentContent: ContentState.createFromText(""),
-    previousContent: undefined,
-    documentPhase: "Draft",
-    additionalOptions: undefined,
     language: LanguageEnum.English,
-    setDocumentPhase: (phase, phaseType) => ({ phase, phaseType }),
-    version: undefined,
-    size: "0" as DocumentSize,
+    documentPhase: '',
+    versionData: undefined,
+    isDynamic: undefined,
+    size: DocumentSize.A4,
     animations: undefined,
     layout: undefined,
-    panels: [],
-
-    // Add missing properties
+    panels: undefined,
     pageNumbers: false,
-    footer: "",
+    footer: '',
     watermark: {
       enabled: false,
-      text: "",
-      color: "",
+      text: '',
+      color: '',
       opacity: 0,
-      fontSize: 12,
-      size: "medium",
+      fontSize: 0,
+      size: '',
       x: 0,
       y: 0,
       rotation: 0,
-      borderStyle: "solid",
+      borderStyle: ''
     },
     headerFooterOptions: {
       enabled: false,
-      headerContent: "",
-      footerContent: "",
+      headerContent: undefined,
+      footerContent: undefined,
       showHeader: false,
       showFooter: false,
-      dateFormat: "MM/DD/YYYY",
+      dateFormat: undefined,
       differentFirstPage: false,
       differentOddEven: false,
       headerOptions: undefined,
-      footerOptions: undefined,
+      footerOptions: undefined
     },
-    zoom: 100,
+    zoom: 0,
     showRuler: false,
     showDocumentOutline: false,
     showComments: false,
     showRevisions: false,
     spellCheck: false,
     grammarCheck: false,
-    margin: {
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-    },
-    visibility: PrivacySettingEnum.Private,
-    updatedDocument: undefined,
-    fontSize: 12,
-    font: "Arial",
-    textColor: "#000000",
-    backgroundColor: "#ffffff",
-    fontFamily: "Arial",
-    lineSpacing: 1.15,
+    visibility: undefined,
+    fontSize: 0,
+    font: '',
+    textColor: '',
+    backgroundColor: '',
+    fontFamily: '',
+    lineSpacing: 0,
     alignment: AlignmentOptions.LEFT,
     indentSize: 0,
     bulletList: false,
     numberedList: false,
-    headingLevel: 1,
+    headingLevel: 0,
     toc: false,
     bold: false,
     italic: false,
@@ -928,10 +720,10 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     strikethrough: false,
     subscript: false,
     superscript: false,
-    hyperlink: "",
+    hyperlink: '',
     textStyles: {},
-    image: "",
-    links: "None",
+    image: '',
+    links: false,
     embeddedContent: false,
     bookmarks: false,
     crossReferences: false,
@@ -942,36 +734,38 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     embeddedMedia: false,
     embeddedCode: false,
     styles: {},
+    previousMetadata: undefined,
+    currentMetadata: undefined,
+    currentContent: new ContentState,
+    previousContent: undefined,
+    lastModifiedDate: undefined,
+    accessHistory: [],
     tableCells: {
       enabled: false,
-      padding: 5,
-      fontSize: 12,
-      alignment: "left",
-      borders: undefined,
+      padding: 0,
+      fontSize: 0,
+      alignment: 'left',
+      borders: undefined
     },
     table: false,
     tableRows: 0,
     tableColumns: 0,
     codeBlock: false,
-    tableStyles: undefined,
     blockquote: false,
     codeInline: false,
-    quote: "",
+    quote: '',
     todoList: false,
     orderedTodoList: false,
     unorderedTodoList: false,
-    content: "",
-    css: "",
-    html: "",
-    color: "#000000",
+    color: '',
     colorCoding: undefined,
     highlight: false,
-    highlightColor: "#FFFF00",
+    highlightColor: '',
     customSettings: undefined,
     documents: [],
-    includeType:{enabled: true, format: "all"},
+    includeType: { enabled: false, format: 'all'},
     footnote: false,
-    defaultZoomLevel: 100,
+    defaultZoomLevel: 0,
     customProperties: undefined,
     value: undefined,
     includeTitle: false,
@@ -979,22 +773,257 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     includeStatus: false,
     includeAdditionalInfo: false,
     metadata: undefined,
-    title: undefined,
-    enableStemming: false,
-    enableStopWords: false,
-    enableWildcards: false,
     userSettings: undefined,
-    enableFuzzy: false,
     dataVersions: undefined,
-    backendStructure: undefined,
-    frontendStructure: undefined,
-    revisionOptions: undefined,
-    additionalOptionsLabel: "",
+    additionalOptions: [],
+    additionalOptionsLabel: "", // Add this line
+  },
+  uniqueIdentifier: "",
+  documentType: "default",
+  userIdea: undefined,
+  documentSize: DocumentSize.Letter,
+  name: "Document",
+  description: "Default Document",
+  createdBy: "Buddease",
+  createdDate: new Date().toISOString(),
+  lastModifiedBy: "Buddease",
+  _rev: "1-1234567890",
+  _attachments: {},
+  _links: {},
+  limit: 0,
+  page: 1,
+  levels: {
+    enabled: true,
+    startLevel: 2,
+    endLevel: 4,
+    format: "PDF",
+    separator: ",",
+    style: {
+      main: "bold",
+      styles: [
+        {
+          format: ["bold", "italic"],
+          separator: [",", ";"],
+          style: {
+            format: ["underline", "strikethrough"],
+            separator: [",", ";"],
+            style: ["underline", "strikethrough"]
+          },
+        },
+      ],
+    },
+  },
+  accessHistory: [],
+  versionData: {
+
+    id: 0,
+    lastUpdated: createLastUpdatedWithVersion(),
+    parentId: "0",
+    parentType: "",
+    parentVersion: "",
+    parentTitle: "",
+    parentContent: "",
+    parentName: "",
+    parentUrl: "",
+    parentChecksum: "",
+    parentAppVersion: "",
+    parentVersionNumber: "",
+    history: [],
+    isLatest: false,
+    isPublished: false,
+    publishedAt: null,
+    source: "",
+    status: "",
+    workspaceId: "",
+    workspaceName: "",
+    workspaceType: "",
+    workspaceUrl: "",
+    workspaceViewers: [],
+    workspaceAdmins: [],
+    workspaceMembers: [],
+    data: [],
+    name: "",
+    url: "",
+    versionNumber: "1.0.0",
+    documentId: "",
+    draft: false,
+    userId: "",
+    content: "",
+    metadata: {
+      author: "",
+      timestamp: new Date().toISOString(),
+      revisionNotes: undefined,
+    },
+    versionData: [],
+    backend: undefined,
+    frontend: undefined,
+
+    checksum: "",
+    version: version,
+    timestamp: new Date().toISOString(),
+    user: "Buddease",
+    comments: [],
+    changes: [],
+    buildVersions: {
+      data: undefined,
+      frontend: undefined,
+      backend: undefined,
+    },
+    major: 1,
+    minor: 1,
+    patch: 1,
+    isActive: true, 
+    releaseDate: ""
+  },
+  lastModifiedDate: {
+    value: undefined,
+    isModified: false,
+  } as ModifiedDate,
+  isDynamic: true,
+  currentMetadata: undefined,
+  previousMetadata: undefined,
+  currentContent: ContentState.createFromText(""),
+  previousContent: undefined,
+  documentPhase: "Draft",
+  additionalOptions: undefined,
+  language: LanguageEnum.English,
+  setDocumentPhase: (phase: string | Phase<PhaseData, PhaseMeta> | undefined, phaseType: DocumentPhaseTypeEnum) => ({ phase, phaseType }),
+  version: undefined,
+  size: "0" as DocumentSize,
+  animations: undefined,
+  layout: undefined,
+  panels: [],
+
+  // Add missing properties
+  pageNumbers: false,
+  footer: "",
+  watermark: {
+    enabled: false,
+    text: "",
+    color: "",
+    opacity: 0,
+    fontSize: 12,
+    size: "medium",
+    x: 0,
+    y: 0,
+    rotation: 0,
+    borderStyle: "solid",
+  },
+  headerFooterOptions: {
+    enabled: false,
+    headerContent: "",
+    footerContent: "",
+    showHeader: false,
+    showFooter: false,
+    dateFormat: "MM/DD/YYYY",
+    differentFirstPage: false,
+    differentOddEven: false,
+    headerOptions: undefined,
+    footerOptions: undefined,
+  },
+  zoom: 100,
+  showRuler: false,
+  showDocumentOutline: false,
+  showComments: false,
+  showRevisions: false,
+  spellCheck: false,
+  grammarCheck: false,
+  margin: {
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  visibility: PrivacySettingEnum.Private,
+  updatedDocument: undefined,
+  fontSize: 12,
+  font: "Arial",
+  textColor: "#000000",
+  backgroundColor: "#ffffff",
+  fontFamily: "Arial",
+  lineSpacing: 1.15,
+  alignment: AlignmentOptions.LEFT,
+  indentSize: 0,
+  bulletList: false,
+  numberedList: false,
+  headingLevel: 1,
+  toc: false,
+  bold: false,
+  italic: false,
+  underline: false,
+  strikethrough: false,
+  subscript: false,
+  superscript: false,
+  hyperlink: "",
+  textStyles: {},
+  image: "",
+  links: "None",
+  embeddedContent: false,
+  bookmarks: false,
+  crossReferences: false,
+  footnotes: false,
+  endnotes: false,
+  comments: false,
+  revisions: undefined,
+  embeddedMedia: false,
+  embeddedCode: false,
+  styles: {},
+  tableCells: {
+    enabled: false,
+    padding: 5,
+    fontSize: 12,
+    alignment: "left",
+    borders: undefined,
+  },
+  table: false,
+  tableRows: 0,
+  tableColumns: 0,
+  codeBlock: false,
+  tableStyles: undefined,
+  blockquote: false,
+  codeInline: false,
+  quote: "",
+  todoList: false,
+  orderedTodoList: false,
+  unorderedTodoList: false,
+  content: "",
+  css: "",
+  html: "",
+  color: "#000000",
+  colorCoding: undefined,
+  highlight: false,
+  highlightColor: "#FFFF00",
+  customSettings: undefined,
+  documents: [],
+  includeType:{enabled: true, format: "all"},
+  footnote: false,
+  defaultZoomLevel: 100,
+  customProperties: undefined,
+  value: undefined,
+  includeTitle: false,
+  includeContent: false,
+  includeStatus: false,
+  includeAdditionalInfo: false,
+  metadata: undefined,
+  title: undefined,
+  enableStemming: false,
+  enableStopWords: false,
+  enableWildcards: false,
+  userSettings: undefined,
+  enableFuzzy: false,
+  dataVersions: undefined,
+  backendStructure: undefined,
+  frontendStructure: undefined,
+  revisionOptions: undefined,
+  additionalOptionsLabel: "",
   };
 };
 // Extend DocumentOptions to include additional properties
-export interface ExtendedDocumentOptions extends DocumentOptions {
-  // Add any additional properties needed for robustness
+interface ExtendedDocumentOptions<
+  T extends BaseData<any> = BaseData<any, any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> 
+  extends DocumentOptions<T, K, Meta> {
   additionalOption2: string;
 }
 
@@ -1020,5 +1049,24 @@ export const getDocumentPhase = (phase: ProjectPhaseTypeEnum) => {
       return "Draft";
   }
 };
-export type { AccessRecord, Style };
+
+
+
+const mapDocumentToProjectPhase = (document: Document<T, K<T>, StructuredMetadata<T, K<T>>>): ProjectPhaseTypeEnum => {
+  switch (document.phaseType) {
+    case "drafting":
+      return ProjectPhaseTypeEnum.Draft;
+    case "review":
+      return ProjectPhaseTypeEnum.Review;
+    case "final":
+      return ProjectPhaseTypeEnum.Final;
+    // Add more mappings as needed
+    default:
+      return ProjectPhaseTypeEnum.Draft;
+  }
+};
+
+
+export { mapDocumentToProjectPhase }
+export type { AccessRecord, Style};
 

@@ -58,7 +58,7 @@ interface CollaborationOption {
 }
 
 
-interface CreationPhase {
+interface CreationPhase<T extends BaseData<any>> {
   id: string;
   phaseName: string;
   description: string;

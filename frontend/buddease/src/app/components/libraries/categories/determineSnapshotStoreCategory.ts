@@ -2,7 +2,7 @@ import { BaseData } from '@/app/components/models/data/Data';
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 //determineSnapshotStoreCategory.ts
-function determineSnapshotStoreCategory<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function determineSnapshotStoreCategory<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   storeConfigs: SnapshotStoreConfig<T, K>[]
 ): string {
   // Example category mappings based on storeConfig properties

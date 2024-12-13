@@ -22,6 +22,7 @@ import { NotificationContextProps } from "@/app/components/support/NotificationC
 import ControlPanel from "@/app/utils/ControlPanel";
 import React, { useEffect, useState } from "react";
 import Calendar, { CommonCalendarProps } from "../../calendar/Calendar";
+import { BaseData } from "../data/Data";
 
 interface Dependency {
   // Define the properties of the Dependency type
@@ -39,7 +40,7 @@ interface IntegrateComponentsProps extends CommonCalendarProps {
   onChangeSpeed: (newSpeed: number) => void;
   container: NotificationContextProps;
   view: string;
-  tasks: Task<T, K>[];
+  tasks: Task<BaseData, BaseData>[];
   event: any;
   milestones: Milestone[];
   dependencies: Dependency[];
@@ -52,8 +53,11 @@ interface IntegrateComponentsProps extends CommonCalendarProps {
   year: YearInfo[];
   years: Years;
   projectId: string
-  events: any[]
+  events: any[],
+  onDateSelect: (date: Date) => void;
 }
+
+
 // Define a function to integrate existing components into the real-time visualization and control panel
 const integrateComponents: React.FC<IntegrateComponentsProps> = ({
   speed,
@@ -67,6 +71,9 @@ const integrateComponents: React.FC<IntegrateComponentsProps> = ({
   progress,
   projects,
   resources,
+  onAudioCallEnd,
+  onVideoCallEnd,
+  onDateSelect,
   ...taskHandlers
 }) => {
   // Initialize state for control panel and task manager
@@ -87,7 +94,7 @@ const integrateComponents: React.FC<IntegrateComponentsProps> = ({
         newTitle={(): string => {
           return "New Task Title";
         }}
-        task={{} as Task}
+        task={{} as Task<BaseData, BaseData>} // specify T and K here
       />
     );
 
@@ -269,85 +276,88 @@ calendarManagerState.events !== undefined && Object.keys(calendarManagerState.ev
       container={container}
       speed={speed}
       onChangeSpeed={onChangeSpeed}
-      onTaskClick={(task: Task) => {
+      onDateSelect={onDateSelect}
+      onAudioCallEnd={onAudioCallEnd}
+      onVideoCallEnd={onVideoCallEnd}
+      onTaskClick={(task: Task<BaseData, BaseData>) => {
         console.log("Task clicked:", task);
       }}
-      onTaskDoubleClick={(task: Task) => {
+      onTaskDoubleClick={(task: Task<BaseData, BaseData>) => {
         console.log("Task double clicked:", task);
       }}
-      onTaskContextMenu={(task: Task) => {
+      onTaskContextMenu={(task: Task<BaseData, BaseData>) => {
         console.log("Task context menu clicked:", task);
       }}
-      onTaskDragStart={(task: Task) => {
+      onTaskDragStart={(task: Task<BaseData, BaseData>) => {
         console.log("Task drag start:", task);
       }}
-      onTaskDragEnd={(task: Task) => {
+      onTaskDragEnd={(task: Task<BaseData, BaseData>) => {
         console.log("Task drag end:", task);
       }}
-      onTaskResizingStart={(task: Task) => {
+      onTaskResizingStart={(task: Task<BaseData, BaseData>) => {
         console.log("Task resizing start:", task);
       }}
-      onTaskResizingEnd={(task: Task) => {
+      onTaskResizingEnd={(task: Task<BaseData, BaseData>) => {
         console.log("Task resizing end:", task);
       }}
-      onTaskResize={(task: Task) => {
+      onTaskResize={(task: Task<BaseData, BaseData>) => {
         console.log("Task resized:", task);
       }}
-      onTaskDrop={(task: Task) => {
+      onTaskDrop={(task: Task<BaseData, BaseData>) => {
         console.log("Task dropped:", task);
       }}
-      onTaskChange={(task: Task) => {
+      onTaskChange={(task: Task<BaseData, BaseData>) => {
         console.log("Task changed:", task);
       }}
-      onTaskCreate={(task: Task) => {
+      onTaskCreate={(task: Task<BaseData, BaseData>) => {
         console.log("Task created:", task);
       }}
-      onTaskDelete={(task: Task) => {
+      onTaskDelete={(task: Task<BaseData, BaseData>) => {
         console.log("Task deleted:", task);
       }}
-      onTaskTitleChange={(task: Task) => {
+      onTaskTitleChange={(task: Task<BaseData, BaseData>) => {
         console.log("Task title changed:", task);
       }}
-      onTaskStatusChange={(task: Task) => {
+      onTaskStatusChange={(task: Task<BaseData, BaseData>) => {
         console.log("Task status changed:", task);
       }}
-      onTaskProgressChange={(task: Task) => {
+      onTaskProgressChange={(task: Task<BaseData, BaseData>) => {
         console.log("Task progress changed:", task);
       }}
-      onTaskDependencyChange={(task: Task) => {
+      onTaskDependencyChange={(task: Task<BaseData, BaseData>) => {
         console.log("Task dependency changed:", task);
       }}
-      onTaskFilterChange={(task: Task) => {
+      onTaskFilterChange={(task: Task<BaseData, BaseData>) => {
         console.log("Task filter changed:", task);
       }}
-      onTaskLabelChange={(task: Task) => {
+      onTaskLabelChange={(task: Task<BaseData, BaseData>) => {
         console.log("Task label changed:", task);
       }}
-      onTaskParentChange={(task: Task) => {
+      onTaskParentChange={(task: Task<BaseData, BaseData>) => {
         console.log("Task parent changed:", task);
       }}
-      onTaskExpandedChange={(task: Task) => {
+      onTaskExpandedChange={(task: Task<BaseData, BaseData>) => {
         console.log("Task expanded changed:", task);
       }}
-      onTaskLinkAdd={(task: Task) => {
+      onTaskLinkAdd={(task: Task<BaseData, BaseData>) => {
         console.log("Task link added:", task);
       }}
-      onTaskLinkRemove={(task: Task) => {
+      onTaskLinkRemove={(task: Task<BaseData, BaseData>) => {
         console.log("Task link removed:", task);
       }}
-      onTaskDependencyAdd={(task: Task) => {
+      onTaskDependencyAdd={(task: Task<BaseData, BaseData>) => {
         console.log("Task dependency added:", task);
       }}
-      onTaskDependencyRemove={(task: Task) => {
+      onTaskDependencyRemove={(task: Task<BaseData, BaseData>) => {
         console.log("Task dependency removed:", task);
       }}
-      onTaskProgressAdd={(task: Task) => {
+      onTaskProgressAdd={(task: Task<BaseData, BaseData>) => {
         console.log("Task progress added:", task);
       }}
-      onTaskProgressRemove={(task: Task) => {
+      onTaskProgressRemove={(task: Task<BaseData, BaseData>) => {
         console.log("Task progress removed:", task);
       }}
-      onTaskLabelAdd={(task: Task) => {
+      onTaskLabelAdd={(task: Task<BaseData, BaseData>) => {
         console.log("Task label added:", task);
       }}
       
@@ -421,7 +431,8 @@ calendarManagerState.events !== undefined && Object.keys(calendarManagerState.ev
         newTitle={(): string => {
           return "New Task Title";
         }}
-        task={{} as Task}
+        task={{} as Task<BaseData, BaseData>
+        }
       />
     );
 

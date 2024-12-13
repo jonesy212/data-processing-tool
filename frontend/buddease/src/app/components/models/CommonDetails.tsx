@@ -1,6 +1,6 @@
 // CommonDetails.tsx
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import React, { useState } from "react";
 import { CommonData } from "./CommonData";
 
@@ -10,13 +10,13 @@ interface Customizations<T> {
 }
 
 // Define the CommonDetailsProps interface with the generic CommonData type
-interface CommonDetailsProps<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface CommonDetailsProps<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   data?: CommonData<T, K>
   customizations?: Customizations<T>;
 }
-
+  
 // CommonDetails component for displaying common details
-const CommonDetails = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>({
+const CommonDetails = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>({
   data,
   customizations,
 }: CommonDetailsProps<T, K>) => {

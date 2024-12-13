@@ -1,13 +1,16 @@
 import { handleApiError } from "@/app/api/ApiLogs";
-import { generateAllHeaders, snapshot } from '@/app/api/headers/generateAllHeaders';
+import { createSnapshot, snapshotContainer } from '@/app/api/SnapshotApi';
+import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
 import { BaseData, Data } from '@/app/components/models/data/Data';
 import { CustomApp } from "@/app/components/web3/dAppAdapter/DApp";
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import metadata from '@/app/layout';
 import { AxiosError, AxiosRequestConfig } from "axios";
 import { Style as DocxStyle } from 'docx';
 import { ContentState } from 'draft-js';
 import { getAuthToken } from '../components/auth/getAuthToken';
+import { EventAttendance } from '../components/calendar/AttendancePrediction';
 import { CodingLanguageEnum, LanguageEnum } from '../components/communications/LanguageEnum';
 import { ModifiedDate } from "../components/documents/DocType";
 import DocumentPermissions from '../components/documents/DocumentPermissions';
@@ -16,20 +19,24 @@ import { useBrainstormingPhase, useMeetingsPhase, useProjectManagementPhase, use
 import { authenticationPhaseHook, dataAnalysisPhaseHook, generalCommunicationFeaturesPhaseHook, ideationPhaseHook, jobSearchPhaseHook, productBrainstormingPhaseHook, productLaunchPhaseHook, recruiterDashboardPhaseHook, teamCreationPhaseHook } from "../components/hooks/phaseHooks/PhaseHooks";
 import useErrorHandling from "../components/hooks/useErrorHandling";
 import { darkModeTogglePhaseHook, notificationBarPhaseHook } from "../components/hooks/userInterface/UIPhaseHooks";
+import { getCategoryFromFilePath } from '../components/libraries/categories/getCategoryFromFilePath';
 import { SupportedData } from "../components/models/CommonData";
 import FileData from "../components/models/data/FileData";
 import { BorderStyle, DocumentSize } from '../components/models/data/StatusType';
-import { Meta } from "../components/models/data/dataStoreMethods";
+import { K, Meta } from "../components/models/data/dataStoreMethods";
 import { DataSharingPreferences } from '../components/settings/PrivacySettings';
+import { SnapshotConfigProps } from '../components/snapshots/SnapshotConfigProps';
+import { storeProps } from '../components/snapshots/SnapshotStoreProps';
 import { AlignmentOptions } from '../components/state/redux/slices/toolbarSlice';
 import { Settings } from "../components/state/stores/SettingsStore";
 import { useNotification } from '../components/support/NotificationContext';
 import UserRoles from '../components/users/UserRoles';
+import { generateSnapshotId } from '../components/utils/snapshotUtils';
 import useSecureStoreId from '../components/utils/useSecureStoreId';
 import { currentAppName } from "../components/versions/AppVersion";
 import { VersionData, versionHistory } from "../components/versions/VersionData";
 import { backendConfig } from "../configs/BackendConfig";
-import {  ConfigurationService } from "../configs/ConfigurationService";
+import { ConfigurationService } from "../configs/ConfigurationService";
 import { DataVersions, dataVersions } from '../configs/DataVersionsConfig';
 import { determineFileType } from '../configs/DetermineFileType';
 import { frontendConfig } from "../configs/FrontendConfig";
@@ -38,12 +45,14 @@ import userSettings, { UserSettings } from "../configs/UserSettings";
 import BackendStructure, { backendStructure } from "../configs/appStructure/BackendStructure";
 import FrontendStructure, { frontendStructure } from "../configs/appStructure/FrontendStructure";
 import { CacheData, realtimeData } from "../generators/GenerateCache";
+import { determineType } from '../typings/determineType';
 import { getBackendStructureFilePath, STORE_KEYS, writeAndUpdateCache } from "../utils/CacheManager";
 import { calendarEvent } from './../components/state/stores/CalendarManagerStore';
 import { endpoints } from "./ApiEndpoints";
+import { getSnapshotConfig, getSnapshotsAndCategory } from "./SnapshotApi";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
-import { getSnapshotsAndCategory } from "./SnapshotApi";
+import { ThemeEnum } from "../components/libraries/ui/theme/Theme";
 
 
 // Define the API base URL
@@ -51,17 +60,18 @@ const API_BASE_URL = endpoints.data; // Assuming 'endpoints' has a property 'dat
 const { notify } = useNotification();
 
 
-type CacheReadOptions<T extends  BaseData<T>> = {
+type CacheReadOptions<T extends  BaseData<any>> = {
   filePath: string;
   apiKey: string;
   token: string;
+  currentEvent: EventAttendance | null;
 };
 
 // Define the structure of the response data
 interface CacheResponse<
-  T extends  BaseData<T>,
+  T extends  BaseData<any>,
   K extends T = T,
-  M extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Metadata type
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Metadata type
   ExcludedFields extends keyof T = never
 > {
   id?: string | number | undefined;
@@ -77,45 +87,48 @@ interface CustomStyle extends DocxStyle {
   // Add other custom properties as needed
 }
 
-const createDefaultVersionData = (): VersionData => ({
+const createDefaultVersionData = (overrides?: Partial<VersionData>): VersionData => ({
   versionNumber: "16px",
   id: 0,
   parentId: "",
   parentType: "",
   parentVersion: "",
-  
+
   parentTitle: "",
   parentContent: "",
   parentName: "",
   parentUrl: "",
-  
+
   parentChecksum: "",
   parentAppVersion: "",
   parentVersionNumber: "",
   isLatest: false,
- 
+
   isActive: false,
   isPublished: false,
   publishedAt: new Date(),
   source: "",
   status: "",
- 
+
   version: "",
   timestamp: "",
   user: "",
   changes: [],
- 
+
   comments: [],
   workspaceId: "",
   workspaceName: "",
   workspaceType: "",
-  
+
   workspaceUrl: "",
   workspaceViewers: [],
   workspaceAdmins: [],
   workspaceMembers: [],
- 
-  data: {},
+
+  data: {
+    childIds: [],
+    relatedData: []
+  },
   backend: {} as BackendStructure,
   frontend: {} as FrontendStructure,
   name: "",
@@ -123,24 +136,22 @@ const createDefaultVersionData = (): VersionData => ({
   documentId: "",
   draft: false,
   userId: "",
- 
+
   content: "",
   metadata: {
     author: "",
-     timestamp: new Date().toISOString(),
-     revisionNotes:  ""
-
-   },
+    timestamp: new Date().toISOString(),
+    revisionNotes: ""
+  },
   major: 0,
   minor: 0,
- 
+
   patch: 0,
   checksum: "",
- 
-  releaseDate: '', // Example defaults
-  // Add other defaults if needed
-  // todo
-  // workspaceUrl, workspaceViewers, workspaceAdmins, workspaceMembers,
+
+  releaseDate: '',
+  history: [],
+  ...overrides,
 });
 
 const storeId = useSecureStoreId()
@@ -172,6 +183,7 @@ const appDescription = configServiceInstance.getAppDescription();
 // Create an instance of AppSettings
 const appSettings = new AppSettings(apiKey, appId, appDescription);
 
+const currentEvent = calendarEvent.get();
 // Create an instance of appData based on the CustomApp interface
 const appData: CustomApp = {
   id: appSettings.getAppId(), // Retrieve the actual app ID
@@ -179,6 +191,7 @@ const appData: CustomApp = {
   description: appSettings.getAppDescription(), // Retrieve the actual description
   authToken: authToken, // Replace with the actual auth token
   apiKey: appSettings.getApiKey(), // Retrieve the actual API key
+  relatedData: []
   // Add any additional properties here if needed
 };
 
@@ -187,8 +200,9 @@ const options: CacheReadOptions<CustomApp> = {
   apiKey: appData.apiKey, // Assuming `appData` has an apiKey property
   token: authToken,
   filePath: filePath,
-};
+  currentEvent: currentEvent,
 
+};
 
 // Example usage when calling getSnapshot
 const additionalHeaders: Record<string, string> = generateAllHeaders({ additionalHeaders: { 'Custom-Header': 'value' } }, authToken);
@@ -242,7 +256,7 @@ const cacheData: SupportedData<Data<BaseData<any>>> = {
       enabled: true,
     },
     codeInline: {
-
+      enabled: true,
     },
     quote: {
 
@@ -298,13 +312,10 @@ const cacheData: SupportedData<Data<BaseData<any>>> = {
 
     includeAdditionalInfo: { enabled: true },
 
-    metadata: {
-      key1: "value1",
-      key2: "value2",
-    },
+    metadata: defaultMetadata(),
 
     userSettings: {
-      theme: "dark",
+      theme: ThemeEnum.DARK,
       darkMode: true,
       fontSize: 14,
       language: LanguageEnum.English,
@@ -323,7 +334,7 @@ const cacheData: SupportedData<Data<BaseData<any>>> = {
       themeSwitchingEnabled: true,
 
 
-      notifications: true,
+      notifications: [],
       emailNotifications: true,
       pushNotifications: true,
       notificationEmailEnabled: true,
@@ -358,6 +369,7 @@ const cacheData: SupportedData<Data<BaseData<any>>> = {
       idleTimeout: {
         intervalId: 0,
         isActive: false,  
+        idleTimeoutDuration: 300,
         animateIn: (selector: string) => {},
         startAnimation: () => {},
        
@@ -594,8 +606,8 @@ const cacheData: SupportedData<Data<BaseData<any>>> = {
       } as CustomStyle,
     },
 
-    previousMetadata: {} as StructuredMetadata<any, any>,
-    currentMetadata: {} as StructuredMetadata<any, any>,
+    previousMetadata: {} as UnifiedMetaDataOptions<any, any>,
+    currentMetadata: {} as UnifiedMetaDataOptions<any, any>,
     currentContent: {} as ContentState,
     additionalOptionsLabel: "",
     uniqueIdentifier: "",
@@ -694,12 +706,12 @@ const cacheData: SupportedData<Data<BaseData<any>>> = {
   embeddedMedia: "",
   embeddedCode: "",
   styles: "",
-  previousMetadata: {},
+  previousMetadata: { area: "", currentMeta: {}, metadataEntries: {}},
 
-  currentMetadata: {},
+  currentMetadata: { area: "", currentMeta: {}, metadataEntries: {}},
   currentContent: {},
   previousContent: "",
-  lastModifiedDate: {},
+  lastModifiedDate: {value: "", isModified: "",} as ModifiedDate,
 
   accessHistory: [],
   tableCells: "",
@@ -733,13 +745,13 @@ const cacheData: SupportedData<Data<BaseData<any>>> = {
   includeContent: "",
   includeStatus: "",
   includeAdditionalInfo: "",
-  metadata: {} as UnifiedMetaDataOptions,
+  metadata: {} as UnifiedMetaDataOptions<any>,
 
   userSettings: {} as UserSettings,
   dataVersions: {} as DataVersions,
   folderPath: "",
 
-  // Provide actual data for SupportedData< BaseData<T>> type
+  // Provide actual data for SupportedData< BaseData<any>> type
   userId: 0, // Example property from UserData
   title: 'Sample Todo', // Example property from Todo
   taskId: 'task-1', // Example property from Task
@@ -808,8 +820,9 @@ const getUserByUsername = async (username: string): Promise<any> => {
     
     // Return the user data received from the API response
     return response.data;
-  } catch (error: Error) {
+  } catch (error: any) {
     console.error("Error fetching user by username:", error);
+    const errorMessage = error.message;
     handleApiError(error, errorMessage);
     throw error; // Propagate the error to the calling code
   }
@@ -828,27 +841,110 @@ writeAndUpdateCache(writePath, cacheData)
 
 
 // Update readCache to return SupportedData<T>
-const readCache = async <T extends  BaseData<T>>(
-  { filePath }: CacheReadOptions<T>
+const readCache = async <T extends BaseData<any>>(
+  { filePath, currentEvent }: CacheReadOptions<T> & { currentEvent: EventAttendance | null }
 ): Promise<SupportedData<T> | undefined> => {
   try {
 
-    // Resolve category dynamically using getSnapshotsAndCategory or another suitable method
-    const dynamicCategory = await getSnapshotsAndCategory(filePath); // Assuming this method fetches the correct category
- 
-    const userName = 
-    // Fetch user information dynamically by username
-    const userData = await getUserByUsername(username); // Assuming this returns user data including userName
-    const foundUserName = userData?.userName; // Access the userName property
+    function handleEvent(event: SnapshotEvent): void {
+      if (isTaskEvent(event)) {
+        console.log("Task event:", event.action, event.taskId);
+      } else if (isUserEvent(event)) {
+        console.log("User action:", event.action, event.userId);
+      } else {
+        console.warn("Unhandled event type:", event.eventType);
+      }
+    }
+
+    if (currentEvent) {
+      if (isEventAttendance(currentEvent)) {
+        console.log("Handling EventAttendance:", currentEvent.attendees);
+        // Specific logic for EventAttendance
+      } else if (isSystemEvent(currentEvent)) {
+        console.log("Handling SystemEvent:", currentEvent.systemMessage);
+        // Specific logic for SystemEvent
+      } else {
+        console.warn("Unhandled event type:", currentEvent.eventType);
+      }
+    }
+    // Example values for missing arguments
+    const category = getCategoryFromFilePath(filePath);  // Define this function or use a suitable value
+    const snapshotId = generateSnapshotId;             // Generate or retrieve snapshotId
+    const createdSnapshot = createSnapshot(snapshot);                   // Create or retrieve a snapshot instance
+    // Determine type based on filePath
+    const type = determineType(filePath);
+    // Retrieve the current event
+    const event = currentEvent;   
     
-    // Fetch cache data using the file path
-    const cacheResponse: CacheResponse<T, Meta> | undefined = await fetchCacheData(filePath, dynamicCategory, userName);
+
+    const subscriberId = subscriberApi.getSubscriberId.toString();
+
+    // SnapshotConfigProps for getSnapshotConfig
+    const snapshotConfigProps: SnapshotConfigProps<T> = {
+      id: String(numericId), // Ensure numericId is used correctly here
+      subscriberId: subscriberId, // Assume subscriberId is available
+      dataStoreMethods: dataStoreMethods, // Assume these are available
+      dataStore: dataStore, // Assume these are available
+      metadata: metadata, // Replace with the correct metadata
+      endpointCategory: endpointCategory, // Category for the endpoint
+      storeProps: storeProps, // Store props
+      snapshotConfigData: snapshotConfigData, // Snapshot config data
+      snapshotStoreConfigData: snapshotStoreConfigData, // Snapshot store config data
+      snapshotContainer: snapshotContainer, // Snapshot container
+    };
+    
+    
+    
+    // Call getSnapshotConfig with the correct arguments
+    const snapshotConfig =  getSnapshotConfig(
+      String(numericId),
+      snapshotId,
+      criteria,
+      category,
+      categoryProperties,
+      snapshotConfigProps.subscriberId, // subscriberId
+      delegate,
+      snapshotData,
+      snapshot,
+      data,
+      events,
+      dataItems,
+      newData,
+      payload,
+      store,
+      callback,
+      snapshotConfigProps.storeProps, // storeProps
+      snapshotConfigProps.endpointCategory, // endpointCategory
+      snapshotConfigProps.snapshotContainer // snapshotContainer
+    );
+       
+    // Retrieve snapshot configuration
+ 
+    // Fetch user information dynamically by username
+    const username = ""; // Ideally set this dynamically (e.g., from user context or another source)
+    const userData = await getUserByUsername(username); // Fetch user data
+    const foundUserName = userData?.username; // Access the username property, or handle undefined if user not found
+
+    // Handle case when user data or username is not found
+    if (!foundUserName) {
+      throw new Error("User not found or username is invalid.");
+    }
+
+    // Now you can call getSnapshotsAndCategory with all required arguments
+    const dynamicCategory = await getSnapshotsAndCategory(
+      category, snapshotId, createdSnapshot, type, event, snapshotConfig
+    );
+
+    // Fetch cache data using the file path and foundUserName
+    const cacheResponse: CacheResponse<T, K<T>, Meta<T, K>> | undefined = await fetchCacheData(filePath, dynamicCategory, foundUserName);
 
     if (cacheResponse) {
       // Example: Extract relevant data from cacheResponse
       const data: SupportedData<T> = cacheResponse.data; // Assuming cacheResponse.data is of type SupportedData<T>
       return data;
     }
+    // Handle the response as needed
+    return dynamicCategory;
   } catch (error) {
     console.error("Error reading cache:", error);
     throw error; // Rethrow the error after logging
@@ -856,6 +952,7 @@ const readCache = async <T extends  BaseData<T>>(
 
   return undefined; // Explicitly return undefined if no cacheResponse is found
 };
+
 
 readCache(options)
   .then((data) => {
@@ -868,10 +965,10 @@ readCache(options)
 
 // Function to fetch cache data (mock implementation)
 const fetchCacheData = async <
-  T extends BaseData<T>, 
+  T extends BaseData<any>, 
   K extends T = T, 
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
->(filePath: string, categoryName: string, userName: string): Promise<CacheResponse<T, M>> => {
+>(filePath: string, categoryName: string, username: string): Promise<CacheResponse<T, Meta>> => {
   // Initialize the useErrorHandling hook
   const { handleError } = useErrorHandling();
 
@@ -881,12 +978,14 @@ const fetchCacheData = async <
     
     const fileType = determineFileType(filePath); // Assuming determineFileType takes filePath
 
-    const generatedID = UniqueIDGenerator.generateIDForCache(categoryName, userName);
+    const generatedID = UniqueIDGenerator.generateIDForCache(categoryName, username);
 
     // Mock cache data object using the CacheResponse interface
     const mockCacheData: CacheData = {
       _id: generatedID, // Example data for CacheData
       id: "",
+      // #todo
+      // minor, patch, createdBy
       lastUpdated: versionHistory,
       userSettings: userSettings,
       dataVersions: dataVersions ?? [],

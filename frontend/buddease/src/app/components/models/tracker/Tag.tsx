@@ -1,26 +1,32 @@
 import React from 'react';
 import { TagsRecord } from '../../snapshots';
 import { BaseData } from '../data/Data';
+import { ExcludedFields } from '../../routing/Fields';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { AllTypes } from '../../typings/PropTypes';
 
 // Define the Tag interface and TagOptions interface
 interface Tag<
-  T extends  BaseData<T>,
-  K extends T = T> {
+  T extends  BaseData<any>,
+  K extends T = T
+> extends TagOptions<T, K> {
   id: string;
   name: string;
   color: string;
   relatedTags: string[];
-  description?: string
   // attribs:
 }
 
-interface TagOptions {
+interface TagOptions<
+  T extends BaseData<any>,
+  K extends T = T
+> {
   id: string;
   name: string;
   color: string;
   description: string;
   enabled: boolean;
-  type: string;
+  type: AllTypes;
   tags?: TagsRecord<T, K> | string[] | undefined; 
   createdAt?: Date;
   updatedAt?: Date;
@@ -29,12 +35,15 @@ interface TagOptions {
 }
 
 // TagProps for the TagComponent
-interface TagProps {
-  tagOptions: TagOptions;
+// TagProps for passing tag options to a TagComponent
+interface TagProps<T extends BaseData<any>, K extends T = T> {
+  tagOptions: TagOptions<T, K>; // This will allow flexibility for the tag options
+  excludedFields?: ExcludedFields<T, keyof T>;
+  meta?: StructuredMetadata<T, K>; // You could include a MetaData type for extra metadata
 }
 
 // Functional Component TagComponent
-const TagComponent: React.FC<TagProps> = ({ tagOptions }) => {
+const TagComponent: React.FC<TagProps<BaseData<any>>> = ({ tagOptions, excludedFields, meta  }) => {
   // Function to display tag options
   const display = () => {
     console.log(`Tag Name: ${tagOptions.name}`);
@@ -56,14 +65,15 @@ const TagComponent: React.FC<TagProps> = ({ tagOptions }) => {
     <div>
       <p>Tag Name: {tagOptions.name}</p>
       <p>Tag Color: {tagOptions.color}</p>
+      {/* Render metadata if available */}
+      {meta && <span>Created By: {meta.createdBy}</span>}
     </div>
   );
 };
-
 export default TagComponent;
 
 // Example usage of TagComponent
-const tagOptions1: TagOptions = {
+const tagOptions1: TagOptions<BaseData> = {
   id: "1",
   name: "Important",
   color: "red",
@@ -91,7 +101,7 @@ const tagOptions1: TagOptions = {
   timestamp: 0
 };
 
-const tagOptions2: TagOptions = {
+const tagOptions2: TagOptions<BaseData> = {
   id: "2",
   name: "Less Important",
   color: "blue",
@@ -114,19 +124,24 @@ tag1.props.children;
 tag2.props.children;
 
 // Sorting function for TagOptions
-const localeCompare = (a: TagOptions, b: TagOptions) => {
+const localeCompare =  <T extends BaseData, K extends T = T>(a: TagOptions<T, K>, b: TagOptions<T, K>) => {
   return a.name.localeCompare(b.name);
 };
 
-const sortTags = (tags: TagOptions[]) => {
+const sortTags =  <T extends BaseData, K extends T = T>(tags: TagOptions<T, K>[]) => {
   tags.sort(localeCompare);
   return tags;
 };
 
 // Function to create a tag
-export const createTag = (id: string, name: string, color: string, p0: {
-  tags: (string[] | Tag<any, any>[]) & TagsRecord; description: string; enabled: boolean;
-}): TagOptions => ({
+export const createTag =  <T extends BaseData, K extends T = T>(
+  id: string, 
+  name: string, 
+  color: string,
+  p0: {
+  tags: (string[] | Tag<any, any>[]) & TagsRecord<any>;
+  description: string; enabled: boolean;
+}): TagOptions<T, K> => ({
   id,
   name,
   color,

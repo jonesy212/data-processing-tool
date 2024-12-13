@@ -10,6 +10,8 @@ import {
   DocumentPath,
 } from "../documents/DocumentGenerator";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
+import { BaseData } from "../models/data/Data";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 enum FormatEnum {
   JSON = "json",
@@ -37,7 +39,7 @@ const allowedDiagramFormats: FormatEnum[] = [
 
 async function loadJsonContent(
   draftId: string,
-  document: DocumentPath,
+  document: DocumentPath<BaseData, BaseData, StructuredMetadata<BaseData, BaseData>>, // Provide appropriate types here
   config: DatabaseConfig,
   dataCallback: (data: any) => void
 ): Promise<any> {
@@ -55,7 +57,7 @@ async function loadJsonContent(
 
 async function loadXmlContent(
   draftId: string,
-  document: DocumentPath,
+  document: DocumentPath<BaseData, BaseData, StructuredMetadata<BaseData, BaseData>>, // Provide appropriate types here
   config: DatabaseConfig,
   dataCallback: (data: any) => void
 ): Promise<any> {
@@ -75,9 +77,9 @@ async function csvToJson(csvContent: string) {
 // Function to load document content
 async function loadDocumentContent(
   draftId: string,
-  document: DocumentPath,
+  document: DocumentPath<BaseData, BaseData, StructuredMetadata<BaseData, BaseData>>,
   newContent: CustomDocxtemplater<any>,
-  dataCallback: (data: WritableDraft<DocumentPath>) => void,
+  dataCallback: (data: WritableDraft<DocumentPath<BaseData, BaseData, StructuredMetadata<BaseData, BaseData>>>) => void,
   format: FormatEnum,
   docx?: CustomDocxtemplater<any>,
   config?: DatabaseConfig,

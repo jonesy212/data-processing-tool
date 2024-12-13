@@ -1,4 +1,6 @@
 //projects/Project.ts
+import { BaseData } from '@/app/components/models/data/Data';
+import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { AllStatus } from '@/app/components/state/stores/DetailsListStore';
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import React, { ReactNode, useEffect, useState } from "react";
@@ -36,7 +38,7 @@ export enum ProjectType {
 } 
 
 
-interface Project extends Data {
+interface Project extends BaseData<any> {
   id: string;
   name: string;
   description: string; // Updated this line
@@ -52,7 +54,7 @@ interface Project extends Data {
   type: ProjectType;
   status: AllStatus
   currentPhase: Phase | null; // Provide a default value or mark as optional
-  comments?: (Comment | CustomComment)[] | undefined  // Add other project-related fields as needed
+  comments?: (Comment<any, any, any> | CustomComment)[] | undefined  // Add other project-related fields as needed
   commnetBy?: User | Member;
   then?: typeof implementThen;
   data?: ProjectData;
@@ -148,16 +150,17 @@ export function isProjectInSpecialPhase(project: Project): boolean {
 
 class ProjectImpl implements Project {
   [key: string]: any;
-  scheduled?: boolean | undefined;
+  scheduled?: ScheduledData<any> | undefined;
+  isScheduled?: boolean;
   ideas: Idea[] = [];
   dueDate?: Date | null | undefined;
   priority?: "low" | "medium" | "high" | undefined;
   assignee?: User | undefined;
-  collaborators?: string[] | undefined;
+  collaborators?: Collaborator[] | undefined;
   comments?: (Comment | CustomComment)[] | undefined
   attachments?: Attachment[] | undefined;
   customProperty?: string;
-  subtasks?: TodoImpl[] | undefined;
+  subtasks?: TodoImpl<any, any, any, any>[] | undefined;
   createdAt?: Date | undefined;
   updatedAt?: Date | undefined;
   createdBy?: string | undefined;
@@ -169,7 +172,7 @@ class ProjectImpl implements Project {
   isBeingCompleted?: boolean | undefined;
   isBeingReassigned?: boolean | undefined;
   collaborationOptions?: CollaborationOptions[] | undefined;
-  videoData: VideoData = {} as VideoData;
+  videoData: VideoData<any, any> = {} as VideoData<any, any>;
   _id: string = "0";
   id: string = "0"; // Initialize id property to avoid error
   name: string = "projectName";
@@ -189,7 +192,7 @@ class ProjectImpl implements Project {
   tags:  string[] = [];
   then: typeof implementThen = implementThen;
   analysisType?: AnalysisTypeEnum | undefined;
-  analysisResults: DataAnalysisResult[] = [];
+  analysisResults: DataAnalysisResult<any>[] = [];
   videoUrl: string = "videoUrl";
   videoThumbnail: string = "thumbnail";
   videoDuration: number = 0;
@@ -237,6 +240,10 @@ const currentPhase: Phase = {
   subPhases: [],
   data: {} as Data,
   hooks: {} as CustomPhaseHooks,
+  description, label: {},
+  currentMeta: {}, 
+  currentMetadata: {},
+
   component: (props: {}, context?: any): ReactNode => {
     return (
       <div>
@@ -286,10 +293,17 @@ export interface ProjectData extends Project {
 
 currentProject.phases = [
   {
+ 
     id: currentPhase.id,
     name: currentPhase.name,
+    description: currentPhase.description,
+    label: currentPhase.label,
+    date: currentPhase.date,
+    createdBy: currentPhase.createdBy,
     startDate: (currentPhase.startDate),
     endDate: (currentPhase.endDate),
+    currentMeta: (currentPhase.currentMeta), 
+    currentMetadata: (currentPhase.currentMetadata),
     subPhases: [],
     data: {} as Data,
     component: () => {
@@ -359,7 +373,7 @@ const ProjectDetailsComponents: React.FC<UpdatedProjectDetailsProps> = ({
   return details ? (
     <>
       <CommonDetails
-        data={{} as CommonData}
+        data={{} as CommonData<T, K, Meta, ExcludedFields>}
         details={{
           _id: details.project._id || "",
           id: details.project.id || "",
@@ -369,7 +383,11 @@ const ProjectDetailsComponents: React.FC<UpdatedProjectDetailsProps> = ({
           updatedAt: details.updatedAt
             ? new Date(details.updatedAt)
             : undefined,
-          // analysisResults: details.project.analysisResults || [],
+          analysisResults: details.project.analysisResults || [],
+          currentMeta: details.project.currentMeta,
+          currentMetadata: details.project.currentMetadata,
+          createdBy: details.project.createdBy,
+         
         }}
       />
       <ButtonGenerator

@@ -59,8 +59,6 @@ const storeMetadata = [
   { name: 'SupportStore', components: ['support'] },
   { name: 'VersionsStore', components: ['versions'] }, 
     // Add more metadata entries as needed
-
-    
 ];
 
 

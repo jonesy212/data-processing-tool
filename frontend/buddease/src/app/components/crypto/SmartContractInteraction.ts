@@ -1,6 +1,6 @@
 import { Signature } from "ethers";
 import { SubscriptionTypeEnum } from "../models/data/StatusType";
-import { Transaction } from "../payment/Transaction";
+import { Transaction, BaseTransaction } from "../payment/Transaction";
 
 interface SmartContractInteraction {
   id: string | null;
@@ -20,7 +20,7 @@ interface CustomTransactionProps extends SmartContractInteraction,  BaseTransact
   to?: string | null | undefined;
   nonce?: number | null;
   gasLimit?: bigint | null;
-  gasPrice?: bigint | null;
+  gasPrice: bigint | null;
   maxPriorityFeePerGas: bigint | null;
   maxFeePerGas: bigint | null;
   type: number | null;

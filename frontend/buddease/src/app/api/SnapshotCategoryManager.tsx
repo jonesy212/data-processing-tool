@@ -1,9 +1,9 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Snapshot } from "../components/snapshots";
 import { SnapshotCategory, SnapshotCategoryType } from "./getSnapshotEndpoint";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
-class SnapshotCategoryManager <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+class SnapshotCategoryManager <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
     private categories: SnapshotCategory<T, K>[] = [];
 
     // Add a new category

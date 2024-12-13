@@ -1,16 +1,16 @@
 // subscriberTypeGuads.ts
 import { SnapshotStoreConfig } from '@/app/components/snapshots';
 
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseData } from '@/app/components/models/data/Data';
 import { Subscriber } from "@/app/components/users/Subscriber";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { SnapshotStoreOptions } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { BaseData } from '@/app/components/models/data/Data';
 import { SnapshotData, SnapshotsArray } from "../snapshots";
 import { SnapshotSubscriberManagement } from "../snapshots/SnapshotSubscriberManagement";
 
 // Type guard to differentiate between SnapshotSubscriberManagement and SnapshotStoreOptions
-function isSnapshotSubscriberManagement<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isSnapshotSubscriberManagement<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     obj: SnapshotSubscriberManagement<T, K> | SnapshotStoreOptions<T, K>
   ): obj is SnapshotSubscriberManagement<T, K> {
     return (
@@ -21,15 +21,15 @@ function isSnapshotSubscriberManagement<T extends  BaseData<T>, K extends T = T,
 
 
 // Usage Example
-function handleSubscription<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function handleSubscription<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   obj: SnapshotSubscriberManagement<T, K> | SnapshotStoreOptions<T, K>,
   snapshotStore: SnapshotStore<T, K>,
   snapshotId: string,
   snapshotData: SnapshotData<T, K>,
   category: symbol | string | Category | undefined,
   snapshotConfig: SnapshotStoreConfig<T, K>,
-  callback: (snapshots: SnapshotsArray<T>) => Subscriber<T, K> | null,
-  snapshots: SnapshotsArray<T>
+  callback: (snapshots: SnapshotsArray<T, K>) => Subscriber<T, K> | null,
+  snapshots: SnapshotsArray<T, K>
 ): void {
   if (isSnapshotSubscriberManagement(obj)) {
     // Handle SnapshotSubscriberManagement case

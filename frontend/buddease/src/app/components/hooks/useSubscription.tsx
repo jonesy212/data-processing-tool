@@ -1,3 +1,4 @@
+import { BaseData } from '@/app/components/models/data/Data';
 import { LiveEvent } from "@refinedev/core";
 import { useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
@@ -5,7 +6,6 @@ import {
     SubscriptionActions
 } from "../actions/SubscriptionActions";
 import { ModifiedDate } from "../documents/DocType";
-import { Data } from "../models/data/Data";
 import { CustomSnapshotData, Snapshot, SnapshotContainerData } from "../snapshots";
 import { Callback } from "@/app/components/snapshots/subscribeToSnapshotsImplementation";
 
@@ -13,6 +13,7 @@ import { fetchPortfolioUpdatesLastUpdated } from "../trading/TradingUtils";
 import { Subscriber } from "../users/Subscriber";
 import { T, K } from "../models/data/dataStoreMethods";
 import { ExcludedFields } from "../routing/Fields";
+import { createAction } from "@reduxjs/toolkit";
 
 interface UseSubscriptionOptions {
   channel: string;
@@ -36,9 +37,7 @@ const useSubscription = ({
   onLiveEvent,
   enabled = true,
 }: UseSubscriptionOptions) => {
-  const [subscribers, setSubscribers] = useState<
-    Subscriber<Data<T>, CustomSnapshotData<T>>[]
-  >([]);
+  const [subscribers, setSubscribers] = useState<Subscriber<BaseData<any>, CustomSnapshotData<any>>[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const dispatch = useDispatch()
   const subscribe = () => {
@@ -58,8 +57,8 @@ const useSubscription = ({
       unsubscribeData: any;
     },
     callback: Callback<Snapshot<SnapshotContainerData<T, K<T>,
-      ExcludedFields<T, K<T>>>, SnapshotContainerData<T, K<T>,
-      ExcludedFields<T, K<T>>>>> | null
+      ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K<T>,
+      ExcludedFields<T, keyof T>>>> | null
   ) => {
     // Filter out the subscriber with the given subscriberId
     const updatedSubscribers = subscribers.filter(
@@ -93,7 +92,7 @@ const useSubscription = ({
     if (callback) {
       // Here, assuming you want to pass a Snapshot object to the callback.
       // You may need to adjust the structure of the Snapshot data accordingly.
-      const snapshot: Snapshot<SnapshotContainerData<T, K<T>, ExcludedFields>> = {
+      const snapshot: Snapshot<SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>> = {
         // Populate the Snapshot with the relevant data
         snapshotId: unsubscribeDetails.snapshotId,
         snapshotData: unsubscribeDetails.unsubscribeData,

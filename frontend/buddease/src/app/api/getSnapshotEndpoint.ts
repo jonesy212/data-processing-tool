@@ -1,6 +1,6 @@
+import { BaseData } from '@/app/components/models/data/Data';
 import { Snapshot } from "../components/snapshots";
 import endpointConfigurations, { EndpointConfig } from "./endpointConfigurations";
-import { BaseData } from '@/app/components/models/data/Data';
 
 
 type SnapshotCategoryType = "User" | "Todo" | "Task" | "Delegate" | "Highlight" |  "Project" |
@@ -8,7 +8,7 @@ type SnapshotCategoryType = "User" | "Todo" | "Task" | "Delegate" | "Highlight" 
     "Comment";
 
 interface SnapshotCategory<
-  T extends  BaseData<T>, 
+  T extends  BaseData<any>, 
 //   ExcludedFields extends keyof T = never, // Declare ExcludedFields first
   K extends T = T,
 // K extends Exclude<keyof T, ExcludedFields> = Exclude<keyof T, ExcludedFields> // Then use it in K

@@ -1,15 +1,17 @@
-
 import { BaseData } from '@/app/components/models/data/Data';
 import { Callback, Snapshot, SnapshotConfig, SnapshotData, SnapshotWithCriteria } from '@/app/components/snapshots';
-import SnapshotStore, { SubscriberCollection } from '@/app/components/snapshots/SnapshotStore';
+import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseEvent, SharedSnapshotEvent } from "@/app/typings/eventTypes";
 import { UpdateSnapshotPayload } from '../database/Payload';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import { EventRecord } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { SubscriberCollection } from '../users/SubscriberCollection';
 
 // Step 1: Base Interface for Shared Properties
-interface BaseSnapshotEvents<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface BaseSnapshotEvents<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   initialConfig: SnapshotConfig<T, K>;
   callbacks: Record<string, Array<(snapshot: Snapshot<T, K>) => void>>;
   subscribers: SubscriberCollection<T, K>;
@@ -20,6 +22,7 @@ interface BaseSnapshotEvents<T extends  BaseData<T>, K extends T = T, Meta exten
   trigger: (
     event: string | SnapshotEvents<T, K>,
     snapshot: Snapshot<T, K>,
+    eventDate: Date,
     snapshotId: string,
     subscribers: SubscriberCollection<T, K>,
     type: string,
@@ -35,7 +38,7 @@ interface BaseSnapshotEvents<T extends  BaseData<T>, K extends T = T, Meta exten
   ) => void;
   off: (
     event: string,
-    callback: Callback<Snapshot<T, K>>,
+    callback: (snapshot: Snapshot<T, K>) => void,
     snapshotId: string,
     subscribers: SubscriberCollection<T, K>,
     type: string,
@@ -78,8 +81,14 @@ interface BaseSnapshotEvents<T extends  BaseData<T>, K extends T = T, Meta exten
 }
 
 // Step 2:  Define the common SnapshotEvents interface
-interface SnapshotEvents<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends BaseSnapshotEvents<T, K> {
+interface SnapshotEvents<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+  extends BaseSnapshotEvents<T, K>, BaseEvent, SharedSnapshotEvent<T, K> {
   key: string;
+  target?: EventTarget; // Event target
+
   onSnapshotAdded: (
     event: string,
     snapshot: Snapshot<T, K>,
@@ -113,7 +122,7 @@ interface SnapshotEvents<T extends  BaseData<T>, K extends T = T, Meta extends S
   ) => void;
 
   onSnapshotUpdated: (
-    // event: string,
+    event: string,
     snapshotId: string,
     snapshot: Snapshot<T, K>,
     data: Map<string, Snapshot<T, K>>,

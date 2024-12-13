@@ -1,7 +1,8 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { SnapshotStoreConfig } from "../components/snapshots";
 
-export function getConfigPromise<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<SnapshotStoreConfig<T, K>[]> {
+export function getConfigPromise<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<SnapshotStoreConfig<T, K>[]> {
   return new Promise((resolve, reject) => {
       try {
           // Simulate asynchronous data retrieval, e.g., from a database or API

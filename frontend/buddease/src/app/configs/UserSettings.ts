@@ -1,3 +1,4 @@
+import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
 import { Task } from "@/app/components/models/tasks/Task";
 import { TodoManagerStore } from "@/app/components/state/stores/TodoStore";
 import { Idea } from "@/app/components/users/Ideas";
@@ -5,7 +6,7 @@ import { AxiosResponse } from "axios";
 import { object } from "prop-types";
 import { NestedEndpoints } from "../api/ApiEndpoints";
 import { CalendarEvent } from "../components/calendar/CalendarEvent";
-import { CodingLanguageEnum, LanguageEnum } from "../components/communications/LanguageEnum";
+import { CodingLanguageEnum } from "../components/communications/LanguageEnum";
 import { Attachment } from "../components/documents/Attachment/attachment";
 import HighlightEvent from "../components/documents/screenFunctionality/HighlightEvent";
 import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
@@ -142,7 +143,7 @@ export interface UserSettings extends Settings {
     | BrowserCheckStore
     | VideoData<BaseData, BaseData>
     | UserAssignee
-    | DataAnalysisResult[]
+    | DataAnalysisResult<BaseData>[]
     | Category
     | CategoryProperties
     | Attachment[]
@@ -259,12 +260,12 @@ export interface UserSettings extends Settings {
   selectDatabaseVersion: string;
   selectAppVersion: string;
   enableDatabaseEncryption: boolean;
+  notificationsEnabled: boolean;
 }
 
 const userSettings: UserSettings = {
   
- 
-  
+  notificationsEnabled: true,
   endpoints: {} as NestedEndpoints,
   highlights: [],
   results: [],
@@ -451,7 +452,7 @@ const userSettings: UserSettings = {
       NOTIFICATION_MESSAGE: "",
       NOTIFICATION_MESSAGES: {},
       
-      setDynamicNotificationMessage: (message: string) => {},
+       setDynamicNotificationMessage: (message: Message, type: NotificationType) => {},
       takeTaskSnapshot: (taskId: string) => {},
       markTaskAsComplete: (taskId: string) => {},
       updateTaskPositionSuccess: (payload: { task: Task; }) => {},
@@ -536,7 +537,7 @@ const userSettings: UserSettings = {
         reassignUsersInTodos: function (todoIds: string[], oldUserId: string, newUserId: string): void {
           throw new Error("Function not implemented.");
         },
-        assignUserSuccess: function (): void {
+        assignUserSuccess: function (message: string): void {
           throw new Error("Function not implemented.");
         },
         assignUserFailure: function (error: string): void {

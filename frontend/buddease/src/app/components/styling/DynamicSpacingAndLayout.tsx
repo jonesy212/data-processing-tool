@@ -1,3 +1,4 @@
+import { View, Text, StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Platform } from 'react-native'; // Import Platform from react-native
 
@@ -29,59 +30,71 @@ const DynamicSpacingAndLayout: React.FC<DynamicSpacingAndLayoutProps> = ({ dynam
   }, [fetchDocuments]);
 
   return (
-    <div>
-      <h2>{dynamicContent ? 'Dynamic' : 'Static'} Spacing and Layout</h2>
-      {dynamicContent ? renderDynamicContent({ margin, padding, border }, documents, deviceType) : renderStaticContent({ margin, padding, border })}
-      {/* Add more examples for dynamic spacing and layout */}
-    </div>
+    <View style={{ margin: margin as any, padding: padding as any, borderWidth: border as any }}>
+      <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 10 }}>
+        {dynamicContent ? 'Dynamic' : 'Static'} Spacing and Layout
+      </Text>
+
+      {dynamicContent
+        ? renderDynamicContent({ margin, padding, border }, Object.values(documents), deviceType)
+        : renderStaticContent({ margin, padding, border })}
+    </View>
   );
 };
-
+// Static content rendering function
 const renderStaticContent = ({ margin, padding, border }: SpacingAndLayoutProps) => {
   return (
-    <div>
-      <h3>Static Spacing and Layout</h3>
-      <div style={{ margin, padding, border }}>
-        {/* Static content with spacing and layout */}
-      </div>
-    </div>
+    <View style={{ margin: margin as any, padding: padding as any, borderWidth: border as any }}>
+      <Text style={{ fontSize: 16 }}>Static Spacing and Layout</Text>
+      <View style={{ margin: margin as any, padding: padding as any, borderWidth: border as any, backgroundColor: '#f0f0f0', height: 100 }}>
+        <Text>Static content with spacing and layout</Text>
+      </View>
+    </View>
   );
 };
 
-const renderDynamicContent = ({ margin, padding, border }: SpacingAndLayoutProps, documents: any, deviceType: string) => {
+// Dynamic content rendering function
+const renderDynamicContent = (
+  { margin, padding, border }: SpacingAndLayoutProps,
+  documents: any[],
+  deviceType: string
+) => {
   return (
-    <div>
-      <h3>Dynamic Spacing and Layout</h3>
-      <div style={{ margin, padding, border }}>
-        {/* Dynamic content with spacing and layout */}
-        {JSON.stringify(documents)}
+    <View style={{ margin: margin as any, padding: padding as any, borderWidth: border as any }}>
+      <Text style={{ fontSize: 16 }}>Dynamic Spacing and Layout</Text>
+      <View style={{ backgroundColor: '#e0e0e0', padding: 10 }}>
+        {/* Render documents dynamically */}
+        <Text>Documents:</Text>
+        {documents.map((doc, index) => (
+          <Text key={index}>{JSON.stringify(doc)}</Text>
+        ))}
 
         {/* Render additional content based on the user's device type */}
         {deviceType === 'android' && <AndroidSpecificContent />}
         {deviceType === 'ios' && <IOSSpecificContent />}
-        {/* Add logic for tablet-specific content if needed */}
-      </div>
-    </div>
+        {/* Add logic for tablet or other platforms as needed */}
+      </View>
+    </View>
   );
 };
 
-
-// Additional components for Android and iOS specific content
+// Android-specific content component
 const AndroidSpecificContent = () => {
   return (
-    <div>
-      <h4>Android Specific Content</h4>
-      {/* Add Android-specific content here */}
-    </div>
+    <View>
+      <Text style={{ fontSize: 14, color: 'green' }}>Android Specific Content</Text>
+      <Text>Additional content for Android users.</Text>
+    </View>
   );
 };
 
+// iOS-specific content component
 const IOSSpecificContent = () => {
   return (
-    <div>
-      <h4>iOS Specific Content</h4>
-      {/* Add iOS-specific content here */}
-    </div>
+    <View>
+      <Text style={{ fontSize: 14, color: 'blue' }}>iOS Specific Content</Text>
+      <Text>Additional content for iOS users.</Text>
+    </View>
   );
 };
 

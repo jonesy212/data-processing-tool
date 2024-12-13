@@ -1,20 +1,20 @@
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { Content } from '@/app/components/models/content/AddContent';
 import { BaseData } from '@/app/components/models/data/Data';
 import { StatusType } from "@/app/components/models/data/StatusType";
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import ListGenerator from "@/app/generators/ListGenerator";
 import React from "react";
-import { Data } from "../models/data/Data";
+import { Data, SharedBaseData } from "../models/data/Data";
 import { Phase } from "../phases/Phase";
-
+ 
 // Define a type representing the data structure for blog posts
 interface BlogData<
-  T extends  BaseData<T>,
+  T extends  BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
-  > {
+  > extends SharedBaseData {
   _id: string;
   id: string;
   title?: string;

@@ -1,10 +1,10 @@
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { StatusType } from "../models/data/StatusType";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 
 // snapshotDefaults.ts
-function defaultTransformDelegate<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(snapshot: Snapshot<T, K>): Snapshot<T, K> {
+function defaultTransformDelegate<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(snapshot: Snapshot<T, K>): Snapshot<T, K> {
     // Example transformation logic
     // You can modify the snapshot data here, e.g., adding metadata or modifying existing fields.
     snapshot.metadata = {
@@ -14,7 +14,7 @@ function defaultTransformDelegate<T extends  BaseData<T>, K extends T = T, Meta 
   
     return snapshot;
   }
-  function defaultAddDataStatus<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  function defaultAddDataStatus<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     id: number,
     status: StatusType | undefined,
     snapshot: Snapshot<T, K>
@@ -43,7 +43,7 @@ function defaultTransformDelegate<T extends  BaseData<T>, K extends T = T, Meta 
 
   
 
-  function defaultRemoveData<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  function defaultRemoveData<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     id: number,
     snapshot: Snapshot<T, K>
   ): void {
@@ -58,7 +58,7 @@ function defaultTransformDelegate<T extends  BaseData<T>, K extends T = T, Meta 
     }
   }
     
-  function defaultUpdateData<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  function defaultUpdateData<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     id: number,
     newData: Snapshot<T, K>,
     snapshot: Snapshot<T, K>
@@ -75,7 +75,7 @@ function defaultTransformDelegate<T extends  BaseData<T>, K extends T = T, Meta 
     }
   }
 
-  function defaultUpdateDataTitle<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  function defaultUpdateDataTitle<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   id: number,
   title: string,
   snapshot: Snapshot<T, K>
@@ -94,7 +94,7 @@ function defaultTransformDelegate<T extends  BaseData<T>, K extends T = T, Meta 
 }
 
   
-function defaultUpdateDataDescription<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function defaultUpdateDataDescription<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     id: number,
     description: string,
     snapshot: Snapshot<T, K>
@@ -114,7 +114,7 @@ function defaultUpdateDataDescription<T extends  BaseData<T>, K extends T = T, M
 
   
 
-  function defaultUpdateDataStatus<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  function defaultUpdateDataStatus<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     id: number,
     status: StatusType | undefined,
     snapshot: Snapshot<T, K>
@@ -141,7 +141,7 @@ function defaultUpdateDataDescription<T extends  BaseData<T>, K extends T = T, M
   }
 
   
-  function defaultAddDataSuccess<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  function defaultAddDataSuccess<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     payload: { data: Snapshot<T, K>[] },
     snapshot: Snapshot<T, K>
   ): void {

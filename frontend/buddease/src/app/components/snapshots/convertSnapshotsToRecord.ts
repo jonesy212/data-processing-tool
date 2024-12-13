@@ -4,7 +4,7 @@
 
 // // convertSnapshotsToRecord.ts
 // function convertSnapshotsToRecord<
-//     T extends  BaseData<T>,
+//     T extends  BaseData<any>,
 //     K extends T = T>(
 //     snapshots: Snapshot<T, K>[]
 //   ): Record<string, CalendarManagerStoreClass<T, K>[]> {

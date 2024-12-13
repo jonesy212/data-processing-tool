@@ -1,6 +1,5 @@
 import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { AxiosError } from 'axios';
-import dotProp from 'dot-prop';
 import { Data } from '../components/models/data/Data';
 import { useDetailsContext } from '../components/models/data/DetailsContext';
 import { DetailsItem } from '../components/state/stores/DetailsListStore';
@@ -59,7 +58,7 @@ const handleDetailsApiErrorAndNotify = (
 };
 
 
-export const fetchDetails = async (): Promise<DetailsItem[]> => {
+export const fetchDetails = async <T extends, K extends, Meta extends StructurredMetadata<T, K> = StructurredMetadata<T, K>>(): Promise<DetailsItem<T, K, Meta>[]> => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}`);
     const details = response.data;
@@ -130,11 +129,11 @@ export const addDetails = async (newDetails: Omit<DetailsItem<Data>, 'id'>) => {
 
 export const removeDetails = async (detailsId: string): Promise<void> => {
   try {
-    const endpointPath = 'endpoints.details.single';
-    const endpoint = dotProp.getProperty(endpoints, endpointPath);
+    // Directly access the endpoint path using optional chaining
+    const endpoint = endpoints?.details?.single;
 
     if (!endpoint) {
-      throw new Error(`${endpointPath} endpoint not found`);
+      throw new Error(`endpoints.details.single endpoint not found`);
     }
 
     await apiService.callApi(endpoint, { detailsId });
@@ -158,11 +157,11 @@ export const updateDetails = async (
   newData: any
 ): Promise<DetailsItem<Data> | null> => {
   try {
-    const endpointPath = "endpoints.details.single";
-    const endpoint = dotProp.getProperty(endpoints, endpointPath);
+    // Directly access the endpoint path using optional chaining
+    const endpoint = endpoints?.details?.single;
 
     if (!endpoint) {
-      throw new Error(`${endpointPath} endpoint not found`);
+      throw new Error(`endpoints.details.single endpoint not found`);
     }
 
     const response = await apiService.callApi(endpoint, { detailsId, newData });
@@ -170,7 +169,7 @@ export const updateDetails = async (
     // Notify success
     const successMessage = detailsNotificationMessages.UPDATE_DETAILS_SUCCESS;
     useNotification().notify(
-      "UPDATE_DETAILS_SUCCESS",
+      'UPDATE_DETAILS_SUCCESS',
       successMessage,
       null,
       new Date(),
@@ -179,12 +178,10 @@ export const updateDetails = async (
 
     return response.data;
   } catch (error) {
-    handleDetailsApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      "UPDATE_DETAILS_ERROR"
-    );
+    handleDetailsApiErrorAndNotify(error as AxiosError<unknown>, 'UPDATE_DETAILS_ERROR');
   }
   return null;
 };
+
 
 // Add other details-related actions as needed

@@ -25,6 +25,7 @@ import useTrackerStore, { TrackerStore } from './TrackerStore';
 import UIStore from './UIStore';
 import { UserStore, userManagerStore } from './UserStore';
 import useVideoStore, { VideoStore } from './VideoStore';
+import BrowserCheckStore from './BrowserCheckStore';
  
 export interface Dispatchable {
   dispatch(action: any): void;
@@ -33,6 +34,7 @@ export interface Dispatchable {
 
 export interface MobXRootState {
   appManager: AppStore;
+  browserCheckStore: BrowserCheckStore
   toolbarManager: ToolbarStore;
   uiManager: UIStore;
   authManager: AuthStore;
@@ -42,7 +44,7 @@ export interface MobXRootState {
   taskManager: TaskManagerStore;
   trackerManager: TrackerStore;
   userManager: UserStore;
-  teamManager: TeamManagerStore;
+  teamManager: TeamManagerStore<T, K, Meta>;
   projectOwner: ProjectManagerStore;
   dataManager: DataStore<T, K>;
   dataAnalysisManager: DataAnal;
@@ -66,6 +68,7 @@ export interface MobXRootState {
 }
 
 export class RootStores {
+  browserCheckStore: BrowserCheckStore;
   appManager: AppStore;
   toolbarManager: ToolbarStore;
   uiManager: UIStore;
@@ -101,6 +104,7 @@ export class RootStores {
 
   constructor(props: any) {
     this.appManager = useAppStore(props);
+    this.browserCheckStore = useCheckBrowser()
     this.toolbarManager = useToolbarStore();
     this.uiManager = useUIStore();
     this.authManager = useAuthStore();
@@ -204,31 +208,6 @@ export class RootStores {
 }
 
 export const rootStores = new RootStores(props);
-
-class BrowserCheckStore {
-  rootStores?: RootStores;
-
-  constructor(rootStores: RootStores) {
-    this.rootStores = rootStores;
-    makeAutoObservable(this);
-  }
-
-  dispatch(action: any): void {
-    switch (action.type) {
-      case 'BROWSER_CHECK_ACTION':
-        // Handle browser check action
-        console.log('Performing browser check action');
-        break;
-      case 'THEME_CHANGE':
-        console.log('Theme changed:', action.payload);
-        break;
-      // Add more cases as needed for different actions
-      default:
-        // Handle unknown action types or default behavior
-        console.warn('Unhandled action type:', action.type);
-    }
-  }
-}
 
 // Initialize mobx-persist
 const hydrate = create();

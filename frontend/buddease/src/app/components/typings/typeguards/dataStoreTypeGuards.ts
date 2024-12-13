@@ -2,33 +2,49 @@ import { Data } from '@/app/components/models/data/Data';
 import { BaseData } from "../../models/data/Data";
 import { DataStoreWithSnapshotMethods } from "../../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { SnapshotStoreMethod } from "../../snapshots";
-
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 // Example type guard for checking data store methods
-function isDataStoreMethod<U extends BaseData,   K extends Data,
-  Key extends keyof DataStoreWithSnapshotMeth, K extendsK>>(
+function isDataStoreMethod<
+  U extends BaseData,
+  K extends Data,
+  Key extends keyof DataStoreWithSnapshotMethods<U, any, K>,
+  ExcludedFields extends keyof T = never
+>(
   value: any
-): value is DataStoreWithSnapshotMethods<U, Meta, K>[Key] {
-  // Implement type check logic based on your requirements for DataStoreWithSnapshotMethods
-  // Here we assume it's either a function or an object with specific properties
+): value is DataStoreWithSnapshotMethods<U, any, K>[Key] {
+  // Check if the value is a function (valid method)
   if (typeof value === 'function') {
-    return true; // Accept functions
+    return true;
   }
 
-   // If the value should be an array of snapshot methods
-   
-  // Check if value is an object and perform further checks
+  // Check if the value is an array of snapshot methods
+  if (Array.isArray(value)) {
+    return value.every(
+      (item) => typeof item === 'function' || isSnapshotStoreMethod<U, any, K>(item)
+    );
+  }
+
+  // Check if the value is an object and perform further checks
   if (typeof value === 'object' && value !== null) {
-    // If the value should be an array of snapshot methods
-    if (Array.isArray(value)) {
-      // Validate if the value contains snapshot methods
-      return value.every((item) => typeof item === 'function' || isSnapshotStoreMethod<U, Meta, K>(item));
-    }
-
-    // Additional checks could be added if `DataStore` has more specific properties
-    return true; // Assuming the object matches the expected type
+    // Optionally check for required properties or structure
+    // For example, if your DataStoreWithSnapshotMethods object must have certain keys or properties
+    return Object.values(value).every(
+      (item) => typeof item === 'function' || isSnapshotStoreMethod<U, any, K>(item)
+    );
   }
 
+  // If the value does not match any of the expected types, return false
   return false;
+}
+
+// Example of a type guard for SnapshotStore methods (assuming you have this function)
+function isSnapshotStoreMethod<
+  U extends BaseData,
+  Meta extends StructuredMetadata<U, K>,
+  K extends Data
+>(value: any): value is SnapshotStore<U, Meta, K> {
+  // Implement logic to check if the value is a valid SnapshotStore method or object
+  return typeof value === 'function' || (value && typeof value === 'object');
 }
 
 
@@ -43,7 +59,7 @@ function isSnapshotStoreMethod<U extends BaseData,   K extends Data>(
 
 
 // Example type guard for checking DataStoreWithSnapshotMethods
-function isDataStoreWithSnapshotMethods <T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isDataStoreWithSnapshotMethods <T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   value: unknown, K extends
 ): value is DataStoreWithSnapshotMethods<T, K> {
   // Ensure the value is an object and not null

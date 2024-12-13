@@ -235,6 +235,9 @@ const versionData: VersionData = {
   major: versionInfo.major,
   minor: versionInfo.minor,
   patch: versionInfo.patch,
+  childIds: versionInfo.childIds,
+  relatedData: versionInfo.relatedData
+
  
 };
 
@@ -713,8 +716,14 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
       title: "",
       description: "",
     },
-    previousMetadata: {},
-     currentMetadata:{},
+    previousMetadata: {
+      childIds: [],
+      relatedData: []
+    },
+     currentMetadata:{
+      childIds: [],
+      relatedData: []
+     },
      accessHistory:[],
      lastModifiedDate: { value: new Date, isModified: false } as ModifiedDate,
     };

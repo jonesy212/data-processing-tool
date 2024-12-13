@@ -126,7 +126,7 @@ export interface AssignBaseStore {
   
   
   // Success and Failure methods
-  assignUserSuccess: () => void;
+  assignUserSuccess: (message: string) => void;
   assignUserFailure: (error: string) => void;
   
   assignTeamsToTodos: Record<string, string[]>

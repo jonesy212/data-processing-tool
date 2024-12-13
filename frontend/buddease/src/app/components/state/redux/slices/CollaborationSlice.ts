@@ -1,17 +1,15 @@
 // CollaborationSlice.ts
-import { BaseData } from '@/app/components/models/data/Data';
-import DocumentPermissions from '@/app/components/documents/DocumentPermissions';
-import { Data } from '@/app/components/models/data/Data';
-import { Participant } from '@/app/pages/management/ParticipantManagementPage';
 import Milestone from "@/app/components/calendar/CalendarSlice";
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import { CryptoHolding } from "@/app/components/crypto/CryptoHolding";
 import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { DocumentBuilderOptions } from "@/app/components/documents/DocumentOptions";
+import DocumentPermissions from '@/app/components/documents/DocumentPermissions';
 import { Change } from "@/app/components/documents/NoteData";
 import { mergeChanges } from "@/app/components/documents/editing/autosave";
 import { CollaborationOptions } from "@/app/components/interfaces/options/CollaborationOptions";
+import { BaseData, Data } from '@/app/components/models/data/Data';
 import { StatusType } from '@/app/components/models/data/StatusType';
 import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { Task } from "@/app/components/models/tasks/Task";
@@ -28,6 +26,7 @@ import UserService, {
 import { Idea } from "@/app/components/users/Ideas";
 import { VersionData } from "@/app/components/versions/VersionData";
 import { MentorshipRequest } from "@/app/pages/community/MentorshipRequest";
+import { Participant } from '@/app/pages/management/ParticipantManagementPage';
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import CollaborationSettings from "../../../../pages/community/CollaborationSettings";
 import { Communication } from "../../../communications/chat/Communication";
@@ -52,7 +51,10 @@ enum ResourceType {
   Link,
   Other,
 }
-interface CollaborationState<T extends  BaseData<T>, Meta extends UniffiedMetaDataOptions, K extends T = T> {
+interface CollaborationState<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StrucuredMetadata<T, K> = StrucuredMetadata<T, K>> {
   sharedProjects: Project[];
   sharedMeetings: Meeting[];
   participants: Participants[]

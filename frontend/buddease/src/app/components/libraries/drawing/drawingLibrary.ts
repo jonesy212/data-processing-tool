@@ -2,6 +2,7 @@
 import path from 'path';
 import 'drawingLibrary';
 import { DrawingFunctions, DrawingOptions } from 'drawingLibrary';
+import { Drawing } from './generateDrawingJSON';
 
 // Class implementation for DrawingError
 export class DrawingError extends Error {

@@ -1,12 +1,11 @@
 import { BaseData, Data } from "@/app/components/models/data/Data";
-import { K } from "@/app/components/models/data/dataStoreMethods";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { IHydrateResult } from "mobx-persist";
 import { FC } from "react";
 import { DayOfWeekProps } from "../calendar/DayOfWeek";
 import { Month } from "../calendar/Month";
-import { DataAnalysisResult } from "../components/projects/DataAnalysisPhase/DataAnalysisResult";
+import { DataAnalysisResult } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisResult";
 import { CreateSnapshotsPayload, Payload } from "../database/Payload";
 import { Attachment } from "../documents/Attachment/attachment";
 import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
@@ -24,7 +23,7 @@ import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStor
 import { Callback, SnapshotConfig, SnapshotData, SnapshotItem, SnapshotStoreConfig, SnapshotWithCriteria, SubscriberCollection, TagsRecord } from "../snapshots";
 import { LocalStorageSnapshotStore, Result, Snapshot, Snapshots, SnapshotsArray, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
 import { ConfigureSnapshotStorePayload } from "../snapshots/SnapshotConfig";
-import SnapshotStore from "../snapshots/SnapshotStore";
+import SnapshotStore, { initialState } from "../snapshots/SnapshotStore";
 import { CustomComment } from "../state/redux/slices/BlogSlice";
 import { NotificationType } from "../support/NotificationContext";
 import { Idea } from "../users/Ideas";
@@ -32,23 +31,32 @@ import { Subscriber } from "../users/Subscriber";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { Comment } from "../models/data/Comments";
+import { InitializedData, InitializedDataStore } from "../snapshots/SnapshotStoreOptions";
+import operation from "antd/es/transfer/operation";
+import { config } from "process";
+import { options } from "sanitize-html";
+import { FetchSnapshotPayload } from "../snapshots/FetchSnapshotPayload";
 
 export type UserAssignee = Pick<User, '_id' | 'id' | 'username' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'avatarUrl'>;
 
 export interface Todo<
-  T extends BaseData<T>, // Align `T` with `BaseData`
+  T extends BaseData<any> = BaseData<any, any>, // Align `T` with `BaseData`
   K extends T = T, // Ensure `K` aligns with `T`
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Use `StructuredMetadata` for metadata
   > {
   _id: string;
   id: string;
-  content?:  BaseData<T> | string |  Content<T> | undefined; // Adjust the content property to accept Content type
+  content?:  BaseData<any> | string |  Content<T> | undefined; // Adjust the content property to accept Content type
   done: boolean;
   status?: StatusType;
+  scheduled?: ScheduledData<T>;
+  isScheduled?: boolean;
   priorityStatus?: PriorityTypeEnum | undefined;
-  todos: Todo<T>[];
+  todos: TodoImpl<T, K>[];
   title: string;
   selectedTodo?: Todo<T>;
+  subtasks: TodoImpl<T, K>[]
   progress?: Progress;
   description: string;
   dueDate?: Date | null | undefined;
@@ -59,9 +67,9 @@ export interface Todo<
   assigneeId: string;
   assignee: UserAssignee | null;
   assignedUsers: string[];
-  collaborators: string[];
+  collaborators: Collaborator[];
   labels: string[];
-  comments?: (Comment | CustomComment)[] | undefined;
+  comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
   attachments?: Attachment[];
   checklists?: (typeof ChecklistItem)[];
   startDate?: Date;
@@ -84,7 +92,7 @@ export interface Todo<
   updatedAt?: Date;
   isActive?: boolean;
   tags?: TagsRecord<T, K> | string[] | undefined; 
-
+  parentTask?: Task;
   ideas?: Idea[] 
   videoUrl?: string
   videoThumbnail?: string
@@ -113,7 +121,7 @@ export interface Todo<
   save: () => Promise<void>;
   snapshot: Snapshot<T, any>;
   analysisType?: AnalysisTypeEnum;
-  analysisResults?: DataAnalysisResult[];
+  analysisResults?: DataAnalysisResult<T>[];
   videoData?: VideoData<T, K>
   timestamp: string | Date;
   suggestedDay?: DayOfWeekProps["day"] | null;
@@ -135,13 +143,13 @@ export interface Todo<
   updateUI?(): void;
 }
 
-export interface TodoManagerState<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+export interface TodoManagerState<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   entities: Record<string, Todo<T>>;
 }
 
 
 interface TodoMeta<
-  T extends BaseData<T>, 
+  T extends BaseData<any>, 
   K extends T = T
 > extends Todo<T, K> {
   // Add properties that are missing from UnifiedMetaDataOptions
@@ -153,10 +161,12 @@ interface TodoMeta<
 }
 
 
+
 class TodoImpl<
-  T extends BaseData<T>,
+  T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Add constraint for Meta
+  ExcludedFields extends keyof T = never
 > implements Todo<T, K, Meta> {
   _id: string = "";
   id: string = "";
@@ -189,7 +199,7 @@ class TodoImpl<
   done: boolean = false;
   priorityStatus?: PriorityTypeEnum | undefined;
   text?: string
-  todos: Todo<T>[] = [];
+  todos: TodoImpl<T, K>[] = [];
   description: string = "";
   dueDate: Date | null | undefined = null;
   priority: PriorityTypeEnum | undefined = undefined;
@@ -199,9 +209,9 @@ class TodoImpl<
   assignee: UserAssignee | null = null;
   assigneeId: string = "";
   assignedUsers: string[] = [];
-  collaborators: string[] = [];
+  collaborators: Collaborator[] = [];
   labels: string[] = [];
-  comments: Comment[] = [];
+  comments: Comment<T, K, Meta, ExcludedFields>[] = [];
   attachments: Attachment[] = [];
   subtasks: TodoImpl<T, K>[] = [];
 
@@ -229,9 +239,9 @@ class TodoImpl<
   ideas: Idea[] = [];
   tags: TagsRecord = {}
   phase: Phase<T, K> | null = null;
-  then: (callback: (newData: Snapshot<Data, Data>) => void) => void = () => { };
+  then: (callback: (newData: Snapshot) => void) => void = () => { };
   analysisType: AnalysisTypeEnum = AnalysisTypeEnum.TODO as AnalysisTypeEnum;
-  analysisResults?: DataAnalysisResult[] = [];
+  analysisResults?: DataAnalysisResult<T>[] = [];
   videoUrl: string = "";
   videoThumbnail: string = "";
   videoDuration: number = 0;
@@ -245,7 +255,7 @@ class TodoImpl<
     });
   };
   snapshot: Snapshot<T, K> = {
-    data: new Map<string, Snapshot<T, K>>(),
+    data: {} as InitializedData<T> | undefined,
     store: new LocalStorageSnapshotStore<T, K>({
       window.localStorage,
       this.category,
@@ -256,13 +266,17 @@ class TodoImpl<
     }),
     state: null,
     snapshotStoreConfig: {},
-    getDataStore: (): Promise<DataStore<T, K>[]> => { 
-      return new Promise<DataStore<T, K>[]>((resolve) => {
-        resolve([new LocalStorageSnapshotStore<T, K>(window.localStorage)]);
-      })
+    getDataStore: (): Promise<InitializedDataStore<T>[]> => {
+      return new Promise<InitializedDataStore<T>[]>((resolve) => {
+        const stores = this.dataStores.map((store) =>
+          convertToLocalStorageSnapshotStore(store)
+        );
+        resolve(stores);
+      });
     },
+    
     getDataStoreMap: (): Promise<Map<string, Snapshot<T, K>>> => {
-      return new Promise<Map<string, Snapshot<T, K>>>((resolve) => {
+      return new Promise<Map<string, Snapshot<T, K>, >>((resolve) => {
         resolve(new Map<string, Snapshot<T, K>>());
       })
     },
@@ -271,7 +285,7 @@ class TodoImpl<
     getSnapshotItems: function (): (SnapshotStoreConfig<T, K> | SnapshotItem<T, K>)[] {
       throw new Error("Function not implemented.");
     },
-    defaultSubscribeToSnapshots: function (snapshotId: string, callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null, snapshot: Snapshot<T, K> | null): void {
+    defaultSubscribeToSnapshots: function (snapshotId: string, callback: (snapshots: Snapshots<T, K>) => Subscriber<T, K> | null, snapshot: Snapshot<T, K> | null): void {
       throw new Error("Function not implemented.");
     },
     versionInfo: null,
@@ -315,10 +329,10 @@ class TodoImpl<
     updateDataVersions: function (id: number, versions: Snapshot<T, K>[]): void {
       throw new Error("Function not implemented.");
     },
-    getBackendVersion: function (): IHydrateResult<number> | Promise<string> | undefined {
+    getBackendVersion: function (): Promise<string | number | undefined> {
       throw new Error("Function not implemented.");
     },
-    getFrontendVersion: function (): IHydrateResult<number> | Promise<string> | undefined {
+    getFrontendVersion: function (): Promise<string | number | undefined> {
       throw new Error("Function not implemented.");
     },
     fetchData: function (endpoint: string, id: number): Promise<SnapshotStore<T, K>[]> {
@@ -330,7 +344,7 @@ class TodoImpl<
     handleSubscribeToSnapshot: function (snapshotId: string, callback: Callback<Snapshot<T, K>>, snapshot: Snapshot<T, K>): void {
       throw new Error("Function not implemented.");
     },
-    removeItem: function (key: string | number)): Promise<void> {
+    removeItem: function (key: string | number): Promise<void> {
       throw new Error("Function not implemented.");
     },
     getSnapshot: function (snapshot: (id: string) => Promise<{ category: any; timestamp: any; id: any; snapshot: Snapshot<T, K>; snapshotStore: SnapshotStore<T, K>; data: T; }> | undefined): Promise<Snapshot<T, K>> {
@@ -405,7 +419,7 @@ class TodoImpl<
     updateSnapshots: function (): void {
       throw new Error("Function not implemented.");
     },
-    updateSnapshotsSuccess: function (snapshotData: (subscribers: Subscriber<T, K>[], snapshot: Snapshots<T>) => void): void {
+    updateSnapshotsSuccess: function (snapshotData: (subscribers: Subscriber<T, K>[], snapshot: Snapshots<T, K>) => void): void {
       throw new Error("Function not implemented.");
     },
     updateSnapshotsFailure: function (error: Payload): void {
@@ -413,7 +427,7 @@ class TodoImpl<
     },
     initSnapshot: function (
       snapshot: SnapshotStore<T, K> | Snapshot<T, K> | null,
-      snapshotId: string | number,
+      snapshotId: string | number | null,
       snapshotData: SnapshotData<T, K>,
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
@@ -456,13 +470,13 @@ class TodoImpl<
     transformSnapshotConfig: function <T extends BaseData>(config: SnapshotStoreConfig<BaseData, T>): SnapshotStoreConfig<BaseData, T> {
       throw new Error("Function not implemented.");
     },
-    setSnapshots: function (snapshots: Snapshots<T>): void {
+    setSnapshots: function (snapshots: Snapshots<T, K>): void {
       throw new Error("Function not implemented.");
     },
     clearSnapshot: function (): void {
       throw new Error("Function not implemented.");
     },
-    mergeSnapshots: function (snapshots: Snapshots<T>, category: string): void {
+    mergeSnapshots: function (snapshots: Snapshots<T, K>, category: string): void {
       throw new Error("Function not implemented.");
     },
     reduceSnapshots: function <U>(callback: (acc: U, snapshot: Snapshot<T, K>) => U, initialValue: U): U | undefined {
@@ -477,7 +491,7 @@ class TodoImpl<
     findSnapshot: function (predicate: (snapshot: Snapshot<T, K, never>) => boolean):  Snapshot<T, K, never> | undefined {
       throw new Error("Function not implemented.");
     },
-    getSubscribers: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T>): Promise<{ subscribers: Subscriber<T, K>[]; snapshots: Snapshots<T>; }> {
+    getSubscribers: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T, K>): Promise<{ subscribers: Subscriber<T, K>[]; snapshots: Snapshots<T, K>; }> {
       throw new Error("Function not implemented.");
     },
     notify: function (
@@ -499,40 +513,40 @@ class TodoImpl<
     ): Subscriber<BaseData, K>[] {
       throw new Error("Function not implemented.");
     },
-    getSnapshots: function (category: string, data: Snapshots<T>): void {
+    getSnapshots: function (category: string, data: Snapshots<T, K>): void {
       throw new Error("Function not implemented.");
     },
-    getAllSnapshots: function (data: (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T>) => Promise<Snapshots<T>>): void {
+    getAllSnapshots: function (data: (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T, K>) => Promise<Snapshots<T, K>>): void {
       throw new Error("Function not implemented.");
     },
     generateId: function (): string {
       throw new Error("Function not implemented.");
     },
-    batchFetchSnapshots: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T>): void {
+    batchFetchSnapshots: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T, K>): void {
       throw new Error("Function not implemented.");
     },
     batchTakeSnapshotsRequest: function (snapshotData: any): void {
       throw new Error("Function not implemented.");
     },
-    batchUpdateSnapshotsRequest: function (snapshotData: (subscribers: Subscriber<T, K>[]) => Promise<{ subscribers: Subscriber<T, K>[]; snapshots: Snapshots<T>; }>): void {
+    batchUpdateSnapshotsRequest: function (snapshotData: (subscribers: Subscriber<T, K>[]) => Promise<{ subscribers: Subscriber<T, K>[]; snapshots: Snapshots<T, K>; }>): void {
       throw new Error("Function not implemented.");
     },
     filterSnapshotsByStatus: undefined,
     filterSnapshotsByCategory: undefined,
     filterSnapshotsByTag: undefined,
-    batchFetchSnapshotsSuccess: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T>): void {
+    batchFetchSnapshotsSuccess: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T, K>): void {
       throw new Error("Function not implemented.");
     },
     batchFetchSnapshotsFailure: function (payload: { error: Error; }): void {
       throw new Error("Function not implemented.");
     },
-    batchUpdateSnapshotsSuccess: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T>): void {
+    batchUpdateSnapshotsSuccess: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T, K>): void {
       throw new Error("Function not implemented.");
     },
     batchUpdateSnapshotsFailure: function (payload: { error: Error; }): void {
       throw new Error("Function not implemented.");
     },
-    batchTakeSnapshot: function (snapshotStore: SnapshotStore<T, K>, snapshots: Snapshots<T>): Promise<{ snapshots: Snapshots<T>; }> {
+    batchTakeSnapshot: function (snapshotStore: SnapshotStore<T, K>, snapshots: Snapshots<T, K>): Promise<{ snapshots: Snapshots<T, K>; }> {
       throw new Error("Function not implemented.");
     },
     handleSnapshotSuccess: function (snapshot: Snapshot<Data, Data> | null, snapshotId: string): void {
@@ -674,7 +688,7 @@ class TodoImpl<
     onSnapshot: function (snapshotId: number, snapshot: Snapshot<T, K>, type: string, event: Event, callback: (snapshot: Snapshot<T, K>) => void): void {
       throw new Error("Function not implemented.");
     },
-    onSnapshots: function (napshotId: number, snapshots: Snapshots<T>, type: string, event: Event, callback: (snapshots: Snapshots<T>) => void): void {
+    onSnapshots: function (napshotId: number, snapshots: Snapshots<T, K>, type: string, event: Event, callback: (snapshots: Snapshots<T, K>) => void): void {
       throw new Error("Function not implemented.");
     },
     updateSnapshot: function (
@@ -698,7 +712,7 @@ class TodoImpl<
       category: symbol | string | Category | undefined, 
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T>,
+      snapshots: SnapshotsArray<T, K>,
       type: string,
       event: Event,
       snapshotContainer?: T,
@@ -709,8 +723,8 @@ class TodoImpl<
     subscribeToSnapshots: function (
       snapshotId: number,
       unsubscribe: UnsubscribeDetails, 
-      callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null
-    ) : SnapshotsArray<T> {
+      callback: (snapshots: Snapshots<T, K>) => Subscriber<T, K> | null
+    ) : SnapshotsArray<T, K> {
       throw new Error("Function not implemented.");
     },
 

@@ -10,12 +10,14 @@ class PresentationService {
     const id = generateUniqueId(); // Function to generate a unique ID
     const createdAt = new Date();
     const updatedAt = createdAt;
+    const createdBy = createdBy;
     return {
       id,
       title,
       slides,
       createdAt,
       updatedAt,
+      createdBy
     };
   }
 

@@ -1,4 +1,5 @@
- import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData } from "../models/data/Data";
@@ -10,7 +11,7 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 
 // SnapshotManagement interface for snapshot operations
-export interface SnapshotManagement<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+export interface SnapshotManagement<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   takeSnapshot(snapshot: Snapshot<T, K>): Promise<{ snapshot: Snapshot<T, K>; }>;
   updateSnapshot(
     snapshotId: string, 
@@ -23,7 +24,7 @@ export interface SnapshotManagement<T extends  BaseData<T>, K extends T = T, Met
     store: SnapshotStore<any, any>,
     callback: (snapshotStore: SnapshotStore<T, K>
     ) => Promise<{ snapshot: Snapshot<T, K>; }>): Promise<{ snapshot: Snapshot<T, K> }>;
-  mergeSnapshots(snapshots: Snapshots<T>, category: string): Promise<void>;
+  mergeSnapshots(snapshots: Snapshots<T, K>, category: string): Promise<void>;
   reduceSnapshots<U>(callback: (acc: U, snapshot: Snapshot<T, K>) => U, initialValue: U): U;
   filterSnapshots(predicate: (snapshot: Snapshot<T, K>) => boolean): Snapshot<T, K>[];
   findSnapshot(predicate: (snapshot: Snapshot<T, K>) => boolean): Snapshot<T, K> | undefined;
@@ -48,8 +49,8 @@ export interface SnapshotManagement<T extends  BaseData<T>, K extends T = T, Met
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     callback?: (snapshot: Snapshot<T, K>) => void,
-    SnapshotData?: SnapshotStore<T, K>,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, K> | null,
+    snapshotData?: SnapshotStore<T, K>,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>  | null,
     snapshotStoreConfigSearch?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K>,
   ) => Snapshot<T, K> | null;
 

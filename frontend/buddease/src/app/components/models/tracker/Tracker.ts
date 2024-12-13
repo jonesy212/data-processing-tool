@@ -1,9 +1,12 @@
 //Tracker.ts
 import path from "path";
+import { useDispatch } from "react-redux";
 import { useAuth } from "../../auth/AuthContext";
 import { Phase } from "../../phases/Phase";
-import { HighlightColor } from "../styling/Palette";
-import { User, UserData } from "../../users/User";
+import { Stroke } from "../../state/redux/slices/DrawingSlice";
+import { Payment } from "../../subscriptions/SubscriptionPlan";
+import { NotificationData } from "../../support/NofiticationsSlice";
+import { User } from "../../users/User";
 import {
   fetchUsersSuccess,
   updateBio,
@@ -12,46 +15,58 @@ import {
   updateQuota,
 } from "../../users/UserSlice";
 import FileData from "../data/FileData";
-import { Stroke } from "../../state/redux/slices/DrawingSlice";
-import { Payment } from "../../subscriptions/SubscriptionPlan";
 import FolderData from "../data/FolderData";
-import { NotificationData } from "../../support/NofiticationsSlice";
-import { useDispatch } from "react-redux";
+import { HighlightColor } from "@/app/components/styling/Palette";
+import { T } from "../data/dataStoreMethods";
+import { BaseData } from "../data/Data";
+import { detectMetadataChanges } from "@/app/configs/metadata/detectMetadataChanges";
 
+
+export interface SharedFormattingOptions {
+  borderColor?: string;
+  textColor?: string;
+  highlightColor?: string;
+  backgroundColor?: string;
+  fontSize?: string | number;
+  fontFamily?: string;
+}
 
 // Define a common interface for tracker properties
 interface CommonTrackerProps {
   id?: string;  // Optional
   name?: string;  // Optional
   phases?: Phase[];  // Optional
-  trackFileChanges?: (file: FileData) => void;  // Optional
+  trackFileChanges?: (file: FileData<T>) => void;  // Optional
   trackFolderChanges?: (folder: FolderData) => void;  // Optional
-  updateUserProfile?: (userData: User) => void;  // Optional
+  updateUserProfile?: (userData: User, dispatch: any) => void;  // Optional
   sendNotification?: (notification: NotificationData, userData: User) => void;  // Optional
   stroke?: Stroke;
   strokeWidth?: number;
   fillColor?: string;
-  flippedX?: boolean;
-  flippedY?: boolean;
+  isFlippedX?: boolean;
+  isFlippedY?: boolean;
+  position?: number
   x?: number;
   y?: number;
+  rotation?: number;
+
 
    // Update appearance function with comprehensive properties
    updateAppearance?: (
-    updates: {
-      stroke?: Stroke;  // Optional stroke updates
-      fillColor?: string;  // Optional fill color updates
-      borderColor?: string;  // Optional border color updates
-      textColor?: string;  // Optional text color updates
-      highlightColor?: HighlightColor;  // Optional highlight settings
-      backgroundColor?: string;  // Optional background color updates
-      fontSize?: string;  // Optional font size updates
-      fontFamily?: string;  // Optional font family updates
-    },
-    newStroke: Stroke,  // New stroke to be applied
-    newFillColor: string,  // New fill color to be applied
-    newBorderColor?: string,  // Optional new border color
-    newHighlightColor?: string  // Optional new highlight color
+     newStroke: Stroke,  // New stroke to be applied
+     newFillColor: string,  // New fill color to be applied
+     updates: {
+       stroke?: Stroke;  // Optional stroke updates
+       fillColor?: string;  // Optional fill color updates
+       borderColor?: string;  // Optional border color updates
+       textColor?: string;  // Optional text color updates
+       highlightColor?: HighlightColor;  // Optional highlight settings
+       backgroundColor?: string;  // Optional background color updates
+       fontSize?: string;  // Optional font size updates
+       fontFamily?: string;  // Optional font family updates
+     },
+     newBorderColor?: string,  // Optional new border color
+     newHighlightColor?: string, // Optional new highlight color
   ) => void;
   
   // todo verify above works original
@@ -80,19 +95,34 @@ class TrackerClass implements TrackerProps {
   stroke: Stroke;
   strokeWidth: number;
   fillColor: string;
-  flippedX: boolean;
-  flippedY: boolean;
+  isFlippedX: boolean;
+  isFlippedY: boolean;
   x: number;
   y: number;
   payments?: Payment[];
+
+    // Shared formatting options
+    borderColor?: string;
+    textColor?: string;
+    highlightColor?: string;
+    backgroundColor?: string;
+    fontSize?: string | number;
+    fontFamily?: string;
+  
+  formattingOptions?: SharedFormattingOptions // Optional formatting options
+
+    // Shared formatting properties
+
   constructor(id: string, name: string, phases: Phase[],
     stroke: Stroke,
     strokeWidth: number,
     fillColor: string,
-    flippedX: boolean,
-    flippedY: boolean,
+    isFlippedX: boolean,
+    isFlippedY: boolean,
     x: number,
     y: number,
+        formattingOptions?: SharedFormattingOptions // Optional formatting options
+
   ) {
     this.id = id;
     this.name = name;
@@ -100,19 +130,23 @@ class TrackerClass implements TrackerProps {
     this.stroke = stroke;
     this.strokeWidth = strokeWidth;
     this.fillColor = fillColor;
-    this.flippedX = flippedX;
-    this.flippedY = flippedY;
+    this.isFlippedX = isFlippedX;
+    this.isFlippedY = isFlippedY;
     this.x = x;
     this.y = y;
+    // Initialize formatting options
+    if (formattingOptions) {
+      Object.assign(this, formattingOptions);
+    }
   }
 
   // Method to track changes for a file
-  trackFileChanges(file: FileData): void {
+  trackFileChanges<T extends BaseData<any>>(file: FileData<T>): void {
     // Simulate tracking content changes
     const contentChanges = this.detectContentChanges(file);
 
     // Simulate tracking metadata modifications
-    const metadataChanges = this.detectMetadataChanges(file);
+    const metadataChanges = detectMetadataChanges(file);
 
     // Simulate tracking access history
     const accessHistory = this.trackAccessHistory(file);
@@ -125,7 +159,7 @@ class TrackerClass implements TrackerProps {
 
   }
 
-  detectContentChanges(file: FileData): string {
+  detectContentChanges<T extends BaseData<any>>(file: FileData<T>): string {
     // Dummy implementation: Check if the content length has changed
     const previousContentLength = file.previousContent?.length;
     const currentContentLength = file.currentContent?.length;
@@ -206,38 +240,8 @@ class TrackerClass implements TrackerProps {
     }
   }
 
-  // Function to detect metadata changes in a document
-  detectMetadataChanges(file: FileData): string {
-    let changesDetected = false;
-    let metadataChanges = "";
-
-    // Check if previous metadata is available
-    if (file.previousMetadata) {
-      // Compare current metadata with previous metadata
-      if (file.metadata?.title !== file.previousMetadata.title) {
-        changesDetected = true;
-        metadataChanges += "Title has changed. ";
-      }
-      if (file.metadata?.author !== file.previousMetadata.author) {
-        changesDetected = true;
-        metadataChanges += "Author has changed. ";
-      }
-      // Add more comparisons for other metadata properties as needed
-    } else {
-      // Handle case where previous metadata is not available
-      metadataChanges = "No previous metadata available for comparison.";
-    }
-
-    // Return the result
-    if (changesDetected) {
-      return "Detected metadata changes: " + metadataChanges.trim();
-    } else {
-      return "No metadata changes detected.";
-    }
-  }
-
   // Function to track access history of the document
-  trackAccessHistory(file: FileData): string {
+  trackAccessHistory<T extends BaseData<T>>(file: FileData<T>): string {
     // Implement logic to track access history (actual implementation)
     const currentTime = new Date().toISOString();
     const accessRecord = `Accessed at: ${currentTime}`;
@@ -311,33 +315,18 @@ class TrackerClass implements TrackerProps {
     console.log("Handling authentication actions:", authSlice);
   }
   
-  updateUserProfile(userData: User): void {
-    // Access dispatch function from AuthContext
-    const { dispatch } = useAuth();
+  
+  updateUserProfile(userData: User, dispatch: any): void {
+    // Preprocess fullName - check for empty string and handle it
+    const fullNameToDispatch = userData.fullName && userData.fullName.trim() !== ""
+      ? userData.fullName
+      : null;
 
-    // Access Redux dispatch for userManagerSlice actions
-    const reduxDispatch = useDispatch();
-
-    // Dispatch action to update user profile
-    dispatch({
-      type: "LOGIN_WITH_ROLES",
-      payload: { user: userData, authToken: "YOUR_AUTH_TOKEN" },
-    });
-    console.log("Updating user profile:", userData);
-
-
-     // Preprocess fullName - check for empty string and handle it
-    const fullNameToDispatch = userData.fullName && userData.fullName.trim() !== "" 
-    ? userData.fullName 
-    : null; // Replace empty string with null or any default value
-
-    //  Dispatch update actions using userManagerSlice.actions
-    // For example:
-    // todo 
-    if (userData.fullName !== null) {
-      reduxDispatch(updateFullName(fullNameToDispatch));
-      reduxDispatch(updateBio(userData.bio));
-      reduxDispatch(updateProfilePicture(userData.profilePicture));
+    // Dispatch update actions
+    if (fullNameToDispatch !== null) {
+      dispatch(updateFullName(fullNameToDispatch));
+      dispatch(updateBio(userData.bio));
+      dispatch(updateProfilePicture(userData.profilePicture));
     }
   }
 
@@ -356,25 +345,37 @@ class TrackerClass implements TrackerProps {
 
   // Implementation of updateAppearance method
   updateAppearance(
+    newStroke: Stroke,
+    newFillColor: string,
     updates: {
-      stroke?: {
-        width?: number;
-        color?: string;
-      };
-    },
-    newStroke: {width: number, color: string},
-    newFillColor: string
+      stroke?: Stroke;
+      fillColor?: string;
+      borderColor?: string;
+      textColor?: string;
+      highlightColor?: any;
+      backgroundColor?: string;
+      fontSize?: string;
+      fontFamily?: string;
+    }
   ): void {
-    // Update the stroke property based on newStroke or updates
-    this.stroke.width = updates.stroke?.width ?? newStroke.width; // Use updates if available, otherwise newStroke
-    this.stroke.color = updates.stroke?.color ?? newStroke.color; // Use updates if available, otherwise newStroke
+    // Update the stroke property based on updates or newStroke
+    this.stroke.width = updates.stroke?.width ?? newStroke.width;
+    this.stroke.color = updates.stroke?.color ?? newStroke.color;
 
     // Update the fill color
-    this.fillColor = newFillColor;
+    this.fillColor = updates.fillColor ?? newFillColor;
 
-    console.log(`Appearance updated to stroke: ${this.stroke.width}px, color: ${this.stroke.color}, fill color: ${newFillColor}`);
+    // Update other properties if provided in updates
+    if (updates.borderColor !== undefined) this.borderColor = updates.borderColor;
+    if (updates.textColor !== undefined) this.textColor = updates.textColor;
+    if (updates.highlightColor !== undefined) this.highlightColor = updates.highlightColor;
+    if (updates.backgroundColor !== undefined) this.backgroundColor = updates.backgroundColor;
+    if (updates.fontSize !== undefined) this.fontSize = updates.fontSize;
+    if (updates.fontFamily !== undefined) this.fontFamily = updates.fontFamily;
+ 
+    console.log(`Appearance updated to stroke: ${this.stroke.width}px, color: ${this.stroke.color}, fill color: ${this.fillColor}`);
   }
 }
 
 export default TrackerClass;
-export type { CommonTrackerProps, TrackerProps}
+export type { CommonTrackerProps, TrackerProps };

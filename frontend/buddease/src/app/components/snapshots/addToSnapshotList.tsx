@@ -11,7 +11,7 @@
 // import { Subscriber } from "../users/Subscriber";
 
 // // addToSnapshotList.ts
-// const addToSnapshotList = async  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// const addToSnapshotList = async  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
 //   snapshotStore: SnapshotStore<T, K>,
 //   subscribers: Subscriber<T, K>[]
 // ) => {

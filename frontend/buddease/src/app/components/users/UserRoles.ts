@@ -20,6 +20,14 @@ enum UserRoleEnum {
   Verified_User = 'Verified_User',
   System = 'System',
   Editor = 'Editor',
+   // New roles added due to app growth
+   CryptoInvestor = 'CryptoInvestor', // Users managing their crypto portfolios
+   CryptoAnalyst = 'CryptoAnalyst',   // Users providing market analysis
+   BlockchainAdmin = 'BlockchainAdmin', // Admins overseeing blockchain infrastructure
+   RegionalManager = 'RegionalManager', // Manages users or projects in specific regions
+   LegalAdvisor = 'LegalAdvisor',       // Ensures legal compliance
+   CustomerSupport = 'CustomerSupport',  // Manages customer support tasks
+   DeFiInvestor = 'DeFiInvestor'
 }
 
 const UserRoles: { [key in UserRoleEnum]: UserRole } = {
@@ -251,8 +259,177 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     positions: [],
     salary: 7000,
     includes: []
-  }
-};
+  },
+
+  // New roles added based on app growth
+  CryptoInvestor: {
+    role: UserRoleEnum.CryptoInvestor,
+    responsibilities: [
+      'Manage personal crypto portfolios',
+      'Track portfolio performance',
+      'Make informed crypto investment decisions',
+      'Monitor market trends',
+    ],
+    permissions: [
+      'View crypto dashboard',
+      'Execute crypto transactions',
+      'Analyze market data',
+      'Access investment reports',
+    ],
+    positions: [
+      { title: 'Crypto Portfolio Manager', level: 1 },
+      { title: 'Investor', level: 1 }
+    ],
+    salary: 80000, // Example salary for CryptoInvestor role
+    includes: [
+      'Access to crypto trading platform',
+      'Crypto-related analytics tools'
+    ],
+  },
+  CryptoAnalyst: {
+    role: UserRoleEnum.CryptoAnalyst,
+    responsibilities: [
+      'Provide market analysis and predictions',
+      'Track cryptocurrency market trends',
+      'Generate reports on investment opportunities',
+      'Advise on risk management for crypto portfolios',
+    ],
+    permissions: [
+      'View crypto analytics dashboard',
+      'Generate market analysis reports',
+      'Access cryptocurrency data',
+      'Provide investment advice',
+    ],
+    positions: [
+      { title: 'Crypto Analyst', level: 1 },
+      { title: 'Market Researcher', level: 1 }
+    ],
+    salary: 90000, // Example salary for CryptoAnalyst role
+    includes: [
+      'Advanced market analysis tools',
+      'Access to crypto trend data'
+    ],
+  },
+  BlockchainAdmin: {
+    role: UserRoleEnum.BlockchainAdmin,
+    responsibilities: [
+      'Oversee blockchain infrastructure',
+      'Ensure security of blockchain systems',
+      'Monitor blockchain transactions',
+      'Optimize blockchain network performance',
+    ],
+    permissions: [
+      'Access blockchain configuration settings',
+      'Manage blockchain network permissions',
+      'Monitor blockchain logs',
+      'Troubleshoot blockchain network issues',
+    ],
+    positions: [
+      { title: 'Blockchain Network Admin', level: 1 }
+    ],
+    salary: 120000, // Example salary for BlockchainAdmin role
+    includes: [
+      'Full access to blockchain systems',
+      'Advanced configuration and troubleshooting tools',
+    ],
+  },
+  RegionalManager: {
+    role: UserRoleEnum.RegionalManager,
+    responsibilities: [
+      'Manage regional teams and users',
+      'Oversee regional projects',
+      'Ensure alignment with regional goals and strategies',
+      'Manage regional customer support needs',
+    ],
+    permissions: [
+      'Manage regional users',
+      'Oversee region-specific projects and tasks',
+      'Access regional performance reports',
+      'Allocate resources to regional teams',
+    ],
+    positions: [
+      { title: 'Regional Operations Manager', level: 1 },
+      { title: 'Regional Supervisor', level: 1 }
+    ],
+    salary: 95000, // Example salary for RegionalManager role
+    includes: [
+      'Regional operational control',
+      'Access to regional performance data'
+    ],
+  },
+  LegalAdvisor: {
+    role: UserRoleEnum.LegalAdvisor,
+    responsibilities: [
+      'Ensure compliance with legal regulations',
+      'Advise on contracts and agreements',
+      'Provide legal guidance on crypto-related issues',
+      'Monitor for any legal issues that may arise',
+    ],
+    permissions: [
+      'Access legal documents',
+      'Review and approve contracts',
+      'Provide legal compliance reports',
+      'Advise on regulatory requirements',
+    ],
+    positions: [
+      { title: 'Legal Counsel', level: 1 },
+      { title: 'Compliance Officer', level: 1 }
+    ],
+    salary: 100000, // Example salary for LegalAdvisor role
+    includes: [
+      'Access to legal and compliance tools',
+      'Permission to review and approve contracts'
+    ],
+  },
+  CustomerSupport: {
+    role: UserRoleEnum.CustomerSupport,
+    responsibilities: [
+      'Assist customers with inquiries',
+      'Resolve customer complaints',
+      'Provide technical support for platform issues',
+      'Maintain positive customer relationships',
+    ],
+    permissions: [
+      'Access customer accounts and issues',
+      'Resolve tickets and support inquiries',
+      'View support-related analytics',
+      'Manage customer feedback',
+    ],
+    positions: [
+      { title: 'Support Representative', level: 1 },
+      { title: 'Helpdesk Coordinator', level: 1 }
+    ],
+    salary: 45000, // Example salary for CustomerSupport role
+    includes: [
+      'Access to customer support ticketing system',
+      'Customer management tools'
+    ],
+  },
+
+  DeFiInvestor: {
+    role: UserRoleEnum.DeFiInvestor,
+    responsibilities: [
+      'Invest in decentralized finance (DeFi) projects',
+      'Monitor and manage DeFi investments',
+      'Research emerging DeFi opportunities',
+      'Engage in yield farming and liquidity provision',
+    ],
+    permissions: [
+      'Access DeFi investment dashboards',
+      'Execute DeFi-related transactions',
+      'Analyze DeFi market data',
+      'Access investment opportunities',
+    ],
+    positions: [
+      { title: 'DeFi Investment Manager', level: 1 },
+      { title: 'DeFi Portfolio Manager', level: 1 }
+    ],
+    salary: 110000, // Example salary for DeFiInvestor role
+    includes: [
+      'Access to decentralized finance platforms',
+      'Advanced DeFi analytics tools'
+    ],
+  },};
 
 // Restricting the keys of UserRoles to ensure type safety
 type UserRoleKeys = keyof typeof UserRoles;
@@ -281,3 +458,4 @@ console.log(developerRole.salary); // Output: 80000
 
 
 const adminResponsibilities = UserRoles.Administrator.responsibilities;
+

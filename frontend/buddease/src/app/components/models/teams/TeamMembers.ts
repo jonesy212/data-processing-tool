@@ -45,6 +45,7 @@ interface TeamMember extends MemberData {
   
 
   const memberData: MemberData = {
+    bannerUrl: "", roles: "", followers: "", preferences: "", storeId: "",
     id: 1,
     username: 'member1',
     email: 'member1@example.com',
@@ -75,7 +76,7 @@ interface TeamMember extends MemberData {
     lastName: "",
     friends: [],
     blockedUsers: [],
-    settings: undefined,
+    settings: null,
     interests: [],
     privacySettings: undefined,
     notifications: undefined,

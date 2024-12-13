@@ -1,3 +1,5 @@
+import { BaseData } from '@/app/components/models/data/Data';
+import { simulateFetch } from "@/app/simuuate/simulateFetch";
 import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
 import { CalendarEvent } from "../calendar/CalendarEvent";
 import { Category } from "../libraries/categories/generateCategoryProperties";
@@ -5,11 +7,10 @@ import { StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { Subscriber } from "../users/Subscriber";
 import { Snapshot } from "./LocalStorageSnapshotStore";
-import { BaseData } from '@/app/components/models/data/Data';
 
 
 interface FetchSnapshotPayload<
-  T extends  BaseData<T>, 
+  T extends  BaseData<any>, 
   K extends T = T,
   ExcludedFields extends keyof T = never
   > {
@@ -58,6 +59,78 @@ interface FetchTaskSnapshotPayload {
 }
 
 
+async function fetchSnapshotPayload<T extends BaseData<any>, K extends T = T>(
+  snapshotId: string,
+  options?: {
+    includeMetaData?: boolean;
+    filters?: Partial<T>;
+    queryParams?: Record<string, any>;
+    priority?: 'high' | 'normal' | 'low';
+    source?: 'remote' | 'local';
+    requestContext?: string;
+  }
+): Promise<FetchSnapshotPayload<T, K>> {
+  // Initialize defaults for options
+  const {
+    includeMetaData = true,
+    filters = {},
+    queryParams = {},
+    priority = 'normal',
+    source = 'remote',
+    requestContext = 'default',
+  } = options || {};
 
+  // Record request timestamp
+  const requestTimestamp = new Date();
+
+  // Simulate fetching data (replace this with actual API call)
+  const fetchedData = await simulateFetch(snapshotId, queryParams);
+
+  if (!fetchedData) {
+    throw new Error(`Snapshot with ID "${snapshotId}" not found.`);
+  }
+
+  // Map the fetched data to the FetchSnapshotPayload format
+  const payload: FetchSnapshotPayload<T, K> = {
+    id: snapshotId,
+    key: `key-${snapshotId}`, // Simulate a key
+    topic: fetchedData.topic || 'Default Topic',
+    date: fetchedData.date || new Date(),
+    message: fetchedData.message || 'No message provided',
+    timestamp: fetchedData.timestamp || Date.now(),
+    createdBy: fetchedData.createdBy || undefined,
+    eventRecords: fetchedData.eventRecords || {},
+    type: fetchedData.type || 'default',
+    subscribers: fetchedData.subscribers as Subscriber<T, K, StructuredMetadata<T, K>>[] || [],
+    snapshots: fetchedData.snapshots || new Map<string, Snapshot<T, K>>(),
+    requestTimestamp,
+    requestContext,
+    queryParams,
+    filters,
+    includeMetaData,
+    category: fetchedData.category || undefined,
+    categoryProperties: fetchedData.categoryProperties || undefined,
+    source,
+    priority,
+    customPayload: fetchedData.customPayload || {},
+    title: fetchedData.title || 'Untitled Snapshot',
+    description: fetchedData.description || '',
+    createdAt: fetchedData.createdAt || new Date(),
+    updatedAt: fetchedData.updatedAt || new Date(),
+    status: fetchedData.status || 'unknown',
+    data: fetchedData.data || null,
+    events: fetchedData.events || {},
+    dataItems: fetchedData.dataItems || (() => null),
+    newData: fetchedData.newData || null,
+    metadata: includeMetaData ? fetchedData.metadata : null,
+  };
+
+  return payload;
+}
+
+
+
+
+export { fetchSnapshotPayload };
 export type { FetchSnapshotPayload, FetchTaskSnapshotPayload };
 

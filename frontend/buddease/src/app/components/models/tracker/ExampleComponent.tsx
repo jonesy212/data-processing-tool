@@ -1,14 +1,14 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
+import React from 'react';
 import { useStore } from '../../hooks/useStore';
 
 import ListGenerator, { DetailsItemCommon } from '@/app/generators/ListGenerator';
-import { Data } from '../data/Data';
-import { CommonTrackerProps, TrackerProps } from './Tracker';
-import FolderData from '../data/FolderData';
-import FileData from '../data/FileData';
-import { UserData } from '../../users/User';
 import { NotificationData } from '../../support/NofiticationsSlice';
+import { UserData } from '../../users/User';
+import { Data } from '../data/Data';
+import FileData from '../data/FileData';
+import FolderData from '../data/FolderData';
+import { CommonTrackerProps, TrackerProps } from './Tracker';
 
 const ExampleComponent: React.FC = observer(() => {
   const { trackerManager } = useStore(); // Replace with your actual store names
@@ -22,8 +22,8 @@ const ExampleComponent: React.FC = observer(() => {
       
       strokeWidth: 2, // Assign default stroke width
       fillColor: '#000000', // Assign default fill color
-      flippedX: false, // Default value for flippedX
-      flippedY: false, // Default value for flippedY
+      isFlippedX: false, // Default value for isFlippedX
+      isFlippedY: false, // Default value for isFlippedY
       x: 0, // Default x position
       y: 0, // Default y position
 

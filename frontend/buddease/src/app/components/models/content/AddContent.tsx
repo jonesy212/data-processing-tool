@@ -13,12 +13,13 @@ import { StatusType } from '../data/StatusType';
 import { TaskData } from '../tasks/Task';
 import ContentDetailsListItem from "./ContentDetailsListItem";
 import ContentToolbar from "./ContentToolbar";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 
 interface Content<
-T extends  BaseData<T>,
- K extends T = T,
- Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, k>
+  T extends  BaseData<any, any> = BaseData<any, any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
  > {
   id: string | number | undefined;
   title: string;
@@ -29,7 +30,7 @@ T extends  BaseData<T>,
   timestamp: string | number | Date,
   length: number,
   items: ItemUnion[],
-  data: T | SnapshotWithCriteria<T, K> | CustomSnapshotData | null | undefined,
+  data: T | SnapshotWithCriteria<T, K> | CustomSnapshotData<T, K, Meta> | null | undefined,
   contentItems?: ContentItem[]
 }
 
@@ -525,7 +526,9 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
               profileVisibility: "",
               profileAccessControl: undefined,
               activityStatus: "",
-              isAuthorized: false
+              isAuthorized: false,
+              childIds: [],
+              relatedData: []
             },
           ],
           analysisResults: [],
@@ -609,6 +612,11 @@ const taskContent: Content<TaskData, TaskMetadata> = {
     },
   ],
   data: null,
-  contentItems: []
+  contentItems: [],
+  // relatedData: [],
+  phase: null,
+  metadata: undefined,
+  username: "",
+  storeId: "",
+  role: "",
 };
-

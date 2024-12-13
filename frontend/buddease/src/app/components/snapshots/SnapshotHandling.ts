@@ -1,14 +1,15 @@
 // SnapshotHandling.ts
 import { Data } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from '../../pages/personas/ScenarioBuilder';
+import { BaseData } from '../data/Data';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject } from './LocalStorageSnapshotStore';
 import SnapshotStore from './SnapshotStore';
 import { SnapshotStoreConfig } from './SnapshotStoreConfig';
-import { BaseData } from '../data/Data';
 
 
-interface SnapshotHandling<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface SnapshotHandling<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
     mapSnapshots(
         storeIds: number[],
         snapshotId: string,
@@ -35,7 +36,7 @@ interface SnapshotHandling<T extends  BaseData<T>, K extends T = T, Meta extends
           data: T,
           index: number
         ) => SnapshotsObject<T, K>
-      ): Promise<SnapshotsArray<T>>    
+      ): Promise<SnapshotsArray<T, K>>    
 
       createSnapshotStore: (
         id: string,
@@ -51,7 +52,7 @@ interface SnapshotHandling<T extends  BaseData<T>, K extends T = T, Meta extends
       updateSnapshotStore: (
         id: string,
         snapshotId: number,
-        snapshotStoreData: Snapshots<T>,
+        snapshotStoreData: Snapshots<T, K>,
         category?: string | symbol | Category,
         callback?: (snapshotStore: SnapshotStore<T, K>) => void,
         snapshotDataConfig?: SnapshotStoreConfig<T, K>[]
@@ -73,5 +74,5 @@ interface SnapshotHandling<T extends  BaseData<T>, K extends T = T, Meta extends
   sortSnapshots: (compareFn: (a: Snapshot<T, K>, b: Snapshot<T, K>) => number) => void;
   filterSnapshots: (predicate: (snapshot: Snapshot<T, K>) => boolean) => Snapshot<T, K>[];
   
-  mergeSnapshots: (snapshots: Snapshots<T>, category: string) => Promise<void>;
+  mergeSnapshots: (snapshots: Snapshots<T, K>, category: string) => Promise<void>;
 }

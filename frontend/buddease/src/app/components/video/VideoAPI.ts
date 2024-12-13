@@ -2,15 +2,11 @@
 
 import axios, { AxiosResponse } from 'axios';
 import { VideoOptions } from '../communications/chat/ChatSettingsModal';
+import { Video } from '../state/stores/VideoStore';
 import axiosInstance from '../security/csrfToken';
 import { PrivacySettings } from '../settings/PrivacySettings';
 
-interface Video {
-  id: string;
-  title: string;
-  url: string;
-  // Add more properties as needed
-}
+
 
 class VideoAPI {
   private static baseURL = 'https://example.com/api/videos';

@@ -27,7 +27,7 @@ import FileData from "@/app/components/models/data/FileData";
 import { useDrag } from "@/app/libraries/animations/DraggableAnimation/useDrag";
 import useText from "@/app/libraries/animations/DraggableAnimation/useText";
 import { ContentItem } from "../../stores/ContentStore";
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData, SharedBaseData } from '@/app/components/models/data/Data';
   
 interface Guide {
   id: string;               // Unique identifier for the guide
@@ -39,14 +39,27 @@ interface Guide {
   label: string        // Array to store guides
 }
 
-
 interface Stroke {
   width: number;            // Width of the stroke in pixels
   color: string;            // Color of the stroke (e.g., hex, RGB)
   style?: 'solid' | 'dashed' | 'dotted'; // Optional stroke style
 }
 
-interface LayerEffect {
+interface AppearanceUpdate {
+  stroke?: Stroke; // Optional stroke update
+  fillColor?: string; // Optional fill color update
+  borderColor?: string; // Optional border color update
+  textColor?: string; // Optional text color update
+  highlightColor?: any; // Optional highlight color update
+  backgroundColor?: string; // Optional background color update
+  fontSize?: string; // Optional font size update
+  fontFamily?: string; // Optional font family update
+  width?: string,
+  height?: string; // Optional width and height update
+}
+
+interface LayerEffectGuide extends Guide, SharedBaseData, AppearanceUpdate {}
+interface LayerEffect extends LayerEffectGuide {
   effectType: string;        // Type of the effect (e.g., 'blur', 'shadow')
   options: object;           // Options specific to the effect (e.g., intensity, color)
 }
@@ -57,22 +70,22 @@ interface Layer extends DrawingOptions {
   visible: boolean;         // Whether the layer is currently visible
   locked: boolean;          // Whether the layer is locked for editing
   groupId?: string; // Optional group identifier for layers
-
   content: any[];           // Content of the layer, such as drawings or text
   effects: LayerEffect[];   // List of effects applied to the layer
   blendMode: BlendMode // Blend mode
 }
 
+interface SharedDrawingProps extends SharedBaseData {}
 
-interface Shape {
+interface Shape extends SharedDrawingProps {
   id: string;                      // Unique identifier for the shape
   x: number;                       // X position of the shape
   y: number;                       // Y position of the shape
   width: number;
   height: number;
   fillColor: string;
-  flippedX?: boolean;
-  flippedY?: boolean; // Define additional shape properties as needed
+  isFlippedX?: boolean;
+  isFlippedY?: boolean; // Define additional shape properties as needed
 }
 
 
@@ -107,22 +120,21 @@ interface DrawingElement {
 
 
 interface DrawingTemplate<
-  T extends  BaseData<T>, 
+  T extends  BaseData<any>, 
   K extends T = T, 
-  StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   id: string;               // Unique identifier for the template
   name: string;             // Name of the template
   description?: string;     // Optional description of the template
   imageUrl?: string;        // Optional URL to an image representing the template
-  elements: any[];          // List of elements or patterns included in the template
-  content: Content<DrawingElement, K>
+  elements: DrawingElement[]; // List of drawing elements included in the template
+  content: Content<T, K, Meta>
 }
-
 type TrackerDrawingElement = TrackerProps & DrawingElement;
 
 
 // Define interface for drawing state
-interface DrawingState<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface DrawingState<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   id: string;
   selectedDrawingId: number | null;
   isDrawing: boolean;
@@ -214,11 +226,30 @@ interface DrawingState<T extends  BaseData<T>, K extends T = T, Meta extends Str
 type BlendMode = "normal" | "multiply" | "screen" | "overlay" | "darken" | "lighten";
 // Define initial state
 const initialState: DrawingState<Shape, LayerEffect, DrawingTemplate<Shape, LayerEffect>> = {
-  canvasPosition: "",
-  undoStack: "",
-  redoStack: "",
-  canvasResolution: "",
+  
+  stroke: {
+    width: 0,
+    color: ''
+  },
+  brushes: [],
+  templates: [],
+  gridSize: 0,
  
+  selectedShapes: [],
+  selectedColor: "",
+  selectedLayerId: "",
+  selectedTool: "",
+  canvasBackground: "",
+ 
+  canvasPosition: { x: 0, y: 0 },
+  undoStack: [],
+  redoStack: [],
+  canvasResolution: {
+    width: 800,
+    height: 600
+  },
+
+  
   // selectedDrawingId: null,
   id: "",
   isDrawing: false,
@@ -270,7 +301,6 @@ const initialState: DrawingState<Shape, LayerEffect, DrawingTemplate<Shape, Laye
   zoomLevel: 1, // Default zoom level
 
 };
-
 export const setIsDrawing = (isDrawing: boolean) => ({
   type: "SET_IS_DRAWING",
   payload: isDrawing,
@@ -418,8 +448,8 @@ const convertContentItemToTracker = (item: ContentItem): WritableDraft<TrackerDr
     item.data.stroke || 'black', // Default stroke color
     item.data.strokeWidth || 1, // Default stroke width
     item.data.fillColor || 'transparent', // Default fill color
-    item.data.flippedX || false,
-    item.data.flippedY || false,
+    item.data.isFlippedX || false,
+    item.data.isFlippedY || false,
     item.data.x || 0,
     item.data.y || 0
   );
@@ -465,8 +495,8 @@ const convertContentItemToTracker = (item: ContentItem): WritableDraft<TrackerDr
     stroke: item.data.stroke, // Assume 'data' contains stroke information
     strokeWidth: item.data.strokeWidth,
     fillColor: item.data.fillColor,
-    flippedX: item.data.flippedX,
-    flippedY: item.data.flippedY,
+    isFlippedX: item.data.isFlippedX,
+    isFlippedY: item.data.isFlippedY,
     x: item.data.x,
     y: item.data.y,
 
@@ -1119,10 +1149,10 @@ export const useDrawingManagerSlice = createSlice({
     // Flip Shape X
     flipShapeX(state, action: PayloadAction<{ shapeId: string }>) {
       const { shapeId } = action.payload;
-      // Find the shape in drawingContent and update its flippedX property
+      // Find the shape in drawingContent and update its isFlippedX property
       const shape = state.drawingContent.find(shape => shape.id === shapeId);
       if (shape) {
-        shape.flippedX = !shape.flippedX;
+        shape.isFlippedX = !shape.isFlippedX;
         // Apply transformation logic if needed
       }
     },
@@ -1130,10 +1160,10 @@ export const useDrawingManagerSlice = createSlice({
     // Flip Shape Y
     flipShapeY(state, action: PayloadAction<{ shapeId: string }>) {
       const { shapeId } = action.payload;
-      // Find the shape in drawingContent and update its flippedY property
+      // Find the shape in drawingContent and update its isFlippedY property
       const shape = state.drawingContent.find(shape => shape.id === shapeId);
       if (shape) {
-        shape.flippedY = !shape.flippedY;
+        shape.isFlippedY = !shape.isFlippedY;
         // Apply transformation logic if needed
       }
     },
@@ -1793,7 +1823,7 @@ export const {
 } = useDrawingManagerSlice.actions;
 
 export default useDrawingManagerSlice.reducer;
-export type { DrawingState, Stroke, TrackerDrawingElement };
+export type { DrawingState, Stroke, TrackerDrawingElement, AppearanceUpdate };
 
 // Selectors
 export const selectDrawing = (state: RootState) => state.drawingManager;

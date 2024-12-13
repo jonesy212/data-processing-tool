@@ -1,4 +1,7 @@
+import { useMeta } from '@/app/configs/useMeta';
 // Version.ts
+
+import { fetchUserAreaDimensions } from '@/app/configs/database/MetaDataOptions';
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure, {  backendStructure } from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure, {  frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
@@ -17,7 +20,8 @@ import DocumentPermissions from "../documents/DocumentPermissions";
 import { fluenceApiKey } from "../web3/dAppAdapter/DAppAdapterConfig";
 import { dataVersions } from "@/app/configs/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { T } from "../models/data/dataStoreMethods";
+import { K, Meta, T } from "../models/data/dataStoreMethods";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 
 
 interface ExtendedVersion extends Version {
@@ -56,8 +60,8 @@ interface Version {
   content: string;
   description: string;
   buildNumber: string;
-  metadata?: any; // Adjust based on actual type
-  versions: any | null; // Adjust based on actual type
+  metadata?: UnifiedMetaDataOptions<T, K<T>, Meta<T, K<T>>>; // Adjust based on actual type
+  versions: Versions | null; // Adjust based on actual type
   appVersion: string;
   checksum: string;
   parentId: string | null;
@@ -86,7 +90,7 @@ interface Version {
   workspaceViewers: any[]; // Adjust based on actual type
   workspaceAdmins: any[]; // Adjust based on actual type
   workspaceMembers: any[]; // Adjust based on actual type
-  data: any[]; // Adjust based on actual type
+  data: VersionData | undefined;
   _structure: Record<string, AppStructureItem[]>;
   versionHistory: {
     versionData: any; // Adjust based on actual type
@@ -96,108 +100,139 @@ interface Version {
   setStructureData(newData: string): void;
   hash(value: string): string;
 
-
-
   currentHash: string; // Property to hold the current hash value
   structureData: string; // Property to hold the structure data
   calculateHash(): string; // Method to calculate the hash
 }
 
+interface Versions {
+  version?: Version[]; 
+  backend: BackendStructure | undefined;
+  frontend: FrontendStructure | undefined;
+}
 
 
 
-const version: Version = {
-  id: 1,
-  versionData: null,
-  buildVersions: undefined,
-  isActive: true,
-  releaseDate: new Date(),
-  major: 1,
-  minor: 0,
-  patch: 0,
-  name: "Initial Release",
-  url: "https://example.com/version/1",
-  versionNumber: "1.0.0",
-  documentId: "doc123",
-  draft: false,
-  userId: "user456",
-  content: "This is the content of the version.",
-  description: "This is the initial release version.",
-  buildNumber: "build_001",
-  metadata: {},
-  versions: null,
-  appVersion: "1.0.0",
-  checksum: "abc123",
-  parentId: null,
-  parentType: "document",
-  parentVersion: "0.0.1",
-  parentTitle: "Parent Document Title",
-  parentContent: "Parent document content.",
-  parentName: "Parent Name",
-  parentUrl: "https://example.com/parent",
-  parentChecksum: "def456",
-  parentAppVersion: "0.0.1",
-  parentVersionNumber: "0.0.1",
-  parentMetadata: {},
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  deletedAt: undefined,
-  isLatest: true,
-  isPublished: true,
-  publishedAt: new Date(),
-  source: "web",
-  status: "active",
-  workspaceId: "workspace789",
-  workspaceName: "Workspace Name",
-  workspaceType: "standard",
-  workspaceUrl: "https://example.com/workspace",
-  workspaceViewers: [],
-  workspaceAdmins: [],
-  workspaceMembers: [],
-  data: [],
-  _structure: {},
+const area = fetchUserAreaDimensions().toString()
+const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
 
-  versionHistory: {
-    versionData: {},
-  },
 
-  // Method to generate a version number string
-  getVersionNumber: function () {
-    return `${this.major}.${this.minor}.${this.patch}`;
-  },
+function createVersion(overrides?: Partial<Version>): Version {
+  const now = new Date();
 
-  // Method to update the hash of the structure
-  updateStructureHash: async function () {
-    this.currentHash = this.calculateHash();
-    console.log(`Structure hash updated to: ${this.currentHash}`);
-  },
+  // Default structure
+  const defaultVersion: Version = {
+    id: 1,
+    versionData: null,
+    buildVersions: undefined,
+    isActive: true,
+    releaseDate: now,
+    major: 1,
+    minor: 0,
+    patch: 0,
+    name: "Initial Release",
+    url: "https://example.com/version/1",
+    versionNumber: "1.0.0",
+    documentId: "doc123",
+    draft: false,
+    userId: "user456",
+    content: "This is the content of the version.",
+    description: "This is the initial release version.",
+    buildNumber: "build_001",
+    metadata: {
+      area: area, 
+      currentMeta: currentMeta,
+      metadataEntries: {}
+    },
+    versions: null,
+    appVersion: "1.0.0",
+    checksum: "abc123",
+    parentId: null,
+    parentType: "document",
+    parentVersion: "0.0.1",
+    parentTitle: "Parent Document Title",
+    parentContent: "Parent document content.",
+    parentName: "Parent Name",
+    parentUrl: "https://example.com/parent",
+    parentChecksum: "def456",
+    parentAppVersion: "0.0.1",
+    parentVersionNumber: "0.0.1",
+    parentMetadata: {},
+    createdAt: now,
+    updatedAt: now,
+    deletedAt: undefined,
+    isLatest: true,
+    isPublished: true,
+    publishedAt: now,
+    source: "web",
+    status: "active",
+    workspaceId: "workspace789",
+    workspaceName: "Workspace Name",
+    workspaceType: "standard",
+    workspaceUrl: "https://example.com/workspace",
+    workspaceViewers: [],
+    workspaceAdmins: [],
+    workspaceMembers: [],
+    data: {} as VersionData,
+    _structure: {},
 
-  // Method to set the structure data
-  setStructureData: function (newData: string) {
-    this.structureData = newData;
-    console.log("Structure data set to:", newData);
-  },
+    versionHistory: {
+      versionData: {},
+    },
 
-  // Sample hash function, ideally use a secure hashing algorithm here
-  hash: function (value: string): string {
-    // Basic example using a simple hash, replace with a robust hashing algorithm as needed
-    let hash = 0;
-    for (let i = 0; i < value.length; i++) {
-      hash = (hash << 5) - hash + value.charCodeAt(i);
-      hash |= 0;
-    }
-    return hash.toString();
-  },
+    // Method to generate a version number string
+    getVersionNumber: function () {
+      return `${this.major}.${this.minor}.${this.patch}`;
+    },
 
-  // Calculate hash based on structureData or other relevant fields
-  calculateHash: function () {
-    return this.hash(this.structureData || "");
-  },
+    // Method to update the hash of the structure
+    updateStructureHash: async function () {
+      this.currentHash = this.calculateHash();
+      console.log(`Structure hash updated to: ${this.currentHash}`);
+    },
 
-  currentHash: "", // Initialized to empty; will be set by `updateStructureHash`
-  structureData: "", // Will be populated with actual data when needed
-};
+    // Method to set the structure data
+    setStructureData: function (newData: string) {
+      this.structureData = newData;
+      console.log("Structure data set to:", newData);
+    },
 
+    // Sample hash function, ideally use a secure hashing algorithm here
+    hash: function (value: string): string {
+      let hash = 0;
+      for (let i = 0; i < value.length; i++) {
+        hash = (hash << 5) - hash + value.charCodeAt(i);
+        hash |= 0;
+      }
+      return hash.toString();
+    },
+
+    // Calculate hash based on structureData or other relevant fields
+    calculateHash: function () {
+      return this.hash(this.structureData || "");
+    },
+
+    currentHash: "", // Initialized to empty; will be set by `updateStructureHash`
+    structureData: "", // Will be populated with actual data when needed
+  };
+
+  // Merge overrides (if any) with default values
+  return {
+    ...defaultVersion,
+    ...overrides,
+    metadata: {
+      area: overrides.metadata?.area ?? defaultVersion.metadata.area,
+      tags: overrides.metadata?.tags ?? defaultVersion.metadata.tags,
+      childIds: overrides.metadata?.childIds ?? defaultVersion.metadata.childIds,
+      relatedData: overrides.metadata?.relatedData ?? defaultVersion.metadata.relatedData,
+      baseUrl: overrides.metadata?.baseUrl ?? defaultVersion.metadata.baseUrl,
+    },
+    versionHistory: {
+      ...defaultVersion.versionHistory,
+      ...(overrides?.versionHistory ?? {}),
+    },
+  };
+}
 
 // DevVersion: Extends BaseVersion and adds development-specific properties
 interface DevVersion extends Version {
@@ -262,16 +297,8 @@ class VersionImpl implements Version {
   content: string;
   description: string;
   buildNumber: string;
-  metadata: {
-    author: string;
-    timestamp: string | Date | undefined;
-    revisionNotes?: string;
-  } | undefined;
-  versions: {
-    data: VersionData | undefined;
-    backend: BackendStructure | undefined;
-    frontend: FrontendStructure | undefined;
-  } | null;
+  metadata: UnifiedMetaDataOptions<T, K<T>, Meta<T, K<T>>, never> | undefined;
+  versions: Versions
   appVersion: string;
   published?: boolean;
   checksum: string;
@@ -376,6 +403,7 @@ class VersionImpl implements Version {
       data: VersionData | undefined;
       backend: BackendStructure | undefined;
       frontend: FrontendStructure | undefined;
+      history: HistoryEntry[];
     } | null;
     versionHistory: VersionHistory;
     userId: string;
@@ -433,7 +461,6 @@ class VersionImpl implements Version {
     workspaceViewers: string[];
     workspaceAdmins: string[];
     workspaceMembers: string[];
-
 
     _structure?: Record<string, AppStructureItem[]>; // Added here
     frontendStructure?: Promise<AppStructureItem[]>; // Added here
@@ -548,7 +575,8 @@ class VersionImpl implements Version {
       backendStructure: versionInfo.backendStructure ?? Promise.resolve([]),
       data: versionInfo.data ?? [],
       backend: versionInfo.versions?.backend ?? undefined,
-      frontend: versionInfo.versions?.frontend ?? undefined
+      frontend: versionInfo.versions?.frontend ?? undefined,
+      history: versionInfo.versions?.history ?? undefined
     };
 
     this.getVersion = async (): Promise<string | null> => {
@@ -582,6 +610,42 @@ class VersionImpl implements Version {
     this.backendStructure = Promise.resolve(backendStructureInstance.getStructureAsArray());
   }
 
+  /**
+   * Static method to create a Version instance.
+   * @param versionInfo - Object containing version details.
+   * @returns A new instance of VersionImpl.
+  */
+  static createVersion(versionInfo: {
+    id: number;
+    major: number;
+    minor: number;
+    patch: number;
+    versionNumber: string;
+    buildVersions?: BuildVersion;
+    versionHistory?: VersionHistory;
+  }): VersionImpl {
+    return new VersionImpl({
+      id: versionInfo.id,
+      major: versionInfo.major,
+      minor: versionInfo.minor,
+      patch: versionInfo.patch,
+      versionData: {
+        versionNumber: versionInfo.versionNumber,
+        releaseDate: new Date(),
+        description: "Generated version",
+      },
+      buildVersions: versionInfo.buildVersions,
+      versionHistory: versionInfo.versionHistory || {
+        history: [
+          {
+            versionId: `${versionInfo.id}`,
+            description: "Initial version",
+            releaseDate: new Date(),
+          },
+        ],
+      },
+    });
+  }
 
   private async generateStructureHash?(): Promise<string> {
     // Wait for the resolution of the promise
@@ -676,11 +740,7 @@ class VersionImpl implements Version {
     checksum: string;
     data: Data<BaseData<any>>[];
     name: string;
-    versions: {
-      data: VersionData | undefined;
-      backend: BackendStructure | undefined;
-      frontend: FrontendStructure | undefined;
-    };
+    versions: Versions;
     metadata: {
       author: string;
       timestamp: string | Date | undefined
@@ -944,6 +1004,9 @@ class VersionImpl implements Version {
     }
   }
 
+
+  
+
   // Method to generate checksum
   generateChecksum?(content: string): string {
     return crypto.createHash("sha256").update(content).digest("hex");
@@ -1068,6 +1131,7 @@ name: "",
   releaseDate: '',  
   draft: false,
   userId: "",
+  history: [],
   parentId: "", // Provide appropriate values based on your application logic
   parentType: "", // Provide appropriate values based on your application logic
   parentVersion: "", // Provide appropriate values based on your application logic
@@ -1114,7 +1178,8 @@ name: "",
     data: dataVersions,
     backend: backendStructure,
     frontend: frontendStructure
-  }
+  },
+  
 };
 
 
@@ -1137,7 +1202,11 @@ const devVersion: DevVersion = {
   description: 'Description of the version',
   buildNumber: '12345',
   appVersion: '1.0.3',
-  versions: [],
+  versions: {
+    version: [],
+    backend: {},
+    frontend: {}
+  },
   checksum: 'abc123checksum',
   parentId: null,
   parentType: 'document',
@@ -1216,11 +1285,11 @@ const devVersion: DevVersion = {
   pullRequestMergeCommitCommitterEmail: '',
 };
 
-export { versionData, VersionImpl };
-export type { BuildVersion }
+export { versionData, VersionImpl, createVersion };
+export type { BuildVersion, Version }
 
 
-
+export const version = createVersion();
 
 
 

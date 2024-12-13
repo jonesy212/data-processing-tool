@@ -1,3 +1,4 @@
+import { Tenant } from '@/app/components/users/TenantStore';
 import { makeAutoObservable } from "mobx";
 
 
@@ -42,7 +43,7 @@ interface TenantStore {
     }
   
     removeTenant(tenantId: string): void {
-      this.tenants = this.tenants.filter((tenant) => tenant.id !== tenantId);
+      this.tenants = this.tenants.filter((tenant: Tenant) => tenant.id !== tenantId);
     }
   
     setCurrentTenant(tenantId: string): void {

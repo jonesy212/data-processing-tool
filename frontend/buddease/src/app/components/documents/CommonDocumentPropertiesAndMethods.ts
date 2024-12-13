@@ -13,7 +13,7 @@ interface CommonDocumentPropertiesAndMethods {
   comments: string[];
   tags: string[];
   tasks: Task[];
-  collaborators: string[];
+  collaborators: Collaborator[];
   permissions: Record<string, boolean>;
   isPublic: boolean;
   parentDocument: string;

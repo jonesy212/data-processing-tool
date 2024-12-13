@@ -1,13 +1,14 @@
 import Milestone from '@/app/components/calendar/CalendarSlice';
 import { Communication } from '@/app/components/communications/chat/Communication';
 import { Meeting } from '@/app/components/communications/scheduler/Meeting';
-import { CollaborationOption } from '@/app/components/interfaces/options/CollaborationOptions';
+import { CollaborationOptions } from '@/app/components/interfaces/options/CollaborationOptions';
 import { BaseData, Data } from '@/app/components/models/data/Data';
+import { Task } from '@/app/components/models/tasks/Task';
 import { Member } from '@/app/components/models/teams/TeamMembers';
 import { AllStatus } from '@/app/components/state/stores/DetailsListStore';
 import { User } from '@/app/components/users/User';
 import { BaseMetadata, BaseMetaDataOptions, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { Task } from '@/app/typings/appTypes';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { Project } from 'next/dist/build/swc';
 import { Resource } from 'node_modules/@refinedev/core/dist/hooks/router/use-go';
 
@@ -22,7 +23,7 @@ interface CollaborationData extends BaseData {
     milestones?: Milestone[]; // Specific to collaboration
     members?: Member[] | string[] | number[]; // Can be Member objects, or IDs as string/number
     leader?: User | null; // Specific to collaboration
-    collaborationOptions?: CollaborationOption[]; // Specific collaboration settings/options
+    collaborationOptions?: CollaborationOptions[]; // Specific collaboration settings/options
     isShared?: boolean; // Indicates if the data is shared across collaboration
     // Additional properties specific to CollaborationData can be added here
   
@@ -31,8 +32,11 @@ interface CollaborationData extends BaseData {
   }
   
   // Define CollaborationMeta interface by extending BaseMetaDataOptions and adding specific properties
-  interface CollaborationMeta<T extends Data = CollaborationData, Meta extends UnifiedMetaDataOptions = BaseMetadata, K extends T = T> 
-    extends BaseMetaDataOptions<T, K> {
+  interface CollaborationMeta<
+      T extends BaseData<any> = CollaborationData,
+      K extends T = T,
+      Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+    >  extends BaseMetaDataOptions<T, K> {
     projectId?: string; // Specific to collaboration metadata
     projectType?: string; // Project type for collaboration context
     lastEditedBy?: string; // User who last edited the metadata
@@ -48,3 +52,4 @@ interface CollaborationData extends BaseData {
     [key: string]: any; // Allow dynamic properties
   }
   
+  export type { CollaborationData }

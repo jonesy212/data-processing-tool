@@ -1,9 +1,10 @@
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseData } from '../data/Data';
 import { CombinedEvents } from "../hooks/useSnapshotManager";
 import { Snapshot } from "./LocalStorageSnapshotStore";
-import { BaseData } from '../data/Data';
 
 // Define SampleSnapshot implementing Snapshot<T, K>
-class SampleSnapshot <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+class SampleSnapshot <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
   implements Snapshot<T, K> {
   id: string;
   data: Map<string, Snapshot<T, K>>;

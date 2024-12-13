@@ -1,11 +1,12 @@
 // FileData.ts
 
 import { ScheduledData } from '../../calendar/ScheduledData';
-import { Attachment } from '../../documents/Attachment/attachment';
+import { Attachment } from '@/app/components/documents/Attachment/attachment'
 import { User } from '../../users/User';
+import { BaseData } from './Data';
 
 // Define the interface for FileData
-interface FileData extends ScheduledData {
+interface FileData<T extends BaseData<any>> extends ScheduledData<T> {
   // Define specific properties for FileData
   fileSize: number; // Size of the file in bytes
   fileType: string; // Type of the file (e.g., PDF, Word document, etc.)

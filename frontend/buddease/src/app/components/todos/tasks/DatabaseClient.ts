@@ -38,7 +38,7 @@ class DatabaseClient {
   
   
   async insert<
-    T extends  BaseData<T>, 
+    T extends  BaseData<any>, 
     K extends T = T>(
     tableName: string,
     data: DatasetModel<T, K>,
@@ -112,7 +112,7 @@ class DatabaseClient {
 
   // Method to upload a dataset
   static async uploadDataset<
-    T extends  BaseData<T>,
+    T extends  BaseData<any>,
     K extends T = T
   >(formData: FormData): Promise<DatasetModel<T, K> | null> {
     try {

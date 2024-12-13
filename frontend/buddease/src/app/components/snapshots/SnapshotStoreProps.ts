@@ -11,7 +11,7 @@ import { SnapshotConfig } from '@/app/components/snapshots';
 import { SnapshotContainer, SnapshotData } from '@/app/components/snapshots';
 import { SnapshotStoreProps } from '@/app/components/snapshots';
 import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData"
-import { SubscriberCollection } from '@/app/components/snapshots/SnapshotStore';
+import SubscriberCollection from '@/app/components/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/components/snapshots/SnapshotWithCriteria';
 import { getStoreId } from '@/app/api/ApiData';
 import * as snapshotApi from '@/app/api/SnapshotApi';
@@ -46,7 +46,7 @@ import handleSnapshotStoreOperation from '../snapshots/handleSnapshotStoreOperat
 import { subscribeToSnapshot, subscribeToSnapshots } from "../snapshots/snapshotHandlers";
 import { Subscription } from '../subscriptions/Subscription';
 import { addToSnapshotList, isSnapshotStoreConfig, isSnapshotWithCriteria } from '../utils/snapshotUtils';
-import { SnapshotStoreOptions } from '@/app/components/hooks/SnapshotStoreOptions';
+import { SnapshotStoreOptions } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { LibraryAsyncHook } from "@/app/components/hooks/useAsyncHookLinker";
 import { T, K } from '../models/data/dataStoreMethods';
 import { Subscriber } from '@/app/components/users/Subscriber';
@@ -54,9 +54,12 @@ import { getCategory } from './snapshotContainerUtils';
 import { createBaseData } from "../hooks/useSnapshotManager";
 
 // Initialize storeProps with meaningful values
-const storeProps: SnapshotStoreProps<Data<BaseData, BaseData>,
-  SnapshotStoreConfig<Data<BaseData, BaseData>>> = {
-    category, expirationDate, payload, callback,
+const storeProps: SnapshotStoreProps<T, K<T>> = {
+    category: "",
+     expirationDate: "",
+     payload: "",
+     callback: "",
+
 
     storeId: "yourStoreId",
     name: "MySnapshotStore", // Provide a valid name
@@ -143,7 +146,7 @@ const storeProps: SnapshotStoreProps<Data<BaseData, BaseData>,
         publishedAt: null, // or a valid Date
         source: "initial", // Required property
         status: "active", // Required property
-        version: "1.0.0", // Required property
+        version: version, // Required property
         timestamp: new Date(), // Required property
         user: "user1", // Required property
         changes: [], // Required property
@@ -211,11 +214,11 @@ const storeProps: SnapshotStoreProps<Data<BaseData, BaseData>,
         snapshotConfig: SnapshotStoreConfig<T, K<T>>,
         callback: (
           snapshotStore: SnapshotStore<T, K<T>>, 
-          snapshots: SnapshotsArray<T>
+          snapshots: SnapshotsArray<T, K<T>>
         ) => Subscriber<T, K<T>> | null,
-        snapshots: SnapshotsArray<T>,
+        snapshots: SnapshotsArray<T, K<T>>,
         unsubscribe?: UnsubscribeDetails, 
-      ): SnapshotsArray<T> | [] => {
+      ): SnapshotsArray<T, K<T>> | [] => {
         // Implement your logic here
         return snapshots; // or modify the snapshots as needed
       },
@@ -408,7 +411,7 @@ const storeProps: SnapshotStoreProps<Data<BaseData, BaseData>,
         snapshot: Snapshot<T, K<T>>,
         data: SnapshotStoreConfig<T, K<T>>,
         mappedData: Map<string, SnapshotStoreConfig<T, K<T>>>,
-        operation: SnapshotOperation, // Ensure you use this in your logic
+        operation: SnapshotOperation<T, K>, // Ensure you use this in your logic
         operationType: SnapshotOperationType
       ): Promise<Snapshot<T, K<T>> | null> => {
         return new Promise((resolve) => {

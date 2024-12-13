@@ -16,7 +16,7 @@ import { SnapshotStoreProps } from "./useSnapshotStore";
 
 
 // SnapshotCommonProps for properties specific to snapshots, extending BaseEntity for common properties
-interface SnapshotCommonProps<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends BaseEntity {
+interface SnapshotCommonProps<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends BaseEntity {
   criteria?: any; // Define a more specific type if needed
   category?: string | symbol | Category; // Optional category
   categoryProperties?: CategoryProperties; // Define the type as needed
@@ -32,7 +32,7 @@ interface SnapshotCommonProps<T extends  BaseData<T>, K extends T = T, Meta exte
 
 
 
-interface SnapshotConfigProps<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends SnapshotCommonProps<T, K> {
+interface SnapshotConfigProps<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends SnapshotCommonProps<T, K> {
   id: string;
   subscriberId: string;
   dataStoreMethods: DataStoreMethods<T, K>; // Replace `any` with the appropriate type

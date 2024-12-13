@@ -1,4 +1,4 @@
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { ExtendedCalendarEvent } from "@/app/components/calendar/CalendarEventTimingOptimization";
 import HighlightEvent from "@/app/components/documents/screenFunctionality/HighlightEvent";
 import { BaseData, Data } from "@/app/components/models/data/Data";
@@ -6,12 +6,12 @@ import { T } from "@/app/components/models/data/dataStoreMethods";
 import { Member } from "@/app/components/models/teams/TeamMembers";
 import { Tag } from "@/app/components/models/tracker/Tag";
 import { RootState } from '@/app/components/state/redux/slices/RootSlice';
-import { CalendarEvent } from "@/app/components/state/stores/CalendarEvent";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { produce } from "immer"; // Import immer for immutable updates
 import { WritableDraft } from "../ReducerGenerator";
 
-interface FilteredEventsState<T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface FilteredEventsState<T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   filteredEvents: (ExtendedCalendarEvent | CalendarEvent<T, K> | HighlightEvent)[];
   addFilteredEvent: (event:  ExtendedCalendarEvent | CalendarEvent<T, K> | HighlightEvent) => void; // Define methods
   payload: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[];

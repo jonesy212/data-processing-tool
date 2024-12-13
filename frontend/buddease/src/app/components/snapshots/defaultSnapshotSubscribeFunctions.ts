@@ -1,14 +1,13 @@
 // defaultSnapshotSubscribeFunctions.ts
 import * as snapshotApi from '@/app/api/SnapshotApi';
-
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { BaseData } from "../models/data/Data";
 import { CoreSnapshot } from "./CoreSnapshot";
 import { Snapshot } from "./LocalStorageSnapshotStore";
-
 import { Callback } from "./subscribeToSnapshotsImplementation";
 
 // Function to unsubscribe from snapshots
-export const defaultUnsubscribeFromSnapshots = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const defaultUnsubscribeFromSnapshots = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string,
   callback: Callback<Snapshot<T, K>>,
   snapshot: Snapshot<T, K> // Ensure this matches the expected type
@@ -26,7 +25,7 @@ export const defaultUnsubscribeFromSnapshots = <T extends  BaseData<T>, K extend
 };
 
 
-function convertCoreToSnapshot<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertCoreToSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   coreSnapshot: CoreSnapshot<T, K>
 ): Snapshot<T, K> {
   return {
@@ -39,19 +38,28 @@ function convertCoreToSnapshot<T extends  BaseData<T>, K extends T = T, Meta ext
   };
 }
 
-export const fetchAndCreateSnapshot = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const fetchAndCreateSnapshot = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string,
   storeId: number,
   additionalHeaders?: Record<string, string>
 ): Promise<CoreSnapshot<T, K>> => {
   try {
     // Fetch the snapshot from the API
-    const snapshot = await snapshotApi.getSnapshot(String(snapshotId), Number(storeId), additionalHeaders);
+    const snapshot =  snapshotApi.getSnapshot(String(snapshotId), Number(storeId), additionalHeaders);
     
     // Create CoreSnapshot using fetched data
     const coreSnapshot: CoreSnapshot<T, K> = {
-     subscribers, snapshotSubscriberId, isSubscribed, getSubscribers,
-
+      subscribers: snapshot.subscribers,
+      snapshotSubscriberId: snapshot.snapshotSubscriberId,
+      isSubscribed: snapshot.isSubscribed,
+      getSubscribers: snapshot.getSubscribers,
+     
+      mappedSnapshot: snapshot.mappedSnapshot,
+      notifySubscribers: snapshot.notifySubscribers,
+      notify: snapshot.notify,
+      subscribe: snapshot.subscribe,
+      
+      
       id: snapshot.id,  // Assuming snapshot has an id
       isCore: true,
       config: Promise.resolve(null),  // Placeholder promise for config
@@ -116,7 +124,7 @@ export const fetchAndCreateSnapshot = async <T extends  BaseData<T>, K extends T
 }
 
 
-export const defaultSubscribeToSnapshot = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const defaultSubscribeToSnapshot = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string,
   storeId: number, // Added storeId parameter
   callback: (snapshot: Snapshot<T, K>) => void,
@@ -125,7 +133,7 @@ export const defaultSubscribeToSnapshot = async <T extends  BaseData<T>, K exten
   console.log(`Subscribed to single snapshot with ID: ${snapshotId}`);
 
   // Fetch the snapshot and create CoreSnapshot
-  const snapshot = await fetchAndCreateSnapshot<T, K>(snapshotId, storeId, additionalHeaders);
+  const coreSnapshot = await fetchAndCreateSnapshot<T, K>(snapshotId, storeId, additionalHeaders);
 
    // Convert CoreSnapshot to Snapshot
    const fullSnapshot = convertCoreToSnapshot(coreSnapshot);

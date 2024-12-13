@@ -24,6 +24,7 @@ import {
   NotificationType,
   NotificationTypeEnum,
 } from "../support/NotificationContext";
+import { T, K, Meta } from "../models/data/dataStoreMethods";
 
 type AnimationType = "fade" | "slide" | "bounce" | "custom" | "show";
 type NotificationCategory = "general" | "urgent" | "important";
@@ -71,7 +72,7 @@ interface NotificationProps extends BaseProps {
   fontSize: string;
   fontColor: string;
   sendStatus: SendStatus;
-  completionMessageLog: LogData | undefined;
+  completionMessageLog: LogData<T, K<T>, Meta<T, K<T>>> | undefined;
   type: NotificationType;
 }
 

@@ -3,9 +3,11 @@ import { databaseConfig } from "@/app/configs/DatabaseConfig";
 import express from 'express';
 import performDatabaseOperation from "../database/DatabaseOperations";
 import { User } from "../users/User";
+import { SnapshotDataType } from '@/app/components/snapshots';
 import isValidAuthToken from "./AuthValidation";
 import { decryptedData } from "./decryptedData";
 import { Encryption } from "./Encryption";
+import { isSnapshotData } from '@/app/components/utils/snapshotUtils'
 
 const app = express();
 

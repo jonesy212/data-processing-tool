@@ -1,11 +1,13 @@
 // SecuritySettings.tsx
+import { Permission } from "@/app/components/users/Permission";
+
 interface SecuritySettings {
   twoFactorAuthentication: boolean;
   securityQuestions: string[],
   passwordPolicy: string;
   passwordExpirationDays: number;
   passwordStrength: string;
-
+  permission: Permission
     passwordComplexityRequirements: {
       minLength: number;
       requireUppercase: boolean;
@@ -24,10 +26,15 @@ interface SecuritySettings {
   const defaultSecuritySettings: SecuritySettings = {
     twoFactorAuthentication: false,
     securityQuestions: ["What is your pet's name?"],
-
+    
     passwordPolicy: 'StandardPolicy',
     passwordExpirationDays: 90,
     passwordStrength: 'Strong',
+    permission: {
+      userId: "",
+      permissions: {},
+      permissionType: "read"
+    },
     passwordComplexityRequirements: {
       minLength: 8,
       requireUppercase: true,
@@ -43,3 +50,6 @@ interface SecuritySettings {
     accountLockoutThreshold: 5, // TODO: Implement account lockout threshold
   };
   
+
+
+  export default defaultSecuritySettings;

@@ -10,7 +10,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
 import snapshotStore from "../../snapshots/SnapshotStore";
-import { updateCallback } from "../../state/stores/CalendarEvent";
+import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
 import userService, { userId } from "../../users/ApiUser";
 import { Data } from "./Data";
 // import  DataFrameAPI  from '@/app/api/DataframeApi';
@@ -294,7 +294,7 @@ if (options.random) {
         <input
           type="text"
           value={column}
-          onChange={(e) => setColumn(e.target.value)}
+          onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setColumn(e.target.value)}
         />
       </label>
       <label>

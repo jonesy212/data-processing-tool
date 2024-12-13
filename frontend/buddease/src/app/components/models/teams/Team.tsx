@@ -1,3 +1,4 @@
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UserSettings } from "@/app/configs/UserSettings";
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
@@ -131,7 +132,7 @@ interface Team extends Data {
   percentage: number;
   data?: TeamData;
   members?: Member[];
-  then?: <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
+  then?: <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
   pointOfContact?: TeamMember | null;
   currentProject?: Project | null;
   currentTeam?: Team | null;

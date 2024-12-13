@@ -1,9 +1,9 @@
+import { BaseData } from '@/app/components/models/data/Data';
 import useErrorHandling from "../hooks/useErrorHandling";
 import { sanitizeComments } from "../security/SanitizationFunctions";
 import { ParsedData, parseData } from "./parseData";
-import { BaseData } from '@/app/components/models/data/Data';
 // Define a specific type that extends T to include the comment property
-interface DataWithComment<T extends   BaseData<T>> {
+interface DataWithComment<T extends   BaseData<any>> {
   comment: string;
 }
 

@@ -1,5 +1,5 @@
 // snapshots/SnapshotSlice.ts
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { Payload } from '@/app/components/database/Payload';
 import { SnapshotManager, useSnapshotManager } from "@/app/components/hooks/useSnapshotManager";
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from "@/app/components/models/data/Data";
@@ -10,20 +10,18 @@ import { DataStore } from "@/app/components/projects/DataAnalysisPhase/DataProce
 import { Callback, SnapshotConfig, SnapshotData, SnapshotWithCriteria } from "@/app/components/snapshots";
 import { Snapshot, Snapshots } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import { ConfigureSnapshotStorePayload } from "@/app/components/snapshots/SnapshotConfig";
-import SnapshotStore, { SubscriberCollection } from "@/app/components/snapshots/SnapshotStore";
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
-import { Payload } from '@/app/configs/database/Payload';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { getSnapshotItems } from './snapshotOperations';
 
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { NotificationType } from "@/app/components/support/NotificationContext";
 import { Subscriber } from "@/app/components/users/Subscriber";
 import { sendNotification } from "@/app/components/users/UserSlice";
 import { findCorrectSnapshotStore, isSnapshot } from "@/app/components/utils/snapshotUtils";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IHydrateResult } from "mobx-persist";
+import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import { FC } from "react";
 import { WritableDraft } from "../ReducerGenerator";
 
@@ -128,8 +126,8 @@ export const useSnapshotSlice = createSlice({
 
     
 
-    batchRemoveSnapshotsRequest: <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-      state: WritableDraft<SnapshotState<T, K>>, // Specify state type here
+    batchRemoveSnapshotsRequest: <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+      state, // Specify state type here
       action: PayloadAction<{ startDate: Date; endDate: Date }>
     ) => {
 
@@ -139,7 +137,7 @@ export const useSnapshotSlice = createSlice({
       state.loading = true;
       state.error = null;
 
-      const notifySubscribers = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+      const notifySubscribers = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
         subscribers: Subscriber<T, K>[]
       ) => {
         const { startDate, endDate } = action.payload;
@@ -181,7 +179,7 @@ export const useSnapshotSlice = createSlice({
       state.loading = true;
       state.error = null;
 
-      const notifySubscribers = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+      const notifySubscribers = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
         subscribers: Subscriber<T, K>[],
         action: PayloadAction<{ snapshot: Snapshot<T, K>; subscriber: Subscriber<T, K> }>
       ) => {
@@ -231,7 +229,7 @@ export const useSnapshotSlice = createSlice({
           getSnapshotItems: getSnapshotItems,
           defaultSubscribeToSnapshots: function (
             napshotId: string,
-            callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null,
+            callback: (snapshots: Snapshots<T, K>) => Subscriber<T, K> | null,
             snapshot: Snapshot<T, K> | null
           ): void {
             throw new Error("Function not implemented.");
@@ -277,10 +275,10 @@ export const useSnapshotSlice = createSlice({
           updateDataVersions: function (id: number, versions: Snapshot<BaseData, BaseData>[]): void {
             throw new Error("Function not implemented.");
           },
-          getBackendVersion: function (): Promise<string> | IHydrateResult<number> | undefined {
+          getBackendVersion: function (): Promise<string | number | undefined> {
             throw new Error("Function not implemented.");
           },
-          getFrontendVersion: function (): Promise<string> | IHydrateResult<number> | undefined {
+          getFrontendVersion: function (): Promise<string | number | undefined> {
             throw new Error("Function not implemented.");
           },
           fetchData: function (endpoint: string, id: number): Promise<SnapshotStore<BaseData, BaseData>[]> {
@@ -379,7 +377,7 @@ export const useSnapshotSlice = createSlice({
           },
           initSnapshot: function (
             snapshot: SnapshotStore<BaseData, BaseData> | Snapshot<BaseData, BaseData> | null,
-            snapshotId: string | number,
+            snapshotId: string | number | null,
             snapshotData: SnapshotData<BaseData, BaseData>,
             category: Category | undefined,
             categoryProperties: CategoryProperties | undefined,
@@ -487,7 +485,7 @@ export const useSnapshotSlice = createSlice({
             criteria: CriteriaType,
             snapshotData: (
               snapshotIds: string[],
-              snapshots: Snapshots<T>,
+              snapshots: Snapshots<T, K>,
               subscribers: Subscriber<BaseData, BaseData>[]
             ) => Promise<{
               subscribers: Subscriber<BaseData, BaseData>[]
@@ -498,7 +496,7 @@ export const useSnapshotSlice = createSlice({
           batchUpdateSnapshotsRequest: function (
             snapshotData: (subscribers: SubscriberCollection<BaseData, BaseData>) => Promise<{
               subscribers: SubscriberCollection<BaseData, BaseData>;
-              snapshots: Snapshots<T>
+              snapshots: Snapshots<T, K>
             }>,
             snapshotManager: SnapshotManager<BaseData, BaseData>
           ): Promise<{ subscribers: Subscriber<BaseData, BaseData>[]; snapshots: Snapshots<BaseData>; }> {
@@ -522,7 +520,7 @@ export const useSnapshotSlice = createSlice({
           },
           batchUpdateSnapshotsFailure: function (
             date: Date,
-            snapshotId: string | number,
+            snapshotId: string | number | null,
             snapshotManager: SnapshotManager<T, K>,
             snapshot: Snapshot<T, K>,
             payload: { error: Error; }
@@ -535,7 +533,7 @@ export const useSnapshotSlice = createSlice({
             snapshotId: string,
             snapshot: Snapshot<T, K>,
             snapshotStore: SnapshotStore<T, K>,
-            snapshots: Snapshots<T>,
+            snapshots: Snapshots<T, K>,
           ): Promise<{ snapshots: Snapshots<BaseData>; }> {
             throw new Error("Function not implemented.");
           },

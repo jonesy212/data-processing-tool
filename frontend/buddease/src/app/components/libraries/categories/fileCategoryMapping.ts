@@ -1,10 +1,10 @@
 // fileCategoryMapping.ts
+import { BaseData } from '@/app/components/models/data/Data';
 import { FileCategory, fileMapping } from "../../documents/FileType";
 import { determineFileCategoryLogger } from "../../logging/determineFileCategoryLogger";
 import { T } from "../../models/data/dataStoreMethods";
 import { Snapshot } from "../../snapshots";
 import { getAllSnapshotEntries } from "../../snapshots/getSnapshotEntries";
-import { BaseData } from '@/app/components/models/data/Data';
 // Define a mapping of file categories to their corresponding snapshot entries
 const fileCategoryMapping: { [category in FileCategory]: string[] } = {
     [FileCategory.Component]: ["tsx", "jsx"],
@@ -54,7 +54,7 @@ function getEntriesByCategory(snapshot: Map<string, T>, category: FileCategory):
 
   
 // Integrated function to process all snapshots and filter by file category
-function processSnapshotsByCategory<T extends  BaseData<T>>(
+function processSnapshotsByCategory<T extends  BaseData<any>>(
   snapshot: Snapshot<T, any>,
   category: FileCategory
 ): Snapshot<T, any> | undefined {

@@ -1,20 +1,21 @@
+import { SnapshotStore } from '@/app/components/snapshots/SnapshotStore';
 // SnapshotCore.ts
-import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
-import { InitializedState } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { SchemaField } from './../database/SchemaField';
 import { BaseData } from '@/app/components/models/data/Data';
+import { InitializedState } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import CalendarManagerStoreClass from '../state/stores/CalendarManagerStore';
 import { Subscriber, SubscribeResult } from '../users/Subscriber';
+import { ExtendedVersionData } from '../versions/VersionData';
+import { SchemaField } from './../database/SchemaField';
 import { Snapshots, SnapshotsArray, SnapshotUnion } from './LocalStorageSnapshotStore';
 import { SnapshotConfig } from './SnapshotConfig';
 import { SnapshotData } from './SnapshotData';
-import { ExtendedVersionData } from '../versions/VersionData';
 
 
-interface SnapshotCore<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface SnapshotCore<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
     initialState: InitializedState<T, K>;
     schema: Record<string, SchemaField>;
     versionInfo: ExtendedVersionData | null;
@@ -24,16 +25,16 @@ interface SnapshotCore<T extends  BaseData<T>, K extends T = T, Meta extends Str
   }
 
 
-interface SnapshotStoreCore<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
-  id: string;
-  data: T[];
+interface SnapshotStoreCore<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  id?: string | number | undefined;             
+  data: InitializedData<T> | undefined;
   createdAt: Date;
   updatedAt: Date;
   
   storeId: string | number;
   category: Category;
   criteria?: CriteriaType;
-  snapshots?: Snapshots<T>;
+  snapshots?: Snapshots<T, K>;
   timestamp?: string | number | Date | undefined;
   eventRecords?: Record<string, CalendarManagerStoreClass<T, K>[]>;
   
@@ -46,13 +47,13 @@ interface SnapshotStoreCore<T extends  BaseData<T>, K extends T = T, Meta extend
     snapshotData: SnapshotData<T, K>,
     category: symbol | string | Category | undefined,
     snapshotConfig: SnapshotStoreConfig<T, K>,
-    snapshots: SnapshotsArray<T>,
+    snapshots: SnapshotsArray<T, K>,
     callback: (
       snapshotStore: SnapshotStore<T, K>, 
-      snapshots: SnapshotsArray<T>
+      snapshots: SnapshotsArray<T, K>
     ) => Subscriber<T, K> | null,
    ) => SubscribeResult<T, K> | null;
-  findIndex?(predicate: (snapshot: SnapshotUnion<T>) => boolean): number;
+  findIndex?(predicate: (snapshot: SnapshotUnion<T, K>) => boolean): number;
 }
 
 

@@ -1,10 +1,10 @@
 // ApiSearch.ts
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { SearchResult } from "../components/routing/SearchResult";
 import { handleApiError } from "./ApiLogs";
 import { Note } from "./ApiNote";
 import axiosInstance from "./axiosInstance";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 
 // Define the base URL for your search endpoint
@@ -12,7 +12,7 @@ const SEARCH_BASE_URL = "/api/search"; // Adjust the base URL according to your 
 
 // Define the structure of the search response data
 interface SearchResponseData<
-  T extends  BaseData<T>,
+  T extends  BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
   > {
@@ -23,10 +23,10 @@ interface SearchResponseData<
 
 // Define the searchAPI function
 export const searchAPI = async <
-  T extends  BaseData<T>,
+  T extends  BaseData<any>,
   K extends T = T>(
   query: string
-): Promise<SearchResult<any>[]> => {
+): Promise<SearchResult<T, K>[]> => {
   try {
     const searchEndpoint = `${SEARCH_BASE_URL}?query=${encodeURIComponent(
       query
@@ -38,9 +38,28 @@ export const searchAPI = async <
 
     const { results, totalCount } = response.data;
 
-    const searchResults: SearchResult<any>[] = results.map((note) => ({
+    const searchResults: SearchResult<T, K>[] = results.map((note) => ({
+      _id: note.id,
       id: note.id,
       // name: note.name,
+      lastModifiedBy: note.lastModifiedBy,
+      createdByRenamed: note.createdByRenamed,
+      createdDate: note.createdDate,
+      documentType: note.documentType,
+     
+      documents: note.documents,
+      previousMeta: note.previousMeta,
+      currentMeta: note.currentMeta,
+      documentPhase: note.documentPhase,
+      versionData: note.versionData,
+      visibility: note.visibility,
+      documentSize: note.documentSize,
+      document: note.document,
+      _rev: note._rev,
+      phaseType: note.phaseType,
+      label: note.label,
+     
+     
       createdBy: note.createdBy ? note.createdBy : undefined,
       title: note.title,
       content: note.content,
@@ -67,8 +86,9 @@ export const searchAPI = async <
       totalCount,
       load: () => Promise.resolve(),
       query,
-      results: searchResults,
-    }));
+      results: [],
+    })
+  );
 
     return searchResults;
   } catch (error: any) {
@@ -76,4 +96,6 @@ export const searchAPI = async <
     throw error;
   }
 };
+
+
 export type { SearchResponseData };

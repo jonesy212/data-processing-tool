@@ -1,6 +1,6 @@
 import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { SnapshotData } from '@/app/components/snapshots';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Snapshot } from "../../snapshots";
@@ -15,11 +15,17 @@ type Category = CategoryIdentifier | CategoryProperties | undefined;
 function isCategoryProperties(category: Category): category is CategoryProperties {
   return (category as CategoryProperties)?.name !== undefined;
 }
+
 // generateCategoryProperties.ts
 function generateCategoryProperties(area: string): CategoryProperties {
   switch (area) {
     case "UserInterface":
       return {
+        id: "ui-001", 
+        type: "interface", 
+        chartType: "none", 
+        dataProperties: [],
+        formFields: [],
         name: "User Interface",
         description: "User Interface component",
         icon: "fa-ui",
@@ -43,9 +49,104 @@ function generateCategoryProperties(area: string): CategoryProperties {
         brandColor: "#ff5733",
         brandMessage: "Bringing insights to life",
       };
+    case "Analytics":
+      return {
+        id: "an-001", 
+        type: "analytics", 
+        chartType: "line", 
+        dataProperties: [],
+        formFields: [],
+        name: "Analytics",
+        description: "Analytics components for data analysis and insights",
+        icon: "fa-chart-line",
+        color: "#28a745",
+        iconColor: "#fff",
+        isActive: true,
+        isPublic: true,
+        isSystem: false,
+        isDefault: false,
+        isHidden: false,
+        isHiddenInList: false,
+        UserInterface: [],
+        DataVisualization: ["dataProperties", "chartType"],
+        Forms: {},
+        Analysis: [],
+        Communication: [],
+        TaskManagement: [],
+        Crypto: [],
+        brandName: "MyBrand",
+        brandLogo: "path/to/logo.png",
+        brandColor: "#ff5733",
+        brandMessage: "Bringing insights to life"
+      };
+    case "Reports":
+      return {
+        id: "rp-001", 
+        type: "report", 
+        chartType: "pie", 
+        dataProperties: [],
+        formFields: [],
+        name: "Reports",
+        description: "Reporting components for generating and viewing reports",
+        icon: "fa-file-alt",
+        color: "#ffc107",
+        iconColor: "#fff",
+        isActive: true,
+        isPublic: true,
+        isSystem: false,
+        isDefault: false,
+        isHidden: false,
+        isHiddenInList: false,
+        UserInterface: [],
+        DataVisualization: ["dataProperties", "chartType"],
+        Forms: {},
+        Analysis: [],
+        Communication: [],
+        TaskManagement: [],
+        Crypto: [],
+        brandName: "MyBrand",
+        brandLogo: "path/to/logo.png",
+        brandColor: "#ff5733",
+        brandMessage: "Bringing insights to life"
+      };
+    case "Widgets":
+      return {
+        id: "wg-001", 
+        type: "widget", 
+        chartType: "custom", 
+        dataProperties: [],
+        formFields: [],
+        name: "Widgets",
+        description: "Custom widgets for enhancing user experience",
+        icon: "fa-puzzle-piece",
+        color: "#6c757d",
+        iconColor: "#fff",
+        isActive: true,
+        isPublic: true,
+        isSystem: false,
+        isDefault: false,
+        isHidden: false,
+        isHiddenInList: false,
+        UserInterface: [],
+        DataVisualization: ["dataProperties", "chartType"],
+        Forms: {},
+        Analysis: [],
+        Communication: [],
+        TaskManagement: [],
+        Crypto: [],
+        brandName: "MyBrand",
+        brandLogo: "path/to/logo.png",
+        brandColor: "#ff5733",
+        brandMessage: "Bringing insights to life"
+      };
     case "DataVisualization":
       return {
+        id: "dv-001", 
+        type: "visualization", 
+        chartType: "bar", 
         name: "Data Visualization",
+        dataProperties: [],
+        formFields: [],
         description: "Data visualization component",
         icon: "fa-chart-bar",
         color: "#007bff",
@@ -67,12 +168,17 @@ function generateCategoryProperties(area: string): CategoryProperties {
         brandLogo: "path/to/logo.png",
         brandColor: "#ff5733",
         brandMessage: "Bringing insights to life",
-      };
+    };
     // Add cases for other categories
     default:
       return {
+        id: "default-001", 
+        type: "default", 
+        chartType: "none", 
         name: "Default",
         description: "Default category",
+        dataProperties: [],
+        formFields: [],
         icon: "fa-default",
         color: "#000000",
         iconColor: "#fff",
@@ -97,9 +203,6 @@ function generateCategoryProperties(area: string): CategoryProperties {
   }
 }
 
-
-
-
 function getCategoryLabelForSnapshot(context: string): CategoryKeys | null {
 
   switch (context) {
@@ -121,18 +224,26 @@ function getCategoryLabelForSnapshot(context: string): CategoryKeys | null {
   }
 }
 
-function getOrSetCategoryForSnapshot <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function getOrSetCategoryForSnapshot <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string,
   snapshot: Snapshot<T, K>,
   type: string,
   event: Event,
-  categoryProps?: Category
+  snapshotConfig: SnapshotConfig<T, K>,
+  categoryProps?: Category,
+  additionalHeaders?: Record<string, string>
 ): CategoryProperties {
   // Check if the category is already set and is a string or symbol
   if (typeof snapshot.category === 'string' || typeof snapshot.category === 'symbol') {
     return {
       name: snapshot.category.toString(),
+      id, 
       description: snapshot.description ? snapshot.description : "",
+      type: snapshot.categoryProperties?.type ?? "",
+      chartType: snapshot.categoryProperties?.chartType ?? "",
+      dataProperties: snapshot.categoryProperties?.dataProperties ?? [],
+      formFields: snapshot.categoryProperties?.formFields ?? [],
+     
       icon: snapshot.categoryProperties?.icon ?? "",   
       color: snapshot.categoryProperties?.color ?? "",
       iconColor: snapshot.categoryProperties?.iconColor ?? "",
@@ -187,7 +298,7 @@ function getOrSetCategoryForSnapshot <T extends  BaseData<T>, K extends T = T, M
 
 
 // Update the logic to handle ID assignment and verification
-function generateOrVerifySnapshotId <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function generateOrVerifySnapshotId <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   id: string | number | undefined,
   snapshotData: SnapshotData<T, K>,
   category: Category

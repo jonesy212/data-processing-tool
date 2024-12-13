@@ -1,6 +1,6 @@
 import { useAuth } from '@/app/components/auth/AuthContext';
 import { Data } from '@/app/components/models/data/Data';
-import SnapshotStore, { Snapshot } from '@/app/components/snapshots/SnapshotStore';
+import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { useNotification } from '@/app/components/support/NotificationContext';
 import { fetchDataWithToken } from '@/app/components/users/ExternalApiAuth';
 import React, { useState } from 'react';

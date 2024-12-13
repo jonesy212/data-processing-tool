@@ -1,8 +1,8 @@
 // DynamicHooks.tsx
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { ModifiedDate } from '@/app/components/documents/DocType';
 import { BaseData } from '@/app/components/models/data/Data';
-import { SubscriberCollection } from '@/app/components/snapshots/SnapshotStore';
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { performLogin } from "@/app/pages/forms/utils/CommonLoginLogic";
 import { useEffect, useState } from "react";
 import { loadDashboardState } from "../../dashboards/LoadDashboard";
@@ -260,10 +260,10 @@ useAsyncHookLinker({
 
 
 
-const subscriptionService = {
+const subscriptionServiceInstance = {
   subscriptions: new Map<string, { callback: (message: any) => void; usage: string }>(),
    // Add generic types <T, K> to the subscribers method
-   subscribers<T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(name: string, id: string): SubscriberCollection<T, K> {
+   subscribers<T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(name: string, id: string): SubscriberCollection<T, K> {
     // Return an empty array or , K extends the subscribers as a placeholder
     return [];
   },   
@@ -324,17 +324,17 @@ const subscriptionService = {
         portfolioUpdatesLastUpdated: {} as ModifiedDate, // Placeholder function
       };
     }
-    subscriptionService.subscriptions.set(hookName, { callback, usage });
+    subscriptionServiceInstance.subscriptions.set(hookName, { callback, usage });
   },
 
   unsubscribe: (hookName: string, subscriptionUsage: string, callback: (data: any) => void) => {
-    if (subscriptionService.subscriptions.has(hookName)) {
-      subscriptionService.subscriptions.delete(hookName);
+    if (subscriptionServiceInstance.subscriptions.has(hookName)) {
+      subscriptionServiceInstance.subscriptions.delete(hookName);
     }
   },
 
   unsubscribeAll: () => {
-    subscriptionService.subscriptions.clear();
+    subscriptionServiceInstance.subscriptions.clear();
   },
 
   connectWeb3Provider: (web3Provider: Web3Provider) => {
@@ -344,11 +344,11 @@ const subscriptionService = {
 
 
 // Update the `subscription` retrieval to ensure correct property access
-const subscription = subscriptionService.subscriptions.get('snapshot') ?? {
+const subscription = subscriptionServiceInstance.subscriptions.get('snapshot') ?? {
   callback: () => {},
   usage: '',
 };
 
 
-export { subscriptionService };
+export { subscriptionServiceInstance };
 export default dynamicHooks;

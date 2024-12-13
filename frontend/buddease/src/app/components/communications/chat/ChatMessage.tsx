@@ -1,37 +1,47 @@
 // ChatMessage.tsx
+import { ChatApi } from "@/app/api/ChatApi";
 import { AquaConfig } from "@/app/components/web3/web_configs/AquaConfig";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import GeolocationService from "@/app/services/GeolocationService";
 import { openChatSettingsPanel } from "@/app/utils/ChatSettingsPanelUtils";
 import { initializeGeolocationService } from "@/app/utils/GeolocationServiceUtils";
 import axios, { AxiosResponse } from "axios";
 import { EditorState } from "draft-js";
 import React, { useEffect, useState } from "react";
+import { ChatMessageActions } from "../../actions/ChatMessageActions";
 import { useAuth } from "../../auth/AuthContext";
 import ChatCard from "../../cards/ChatCard";
-import { subscriptionService } from "../../hooks/dynamicHooks/dynamicHooks";
+import { FileUploadModalProps } from "../../cards/modal/FileUploadModal";
+import { subscriptionServiceInstance } from "../../hooks/dynamicHooks/dynamicHooks";
+import useFiles from "../../hooks/useFiles";
+import { UserRole } from "../../users/UserRole";
+import UserRoles from "../../users/UserRoles";
 import FluenceConnection from "../../web3/fluenceProtocoIntegration/FluenceConnection";
 import connectToChatWebSocket, { retryConfig } from "../WebSocket";
 import { AquaChat } from "./AquaChat";
-import { UserRole } from "../../users/UserRole";
 import ChatSettings from "./ChatSettingsPanel";
 import resetUnreadMessageCount from "./ResetUnreadMessageCount";
 import {
-  SidebarController,
-  SpeechToTextEngine,
-  createRichTextEditor,
-  getUnreadMessageCount,
-  initializeSpeechToText,
-  leaveChatRoom,
-  openChatSettingsModal,
-  openChatSidebar,
-  openEmojiPicker,
-  openFileUploadModal,
-  sendChatMessage,
+    SidebarController,
+    SpeechToTextEngine,
+    createRichTextEditor,
+    getUnreadMessageCount,
+    initializeSpeechToText,
+    leaveChatRoom,
+    openChatSettingsModal,
+    openChatSidebar,
+    openEmojiPicker,
+    openFileUploadModal,
+    sendChatMessage,
 } from "./chatUtils";
 import clearChatAnalyticsData from "./features/clearChatAnalyticsData";
 import clearChatImageCache from "./features/clearChatImageCache";
 import clearChatSearchHistory from "./features/clearChatSearchHistory";
 import clearDraftMessages from "./features/clearDraftMessages";
+import { closeChatSettingsPanel } from "./features/closeChatSettingsPanel";
 import disconnectFromChatServer from "./features/disconnectFromChatServer";
+import { disposeGeolocationService } from "./features/disposeGeolocationServices";
 import removeExpiredChatTokens from "./features/removeExpiredChatTokens";
 import removeStaleChatSessions from "./features/removeStaleChatSessions";
 import resetChatPreferences from "./features/resetChatPreferences";
@@ -39,16 +49,6 @@ import revokeMediaPermissions from "./features/revokeMediaPermissions";
 import stopAnimatedEmoticons from "./features/stopAnimatedEmoticons";
 import stopBackgroundChatAudio from "./features/stopBackgroundChatAudio";
 import unsubscribeFromChatNotifications from "./features/unsubscribeFromChatNotifications";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import UserRoles from "../../users/UserRoles";
-import { ChatMessageActions } from "../../actions/ChatMessageActions";
-import { ChatApi } from "@/app/api/ChatApi";
-import GeolocationService from "@/app/services/GeolocationService";
-import { closeChatSettingsPanel } from "./features/closeChatSettingsPanel";
-import { disposeGeolocationService } from "./features/disposeGeolocationServices";
-import { FileUploadModalProps } from "../../cards/modal/FileUploadModal";
-import useFiles from "../../hooks/useFiles";
 
 type ChatSettingsModal = {
   close?: () => void;
@@ -284,7 +284,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
     fetchMessages(String(roomId));
 
     //#todo impement event listeners cleanup into chat
-    subscriptionService.subscribe("chat_updates_" + roomId, (message: any) => {
+    subscriptionServiceInstance.subscribe("chat_updates_" + roomId, (message: any) => {
       // Handle new message
       const newMessage = JSON.parse(message);
 
@@ -352,7 +352,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
     initialize();
 
     return () => {
-      subscriptionService.unsubscribe("chat_updates_" + roomId, "");
+      subscriptionServiceInstance.unsubscribe("chat_updates_" + roomId, "");
       socket?.close();
       resetUnreadMessageCount(String(roomId));
 

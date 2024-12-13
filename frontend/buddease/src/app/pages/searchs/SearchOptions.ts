@@ -91,16 +91,15 @@ interface CustomFilter {
   }
   
   interface PaginationOptions {
-    current?: number;
+    currentPage?: number;
     pageSize?: number;
     mode?: "client" | "server" | "off";
+    totalItems: number;
+    totalPages: number;
   }
     
-    
-// example implementation of search options
-   
-// Inside your component
 
+  
   // Define searchOptions object
   const searchOptions: SearchOptions = {
     size: "medium",
@@ -115,9 +114,10 @@ interface CustomFilter {
         order: "asc",
       },
       pagination: {
-        current: 1,
+        currentPage: 1,
         pageSize: 10,
-
+        totalItems: 0,
+        totalPages: 0
       }
     },
     additionalOption2: undefined,
@@ -141,7 +141,6 @@ interface CustomFilter {
       excludeKeywords: []
     }
   };
-
 
 
 

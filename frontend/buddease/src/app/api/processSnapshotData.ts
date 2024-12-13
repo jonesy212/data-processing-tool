@@ -1,7 +1,7 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { SnapshotDataType } from "../components/snapshots";
 import { DataWithPriority } from "../utils/versionUtils";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 
 
@@ -35,7 +35,7 @@ const transformCustomSnapshotToSnapshot = (input: Snapshot<T, CustomSnapshotData
 
 
 // processSnapshotData.ts// processSnapshotData.ts
-function processSnapshotData<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function processSnapshotData<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotDataType: SnapshotDataType<T, K> | SnapshotData<T, K> | undefined
 ): void {
   if (!snapshotDataType) {
@@ -58,7 +58,7 @@ function processSnapshotData<T extends  BaseData<T>, K extends T = T, Meta exten
 }
 
 // Helper function to handle priority data within the snapshot
-const processPriorityData = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const processPriorityData = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotData: Snapshot<T, K> | SnapshotData<T, K>
 ): void => {
   const dataWithPriority: Partial<DataWithPriority> = {

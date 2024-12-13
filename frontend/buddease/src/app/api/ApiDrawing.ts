@@ -11,6 +11,8 @@ import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
 import useErrorHandling from "../components/hooks/useErrorHandling";
+import { BaseData } from "../components/models/data/Data";
+import { StructuredMetadata } from "../configs/StructuredMetadata";
 
 // Define the API base URL
 const API_BASE_URL = endpoints.drawing; // Accessing property directly
@@ -60,14 +62,17 @@ export const handleDrawingApiErrorAndNotify = (
 };
 
 // Fetch drawing data
-export const fetchDrawing = (): Promise<YourResponseType> => {
+export const fetchDrawing = <
+  T extends BaseData<any> = BaseData<any, any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<YourResponseType<T, K, Meta>> => {
   // Initialize the useErrorHandling hook
   const { handleError } = useErrorHandling();
 
-  return new Promise<YourResponseType>(async (resolve, reject) => {
+  return new Promise<YourResponseType<T, K, Meta>>(async (resolve, reject) => {
     try {
       const fetchDrawingEndpoint = `${API_BASE_URL}/fetch`; // Adjust the endpoint as needed
-      const response = await axiosInstance.get<YourResponseType>(
+      const response = await axiosInstance.get<YourResponseType<T, K, Meta>>(
         fetchDrawingEndpoint,
         {
           headers: headersConfig,
@@ -84,14 +89,18 @@ export const fetchDrawing = (): Promise<YourResponseType> => {
 };
 
 // Fetch drawing data by ID
-export const fetchDrawingById = (drawingId: number): Promise<YourResponseType> => {
+export const fetchDrawingById = <
+  T extends BaseData<any> = BaseData<any, any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(drawingId: number): Promise<YourResponseType<T, K, Meta>> => {
   // Initialize the useErrorHandling hook
   const { handleError } = useErrorHandling();
 
-  return new Promise<YourResponseType>(async (resolve, reject) => {
+  return new Promise<YourResponseType<T, K, Meta>>(async (resolve, reject) => {
     try {
       const fetchDrawingByIdEndpoint = `${API_BASE_URL}/fetch/${drawingId}`;
-      const response = await axiosInstance.get<YourResponseType>(
+      const response = await axiosInstance.get<YourResponseType<T, K, Meta>>(
         fetchDrawingByIdEndpoint,
         {
           headers: headersConfig

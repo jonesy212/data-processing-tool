@@ -38,11 +38,11 @@ const RealTimePriceComparison: React.FC<PriceComparisonProps> = ({ key }) => {
   ];
 
   // Define a custom update callback function to process fetched data
-  const updateCallback: RealtimeUpdateCallback<RealtimeData,  BaseData<T>> = async (
+  const updateCallback: RealtimeUpdateCallback<RealtimeData,  BaseData<any>> = async (
     id: string,
-    data: SnapshotStore<RealtimeData,  BaseData<T>>,
+    data: SnapshotStore<RealtimeData,  BaseData<any>>,
     events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<RealtimeData,  BaseData<T>>,
+    snapshotStore: SnapshotStore<RealtimeData,  BaseData<any>>,
     dataItems: RealtimeData[]
   ) => {
     // Example: Log received data

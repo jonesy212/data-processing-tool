@@ -1,63 +1,126 @@
 import { NestedEndpoints } from "@/app/api/ApiEndpoints";
 import { SearchNotesResponse } from "@/app/api/ApiNote";
+import { Meta } from "@/app/components/models/data/dataStoreMethods";
+
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Exchange } from "../crypto/Exchange";
 import { DataWithComment } from "../crypto/SafeParseData";
 import HighlightEvent from "../documents/screenFunctionality/HighlightEvent";
+import { BaseData } from "../models/data/Data";
+import { K, T } from "../models/data/dataStoreMethods";
 import { ExchangeData } from "../models/data/ExchangeData";
 import { Task } from "../models/tasks/Task";
 import { Team } from "../models/teams/Team";
 import { Phase } from "../phases/Phase";
 import { DataAnalysisResult } from '../projects/DataAnalysisPhase/DataAnalysisResult';
 import { Project } from "../projects/Project";
+import { ExcludedFields } from "../routing/Fields";
+import  SnapshotStoreUnion from "../snapshots";
+import SnapshotStore from "../snapshots/SnapshotStore";
 import BrowserCheckStore from "../state/stores/BrowserCheckStore";
-import { CalendarEvent, CalendarManagerStore } from "../state/stores/CalendarEvent";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { CalendarManagerStore } from "@/app/components/state/stores/CalendarEvent";
+
 import { IconStore } from "../state/stores/IconStore";
+import { Settings } from "../state/stores/SettingsStore";
 import { TaskManagerStore } from "../state/stores/TaskStore ";
 import { TodoManagerStore } from "../state/stores/TodoStore";
 import { TrackerStore } from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
-import { K, T } from "../models/data/dataStoreMethods";
-import { Snapshot, SnapshotStoreUnion } from "../snapshots";
-import SnapshotStore from "../snapshots/SnapshotStore";
-import { User, UserData } from "../users/User";
-import { Settings } from "../state/stores/SettingsStore";
-import { BaseData } from "../models/data/Data";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { ExcludedFields } from "../routing/Fields";
+import { User } from "../users/User";
+
+export interface TodoType {
+  id: string;                  // Unique identifier for the todo
+  title: string;               // Title of the todo
+  description?: string;        // Optional description
+  isCompleted: boolean;        // Status of the todo
+  dueDate?: Date;              // Optional due date
+  priority?: 'low' | 'medium' | 'high'; // Priority level
+  tags?: string[];             // Tags associated with the todo
+}
+
+
+
+export interface TaskType {
+  id: string;                  // Unique identifier for the task
+  title: string;               // Title of the task
+  description?: string;        // Optional description
+  assignee?: string;           // User assigned to the task
+  status: 'todo' | 'in-progress' | 'done'; // Status of the task
+  dueDate?: Date;              // Optional due date
+  priority?: 'low' | 'medium' | 'high'; // Priority level
+  subtasks?: TodoType[];       // Subtasks associated with the task
+  tags?: string[];             // Tags associated with the task
+  relatedProjectId?: string;   // ID of the related project
+}
+
+
+export interface CalendarEventType {
+  id: string;                      // Unique identifier for the calendar event
+  title: string;                   // Title of the calendar event
+  description?: string;            // Optional description of the event
+  startDate: Date;                 // Start date and time of the event
+  endDate: Date;                   // End date and time of the event
+  location?: string;               // Optional location of the event
+  attendees?: Attendee[];            // List of attendees (could be emails, names, or user IDs)
+  recurrence?: 'none' | 'daily' | 'weekly' | 'monthly'; // Recurrence pattern
+  reminders?: {                    // Optional reminders for the event
+    type: 'email' | 'notification'; // Type of reminder
+    timeBefore: number;            // Time before the event (in minutes)
+  }[];
+  isAllDay?: boolean;              // Indicates if the event lasts the entire day
+  tags?: string[];                 // Tags associated with the event
+  relatedTaskId?: string;          // If the event is related to a task, reference the task ID
+}
+
+
+export interface SnapshotStoreType<T> {
+  id: string;                  // Unique identifier for the snapshot store
+  name: string;                // Name of the snapshot store
+  data: T[];                   // Array of snapshots
+  createdAt: Date;             // Creation date of the snapshot store
+  updatedAt?: Date;            // Last update date
+  version?: string;            // Current version of the snapshot store
+  metadata?: Record<string, any>; // Additional metadata
+}
+
 
 
 interface BaseResponseType {
   calendarEvents: CalendarEvent[];
   todos: Todo[];
   tasks: Task[];
-  snapshotStores: SnapshotStore<SnapshotStoreUnion<T>, K>[];
+  snapshotStores: SnapshotStore<SnapshotStoreUnion<T>, K<T>>[];
   currentPhase: Phase | null;
   comment: string;
-  securityStamp?: string | null | undefined
-  
-
-    // Add any other shared properties
+  securityStamp?: string | null | undefined;
+  // Add any other shared properties
 }
 
 
-interface YourSettingsResponseType extends Settings, YourResponseType
+interface YourSettingsResponseType<
+  T extends BaseResponseType,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> extends Settings, YourResponseType<T, K, Meta>
     //, 
 // Omit<YourResponseType, 'calendarEvents' | 'todos' | 'tasks' | 'snapshotStores'> 
 {
     // Additional properties specific to YourSettingsResponseType
-    // calendarEvents: CalendarEventType[];
-    // todos: TodoType[];
-    // tasks: TaskType[];
-    // snapshotStores: SnapshotStoreType[];
+    calendarEventTypes: CalendarEventType[];
+    todoTypes: TodoType[];
+    taskTypes: TaskType[];
+    snapshotStoreTypes: SnapshotStoreTyp<T>[];
 }
 
 
-type UserDataResponseType = User & BaseResponseType & YourSettingsResponseType
+type UserDataResponseType = User & BaseResponseType & YourSettingsResponseType<T, K, Meta>
 
 
 
 // Define the structure of YourResponseType based on the actual response from the backend
-interface YourResponseType<T extends BaseData<T>,
+interface YourResponseType<
+  T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > extends BaseResponseType, DataWithComment<T>,
@@ -109,9 +172,11 @@ interface YourResponseType<T extends BaseData<T>,
     };
     exchangeData: ExchangeData[];
     averagePrice: number;
+    
   };
   analysisResults?: string | DataAnalysisResult<T>[];
   // Add other properties if necessary
 }
 
-export type { YourResponseType, BaseResponseType, UserDataResponseType, YourSettingsResponseType };
+export type { BaseResponseType, UserDataResponseType, YourResponseType, YourSettingsResponseType };
+

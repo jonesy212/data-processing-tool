@@ -1,4 +1,4 @@
-export interface Attachment extends File {
+interface Attachment extends File {
   id: string;
   url: string;
   fileType: FileType;
@@ -30,3 +30,6 @@ export type FileType =
   | "file"
 
 export const attachmentInitialState: Record<string, Attachment> = {};
+
+
+export type { Attachment }

@@ -64,7 +64,6 @@ import { DataAnalysisActions } from "../projects/DataAnalysisPhase/DataAnalysisA
 import { brandingSettings } from "../projects/branding/BrandingSettings";
 import { ContentActions } from "../security/ContentActions";
 import { sanitizeData, sanitizeInput } from "../security/SanitizationFunctions";
-import { K, T } from "../snapshots";
 import SnapshotList from "../snapshots/SnapshotList";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { addMessage } from "../state/redux/slices/ChatSlice";
@@ -76,6 +75,9 @@ import { UIApi } from "../users/APIUI";
 import * as apiSnapshot from "./../../api/SnapshotApi";
 import { BaseCustomEvent } from "./BaseCustomEvent";
 import { CustomMouseEvent } from "./EventService";
+import { callback } from "node_modules/chart.js/dist/helpers/helpers.core";
+import { T, K } from "../models/data/dataStoreMethods";
+import { snapshotId } from "../utils/snapshotUtils";
 
 const dispatch = useDispatch();
 // State and other logic...
@@ -298,7 +300,7 @@ const resetStateVariables = () => {
 
 const clearResources = (
   socket: WebSocket | null,
-  subscription: Subscription<T, K> | null,
+  subscription: Subscription<T, K<T>> | null,
   unsubscribeDetails?: UnsubscribeDetails
 ) => {
 
@@ -328,7 +330,7 @@ const cleanupState = (subscription: any) => {
 };
 
 const cleanupSubscriptions = (
-  subscription: Subscription<T, K> | null,
+  subscription: Subscription<T, K<T>> | null,
   unsubscribeDetails?: UnsubscribeDetails,
 ) => {
 
@@ -346,7 +348,7 @@ const cleanupSocketConnection = (socket: WebSocket) => {
 
 const closeConnections = (
   socket: WebSocket,
-  subscription: Subscription<T, K>| null,
+  subscription: Subscription<T, K<T>>| null,
   unsubscribeDetails?: UnsubscribeDetails
 ) => {
   // Close any open connections
@@ -1170,7 +1172,7 @@ const DynamicEventHandlerService = ({
   handleSorting,
 }: {
   handleSorting: (
-    snapshotList: Promise<SnapshotList<T, K>>,
+    snapshotList: Promise<SnapshotList<T, K<T>>>,
     event: SyntheticEvent<Element, Event> | MouseEvent
   ) => void;
 }) => {
@@ -1181,10 +1183,10 @@ const DynamicEventHandlerService = ({
 
   // State to track messages
   const [messages, setMessages] = useState<string[]>([]);
-  const snapshhotListRef = useRef<Promise<SnapshotList<T, K>>>();
+  const snapshhotListRef = useRef<Promise<SnapshotList<T, K<T>>>>();
   let sentiment: AxiosResponse<any, any>;
 
-  const handleSortingWrapper = (snapshotList: Promise<SnapshotList<T, K>>) => {
+  const handleSortingWrapper = (snapshotList: Promise<SnapshotList<T, K<T>>>) => {
     // Handle sorting logic
     // Assuming snapshotList is an array or object with sorting functionality
     (async () => {
@@ -2500,7 +2502,7 @@ const DynamicEventHandlerService = ({
         });
     
         // Fetch the sorted list using the constructed Target
-        const snapshotList: Promise<SnapshotList<T, K>> = apiSnapshot.getSortedList(targetConfig);
+        const snapshotList: Promise<SnapshotList<T, K<T>>> = apiSnapshot.getSortedList(targetConfig);
         handleSorting(snapshotList, event);
       }
     );

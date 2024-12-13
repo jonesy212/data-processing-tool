@@ -65,7 +65,7 @@
 //               compareSnapshotState: snapshot.compareSnapshotState,
 //               eventRecords: null,
 //               getParentId: (childSnapshot: Snapshot<T, K>) => snapshot.getParentId(childSnapshot),
-//               getChildIds: (childSnapshot: Snapshot<T, K>) => snapshot.getChildIds(childSnapshot),
+//               getChildIds: (id: string, childSnapshot: Snapshot<T, K>) => snapshot.getChildIds(childSnapshot),
 //               addChild: (snapshot: Snapshot<T, K>) => snapshot.addChild(snapshot),
 //               removeChild: (snapshot: Snapshot<T, K>) => snapshot.removeChild(snapshot),
 //               getChildren: () => { },
@@ -104,7 +104,7 @@
 //                 return null;
 //               },
 //               events: {
-//                   callbacks: (snapshots:SnapshotsArray<T>) => {
+//                   callbacks: (snapshots:SnapshotsArray<T, K>) => {
 //                       return snapshots.map(snapshot => snapshot.eventRecords?.callbacks).flat();
 //                 },
 //                 eventRecords: undefined,

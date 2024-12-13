@@ -1,6 +1,6 @@
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { BaseData } from '@/app/components/models/data/Data';
 import { useNotification } from '@/app/components/support/NotificationContext';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { SystemConfigs } from "../api/systemConfigs";
 import { UserConfigs } from "../api/userConfigs";
 import { Project, isProjectInSpecialPhase } from "../components/projects/Project";
@@ -33,7 +33,7 @@ interface BaseCacheConfig {
 }
 
 
-interface BaseMetadataConfig<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface BaseMetadataConfig<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   enableSnapshot?: boolean;
   eventRecords?: EventRecord<T, K>[] | []
 }
@@ -110,43 +110,31 @@ export const DATA_PATH = getConfigsData()
 
 const notify = useNotification
 export class ConfigurationService {
-  private static instance: ConfigurationService;
+  protected static instance: ConfigurationService;
   private apiConfig: ApiConfig;
   private cachedConfig: LazyLoadScriptConfigImpl | null = null;
   private apiConfigSubscribers: ((config: ApiConfig) => void)[] = [];
 
   private constructor() {
     // Initialize apiConfig with default values
-    this.apiConfig = {
-      name: "apiConfigName",
-      baseURL: "",
-      timeout: 0,
-      headers: {},
-      retry: {} as RetryConfig,
-      cache: {} as CacheConfig,
-      responseType: {
-        contentType: "contentType", // New property for content type
-        encoding: "encoding", // New property for encoding
-        // Add more properties as needed
-      },
-      withCredentials: false,
-      onLoad: () => {},
-    };
+    this.apiConfig = this.getDefaultApiConfig();
+
   }
 
 
-  
   private readConfigFile(): any {
     const rawData = fs.readFileSync('config.json', 'utf-8');
     return JSON.parse(rawData);
   }
-
-  getApiKey(): string {
-    return this.readConfigFile().apiKey;
+  // Handle API key retrieval
+  async getApiKey(): Promise<string> {
+    const config = await this.readConfigFile();
+    return config.apiKey;
   }
 
-  getAppId(): string {
-    return this.readConfigFile().appId;
+  async getAppId(): Promise<string> {
+    const config = await this.readConfigFile();
+    return config.appId;
   }
 
   getAppDescription(): string {

@@ -1,16 +1,21 @@
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { BaseData } from '@/app/components/models/data/Data';
 import { useNotification } from '@/app/components/support/NotificationContext';
 import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { useMeta } from "@/app/configs/useMeta";
+import { useMetadata } from "@/app/configs/useMetadata";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { AxiosError } from "axios";
 import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";
 import { DocumentData } from "../../documents/DocumentBuilder";
 import { DocumentPath } from "../../documents/DocumentGenerator";
+import { DocumentPhaseTypeEnum } from "../../documents/DocumentPhaseType";
 import { Content } from "../../models/content/AddContent";
 import { Comment } from "../../models/data/Comments";
+import { ProjectPhaseTypeEnum } from "../../models/data/StatusType";
+import { ProgressPhase } from "../../models/tracker/ProgressBar";
 import axiosInstance from "../../security/csrfToken";
 import { TagsRecord } from "../../snapshots";
 import { NotificationTypeEnum } from "../../support/NotificationContext";
@@ -18,12 +23,13 @@ import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { AllTypes } from "../../typings/PropTypes";
 import { userService } from "../../users/ApiUser";
 import { UserRoleEnum } from "../../users/UserRoles";
+import { CustomComment } from "../redux/slices/BlogSlice";
 
 
-
+type PhaseTypeEnums = ProgressPhase | ProjectPhaseTypeEnum | DocumentPhaseTypeEnum | undefined;
 // Define the type for the document content
 interface DocumentContent<
-  T extends  BaseData<T>, 
+  T extends  BaseData<any>, 
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = never
@@ -31,13 +37,15 @@ interface DocumentContent<
   eventId: string;
   content: Content<T, K>,
   meta: Meta; 
-  metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludeFields>; 
+  metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>; 
   // Add more properties as needed
 }
 
 interface DocumentBase<
-  T extends  BaseData<T>,
-  K extends T = T> {
+  T extends  BaseData<any> = BaseData<any, any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  > {
   id: string | number;
   title: string;
   content: Content<T, K>;
@@ -48,9 +56,9 @@ interface DocumentBase<
   createdBy: string | undefined;
   updatedBy: string;
   visibility: AllTypes;
-
+  phaseType: PhaseTypeEnums;
   documentData?: DocumentData<T, K>;
-  comments?: Comment<T, K>[];
+  comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
   // selectedDocument: DocumentData<T> | null;
   selectedDocuments?: DocumentData<T, K>[];
   
@@ -81,7 +89,7 @@ interface DocumentStatus {
   visibilityState?: string;
 }
 
-interface DocumentAdditionalProps <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface DocumentAdditionalProps <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   URL: string;
   bgColor: string;
   documentURI: string;
@@ -124,19 +132,23 @@ interface DocumentAdditionalProps <T extends  BaseData<T>, K extends T = T, Meta
 
 
 
-interface Document<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
-  extends DocumentBase<T, K>, DocumentMetadata, DocumentStatus, DocumentAdditionalProps<T, K>  {
+interface Document<
+  T extends  BaseData<any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> extends DocumentBase<T, K>, DocumentMetadata, DocumentStatus, DocumentAdditionalProps<T, K>  {
   // name: string | undefined;
   bgColor: string;
   documentURI: string;
   currentScript: string | null;
   defaultView: Window | undefined;
+  phaseType: PhaseTypeEnums;
   doctype: DocumentType | null;
   ownerDocument: Document<T, K> | null;
   scrollingElement: Element | null;
   requiredRole?: UserRoleEnum;
   timeline: DocumentTimeline | undefined;
-  filePath?: DocumentPath;
+  filePath?: DocumentPath<T, K, Meta>;
   documentData?: DocumentData<T, K>;
   isPrivate?: boolean;
   _rev: string | undefined;
@@ -173,7 +185,7 @@ interface Document<T extends  BaseData<T>, K extends T = T, Meta extends Structu
 }
 
   
-export interface DocumentStore <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+export interface DocumentStore <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   documents: Record<string, Document<T, K>>;
   fetchDocuments: () => void;
   getSnapshotDataKey: (documentId: string, eventId: number, userId: string) => string;
@@ -189,7 +201,7 @@ export interface DocumentStore <T extends  BaseData<T>, K extends T = T, Meta ex
   // Add more methods as needed
 }
 
-const useDocumentStore = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): DocumentStore<T, K> => {
+const useDocumentStore = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): DocumentStore<T, K> => {
   const [documents, setDocuments] = useState<Record<string, Document<T, K>>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -247,12 +259,13 @@ const useDocumentStore = <T extends  BaseData<T>, K extends T = T, Meta extends 
   
 
 
- // Function to load document content for calendar events
- const loadCalendarEventsDocumentContent = async (eventId: string): Promise<DocumentContent<T, K, Meta>> => {
-  try {
-    // Fetch document content from the backend based on the event ID
-    const response = await axiosInstance.get(`/api/calendar-events/${eventId}/document-content`);
-    
+  // Function to load document content for calendar events
+  const loadCalendarEventsDocumentContent = async (eventId: string, area: string): Promise<DocumentContent<T, K, StructuredMetadata<T, K>>> => {
+    try {
+      // Fetch document content from the backend based on the event ID
+      const response = await axiosInstance.get(`/api/calendar-events/${eventId}/document-content`);
+      const meta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+      const metadata: UnifiedMetaDataOptions<T, K> = useMetadata<T, K>(area)
     // Extract the content from the response data
     const content = response.data.content;
     
@@ -269,7 +282,6 @@ const useDocumentStore = <T extends  BaseData<T>, K extends T = T, Meta extends 
     throw error;
   }
 };
-
   const selectedDocument = useMemo(() => {
     return Object.values(documents).find((document) => document.id === selectedDocumentId);
   }, [documents, selectedDocumentId]);
@@ -436,5 +448,5 @@ const useDocumentStore = <T extends  BaseData<T>, K extends T = T, Meta extends 
 };
 
 export default useDocumentStore;
-export type { Document, DocumentBase, DocumentMetadata };
+export type { Document, DocumentBase, DocumentMetadata, PhaseTypeEnums };
 

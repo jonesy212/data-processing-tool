@@ -1,7 +1,6 @@
 // Logger.ts
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { BaseData } from '@/app/components/models/data/Data';
 import { endpoints } from "@/app/api/ApiEndpoints";
+import { BaseData } from '@/app/components/models/data/Data';
 import { LogData } from "@/app/components/models/LogData";
 import { Task } from "@/app/components/models/tasks/Task";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
@@ -11,11 +10,12 @@ import {
     useNotification,
 } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import fs from 'fs';
 
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
-import { Data, DataDetails } from "@/app/components/models/data/Data";
+import { DataDetails } from "@/app/components/models/data/Data";
 import { team, Team } from "@/app/components/models/teams/Team";
 import TeamData from "@/app/components/models/teams/TeamData";
 import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
@@ -404,7 +404,8 @@ class TeamLogger extends Logger {
       // Convert teamId to a number using the utility method
 
       if (storeId !== undefined && color !== undefined) {
-        const teamData: TeamData | null = (await useTeamManagerStore(storeId)).getTeamData(
+        const teamData: TeamData<BaseTeamData, ExtendedTeamData, TeamMetadata> | null =
+        (await useTeamManagerStore(storeId)).getTeamData(
           teamId,
           team,
           color
@@ -584,7 +585,7 @@ class AnimationLogger extends Logger {
     }
   }
 
-  static generateID<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetaData<T, K> = StructuredMetaData<T, K>>(
+  static generateID<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     prefix: string,
     name: string,
     type: NotificationType,
@@ -601,6 +602,15 @@ class AnimationLogger extends Logger {
     }
 
     return id;
+  }
+
+  // Using generateID with default K inferred as T
+  static generateTrackerID(
+    name: string,
+    type: NotificationTypeEnum,
+    id?: string
+  ): string {
+    return UniqueIDGenerator.generateID("TRK", name, type, id, NotificationTypeEnum.GeneratedID);
   }
 
   private static getLogUrl(action: string): string {
@@ -1045,7 +1055,7 @@ class FileLogger extends Logger {
 }
 
 class TaskLogger<
-  T extends BaseData<T>, 
+  T extends BaseData<any>, 
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > extends Logger {
@@ -1059,12 +1069,12 @@ class TaskLogger<
     completionMessage: string,
     type: string,
     notify: (message: string, type: string, date: Date, id: string) => void,
-    meta: Map<string, Snapshot<DataType, KeyType, MetaType>> & DataType // Correctly correlate DataType, KeyType, and MetaType
+    meta: Map<string, Snapshot<DataType, KeyType, MetaType>> & BaseData<any, any, any>
   ) {
     // Assuming you want to log the completion message
 
     // Define the completionMessageLog using LogData interface
-    const completionMessageLog: LogData<T, K> & Partial<NotificationData> = {
+    const completionMessageLog: LogData<DataType, KeyType> & Partial<NotificationData> = {
       timestamp: new Date(), // Set the current timestamp
       level: "INFO", // Specify the log level, e.g., INFO, WARNING, ERROR
       message: completionMessage, // Use the completionMessage provided as the log message
@@ -1085,7 +1095,7 @@ class TaskLogger<
       topics: [],
       highlights: [],
       files: [],
-      meta,
+      meta: meta
     };
 
     if (completionMessageLog.createdAt) {
@@ -1116,14 +1126,17 @@ class TaskLogger<
     existingTaskId: string,
     taskName: string,
     type: NotificationTypeEnum,
-    notify: (message: string, type: string, date: Date, id: string) => void
+    notify: (message: string, type: string, date: Date, id: string) => void,
   ) {
     // Generate or retrieve the task ID
     const taskID = UniqueIDGenerator.generateTaskID(existingTaskId, taskName, type);
 
     // Additional logic specific to logging task completion
     const completionMessage = `Task ${taskID} has been completed.`;
-    const event = {} as Task;
+    const event = {} as Task<BaseData<any>, BaseData<any>, StructuredMetadata<BaseData<any>, BaseData<any>>>;
+
+    const meta = new Map<string, Snapshot<BaseData<any>, BaseData<any>, StructuredMetadata<BaseData<any>, BaseData<any>>>>();
+
     // Log the completion event
     TaskLogger.logTaskEvent(
       taskID,

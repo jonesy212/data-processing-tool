@@ -1,12 +1,12 @@
 // determinCategory.ts
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { isCategoryProperties } from "./generateCategoryProperties";
 
 // determineCategory function
-function determineCategory<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function determineCategory<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   data: Snapshot<T, K> | null | undefined
 ): string | CategoryProperties | null {
   if (!data) {

@@ -1,5 +1,6 @@
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { ProgressPhase } from '@/app/components/models/tracker/ProgressBar';
 // Assuming you have an interface for the User and Team models as well
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { ModifiedDate } from "../../documents/DocType";
 import { DocumentData } from "../../documents/DocumentBuilder";
 import { DocumentPath } from "../../documents/DocumentGenerator";
@@ -10,12 +11,16 @@ import { BaseEntity } from "../../routing/FuzzyMatch";
 import { TagsRecord } from "../../snapshots";
 import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { DocumentObject } from "../../state/redux/slices/DocumentSlice";
-import { DocumentBase } from "../../state/stores/DocumentStore";
+import { DocumentBase, PhaseTypeEnums } from "../../state/stores/DocumentStore";
 import { AllTypes } from "../../typings/PropTypes";
 
-interface DatasetModel<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+
+interface DatasetModel<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
   extends BaseEntity, DocumentBase<T, K> {
-  filePathOrUrl: string;
+  filePathOrUrl?: string;
   uploadedBy: string; // Assuming this is the user ID
   uploadedAt?: string; // Assuming the date is sent as a string
   tagsOrCategories: string; // Comma-separated list or JSON array
@@ -32,16 +37,17 @@ interface DatasetModel<T extends  BaseData<T>, K extends T = T, Meta extends Str
   lastModifiedBy: string; // Assuming this is the user ID
   lastModifiedByTeamId?: number | null; // Assuming this is the team ID
   lastModifiedByTeam?: Team | null;
-  filePath?: DocumentPath;
+  filePath?: DocumentPath<T, K, Meta>;
   tags?: TagsRecord<T, K> | string[] | undefined; 
-  createdBy: string;
+  createdBy: string | undefined;
   updatedBy: string;
-  documents: WritableDraft<DocumentObject<T, UnifiedMetaDataOptions<T>>>[];
+  documents: WritableDraft<DocumentObject<T, K, Meta>>[];
   createdAt: string | Date | undefined;
   updatedAt?: string | Date; 
   selectedDocument: DocumentData<T, K> | null;
   selectedDocuments?: DocumentData<T, K>[];
-  content: Content<T, K>
+  content: Content<T, K>;
+  phaseType: PhaseTypeEnums
   // Optional: Add other relationships as needed
 }
 
@@ -60,6 +66,8 @@ const dataset: DatasetModel<Data<BaseData>> = {
   uploadedByTeamId: 1,
   uploadedByTeam: null,
   type: "url",
+
+  phaseType: ProgressPhase.Draft,
   url: "https://example.com/datasets/example.csv",
   lastModifiedDate: {
     value: new Date("2023-01-01T12:00:00Z"),
@@ -86,8 +94,7 @@ const dataset: DatasetModel<Data<BaseData>> = {
     data: undefined,
     contentItems: []
   }
-};
 
-export { dataset };
+};export { dataset };
 export type { DatasetModel };
 

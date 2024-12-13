@@ -9,7 +9,7 @@
 // import { getSnapshotItems } from "./snapshotOperations";
 
 // // createSnapshots.ts
-// const createSnapshots = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// const createSnapshots = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
 //     id: string,
 //     snapshotId: string,
 //     snapshot: Snapshot<T, K>,

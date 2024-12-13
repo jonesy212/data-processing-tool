@@ -18,28 +18,27 @@ const authProvider: CustomAuthProvider  = {
   login: async ({ username, password }) => {
     // Example login logic using your existing store
     const store = useAuthStore();
-    const authToken = await store.login(username, password); // Implement this in your store
-    if (authToken) {
+    const authToken = await store.loginSuccess(username, password); // Implement this in your store
+    if (authToken !== undefined) {
       return { success: true };
     } else {
       throw new Error('Login failed');
     }
   },
+  
   logout: async () => {
     const store = useAuthStore();
     store.logout();
     return { success: true };
   },
 
-  check: async (
-    success: boolean
-  ): Promise<CheckResponse> => {
+  check: async (): Promise<CheckResponse> => {
     const store = useAuthStore();
     const isAuthenticated = store.isAuthenticated;
     if (isAuthenticated) {
-      return { success: true };
+      return { authenticated: true };
     } else {
-      throw new Error('Not authenticated');
+      return { authenticated: false, error: new Error('Not authenticated') };
     }
   },
 
@@ -71,7 +70,7 @@ const authProvider: CustomAuthProvider  = {
     }
 
     // If the token is available, then get the user
-    const user = store.setUser.getUser();
+    const user = store.getUser();
 
     if (!user) {
       // Handle the case where the user is not available

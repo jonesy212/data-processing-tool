@@ -3,17 +3,18 @@ import { snapshotStoreConfig, SnapshotStoreProps } from '.';
 
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { LanguageEnum } from "../communications/LanguageEnum";
-import { SnapshotStoreOptions } from "../hooks/SnapshotStoreOptions";
+import { BaseData } from '../data/Data';
 import { Category, generateCategoryProperties } from "../libraries/categories/generateCategoryProperties";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotContainer } from "./SnapshotContainer";
 import { getSnapshotContainer } from "./snapshotOperations";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { BaseData } from '../data/Data';
+import { SnapshotStoreOptions } from "./SnapshotStoreOptions";
 
-interface SnapshotStoreContainer<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface SnapshotStoreContainer<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
     id?: string | number | undefined;
     storeId: number;
     snapshotStore: SnapshotStore<T, K> | null;
@@ -37,7 +38,7 @@ interface SnapshotStoreContainer<T extends  BaseData<T>, K extends T = T, Meta e
     // Other methods as necessary for managing snapshots and configurations
   }
   
-  export const snapshotStoreContainer =  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  export const snapshotStoreContainer =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     storeId: number,
     storeProps?: SnapshotStoreProps<T, K>
   ): SnapshotStoreContainer<T, K> => {

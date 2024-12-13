@@ -5,6 +5,7 @@ import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import { ConfigureSnapshotStorePayload, SnapshotOperation, SnapshotOperationType, SnapshotStoreProps } from '@/app/components/snapshots';
 import { createSnapshotInstance } from '@/app/components/snapshots/snapshot';
 import { useNotification } from "@/app/components/support/NotificationContext";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { SnapshotStoreOptions, useSnapshotManager } from "../../hooks/useSnapshotManager";
@@ -26,17 +27,17 @@ import {
 } from "./AssignTeamMemberStore";
 import useVideoStore from "./VideoStore";
 
-interface CustomData<T extends  BaseData<T>, K extends T> extends Data<T> {
+interface CustomData<T extends  BaseData<any>, K extends T> extends Data<T> {
   _id: string;
   id: number;
   title: string;
   status: "pending" | "inProgress" | "completed";
   isActive: boolean;
-  tags: TagsRecord;
+  tags: TagsRecord<T, K>;
   phase: Phase<CustomData<T, K>, BaseData> | null;
   // Add other properties as needed to match the structure of Data
 }
-export interface TeamManagerStore <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+export interface TeamManagerStore <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   teams: Record<string, Team[]>;
   teamName: string;
   teamDescription: string;
@@ -66,7 +67,7 @@ export interface TeamManagerStore <T extends  BaseData<T>, K extends T = T, Meta
   completeAllTeamsFailure: (payload: { error: string }) => void;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
-  setDynamicNotificationMessage: (message: string) => void;
+   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
   snapshotStore: SnapshotStore<T, K>; // Include a SnapshotStore for teams
   takeTeamSnapshot: (teamId: string, userIds: string[]) => void;
   getTeamId: (
@@ -77,7 +78,7 @@ export interface TeamManagerStore <T extends  BaseData<T>, K extends T = T, Meta
 }
 const config = {} as typeof SnapshotStoreConfigComponent<SnapshotStore<T, K>>;
 
-const useTeamManagerStore = async <T extends  BaseData<T>, K = T>(initialStoreId: number): Promise<TeamManagerStore<T, K>> => {
+const useTeamManagerStore = async <T extends  BaseData<any>, K = T>(initialStoreId: number): Promise<TeamManagerStore<T, K>> => {
   const { notify } = useNotification();
 
 
@@ -109,7 +110,7 @@ const useTeamManagerStore = async <T extends  BaseData<T>, K = T>(initialStoreId
       events: Record<string, any>,
       dataItems: RealtimeDataItem[],
       newData: Snapshot<T, T>,
-      payload: ConfigureSnapshotStorePayload<T, Meta>,
+      payload: ConfigureSnapshotStorePayload<T, Meta<T, K>>,
       store: SnapshotStore<T, T>,
       callback?: (snapshotStore: SnapshotStore<T, T>) => void
     ) => {
@@ -131,7 +132,7 @@ const useTeamManagerStore = async <T extends  BaseData<T>, K = T>(initialStoreId
 
 
   // Define the snapshot store options with storeProps
-  const options: SnapshotStoreOptions<T, K<T>> = {
+  const options: SnapshotStoreOptions<T, K> = {
     initialConfig: {
       category: "TeamManager",
       expirationDate: new Date(),
@@ -140,7 +141,7 @@ const useTeamManagerStore = async <T extends  BaseData<T>, K = T>(initialStoreId
   };
   // Initialize SnapshotStore
   const initSnapshot = {} as SnapshotStoreConfig<T, K>;
-  let operation: SnapshotOperation= {
+  let operation: SnapshotOperation<T, K>= {
     operationType: SnapshotOperationType.TeamManagerSnapshot
   }
 

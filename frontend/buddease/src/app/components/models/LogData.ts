@@ -3,10 +3,14 @@ import { DefaultCalendarEvent } from "../actions/CalendarEventActions";
 import { Highlight } from "../documents/NoteData";
 import CustomFile from "../documents/File";
 import {  Snapshot} from "../snapshots";
+import { BaseData } from "./data/Data";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 interface LogData<
   T extends BaseData<T>, 
-  K extends T = T>
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+> extends BaseData<T>
   {
   date: Date | string | number;
   timestamp: Date | number;
@@ -14,7 +18,7 @@ interface LogData<
   message: string;
   user?: string | null; // Optional user information associated with the log
   content?: string
-  createdAt?: Date | string | number;
+  createdAt?: Date | string;
   endpoint?: NestedEndpoints | string;
   method?: string,
   status?: string,

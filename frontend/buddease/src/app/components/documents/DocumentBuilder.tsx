@@ -1,10 +1,11 @@
 // DocumentBuilder.tsx
+import { useMetadata } from "@/app/configs/useMetadata";
 import {
-  createContentStateFromText,
-  fetchContentIdFromAPI
+    createContentStateFromText,
+    fetchContentIdFromAPI
 } from "@/app/api/ApiContent";
 import { endpoints } from "@/app/api/ApiEndpoints";
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData, SharedBaseData } from '@/app/components/models/data/Data';
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
@@ -17,11 +18,11 @@ import Clipboard from "@/app/ts/clipboard";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import crypto from "crypto";
 import {
-  ContentState,
-  Editor,
-  EditorState,
-  Modifier,
-  RichUtils,
+    ContentState,
+    Editor,
+    EditorState,
+    Modifier,
+    RichUtils,
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import React, { useState } from "react";
@@ -48,8 +49,8 @@ import SharingOptions from "../shared/SharingOptions";
 import { TagsRecord } from "../snapshots";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import {
-  DocumentObject,
-  addDocumentSuccess
+    DocumentObject,
+    addDocumentSuccess
 } from "../state/redux/slices/DocumentSlice";
 import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
 import { AllStatus } from "../state/stores/DetailsListStore";
@@ -59,28 +60,29 @@ import { DatasetModel } from "../todos/tasks/DataSetModel";
 import { AllTypes } from "../typings/PropTypes";
 import { getMetadataFromPlainText } from "../utils/metadataUtils";
 import AccessHistory, {
-  convertAccessRecordToHistory,
+    convertAccessRecordToHistory,
 } from "../versions/AccessHistory";
 import AppVersionImpl from "../versions/AppVersion";
 import Version from "../versions/Version";
 import { VersionData } from "../versions/VersionData";
-import { getCurrentAppInfo } from "../versions/VersionGenerator";
+import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
 import { ModifiedDate } from "./DocType";
 import {
-  getFormattedOptions
+    getFormattedOptions
 } from "./DocumentCreationUtils";
 import { DocumentPath, DocumentTypeEnum, FinancialReport } from "./DocumentGenerator";
 import { DocumentOptions } from "./DocumentOptions";
 import DocumentPermissions from "./DocumentPermissions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 import {
-  DocumentAnimationOptions,
-  DocumentBuilderProps,
+    DocumentAnimationOptions,
+    DocumentBuilderProps,
 } from "./SharedDocumentProps";
 import { ToolbarOptionsComponent, ToolbarOptionsProps } from "./ToolbarOptions";
 import { ResearchReport, TechnicalReport } from "./documentation/report/Report";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
+import { T } from "../models/data/dataStoreMethods";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 
@@ -92,14 +94,17 @@ function computeChecksum(data: string): string {
 const versionData = "content of version 1.0.0";
 const checksum = computeChecksum(versionData);
 
-type ContentStructuredMetadata<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = StructuredMetadata<T, K> & ContentState;// DocumentData.tsx
+type ContentStructuredMetadata<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = StructuredMetadata<T, K> & ContentState;// DocumentData.tsx
 
 // Define a mapped type to convert TodoSubtasks to WritableDraft equivalent
 type WritableTodoSubtasks = WritableDraft<TodoSubtasks>;
 
 
-export interface DocumentData<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
-  extends DocumentBase<T, K>, CommonData<T>, 
+interface DocumentData<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+  extends DocumentBase<T, K>, CommonData<T, K, Meta>, 
 DatasetModel<T, K> {
   id: string | number;
   _id: string;
@@ -112,11 +117,11 @@ DatasetModel<T, K> {
   keywords?: string[] | undefined;
   load?(content: any): void;
   subtasks?: TodoSubtasks
-  file?: FileData;
-  files?: FileData[]; // Array of FileData associated with the document
+  file?: FileData<T>;
+  files?: FileData<T>[]; // Array of FileData associated with the document
   folder?: FolderData;
   folders: FolderData[]; // Array fof FolderData associated with the document
-  filePath?: DocumentPath;
+  filePath?: DocumentPath<T, K, Meta>;
   status?: AllStatus;
   type?: AllTypes;
   locked?: boolean;
@@ -130,8 +135,10 @@ DatasetModel<T, K> {
   folderPath: string;
   previousContent?: string | ContentState;
   currentContent?: ContentState;
-  previousMetadata: StructuredMetadata<T, K> | undefined;
-  currentMetadata: StructuredMetadata<T, K> | undefined;
+  previousMeta: StructuredMetadata<T, K> | undefined;
+  currentMeta: StructuredMetadata<T, K>
+  previousMetadata?: UnifiedMetaDataOptions<T, K> | undefined;
+  currentMetadata: UnifiedMetaDataOptions<T, K>
   accessHistory: AccessHistory[];
   documentPhase:
     | string
@@ -233,6 +240,8 @@ export interface CustomProjectPhaseType {
 }
 
 const initialOptions: DocumentOptions = {
+  previousMeta: undefined,
+  currentMeta: undefined,
   uniqueIdentifier: "",
   documentType: typeof DocumentTypeEnum,
   documentSize: DocumentSize.A4,
@@ -423,7 +432,9 @@ const initialOptions: DocumentOptions = {
   } as unknown as VersionData,
   currentContent: new ContentState(),
   previousContent: undefined,
-  additionalOptionsLabel: "additionalOptionsLabel"
+  additionalOptionsLabel: "additionalOptionsLabel",
+  previousMeta: {},
+  currentMeta: {}
 };
 
 export const [options, setOptions] = useState<Options>(initialOptions);
@@ -554,7 +565,7 @@ export const saveDocument = createAsyncThunk(
 const extractMetadata = async (
   contentId: string,
   contentState: ContentState
-): Promise<UnifiedMetaDataOptions> => {
+): Promise<UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>> => {
   const contentString = contentState.getPlainText();
   return await getMetadataFromPlainText(contentId, contentString);
 };
@@ -1249,8 +1260,11 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       format: "" // Optionally, provide format if necessary
     });
     
+
+
+    const currentMetadata: UnifiedMetaDataOptions<T, K> = useMetadata<T, K>()
     // Create a document object
-    const documentObject: DocumentObject<T, K> = {
+    const documentObject: DocumentObject<BaseData<string, string, StructuredMetadata<any, any>>> = {
       // Document Identification & Versioning
       id: "", // Document unique identifier
       _id: "", // Internal document identifier
@@ -1282,7 +1296,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 
 
       // Content & Structure
-      content: "", // Main content of the document
+      content: {}, // Main content of the document
       documents: [], // Array of sub-documents or sections
       folders: [], // Folder hierarchy related to the document
       rootElement: null, // Root HTML or XML element (if applicable)
@@ -1337,9 +1351,10 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       options: undefined, // Additional document-related options or settings
       timeline: undefined, // Timeline for versioning or history
       format: "",
-      defaultView: null,
+      defaultView: undefined,
       doctype: null,
-      document: undefined
+      document: undefined,
+      childIds: []
     };
 
     
@@ -1385,8 +1400,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       documentObject,
       documentType
     );
-  };
-  
+  };  
   const handleEditorStateChange = async (
     newEditorState: EditorState
   ): Promise<void> => {
@@ -1647,4 +1661,5 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 };
 
 export default DocumentBuilder;
-export type { RevisionOptions, WritableTodoSubtaskss };
+export type { RevisionOptions, WritableTodoSubtasks, DocumentData};
+export { computeChecksum }

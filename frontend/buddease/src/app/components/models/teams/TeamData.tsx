@@ -1,4 +1,5 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { BrainstormingSettings } from "../../interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
@@ -9,13 +10,12 @@ import { Data } from "../data/Data";
 import { Progress } from "../tracker/ProgressBar";
 import { Member } from "./TeamMembers";
 import { CommonData } from "./models/CommonData";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
 interface TeamData<
-  T extends  BaseData<T>,
+  T extends  BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-  > extends CommonData<T, K>, Partial< BaseData<T>> {
+  > extends CommonData<T, K>, Partial< BaseData<any>> {
   id: number | string;
   teamName: string
   description?: string;
@@ -51,7 +51,7 @@ const collaborationPreferences: CollaborationPreferences = {
   branding: {} as BrandingSettings
 };
 
-const teamData: TeamData<Data<string>, string> & Partial<TeamData<Data<string>, string>> = {
+const teamData: TeamData<BaseData<Data<string>, Data<string>, any>, string> & Partial<TeamData<Data<string>, string>> = {
   // Other team data properties
   collaborationPreferences: collaborationPreferences,
   id: 0,

@@ -7,7 +7,6 @@ import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
 import userSettings from '@/app/configs/UserSettings';
 import { DataSharingPreferences } from '../settings/PrivacySettings';
 import { ActivityStatus } from '@/app/pages/profile/Profile';
-import { ChatRoom } from '../calendar/CalendarSlice';
 
 // Function to transform friends into the required format
 const transformFriends = (friends: User[]): User[] => {
@@ -60,7 +59,8 @@ const transformFriends = (friends: User[]): User[] => {
     
     preferences: friend.preferences,
     storeId: friend.storeId,
-   
+    childIds: friend.childIds,
+    relatedData: friend.relatedData,
     // Add any other properties you might need for the User object
   }));
 };
@@ -185,6 +185,7 @@ export const createSystemMessage = (
       },
     },
 
+    childIds: [], relatedData: [],
     workspaceUrl: "",
     workspaces: [],
     products: [],
@@ -247,7 +248,8 @@ const friendData: User[] = [
     activityStatus: "",
     isAuthorized: false,
     preferences: undefined,
-    storeId: 0
+    storeId: 0,
+    childIds: [], relatedData: [],
   },
   {
     id: 2, username: "friend2",
@@ -288,7 +290,8 @@ const friendData: User[] = [
     activityStatus: "",
     isAuthorized: false,
     preferences: undefined,
-    storeId: 0
+    storeId: 0,
+    childIds: [], relatedData: [],
   },
 ];
 

@@ -1,8 +1,9 @@
 import appTreeApiService from "@/app/api/appTreeApi";
-import { generateAllHeaders } from '@/app/api/generateAllHeaders';
+import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
+import React, { FC } from "react";
 import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
 import YourClass from "@/app/utils/YourClass";
-import React, { FC } from "react";
+import { ThemeEnum } from "@/app/components/libraries/ui/theme/Theme";
 import winston from "winston";
 import { authToken } from "../../auth/authToken";
 import { AquaChat } from "../../communications/chat/AquaChat";
@@ -13,6 +14,7 @@ import { DocumentOptions } from "../../documents/DocumentOptions";
 import useSocialAuthentication from "../../hooks/commHooks/useSocialAuthentication";
 import useErrorHandling from "../../hooks/useErrorHandling";
 import { DataLogger } from "../../logging/Logger";
+import { BaseData, CommonRelationship } from "../../models/data/Data";
 import { DocumentSize } from "../../models/data/StatusType";
 import { Team } from "../../models/teams/Team";
 import { TeamMember } from "../../models/teams/TeamMembers";
@@ -24,15 +26,24 @@ import FluencePlugin from "../pluginSystem/plugins/fluencePlugin";
 import { AquaConfig } from "../web_configs/AquaConfig";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
 import { manageDocuments } from "./functionality/DocumentManagement";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { UserData } from "../../users/User";
+import UserRoles from "../../users/UserRoles";
+import { SupportedData } from "../../models/CommonData";
 
 export type CustomDocumentOptionProps = DocumentOptions & DappProps;
 
-interface CustomApp {
+interface CustomApp<
+  T extends BaseData<any, any> = any,
+  K extends T = T
+> extends CommonRelationship<T, K>{
   id: string;
   name: string;
   description: string;
   authToken: string;
   apiKey: string
+  childIds?: K[] | undefined,
+  relatedData?: K[],
   // Add any other properties as needed
 }
 
@@ -42,7 +53,11 @@ type DatabaseType = 'fluence' | 'postgres' | 'mysql' | 'other';
 
 
 
-class CustomDAppAdapter<T extends DappProps> extends YourClass {
+class CustomDAppAdapter<
+  T extends DappProps, 
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> extends YourClass {
   private adapter: FC<DAppAdapterProps>;
   private config: DAppAdapterConfig<T>;
   private database = new FluenceConnection();
@@ -91,6 +106,7 @@ class CustomDAppAdapter<T extends DappProps> extends YourClass {
           /* themeConfig */
           primaryColor: "#000000",
           infoColor: "#000000",
+          theme: ThemeEnum.DARK,
         },
         dappProps
       );
@@ -115,10 +131,9 @@ class CustomDAppAdapter<T extends DappProps> extends YourClass {
     // Initialize connections to different databases
     this.databaseConnections = new Map<DatabaseType, any>();
     this.databaseConnections.set('fluence', new FluenceConnection());
-    this.databaseConnections.set('postgres', new Connection(this.config.postgresConfig)); // Example, adjust as needed
+    this.databaseConnections.set('postgres', new Connection(this.config.postgresConfig!)); // Example, adjust as needed
     // Add other database connections as required
-  }
-  
+  }  
 
 
   private getDatabaseConnection(databaseType: DatabaseType): any {
@@ -383,19 +398,11 @@ class CustomDAppAdapter<T extends DappProps> extends YourClass {
     // Implement your logic here for data synchronization
     console.log("Data synchronization in progress...");
 
-    interface UserData {
-      id: string;
-      name: string;
-      role: string;
-      teams: Team[];
-      projects: Project[];
-      teamMembers: TeamMember[];
-    }
 
-    const userData: UserData = {
-      id: "",
-      name: "",
-      role: "",
+    const userData: Partial<UserData> = {
+      id: "123",
+      username: "John Doe",  
+      role: UserRoles.Administrator,
       teams: [],
       projects: [],
       teamMembers: [],
@@ -463,14 +470,14 @@ class CustomDAppAdapter<T extends DappProps> extends YourClass {
     return component;
   }
 
-  manageDocuments(newDocument: DocumentData) {
+  manageDocuments<T extends SupportedData<any, any> = SupportedData<any, any>, K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(newDocument: DocumentData<T, K, Meta>) {
     // Implement your logic here for document management
     console.log("Document management functionality enabled");
 
     // For example, add a new document to the document options
-    this.config.dappProps.documentOptions.documents.push(
-      newDocument as DocumentData
-    );
+    this.config.dappProps.documentOptions.documents.push(newDocument);
 
     // Additional logic...
 

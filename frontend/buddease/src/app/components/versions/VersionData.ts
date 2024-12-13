@@ -1,20 +1,65 @@
-import { getStructureAsArray } from '@/app/configs/declarations/traverseBackend';
+import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
-import BackendStructure from "@/app/configs/appStructure/BackendStructure";
-import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
-import { BaseData, Data } from "../models/data/Data";
-import { getCurrentAppInfo } from "./VersionGenerator";
-import { T } from "../models/data/dataStoreMethods";
-import { BuildVersion } from "./Version";
-import * as crypto from 'crypto';  // Node.js crypto module
+import BackendStructure, { backend } from "@/app/configs/appStructure/BackendStructure";
+import FrontendStructure, { frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import getAppPath from 'appPath';
+import { Comment } from '../models/data/Comments';
+import { BaseData, Data } from "../models/data/Data";
+import { K, T } from "../models/data/dataStoreMethods";
+import { CustomComment } from '../state/redux/slices/BlogSlice';
+import { HistoryEntry } from '../state/stores/HistoryStore';
 import MobXEntityStore from '../state/stores/MobXEntityStore';
+import Version, { BuildVersion, version } from "./Version";
+import { getCurrentAppInfo } from "./VersionGenerator";
+
+
+
+interface SharedVersionData { 
+  major?: number,
+  minor?: number,
+  patch?: number,
+}
+
+interface SharedUpdateHistory extends SharedVersionData {
+  lastUpdated?: Date | VersionHistory; // Added
+  timestamp: Date;
+  changeLogSummary?: string;
+ 
+}
 
 // Interfaces
-interface VersionHistory {
+interface VersionHistory extends SharedUpdateHistory{
   // Define the structure of the version history
   // Each element represents a version of the data
-  versionData: VersionData[] | {};
+  versionData: VersionData[] | {} | null;
+  latestVersion: VersionData; // A reference to the most recent version
+  history: HistoryEntry[]
+}
+
+
+
+// Import necessary dependencies if needed
+export interface LastUpdated {
+  timestamp: Date;
+  updatedBy: string;
+  lastUpdated?: Date | VersionHistory;
+  changeLogSummary: string | undefined
+  // Define the structure of the last updated history
+}
+
+export function createLastUpdated(
+  summary?: string,
+
+): LastUpdated {
+  const now = new Date();
+  return {
+
+    lastUpdated: now || {},
+    timestamp: now,
+    updatedBy: "system",
+    changeLogSummary: summary || "No changes recorded.",
+  };
 }
 
 
@@ -33,7 +78,9 @@ interface ExtendedVersionData {
     revisionNotes?: string;
     // Add other metadata fields as needed
   };
+  comments: (Comment<T, K<T>, StructuredMetadata<T, K<T>>> | CustomComment)[] | undefined;
   releaseDate: string;
+  lastUpdated: Date | VersionHistory;
   buildVersions?: BuildVersion | undefined;
   versionData?: VersionData[] | null;
   major: number;
@@ -41,6 +88,7 @@ interface ExtendedVersionData {
   patch: number;
   published?: boolean;
   checksum: string;
+
 }
 
 interface VersionData extends ExtendedVersionData {
@@ -59,16 +107,15 @@ interface VersionData extends ExtendedVersionData {
   parentVersionNumber: string;
   isLatest: boolean;
   isActive: boolean;
-
+  description?: string;
   isPublished: boolean;
   publishedAt: Date | null;
   source: string;
   status: string;
-  version: string;
+  version: Version;
   timestamp: string | Date | undefined
   user: string;
   changes: string[];
-  comments: Comment[];
   workspaceId: string;
   workspaceName: string;
   workspaceType: string;
@@ -77,7 +124,9 @@ interface VersionData extends ExtendedVersionData {
   workspaceAdmins: string[];
   workspaceMembers: string[];
   createdAt?: string | Date | undefined;
+  createdBy: string,
   updatedAt?: string | Date | undefined;
+  history: HistoryEntry[]
   _structure?: any; // Adjust as per actual type
   frontendStructure?: Promise<AppStructureItem[]>; // Adjust as per actual type
   backendStructure?: Promise<AppStructureItem[]>; // Adjust as per actual type
@@ -93,7 +142,157 @@ const author = "John Doe";
 const timestamp = new Date();
 const revisionNotes = "Added new section and fixed typos.";
 
+
+const createDefaultVersionData = (overrides?: Partial<VersionData>): VersionData => ({
+  versionNumber: "1.0.0", // Example semantic version
+  id: 1, // Unique identifier for the version
+  lastUpdated: new Date(),
+  parentId: "123", // Example parent ID
+  parentType: "document", // Parent type like 'document' or 'file'
+  parentVersion: "v0.9.0", // Previous version for the parent
+
+  parentTitle: "Introduction to TypeScript", // Example title of the parent
+  parentContent: "This is the initial draft of the document.", // Example content
+  parentName: "TS Guide", // Parent name, e.g., project or file name
+  parentUrl: "https://example.com/parent", // Example URL for the parent resource
+
+  parentChecksum: "abc123xyz", // Simulated checksum
+  parentAppVersion: "1.0.1", // Example app version related to the parent
+  parentVersionNumber: "v1", // Parent version identifier
+  isLatest: true, // Indicates if it's the latest version
+
+  isActive: true, // Indicates if the version is active
+  isPublished: true, // Indicates if the version is published
+  publishedAt: new Date(), // Current date and time
+  source: "user_upload", // Example source, e.g., "user_upload" or "imported"
+  status: "active", // Status of the version, e.g., 'active' or 'archived'
+
+  version: {
+    id: 0,
+    isActive: false,
+    releaseDate: undefined,
+    major: 0,
+    minor: 0,
+    patch: 0,
+    name: '',
+    url: '',
+    versionNumber: '',
+    documentId: '',
+    draft: false,
+    userId: '',
+    content: '',
+    description: '',
+    buildNumber: '',
+    versions: null,
+    appVersion: '',
+    checksum: '',
+    parentId: null,
+    parentType: '',
+    parentVersion: '',
+    parentTitle: '',
+    parentContent: '',
+    parentName: '',
+    parentUrl: '',
+    parentChecksum: '',
+    parentAppVersion: '',
+    parentVersionNumber: '',
+    isLatest: false,
+    isPublished: false,
+    publishedAt: null,
+    source: '',
+    status: '',
+    workspaceId: '',
+    workspaceName: '',
+    workspaceType: '',
+    workspaceUrl: '',
+    workspaceViewers: [],
+    workspaceAdmins: [],
+    workspaceMembers: [],
+    data: [],
+    _structure: {},
+    versionHistory: {
+      versionData: undefined
+    },
+    getVersionNumber: undefined,
+    updateStructureHash: function (): Promise<void> {
+      throw new Error('Function not implemented.');
+    },
+    setStructureData: function (newData: string): void {
+      throw new Error('Function not implemented.');
+    },
+    hash: function (value: string): string {
+      throw new Error('Function not implemented.');
+    },
+    currentHash: '',
+    structureData: '',
+    calculateHash: function (): string {
+      throw new Error('Function not implemented.');
+    }
+  }, // Current version
+  timestamp: new Date().toISOString(), // Example ISO timestamp
+  user: "user123", // Example user identifier
+  changes: ["Added introduction section", "Fixed typos"], // Example changes
+
+  comments: [], // Empty array for comments
+  workspaceId: "workspace456", // Example workspace identifier
+  workspaceName: "TypeScript Workspace", // Workspace name
+  workspaceType: "shared", // Workspace type, e.g., 'private' or 'shared'
+
+  workspaceUrl: "https://example.com/workspace", // Example workspace URL
+  workspaceViewers: ["viewer1", "viewer2"], // Example viewers
+  workspaceAdmins: ["admin1"], // Example admin users
+  workspaceMembers: ["member1", "member2"], // Example members
+
+  data: {
+    major: 1,
+    minor: 0,
+    patch: 0,
+    childIds: ["doc1", "doc2"], // Example child document IDs
+    relatedData: ["relatedDoc1", "relatedDoc2"], // Example related data
+  },
+  backend: backendStructure,
+  frontend: frontendStructure,
+  name: "Version 1", // Example name for the version
+  url: "https://example.com/version1", // URL for this version
+  documentId: "doc123", // Document ID
+  draft: false, // Indicates if it's a draft
+  userId: "user123", // User identifier
+
+  content: "This is the content of the version.", // Example content
+  metadata: {
+    author: "John Doe", // Example author
+    timestamp: new Date().toISOString(), // Example metadata timestamp
+    revisionNotes: "Initial draft created.", // Example revision notes
+  },
+  major: 1, // Major version number
+  minor: 0, // Minor version number
+
+  patch: 0, // Patch version number
+  checksum: "12345abcde", // Example checksum
+
+  releaseDate: new Date().toISOString(), // Example release date
+
+  history: [{ id: "string", 
+    timestamp: new Date("2024-01-01T00:00:00Z").getTime(), 
+    changes: ["Initial version"],
+    data: {
+      childIds: ["doc1", "doc2"],
+      relatedData: ["relatedDoc1", "relatedDoc2"],
+    },
+  }], // Example history as HistoryEntry
+  ...overrides, // Apply overrides for custom values
+
+});
+
 const versions: VersionHistory = {
+  major: 1,
+  minor: 1, 
+  patch: 0,
+  history: [],
+  latestVersion: createDefaultVersionData({ id: 1, isLatest: true }),
+  lastUpdated: new Date("2024-01-01T00:00:00Z"),
+
+  timestamp: new Date("2024-11-24T12:00:00Z"),
   versionData: [
     {
       name: "Version 1",
@@ -128,8 +327,7 @@ const versions: VersionHistory = {
       publishedAt: null,
       source: "",
       status: "",
-      version: "",
-      timestamp: "",
+      timestamp: new Date(),
       user: "",
       comments: [],
       workspaceId: "",
@@ -141,7 +339,8 @@ const versions: VersionHistory = {
       workspaceMembers: [],
       data: undefined,
       backend: undefined,
-      frontend: undefined
+      frontend: undefined,
+      version: {},
     }
   ]
 };
@@ -154,19 +353,29 @@ const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
 const backendStructure = new BackendStructure(projectPath, globalState);
 
-const versionData: VersionData = (() => {
 
-  // Private structureHash
-  let structureHash: string | undefined = undefined;
+const versionData: VersionData = (() => {
+ 
+  let databaseSchema: Record<string, any> | undefined;
+  let services: Record<string, any> | undefined;
 
   // const mergedStructure = this.getStructure?.();
 
   // const mergedStructure = this.getStructure ? this.getStructure() : null;
 
+    // Simulate the structure for demonstration purposes
+  const getStructure = async (): Promise<Record<string, AppStructureItem> | undefined> => {
+    return undefined; // Simulate structure or return an actual structure
+  };
+  
   return {
+    
+    ...backend,
+    ...backendStructure,
     id: 0,
     
     name: "Version 1",
+    lastUpdated: new Date(),
     url: "https://example.com/version1",
     timestamp: new Date("2022-03-27T12:00:00Z"),
     versionNumber: versionNumber,
@@ -206,143 +415,35 @@ const versionData: VersionData = (() => {
     workspaceAdmins: ["admin1@example.com", "admin2@example.com"],
     workspaceMembers: ["member1@example.com", "member2@example.com"],
     data: versions,
-    version: "1.0.0",
+    version: version,
     user: "user@example.com",
     comments: [],
     // Backend structure matching the BackendStructure class
-    backend: {
-      globalState: "globalState",
+    backend: backendStructure,
 
-      // Access structureHash through the getter
-      getStructureHash: async (): Promise<string | undefined> => {
-        return await backendStructure.getStructureHash();
-      },
-
-      // Update the structureHash using the setter
-      setStructureHash: async (hash: string): Promise<void> => {
-        const promiseHash = Promise.resolve(hash);
-        backendStructure.setStructureHash(promiseHash);
-      },
-
-      // Update the structureHash if needed
-      updateStructureHash: async (newHash: string): Promise<void> => {
-        const currentHash = await backendStructure.getStructureHash();
-        if (currentHash !== newHash) {
-          backendStructure.setStructureHash(Promise.resolve(newHash));
-        }
-      },
-
-      // Ensure structureHash is correctly updated when necessary
-      getStructureHashAndUpdateIfNeeded: async (): Promise<string | undefined> => {
-        const currentHash = await backendStructure.getStructureHash();
-        const newHash = "NewGeneratedHash"; // Simulate the generation of a new hash
-        if (currentHash !== newHash) {
-          await backendStructure.setStructureHash(Promise.resolve(newHash));
-          return backendStructure.getStructureHash();
-        }
-        return currentHash;
-      },
-
-      // Placeholder for other methods in BackendStructure
-      setDatabaseSchema: "",
-      getDatabaseSchema: "",
-      setServices: "",
-      getServices: "",
-
-      // Methods to access structure
-      getStructure: async (): Promise<Record<string, AppStructureItem>> => {
-        return {};
-      },
-      getStructureAsArray: async (): Promise<AppStructureItem[]> => {
-        const structure = await this.getStructure(); // Assuming this method returns a structure object
-        return getStructureAsArray(structure); // Call the imported helper function
-      },
-      traverseDirectoryPublic: async (dir: string, fs: typeof import("fs")): Promise<AppStructureItem[]> => {
-        return [];
-      },
-      backendVersions: () => [versions],
-    },
-
-    frontend: {
-      id: "0",
-      name: "frontend",
-      type: "directory",
-      path: "workspace/frontend",
-      draft: false,
-      versions,
-      versionData: [],
-      structureHash,
-      getStructureHash: (): string | undefined => {
-        return structureHash;
-      },
-
-
-      getStructureAsArray: async (): Promise<AppStructureItem[]> => {
-        return []; // Always return an array
-      },
-
-      
-
-      // Generate the structure checksum (Example: Returns a dummy checksum for now)
-      getStructureChecksum: async (): Promise<string> => {
-        try {
-          // Ensure `getStructureAsArray` is callable
-          if (!getStructureAsArray) {
-            throw new Error("getStructureAsArray is not defined");
-          }
-      
-          // Step 1: Retrieve the structure as an array
-          const structureArray = await getStructureAsArray();
-      
-          if (!structureArray) {
-            throw new Error("Structure array is undefined or empty");
-          }
-      
-          // Step 2: Convert the array to JSON
-          const structureString = JSON.stringify(structureArray);
-      
-          // Step 3: Generate and return a checksum (Dummy logic used here)
-          const checksum = "dummyChecksum"; // Replace with real hash generation logic if needed
-          return checksum;
-        } catch (error: any) {
-          throw new Error(`Failed to generate structure checksum: ${error.message}`);
-        }
-      },
-
-
-
-      permissions: {
-        read: true,
-        write: false,
-        delete: false,
-        share: false,
-        execute: false,
-      },
-      content: updatedContent,
-      getStructure: async (): Promise<Record<string, AppStructureItem>> => {
-        return {};
-      },
-      
-      traverseDirectoryPublic: async (
-        dir: string,
-        fs: typeof import("fs")): Promise<AppStructureItem[]> => {
-        return [];
-      },
-      frontendVersions: async () => [versions]
-    },
+    frontend: frontendStructure,
     changes: [],
     // Versioning properties
-    buildVersions: [
-      { major: 1, minor: 0, patch: 0 },
-      { major: 1, minor: 1, patch: 0 },
-      { major: 1, minor: 1, patch: 1 }
-    ],  // Example version history
+    buildVersions: {
+      data: {
+        major: 1,
+        minor: 0,
+        patch: 0
+      },
+      backend: backendStructure,
+      frontend: frontendStructure,
+     
+    },  // Example version history
 
     major: 1,  // Current major version
     minor: 1,  // Current minor version
     patch: 1,  // Current patch version
-  }
- 
+    history: [],
+    setStructureHash: "", 
+    updateStructureHash: "",
+    getStructureHashAndUpdateIfNeeded: "",
+    backendVersions: "",
+   }
 })();
 
 // Function to calculate checksum (example implementation)
@@ -362,7 +463,17 @@ function calculateChecksum(content: string): string {
 
 // Create a VersionHistory instance and add VersionData to it
 export const versionHistory: VersionHistory = {
-  versionData: [versionData] // Add the VersionData to the versions array
+  versionData: versionData ? [versionData] : [], // Use empty array instead of null
+  latestVersion: versionData || {
+    id: 0,
+    name: "Initial Version",
+    timestamp: new Date(),
+  }, 
+  ...createLatestVersion(),
+  ...createLastUpdated("Version history initialized."),
 };
 
-export type { ExtendedVersionData, VersionData, VersionHistory };
+
+export { createDefaultVersionData };
+export type { ExtendedVersionData, SharedVersionData, VersionData, VersionHistory };
+

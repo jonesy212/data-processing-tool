@@ -1,6 +1,8 @@
-import { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
-
 // CustomEvent.ts
+import { SharedSnapshotEvent } from "@/app/typings/eventTypes";
+import { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
+import { T, K } from "../models/data/dataStoreMethods";
+
 const ClipboardData = {
   onCopy: (content: string) => {},
   onPaste: (content: string) => {},
@@ -13,7 +15,7 @@ export interface CustomClipboardEvent extends BaseCustomEvent {
 // Define interfaces for events
 export interface BaseCustomEvent
   extends EventTarget,
-    Event,
+    // Event,
     ExtendedCalendarEvent {
   id: string;
   title: string;
@@ -36,7 +38,7 @@ export interface BaseCustomEvent
   clipboardData: React.ClipboardEvent<HTMLDivElement>;
 }
 
-interface CustomEventExtension extends CustomEvent {
+interface CustomEventExtension extends CustomEvent, SharedSnapshotEvent<T, K<T>> {
   id: string;
   title: string;
   dispatchEvent?(event: Event): boolean;

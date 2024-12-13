@@ -18,7 +18,8 @@ import { User } from "./User";
 
 interface ProjectOwnerState {
   // Define the state structure here
-  projectDetails: typeof ProjectDetails | null;
+
+  projectDetails: ProjectDetails | null;
   teamMembers: TeamMember[] | null;
   tasks: Task[] | null;
   users: User[] | null;
@@ -59,7 +60,7 @@ const initialState: ProjectOwnerState = {
 };
 
 const generateReport = (
-  state: WritableDraft<ProjectOwnerState>,
+  state: ProjectOwnerState,
   payload: any,
   customSections?: string[] // Optional parameter for custom sections
 ) => {
@@ -164,9 +165,9 @@ export const useProjectOwnerSlice = createSlice({
   name: "projectOwner",
   initialState,
   reducers: {
-    updateProject: (state) => {
+    updateProject: (state, action: PayloadAction<WritableDraft<ProjectDetails>>) => {
       try {
-        state.projectDetails = UpdatedProjectDetails;
+        state.projectDetails = action.payload;
 
         notify(
           "updateProjectSuccess",
@@ -186,7 +187,7 @@ export const useProjectOwnerSlice = createSlice({
         );
       }
     },
-    addTeamMember: (state, action: PayloadAction<TeamMember>) => {
+    addTeamMember: (state, action: PayloadAction<WritableDraft<TeamMember>>) => {
       try {
         // Ensure teamMembers is initialized as an array if it's currently null
         if (state.teamMembers === null) {
@@ -413,8 +414,12 @@ export const useProjectOwnerSlice = createSlice({
         const { reportData, customSections } = action.payload;
 
         // Generate report using reportData and customSections
-        const report = generateReport(state, reportData, customSections);
-
+        const report = generateReport(
+          JSON.parse(JSON.stringify(state)) as ProjectOwnerState, // Convert to an immutable object
+          reportData,
+          customSections
+        );
+        
         // Handle success (if needed)
         notify(
           "generateReportSuccess",

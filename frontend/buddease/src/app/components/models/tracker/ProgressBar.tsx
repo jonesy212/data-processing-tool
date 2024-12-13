@@ -31,6 +31,7 @@ import { NotificationType } from "../../support/NotificationContext";
     ProductDevelopment = "Product Development",
     LaunchPreparation = "Launch Preparation",
     DataAnalysis = "Data Analysis",
+    Draft = "Draft"
   }
 
   // Updated ProgressBarProps interface to include the phase property

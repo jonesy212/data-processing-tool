@@ -8,8 +8,8 @@ import { Team } from "../../models/teams/Team";
 import { Phase } from "../../phases/Phase";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
@@ -20,14 +20,14 @@ import { Attachment } from "../../documents/Attachment/attachment";
 import { DocumentStatus } from "../../documents/types";
 import { DataDetails } from "../../models/data/Data";
 import {
-  DataStatus,
-  MeetingStatus,
-  PriorityTypeEnum,
-  ProductStatus,
-  StatusType,
-  TaskStatus,
-  TeamStatus,
-  TodoStatus,
+    DataStatus,
+    MeetingStatus,
+    PriorityTypeEnum,
+    ProductStatus,
+    StatusType,
+    TaskStatus,
+    TeamStatus,
+    TodoStatus,
 } from "../../models/data/StatusType";
 import { Member, TeamMember } from "../../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
@@ -58,7 +58,7 @@ export type AllStatus =
 
 // Define a generic interface for details
 interface DetailsItem<
-  T extends BaseData<T>,
+  T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   > {
@@ -70,10 +70,10 @@ interface DetailsItem<
   communication?: CommunicationActionTypes;
   teammembers?: Array<TeamMember>;
   description?: string | null | undefined;
-  startDate?: Date;
+  startDate: Date;
   endDate?: Date;
   updatedAt?: Date;
-  phase?: Phase<T, K> | null; // Updated to match DetailsItemExtended
+  phase?: Phase<PhaseData<BaseData<T, K, Meta, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, K> | null;
   subtitle: string;
   author?: string;
   date?: Date;
@@ -85,9 +85,12 @@ interface DetailsItem<
   tracker?: string;
   participants?: Member[];
   // Core properties...
-}interface DetailsItemExtended<
-  T extends  BaseData<T>,
-  K extends T = T> extends DataDetails<T, K> {
+}
+
+interface DetailsItemExtended<
+  T extends  BaseData<any>,
+  K extends T = T
+> extends DataDetails<T, K> {
   id: string | number;
   _id?: string;
   title?: string;
@@ -135,7 +138,7 @@ interface DetailsItem<
   setCurrentTeam?: (team: Team) => void;
   clearCurrentProject?: () => void;
 
-}export interface DetailsListStore <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+}export interface DetailsListStore <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   details: Record<string, DetailsItemExtended<T, K>[]>;
   detailsTitle: string;
   detailsDescription: string;
@@ -172,10 +175,10 @@ interface DetailsItem<
   setDetails: (details: Record<string, DetailsItemExtended<T, K>[]>) => void;
   removeDetails: (detailsId: string) => void;
   removeDetailsItems: (detailsIds: string[]) => void;
-  setDynamicNotificationMessage: (message: string) => void;
+   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
 }
 
-class DetailsListStoreClass <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+class DetailsListStoreClass <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
   implements DetailsListStore<T, K>
 {
   details: Record<string, DetailsItemExtended<T, K>[]> = {
@@ -186,6 +189,7 @@ class DetailsListStoreClass <T extends  BaseData<T>, K extends T = T, Meta exten
   detailsTitle = "";
   detailsDescription = "";
   createdBy = "";
+  
   detailsStatus:
     | TaskStatus.Pending
     | TaskStatus.InProgress
@@ -225,6 +229,12 @@ class DetailsListStoreClass <T extends  BaseData<T>, K extends T = T, Meta exten
       description: "",
       startDate: "",
       subPhases: [], // Set subPhases as an empty array to meet the expected type
+      endDate: new Date() ? new Date() : undefined,
+      label: {},
+      currentMeta: currentMeta,
+      currentMetadata: currentMetadata,
+      date: new Date(),
+     
       // Initialize any other required properties of Phase here, based on Phase<T, K> structure
     } as Phase<T, K>;
   }
@@ -232,6 +242,7 @@ class DetailsListStoreClass <T extends  BaseData<T>, K extends T = T, Meta exten
   private async initSnapshotStore(storeProps: SnapshotStoreProps<T, K>, snapConfig: SnapshotConfig<T, K>) {
     const initialState = null;
     const snapshotStoreProps: SnapshotStoreProps<T, K> = {
+      initialState: storeProps.initialState,
       id: storeProps.storeId.toString(), // Assuming ID needs to be a string
       storeId: storeProps.storeId,
       name: storeProps.name, // Assuming this relates to the store's name
@@ -263,6 +274,12 @@ class DetailsListStoreClass <T extends  BaseData<T>, K extends T = T, Meta exten
       category: snapConfig.category,
       config: snapshotStoreProps.config,
       operation: snapshotStoreProps.operation,
+      initialState: snapshotStoreProps.initialState,
+      expirationDate: snapshotStoreProps.expirationDate,
+      payload: snapshotStoreProps.payload,
+      callback: snapshotStoreProps.callback,
+     
+
     });
 
     const snapshotConfig: SnapshotConfig<T, K> = {
@@ -500,7 +517,11 @@ class DetailsListStoreClass <T extends  BaseData<T>, K extends T = T, Meta exten
         initializeWithData: snapConfig?.initializeWithData || undefined,
         hasSnapshots: snapConfig?.hasSnapshots,
         equals: snapConfig?.equals || null,
-       
+        dataObject: snapsConfig?.dataObject,
+        deleted: snapsConfig?.deleted,
+        createdBy: snapsConfig?.createdBy,
+        mappedSnapshot: snapsConfig?.mappedSnapshot,
+        
 
       };
 
@@ -876,6 +897,8 @@ class DetailsListStoreClass <T extends  BaseData<T>, K extends T = T, Meta exten
         description: this.detailsDescription,
         title: this.detailsTitle,
         createdBy: this.createdBy,
+        currentMeta: this.currentMeta,
+        currentMetadata: this.currentMetadata,
         status: this.detailsStatus as
           | TaskStatus.Pending
           | TaskStatus.InProgress
@@ -897,7 +920,7 @@ class DetailsListStoreClass <T extends  BaseData<T>, K extends T = T, Meta exten
           updatedAt: undefined,
           startDate: undefined,
           endDate: undefined,
-          subPhases: [] as Phase<T, K>[],
+          subPhases: [] as Phase<PhaseData<BaseData<any>>, K>[],
           component: {} as FC<any>,
           hooks: {
             onPhaseStart: [],
@@ -1024,6 +1047,8 @@ class DetailsListStoreClass <T extends  BaseData<T>, K extends T = T, Meta exten
       _id: "",
       analysisResults: [],
       updatedAt: undefined,
+      currentMeta: this.currentMeta,
+      currentMetadata: this.currentMetadata,
     };
 
     this.addDetailsItem(newDetailsItem);
@@ -1089,6 +1114,8 @@ class DetailsListStoreClass <T extends  BaseData<T>, K extends T = T, Meta exten
         isActive: false,
         analysisResults: [],
         updatedAt: undefined,
+        currentMeta: detail.currentMeta,
+        currentMetadata: detail.currentMetadata
       });
     }
     // Update the details object with the new status array
@@ -1099,7 +1126,7 @@ class DetailsListStoreClass <T extends  BaseData<T>, K extends T = T, Meta exten
   }
 }
 
-const useDetailsListStore = <T extends  BaseData<T>,
+const useDetailsListStore = <T extends  BaseData<any>,
    
   K extends T = T
 >(

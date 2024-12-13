@@ -1,14 +1,14 @@
-import { IHydrateResult } from "mobx-persist";
 import React from "react";
 import { useDataStore } from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import AppStructure, { AppStructureItem } from "./appStructure/AppStructure";
 
 interface DataVersionsProps {
   dataPath: string; // Added a prop to pass the data path
 }
 
 interface DataVersions {
-  backend: IHydrateResult<number> | Promise<string> | undefined
-  frontend: IHydrateResult<number> | Promise<string> | undefined; // Updated to use 'IHydrateResult<number>' or Promise<number>
+  backend: Record<string, AppStructureItem> | undefined;
+  frontend: Record<string, AppStructureItem> | undefined;
 }
 
 const DataVersionsComponent: React.FC<DataVersionsProps> = ({
@@ -18,18 +18,25 @@ const DataVersionsComponent: React.FC<DataVersionsProps> = ({
   const dataStore = useDataStore(); // Initialize DataStore
 
   const [dataVersions, setDataVersions] = React.useState<DataVersions>({
-    backend: new Promise<string>(() => 0),
-    frontend: new Promise<string>(() => 0),
+    backend: undefined,  // No Promise, just undefined initially
+    frontend: undefined, // No Promise, just undefined initially
   });
+
   React.useEffect(() => {
-    const fetchData = async () => {
-      const id = parseInt(DATA_PATH.split("/").pop()!);
-      const versions = await dataStore.getDataVersions(id);
-      if (versions) {
-        dataStore.updateDataVersions(id, versions);
-      }
+      const fetchBackendData = async () => {
+      const appStructure = new AppStructure("backend"); // Initialize for backend
+      const data = await appStructure.getBackendStructure(DATA_PATH); // Assuming this returns a Record<string, AppStructureItem>
+      setDataVersions((prev) => ({ ...prev, backend: data }));
     };
-    fetchData();
+
+    const fetchFrontendData = async () => {
+      const appStructure = new AppStructure("backend"); // Initialize for backend
+      const data = await appStructure.getFrontendStructure(DATA_PATH); // Assuming this returns a Record<string, AppStructureItem>
+      setDataVersions((prev) => ({ ...prev, frontend: data }));
+    };
+
+    fetchBackendData();
+    fetchFrontendData();
   }, [DATA_PATH, dataStore]);
 
   React.useEffect(() => {

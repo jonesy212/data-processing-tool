@@ -1,13 +1,13 @@
 // Comments.ts
 import { Content } from '@/app/components/models/content/AddContent';
 import { BaseData, Data } from '@/app/components/models/data/Data';
-import { T } from "@/app/components/models/data/dataStoreMethods";
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { ColorPalettes } from 'antd/es/theme/interface';
 import { TagsRecord } from '../../snapshots/SnapshotWithCriteria';
-import { Attachment } from './../../documents/Attachment/attachment';
+import { Attachment } from '@/app/components/documents/Attachment/attachment''
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 // Define a basic type for the data associated with a comment
-type CommentData =  BaseData<T> & {
+type CommentData =  BaseData<any> & {
     id: string;
     content: string;
     author: string;
@@ -16,7 +16,12 @@ type CommentData =  BaseData<T> & {
   };
   
   // Define a type for the metadata associated with a comment
-  type CommentMeta = UnifiedMetaDataOptions & {
+type CommentMeta<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+> = UnifiedMetaDataOptions<T, K, Meta, ExcludedFields> & {
     isPinned?: boolean;
     isFlagged?: boolean;
     likesCount?: number;
@@ -28,8 +33,10 @@ type CommentData =  BaseData<T> & {
   
   
  interface Comment<
-  T extends  BaseData<T>,
-  K extends T = T
+  T extends  BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
     > {
     id?: string;
     text?: string | Content<T, K>;

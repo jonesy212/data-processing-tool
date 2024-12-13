@@ -1,8 +1,8 @@
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { BaseData } from '@/app/components/models/data/Data';
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import React from "react";
 import DatePickerComponent from "react-datepicker";
 import { CryptoHolding } from "../crypto/CryptoHolding";
@@ -22,7 +22,7 @@ import DayView from "./DayOfWeek";
 import { MonthInfo } from "./Month";
 import YourCalendarLibrary from "./YourCalendarLibrary";
 
-interface CommonCalendarProps{
+interface CommonCalendarProps {
   year?: YearInfo[] | number;
   month?: MonthInfo[] | number;
   events: CalendarEvent<any, any>[];
@@ -87,7 +87,8 @@ interface CommonCalendarProps{
   onContentPostPerformanceTrack: (post: ContentPost) => void;
 }
 
-interface CalendarProps<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends CommonCalendarProps {
+interface CalendarProps<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+  extends CommonCalendarProps {
   view: string | CalendarManagerState;
   container: any;
   speed: number;
@@ -101,7 +102,7 @@ interface CalendarProps<T extends  BaseData<T>, K extends T = T, Meta extends St
   onDateSelect: (date: Date) => void;
 }
 
-const Calendar = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>({
+const Calendar = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>({
   view,
   container,
   speed,

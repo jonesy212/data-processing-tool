@@ -1,5 +1,5 @@
 import { PoolConfig } from 'pg';
-import configServiceInstance from '../configs/ConfigurationService';
+import { configServiceInstance } from '../configs/ConfigurationService';
 import axiosInstance from './axiosInstance';
 import { SystemConfigs } from './systemConfigs';
 import { UserConfigs } from './userConfigs';

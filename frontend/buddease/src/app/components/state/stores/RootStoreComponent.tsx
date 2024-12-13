@@ -8,15 +8,25 @@ import generateStoreKey from "./StoreKeyGenerator";
 import useTodoManagerStore from "./TodoStore";
 import TrackerStore from "./TrackerStore";
 import useIconStore from "./IconStore";
-export const RootStoreComponent = observer(() => {
+
+
+
+export const RootStoreComponent: React.FC = observer(() => {
   const [rootStore, setRootStore] = useState<RootStores | null>(null);
 
   useEffect(() => {
-    const newRootStore = new RootStores() as RootStores;
+    const props = {}; // Replace with actual properties needed by RootStores
+    const newRootStore = new RootStores(props);
     
-    const dispatch = (action: any, state: any) => {
-      newRootStore.browsers.setState(state);
+     // Updated dispatch to work with browserCheckStore
+     const dispatch = (action: any, state: any) => {
+      if (newRootStore.browserCheckStore) {
+        newRootStore.browserCheckStore.setState(state); // Assuming setState exists on browserCheckStore
+      } else {
+        console.error("BrowserCheckStore is not initialized.");
+      }
     };
+
 
     // Use generateStoreKey to create a unique key for BrowserCheckStore
     const browserCheckStoreKey = generateStoreKey("browserCheckStore");
@@ -31,11 +41,11 @@ export const RootStoreComponent = observer(() => {
     // Assign the instance to newRootStore.browserCheckStore
     newRootStore.browserCheckStore = browserCheckStoreInstance;
 
-    newRootStore.trackerStore = TrackerStore(newRootStore);
+    newRootStore.trackerManager = TrackerStore(newRootStore);
 
     newRootStore.iconStore = useIconStore(newRootStore);
 
-    newRootStore.todoStore = useTodoManagerStore();
+    newRootStore.todoManager = useTodoManagerStore();
 
     // newRootStore.undoRedoStore = useUnd
     setRootStore(newRootStore);
@@ -55,7 +65,6 @@ export const RootStoreComponent = observer(() => {
         console.error("Error hydrating store:", error);
       });
   }, []);
-
   if (!rootStore) {
     return null;
   }

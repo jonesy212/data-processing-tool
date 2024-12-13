@@ -5,7 +5,7 @@ import { SnapshotStoreConfig } from "./snapshotStoreConfig";
 import { BaseData } from '@/app/components/models/data/Data';
 
 export function storeTempData<
-T extends  BaseData<T>,
+T extends  BaseData<any>,
  K extends T = T>(
   configs: SnapshotStoreConfig<T, K>,
   configId: string,
@@ -26,10 +26,10 @@ T extends  BaseData<T>,
 
 export function getTempData<
   T extends  
-  BaseData<T>,
+  BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  configs: SnapshotStoreConfig<T extends  BaseData<T>>,
+  configs: SnapshotStoreConfig<T extends  BaseData<any>>,
   configId: string
 ): T[] | undefined {
   for (const config of configs) {

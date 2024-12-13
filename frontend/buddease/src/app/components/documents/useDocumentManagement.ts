@@ -11,6 +11,13 @@ const useDocumentManagement = () => {
   const { isAuthenticated, user } = useAuth();
   const documentStore = useDocumentStore(); // Initialize the document store
 
+
+  const documents = async ()
+  // fetchDocuments, getSnapshotDataKey, updateDocumentReleaseStatus
+
+
+
+
   const fetchDocumentContent = async (documentKey: string): Promise<string | null> => {
     try {
       if (!isAuthenticated) {

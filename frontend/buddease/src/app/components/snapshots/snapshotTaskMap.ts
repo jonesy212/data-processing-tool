@@ -383,7 +383,7 @@
 //         return 'backendVersion';
 //       },
       
-//       getFrontendVersion: async (): Promise<string | IHydrateResult<number>> => {
+//       getFrontendVersion: async (): Promise<string | number | undefined> => {
 //         console.log('Getting frontend version');
 //         // Replace with actual frontend version fetch
 //         return 'frontendVersion' as string; // Replace with actual string or IHydrateResult<number> return
@@ -737,7 +737,7 @@
 //         // Possibly dispatch an error action or log the error
 //       },
     
-//       batchUpdateSnapshotsSuccess: (subscribers: Subscriber<Task, K>[], snapshots: Snapshots<T>) => {
+//       batchUpdateSnapshotsSuccess: (subscribers: Subscriber<Task, K>[], snapshots: Snapshots<T, K>) => {
 //         console.log('Batch updating snapshots success');
 //         // Handle the success of batch updating snapshots
 //         // Update the state or notify subscribers about the success
@@ -749,7 +749,7 @@
 //         // Possibly dispatch an error action or log the error
 //       },
     
-//       batchTakeSnapshot: async (snapshotStore: SnapshotStore<Task, K>, snapshots: Snapshots<T>) => {
+//       batchTakeSnapshot: async (snapshotStore: SnapshotStore<Task, K>, snapshots: Snapshots<T, K>) => {
 //         console.log('Batch taking snapshot');
 //         // Your logic to batch take snapshots
 //         // For example, this could involve updating the snapshot store and returning the result

@@ -6,7 +6,6 @@ import headersConfig from '@/app/api/headers/HeadersConfig';
 import { currentAppVersion } from '@/app/api/headers/authenticationHeaders';
 import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/app/components/database/Payload';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
-import { InitializedData, InitializedDataStore } from '@/app/components/hooks/SnapshotStoreOptions';
 import storeProps from '@/app/components/hooks/YourComponent';
 import { SnapshotManager } from '@/app/components/hooks/useSnapshotManager';
 import { getCategoryProperties } from '@/app/components/libraries/categories/CategoryManager';
@@ -19,15 +18,18 @@ import { SearchCriteria } from '@/app/components/routing/SearchCriteria';
 import { ConfigureSnapshotStorePayload, SnapshotConfig, snapshotContainer, SnapshotData, SnapshotItem, SnapshotStoreMethod, SnapshotStoreProps } from '@/app/components/snapshots';
 import { FetchSnapshotPayload } from '@/app/components/snapshots/FetchSnapshotPayload';
 import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { retrievedSnapshot } from "@/app/components/snapshots/RetrieveSnapshotData";
 import { SnapshotContainer, SnapshotDataType } from '@/app/components/snapshots/SnapshotContainer';
+import { SnapshotStoreCore } from "@/app/components/snapshots/SnapshotCore";
 import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
 import { SnapshotEvents } from '@/app/components/snapshots/SnapshotEvents';
-import SnapshotStore, { SubscriberCollection } from '@/app/components/snapshots/SnapshotStore';
+import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
+import { InitializedData, InitializedDataStore } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { SnapshotSubscriberManagement } from "@/app/components/snapshots/SnapshotSubscriberManagement";
 import { SnapshotWithCriteria } from '@/app/components/snapshots/SnapshotWithCriteria';
-import { isSnapshot } from '@/app/components/snapshots/createSnapshotStoreOptions';
-import { createSnapshotInstance } from '@/app/components/snapshots/snapshot';
+import { BaseSnapshotProps } from "@/app/components/snapshots/createBaseSnapshot";
+import { createSnapshotInstance } from '@/app/components/snapshots/createSnapshotInstance';
 import { getSnapshotItems } from '@/app/components/snapshots/snapshotOperations';
 import { Callback } from '@/app/components/snapshots/subscribeToSnapshotsImplementation';
 import transformDataToSnapshot from '@/app/components/snapshots/transformDataToSnapshot';
@@ -37,7 +39,7 @@ import { Subscription } from '@/app/components/subscriptions/Subscription';
 import { NotificationType } from '@/app/components/support/NotificationContext';
 import { convertMapToSnapshot, convertSnapshotStoreToSnapshot, isSnapshotStore } from '@/app/components/typings/YourSpecificSnapshotType';
 import { Subscriber } from '@/app/components/users/Subscriber';
-import { isSnapshotArrayState, isSnapshotOfType, isSnapshotsArray } from '@/app/components/utils/snapshotUtils';
+import { isSnapshot, isSnapshotArrayState, isSnapshotOfType, isSnapshotsArray } from "@/app/components/utils/snapshotUtils";
 import { getCurrentAppInfo } from '@/app/components/versions/VersionGenerator';
 import { createVersionInfo } from '@/app/components/versions/createVersionInfo';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
@@ -57,13 +59,11 @@ import { DataStoreMethods } from './ DataStoreMethods';
 import { defaultSubscribeToSnapshot } from './../../../snapshots/defaultSnapshotSubscribeFunctions';
 import { defaultSubscribeToSnapshots } from './../../../snapshots/defaultSubscribeToSnapshots';
 import { returnsSnapshotStore } from './../../../snapshots/responsetUtils';
-import { BaseSnapshotProps } from "@/app/components/snapshots/createBaseSnapshot";
-import { SnapshotStoreCore } from "@/app/components/snapshots/SnapshotCore";
 
 const dispatch = useDispatch()
 
 
-interface CommonDataStoreMethods <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface CommonDataStoreMethods <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   getSnapshotByKey(key: string): Snapshot<T, K> | undefined;
   mapSnapshotStore(): Map<string, Snapshot<T, K>>;
   getSubscribers(): SubscriberCollection<T, K>;
@@ -73,7 +73,7 @@ interface CommonDataStoreMethods <T extends  BaseData<T>, K extends T = T, Meta 
 }
 
 
-export interface DataStore<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+export interface DataStore<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
   extends SnapshotSubscriberManagement<T, K>,
   BaseSnapshotProps<T, K>,
   SnapshotStoreConfig<T, K>
@@ -85,20 +85,21 @@ export interface DataStore<T extends  BaseData<T>, K extends T = T, Meta extends
   storage?: SnapshotStore<T, K>[] | undefined;
   config: Promise<SnapshotStoreConfig<T, K> | null>;
   subscribers: SubscriberCollection<T, K>;
-  snapshots: Snapshots<T>;
-
+  snapshots: Snapshots<T, K>;
 
   getData: (
     id: number,
+    snapshot: Snapshot<T, K>,
     data: Snapshot<T, K> | Snapshot<T, CustomSnapshotData & T>
-  ) => Promise<{ data: Snapshot<T, K> }>;
+  ) => Promise<SnapshotStore<T, K>[] | undefined>;
+
 
  // Add convertKeyToT method
  convertKeyToT: (key: string) => T; // Adjust as necessary
  
  getSubscribers: () => Promise<{
   subscribers: Subscriber<T, K>[];
-  snapshots: Snapshots<T>;
+  snapshots: Snapshots<T, K>;
 }>;
 
 
@@ -120,7 +121,7 @@ export interface DataStore<T extends  BaseData<T>, K extends T = T, Meta extends
   ) => Promise<Snapshot<T, K> | null | undefined>;
   
   mapSnapshots: (
-    storeIds: number[],
+    storeIds: number,
     snapshotId: string,
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
@@ -145,7 +146,7 @@ export interface DataStore<T extends  BaseData<T>, K extends T = T, Meta extends
       data: K,
       index: number
     ) => SnapshotsObject<T, K>
-  ) => Promise<SnapshotsArray<T>>
+  ) => Promise<SnapshotsArray<T, K>>
 
   mapSnapshotStore: (
     storeId: number,
@@ -242,8 +243,8 @@ export interface DataStore<T extends  BaseData<T>, K extends T = T, Meta extends
   // getBackendVersion: () => Promise<string | undefined>;
 
 
-  getBackendVersion: () => IHydrateResult<number> | Promise<string> | undefined
-  getFrontendVersion: () => IHydrateResult<number> | Promise<string> | undefined;
+  getBackendVersion: () => Promise<string | number | undefined>
+  getFrontendVersion: () => Promise<string | number | undefined>;
 
   getAllKeys: (
     storeId: number,
@@ -273,7 +274,7 @@ export interface DataStore<T extends  BaseData<T>, K extends T = T, Meta extends
     snapshotId: string,
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
-    snapshot: SnapshotUnion<T> | null,
+    snapshot: SnapshotUnion<T, K> | null,
     timestamp: string | number | Date | undefined,
     type: string,
     event: Event,
@@ -326,12 +327,12 @@ export interface DataStore<T extends  BaseData<T>, K extends T = T, Meta extends
     snapshotStore: SnapshotStore<T, K>,
     snapshotData: SnapshotData<T, K>,
     data: Data<T>,
-    snapshotsArray: SnapshotsArray<T>,
+    snapshotsArray: SnapshotsArray<T, K>,
     snapshotsObject: SnapshotsObject<T, K>
   ) => Promise<SnapshotContainer<T, K> | undefined>
   
   snapshotMethods?: SnapshotStoreMethod<T, K>[] | undefined;
-  snapshotStoreConfig?: SnapshotStoreConfig<T, K>
+  snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> 
   getSnapshotVersions: (
     category: symbol | string | Category | undefined,
     timestamp: any,
@@ -354,14 +355,14 @@ export interface DataStore<T extends  BaseData<T>, K extends T = T, Meta extends
 
 
 
-interface VersionedData <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface VersionedData <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   versionNumber: string;
   appVersion: string;
   content: any;
   getData: (id: number) => Promise<SnapshotStore<T, K>[]>;
 }
 
-const useVersionedData =  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const useVersionedData =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   data: Map<string, T>,
   fetchData: () => Promise<SnapshotStore<T, K>[]>,
 ): VersionedData<T, K> => {
@@ -376,11 +377,11 @@ const useVersionedData =  <T extends  BaseData<T>, K extends T = T, Meta extends
 
 
 
-interface CallbackItem<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends SnapshotItem<T, K> {
+interface CallbackItem<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends SnapshotItem<T, K> {
   callback: (snapshot: Snapshot<T, K>) => void;
 }
 
-type InitializedState<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
+type InitializedState<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
   | T
   | Snapshot<T, K>
   | SnapshotStore<T, K>
@@ -391,7 +392,7 @@ type InitializedState<T extends  BaseData<T>, K extends T = T, Meta extends Stru
   
   
   
-  const initializeState = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  const initializeState = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     initialState: InitializedState<T, K>
   ): InitializedState<T, K> => {
     if (isSnapshot(initialState)) {
@@ -413,13 +414,21 @@ type InitializedState<T extends  BaseData<T>, K extends T = T, Meta extends Stru
   
 
 
-interface EventManager<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface EventManager<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   eventRecords: {
     [key: string]: EventRecord<T, K>[]; // Index signature to allow string keys
   };
 }
 
-interface EventRecord<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+// Factory function to create an instance of EventManager
+function createEventManager<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): EventManager<T, K, Meta> {
+  return {
+    eventRecords: {} // Initialize with an empty object
+  };
+}
+
+
+interface EventRecord<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   record: CalendarManagerStoreClass<T, K>;  // Adjust as necessary
   records?: CalendarManagerStoreClass<T, K>[];  // Adjust as necessary
   callback: (snapshot: Snapshot<T, K>) => void;
@@ -429,11 +438,25 @@ interface EventRecord<T extends  BaseData<T>, K extends T = T, Meta extends Stru
 }
 
 
-class ConfigurableSnapshotStore<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends SnapshotStore<T, K>  implements SnapshotStoreCore<T, K> {
+class ConfigurableSnapshotStore<T extends  BaseData<any>, 
+K extends T = T,
+ Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+ > extends SnapshotStore<T, K>  
+ implements SnapshotStoreCore<T, K, Meta> {
 
-  
-  private setConfig(config: SnapshotStoreConfig<T, K>): void {
+  protected setConfig(config: SnapshotStoreConfig<T, K>): void {
     // Logic to set config specifically for ConfigurableSnapshotStore
+    super.setConfig(cnofig)
+
+    // Custom logic specific to ConfigurableSnapshotStore
+    if (config.logging) {
+      console.log('Logging enabled for ConfigurableSnapshotStore.');
+    }
+
+    if (config.autoSync) {
+      console.log('Auto-sync enabled for ConfigurableSnapshotStore.');
+    }
+
   }
 
   public configure(config: SnapshotStoreConfig<T, K>): void {
@@ -441,7 +464,7 @@ class ConfigurableSnapshotStore<T extends  BaseData<T>, K extends T = T, Meta ex
   }
 }
 
-const useDataStore = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const useDataStore = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   initialState: InitializedState<T, K> = null
 ): DataStore<T, K> & VersionedData<T, K> => {
   const data: Map<string, Snapshot<T, K>> = new Map<string, Snapshot<T, K>>();
@@ -883,12 +906,23 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
 
       // Destructure needed properties from `storeProps`
     const { 
-      storeId, name, version, schema, options, category, config, operation, 
-      snapshots, expirationDate, payload: storePayload, callback, endpointCategory ,
-                criteria,
-                subscriberId,
-                events,
-                dataItems,
+      storeId,
+      name, 
+      version, 
+      schema, 
+      options,
+      category, 
+      config, 
+      operation, 
+      snapshots, 
+      expirationDate, 
+      payload: storePayload, 
+      callback, 
+      endpointCategory ,
+      criteria,
+      subscriberId,
+      events,
+      dataItems,
     } = storeProps; 
 
     for (const item of newData) {
@@ -951,7 +985,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
             };
 
 
-            const typedSnapshotId = snapshotId as keyof SnapshotStore<Snapshot< BaseData<T>,  BaseData<T>>>;
+            const typedSnapshotId = snapshotId as keyof SnapshotStore<Snapshot< BaseData<any>,  BaseData<any>>>;
             const snapshotData = returnsSnapshotStore[typedSnapshotId];
             const delegate = useDataStore()?.snapshotStoreConfig?.find(config => config.delegate)?.delegate ?? null;
             const snapshotId = await snapshot.store.snapshotId;
@@ -1082,7 +1116,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
         events: {
           on: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => {
             if (snapshotItem.data instanceof Map) {
-              snapshotItem.data.forEach((item: Snapshot<T, K>) => {
+              snapshotItem.data.forEach((item: Snapshot<T, K, StructuredMetadata<T, K>>) => {
                 callback(item);
               });
 
@@ -1090,7 +1124,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
                 // Check if events and eventRecords are defined before accessing
                 if (snapshotItem.events && snapshotItem.events.eventRecords) {
                   snapshotItem.events.eventRecords[event] = snapshotItem.events.eventRecords[event].filter(
-                    (callbackItem: CalendarManagerStoreClass<T, K>) => callbackItem.callback !== callback
+                    (callbackItem: EventRecord<T, K, StructuredMetadata<T, K>>) => callbackItem.callback !== callback
                   );
                 } else {
                   console.error("Events or eventRecords are not defined.");
@@ -1385,7 +1419,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
         dataStore: DataStore<T, K>,
         dataStoreMethods: DataStoreMethods<T, K>,
         // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-        metadata: UnifiedMetaDataOptions,
+        metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
         subscriberId: string, // Add subscriberId here
         endpointCategory: string | number,// Add endpointCategory here
         storeProps: SnapshotStoreProps<T, K>,
@@ -1495,7 +1529,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
                 savedState: SnapshotStore<T, K>,
                 category: Category | undefined,
                 callback: (snapshot: T) => R, 
-                snapshots: SnapshotsArray<T>,
+                snapshots: SnapshotsArray<T, K>,
                 type: string,
                 event: string | SnapshotEvents<T, K>,
                 subscribers: SubscriberCollection<T, K>,
@@ -1604,7 +1638,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
               addNestedStore: function (store: SnapshotStore<T, K>): void {
                 throw new Error('Function not implemented.');
               },
-              defaultSubscribeToSnapshots: function (snapshotId: string, callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null, snapshot?: Snapshot<T, K> | null): void {
+              defaultSubscribeToSnapshots: function (snapshotId: string, callback: (snapshots: Snapshots<T, K>) => Subscriber<T, K> | null, snapshot?: Snapshot<T, K> | null): void {
                 throw new Error('Function not implemented.');
               },
               defaultCreateSnapshotStores: function (id: string, 
@@ -1624,7 +1658,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
               },
               subscribeToSnapshots: function (
                 snapshotId: string,
-                callback: (snapshots: Snapshots<T>
+                callback: (snapshots: Snapshots<T, K>
 
                 ) => Snapshot<T, K> | null, snapshot?: Snapshot<T, K> | null): null {
                 throw new Error('Function not implemented.');
@@ -1632,10 +1666,10 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
               subscribeToSnapshot: function (snapshotId: string, callback: Callback<Snapshot<T, K>>, snapshot: Snapshot<T, K>): void {
                 throw new Error('Function not implemented.');
               },
-              defaultOnSnapshots: function (snapshotId: string, snapshots: Snapshots<T>, type: string, event: Event, callback: (snapshots: Snapshots<T>) => void): void {
+              defaultOnSnapshots: function (snapshotId: string, snapshots: Snapshots<T, K>, type: string, event: Event, callback: (snapshots: Snapshots<T, K>) => void): void {
                 throw new Error('Function not implemented.');
               },
-              onSnapshots: function (snapshotId: string, snapshots: Snapshots<T>, type: string, event: Event, callback: (snapshots: Snapshots<T>) => void): Promise<void | null> {
+              onSnapshots: function (snapshotId: string, snapshots: Snapshots<T, K>, type: string, event: Event, callback: (snapshots: Snapshots<T, K>) => void): Promise<void | null> {
                 throw new Error('Function not implemented.');
               },
               transformSubscriber: function (sub: Subscriber<T, K>): Subscriber<T, K> {
@@ -1716,7 +1750,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
               getBackendVersion: function (): IHydrateResult<number> | Promise<string> {
                 throw new Error('Function not implemented.');
               },
-              getFrontendVersion: function (): Promise<string | IHydrateResult<number>> {
+              getFrontendVersion: function (): Promise<string | number | undefined> {
                 throw new Error('Function not implemented.');
               },
               fetchData: function (id: number): Promise<SnapshotStore<T, K>[]> {
@@ -1775,7 +1809,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
               addSnapshotFailure: function (date: Date, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void {
                 throw new Error('Function not implemented.');
               },
-              getDataStore: function (): Promise<InitializedDataStore> {
+              getDataStore: function (): Promise<InitializedDataStore<T>> {
                 throw new Error('Function not implemented.');
               },
               addSnapshotSuccess: function (snapshot: T, subscribers: SubscriberCollection<T, K>): void {
@@ -1860,7 +1894,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
               updateSnapshots: function (): void {
                 throw new Error('Function not implemented.');
               },
-              updateSnapshotsSuccess: function (snapshotData: (subscribers: Subscriber<T, K>[], snapshot: Snapshots<T>) => void): void {
+              updateSnapshotsSuccess: function (snapshotData: (subscribers: Subscriber<T, K>[], snapshot: Snapshots<T, K>) => void): void {
                 throw new Error('Function not implemented.');
               },
               updateSnapshotsFailure: function (error: Payload): void {
@@ -1906,7 +1940,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
               validateSnapshot: function (snapshotId: string, snapshot: Snapshot<T, K>): boolean {
                 throw new Error('Function not implemented.');
               },
-              handleSnapshot: function (id: string, snapshotId: number, snapshot: T | null, snapshotData: T, category: Category | undefined, categoryProperties: CategoryProperties | undefined, callback: (snapshot: T) => void, snapshots: SnapshotsArray<T>, type: string, event: Event, snapshotContainer?: T | undefined, snapshotStoreConfig?: SnapshotStoreConfig<T, K> | undefined): Promise<Snapshot<T, K> | null> {
+              handleSnapshot: function (id: string, snapshotId: number, snapshot: T | null, snapshotData: T, category: Category | undefined, categoryProperties: CategoryProperties | undefined, callback: (snapshot: T) => void, snapshots: SnapshotsArray<T, K>, type: string, event: Event, snapshotContainer?: T | undefined, snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>  | undefined): Promise<Snapshot<T, K> | null> {
                 throw new Error('Function not implemented.');
               },
               handleActions: function (action: (selectedText: string) => void): void {
@@ -1924,13 +1958,13 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
               filterInvalidSnapshots: function (snapshotId: string, state: Map<string, Snapshot<T, K>>): Map<string, Snapshot<T, K>> {
                 throw new Error('Function not implemented.');
               },
-              setSnapshots: function (snapshots: Snapshots<T>): void {
+              setSnapshots: function (snapshots: Snapshots<T, K>): void {
                 throw new Error('Function not implemented.');
               },
               clearSnapshot: function (): void {
                 throw new Error('Function not implemented.');
               },
-              mergeSnapshots: function (snapshots: Snapshots<T>, category: string): void {
+              mergeSnapshots: function (snapshots: Snapshots<T, K>, category: string): void {
                 throw new Error('Function not implemented.');
               },
               reduceSnapshots: function <U>(callback: (acc: U, snapshot: Snapshot<T, K>) => U, initialValue: U): U | undefined {
@@ -1945,13 +1979,13 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
               mapSnapshotsAO: function (storeIds: number[], snapshotId: string, category: Category | undefined, categoryProperties: CategoryProperties | undefined, snapshot: Snapshot<T, K>, timestamp: string | number | Date | undefined, type: string, event: Event, id: number, snapshotStore: SnapshotStore<T, K>, data: T): Promise<SnapshotContainer<T, K>> {
                 throw new Error('Function not implemented.');
               },
-              mapSnapshots: function <U>(storeIds: number[], snapshotId: string, category: Category | undefined, categoryProperties: CategoryProperties | undefined, snapshot: Snapshot<T, K>, timestamp: string | number | Date | undefined, type: string, event: Event, id: number, snapshotStore: SnapshotStore<T, K>, data: T, callback: (storeIds: number[], snapshotId: string, category: Category | undefined, categoryProperties: CategoryProperties | undefined, snapshot: Snapshot<T, K>, timestamp: string | number | Date | undefined, type: string, event: Event, id: number, snapshotStore: SnapshotStore<T, K>, data: K, index: number) => SnapshotsObject<T, K>): Promise<SnapshotsArray<T>> {
+              mapSnapshots: function <U>(storeIds: number[], snapshotId: string, category: Category | undefined, categoryProperties: CategoryProperties | undefined, snapshot: Snapshot<T, K>, timestamp: string | number | Date | undefined, type: string, event: Event, id: number, snapshotStore: SnapshotStore<T, K>, data: T, callback: (storeIds: number[], snapshotId: string, category: Category | undefined, categoryProperties: CategoryProperties | undefined, snapshot: Snapshot<T, K>, timestamp: string | number | Date | undefined, type: string, event: Event, id: number, snapshotStore: SnapshotStore<T, K>, data: K, index: number) => SnapshotsObject<T, K>): Promise<SnapshotsArray<T, K>> {
                 throw new Error('Function not implemented.');
               },
               findSnapshot: function (predicate: (snapshot: Snapshot<T, K>) => boolean): Snapshot<T, K> | undefined {
                 throw new Error('Function not implemented.');
               },
-              getSubscribers: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T>): Promise<{ subscribers: Subscriber<T, K>[]; snapshots: Snapshots<T>; }> {
+              getSubscribers: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T, K>): Promise<{ subscribers: Subscriber<T, K>[]; snapshots: Snapshots<T, K>; }> {
                 throw new Error('Function not implemented.');
               },
               notify: function (id: string, message: string, content: any, date: Date, type: NotificationType, notificationPosition?: NotificationPosition | undefined): void {
@@ -1960,7 +1994,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
               notifySubscribers: function (message: string, subscribers: Subscriber<T, K>[], data: Partial<SnapshotStoreConfig<T, K>>): Subscriber<T, K>[] {
                 throw new Error('Function not implemented.');
               },
-              subscribe: function (snapshotId: string, unsubscribe: UnsubscribeDetails, subscriber: Subscriber<T, K> | null, data: T, event: Event, callback: Callback<Snapshot<T, K>>): [] | SnapshotsArray<T> {
+              subscribe: function (snapshotId: string, unsubscribe: UnsubscribeDetails, subscriber: Subscriber<T, K> | null, data: T, event: Event, callback: Callback<Snapshot<T, K>>): [] | SnapshotsArray<T, K> {
                 throw new Error('Function not implemented.');
               },
               unsubscribe: function (callback: (snapshot: Snapshot<T, K>) => void): void {
@@ -1998,7 +2032,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
               fetchSnapshotFailure: function (snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, date: Date | undefined, payload: { error: Error; }): void {
                 throw new Error('Function not implemented.');
               },
-              getSnapshots: function (category: string, data: Snapshots<T>): void {
+              getSnapshots: function (category: string, data: Snapshots<T, K>): void {
                 throw new Error('Function not implemented.');
               },
               getAllSnapshots: function (
@@ -2016,8 +2050,8 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
                   filter?: (snapshot: Snapshot<T, K>) => boolean,
                   dataCallback?: ((
                     subscribers: Subscriber<T, K>[], 
-                    snapshots: Snapshots<T>
-                  ) => Promise<Snapshots<T>>) | undefined): Promise<Snapshot<T, K>[]> {
+                    snapshots: Snapshots<T, K>
+                  ) => Promise<Snapshots<T, K>>) | undefined): Promise<Snapshot<T, K>[]> {
                 throw new Error('Function not implemented.');
               },
               getSnapshotStoreData: function (
@@ -2036,10 +2070,10 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
               snapshotData: (
                 snapshotIds: string[],
                 subscribers: SubscriberCollection<T, K>,
-                snapshots: Snapshots<T>
+                snapshots: Snapshots<T, K>
               ) => Promise<{
                 subscribers: SubscriberCollection<T, K>;
-                snapshots: Snapshots<T>; // Include snapshots here for consistency
+                snapshots: Snapshots<T, K>; // Include snapshots here for consistency
               }>): Promise<Snapshot<T, K>[]> {
                 throw new Error('Function not implemented.');
               },
@@ -2050,24 +2084,24 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
                 snapshotData: (subscribers: Subscriber<T, K>[]
                 ) => Promise<{
                   subscribers: Subscriber<T, K>[]; 
-                snapshots: Snapshots<T>; 
+                snapshots: Snapshots<T, K>; 
               }>
             ): Promise<void> {
                 throw new Error('Function not implemented.');
               },
-              batchFetchSnapshotsSuccess: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T>): void {
+              batchFetchSnapshotsSuccess: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T, K>): void {
                 throw new Error('Function not implemented.');
               },
               batchFetchSnapshotsFailure: function (date: Date, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void {
                 throw new Error('Function not implemented.');
               },
-              batchUpdateSnapshotsSuccess: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T>): void {
+              batchUpdateSnapshotsSuccess: function (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T, K>): void {
                 throw new Error('Function not implemented.');
               },
               batchUpdateSnapshotsFailure: function (date: Date, snapshotId: string, snapshotManager: SnapshotManager<T, K>, snapshot: Snapshot<T, K>, payload: { error: Error; }): void {
                 throw new Error('Function not implemented.');
               },
-              batchTakeSnapshot: function (snapshotId: string, snapshotStore: SnapshotStore<T, K>, snapshots: Snapshots<T>): Promise<{ snapshots: Snapshots<T>; }> {
+              batchTakeSnapshot: function (snapshotId: string, snapshotStore: SnapshotStore<T, K>, snapshots: Snapshots<T, K>): Promise<{ snapshots: Snapshots<T, K>; }> {
                 throw new Error('Function not implemented.');
               },
               handleSnapshotSuccess: function (
@@ -2117,8 +2151,12 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
     config: {} as Promise<SnapshotStoreConfig<T, K> | null>,
     convertKeyToT: (key: string) => T,
    
-    getSubscribers: (): Promise<{ subscribers: Subscriber<T, K>[]; snapshots: Snapshots<T>; }> => {},
+    getSubscribers: (): Promise<{ 
+      subscribers: Subscriber<T, K>[];
+      snapshots: Snapshots<T, K>; 
+    }> => {},
     getSnapshotByKey: (storeId: number, snapshotKey: string): Promise<Snapshot<T, K> | null | undefined> =>{},
+    
     mapSnapshot: (
       id: number,
       storeId: string | number,
@@ -2252,7 +2290,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
       snapshotStore: SnapshotStore<T, K>,
       snapshotData: SnapshotData<T, K>,
       data: Data<T>,
-      snapshotsArray: SnapshotsArray<T>,
+      snapshotsArray: SnapshotsArray<T, K>,
       snapshotsObject: SnapshotsObject<T, K>
     ): Promise<SnapshotContainer<T, K> | undefined> => {},
    
@@ -2342,6 +2380,6 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
   };
 };
 
-export { initializeState, useDataStore };
+export { createEventManager, initializeState, useDataStore };
 export type { CommonDataStoreMethods, ConfigurableSnapshotStore, EventManager, EventRecord, InitializedState, VersionedData };
 

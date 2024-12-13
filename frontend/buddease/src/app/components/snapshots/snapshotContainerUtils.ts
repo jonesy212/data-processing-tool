@@ -1,15 +1,20 @@
 // snapshotContainerUtils.ts
+import { snapshot } from '.';
+import { createSnapshot, getSnapshotContainer, getSnapshotId } from "@/app/api/SnapshotApi";
+import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
+import { snapshotId } from './../utils/snapshotUtils';
+import { category } from '@/app/components/utils/snapshotUtils';
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { convertToCategoryProperties, generateCategoryProperties, isCategoryProperties } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { createSnapshotStoreConfig } from '@/app/components/snapshhots/createSnapshotStoreConfig';
+import { generateCategoryProperties, isCategoryProperties } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { createSnapshotStoreConfig } from '@/app/components/snapshots/snapshotStorageOptionsInstance';
 import { SnapshotConfig } from '@/app/components/snapshots';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { snapshotConfigOptions } from '@/app/components/snapshots/snapshotConfigOptions';
+import { CategoryProperties, convertToCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { BaseData } from '../models/data/Data';
 import { dataStoreMethods } from "../models/data/dataStoreMethods";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { snapshotStoreConfigInstance } from "./snapshotStoreConfigInstance";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-
+import SnapshotEvent from '@/app/typings/eventTypes'
 // Subscription management logic
 
 const subscribeToSnapshots = () => {
@@ -35,20 +40,64 @@ const delegate = {
   }
 };
 
-const category = snapshotApi.getSnapshotsAndCategory()
+
+const snapshotIdObject = { 
+  snapshotId: 'snapshot_456', 
+  handleAddSnapshot: async (newSnapshotData: any) => {
+    console.log('Creating new snapshot:', newSnapshotData);
+    await createSnapshot(newSnapshotData); // Call your add API
+  }
+};
+
+
+
+const snapshotConfig = getSnapshotConfig(
+  id,
+  String(snapshotId),
+  snapshotData,
+  criteria,
+  category,
+  categoryProperties,
+  subscriberId,
+  delegate,
+  snapshot,
+  data,
+  events,
+  dataItems,
+  newData,
+  payload,
+  store,
+  callback,
+  storeProps,
+  endpointCategory,
+  snapshotContainer as unknown as SnapshotContainer<Data, Data>, 
+)
+
+const currentCategory = (type: string, event: SnapshotEvent<T, K>,
+) => snapshotApi.getSnapshotsAndCategory(
+  category,
+  snapshotIdObject.snapshotId,
+  snapshot,
+  type,
+  event,
+  snapshotConfig,
+  additionalHeaders,
+);
+
 const snapshotManager = snapshotStoreConfigInstance.getSnapshotManager()
 const snapshotStore = snapshotManager?.state
-const snapshotConfig = createSnapshotStoreConfig(snapshotStore)
+const createdSnapshotConfig = createSnapshotStoreConfig(snapshotStore)
 const getDelegate = () => delegate;
 
 const getCategory = <
-  T extends  BaseData<T>,
+  T extends  BaseData<any>,
   K extends T = T,
 >(
   snapshotId: string,
+  storeId: number,
   snapshot: Snapshot<any>, // Use the appropriate type for T
   type: string,
-  event: Event,
+  event: SnapshotEvent<T, K>,
   snapshotConfig: SnapshotConfig<any>, // Use the appropriate type for K
   additionalHeaders?: Record<string, string>
 ): Promise<{ categoryProperties?: CategoryProperties; snapshots: Snapshot<BaseData, BaseData>[] }> => {
@@ -82,55 +131,90 @@ const getCategory = <
     categoryProps = { ...categoryProps, ...defaultCategoryProps };
   }
 
-  // Implement logic for retrieving snapshots based on the provided snapshotId, event, etc.
-  return snapshotApi.retrieveSnapshots(snapshotId, event, snapshotConfig, additionalHeaders).then(snapshots => ({
-    categoryProperties: categoryProps,
-    snapshots
-  }));
+
+    // Step 3️⃣: Handle event logic
+    if (event) {
+      if (event.operationType) {
+        handleSnapshotOperation(event.operationType); // Call the operation
+      }
+      if (event.categoryId) {
+        console.log(`Using category ID from event: ${event.categoryId}`);
+        categoryProps = generateCategoryProperties(event.categoryId);
+      }
+    }
+    // Step 4️⃣: Retrieve snapshots
+    snapshots = await snapshotApi.retrieveSnapshots(snapshotId, event, snapshotConfig, additionalHeaders);
+  
+    return { categoryProperties: categoryProps, snapshots };
 };
 
 
-const getSnapshotConfig = () => snapshotConfig;
+const getSnapshotConfig = () => snapshotConfigOptions.getSnapshotConfig;
 
 const getDataStoreMethods = () => dataStoreMethods;
 
 // Snapshot methods that define how the snapshot operations are handled
-const snapshotMethods = {
-  create: async (): Promise<Snapshot<T, K>> => {
+
+// Snapshot methods that define how the snapshot operations are handled
+const snapshotMethods = <T, K>() => ({
+  // Step 1️���: Handle snapshot creation
+  /**
+   * Create a new snapshot
+   * @returns {Promise<Snapshot<T, K>>}
+   */
+  create: async (data: T, metadata: K): Promise<Snapshot<T, K>> => {
     console.log("Creating snapshot...");
-    // Add logic for snapshot creation if needed, otherwise return a mock snapshot
-    return Promise.resolve({} as Snapshot<T, K>);
+    const snapshot: Snapshot<T, K> = {
+      id: generateUniqueId(), // Custom ID generator function
+      data,
+      metadata,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    return snapshot;
   },
 
-  update: async (): Promise<Snapshot<T, K>> => {
-    console.log("Updating snapshot...");
-    // Add logic for snapshot update if needed, otherwise return a mock snapshot
-    return Promise.resolve({} as Snapshot<T, K>);
+  /**
+   * Update an existing snapshot
+   * @param id The ID of the snapshot to update
+   * @param updatedData The updated data
+   * @param updatedMetadata The updated metadata
+   * @returns {Promise<Snapshot<T, K>>}
+   */
+  update: async (
+    id: string,
+    updatedData: Partial<T>,
+    updatedMetadata: Partial<K>
+  ): Promise<Snapshot<T, K>> => {
+    console.log(`Updating snapshot with id ${id}...`);
+
+    // Simulate the process of updating a snapshot
+    const existingSnapshot: Snapshot<T, K> = {
+      id,
+      data: { ...updatedData } as T,
+      metadata: { ...updatedMetadata } as K,
+      createdAt: new Date(), // Assume this was already present
+      updatedAt: new Date(), // The updated timestamp
+    };
+
+    // Simulate an API call or DB update
+    return existingSnapshot;
   },
 
-  delete: async (): Promise<Snapshot<T, K>> => {
-    console.log("Deleting snapshot...");
-    // Add logic for snapshot deletion if needed, otherwise return a mock snapshot
-    return Promise.resolve({} as Snapshot<T, K>);
+  /**
+   * Delete an existing snapshot
+   * @param id The ID of the snapshot to delete
+   * @returns {Promise<{ id: string, success: boolean }>}
+   */
+  delete: async (id: string): Promise<{ id: string; success: boolean }> => {
+    console.log(`Deleting snapshot with id ${id}...`);
+    
+    // Simulate an API call to delete the snapshot
+    const result = { id, success: true };
+    
+    return result;
   },
-};
-
-// Handling snapshot operations (e.g., map, sort, categorize)
-const handleSnapshotOperation = (operationType: string) => {
-  switch (operationType) {
-    case "map":
-      console.log("Mapping snapshot data...");
-      break;
-    case "sort":
-      console.log("Sorting snapshot data...");
-      break;
-    case "categorize":
-      console.log("Categorizing snapshot data...");
-      break;
-    default:
-      console.log(`Unhandled operation: ${operationType}`);
-  }
-};
+});
 
 
 export { getCategory };

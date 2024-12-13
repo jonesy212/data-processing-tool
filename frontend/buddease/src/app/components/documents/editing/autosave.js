@@ -2,6 +2,8 @@
 import { getCurrentAppInfo } from "@/app/generators/VersionGenerator";
 import { useDispatch } from "react-redux";
 import useErrorHandling from "../../hooks/useErrorHandling";
+import VersionGenerator from "../../versions/VersionGenerator";
+import { AutosaveLogActions } from "../../actions/AutosaveLogActions";
 
 const handleError = useErrorHandling(); // Error handling hook
 

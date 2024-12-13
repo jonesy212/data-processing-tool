@@ -1,9 +1,9 @@
 // Payload.ts
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { SnapshotActions } from '@/app/components/snapshots/SnapshotActions';
 import { useNotification } from '@/app/components/support/NotificationContext';
 import { addToSnapshotList, category } from '@/app/components/utils/snapshotUtils';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { LiveEvent } from '@refinedev/core';
 import { useDispatch } from 'react-redux';
 import { SubscriptionPayload } from "../actions/SubscriptionActions";
@@ -22,7 +22,7 @@ import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState }
 import * as subscriptionApi from "./../../api/subscriberApi";
 
 
-interface ExtendedBaseDataPayload<T extends  BaseData<T>, Meta = {}, K = T> extends BaseData<T, K> {
+interface ExtendedBaseDataPayload<T extends  BaseData<any>,  K extends T = T, Meta extends {} = StructuredMetadata<T, K>> extends BaseData<T, K, Meta> {
   meta?: {
     name: string;
     timestamp: Date;
@@ -75,7 +75,7 @@ interface Payload {
     } | undefined
   }
   
-  interface CreateSnapshotsPayload<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  interface CreateSnapshotsPayload<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
     data: Map<string, Snapshot<T, K>>;
     events: Record<string, CalendarEvent<T, K>[]>;
     dataItems: RealtimeDataItem[];
@@ -84,7 +84,7 @@ interface Payload {
   }
   
   
-  interface CreateSnapshotStoresPayload <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  interface CreateSnapshotStoresPayload <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
     snapshotId: string;
     title: string;
     description: string;

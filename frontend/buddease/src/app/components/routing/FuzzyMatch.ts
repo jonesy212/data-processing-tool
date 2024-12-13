@@ -10,7 +10,7 @@ interface BaseEntity {
   name?: string | undefined;
   description?: string | null | undefined;
   createdAt: string | Date | undefined;
-  createdBy: string;
+  createdBy: string | undefined;
   updatedBy?: string;
   filePathOrUrl?: string;
   source?: string;
@@ -90,4 +90,4 @@ const query = "Microsft Corp"; // Intentional typo for demonstration
 const matchedEntities = fuzzyMatchEntities(query, entities);
 const filteredEntities = entities.filter((entity) => entity.type === "company");
 console.log("Matched Entities:", matchedEntities, filteredEntities);
-export type { Entity, BaseEntity}
+export type { BaseEntity, Entity };

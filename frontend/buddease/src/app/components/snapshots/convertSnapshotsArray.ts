@@ -9,25 +9,25 @@
 // import { Snapshot, SnapshotsArray } from "./LocalStorageSnapshotStore";
 // import SnapshotStore from "./SnapshotStore";
 
-// // Utility function to convert Snapshot<BaseData, T>[] to Snapshots<T>
-// function convertSnapshotsArray<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// // Utility function to convert Snapshot<BaseData, T>[] to Snapshots<T, K>
+// function convertSnapshotsArray<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
 //   snapshotsArray: Snapshot<T, K>[]
-// ): SnapshotsArray<T> {
+// ): SnapshotsArray<T, K> {
 //     return snapshotsArray.map((snapshot) => {
 //       const convertedSnapshot: Snapshot<T, K> = {
 //         ...snapshot,
 //         data: snapshot.data as T,
-//         snapshots: snapshot.snapshots as SnapshotsArray<T>,
+//         snapshots: snapshot.snapshots as SnapshotsArray<T, K>,
 //         compareSnapshotState: snapshot.compareSnapshotState,
 //         eventRecords: snapshot.eventRecords,
 //       };
 //       return convertedSnapshot;
-//     }) as unknown as SnapshotsArray<T>;
+//     }) as unknown as SnapshotsArray<T, K>;
 //   }
   
 //   // Example usage of the conversion function
 //   const filteredSnapshots: Snapshot<T, K>[] = [/* your snapshots array */];
-//   const convertedSnapshots: SnapshotsArray<T> = convertSnapshotsArray<T, BaseData>(filteredSnapshots);
+//   const convertedSnapshots: SnapshotsArray<T, K> = convertSnapshotsArray<T, BaseData>(filteredSnapshots);
   
 //   const storeId = useSecureStoreId()
 //   if(!storeId){

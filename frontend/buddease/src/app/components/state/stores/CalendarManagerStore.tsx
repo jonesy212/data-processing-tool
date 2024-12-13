@@ -12,7 +12,6 @@ import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
 import useModalFunctions from "@/app/pages/dashboards/ModalFunctions";
 import ScheduleEventModal from "@/app/ts/ScheduleEventModal";
 import { makeAutoObservable } from "mobx";
-import React from "react";
 import {
     getDefaultDocumentOptions,
 } from "../../documents/DocumentOptions";
@@ -125,7 +124,7 @@ interface CalendarEntities {
 }
 
 // Common interface for CalendarManager
-interface CommonCalendarManagerMethods<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface CommonCalendarManagerMethods<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   updateEventTitle: (title: string) => void;
   updateEventDescription: (eventId: string, description: string) => void;
   updateEventStatus: (eventId: string, status: AllStatus) => void;
@@ -143,7 +142,7 @@ interface CommonCalendarManagerMethods<T extends  BaseData<T>, K extends T = T, 
     reassignData: ReassignEventResponse[]
   ) => void;
   completeAllEvents: () => void;
-  setDynamicNotificationMessage: (message: string) => void;
+  setDynamicNotificationMessage: (message: Message) => void;
 }
 
 export type ActionType =
@@ -165,8 +164,8 @@ interface ActionPayload {
 }
 
 export interface CalendarManagerStore<
-  T extends  BaseData<T> = BaseData,
-  K extends  BaseData<T> = BaseData
+  T extends  BaseData<any> = BaseData,
+  K extends  BaseData<any> = BaseData
 > {
   // dispatch: (action: PayloadAction<any, string, any, any>) => void;
   openScheduleEventModal: (content: JSX.Element) => void;
@@ -216,7 +215,7 @@ export interface CalendarManagerStore<
   completeAllEventsSuccess: () => void;
   completeAllEvents: () => void;
   completeAllEventsFailure: (payload: { error: string }) => void;
-  setDynamicNotificationMessage: (message: string) => void;
+  setDynamicNotificationMessage: (message: Message) => void;
   handleRealtimeUpdate: (
     storeId: number,
     documentId: number,
@@ -242,11 +241,14 @@ export interface CalendarManagerStore<
 
 
 
-class CalendarManagerStoreClass<T extends  BaseData<T>, 
+class CalendarManagerStoreClass<T extends  BaseData<any>, 
   K extends T = T>
   implements CalendarManagerStore<T, K>,
   CommonCalendarManagerMethods<T, K> 
 {
+  updateCalendarEvent(snapshot: Snapshot<T, K, StructuredMetadata<T, K>, never>): void {
+    throw new Error('Method not implemented.');
+  }
   process: (newData: Snapshot<T, K>) => void; // Ensure this method is define
   getState: () => MobXRootState;
   events: Record<string, CalendarEvent<T, K>[]> = {
@@ -595,7 +597,7 @@ class CalendarManagerStoreClass<T extends  BaseData<T>,
       snapshotContainer as unknown as SnapshotContainer<Data, Data>, 
     )
     // const config = storeConfig as unknown as SnapshotStoreConfig<T, K>;
-    const operation: SnapshotOperation = {
+    const operation: SnapshotOperation<T, K> = {
       // Provide the required operation details
       operationType: SnapshotOperationType.FindSnapshot,
     };
@@ -645,7 +647,7 @@ class CalendarManagerStoreClass<T extends  BaseData<T>,
   private convertDocumentToSnapshot(document: Document<T>): Snapshot<T, K> {
    
     // Utility function to ensure documentData matches type T
-    function castDocumentData<T extends  BaseData<T>>(documentData: any): T {
+    function castDocumentData<T extends  BaseData<any>>(documentData: any): T {
         return documentData as T;
       }
 

@@ -1,12 +1,16 @@
 import BackendStructure, {
   backend,
+  backendStructure,
 } from "@/app/configs/appStructure/BackendStructure";
+import { getCurrentAppInfo } from '@/app/components/versions/VersionGenerator';
 import { API_VERSION_HEADER } from "@/app/configs/AppConfig";
 import { RootState } from "../state/redux/slices/RootSlice";
 import Version from "./Version";
 import { DocumentTypeEnum } from "../documents/DocumentGenerator";
-import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+import FrontendStructure, { frontend } from "@/app/configs/appStructure/FrontendStructure";
 import { VersionData } from "./VersionData";
+import getAppPath from 'appPath';
+import { globalState } from 'mobx/dist/internal';
 
 
 interface Versionable {
@@ -39,6 +43,10 @@ export const selectAppVersion = (state: RootState) =>
   state.versionManager.appVersion;
 export const selectDatabaseVersion = (state: RootState) =>
   state.versionManager.databaseVersion;
+
+
+const { versionNumber } = getCurrentAppInfo();
+const projectPath = getAppPath(versionNumber, appVersion);
 
 // Implement the AppVersion interface
 class AppVersionImpl implements AppVersion, Versionable {
@@ -150,21 +158,81 @@ class AppVersionImpl implements AppVersion, Versionable {
   // Example function to retrieve FrontendStructure (returns a promise)
   private getFrontendStructure(): Promise<FrontendStructure> {
     return Promise.resolve({
+
+      id: 0,
+      name: "",
       components: ["Header", "Footer", "Sidebar"],
       layout: "Grid",
-      version: "1.0.0"
+      version: "1.0.0",
+      versions: {
+        backend: backend,
+        frontend: frontend
+      },
+      versionData: {},
+  
+      description: "",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isLatest: false,
+      isPublished: false,
+      publishedAt: null,
+      metadata: {},
+      type: "",
+      path: "",
+      content: "",
+      draft: "",
+      permissions: "",
+      structureHash: "",
+      getStructureHash: "",
+      getStructure: "",
+      frontendVersions: "",
+      getStructureAsArray: "",
+      getStructureChecksum: "",
+      major: "", 
+      minor: "",
+      patch: "",
+      backend: backendStructure,
+      frontend: this.frontendStructure,
     });
   }
 
   // Example function to retrieve BackendStructure (returns a promise)
   private getBackendStructure(): Promise<BackendStructure> {
+    const backendStructure = new BackendStructure(projectPath, globalState);
+    backendStructure.setStructureHash("exampleHash");
+
     return Promise.resolve({
+      // #structureHash,
+      toSecureMetadata, sanitize,
+      major: 1, minor: 0, patch: 0,
       services: ["UserService", "AuthService"],
       databaseSchema: "v1.2",
-      version: "1.0.0"
+      version: "1.0.0",
+      structureHash: "",
+      globalState: {},
+      setDatabaseSchema: (schema: string) => {},
+      getDatabaseSchema: () => "v1.2",
+      addService: (service: string) => {},
+      removeService: (service: string) => {},
+      updateVersion: (version: string) => {},
+      getVersion: () => "1.0.0",
+      getServices: () => ["UserService", "AuthService"],
+      validateStructure: () => true,
+      serializeStructure: () => "",
+      deserializeStructure: (serialized: string) => {},
+      compareStructures: (other: BackendStructure) => true,
+      migrateStructure: (newStructure: BackendStructure) => Promise.resolve(),
+      setServices: "",
+      getStructure: "",
+      getStructureAsArray: "",
+      traverseDirectoryPublic: "",
+      getStructureHash: "",
+      setStructureHash: "",
+      updateStructureHash: "",
+      getStructureHashAndUpdateIfNeeded: "",
+      backendVersions: "",
     });
   }
-
   getAppName(): string {
     return this.appName;
   }

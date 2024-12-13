@@ -1,5 +1,6 @@
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { addSnapshot, mergeSnapshots, snapshotContainer, takeSnapshot } from "@/app/api/SnapshotApi";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import React, { useRef, useState } from "react";
 import { useSnapshotManager } from "../../hooks/useSnapshotManager";
 import useStorageManager from "../../hooks/useStorageManager";
@@ -24,7 +25,7 @@ enum ProjectPhase {
 
 
 // Define Data for the snapshot
-interface ProjectData<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends BaseData {
+interface ProjectData<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends BaseData {
   currentPhase: ProjectPhase;
   tasks: Task<T, K>[];
 }
@@ -57,7 +58,7 @@ const ProjectManager: React.FC<ProjectManagerProps> = async ({ storeProps }) => 
   );
   const snapshotId = await snapshotApi.getSnapshotId(criteria);
   const storeId = await snapshotApi.getSnapshotStoreId(snapshotId); 
-  const operation: SnapshotOperation = {
+  const operation: SnapshotOperation<T, K> = {
     // Provide the required operation details
     operationType: SnapshotOperationType.TaskSnapshotReference
   };

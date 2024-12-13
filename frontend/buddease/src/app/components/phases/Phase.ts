@@ -1,7 +1,11 @@
+import { addPhase } from "@/app/api/ApiPhases";
 import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { FC } from "react";
 import { Lesson } from "../documents/CourseBuilder";
+import { DocumentTypeEnum } from "../documents/DocumentGenerator";
 import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 import { CommonData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
@@ -10,31 +14,48 @@ import { Member } from "../models/teams/TeamMembers";
 import { Progress } from "../models/tracker/ProgressBar";
 import { TagsRecord } from "../snapshots";
 import { DetailsItem } from "../state/stores/DetailsListStore";
+import { useNotification } from "../support/NotificationContext";
 
-interface PhaseData extends BaseData<any> {
+interface PhaseData<
+  T extends BaseData<any> = BaseData<any, any>,
+  K extends T = T,
+> extends BaseData<T, K> {
   // Define any properties specific to phase-related data
+  phaseName?: string;
+  startDate?: Date;
+  endDate?: Date;
 }
 
-interface PhaseMeta {
-  createdBy?: string;
+interface PhaseMeta<
+  T extends PhaseData<any, any> = PhaseData<any, any>,
+  K extends T = T
+> extends StructuredMetadata<T, K> {
+
+  createdBy: string;
   updatedBy?: string;
   archived?: boolean;
+  relatedUsers?: string[];
+  deadline?: Date | string;
+  childIds?: K[];
   [key: string]: any; // Add more metadata as needed
 }
 
+
+type DataWithOmittedFields<T, K, Meta, ExcludedFields extends keyof T = never> = Omit<Data<T, K, Meta>, ExcludedFields>;
+
 // Define a type for a phase
 export interface Phase<
-  T extends PhaseData = PhaseData,
+  T extends PhaseData<BaseData<any, any>> = PhaseData<BaseData<any, any>>,
+  K extends T = T,
   Meta extends PhaseMeta = PhaseMeta
-  >
-  extends CommonData<T, K> {
-  id: string;
+  > extends CommonData<T, K, Meta> {
+    id: string;
   index?: number;
   name: string;
   description: string | undefined
   startDate: Date | undefined;
   endDate: Date | undefined;
-  subPhases: string[] | Phase<T, Meta>[];
+  subPhases: string[] | Phase<T, K, Meta>[];
   component?: FC<any>; // Adjust to accept any props
   hooks?: CustomPhaseHooks<T>;
   data?: any;
@@ -46,18 +67,23 @@ export interface Phase<
   status?: string;
   isActive?: boolean;
   type?: string;
+  responsibleUsers?: string[]; // IDs of users responsible for the phase
+  isComplete?: boolean;
   createdAt?: undefined;
   updatedAt?: undefined;
   __typename?: "Phase";
 }
 
-export class PhaseImpl<T extends  BaseData<T>,
-  K extends T = T> implements Phase<T, K> {
+export class PhaseImpl<
+  T extends BaseData<any> = BaseData<any, any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> implements Phase<T, K> {
   id: string = "";
   name: string = "";
-  startDate: Date = new Date();
-  endDate: Date = new Date();
-  subPhases: Phase<T>[] = [];
+  startDate: Date | undefined = undefined; 
+  endDate: Date | undefined = undefined; 
+  subPhases: string[] | Phase<T, K, Meta>[] = [];
   createdBy: string = ""; // Moved to common data
   // component: React.FC = () => <div>Phase Component</div>,
   hooks: CustomPhaseHooks<T> = {
@@ -73,11 +99,17 @@ export class PhaseImpl<T extends  BaseData<T>,
   duration: number = 0; // Duration of the phase in seconds
   lessons: Lesson[] = [];
 
+   // New properties added to fix the error
+   label: Label = {}
+   currentMeta?: PhaseMeta<T, K> = undefined;
+   currentMetadata?: UnifiedMetaDataOptions<T, K> = undefined;
+   date: Date = new Date(); // Default to the current date
+ 
   constructor(
     name: string,
     startDate: Date,
     endDate: Date,
-    subPhases: Phase<T>[],
+    subPhases: string[] | Phase<T, K, Meta>[],
     component: React.FC,
     hooks: CustomPhaseHooks<T>,
     data: any,
@@ -85,7 +117,6 @@ export class PhaseImpl<T extends  BaseData<T>,
     title: string
   ) {
     this.name = name;
-    this.title = title;
     this.startDate = startDate;
     this.endDate = endDate;
     this.subPhases = subPhases;
@@ -93,12 +124,18 @@ export class PhaseImpl<T extends  BaseData<T>,
     this.data = data;
     this.description = description;
     this.component = component;
+    this.title = title;
+
+    if (label) this.label = label;
+    if (currentMeta) this.currentMeta = currentMeta;
+    if (currentMetadata) this.currentMetadata = currentMetadata;
+    if (date) this.date = date;
   }
   component: FC<{}>;
   // tasks?: Task[] | undefined;
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[] | undefined;
-  metadata?: StructuredMetadata<T, K> | undefined;
+  metadata?: UnifiedMetaDataOptions<T, K>
   details?: DetailsItem<any> | undefined; 
   tags?: TagsRecord<T, K> | string[] | undefined;
   categories?: string[] | undefined;
@@ -116,8 +153,10 @@ export class PhaseImpl<T extends  BaseData<T>,
   documentBackup?: string | undefined;
 }
 
-
-export interface CustomPhaseHooks <T extends Data<T>, K extends T = T> {
+export interface CustomPhaseHooks<
+  T extends BaseData<any> = BaseData<any, any>,
+  K extends T = T
+> {
   [x: string]: any;
   canTransitionTo?: (nextPhase: Phase<T>) => boolean;
   handleTransitionTo?: (nextPhase: Phase<T>) => void;
@@ -129,12 +168,13 @@ export interface CustomPhaseHooks <T extends Data<T>, K extends T = T> {
 }
 
 export const customPhaseHooks = {
-  canTransitionTo: (nextPhase: Phase<PhaseData>) => {
+  canTransitionTo: (currentPhase: Phase<PhaseData>, nextPhase: Phase<PhaseData>) => {
     // Ensure the next phase's start date is after the current phase's end date
-  const isValidTransition = currentPhase.endDate < nextPhase.startDate;
+  const isValidTransition = currentPhase.endDate! < nextPhase.startDate!;
   return isValidTransition;
   },
-  handleTransitionTo: async (nextPhase: Phase<PhaseData>) => {
+
+  handleTransitionTo: async (currentPhase: Phase<PhaseData>, nextPhase: Phase<PhaseData>) => {
    // Log the transition
   console.log(`Transitioning from ${currentPhase.name} to ${nextPhase.name}`);
 
@@ -150,14 +190,11 @@ export const customPhaseHooks = {
 
   },
 
-
   resetIdleTimeout: async () => {
     // reset idle timeout
     await Promise.resolve();
   },
 };
-
-
 
 const saveCurrentPhaseData = async (phaseData: Phase): Promise<void> => {
   try {
@@ -182,11 +219,9 @@ const saveCurrentPhaseData = async (phaseData: Phase): Promise<void> => {
   }
 };
 
-
 // Example function to notify of the phase transition
 const notifyTransition = (nextPhase: Phase<PhaseData>): void => {
   console.log(`Now in phase: ${nextPhase.name}`);
 };
-
 
 export type { PhaseData, PhaseMeta };

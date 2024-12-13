@@ -1,22 +1,23 @@
 import { BaseData } from '@/app/components/models/data/Data';
 import { SubscriberCollection } from "@/app/components/snapshots/SnapshotStore";
 import { determineSubscriberType } from "@/app/components/subscriptions/SubscriptionLevel";
-import { subscriptionService } from "../hooks/dynamicHooks/dynamicHooks";
+import { subscriptionServiceInstance } from "../hooks/dynamicHooks/dynamicHooks";
 import { Data } from "../models/data/Data";
 import { Subscriber } from "../users/Subscriber";
 import { Subscription } from "./Subscription";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
  // Helper function to generate a unique event name based on user and snapshot
 const getEventName = (userId: string, snapshotId: string) => `${userId}:${snapshotId}`;
 
 
-function getSubscription<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function getSubscription<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   userId: string,
   snapshotId: string
 ): { subscription: Subscription<T, K> | null; subscriber: Subscriber<T, K> | null } {
   const eventName = getEventName(userId, snapshotId);
-  // Retrieve the subscribers using the subscriptionService's subscribers method
-  const subscribers: SubscriberCollection<T, K> | null = subscriptionService.subscribers<T, K>(userId, snapshotId);
+  // Retrieve the subscribers using the subscriptionServiceInstance's subscribers method
+  const subscribers: SubscriberCollection<T, K> | null = subscriptionServiceInstance.subscribers<T, K>(userId, snapshotId);
 
   if (subscribers && Object.keys(subscribers).length > 0) {
     // Get the first subscriber
@@ -65,8 +66,8 @@ function getSubscription<T extends  BaseData<T>, K extends T = T, Meta extends S
 function removeSubscription(userId: string, snapshotId: string, subscriptionUsage: string,  callback: (data: any) => void) {
   const eventName = getEventName(userId, snapshotId);
 
-  // Use the existing unsubscribe method from subscriptionService
-  subscriptionService.unsubscribe(eventName, subscriptionUsage, callback);
+  // Use the existing unsubscribe method from subscriptionServiceInstance
+  subscriptionServiceInstance.unsubscribe(eventName, subscriptionUsage, callback);
 }
 
 

@@ -1,16 +1,18 @@
 import * as React from  'react' 
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
 import { categorizeNews } from "@/app/components/community/articleKeywords";
 import { ModifiedDate } from "@/app/components/documents/DocType";
 import DocumentBuilder, { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import {
     getDefaultDocumentOptions,
     getDocumentPhase,
+    mapDocumentToProjectPhase
 } from "@/app/components/documents/DocumentOptions";
 import { DocumentSize } from "@/app/components/models/data/StatusType";
 import PhaseManager from "@/app/components/phases/PhaseManager";
 import { generateValidationRulesCode } from "@/app/components/security/validationRulesCode";
 import Version from "@/app/components/versions/Version";
-import { VersionData } from "@/app/components/versions/VersionData";
+import { VersionData, VersionHistory } from "@/app/components/versions/VersionData";
 import fs from "fs";
 import { useState } from "react";
 import PersonaTypeEnum, { PersonaBuilder } from "./PersonaBuilder";
@@ -21,6 +23,16 @@ import { allCategories, AllCategoryValues } from "@/app/components/models/data/D
 import { Phase } from "@/app/components/phases/Phase";
 import { DocumentObject } from '@/app/components/state/redux/slices/DocumentSlice';
 import { buildDocument } from '@/app/components/documents/DocumentBuilderComponent';
+import { T, K, Meta, UserConfigData } from '@/app/components/models/data/dataStoreMethods';
+import { UserData } from '@/app/components/users/User';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { EventManager, EventRecord } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { Content } from '@/app/components/models/content/AddContent';
+import { BaseData } from '@/app/components/models/data/Data';
+import { ProgressPhase } from '@/app/components/models/tracker/ProgressBar';
+import { createMetaState } from '@/app/configs/metadata/createMetadataState';
+import { Snapshot } from '@/app/components/snapshots';
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 
 
 
@@ -28,6 +40,8 @@ type NestedCategoryKeys = 'UserInterface' | 'DataVisualization' | 'Forms' | 'Ana
 
 // Define categories and their associated properties
 interface CategoryProperties {
+  id: string;
+  type: string;
   name: string;
   description: string;
   icon: string;
@@ -50,12 +64,17 @@ interface CategoryProperties {
   brandLogo: string;
   brandColor: string;
   brandMessage: string;
+  chartType: string;
+  dataProperties: string[];
+  formFields: string[];
   componentDescription?: string;  // Add this if it's a direct property
 }
 
 
 
 export const defaultCategoryProperties: CategoryProperties = {
+  id: "default",
+  type: "Category",
   name: "DefaultCategory",
   description: "",
   icon: "",
@@ -78,6 +97,9 @@ export const defaultCategoryProperties: CategoryProperties = {
   brandLogo: "",
   brandColor: "",
   brandMessage: "",
+  chartType: '',
+  dataProperties: [],
+  formFields: []
 };
 
 
@@ -132,8 +154,12 @@ function generateComponent(
   nestedCategory?: NestedCategoryKeys 
 ) {
 
+
+    // Merge the provided properties with the defaults
+    const mergedProperties: CategoryProperties = mergeCategoryProperties(properties);
+
   // Use convertToCategoryProperties to initialize properties with defaults
-  const fullProperties = convertToCategoryProperties(properties);
+  const fullProperties = convertToCategoryProperties(mergedProperties);
 
   let reactCode = "";
 
@@ -142,7 +168,7 @@ function generateComponent(
     // Handle nested categories
     switch (nestedCategory) {
       case "UserInterface":
-        reactCode = generateUserInterfaceComponent(componentName, fullProperties.componentDescription, brand);
+        reactCode = generateUserInterfaceComponent(componentName, fullProperties.componentDescription || '', brand);
         break;
       case "DataVisualization":
         reactCode = generateDataVisualizationComponent(componentName, fullProperties.dataProperties, fullProperties.chartType, brand);
@@ -559,6 +585,11 @@ const defaultCondition = async (idleTimeoutDuration: number): Promise<boolean> =
 };
 
 
+
+
+
+
+
 // Define function to create user scenarios and map out user journey
 async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode: string) {
     const [options, setOptions] = useState(getDefaultDocumentOptions());
@@ -575,8 +606,11 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
         startDate: new Date(),
         endDate: new Date(),
         description: "default_phase description",
-        label: {}, 
-        date: new Date().now(), 
+        label: {
+          text: '',
+          color: ''
+        }, 
+        date: new Date(), 
         createdBy: "User123",
         component: () => <div>Phase 1 Component</div>,
         subPhases: [],
@@ -590,6 +624,25 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
         },
         duration: 1000,
         lessons: [],
+        currentMetadata: {
+          metadataEntries: {},
+          childIds: [],
+          relatedData: [],
+          id: '',
+          apiEndpoint: '',
+          apiKey: undefined,
+          timeout: 0,
+          retryAttempts: 0,
+          name: '',
+          category: '',
+          timestamp: undefined,
+          createdBy: '',
+          tags: [],
+          metadata: undefined,
+          initialState: undefined,
+          meta: undefined,
+          events: undefined
+        }
       },
       // Add more phases as needed
     ];
@@ -625,10 +678,88 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
     // Save component code to file
     fs.writeFileSync(componentFilePath, reactCode);
     
-    
-     // Example usage of buildDocument function
-     const documentObject: DocumentObject = {
-      // Define your document object here
+
+    const content: Content<UserData, UserData, StructuredMetadata<UserData, UserData>> = {
+      // Initialize with appropriate values for UserData and StructuredMetadata
+      metadata: {/* initialize StructuredMetadata properties */},
+      userData: {/* initialize UserData properties */},
+    };    
+    // Example usage of buildDocument function
+    const documentObject: DocumentObject<UserData, K<UserData>, StructuredMetadata<UserData, K<UserData>>> = {
+      createdBy: undefined,
+      alinkColor: '',
+      supportedLanguages: [],
+      bgColor: '',
+      documentURI: '',
+      phaseType: ProgressPhase.Ideation,
+      DocumentData: '',
+      currentScript: null,
+      defaultView: undefined,
+      doctype: null,
+      ownerDocument: null,
+      scrollingElement: null,
+      timeline: undefined,
+      _rev: undefined,
+      id: '',
+      title: '',
+      content: content,
+      createdAt: undefined,
+      updatedBy: '',
+      visibility: undefined,
+      characterSet: '',
+      charset: '',
+      compatMode: '',
+      contentType: '',
+      cookie: '',
+      designMode: '',
+      dir: '',
+      domain: '',
+      inputEncoding: '',
+      lastModified: '',
+      linkColor: '',
+      referrer: '',
+      vlinkColor: '',
+      fullscreen: false,
+      fullscreenEnabled: false,
+      hidden: false,
+      readyState: '',
+      URL: '',
+      rootElement: null,
+      _id: '',
+      documents: [],
+      permissions: undefined,
+      folders: [],
+      options: undefined,
+      folderPath: '',
+      previousMetadata: undefined,
+      currentMetadata: {} as UnifiedMetaDataOptions<UserData<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>, UserData<T, K<T>>,
+        StructuredMetadata<UserData<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>, UserData<T, K<T>>>, never>,
+      accessHistory: [],
+      documentPhase: undefined,
+      version: undefined,
+      versionData: undefined,
+      documentSize: DocumentSize.A4,
+      lastModifiedDate: undefined,
+      lastModifiedBy: '',
+      name: undefined,
+      createdByRenamed: undefined,
+      createdDate: undefined,
+      documentType: '',
+      document: undefined,
+      label: {} as Label,
+      date: undefined,
+      filePathOrUrl: '',
+      uploadedBy: '',
+      tagsOrCategories: '',
+      format: '',
+      uploadedByTeamId: null,
+      uploadedByTeam: null,
+      selectedDocument: null,
+      documentList: [],
+      filteredDocuments: [],
+      searchResults: [],
+      loading: false,
+      error: null
     };
 
     // Call buildDocument function directly
@@ -640,7 +771,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
     // Instead, include the DocumentBuilder component in your JSX markup with the required props:
     const docPermissions = new DocumentPermissions(true, true);
 
-    const documents: DocumentData[] = [
+    const documents: DocumentData<UserData, K<UserData>, StructuredMetadata<UserData, K<UserData>>>[] = [
       {
         id: "1",
         documentSize: DocumentSize.A4,
@@ -663,9 +794,23 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
         createdDate: new Date(),
         status: "active",
         type: "type1",
-        // user: "user1",
-        title: "Document 1",
-        content: "Content for Document 1",
+         title: "Document 1",
+        content: {
+          text: "Content for Document 1",
+          id: "",
+          title: "",
+          description: "",
+          subscriberId: "",
+          
+          category: "",
+          categoryProperties: "",
+          timestamp: "",
+          length: 0,
+         
+          items: [],
+          data: {},
+         
+         } as Content<UserData, K<UserData>, StructuredMetadata<UserData, K<UserData>>>,
         highlights: ["highlighted phrase 1", "tagged item 2"],
         topics: ["topic 1", "topic 2"],
         files: [
@@ -702,11 +847,59 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
         ],
         documentType: "document type 1",
         options: getDefaultDocumentOptions(),
-        documentPhase: getDocumentPhase(document),
+        documentPhase: getDocumentPhase(mapDocumentToProjectPhase(document)),
         keywords: ["keyword 1", "keyword 2"],
         folderPath: "",
-        previousMetadata: {},
-        currentMetadata: {},
+        previousMetadata: createMetaState(
+          "", // id: unique identifier for the metadata
+          "", // apiEndpoint: endpoint for the API to fetch metadata
+          "", // apiKey: authentication key for API requests
+          0, // timeout: request timeout in milliseconds
+          0, // retryAttempts: number of retry attempts in case of failure
+          "", // name: name of the metadata entity
+          "", // category: category for metadata
+          "", // timestamp: timestamp when the metadata was last modified
+          "", // createdBy: user who created the metadata
+          [], // tags: tags associated with the metadata
+          undefined, // metadata: metadata object, can be undefined initially
+          undefined, // initialState: initial state of the metadata, can be undefined
+          {} as Map<string, Snapshot<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never, StructuredMetadata<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never>, never>>, // meta: additional metadata, can be an empty array if not needed
+          { eventRecords: {} }, // events: event manager data, initializing with an empty event record
+          [], // relatedData: related data associated with metadata, empty array for now
+          {} as Version, // version: version information, can be undefined if not applicable
+          {} as VersionHistory, // lastUpdated: last updated version history, it should be provided
+          true, // isActive: boolean flag indicating whether metadata is active or not
+          {}, // config: configuration settings for the metadata, using an empty object
+          [], // permissions: permissions associated with the metadata, empty for now
+          {}, // customFields: any custom fields you might have for metadata, empty object
+          "" // baseUrl: the base URL for API requests, can be an empty string if not used
+        ),
+        
+        currentMetadata: createMetaState(
+          "", // id: unique identifier for the metadata
+          "", // apiEndpoint: endpoint for the API to fetch metadata
+          "", // apiKey: authentication key for API requests
+          0, // timeout: request timeout in milliseconds
+          0, // retryAttempts: number of retry attempts in case of failure
+          "", // name: name of the metadata entity
+          "", // category: category for metadata
+          "", // timestamp: timestamp when the metadata was last modified
+          "", // createdBy: user who created the metadata
+          [], // tags: tags associated with the metadata
+          undefined, // metadata: metadata object, can be undefined initially
+          undefined, // initialState: initial state of the metadata, can be undefined
+          {} as Map<string, Snapshot<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never, StructuredMetadata<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never>, never>>, // meta: additional metadata, can be an empty array if not needed
+          { eventRecords: {} }, // events: event manager data, initializing with an empty event record
+          {} as Version, // version: version information, can be undefined if not applicable
+          {} as VersionHistory, // lastUpdated: last updated version history, it should be provided
+          true, // isActive: boolean flag indicating whether metadata is active or not
+          {}, // config: configuration settings for the metadata, using an empty object
+          [], // permissions: permissions associated with the metadata, empty for now
+          {}, // customFields: any custom fields you might have for metadata, empty object
+          "", // baseUrl: the base URL for API requests, can be an empty string if not used
+          [], // relatedData: related data associated with metadata, empty array for now
+          [], 
+        ),
         accessHistory: [],
         _rev: "1",
         _attachments: {},
@@ -737,7 +930,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
         _routing_values_as_array_of_objects_with_key_and_value: [],
         _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
         filePathOrUrl: "",
-        uploadedBy: 0,
+        uploadedBy: "",
         uploadedAt: "",
         tagsOrCategories: "",
         format: "",
@@ -753,12 +946,17 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
         
       },
       // Add more document data as needed
-    ];
-    // Output or utilize the created user scenarios and mapped user journey
+    ];    // Output or utilize the created user scenarios and mapped user journey
     console.log("User scenarios and user journey mapped successfully.");
 
   // Get properties based on the selected category
   const properties = dataVisualizationProperties[category as keyof CategoryProperties];
+
+    // Ensure properties is of the correct type before passing it
+    const validProperties: Partial<CategoryProperties> | undefined = 
+    typeof properties === "object" && !Array.isArray(properties) && properties !== null
+      ? (properties as Partial<CategoryProperties>)
+      : undefined;
 
   if (!properties) {
     console.error("Invalid category.");
@@ -766,10 +964,10 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
   }
 
   // Generate the component
-  generateComponent(componentName, category, properties, validationRules);
+  generateComponent(componentName, category, validProperties, validationRules);
+
 
 }
-
 
 
 

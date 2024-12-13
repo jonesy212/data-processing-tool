@@ -7,7 +7,7 @@ import { backend } from '../appStructure/BackendStructure';
 import DocumentPermissions from '@/app/components/documents/DocumentPermissions';
 
 
-interface BackendStructureP {
+interface BackendStructure {
   // Define the structure for the backend
   databaseSchema: string;
 

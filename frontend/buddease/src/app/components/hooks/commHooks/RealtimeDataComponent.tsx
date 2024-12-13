@@ -1,5 +1,4 @@
 // RealtimeDataComponent.tsx
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { ExchangeActions } from "@/app/components/actions/ExchangeActions";
 import useRealtimeData, { RealtimeUpdateCallback } from "@/app/components/hooks/commHooks/useRealtimeData";
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
@@ -7,6 +6,7 @@ import { BaseData } from '@/app/components/models/data/Data';
 import { ExchangeData } from "@/app/components/models/data/ExchangeData";
 import { fetchDEXData } from "@/app/components/models/data/fetchExchangeData";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import React, { useEffect } from "react";
 import { RealtimeData, RealtimeDataItem } from "../../models/realtime/RealtimeData"; // Adjust path as needed
 import { Snapshot } from "../../snapshots";
@@ -17,7 +17,7 @@ interface RealtimeDataProps extends RealtimeDataItem  {
   value: string;
 }
 
-const processSnapshotStore = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const processSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotStore: SnapshotStore<T, K>
 ) => {
   Object.keys(snapshotStore).forEach((snapshotId) => {

@@ -1,11 +1,11 @@
 // data/DataActions.ts
+import { BaseData } from '@/app/components/models/data/Data';
 import { createAction, PayloadAction } from "@reduxjs/toolkit";
 import { StatusType } from "../../models/data/StatusType";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { DataProcessing, DataProcessingResult } from "./DataProcessing/DataProcessingService";
-import { BaseData } from '@/app/components/models/data/Data';
 
-export const DataActions = <T extends  BaseData<T>,  K extends T = T>() => ({  // Actions for data processing
+export const DataActions = <T extends  BaseData<any>,  K extends T = T>() => ({  // Actions for data processing
    updateDataFrame: createAction<{ id: string; frame: any }>('data/updateDataFrame'),
    deleteDataFrame: createAction<{ id: string }>('data/deleteDataFrame'),
    updateDataTitle: createAction<{ id: string; title: string }>('data/updateDataTitle'),

@@ -1,11 +1,11 @@
 // subscriberApi.ts 
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Subscriber } from "../components/users/Subscriber";
 import axiosInstance from "./axiosInstance";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
-export const getSubscriberId = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(subscriber: Subscriber<T, K>) => subscriber.id
-export const getSubscribersAPI = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<Subscriber<T, K>[]> => {
+export const getSubscriberId = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(subscriber: Subscriber<T, K>) => subscriber.id
+export const getSubscribersAPI = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<Subscriber<T, K>[]> => {
   try {
     const response = await axiosInstance.get("/subscribers");
     return response.data;
@@ -17,7 +17,7 @@ export const getSubscribersAPI = async <T extends  BaseData<T>, K extends T = T,
 
 
 
-export const getSubscriberById = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(subscriberId: string): Promise<Subscriber<T, K>> => {
+export const getSubscriberById = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(subscriberId: string): Promise<Subscriber<T, K>> => {
   try {
     const response = await axiosInstance.get("/subscribers/" + subscriberId);
     return response.data;

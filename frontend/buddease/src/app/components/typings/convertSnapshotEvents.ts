@@ -1,10 +1,11 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CombinedEvents } from '../hooks/useSnapshotManager';
 import { SnapshotEvents } from '../snapshots/SnapshotEvents';
 import CalendarManagerStoreClass from '../state/stores/CalendarEvent';
 
 // convertSnapshotEvents.ts
-function convertEventsToRecord<T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertEventsToRecord<T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     events: (SnapshotEvents<T, K> & CombinedEvents<T, K>) | undefined
   ): Record<string, CalendarManagerStoreClass<T, K>[]> {
     if (!events) {

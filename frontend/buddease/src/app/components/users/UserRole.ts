@@ -1,6 +1,8 @@
+import { UserRoleEnum } from "./UserRoles";
+
 // UserRole.ts
 export interface UserRole {
-  role: string;
+  roleType: string | UserRole | UserRoleEnum;
   responsibilities: string[];
   permissions: string[];
   positions: { title: string; level: number }[]; // Define positions as an array of objects

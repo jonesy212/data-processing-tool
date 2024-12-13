@@ -4,6 +4,10 @@ import { logData } from '../notifications/NotificationService';
 import { notificationStoreInstance } from '../state/stores/NotificationStore';
 import { NotificationData } from './NofiticationsSlice';
 import { NotificationContextProps, NotificationType, NotificationTypeEnum } from './NotificationContext';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { title } from 'process';
+import { BaseData } from '../models/data/Data';
+import { useMeta } from '@/app/configs/useMeta';
 
 export const notificationStore = notificationStoreInstance
 export const notificationData: NotificationData[] = [];
@@ -23,12 +27,16 @@ const generateNotificationMessage = (type: string, userName?: string | number): 
   }
 };
 
-export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
+export const NotificationProvider: React.FC<{ children: ReactNode }> = <
+  T extends BaseData<any> = BaseData<any, any>,
+  K extends T = T
+>({
   children,
 }) => {
-
+  const area = 'notificationProvider'
   const [notifications, setNotifications] = useState <NotificationData[]>([]);
   const [duration, setDuration] = useState<number>(3000);  // Default duration
+  const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
 
   const sendNotification = (
     type: string,
@@ -58,6 +66,16 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
       host: true, 
       participants: [],
       teamMemberId: "",
+      title: "", 
+      meta: {} as BaseData<any, any, StructuredMetadata<any, any>>, 
+      childIds: [],
+      relatedData: [], 
+      currentMetadata: {
+        area: "notificationProvider", 
+        currentMeta: currentMeta, 
+        metadataEntries: {},
+      },
+      major: 1, minor: 0, patch: 0, currentMeta: {},
     });
   };
 
@@ -94,7 +112,10 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = ({
             rsvpStatus: 'yes',
             host: undefined,
             participants: [],
-            teamMemberId: ''
+            teamMemberId: '',
+            title, meta, major, minor,
+            patch, currentMeta, currentMetadata,
+            
           });
           console.log(`Notification: ${message}`);
           return Promise.resolve();

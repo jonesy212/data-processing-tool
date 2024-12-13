@@ -1,7 +1,7 @@
 // components/BroswerCheck.tsx
 import React from 'react';
 
-interface BrowswerCheckProps {
+interface BrowserCheckProps {
   browsers: string[];
 }
 

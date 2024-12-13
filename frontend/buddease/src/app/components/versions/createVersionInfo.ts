@@ -1,3 +1,4 @@
+import { backend, backendStructure } from "@/app/configs/appStructure/BackendStructure";
 import DocumentPermissions from "../documents/DocumentPermissions";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
@@ -6,6 +7,23 @@ import SnapshotStore from "../snapshots/SnapshotStore";
 import { convertSnapshotContainerToStore } from "../typings/YourSpecificSnapshotType";
 import Version, { VersionImpl } from "./Version";
 import { VersionData, VersionHistory } from "./VersionData";
+import { frontend, frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
+import { T, K } from "../models/data/dataStoreMethods";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+
+
+
+// Default reusable data
+const defaultData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
+  id: 'default-id', // Replace with a unique identifier logic if needed
+  category: 'default-category',
+  subtasks: [],
+  actions: [],
+  // Add other required fields as per your `Data` interface
+};
+
+
+
 
 const createVersionInfo = (versionData: string | VersionData): Version => {
     const docPermissions = new DocumentPermissions(true, true);
@@ -14,6 +32,10 @@ const createVersionInfo = (versionData: string | VersionData): Version => {
   const defaultVersionInfo = {
     id: 0,
 
+    major: 0,
+    minor: 0,
+    patch: 0,
+    structureData: "",
 
     source: "",
     status: "",
@@ -23,12 +45,11 @@ const createVersionInfo = (versionData: string | VersionData): Version => {
     workspaceName: "",
     workspaceType: "",
     workspaceUrl: "",
-    workspaceViewers: "",
+    workspaceViewers: [],
    
-    workspaceAdmins: "",
-    workspaceMembers: "",
+    workspaceAdmins: [],
+    workspaceMembers: [],
    
-
     versionNumber: typeof versionData === 'string' ? versionData : '0.0.0',
     appVersion: '1.0.0',
     description: 'Default version',
@@ -84,8 +105,14 @@ const createVersionInfo = (versionData: string | VersionData): Version => {
     reactions: [],
     changes: [],
     attachments: [],
-  };
-  if (typeof versionData !== 'string') {
+    buildVersions: {
+      data: defaultData,
+      backend: backendStructure,
+      frontend: frontendStructure
+    },
+    isActive: true,
+    releaseDate: undefined,
+  };  if (typeof versionData !== 'string') {
     return new VersionImpl({
       ...defaultVersionInfo,
       versionData: [versionData], // Use the provided VersionData
@@ -99,7 +126,7 @@ const createVersionInfo = (versionData: string | VersionData): Version => {
       lockedBy: null,
       lockedAt: null,
       isArchived: false,
-      archivedBy: null,
+      archivedBy: '',
       archivedAt: null,
       tags: {},
       categories: [],
@@ -118,7 +145,12 @@ const createVersionInfo = (versionData: string | VersionData): Version => {
       workspaceUrl: '',
       workspaceViewers: [],
       workspaceAdmins: [],
-      workspaceMembers: []
+      workspaceMembers: [],
+      buildVersions: {
+        data: {}, backend: backendStructure, frontend: frontendStructure
+      },
+      isActive: false,
+      releaseDate: new Date() || ""
     });
   }
 
@@ -186,7 +218,7 @@ export const handleSnapshot = (
     return Promise.resolve(processedSnapshot);
   } catch (error) {
     console.error("Error in handleSnapshot: ", error);
-    return null;
+    return Promise.resolve(null);
   }
 };
 

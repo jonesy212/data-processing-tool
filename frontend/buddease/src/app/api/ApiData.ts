@@ -1,5 +1,6 @@
 // ApiData.ts
 // import { endpoints } from './ApiEndpoints';
+import { T , K, Meta } from "@/app/components/models/data/dataStoreMethods";
 
 import { fetchUserIdsFromDatabase } from "../api/ApiDatabase";
 import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
@@ -16,6 +17,7 @@ import headersConfig from './headers/HeadersConfig';
 import NotificationStore from '../components/state/stores/NotificationStore';
 import { notificationStore } from '../components/support/NotificationProvider';
 import { endpoints } from './endpointConfigurations';
+import { StructuredMetadata } from "../configs/StructuredMetadata";
 // Define the API base URL
 const { data: API_BASE_URL } = endpoints;
 export let setDynamicData: React.Dispatch<React.SetStateAction<any>>; // Define setDynamicData globally
@@ -63,7 +65,7 @@ const handleApiErrorAndNotify = (
 
 
 
-const fetchData = async (endpoint: string, id: number): Promise<{ data: YourResponseType } | null> => {
+const fetchData = async (endpoint: string, id: number): Promise<{ data: YourResponseType<T, K<T>, StructuredMetadata<T, K<T>>> } | null> => {
   try {
     const response = await fetch(endpoint);
 

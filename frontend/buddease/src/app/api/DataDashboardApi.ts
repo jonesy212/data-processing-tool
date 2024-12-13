@@ -1,24 +1,42 @@
+import  axiosInstance from '@/app/api/axiosInstance';
+import { DeviceDimensions } from './../components/models/display/DeviceDimensions';
 // dataDashboardApi.ts
-import axios from 'axios';
+
 
 const BASE_URL = '/api/dataframe'; // Update with your actual API base URL
 
-export const getDataFrameInfo = async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/info`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
-};
 
-export const sortDataFrame = async (columns: string[], ascending: boolean[]) => {
+export const getDataFrameInfo = async (deviceDimensions?: DeviceDimensions) => {
   try {
-    const response = await axios.get(`${BASE_URL}/sort`, {
-      params: { columns, ascending },
+    const response = await axiosInstance.get(`/api/dataframe/info`, {
+      params: {
+        width: deviceDimensions?.width,
+        height: deviceDimensions?.height,
+      },
     });
     return response.data;
   } catch (error) {
     throw error;
   }
 };
+
+export const sortDataFrame = async (
+  columns: string[],
+  ascending: boolean[],
+  deviceDimensions?: DeviceDimensions
+) => {
+  try {
+    const response = await axiosInstance.get(`/api/dataframe/sort`, {
+      params: {
+        columns,
+        ascending,
+        width: deviceDimensions?.width,
+        height: deviceDimensions?.height,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+

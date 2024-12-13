@@ -17,8 +17,6 @@ const { notify } = useNotification();
 const { handleError } = useErrorHandling(); // Use useErrorHandling for error handling
 
 
-
-
 type UploadResult = { error: Error } | { uploadedFile: CustomFile };
 
 

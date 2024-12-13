@@ -15,8 +15,8 @@ interface ContentData {
   stroke?: string;
   strokeWidth?: number;
   fillColor?: string;
-  flippedX?: boolean;
-  flippedY?: boolean;
+  isFlippedX?: boolean;
+  isFlippedY?: boolean;
   x?: number;
   y?: number;
 }
@@ -105,8 +105,8 @@ const ContentItemComponent: React.FC<ContentItemProps> = ({
 };
 
 export default ContentItemComponent;
+export { isTagObject };
 export type { ContentItem };
-export {isTagObject}
 
 
 

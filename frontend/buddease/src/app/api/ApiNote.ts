@@ -76,7 +76,7 @@ type SearchNotesResponse = {
 };
 
 interface Note<
-  T extends  BaseData<T>, 
+  T extends  BaseData<any>, 
   K extends T = T, 
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   id: number;
@@ -91,7 +91,7 @@ interface Note<
   options: any;
   folderPath: string;
   createdAt: Date | undefined;
-  createdBy?: string
+  createdBy: string
   updatedAt: Date | undefined;
   tags: Tag<T, K>[];
   previousMetadata: string;
@@ -409,9 +409,8 @@ export const searchNotesAPI = async (
     const searchNotesEndpoint = `/notes/search?query=${encodeURIComponent(
       searchQuery
     )}`;
-    const response = await axiosInstance.get<YourResponseType>(
-      searchNotesEndpoint
-    );
+    const response = await axiosInstance.get<YourResponseType<NoteData, NoteData, StructuredMetadata<NoteData, NoteData>>
+    >(searchNotesEndpoint);
 
     // Ensure that response data matches SearchNotesResponse type
     const responseData: SearchNotesResponse = response.data;
@@ -464,7 +463,7 @@ export const filterNotesAPI = async (
 };
 
 export const searchNotes = async <
-  T extends  BaseData<T>,
+  T extends  BaseData<any>,
   K extends T = T>(
     keyword: string
   ): Promise<Note<T, K>[]> => {

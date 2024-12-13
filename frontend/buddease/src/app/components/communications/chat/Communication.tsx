@@ -6,7 +6,7 @@ import { User } from "@/app/components/users/User";
 
 
 // Fix the Sender type with the correct role type
-interface Sender extends User {
+interface Sender extends Partial<User> {
   id: string;
   tags: string[];
   isUserMessage: boolean;

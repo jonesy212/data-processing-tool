@@ -1,7 +1,7 @@
 import { createSnapshot } from '@/app/api/SnapshotApi';
 import { endpoints } from '@/app/api/ApiEndpoints';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
-import axios from 'axios';
+import axiosInstance from "@/app/components/security/csrfToken";
 import { BaseReport, FinancialReport, ReportOptions,
   TechnicalReport, ResearchReport,
   AddReportBase
@@ -27,55 +27,29 @@ interface AddReport extends AddReportBase {
   researchFindings?: ResearchFindings;
   experimentDate?: Date;
 }
+
 export const processReports = (reports: AddReport[]): void => {
   reports.forEach(report => {
-    // Use type guards to process each report type
-    if (isFinancialReport(report)) {
+    const reportType = report.reportType ?? "unknown";
+
+    if (reportType === "financial") {
       console.log("Processing Financial Report:", report.title);
-      processFinancialMetrics(report.financialMetrics);
-
-      // Convert to Snapshot-compatible format
-      const snapshot = createSnapshotInstance(
-        report.id.toString(),              // snapshotId
-        report,                            // data
-        report.category ?? "Financial",    // category
-        null,                              // snapshotStore
-        null,                              // snapshotStoreConfig
-        null,                              // snapshotManager
-        undefined                          // storeProps
+      processFinancialMetrics((report as FinancialReport).financialMetrics);
+      saveToSnapshotStore(
+        createSnapshotInstance(report.id.toString(), report, report.category ?? "Financial")
       );
-
-      saveToSnapshotStore(snapshot);
-    } else if (isTechnicalReport(report)) {
+    } else if (reportType === "technical") {
       console.log("Processing Technical Report:", report.title);
-      processTechnicalSpecifications(report.technicalSpecifications);
-
-      const snapshot = createSnapshotInstance(
-        report.id.toString(),
-        report,
-        report.category ?? "Technical",
-        null,
-        null,
-        null,
-        undefined
+      processTechnicalSpecifications((report as TechnicalReport).technicalSpecifications);
+      saveToSnapshotStore(
+        createSnapshotInstance(report.id.toString(), report, report.category ?? "Technical")
       );
-
-      saveToSnapshotStore(snapshot);
-    } else if (isResearchReport(report)) {
+    } else if (reportType === "research") {
       console.log("Processing Research Report:", report.title);
-      analyzeResearchFindings(report.researchFindings);
-
-      const snapshot = createSnapshotInstance(
-        report.id.toString(),
-        report,
-        report.category ?? "Research",
-        null,
-        null,
-        null,
-        undefined
+      analyzeResearchFindings((report as ResearchReport).researchFindings);
+      saveToSnapshotStore(
+        createSnapshotInstance(report.id.toString(), report, report.category ?? "Research")
       );
-
-      saveToSnapshotStore(snapshot);
     } else {
       console.warn("Unknown report type:", report.title);
     }
@@ -85,18 +59,30 @@ export const processReports = (reports: AddReport[]): void => {
 
 
 
-// Define saveReportSnapshot to include the report and reportType as additional properties
 const saveReportSnapshot = (report: AddReportType, reportType: string): void => {
-  // Define the snapshot data for the report
-  const snapshotData: Snapshot<AddReportType> = {
-    id: generateUniqueId(), // Assuming you have a utility function for unique IDs
-    data: report,
+  // Generate a base snapshot using createSnapshotInstance
+  const baseSnapshot = createSnapshotInstance(
+    generateUniqueId(),     // Snapshot ID
+    report,                 // Report data
+    report.category ?? "DefaultCategory", // Category
+    null,                   // SnapshotStore (or other related objects)
+    null,                   // SnapshotStoreConfig
+    null,                   // SnapshotManager
+    { reportType }          // Add the reportType or other properties as needed
+  );
+
+  // Now, spread the baseSnapshot and add custom properties (like `id`)
+  const snapshotData = {
+    ...baseSnapshot,          // Spread the base snapshot to retain required properties
+    id: generateUniqueId(),   // Override the ID if needed
+    // Add other properties specific to your use case, such as `reportType`
+    reportType,               // Add the reportType (or other properties)
   };
 
-  // Create a snapshot with additional properties for the report
-  const snapshot = createSnapshot(snapshotData, { reportType });
-  
-  // Save the created snapshot to the SnapshotStore
+  // Create a snapshot using the final snapshot data
+  const snapshot = createSnapshot(snapshotData);
+
+  // Save the snapshot to the SnapshotStore
   saveToSnapshotStore(snapshot);
 };
 
@@ -161,3 +147,6 @@ export const removeReport = async (reportId: number): Promise<void> => {
     throw error;
   }
 };
+
+
+export type { AddReport }

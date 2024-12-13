@@ -1,3 +1,5 @@
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData } from '@/app/components/models/data/Data';
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { DocumentOptions } from "../../documents/DocumentOptions";
 import { Task } from "../../models/tasks/Task";
@@ -6,8 +8,6 @@ import { TeamMember } from "../../models/teams/TeamMembers";
 import { Project } from "../../projects/Project";
 import { ClientConfig } from "../../database/Client";
 import { DocumentSize } from "../../models/data/StatusType";
-
-
 
 // FLUENCE_API_KEY EXPORT
 export const fluenceApiKey = process.env.FLUENCE_API_KEY;
@@ -131,7 +131,12 @@ export interface DappProps {
   // Additional props as needed
 }
 
-export interface DAppAdapterConfig<T extends DappProps> {
+export interface DAppAdapterConfig<
+  T extends DappProps = DappProps,          // Default to DappProps, can be extended
+  K = Extract<T, BaseData<any>>,     // Optional BaseData or related config
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Metadata
+  ExcludedFields extends keyof T = never    // Excluded fields for customization
+> {
   // Common properties for DAppAdapter configuration
   appName: string;
   appVersion: string;

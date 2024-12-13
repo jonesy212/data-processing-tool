@@ -1,6 +1,7 @@
 import Milestone, {
   ProductMilestone,
 } from "@/app/components/calendar/CalendarSlice";
+import { Draft, produce  } from "immer";
 import { StatusType } from "@/app/components/models/data/StatusType";
 import { Task } from "@/app/components/models/tasks/Task";
 import { Team } from "@/app/components/models/teams/Team";
@@ -21,15 +22,16 @@ import { CustomApp } from "@/app/components/web3/dAppAdapter/DApp";
 import ProjectProgress from '../../../projects/projectManagement/ProjectProgress';
 
 interface ProjectState {
-  project: WritableDraft<Project> | null;
-  projects: WritableDraft<Project[]>;
+  project: Project | null;
+  projects: Project[];
   
   loading: boolean;
   error: string | null;
-  currentProject: WritableDraft<Project> | null;
-  selectedProject: WritableDraft<Project> | null
-  projectFeedback: ProjectFeedback[] | null
+  currentProject: Project | null;
+  selectedProject: Project | null;
+  projectFeedback: ProjectFeedback[] | null;
 }
+
 
 interface Deadline {
   id: string;
@@ -129,9 +131,10 @@ export const useProjectManagerSlice = createSlice({
       state.error = null;
     },
 
-    fetchProjectSuccess(state, action: PayloadAction<WritableDraft<Project>>) {
+
+    fetchProjectSuccess(state, action: PayloadAction<Project>) {
       state.loading = false;
-      state.project = action.payload;
+      state.project = produce(action.payload, (draft: Draft<Project>) => draft); // Specify the type of draft
     },
 
     fetchProjectFailure(state, action: PayloadAction<string>) {
@@ -139,97 +142,64 @@ export const useProjectManagerSlice = createSlice({
       state.error = action.payload;
     },
 
-    addProject(state, action: PayloadAction<WritableDraft<Project>>) {
-      state.projects.push(action.payload);
+    // Add Project
+    addProject(state, action: PayloadAction<Project>) {
+      state.projects.push(action.payload as WritableDraft<Project>); // Cast to WritableDraft
     },
 
-    updateProject(state, action: PayloadAction<WritableDraft<Project>>) {
-      const index = state.projects.findIndex(
-        (p: any) => p.id === action.payload.id
-      );
+    // Update Project
+    updateProject(state, action: PayloadAction<Project>) {
+      const index = state.projects.findIndex((p) => p.id === action.payload.id);
       if (index !== -1) {
-        state.projects[index] = action.payload;
+        state.projects[index] = action.payload as WritableDraft<Project>; // Cast to WritableDraft
       }
     },
 
-    currentProject(state, action: PayloadAction<WritableDraft<Project>>) {
-      state.project = action.payload;
+    // Set Current Project
+    currentProject(state, action: PayloadAction<Project>) {
+      state.project = action.payload as WritableDraft<Project>; // Cast to WritableDraft
     },
+  
 
     deleteProject(state, action: PayloadAction<string>) {
       state.projects = state.projects.filter((p) => p.id !== action.payload);
     },
 
+    
     assignUserToProject(
       state,
-      action: PayloadAction<{
-        projectId: WritableDraft<string>;
-        userId: WritableDraft<Member>;
-        // memberId: WritableDraft<Member>;
-      }>
+      action: PayloadAction<{ projectId: string; userId: Member }>
     ) {
       const { projectId, userId } = action.payload;
-      const projectIndex = state.projects.findIndex(
-        (project) => project.id === projectId
-      );
-      if (projectIndex !== -1) {
-        const updatedProjects = state.projects.map((project) => {
-          if (project.id === projectId) {
-            // Assuming 'assignUserToProject' adds the user ID to the project's members array
-            return {
-              ...project,
-              members: [...project.members, userId],
-            };
-          }
-          return project;
-        });
-        return { ...state, projects: updatedProjects };
+      const project = state.projects.find((project) => project.id === projectId);
+      if (project) {
+        project.members = [...project.members, userId as WritableDraft<Member>];
       }
-      return state;
     },
 
     removeUserFromProject(
       state,
-      action: PayloadAction<{
-        projectId: string;
-        userId: WritableDraft<Member>;
-      }>
+      action: PayloadAction<{ projectId: string; userId: Member }>
     ) {
-      // Implement logic to remove a user from a project
       const { projectId, userId } = action.payload;
-      const projectIndex = state.projects.findIndex(
-        (project) => project.id === projectId
-      );
-      if (projectIndex !== -1) {
-        const project = state.projects[projectIndex];
-        // Assuming 'removeUserFromProject' removes the user ID from the project's members array
-        project.members = project.members.filter(
-          (memberId) => memberId !== userId
-        );
-        state.projects[projectIndex] = project;
+      const project = state.projects.find((project) => project.id === projectId);
+      if (project) {
+        project.members = project.members.filter((memberId) => memberId !== userId);
       }
     },
 
+    
     setProjectStatus(
       state,
-      action: PayloadAction<{
-        projectId: WritableDraft<string>;
-        status: WritableDraft<
-          StatusType.Pending | StatusType.InProgress | StatusType.Completed
-        >;
-      }>
+      action: PayloadAction<{ projectId: string; status: StatusType }>
     ) {
-      // Implement logic to set the status of a project
       const { projectId, status } = action.payload;
-      const projectIndex = state.projects.findIndex(
-        (project) => project.id === projectId
-      );
-      if (projectIndex !== -1) {
-        const project = state.projects[projectIndex];
+      const project = state.projects.find((project) => project.id === projectId);
+      if (project) {
         project.status = status;
-        state.projects[projectIndex] = project;
       }
     },
+
 
     addTaskToProject(
       state,
@@ -238,33 +208,21 @@ export const useProjectManagerSlice = createSlice({
         task: WritableDraft<Task>;
       }>
     ) {
-      // Implement logic to add a task to a project
       const { projectId, task } = action.payload;
-      const projectIndex = state.projects.findIndex(
-        (project) => project.id === projectId
-      );
-      if (projectIndex !== -1) {
-        const project = state.projects[projectIndex];
-        project.tasks.push(task);
-        state.projects[projectIndex] = project;
+      const project = state.projects.find((project) => project.id === projectId);
+      if (project) {
+        project.tasks.push(task); // Directly modify draft state
       }
     },
 
     removeTaskFromProject(
       state,
-      action: PayloadAction<{ projectId: string; taskId: WritableDraft<Task> }>
+      action: PayloadAction<{ projectId: string; taskId: string }>
     ) {
-      // Implement logic to remove a task from a project
       const { projectId, taskId } = action.payload;
-      const projectIndex = state.projects.findIndex(
-        (project) => project.id === projectId
-      );
-      if (projectIndex !== -1) {
-        const project = state.projects[projectIndex];
-        project.tasks = project.tasks.filter(
-          async (task) => task.id !== String(taskId) 
-        );
-        state.projects[projectIndex] = project;
+      const project = state.projects.find((project) => project.id === projectId);
+      if (project) {
+        project.tasks = project.tasks.filter((task) => task.id !== taskId);
       }
     },
 
@@ -272,17 +230,12 @@ export const useProjectManagerSlice = createSlice({
       state,
       action: PayloadAction<{ projectId: string; task: WritableDraft<Task> }>
     ) {
-      // Implement logic to update a task in a project
       const { projectId, task } = action.payload;
-      const projectIndex = state.projects.findIndex(
-        (project) => project.id === projectId
-      );
-      if (projectIndex !== -1) {
-        const project = state.projects[projectIndex];
+      const project = state.projects.find((project) => project.id === projectId);
+      if (project) {
         const taskIndex = project.tasks.findIndex((t) => t.id === task.id);
         if (taskIndex !== -1) {
-          project.tasks[taskIndex] = task;
-          state.projects[projectIndex] = project;
+          project.tasks[taskIndex] = task; // Update task directly
         }
       }
     },
@@ -295,14 +248,10 @@ export const useProjectManagerSlice = createSlice({
         team: WritableDraft<Team>;
       }>
     ) {
-      const { team, projectId } = action.payload;
-      const projectIndex = state.projects.findIndex(
-        (project) => project.id === projectId
-      );
-      if (projectIndex !== -1) {
-        const project = state.projects[projectIndex];
-        project.teams.push(team);
-        state.projects[projectIndex] = project;
+      const { projectId, team } = action.payload;
+      const project = state.projects.find((project) => project.id === projectId);
+      if (project) {
+        project.teams.push(team); // Add team directly
       }
     },
 
@@ -331,6 +280,8 @@ export const useProjectManagerSlice = createSlice({
         }
       }
     },
+    
+    // Your action definition should ensure you pass the correct types
     defineJobRoles: (
       state,
       action: PayloadAction<{
@@ -340,31 +291,33 @@ export const useProjectManagerSlice = createSlice({
         jobRoles: WritableDraft<JobRole[]>;
       }>
     ) => {
-      const {project, projectId, teamId, jobRoles } = action.payload;
+      const { project, projectId, teamId, jobRoles } = action.payload;
 
       const projectIndex = state.projects.findIndex(
         (project) => project.id === projectId
       );
 
       if (projectIndex !== -1) {
-        const project = state.projects[projectIndex];
-      }
-      const teamIndex = project.teams.findIndex(
-        (team: Team) => team.id === teamId
-      );
-      // Find team
-      if (teamIndex !== -1) {
-        const team = project.teams[teamIndex];
-        // Update team job roles
-        team.jobRoles = jobRoles;
-        // Update project teams
-        project.teams[teamIndex] = team;
+        const draftProject = state.projects[projectIndex];  // This will be a WritableDraft<Project>
+
+        const teamIndex = draftProject.teams.findIndex(
+          (team: Team) => team.id === teamId
+        );
+        
+        if (teamIndex !== -1) {
+          const team = draftProject.teams[teamIndex];
+          // Update team job roles
+          team.jobRoles = jobRoles;
+
+          // Update project teams
+          draftProject.teams[teamIndex] = team;
+        }
+
         // Update project
-        state.projects[projectIndex] = project;
+        state.projects[projectIndex] = draftProject;
       }
 
       updateJobRolesAndDescriptions(state, projectId, teamId, jobRoles, []);
-
     },
 
     createJobDescriptions: (state,
@@ -681,24 +634,14 @@ export const useProjectManagerSlice = createSlice({
         projectId: string;
         metrics: ProjectMetrics;
       }>
-    ): ProjectState {
+    ) {
       const { projectId, metrics } = action.payload;
 
-      // Find the project in the state
-      const projectIndex = state.projects.findIndex(project => project.id === projectId);
-      if (projectIndex !== -1) {
-        const updatedProject = { ...state.projects[projectIndex], metrics };
-
-        return {
-          ...state,
-          projects: [
-            ...state.projects.slice(0, projectIndex),
-            updatedProject,
-            ...state.projects.slice(projectIndex + 1)
-          ]
-        }
+      // Find and update the project in the state
+      const project = state.projects.find(project => project.id === projectId);
+      if (project) {
+        project.metrics = metrics; // Directly modify the draft state
       }
-      return state;
     },
  
     generateRevenue(
@@ -881,7 +824,6 @@ export const useProjectManagerSlice = createSlice({
       return state
     },
 
-    
     assignTasks(
       state,
       action: PayloadAction<{
@@ -890,24 +832,18 @@ export const useProjectManagerSlice = createSlice({
       }>
     ) {
       const { projectId, tasks } = action.payload;
+      
       // Find the project in state
-      const projectIndex = state.projects.findIndex(project => project.id === projectId);
-      if (projectIndex !== -1) {
-        const updatedProject = { ...state.projects[projectIndex] };
-        updatedProject.tasks = tasks;
-        return {
-          ...state,
-          projects: [
-            ...state.projects.slice(0, projectIndex),
-            updatedProject,
-            ...state.projects.slice(projectIndex + 1)
-          ]
-        }
+      const project = state.projects.find(project => project.id === projectId);
+      
+      if (project) {
+        // Mutate the project tasks directly
+        project.tasks = tasks.map((task) => task as WritableDraft<Task>); // Cast each task to WritableDraft
       }
-      return state
+    
+      return state; // `immer` automatically handles state updates
     },
-
-
+    
     scheduleMeetings(
       state,
       action: PayloadAction<{
@@ -1341,56 +1277,38 @@ export const useProjectManagerSlice = createSlice({
       state,
       action: PayloadAction<{
         projectId: string;
-        deadlineId: string
+        deadlineId: string;
       }>
-    ): WritableDraft<ProjectState> => {
-      const { projectId, deadlineId } = action.payload
-      const projectIndex = state.projects.findIndex(project => project.id === projectId);
-      if (projectIndex !== -1) {
-        const updatedProject = { ...state.projects[projectIndex] };
-        // Remove the deadline with the specified ID
-        updatedProject.deadlines = updatedProject.deadlines.filter((deadline: Deadline) => deadline.id !== deadlineId);
-        return {
-          ...state,
-          projects: [
-            ...state.projects.slice(0, projectIndex),
-            updatedProject,
-            ...state.projects.slice(projectIndex + 1),
-            // Remove the deadline with the specified ID
-            updatedProject.deadlines = updatedProject.deadlines.filter((deadline: Deadline) => deadline.id !== deadlineId),
+    ) => {
+      const { projectId, deadlineId } = action.payload;
+      const project = state.projects.find(project => project.id === projectId);
 
-          
-          ]
-        }
-        }
-      return state
+      if (project) {
+        // Directly mutate the project deadlines
+        project.deadlines = project.deadlines.filter((deadline: Deadline) => deadline.id !== deadlineId);
+      }
     },
 
 
 
 
     getProjectDetails: (
-      state: WritableDraft<ProjectState>,
+      state,
       action: PayloadAction<string>
-    ): WritableDraft<ProjectState> => {
+    ) => {
       const projectId = action.payload;
       const project = state.projects.find(
         (project) => project.id === projectId
       );
       if (project) {
-        // Update both currentProject and selectedProject
-        return { 
-          ...state, 
-          currentProject: project.id === state.currentProject?.id ? state.currentProject : project,
-          selectedProject: project
-        };
+        state.currentProject = project.id === state.currentProject?.id ? state.currentProject : project;
+        state.selectedProject = project;
       }
-      return state;
     },
 
-    getProjectList: (state: WritableDraft<ProjectState>): WritableDraft<ProjectState> => {
-      const projects = state.projects || [];
-      return { ...state, projects };
+    getProjectList: (state) => {
+      // No need to return anything as we are not changing state structure
+      state.projects = state.projects || [];
     },
     
     createMilestone(

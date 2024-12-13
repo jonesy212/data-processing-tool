@@ -252,8 +252,15 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
     ANALYZE_DATA_SUCCESS: "Data analysis started successfully",
     ANALYZE_DATA_ERROR: "Error starting data analysis. Please try again",
       FETCH_ANALYSIS_RESULTS_ERROR: "Error fetching data analysis results. Please try again",
+      
     // Add more messages for the DataAnalysis type
     // You can customize the messages based on your application's needs
+  },
+
+
+  VersionData: {
+    FETCH_VERSION_DATA_SUCCESS: "Version data fetched successfully",
+    FETCH_VERSION_DATA_ERROR: "Error fetching version data. Please try again",
   },
 
   Details: {

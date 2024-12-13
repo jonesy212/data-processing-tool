@@ -45,9 +45,8 @@ class DocumentVersioning {
   }
 
   logVersionChange(documentName: string, newVersion: number): void {
-    Logger.log(`Version of document '${documentName}' updated to ${newVersion}`);
+    Logger.log('Version Change', `Version of document '${documentName}' updated to ${newVersion}`);
   }
-
   generateNewVersion(documentName: string, newData: any): void {
     try {
       if (fs) { // Check if 'fs' is available (server-side)
@@ -80,19 +79,18 @@ class DocumentVersioning {
   
         // Compare the contents of the documents
         if (data1 === data2) {
-          Logger.log(`Version ${version1} and Version ${version2} of document '${documentName}' are identical.`);
+          Logger.log('Version Comparison', `Version ${version1} and Version ${version2} of document '${documentName}' are identical.`);
         } else {
-          Logger.log(`Version ${version1} and Version ${version2} of document '${documentName}' are different.`);
+          Logger.log('Version Comparison', `Version ${version1} and Version ${version2} of document '${documentName}' are different.`);
         }
       } else {
-        Logger.error('File system module (fs) is not available. Unable to compare versions.');
+        Logger.error('Version Comparison', 'File system module (fs) is not available. Unable to compare versions.');
       }
     } catch (error) {
-      Logger.error(`Error comparing versions of document '${documentName}': ${error}`);
+      Logger.error('Version Comparison', `Error comparing versions of document '${documentName}': ${error}`);
       throw error;
     }
-  }
-}
+  }}
 
 // Example usage:
 try {

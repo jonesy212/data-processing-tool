@@ -1,80 +1,92 @@
-import { createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
-import { Todo, todoInitialState } from '../../../todos/Todo';
+import { PaginationOptions } from '@/app/pages/searchs/SearchOptions';
+import { FilterCriteria } from '@/app/pages/searchs/FilterCriteria';
+import { createSlice, EntityState, PayloadAction, createEntityAdapter } from '@reduxjs/toolkit';
+import { Todo } from '../../../todos/Todo';
 import { WritableDraft } from '../ReducerGenerator';
 
 export interface TodoManagerState extends EntityState<WritableDraft<Todo>, string>  {
-  todos: WritableDraft<Todo>[];
+  todos: Todo[]; // List of todos
   ids: string[];
-  loading: boolean;
-  error: string | null;
+  selectedTodo: Todo | null; // Currently selected todo
+  loading: boolean; // Indicates whether the app is fetching or processing data
+  error: string | null; // Error message, if any
+  filterCriteria: FilterCriteria | null; // Enhanced filter criteria
+  sortBy?: keyof Todo | null; // Sorting property
+  sortDirection?: "asc" | "desc" | null; // Sorting direction
+  searchQuery?: string | null; // Search query for filtering todos
+  pagination?: PaginationOptions; 
 }
 
 
-// const initialState: TodoManagerState = todoInitialState;
+// Adapter for managing EntityState
+const todoAdapter = createEntityAdapter<Todo>();
+
+// Initial state using the adapter and the new structure
+const todoInitialState: TodoManagerState = {
+  ...todoAdapter.getInitialState(), // Inherits EntityState properties
+  todos: [], // Initialize with an empty list of todos
+  selectedTodo: null, // No selected todo initially
+  loading: false, // Loading state
+  error: null, // Error state
+  filterCriteria: null, // Optional filter criteria
+  sortBy: null, // No initial sorting property
+  sortDirection: null, // No initial sorting direction
+  searchQuery: null, // No initial search query
+  pagination: {
+    currentPage: 1,
+    pageSize: 10,
+    totalItems: 0,
+    totalPages: 0,
+  },
+};
+
 export const useTodoManagerSlice = createSlice({
   name: "todoManager",
   initialState: todoInitialState,
   reducers: {
     toggleTodo: (state, action: PayloadAction<string>) => {
-      const todo = state.entities[action.payload] as WritableDraft<Todo>;
+      const todo = state.entities[action.payload];
       if (todo) {
         todo.done = !todo.done;
       }
     },
-    addTodo: (state, action: PayloadAction<WritableDraft<Todo>>) => {
-      state.entities[action.payload.id] = action.payload;
+    addTodo: (state, action: PayloadAction<Todo>) => {
+      todoAdapter.addOne(state, action.payload);
     },
-
     removeTodo: (state, action: PayloadAction<string>) => {
-      delete state.entities[action.payload];
+      todoAdapter.removeOne(state, action.payload);
     },
     updateTodoTitle: (
       state,
       action: PayloadAction<{ id: string; newTitle: string }>
     ) => {
-      const todo = state.entities[action.payload.id] as WritableDraft<Todo>;
+      const todo = state.entities[action.payload.id];
       if (todo) {
         todo.title = action.payload.newTitle;
       }
     },
     fetchTodosSuccess: (
       state,
-      action: PayloadAction<{ todos: WritableDraft<Todo>[] }>
+      action: PayloadAction<{ todos: Todo[] }>
     ) => {
-      const { todos } = action.payload;
-      todos.forEach((todo: WritableDraft<Todo>) => {
-        state.entities[todo.id] = todo;
-      });
+      todoAdapter.setAll(state, action.payload.todos);
     },
-
     fetchTodosFailure: (state, action: PayloadAction<{ error: string }>) => {
-      // Handle fetch todos failure if needed
-      const { error } = action.payload;
-      
-      // You can update the state to reflect the failure, such as setting an error message
-      state.error = error;
-    
-      // You can also update other parts of the state as needed
-      state.loading = false; // Assuming there's a loading state in your slice
-      
-      // Optionally, you can log the error or perform any additional actions
-      
-      // For example, if you're using Redux Toolkit's `createAsyncThunk`, you can access the `rejectWithValue` callback
-      // and handle the error within the thunk, then dispatch this action with the error payload
-      // return rejectWithValue(error);
+      state.error = action.payload.error;
+      state.loading = false;
     },
-    
     completeAllTodosRequest: (state) => {
-      // Handle complete all todos request if needed
-      // update UI state to indicate that all todos are being completed
-      Object.values(state.entities).forEach((todo: WritableDraft<Todo>) => {
-        todo.done = true;
+      Object.values(state.entities).forEach((todo) => {
+        if (todo) {
+          todo.done = true;
+        }
       });
     },
     completeAllTodosSuccess: (state) => {
-      // Mark all todos as done
-      Object.values(state.entities).forEach((todo: WritableDraft<Todo>) => {
-        todo.done = true;
+      Object.values(state.entities).forEach((todo) => {
+        if (todo) {
+          todo.done = true;
+        }
       });
     },
   },

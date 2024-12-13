@@ -1,4 +1,6 @@
 //UserContext.tsx
+import { ActivityStatus } from '@/app/pages/profile/Profile';
+import { DataSharingPreferences } from '@/app/components/settings/PrivacySettings';
 import { createContext, useContext, useEffect, useState } from "react";
 import { User } from "../components/users/User";
 import UserRoles from "../components/users/UserRoles";
@@ -6,6 +8,7 @@ import useAuthentication from "../components/hooks/useAuthentication";
 import useSocialAuthentication from "../components/hooks/commHooks/useSocialAuthentication";
 import React from "react";
 import ProfileAccessControl from "../pages/profile/Profile";
+import { refreshUI } from '@/app/components/snapshots/refreshUI'
 
 interface UserContextType {
   user: User | null;
@@ -63,9 +66,17 @@ export const useUser = () => {
 const fetchUserDataFromApi = async (): Promise<User> => {
   // Mock API call
   return {
+    bannerUrl: "", 
+    roles: [],
+     storeId: 0, 
+     childIds: [],
+     relatedData: [],
+
     interests: [],
     followers: [],
-    preferences: {},
+    preferences: {
+      refreshUI: refreshUI
+    },
     privacySettings: {
       hidePersonalInfo: true,
       enablePrivacyMode: true,
@@ -81,6 +92,9 @@ const fetchUserDataFromApi = async (): Promise<User> => {
       enableIncognitoMode: false,
       restrictContentSharingToContacts: false,
       restrictContentSharingToGroups: false,
+      isDataSharingEnabled: true, 
+      dataSharing: {} as DataSharingPreferences,
+      thirdPartyTracking: false,
     },
     notifications: {
       channels: {
@@ -93,7 +107,27 @@ const fetchUserDataFromApi = async (): Promise<User> => {
         videoCall: false,
         screenShare: false,
       },
-      types: [],
+      types: {
+        mention: false,
+        reaction: false,
+        follow: false,
+        poke: false,
+        activity: false,
+        thread: false,
+        inviteAccepted: false,
+        task: false,
+        file: false,
+        meeting: false,
+        directMessage: false,
+        announcement: false,
+        reminder: false,
+        project: false,
+        inApp: false,
+        comment: false,
+        like: false,
+        dislike: false,
+        bookmark: false
+      },
       enabled: true,
       notificationType: "all",
     },
@@ -115,6 +149,8 @@ const fetchUserDataFromApi = async (): Promise<User> => {
       isPrivateOnly: false,
       isPrivateOnlyForContacts: false,
       isPrivateOnlyForGroups: false,
+
+      allowMessagesFromFriendContacts: true, activityStatus: ActivityStatus, isAuthorized: false
     },
     activityStatus: "none",
     isAuthorized: true,

@@ -1,7 +1,6 @@
 // DocumentGeneratorMethods.t
 // // Add the namespace declaration for DXT if it's not already imported
 // declare namespace DXT {import { fs } from 'fs';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import calendarApiService from "@/app/api/ApiCalendar";
 import {
     fetchDocumentByIdAPI,
@@ -10,6 +9,7 @@ import {
 } from "@/app/api/ApiDocument";
 import { BaseData } from '@/app/components/models/data/Data';
 import { DatabaseConfig } from "@/app/configs/DatabaseConfig";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { loadDrawingFromDatabase } from "@/app/configs/database/updateDocumentInDatabase";
 import generateDraftJSON from "@/app/generators/generateDraftJSON";
 import fs from "fs";
@@ -51,7 +51,7 @@ import { parseXML } from "./parseXML";
 
 var xl = require("excel4node");
 
-async function loadTextDocumentContent<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(document: DocumentData<T, K>): Promise<string> {
+async function loadTextDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(document: DocumentData<T, K>): Promise<string> {
   let textContent = "";
 
   // Check if content exists in local storage
@@ -87,7 +87,7 @@ function downloadTextContentFromCloud(url: string): string {
   return `Downloaded text content from ${url}`;
 }
 
-async function loadDiagramDocumentContent<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadDiagramDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   documentId: number,
   dataCallback: (data: WritableDraft<DocumentObject<T, K, Meta>>) => void
 ): Promise<string> {
@@ -132,7 +132,7 @@ async function loadDiagramDocumentContent<T extends  BaseData<T>, K extends T = 
   }
 }
 
-async function loadFinancialReportDocumentContent<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadFinancialReportDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   documentId: number,
   dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
 ): Promise<string> {
@@ -163,7 +163,7 @@ async function loadFinancialReportDocumentContent<T extends  BaseData<T>, K exte
   }
 }
 
-async function loadMarketAnalysisDocumentContent<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadMarketAnalysisDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   document: DocumentData<T, K>,
   dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
 ): Promise<string> {
@@ -182,7 +182,7 @@ async function loadMarketAnalysisDocumentContent<T extends  BaseData<T>, K exten
   }
 }
 
-async function loadClientPortfolioDocumentContent<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadClientPortfolioDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   document: DocumentData<T, K>,
   dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
 ): Promise<string> {
@@ -201,7 +201,7 @@ async function loadClientPortfolioDocumentContent<T extends  BaseData<T>, K exte
   }
 }
 
-async function loadSQLDocumentContent<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadSQLDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   document: DocumentPath,
   dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
 ): Promise<string> {
@@ -341,7 +341,7 @@ async function loadSQLDocumentContent<T extends  BaseData<T>, K extends T = T, M
   }
 }
 
-async function loadPDFDocumentContent<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadPDFDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   document: DocumentData<T, K>,
   dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
 ): Promise<string> {
@@ -374,7 +374,7 @@ async function loadPDFDocumentContent<T extends  BaseData<T>, K extends T = T, M
   }
 }
 
-async function loadMarkdownDocumentContent<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadMarkdownDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   document: DocumentPath,
   dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
 ): Promise<string> {
@@ -406,7 +406,7 @@ async function loadCalendarEventsDocumentContent(documentId: number) {
 }
 
 // Function to load content for a drawing document
-async function loadDrawingDocumentContent<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadDrawingDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   documentId: DocumentData<T, K>
 ): Promise<string> {
   try {
@@ -423,7 +423,7 @@ async function loadDrawingDocumentContent<T extends  BaseData<T>, K extends T = 
   }
 }
 
-async function loadPresentationDocumentContent<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadPresentationDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   presentationId: DocumentObject<T, K>
 ): Promise<string> {
   try {
@@ -461,7 +461,7 @@ async function loadDraftDocumentContent(
   }
 }
 
-async function loadGenericDocumentContent<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadGenericDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   documentId: DocumentObject<T, K>,
   format: string,
   dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
@@ -569,7 +569,7 @@ function parsePDFData<T extends object>({
   });
 }
 
-async function loadDocumentContentFromDatabase<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadDocumentContentFromDatabase<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   pdfType: YourPDFType,
   [],
   pdfData: string | Uint8Array,

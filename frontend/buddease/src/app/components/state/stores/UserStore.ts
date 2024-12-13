@@ -3,6 +3,7 @@ import {
   useNotification,
 } from "@/app/components/support/NotificationContext";
 //UserStore.ts
+import { getTasksByUserId } from "@/app/api/TasksApi";
 import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
@@ -12,8 +13,10 @@ import CalendarEventTimingOptimization, {
 } from "../../calendar/CalendarEventTimingOptimization";
 import { Task, tasksDataSource } from "../../models/tasks/Task";
 import { sanitizeData } from "../../security/SanitizationFunctions";
+import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { Todo } from "../../todos/Todo";
-import { User, usersDataSource } from "../../users/User";
+import { User } from "../../users/User";
+import { useSecureUserId } from "../../utils/useSecureUserId";
 import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
 import {
   AssignEventStore,
@@ -21,10 +24,9 @@ import {
   useAssignEventStore,
 } from "./AssignEventStore";
 import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
-import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
-import { useSecureUserId } from "../../utils/useSecureUserId";
-import { getTasksByUserId } from "@/app/api/TasksApi";
 import { useUndoRedoStore } from "./UndoRedoStore";
+
+
 type EventStoreSubset = Pick<
   ReturnType<typeof useAssignEventStore>,
   | "assignedUsers"
@@ -80,7 +82,7 @@ export interface UserStore
   batchFetchUserSnapshotsRequest: (userId: Record<string, User[]>) => void;
   batchFetchUndoRedoSnapshotsRequest: (userId: string) => void;
   fetchUsersByTaskId: (userId: string) => Promise<string>;
-  setDynamicNotificationMessage: (message: string) => void;
+   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
 }
 
 const userManagerStore = (): UserStore => {

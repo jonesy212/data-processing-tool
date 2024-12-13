@@ -4,8 +4,8 @@ function refreshUI(updates: {
     stroke?: { width: number; color: string };
     strokeWidth?: number;
     fillColor?: string;
-    flippedX?: boolean;
-    flippedY?: boolean;
+    isFlippedX?: boolean;
+    isFlippedY?: boolean;
     x?: number;
     y?: number;
   }) {
@@ -23,12 +23,12 @@ function refreshUI(updates: {
       console.log(`Fill color: ${updates.fillColor}`);
     }
   
-    if (updates.flippedX !== undefined) {
-      console.log(`Flipped X: ${updates.flippedX}`);
+    if (updates.isFlippedX !== undefined) {
+      console.log(`Flipped X: ${updates.isFlippedX}`);
     }
   
-    if (updates.flippedY !== undefined) {
-      console.log(`Flipped Y: ${updates.flippedY}`);
+    if (updates.isFlippedY !== undefined) {
+      console.log(`Flipped Y: ${updates.isFlippedY}`);
     }
   
     if (updates.x !== undefined && updates.y !== undefined) {
@@ -41,8 +41,8 @@ function refreshUI(updates: {
     stroke: { width: 1, color: "black" },
     strokeWidth: 1,
     fillColor: "white",
-    flippedX: false,
-    flippedY: false,
+    isFlippedX: false,
+    isFlippedY: false,
     x: 0,
     y: 0,
   
@@ -50,8 +50,8 @@ function refreshUI(updates: {
       stroke?: { width: number; color: string };
       strokeWidth?: number;
       fillColor?: string;
-      flippedX?: boolean;
-      flippedY?: boolean;
+      isFlippedX?: boolean;
+      isFlippedY?: boolean;
       x?: number;
       y?: number;
     }) {
@@ -65,11 +65,11 @@ function refreshUI(updates: {
       if (updates.fillColor !== undefined) {
         this.fillColor = updates.fillColor;
       }
-      if (updates.flippedX !== undefined) {
-        this.flippedX = updates.flippedX;
+      if (updates.isFlippedX !== undefined) {
+        this.isFlippedX = updates.isFlippedX;
       }
-      if (updates.flippedY !== undefined) {
-        this.flippedY = updates.flippedY;
+      if (updates.isFlippedY !== undefined) {
+        this.isFlippedY = updates.isFlippedY;
       }
       if (updates.x !== undefined) {
         this.x = updates.x;
@@ -136,7 +136,7 @@ const refreshUIForFile = (fileId: number) => {
     };
   };
   
-  export { refreshUIForFile, refreshUI };
+  export { refreshUI, refreshUIForFile };
   
     
     
@@ -147,7 +147,7 @@ const refreshUIForFile = (fileId: number) => {
     stroke: { width: 2, color: "red" },
     strokeWidth: 2,
     fillColor: "blue",
-    flippedX: true,
+    isFlippedX: true,
     x: 10,
     y: 20,
   });

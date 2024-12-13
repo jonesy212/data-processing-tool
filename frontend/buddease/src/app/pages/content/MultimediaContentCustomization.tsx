@@ -17,20 +17,38 @@ import { Todo } from "@/app/components/todos/Todo";
 import { AnimatedComponentProps } from "@/app/components/styling/AnimationsAndTansitions";
 import { useNavigate, useNavigation } from "react-router-dom";
 import { isProject, isTask, isTodo } from "@/app/components/libraries/ui/ContentHelpers";
+import { ChildComponentProps } from "../../hooks/ChildComponent";
+import useDeviceDimensions, { DeviceDimensions } from "./DeviceDimensions";
+import { brandingSettings } from "@/app/libraries/theme/BrandingService";
+import ReusableButton from "../../libraries/ui/buttons/ReusableButton";
 
-interface MultimediaContentCustomizationProps {
+interface MultimediaContentCustomizationProps extends ChildComponentProps{
   // Add any necessary props here
   handleAnimationSettingsChange: (settings: AnimatedComponentProps[]) => void;
 }
 
 const MultimediaContentCustomization: React.FC<
   MultimediaContentCustomizationProps
-> = (props) => {
+> = (props ) => {
     // State for managing branding swatches
     const history = useNavigate()
+    const router = useRouter() as ExtendedRouter;
+    const dispatch = useDispatch();
+    const deviceDimensions: DeviceDimensions = useDeviceDimensions();
+
   const [brandingSwatches, setBrandingSwatches] = useState<ColorSwatchProps[]>(
     []
   );
+
+
+  const handleFetchData = async () => {
+    try {
+      const dataFrameInfo = await getDataFrameInfo();
+      console.log("DataFrame Info:", dataFrameInfo);
+    } catch (error) {
+      console.error("Error fetching DataFrame info:", error);
+    }
+  };
 
   // Function to handle branding swatch change
   const handleBrandingSwatchesChange = (swatches: ColorSwatchProps[]) => {
@@ -70,9 +88,23 @@ const MultimediaContentCustomization: React.FC<
   ];
 
   return (
-    <div>
+    <div
+      style={{
+        width: deviceDimensions.width < 768
+          ? "100%"
+          : deviceDimensions.width < 1024
+          ? "80%"
+          : "60%",
+        margin: "auto",
+      }}
+    >
       <h1>Multimedia Content Customization</h1>
 
+      <p>
+        Device Dimensions: {deviceDimensions.width} x {deviceDimensions.height}
+      </p>
+
+      
       {/* Color Palette for Branding */}
       <div>
         <h2>Brand Color Palette:</h2>
@@ -169,6 +201,20 @@ const MultimediaContentCustomization: React.FC<
           }}
         />
       </div>
+      <ReusableButton
+        router={router}
+        brandingSettings={brandingSettings}
+        onClick={handleFetchData} // Replace with ReusableButton
+        label="Fetch DataFrame Info"
+        variant="primary" // Optional: can be customized
+      />
+
+      {/* Adjust layout based on device type */}
+      {deviceDimensions.width < 768 && <p>Rendering Mobile Layout</p>}
+      {deviceDimensions.width >= 768 && deviceDimensions.width < 1024 && (
+        <p>Rendering Tablet Layout</p>
+      )}
+      {deviceDimensions.width >= 1024 && <p>Rendering Desktop Layout</p>}
     </div>
   );
 };

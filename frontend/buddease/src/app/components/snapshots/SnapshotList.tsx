@@ -3,6 +3,7 @@ import { Label } from "@/app/components/projects/branding/BrandingSettings";
 import { createSnapshotInstance } from '@/app/components/snapshots/createSnapshotInstance';
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { User } from "@/app/components/users/User";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { ChatRoom } from "../calendar/CalendarSlice";
@@ -15,14 +16,15 @@ import { createMessage } from "../utils/createMessage";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { useSecureUserId } from '../utils/useSecureUserId';
 
 interface SnapshotItem<
-  T extends  BaseData<T>, 
-  K extends T = T
-> extends Snapshot<T, K> {
+  T extends  BaseData<any>, 
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> extends Snapshot<T, K, Meta> {
   id: string;
-  value: string;
+  // value: string;
   message?: (
     type: NotificationType, 
     content: string, 
@@ -44,7 +46,7 @@ interface SnapshotItem<
 
 
 class SnapshotList<
-  T extends  BaseData<T>, 
+  T extends  BaseData<any>, 
   K extends T = T, 
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   private snapshots: SnapshotItem<T, K>[];
@@ -200,7 +202,7 @@ class SnapshotList<
 
 
 
-const createSnapshotItem = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const createSnapshotItem = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string | null,
   data: T,
   category: symbol | string | Category | undefined,
@@ -223,6 +225,8 @@ const createSnapshotItem = <T extends  BaseData<T>, K extends T = T, Meta extend
     snapshotStoreConfig, // snapshotStoreConfig (pass this argument)
     storeProps         // storeProps (optional)
   );
+
+  const userId = useSecureUserId.toString();
 
   const {     
     type,

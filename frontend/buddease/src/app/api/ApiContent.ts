@@ -238,7 +238,7 @@ const createContentStateFromText = (text: string): any => {
 };
 
  
-const getMetadataForContent = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const getMetadataForContent = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   contentId: string,
   contentState: ContentState // Include contentState in the function parameters
 ): Promise<StructuredMetadata<T, K>> => {

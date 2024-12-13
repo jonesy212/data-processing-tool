@@ -1,7 +1,8 @@
 // applicationUtils.tsx
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
+import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
+import { fetchUserAreaDimensions, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { ApiNotificationsService } from "@/app/api/NotificationsService";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Article } from "@/app/pages/blog/Blog";
 import { AxiosResponse } from "axios";
@@ -9,6 +10,7 @@ import { useDispatch } from "react-redux";
 import * as articleApi from '../../../app/api/articleApi';
 import { sendEmail } from "../communications/email/SendEmail";
 import { sendSMS } from "../communications/sendSMS";
+import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
 import { Content } from "../models/content/AddContent";
 import { BaseData } from "../models/data/Data";
 import { ActivityActionEnum, ActivityTypeEnum, ProjectStateEnum, StatusType } from "../models/data/StatusType";
@@ -25,6 +27,16 @@ import {
 } from "../support/NotificationContext";
 import NotificationManager from "../support/NotificationManager";
 import { useSecureUserId } from "./useSecureUserId";
+import { CalendarEventWithCriteria } from '@/app/pages/searchs/FilterCriteria';
+import { snapshot, SnapshotData, SnapshotStoreOptions, SnapshotStoreProps } from '../snapshots';
+import { useMeta } from '@/app/configs/useMeta';
+import { useMetadata } from '@/app/configs/useMetadata';
+import { useSnapshotManager, CombinedEvents } from '../hooks/useSnapshotManager';
+import { useDataStore } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { createSnapshotInstance } from '../snapshots/createSnapshotInstance';
+import { SnapshotEvents } from '../snapshots/SnapshotEvents';
+import { SubscriberCallbackType } from '../subscriptions/Subscription';
+import { SubscriberCollection } from '../users/SubscriberCollection';
  const dispatch = useDispatch()
 const { notify } = useNotification()
 
@@ -42,12 +54,13 @@ interface LogActivityParams {
 interface TriggerIncentivesParams {
   userId: string;
   incentiveType: string;
-  params?: any;
+  params?:Record<string, unknown>;
+
 }
 
 
-interface AnalyticsEvent<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
-  type: string;
+interface AnalyticsEvent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  event: string | CombinedEvents<T, K> | SnapshotEvents<T, K>,
   snapshot: Snapshot<T, K>; // Include snapshot in the type definition
   date: string;
 }
@@ -63,20 +76,81 @@ const notificationManager = new NotificationManager({
 
 const apiNotificationsService = new ApiNotificationsService(useNotification);
 
-const notifyEventSystem = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+
+function isSnapshotStoreProps<
+  T extends BaseData<any, any, StructuredMetadata<any, any>>,
+  K extends T = T,
+>(obj: any): obj is SnapshotStoreProps<T, K> {
+  return (
+    obj &&
+    typeof obj.storeId === 'string' &&
+    typeof obj.name === 'string' &&
+    typeof obj.version === 'number' &&
+    typeof obj.schema !== 'undefined' &&
+    typeof obj.options !== 'undefined' &&
+    typeof obj.category === 'string' &&
+    typeof obj.config !== 'undefined' &&
+    typeof obj.operation !== 'undefined' &&
+    (obj.expirationDate === undefined || obj.expirationDate instanceof Date) &&
+    typeof obj.payload !== 'undefined' &&
+    typeof obj.callback === 'function' &&
+    typeof obj.endpointCategory === 'string'
+  );
+}
+
+const notifyEventSystem = <
+  T extends BaseData<any> = BaseData<any, any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+>(
   eventType: string,
   eventData: any,
   source: string,
-  event: Event
+  event: Event,
+  storeProps?: SnapshotStoreProps<T, K>
 ) => {
+  const area = fetchUserAreaDimensions().toString()
+  const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+  const currentMetadata: UnifiedMetaDataOptions<T, K> = useMetadata<T, K>(area)
   // Logic to notify the event system
   console.log(`Event '${eventType}' occurred from ${source}. Data:`, eventData);
   // Additional logic to trigger any necessary actions based on the event
 
-  // Create a NotificationData object based on the eventType and eventData
+ // Use the type guard to validate storeProps
+ if (!isSnapshotStoreProps<T, K>(storeProps)) {
+  throw new Error("Invalid or missing storeProps");
+}
+
+const {
+  storeId,
+  name,
+  version,
+  schema,
+  options,
+  category,
+  config,
+  operation,
+  expirationDate,
+  payload,
+  callback,
+  endpointCategory
+} = storeProps 
+
+
+
+// Create a NotificationData object based on the eventType and eventData
   const notificationData: NotificationData = {
-    topics, highlights, files, meta, rsvpStatus, participants, teamMemberId,
-    
+    topics: [],
+    highlights: [],
+    files: [],
+    meta: currentMeta,
+    rsvpStatus: "notResponded",
+    participants: [],
+    teamMemberId: "",
+   
+    currentMeta: currentMeta as unknown as StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
+    currentMetadata: currentMetadata as unknown as UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
+   
     id: UniqueIDGenerator.generateNotificationID(
       {
         message: eventType,
@@ -106,31 +180,81 @@ const notifyEventSystem = <T extends  BaseData<T>, K extends T = T, Meta extends
         rsvpStatus: "yes",
         participants: [],
         teamMemberId: "",
-        getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
-         
-          const snapshotStore = new SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>(storeId, options, config, operation);
-          return Promise.resolve([snapshotStore]);
+        currentMeta: currentMeta as unknown as StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
+        currentMetadata: currentMetadata as unknown as UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
+   
+        getCalendarSnapshotStoreData: function (): Promise<CalendarEventWithCriteria[]> {
+          const snapshotStore = new SnapshotStore<CalendarEventWithCriteria, CalendarEventWithCriteria>({
+            storeId, name,
+            version,
+            schema, 
+            options: options as SnapshotStoreOptions<
+            CalendarEventWithCriteria,
+            CalendarEventWithCriteria,
+            StructuredMetadata<CalendarEventWithCriteria, CalendarEventWithCriteria>
+            >, 
+            category,
+            config: config as SnapshotStoreConfig<
+            CalendarEventWithCriteria,
+            CalendarEventWithCriteria,
+            StructuredMetadata<CalendarEventWithCriteria, CalendarEventWithCriteria>
+            >, 
+            operation,
+            expirationDate,
+            payload,
+            currentMeta,
+            callback,
+            storeProps,
+            endpointCategory
+          });
+        
+          // Return the snapshot store data as CalendarEventWithCriteria[]
+          const calendarSnapshots = snapshotStore.getSnapshotStoreData(snapshotStore,
+            snapshot,
+            snapshotId,
+            snapshotData
+          ).map((snapshot: Snapshot<BaseData<any, any, StructuredMetadata<any, any>>, 
+            BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<any, any>, never>
+          ) => ({
+            ...snapshot, // Spread properties
+            // Add any CalendarEvent-specific fields if necessary
+          })) as CalendarEventWithCriteria[];
+        
+          return Promise.resolve(calendarSnapshots);
         },
-        getData: function (): Promise<Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
-          const snapshot = new Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>(
+        getData: async function (): Promise<
+          Snapshot<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<any, any>, never>
+        > {
+          // Prepare the necessary inputs
+          const snapshotManager = await useSnapshotManager<T, K>(storeId);
+          const snapshotId = await snapshot.store.snapshotId;
+          const eventData: BaseData<any, any, StructuredMetadata<any, any>> = /* your event data */;
+          const category = "EventSystem"; // Your category
+          const storeProps: SnapshotStoreProps<BaseData<any, any>, BaseData<any, any>> = /* your store props */;
+
+          // Create a snapshot instance using createSnapshotInstance
+          const newSnapshot = await createSnapshotInstance<BaseData<any, any>, BaseData<any, any>>(
+            eventData, // data
             {
-              data: eventData,
-              category: "EventSystem",
-              timestamp: new Date(),
-              dataItems: [],
-              newData: eventData,
-              meta: {
+              baseMeta: {
+                // Populate with required metadata
                 events: [],
                 callbacks: [],
                 subscribers: [],
                 eventIds: [],
               },
-              fetchSnapshot: () => Promise.resolve(eventData),
             },
-            "EventSystem"
+            snapshotId,
+            category,
+            undefined, // Assuming no snapshotStore
+            snapshotManager,
+            useDataStore().snapshotStoreConfig,
+            storeProps
           );
-          return Promise.resolve([snapshot]);
+
+          return newSnapshot; // Return the snapshot directly (not an array)
         }
+
       },
 
 
@@ -211,6 +335,8 @@ const notifyEventSystem = <T extends  BaseData<T>, K extends T = T, Meta extends
     rsvpStatus: "no",
     participants: [],
     teamMemberId: "",
+    currentMeta: currentMeta, 
+    currentMetadata: currentMetadata,
     completionMessageLog: {
       timestamp: new Date(),
       level: "info",
@@ -492,7 +618,7 @@ const userId = useSecureUserId()
 const unsubscribe = (
   snapshotId: number,
   unsubscribeDetails: UnsubscribeDetails,
-  callback: SubscriberCallbackType | null
+  callback: SubscriberCallbackType<T, K<T>> | null
 ) => {
   // Log the snapshot unsubscribe action
   console.log(`Unsubscribing user ${unsubscribeDetails.userId} from snapshot ${unsubscribeDetails.snapshotId}`);
@@ -521,10 +647,14 @@ const unsubscribe = (
   }
 };
 
-const triggerEvent = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  event: string,            // Match parameter name with the CombinedEvents interface
-  snapshot: Snapshot<T, K>, // Ensure Snapshot type is used here
-  eventDate: Date
+const triggerEvent = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  event: string | CombinedEvents<T, K> | SnapshotEvents<T, K>,
+  snapshot: Snapshot<T, K>,
+  eventDate: Date,
+  snapshotId: string,
+  subscribers: SubscriberCollection<T, K>,
+  type: string,
+  snapshotData: SnapshotData<T, K>
 ) => {
   // Log the event for debugging purposes
   console.log("Event Triggered:");
@@ -556,7 +686,7 @@ const triggerEvent = <T extends  BaseData<T>, K extends T = T, Meta extends Stru
 };
 
 // Example function to send event data to an analytics service
-const sendEventToAnalyticsService = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const sendEventToAnalyticsService = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   event: AnalyticsEvent<T, K>
 ) => {
   // Replace with actual analytics service logic

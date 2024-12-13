@@ -1,6 +1,6 @@
 // DocumentBuilderComponent.tsx
 import { BaseData } from '@/app/components/models/data/Data';
-import React from 'react';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useDispatch } from 'react-redux';
 import { DocumentObject } from "../state/redux/slices/DocumentSlice";
 import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
@@ -8,7 +8,7 @@ import DocumentBuilder, { saveDocument } from "./DocumentBuilder";
 import { getDefaultDocumentOptions } from "./DocumentOptions";
 const dispatch = useDispatch()
 
-function formatDocument<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function formatDocument<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   documentObject: DocumentObject<T, K>,
   options: DocumentFormattingOptions
 ): DocumentObject<T, K> {
@@ -25,7 +25,7 @@ function validateDocumentType(documentType: string): string | null {
 }
 
 // Define the buildDocument function
-const buildDocument = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const buildDocument = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   options: DocumentFormattingOptions,
   documentObject: DocumentObject<T, K>,
   documentType: string

@@ -1,5 +1,5 @@
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
@@ -7,12 +7,12 @@ import { useDispatch, useSelector } from "react-redux";
 import axiosInstance from "../security/csrfToken";
 import { Snapshot } from "../snapshots";
 import {
-  addEvent,
-  removeAllEvents,
-  removeEvent,
-  selectEventError,
-  selectEventLoading,
-  selectEvents,
+    addEvent,
+    removeAllEvents,
+    removeEvent,
+    selectEventError,
+    selectEventLoading,
+    selectEvents,
 } from "../state/redux/slices/EventSlice";
 import { CustomEventExtension } from "./BaseCustomEvent";
 import { defaultEventStore, EventStore } from "./EventStore";
@@ -20,7 +20,6 @@ import { defaultEventStore, EventStore } from "./EventStore";
 
 
 // Define the thunk actions
-
 const fetchEvents = createAsyncThunk<CustomEventExtension[]>(
   'events/fetchEvents',
   async (_, { rejectWithValue }) => {
@@ -35,10 +34,10 @@ const fetchEvents = createAsyncThunk<CustomEventExtension[]>(
 );
 
 // Define the type for the callback function
-type SnapshotCallback<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = (snapshot: Snapshot<T, K>) => void;
+type SnapshotCallback<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = (snapshot: Snapshot<T, K>) => void;
 
 // Define the type for the subscribers
-interface Subscribers<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface Subscribers<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   [event: string]: SnapshotCallback<T, K>[]; // Keys are event names, values are arrays of callback functions
 }
 
@@ -178,3 +177,4 @@ const EventManager: React.FC<EventManagerProps> = ({
 };
 
 export default EventManager;
+export type { SnapshotCallback }

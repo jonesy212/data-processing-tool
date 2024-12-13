@@ -2,7 +2,7 @@ import { CryptoData, ParsedData } from "../components/crypto/parseData";
 import { SupportedData } from "../components/models/CommonData";
 import { CommonData } from "../components/models/CommonDetails";
 
-const mapParsedDataToCommonData = <T extends SupportedData>(
+const mapParsedDataToCommonData = <T extends SupportedData<T>>(
   parsedData: ParsedData<T>
 ): CommonData<T> => {
   // Get the type name of the data

@@ -1,3 +1,4 @@
+import { BaseData } from '@/app/components/models/data/Data';
 import { handleApiErrorAndNotify } from "@/app/api/ApiData";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import {
@@ -20,21 +21,25 @@ export interface Video extends Data {
   watchLater: boolean;
   tags: string[];
   isActive: boolean;
+  url: string;
   // Add more properties from Data and DataDetails as needed
 }
 
-export interface VideoStore {
-  videos: Record<string, VideoData[]>;
+export interface VideoStore<
+  T extends  BaseData<any>,
+  K extends T = T
+> {
+  videos: Record<string, VideoData<T, K>[]>;
   fetchVideos: () => void;
   addVideo: (video: Video) => void;
   updateVideo: (id: string, updatedVideo: Video) => void;
   deleteVideo: (id: string) => void;
-  getVideoData: (id: string, video: Video) => VideoData | null;
-  getVideosData: (ids: string[], videos: VideoData[]) => Promise<Record<string, VideoData>>
+  getVideoData: (id: string, video: Video) => VideoData<T, K> | null;
+  getVideosData: (ids: string[], videos: VideoData<T, K>[]) => Promise<Record<string, VideoData<T, K>>>
   updateVideoTags: (id: string, tags: string[]) => void;
 }
 
-const useVideoStore = (): VideoStore => {
+const useVideoStore = <T extends BaseData<any>, K extends T = T>(): VideoStore<T, K> => {
 
   const [videos, setVideos] = useState<Record<string, Video[]>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -58,17 +63,17 @@ const useVideoStore = (): VideoStore => {
     }
   };
 
-  const getVideoData = (id: string, video: Video): VideoData => {
+  const getVideoData = (id: string, video: Video): VideoData<T, K> => {
     if (video && video.videoData) {
       return video.videoData;
     }
-    return {} as VideoData;
+    return {} as VideoData<T, K>;
   };
 
   const getVideosData = async (
     ids: string[],
     videos: Video[]
-  ): Promise<Record<string, VideoData>> => {
+  ): Promise<Record<string, VideoData<T, K>>> => {
     try {
       const response = await axiosInstance.get("/videos", {
         params: {
@@ -78,7 +83,7 @@ const useVideoStore = (): VideoStore => {
       });
 
       // Assuming the response data structure is an object where keys are video IDs
-      return response.data as Record<string, VideoData>;
+      return response.data as Record<string, VideoData<T, K>>;
     } catch (error) {
       notify(
         "getVideosData",
@@ -162,8 +167,9 @@ const useVideoStore = (): VideoStore => {
     );
   };
 
-  const store: VideoStore = makeAutoObservable({
+  const store: VideoStore<T, K> = makeAutoObservable({
     videos,
+    video, currentMeta, currentMetadata, date,
     fetchVideos,
     addVideo,
     updateVideo,

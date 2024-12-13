@@ -18,7 +18,7 @@ import {
     useNotification,
 } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import Version from "@/app/components/versions/Version";
+import Version, { version } from "@/app/components/versions/Version";
 import { VersionData } from "@/app/components/versions/VersionData";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
@@ -37,15 +37,18 @@ import TodoImpl, { Todo } from "@/app/components/todos/Todo";
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import getAppPath from "appPath";
 import { ClientInformation } from '@/app/components/database/ClientInformation';
-import { Meta } from '@/app/components/models/data/dataStoreMethods';
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
+import { data } from '@tensorflow/tfjs';
+import { globalState } from 'mobx/dist/internal';
 
 
 const {versionNumber, appVersion} = getCurrentAppInfo()
 const API_BASE_URL = getAppPath(versionNumber, appVersion);
 
 interface DocumentSliceState<
-  T extends  BaseData<T>, 
-  K extends T = T
+  T extends  BaseData<any>, 
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > {
   documentList: DocumentObject<T, K, Meta>[]; // Specify type arguments for DocumentObject
   selectedDocument: DocumentData<T, K, Meta> | null; // Specify type arguments for DocumentData
@@ -82,7 +85,7 @@ interface ArtworkItem {
 
 
 interface DocumentObject<
-    T extends  BaseData<T>,
+    T extends  BaseData,
     K extends T = T,
     Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
   >
@@ -106,11 +109,9 @@ interface ViewTransition {
 }
 
 
-function toObject(document: DocumentObject<T, K, Meta>): object {
+function toObject(document: DocumentObject<T, K<T>, StructuredMetadata<T, K<T>>>): object {
   return { ...document };
 }
-
-
 
 
 const initialState: DocumentObject<BaseData, BaseData> = {
@@ -150,8 +151,8 @@ const initialState: DocumentObject<BaseData, BaseData> = {
   keywords: [],
   options: {} as DocumentOptions,
   folderPath: "",
-  previousMetadata: {} as StructuredMetadata,
-  currentMetadata: {} as StructuredMetadata,
+  previousMetadata: {} as StructuredMetadata<T, K>,
+  currentMetadata: {} as StructuredMetadata<T, K>,
   accessHistory: [],
   folders: [],
   lastModifiedDate: {} as WritableDraft<ModifiedDate>,
@@ -205,7 +206,8 @@ const initialState: DocumentObject<BaseData, BaseData> = {
     data: [],
     draft: false,
     versions: {
-      data: {
+      data: [
+        {
         id: 0,
         parentId: "",
         parentType: "",
@@ -252,9 +254,11 @@ const initialState: DocumentObject<BaseData, BaseData> = {
         timestamp: "",
         user: "",
         comments: []
-      },
-      backend: backendStructure,
-      frontend: frontendStructure,
+      }
+      ],
+      
+    backend: backendStructure,
+    frontend: frontendStructure,
     },
     _structure: {},
     metadata: {
@@ -284,7 +288,7 @@ const initialState: DocumentObject<BaseData, BaseData> = {
         documentId: "doc123",
         draft: false,
         data: [],
-        version: "1.0",
+        version: version,
         timestamp: new Date(),
         user: "",
         comments: [],
@@ -389,7 +393,7 @@ const initialState: DocumentObject<BaseData, BaseData> = {
   _routing_values_as_array_of_objects_with_key_and_value: [],
   _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
   filePathOrUrl: "",
-  uploadedBy: 0,
+  uploadedBy: "",
   uploadedAt: "",
   tagsOrCategories: "",
   format: "",
@@ -540,7 +544,7 @@ function createNewDocument(
           draft: false,
           data: [],
           versionNumber: "1.0",
-          version: "1.0",
+          version: version,
           timestamp: new Date(),
           user: "",
           comments: [],
@@ -586,7 +590,7 @@ function createNewDocument(
       name: "Initial Version",
       url: "https://example.com/initial_version",
       versionNumber: "1.0",
-      version: "1.0",
+      version: version,
       timestamp: new Date(),
       user: "",
       comments: [],

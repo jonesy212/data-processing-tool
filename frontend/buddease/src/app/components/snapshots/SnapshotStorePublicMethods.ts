@@ -1,8 +1,9 @@
+import SubscriberCollection from '@/app/components/snapshots/SnapshotStore';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from "../models/data/Data";
+import { BaseData } from "../models/data/Data";
 import { Snapshot, SnapshotUnion } from "./LocalStorageSnapshotStore";
-import SnapshotStore, { SubscriberCollection } from "./SnapshotStore";
+import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 interface SnapshotStorePublicMethods<
@@ -12,7 +13,7 @@ interface SnapshotStorePublicMethods<
   getSnapshotItems(): Snapshot<T, K>[];
 
   // Method to find the index of a snapshot item
-  findIndex(predicate: (snapshot: SnapshotUnion<T>) => boolean): number;
+  findIndex(predicate: (snapshot: SnapshotUnion<T, K>) => boolean): number;
 
   // Method to splice items from the snapshot
   splice(start: number, deleteCount: number): Snapshot<T, K>[];

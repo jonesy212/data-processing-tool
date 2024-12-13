@@ -39,8 +39,8 @@ export interface DocumentBuilderProps extends DocumentData  {
     } | undefined;
   currentContent?: ContentState
   previousContent?: string | ContentState;
-  currentMetadata: StructuredMetadata | undefined;
-  previousMetadata: StructuredMetadata | undefined;
+  currentMetadata: StructuredMetadata<T, K> | undefined;
+  previousMetadata: StructuredMetadata<T, K> | undefined;
   accessHistory: AccessHistory[];
   lastModifiedDate: ModifiedDate | undefined;
   versionData: VersionData | undefined;

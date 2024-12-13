@@ -79,14 +79,14 @@ interface SearchCriteria extends BaseData {
 
 
 // Extending the DocumentData interface
-interface SupportedSearchResult<T extends  BaseData<T>> extends Entity, DocumentData<T> {
+interface SupportedSearchResult<T extends  BaseData<any>> extends Entity, DocumentData<T> {
   // Now you can access all properties from both Entity and DocumentData
 }
 
 
 
 // You can also make SupportedData extend SearchResult
-type EnhancedSupportedData<T extends  BaseData<T>> = SupportedData<T> & SupportedSearchResult<T>;
+type EnhancedSupportedData<T extends  BaseData<any>> = SupportedData<T> & SupportedSearchResult<T>;
 
 
 
@@ -349,7 +349,7 @@ const SearchCriteriaComponent: React.FC<{
                   updateProgress: (team: Team, project: Project) => {},
                   }, 
                 
-                selectedDocument: {} as DocumentData< BaseData<T>>,
+                selectedDocument: {} as DocumentData< BaseData<any>>,
                 id: result.id,  // Assuming this can be a number or string
                 _id: result.id.toString(), // Assuming you convert it to string
                 // Map 'name' to 'title'

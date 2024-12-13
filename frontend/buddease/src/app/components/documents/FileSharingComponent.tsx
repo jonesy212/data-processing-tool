@@ -3,6 +3,7 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import axiosInstance from "@/app/api/axiosInstance";
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import FormControl from "@/app/pages/forms/FormControl";
 import MenuDivider from "antd/es/menu/MenuDivider";
@@ -24,7 +25,7 @@ import DynamicTypography from "../styling/DynamicTypography";
  
 const API_BASE_URL = endpoints;
 // FileSharingComponent functional component
-const FileSharingComponent: React.FC = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>() => {
+const FileSharingComponent: React.FC = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>() => {
   // State for managing selected file
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   // Ensure that inputValue is a string state
@@ -43,7 +44,7 @@ const FileSharingComponent: React.FC = <T extends  BaseData<T>, K extends T = T,
   const router = useRouter(); // Get the router object using useRouter hook
 
   // Implement the update callback function
-  const updateCallback = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  const updateCallback = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     data: SupportedData<T>[],
     events: Record<string, CalendarEvent[]>,
     snapshotStore: SnapshotStore<T, K>,

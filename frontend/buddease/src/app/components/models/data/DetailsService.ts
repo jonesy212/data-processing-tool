@@ -5,14 +5,20 @@ import { AxiosError } from 'axios';
 import axiosInstance from '../../security/csrfToken';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
 import { DetailsItem } from '../../state/stores/DetailsListStore';
-import { Data } from './Data';
+import { BaseData, Data } from './Data';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
 const API_BASE_URL = "/api/details";
 
 const { notify } = useNotification();  // Destructure notify from useNotification
 
 export const detailsApiService = {
-  fetchDetailsItem: async (detailsItemId: string): Promise<{ detailsItem: DetailsItem<Data> }> => {
+  fetchDetailsItem: async <
+    T extends BaseData<any>,
+    K extends T = T,
+    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+      detailsItemId: string
+    ): Promise<{ detailsItem: DetailsItem<T, K, Meta> }> => {
     try {
       const response = await axiosInstance.get(`${API_BASE_URL}/${detailsItemId}`);
       notify(
@@ -36,7 +42,10 @@ export const detailsApiService = {
     }
   },
 
-  updateDetailsItem: async (detailsItemId: string, updatedDetailsItemData: any): Promise<{ detailsItemId: string, detailsItem: DetailsItem<Data> }> => {
+  updateDetailsItem: async <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+    detailsItemId: string,
+    updatedDetailsItemData: any
+  ): Promise<{ detailsItemId: string, detailsItem: DetailsItem<T, K, Meta> }> => {
     try {
       const response = await axiosInstance.put(`${API_BASE_URL}/${detailsItemId}`, updatedDetailsItemData);
       notify(
@@ -63,7 +72,11 @@ export const detailsApiService = {
     }
   },
 
-  fetchDetailsItems: async (): Promise<{ detailsItems: DetailsItem<Data>[] }> => {
+  fetchDetailsItems: async <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  
+  ): Promise<{ 
+    detailsItems: DetailsItem<T, K, Meta>[]
+  }> => {
     try {
       const response = await axiosInstance.get(API_BASE_URL);
       notify(
@@ -73,7 +86,7 @@ export const detailsApiService = {
         new Date(), 
         NotificationTypeEnum.APISuccess
       );
-      return { detailsItems: response.data as DetailsItem<Data>[] };
+      return { detailsItems: response.data as DetailsItem<Data<any>>[] };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to fetch details items');
       notify(
@@ -86,8 +99,7 @@ export const detailsApiService = {
       throw error;
     }
   },
-
-  updateDetailsItems: async (updatedDetailsItemsData: any): Promise<{ detailsItems: DetailsItem<Data>[] }> => {
+  updateDetailsItems: async <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(updatedDetailsItemsData: any): Promise<{ detailsItems: DetailsItem<T, K, Meta>[] }> => {
     try {
       const response = await axiosInstance.put(API_BASE_URL, updatedDetailsItemsData);
       notify(
@@ -97,7 +109,7 @@ export const detailsApiService = {
         new Date(), 
         NotificationTypeEnum.APISuccess
       );
-      return { detailsItems: response.data as DetailsItem<Data>[] };
+      return { detailsItems: response.data as DetailsItem<Data<any, any, StructuredMetadata<any, any>>>[] };
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, 'Failed to update details items');
       notify(
@@ -110,7 +122,6 @@ export const detailsApiService = {
       throw error;
     }
   },
-
   deleteDetailsItems: async (detailsItemIds: string[]): Promise<void> => {
     try {
       await axiosInstance.delete(`${API_BASE_URL}`, {

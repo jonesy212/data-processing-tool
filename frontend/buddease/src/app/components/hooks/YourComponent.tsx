@@ -136,7 +136,7 @@ const updateSnapshotMethod = (
 
 
 // Assuming CalendarManagerStoreClass has a constructor that takes a snapshot as input
-const records: Record<string, CalendarManagerStoreClass< BaseData<T>, K<T>>[]> = 
+const records: Record<string, CalendarManagerStoreClass< BaseData<any>, K<T>>[]> = 
   Array.from(data.values()).reduce((acc, snapshot) => {
     const id = snapshot.id; // Replace with a unique identifier property of your snapshots
     if (!acc[id]) {
@@ -149,7 +149,7 @@ const records: Record<string, CalendarManagerStoreClass< BaseData<T>, K<T>>[]> =
     const calendarManagerInstance = new CalendarManagerStoreClass(category, documentManager, storeProps, snapshot);
     acc[id].push(calendarManagerInstance);
     return acc;
-  }, {} as Record<string, CalendarManagerStoreClass< BaseData<T>, K<T>>[]>);
+  }, {} as Record<string, CalendarManagerStoreClass< BaseData<any>, K<T>>[]>);
 
   
 

@@ -31,12 +31,12 @@ interface CacheResponse {
   realtimeData: RealtimeData;
   userSettings: UserSettings;
   notificationBarPhaseHook: CustomPhaseHooks
-  teamBuildingPhaseHook: AsyncHook
-  brainstormingPhaseHook: AsyncHook
-  projectManagementPhaseHook: AsyncHook
-  meetingsPhaseHook: AsyncHook
+  teamBuildingPhaseHook: AsyncHook<T>
+  brainstormingPhaseHook: AsyncHook<T>
+  projectManagementPhaseHook: AsyncHook<T>
+  meetingsPhaseHook: AsyncHook<T>
   darkModeTogglePhaseHook: AsyncHook<T>; // Define the type of darkModeTogglePhaseHook
-  authenticationPhaseHook: AsyncHook
+  authenticationPhaseHook: AsyncHook<T>
   // notificationBarPhaseHook: 
   // Add other properties as needed
 }
@@ -132,6 +132,8 @@ UserService.fetchUser(userId,authToken).then((user) => {
   userService.fetchUserById(user).then((userId) => {
     const userDataPromise = Promise.resolve(
       readCache(userId) || {
+        _id,
+        data: {},
         lastUpdated: versionHistory,
         userSettings: userSettings,
         dataVersions: dataVersions,
@@ -140,15 +142,15 @@ UserService.fetchUser(userId,authToken).then((user) => {
         backendConfig: backendConfig,
         frontendConfig: frontendConfig,
         realtimeData: realtimeData,
-        notificationBarPhaseHook: {} as AsyncHook,
-        darkModeTogglePhaseHook: {} as AsyncHook,
+        notificationBarPhaseHook: {} as AsyncHook<T>,
+        darkModeTogglePhaseHook: {} as AsyncHook<T>,
         authenticationPhaseHook: {} as CustomPhaseHooks,
-        jobSearchPhaseHook: {} as AsyncHook,
+        jobSearchPhaseHook: {} as AsyncHook<T>,
         recruiterDashboardPhaseHook: {} as CustomPhaseHooks,
-        teamBuildingPhaseHook: {} as AsyncHook,
-        brainstormingPhaseHook: {} as AsyncHook,
-        projectManagementPhaseHook: {} as AsyncHook,
-        meetingsPhaseHook: {} as AsyncHook,
+        teamBuildingPhaseHook: {} as AsyncHook<T>,
+        brainstormingPhaseHook: {} as AsyncHook<T>,
+        projectManagementPhaseHook: {} as AsyncHook<T>,
+        meetingsPhaseHook: {} as AsyncHook<T>,
         ideationPhaseHook: {} as CustomPhaseHooks,
         teamCreationPhaseHook: {} as CustomPhaseHooks,
         productBrainstormingPhaseHook: {} as CustomPhaseHooks,

@@ -3,8 +3,6 @@ import React from 'react';
 import UserDetails, { User } from '../../components/users/User'; // Import the User interface
 import PersonaTypeEnum, { PersonaBuilder, PersonaData } from '../personas/PersonaBuilder';
 
-
-
 interface ProfileProps {
   user: User; // Pass the user data as props
   props: ProfileAccessControl;

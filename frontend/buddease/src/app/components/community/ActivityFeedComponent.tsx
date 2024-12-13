@@ -23,19 +23,31 @@ export interface RealtimeUpdates {
 const ActivityFeedComponent: React.FC<RealtimeUpdates> = ({dispatch}) => {
   const { state: authState } = useAuth();
   const id = authState.user?.id;
+  const filterStore = useFilterStore(); // Get an instance of FilterStore
   const filteredEventsState = useSelector((state: RootState) => state.filteredEvents);
-
-
-    // Now you can dispatch actions like this
-    dispatch(useFilterStore().addFilteredEvent(event));
-    dispatch(useFilterStore().removeFilteredEvent(filteredEvents.id));
-    dispatch(useFilterStore().clearFilteredEvents(filteredEvents));
+  // Now you can dispatch actions like this
+  dispatch(useFilterStore().addFilteredEvent(event));
+  dispatch(useFilterStore().removeFilteredEvent(filteredEvents.id));
+  dispatch(useFilterStore().clearFilteredEvents(filteredEvents));
   
-
   const [notifications, setNotifications] = useState<NotificationData[]>([]);
   const [realTimeUpdates, setRealTimeUpdates] = useState<RealtimeUpdates[]>([]);
 
   const { sortEvents, setSortByTitle, setSortByDate } = useSorting();
+
+
+
+  const addEvent = (event: ExtendedCalendarEvent | CalendarEvent | HighlightEvent) => {
+    filterStore.addFilteredEvent(event);
+  };
+
+  const removeEvent = (eventId: string) => {
+    filterStore.removeFilteredEvent(eventId);
+  };
+
+  const clearEvents = () => {
+    filterStore.clearFilteredEvents();
+  };
 
   
   useEffect(() => {
@@ -88,20 +100,25 @@ const ActivityFeedComponent: React.FC<RealtimeUpdates> = ({dispatch}) => {
     }
   }, []);
     
-    
-    
 
-    
   const handleSortByTitle = () => {
     setSortByTitle();
     sortFilteredEvents("title");
   };
 
   const handleSortByDate = () => {
-    setSortByDate();
-    sortFilteredEvents("date");
+    filterStore.setFilteredEvents(
+      [...filterStore.filteredEvents].sort((a, b) =>
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      )
+    );
   };
 
+  const handleFilterByCategory = (category: string) => {
+    filterStore.setFilteredEvents(
+      filterStore.filteredEvents.filter((event) => event.category === category)
+    );
+  };
 
   return (
     <div>
@@ -120,9 +137,13 @@ const ActivityFeedComponent: React.FC<RealtimeUpdates> = ({dispatch}) => {
         <h3>Filtered Events:</h3>
         <button onClick={handleSortByTitle}>Sort by Title</button>
         <button onClick={handleSortByDate}>Sort by Date</button>
+        <button onClick={() => handleFilterByCategory("Work")}>Filter by "Work"</button>
+        <button onClick={() => handleFilterByCategory("Personal")}>Filter by "Personal"</button>
         <ul>
-          {sortEvents(addFilteredEvent).map((event: any) => (
-            <li key={event.id}>{event.message}</li>
+          {filterStore.filteredEvents.map((event) => (
+            <li key={event.id}>
+              <strong>{event.title}</strong> - {event.date} - {event.category}
+            </li>
           ))}
         </ul>
       </div>
@@ -135,9 +156,19 @@ const ActivityFeedComponent: React.FC<RealtimeUpdates> = ({dispatch}) => {
           ))}
         </ul>
       </div>
+
+      <div>
+        <h3>Manage Events:</h3>
+        <button
+          onClick={() =>
+            addEvent({ id: "1", title: "Event 1", date: "2024-12-02", category: "Work" })
+          }
+        >
+          Add Event 1
+        </button>
+        <button onClick={() => removeEvent("1")}>Remove Event 1</button>
+        <button onClick={clearEvents}>Clear All Events</button>
+      </div>
     </div>
   );
-
-};
-
 export default ActivityFeedComponent;

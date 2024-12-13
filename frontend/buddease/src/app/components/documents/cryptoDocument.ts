@@ -3,7 +3,7 @@ export interface CryptoDocument {
     title: string;
     content: string;
     author: string;
-    collaborators: string[];
+    collaborators: Collaborator[];
     createdAt: Date;
     updatedAt: Date;
   }

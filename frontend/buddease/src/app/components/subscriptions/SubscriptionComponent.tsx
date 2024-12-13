@@ -23,7 +23,7 @@ import {
     updateProjectState,
 } from "../utils/applicationUtils";
 import { Subscription } from "./Subscription";
-import { subscriptionService } from "./SubscriptionService";
+import { subscriptionServiceInstance } from "./SubscriptionService";
 
 interface Props {
   initialData: RealtimeDataItem[];
@@ -99,7 +99,7 @@ const SubscriptionComponent: React.FC<Props> = async ({
           );
         }
       };
-      subscriptionService.subscribe(hookName, callback);
+      subscriptionServiceInstance.subscribe(hookName, callback);
 
       // Create a web3 provider instance and connect it
       const web3Provider = new Web3Provider(
@@ -107,18 +107,18 @@ const SubscriptionComponent: React.FC<Props> = async ({
         "your-api-key",
         5000
       );
-      subscriptionService.connectWeb3Provider(web3Provider);
+      subscriptionServiceInstance.connectWeb3Provider(web3Provider);
 
       // Subscribe to a web3-related hook
-      subscriptionService.subscribe("web3Hook", () => {
+      subscriptionServiceInstance.subscribe("web3Hook", () => {
         console.log("Web3 hook callback");
         // Your callback logic for web3-related events
       });
 
       // Cleanup: Unsubscribe when the component unmounts
       return () => {
-        subscriptionService.unsubscribe(hookName, callback);
-        subscriptionService.unsubscribe("web3Hook", callback);
+        subscriptionServiceInstance.unsubscribe(hookName, callback);
+        subscriptionServiceInstance.unsubscribe("web3Hook", callback);
         if (subscription) {
           subscription.unsubscribe();
         }
@@ -150,12 +150,12 @@ const web3Provider = new Web3Provider(
   5000
 );
 // Connect the web3 provider
-subscriptionService.connectWeb3Provider(web3Provider);
+subscriptionServiceInstance.connectWeb3Provider(web3Provider);
 // Subscribe to a web3-related hook
-subscriptionService.subscribe("web3Hook", () => {
+subscriptionServiceInstance.subscribe("web3Hook", () => {
   console.log("Web3 hook callback");
   // Your callback logic for web3-related events
 });
 
 // Unsubscribe from the web3-related hook
-subscriptionService.unsubscribe("web3Hook", updateCallback); // You might want to unsubscribe based on a certain condition or component unmount
+subscriptionServiceInstance.unsubscribe("web3Hook", updateCallback); // You might want to unsubscribe based on a certain condition or component unmount

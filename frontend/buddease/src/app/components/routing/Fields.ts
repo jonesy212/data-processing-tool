@@ -1,13 +1,12 @@
 import { Project } from "@/app/components/projects/Project";
 import { TaskMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { ProjectMetadata } from '@/app/configs/StructuredMetadata';
-import { BaseData, Data } from '../models/data/Data';
-import {  } from '@/app/typings/appTypes';
+import { ProjectMetadata, StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { } from '@/app/typings/appTypes';
+import { BaseData } from '../models/data/Data';
 import { K, Meta } from '../models/data/dataStoreMethods';
-import { TaskData, Task} from '../models/tasks/Task';
+import { Task, TaskData } from '../models/tasks/Task';
 
 type Fields<T, K extends keyof T> = Pick<T, K>;
-type ExcludeFields<T, K extends keyof T> = Omit<T, K>;
 type IncludeFields<T, K extends keyof T> = Pick<T, K>;
 
 // Define a utility type that excludes specific keys
@@ -30,16 +29,20 @@ type InclusiveExclusiveFields<
 type ProjectFields = Fields<ProjectMetadata<Task<TaskData>, Project>, 'projectId'>; // { projectId: string }
 
 // Use ExcludeKeys to create a type without specific keys
-type TaskWithoutId = ExcludeKeys<TaskMetadata<Task<TaskData>,
+type TaskWithoutId = ExcludeKeys<TaskMetadata<Task<BaseData<TaskData, TaskData, any>>,
   Task<any, any>>, 'taskId'>; // { taskName: string }
 
 // If needed, we can also define ExcludedFields as a generic utility for clarity
-type ExcludedFields<T, K extends keyof T> = ExcludeKeys<T, K>;
+type ExcludedFields<T, K extends keyof T> = {
+  // Retain all properties of T except for the excluded keys K
+  [P in Exclude<keyof T, K>]: T[P];
+};
 
 type MapExcludedFieldsToMetaKeys<
-  T extends BaseData<T>,
-  Meta extends StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
 > = ExcludedFields extends keyof Meta ? ExcludedFields : never;
 
 // Example utility function to add source tracking for shared fields
@@ -48,18 +51,18 @@ function addSource<T>(metadata: T, source: string): T & { source: string } {
 }
 
 // Type guard functions to determine the origin
-function isTaskMetadata<T>(metadata: any): metadata is TaskMetadata<T, Meta> {
+function isTaskMetadata<T>(metadata: any): metadata is TaskMetadata<T, K> {
   return metadata?.source === 'TaskMetadata';
 }
 
 
-function isProjectMetadata<T>(metadata: any): metadata is ProjectMetadata<T, Meta> {
+function isProjectMetadata<T>(metadata: any): metadata is ProjectMetadata<T, K> {
   return metadata?.source === 'ProjectMetadata';
 }
 
 
 // Example function to demonstrate how to use the union and utility types
-function processMetadata<T extends UnifiedMetaDataOptions>(metadata: T) {
+function processMetadata<T extends UnifiedMetaDataOptions<any>>(metadata: T) {
   // Example of using Fields utility type with task metadata fields
   if ('taskMetadata' in metadata) {
     const taskFields: Fields<TaskMetadata<any, any>, 'taskId' | 'taskName'> = {
@@ -71,7 +74,7 @@ function processMetadata<T extends UnifiedMetaDataOptions>(metadata: T) {
 
   // Example of using Fields utility type with project metadata fields
   if ('projectMetadata' in metadata) {
-    const projectFields: Fields<ProjectMetadata<T, K<T>>, 'projectId' | 'projectName'> = {
+    const projectFields: Fields<ProjectMetadata<any, any>, 'projectId' | 'projectName'> = {
       projectId: metadata.projectMetadata!.projectId,
       projectName: metadata.projectMetadata!.projectName,
     };
@@ -85,7 +88,6 @@ function processMetadata<T extends UnifiedMetaDataOptions>(metadata: T) {
 
   console.log("Excluded Fields:", excludedFields);
 }
-
 // Creating an example task metadata object that satisfies UnifiedMetaDataOptions
 const exampleTaskMeta: UnifiedMetaDataOptions = {
   taskMetadata: {
@@ -98,4 +100,4 @@ const exampleTaskMeta: UnifiedMetaDataOptions = {
 // Call the function with the example metadata
 processMetadata(exampleTaskMeta);
 
-export type { ExcludeKeys, Fields, ExcludedFields, InclusiveExclusiveFields, MapExcludedFieldsToMetaKeys};
+export type { ExcludedFields, ExcludeKeys, Fields, InclusiveExclusiveFields, MapExcludedFieldsToMetaKeys };

@@ -1,3 +1,5 @@
+import { ExtendedCalendarEvent } from './../../calendar/CalendarEventTimingOptimization';
+import { Data } from '@/app/components/models/data/Data';
 // presentationStore.ts
 import { headersConfig } from "@/app/components/shared/SharedHeaders";
 import { AxiosResponse, InternalAxiosRequestConfig } from "axios";
@@ -72,12 +74,13 @@ type PresentationStoreSubset = Pick<
   | "assignBoardCustomFieldToTeam"
 >;
 
-function getPropertyIfExists<T extends object, K extends Data>(
+function getPropertyIfExists<T extends object, K extends keyof T>(
   obj: T,
   prop: K
 ): T[K] | undefined {
   return obj[prop];
 }
+
 
 // Use this hook to access methods and properties from AssignBaseStore specific to presentations
 const presentationSubset = {

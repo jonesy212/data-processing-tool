@@ -54,6 +54,9 @@ const traverseFrontendDirectory = async (
 };
 
 
+
+
+
 // Usage example
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);

@@ -1,14 +1,14 @@
+import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import { useEffect } from "react";
 import { ExchangeEnum } from "../../crypto/exchangeIntegration";
 import { RealtimeData } from "../../models/realtime/RealtimeData";
 import useRealtimeData, { RealtimeUpdateCallback } from "./useRealtimeData";
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 
 const useRealtimeExchangeData = <
-  T extends BaseData<T>,
+  T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
 >(

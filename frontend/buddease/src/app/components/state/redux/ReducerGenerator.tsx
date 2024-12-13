@@ -48,7 +48,7 @@ export const createEntityReducer = <EntityData extends Draft<any>>(
 
 export const setCollaboratorsReducer = createEntityReducer({
   type: "setCollaborators",
-  updateFunction: (entity: { collaborators: string[] }, payload) => {
+  updateFunction: (entity: { collaborators: Collaborator[] }, payload) => {
     entity.collaborators = payload.collaborators;
   },
 });

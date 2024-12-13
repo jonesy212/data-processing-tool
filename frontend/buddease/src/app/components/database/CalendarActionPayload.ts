@@ -12,11 +12,11 @@ type CalendarActionType =
   | 'SET_EVENT_STATUS';
 
 // Define the payloads for different actions
-interface AddEventPayload<T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface AddEventPayload<T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   event: CalendarEvent<T, K>;
 }
 
-interface UpdateEventPayload<T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface UpdateEventPayload<T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   eventId: string;
   updatedEvent: Partial<CalendarEvent<T, K>>;
 }
@@ -31,7 +31,7 @@ interface SetEventStatusPayload {
 }
 
 // Define a union type for action payloads
-type CalendarActionPayload<T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
+type CalendarActionPayload<T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
   | AddEventPayload<T, K>
   | UpdateEventPayload<T, K>
   | RemoveEventPayload
@@ -39,6 +39,6 @@ type CalendarActionPayload<T extends  BaseData<T>,  K extends T = T,  Meta exten
 
 
 export type {
-  AddEventPayload, CalendarActionPayload, CalendarActionType, RemoveEventPayload, SetEventStatusPayload, UpdateEventPayload
+    AddEventPayload, CalendarActionPayload, CalendarActionType, RemoveEventPayload, SetEventStatusPayload, UpdateEventPayload
 };
 

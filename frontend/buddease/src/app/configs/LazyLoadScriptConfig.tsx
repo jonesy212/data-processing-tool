@@ -1,5 +1,5 @@
 import MainConfig from "@/app/configs/MainConfig";
-import { traverseDirectory } from "@/app/configs/declarations/traverseFrontend";
+import { traverseFrontendDirectory } from "@/app/configs/declarations/traverseFrontend";
 import { SystemConfigs } from "../api/systemConfigs";
 import { UserConfigs } from "../api/userConfigs";
 import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
@@ -156,10 +156,23 @@ export const lazyLoadScriptConfig: LazyLoadScriptConfig =
     // Add more properties as needed
     appStructureItem: {
       path: "", // Provide appropriate path value
-      content: "", // Provide appropriate content value
+      content: "",
+      id: "",
+      name: "",
+      type: "",
+      draft: false,
+      permissions: {
+        read: false,
+        write: false,
+        delete: false,
+        share: false,
+        execute: false
+      },
+      versions: undefined,
+      versionData: []
     },
     traverseDirectory: async (path: string) => { 
-      return traverseDirectory(path);
+      return traverseFrontendDirectory(path);
     },
       configureScript: (item) => { }
   });

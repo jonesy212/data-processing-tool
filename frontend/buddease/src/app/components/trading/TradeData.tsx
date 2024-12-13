@@ -1,5 +1,6 @@
 // TradeData.tsx
 import React from 'react';
+import { T, K, Meta} from "@/app/components/models/data/dataStoreMethods";
 import CommonDetails from '../models/CommonData';
 import { CommonData, Customizations } from '../models/CommonDetails';
 import { Data, DataDetailsProps } from '../models/data/Data';
@@ -10,7 +11,8 @@ import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisRe
 import { DetailsItemExtended } from '../state/stores/DetailsListStore';
 
 // Define the TradeData interface extending the CommonData interface
-interface TradeData extends CommonData, DataDetailsProps<Data> {
+interface TradeData 
+extends CommonData<T, K, Meta, ExcludedFields>, DataDetailsProps<Data> {
   uploadedAt: any;
   tradeId: string;
   tradeType: string;
@@ -19,21 +21,21 @@ interface TradeData extends CommonData, DataDetailsProps<Data> {
   phase?: Phase;
   isActive?: boolean;
   analysisType?: AnalysisTypeEnum;
-  analysisResults?: DataAnalysisResult[];
+  analysisResults?: DataAnalysisResult<T>[];
   updatedAt?: Date;
-  data?: Data;
+  data?: Data<T>;
   
   // Add more properties as needed
 }
 
 interface TradeDataProps {
-  trade: CommonData & { data: TradeData };
+  trade: CommonData<T, K, Meta, ExcludedFields> & { data: TradeData };
   details: DetailsItemExtended<Data>;
 
 }
 
 // Ensure TradeDataWithCommon does not cause recursion
-type TradeDataWithCommon = CommonData & TradeData;
+type TradeDataWithCommon = CommonData<T, K, Meta, ExcludedFields> & TradeData;
 
 
 

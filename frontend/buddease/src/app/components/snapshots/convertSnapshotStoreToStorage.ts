@@ -7,7 +7,7 @@
 // import SnapshotStore from "./SnapshotStore";
 // import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
-// function convertSnapshotStoreToStorage<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(snapshotStore: SnapshotStore<T, K>): Storage {
+// function convertSnapshotStoreToStorage<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(snapshotStore: SnapshotStore<T, K>): Storage {
 //     const storage: Storage = window.localStorage;
   
 //     // Store the snapshot data in the Storage object (e.g., localStorage)
@@ -23,7 +23,7 @@
   
 
 
-// function convertStorageToSnapshotStore<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// function convertStorageToSnapshotStore<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
 //     storage: Storage,
 //     snapshotStoreId: number,
 //     topic: string, 
@@ -31,7 +31,7 @@
 //     options: SnapshotStoreOptions<T, K>, 
 //     category: symbol | string | Category | undefined, 
 //     config: SnapshotStoreConfig<T, K>, 
-//     operation: SnapshotOperation
+//     operation: SnapshotOperation<T, K>
 // ): SnapshotStore<T, K> {
 //     const keys = Object.keys(storage);
 //     const data = new Map<string, Snapshot<T, K>>();

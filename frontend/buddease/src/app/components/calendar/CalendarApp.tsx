@@ -1,16 +1,14 @@
 // CalendarApp.tsx
-import { SnapshotStoreProps } from '@/app/components/snapshots';
-import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData"
-import { findSnapshotStoresById } from '@/app/api/SnapshotApi'
-import { castToSnapshot } from '@/app/components/utils/snapshotUtils'
-import { getSnapshotStore,  snapshotContainer } from "@/app/api/SnapshotApi";
+import { findSnapshotStoresById, snapshotContainer } from '@/app/api/SnapshotApi';
 import { useSnapshotManager } from "@/app/components/hooks/useSnapshotManager";
 import AnalyzeData from "@/app/components/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
-import { SnapshotData } from '@/app/components/snapshots';
+import { SnapshotData, SnapshotStoreProps } from '@/app/components/snapshots';
+import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
 import { Todo } from "@/app/components/todos/Todo";
+import { castToSnapshot } from '@/app/components/utils/snapshotUtils';
 import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import React, { useState } from "react";
+import { useState } from "react";
 import * as snapshotApi from '../../api/SnapshotApi';
 import { DocumentOptions } from "../documents/DocumentOptions";
 import { Category } from "../libraries/categories/generateCategoryProperties";
@@ -21,36 +19,37 @@ import { CalendarStatus, StatusType } from "../models/data/StatusType";
 import { DataDetailsComponent, Team, TeamDetails } from "../models/teams/Team";
 import { Member, TeamMember } from "../models/teams/TeamMembers";
 
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import {
-    DataStore,
-    useDataStore,
+  DataStore,
+  useDataStore,
 } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Project, ProjectType } from "../projects/Project";
 import { SnapshotContainer, SnapshotWithCriteria } from "../snapshots";
 import {
-    Snapshot,
-    SnapshotsArray,
-    SnapshotsObject,
-    SnapshotUnion
+  Snapshot,
+  SnapshotsArray,
+  SnapshotsObject,
+  SnapshotUnion
 } from "../snapshots/LocalStorageSnapshotStore";
 import {
-    default as SnapshotStore,
-    default as useSnapshotStore,
+  default as SnapshotStore,
+  default as useSnapshotStore,
 } from "../snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "../snapshots/SnapshotStoreConfig";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { snapshotType } from "../typings/YourSpecificSnapshotType";
 import { User } from "../users/User";
 import UserRoles from "../users/UserRoles";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { processSnapshotData } from '../utils/versionUtils';
 
 
 
 // Define SnapshotWithData to include only essential properties and methods
-interface SnapshotWithData<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface SnapshotWithData<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   data: Map<string, Snapshot<T, K>> | null; // Assuming this holds snapshot data
   events: {
     // Define the events object structure based on your needs
@@ -133,7 +132,7 @@ const analysisType = (project: Project) => {
 
 
 
-export const addSnapshotHandler =  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const addSnapshotHandler =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: Snapshot<T, K>,
   subscribers: (snapshot: Snapshot<T, K>) => void,
   delegate: SnapshotStoreConfig<T, K>[],
@@ -143,8 +142,8 @@ export const addSnapshotHandler =  <T extends  BaseData<T>, K extends T = T, Met
     delegate.forEach((config) => {
       if (typeof config.setSnapshots === "function") {
         // Ensure config.snapshots is treated as an array
-        const currentSnapshotsArray: SnapshotsArray<T> = Array.isArray(config.snapshots)
-          ? (config.snapshots as SnapshotsArray<T>)
+        const currentSnapshotsArray: SnapshotsArray<T, K> = Array.isArray(config.snapshots)
+          ? (config.snapshots as SnapshotsArray<T, K>)
           : [];
 
         // Use type guard to ensure compatibility
@@ -160,14 +159,19 @@ export const addSnapshotHandler =  <T extends  BaseData<T>, K extends T = T, Met
   }
 };
 
-const CalendarApp = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  props: SnapshotStoreProps<T, K>
-) => {
 
-  
+
+
+
+const CalendarApp = async <
+  T extends BaseData<T>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  props: SnapshotStoreProps<T, K>
+): Promise<void> => {
+
   const [snapshot, setSnapshot] = useState<Snapshot<T, K> | null>(null);
   
-
    // Destructure the required properties from props
    const {
     options,
@@ -193,11 +197,16 @@ const CalendarApp = async <T extends  BaseData<T>, K extends T = T, Meta extends
 
 
   const category: CategoryProperties = {
+    id: "",
     name: "",
     description: "category description",
     icon: "category_png",
     color: "categorized_color",
     iconColor: "",
+    type: "",
+    chartType: "", 
+    dataProperties: {}, 
+    formFields: [],
     isActive: false,
     isPublic: false,
     isSystem: false,
@@ -313,7 +322,7 @@ const CalendarApp = async <T extends  BaseData<T>, K extends T = T, Meta extends
       snapshotId: string,
       category: symbol | string | Category | undefined,
       categoryProperties: CategoryProperties | undefined,
-      snapshot: SnapshotUnion<T> | null,
+      snapshot: SnapshotUnion<T, K> | null,
       timestamp: string | number | Date | undefined,
       type: string,
       event: Event,
@@ -460,9 +469,9 @@ const CalendarApp = async <T extends  BaseData<T>, K extends T = T, Meta extends
         data: K,
         index: number
       ) => SnapshotsObject<T, K>
-    ): Promise<SnapshotsArray<T>> {
+    ): Promise<SnapshotsArray<T, K>> {
       // Initialize an array to store results from callback executions
-      const result: SnapshotsArray<T> = [];
+      const result: SnapshotsArray<T, K> = [];
     
       // Loop through each storeId and execute the callback
       for (let i = 0; i < storeIds.length; i++) {
@@ -510,9 +519,9 @@ const CalendarApp = async <T extends  BaseData<T>, K extends T = T, Meta extends
       throw new Error("Function not implemented.");
     },
 
-    getData: async function (
-      input: number | Snapshot<T, K> | Snapshot<T, CustomSnapshotData>
-    ): Promise<{ data: Snapshot<T, K> } | SnapshotStore<T, K>[] | undefined> = async (input) => {
+    getData: async (
+      input: number | Snapshot<T, K> | Snapshot<T, CustomSnapshotData<T, K, Meta>>
+    ): Promise<{ data: Snapshot<T, K> } | SnapshotStore<T, K>[] | undefined> => {
       try {
         if (typeof input === 'number') {
           // Fetch SnapshotStore array based on the ID using `findSnapshotStoresById`
@@ -523,11 +532,11 @@ const CalendarApp = async <T extends  BaseData<T>, K extends T = T, Meta extends
           const snapshotData: Snapshot<T, K> = processSnapshotData(input);
           return { data: snapshotData };
         }
-      } catch (error: Error) {
+      } catch (error: any) {
         throw new Error(`Failed to get data: ${error.message}`);
       }
-    },    
-
+    },
+    
     getStoreData: function (id: number): Promise<SnapshotStore<T, K>[]> {
       throw new Error("Function not implemented.");
     },
@@ -585,7 +594,7 @@ const CalendarApp = async <T extends  BaseData<T>, K extends T = T, Meta extends
       snapshotStore: SnapshotStore<T, K>,
       snapshotData: SnapshotData<T, K>,
       data: Data<T>,
-      snapshotsArray: SnapshotsArray<T>,
+      snapshotsArray: SnapshotsArray<T, K>,
       snapshotsObject: SnapshotsObject<T, K>
     ): Promise<SnapshotContainer<T, K> | undefined> {
       throw new Error("Function not implemented.");
@@ -662,7 +671,7 @@ const CalendarApp = async <T extends  BaseData<T>, K extends T = T, Meta extends
     host: {} as Member,
     teamMemberId: "",
     participants: [],
-    then: function<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(callback: (newData: Snapshot<T, K>) => void): Snapshot<T, K> | undefined {
+    then: function<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(callback: (newData: Snapshot<T, K>) => void): Snapshot<T, K> | undefined {
       if (this as unknown as Snapshot<T, K>) {
         callback(this as unknown as Snapshot<T, K>);
       }
@@ -687,7 +696,7 @@ const CalendarApp = async <T extends  BaseData<T>, K extends T = T, Meta extends
   // Type guard to check if an object is a SnapshotStore<BaseData>
   function isSnapshotStoreBaseData(
     snapshot: any
-  ): snapshot is SnapshotStore< BaseData<T>> {
+  ): snapshot is SnapshotStore< BaseData<any>> {
     return (
       snapshot &&
       typeof snapshot === "object" &&

@@ -1,7 +1,7 @@
 // determineFileCategory.tsx
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { FileCategory } from "../../documents/FileType";
 // Utility function to determine file category based on categoryName
 function determineFileCategory(categoryName: string): FileCategory {
@@ -72,7 +72,7 @@ function determineFileCategory(categoryName: string): FileCategory {
 }
 
 // Example implementation of fetching snapshot data based on category
-async function fetchFileSnapshotData<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function fetchFileSnapshotData<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   category: FileCategory,
   snapshotId: string
 ): Promise<{ data: any }> {

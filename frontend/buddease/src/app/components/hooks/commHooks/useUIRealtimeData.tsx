@@ -1,8 +1,8 @@
 // useUIRealtimeData.tsx
-import { BaseData } from '@/app/components/models/data/Data';
 import { fetchData } from '@/app/api/ApiData';
 import axiosInstance from '@/app/api/axiosInstance';
 import { endpoints } from '@/app/api/endpointConfigurations';
+import { BaseData } from '@/app/components/models/data/Data';
 import { DocumentActionTypes } from '@/app/tokens/DocumentActions';
 import { TokenActionTypes } from '@/app/tokens/TokenActions';
 import { Dispatch, useEffect, useState } from 'react';
@@ -10,8 +10,9 @@ import socketIOClient from 'socket.io-client';
 import { AppActions, AppActionsType } from '../../actions/AppActions';
 import { RealtimeData, RealtimeDataItem } from '../../models/realtime/RealtimeData';
 import SnapshotStore from '../../snapshots/SnapshotStore';
-import CalendarEvent from '../../state/stores/CalendarEvent';
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { EventActions } from './../../../components/actions/EventActions';
+import { useSecureUserId } from '../../utils/useSecureUserId';
 export const ENDPOINT = "http://your-backend-endpoint"; // Update with your actual backend endpoint
 
 const isKnownAction = (action: any): action is AppActionsType => {
@@ -57,10 +58,12 @@ const handleDocumentAction = (action: DocumentActionTypes) => {
     // Add cases for all other DocumentActionTypes
 
     default:
-      const exhaustiveCheck: never = action;
-      throw new Error(`Unhandled document action type: ${(action as DocumentActionTypes).type}`);
+      throw new Error(`Unhandled action type: ${action.type}`);
   }
 };
+
+
+
 const handleTokenActions = (action: TokenActionTypes) => {
   switch (action.type) {
     case 'addToken':
@@ -104,16 +107,14 @@ const handleTokenActions = (action: TokenActionTypes) => {
       break;
 
     default:
-      // TypeScript should infer this as unreachable if all types are covered
-      const exhaustiveCheck: never = action;
-      throw new Error(`Unhandled token action type: ${action.type}`);
+      throw new Error(`Unhandled action type: ${action.type}`);
   }
 };
 
 
-
 // // If you have a function that needs to handle all possible actions
   const handleAction = (action: AppActionsType) => {
+    
     switch (action.type) {
       case 'addDocument':
         // Handle addDocument
@@ -257,15 +258,14 @@ const handleTokenActions = (action: TokenActionTypes) => {
         // Handle deleteUserIdea
         break;
       default:
-        const _exhaustiveCheck: never = action;
-        throw new Error(`Unhandled action type: ${(action as AppActionsType).type}`);
+        throw new Error(`Unhandled action type: ${action.type}`);
     }
   }
 
 
 
 
-const useUIRealtimeData = <T extends  BaseData<T>, K extends RealtimeData = any>(
+const useUIRealtimeData = <T extends  BaseData<any>, K extends T = T>(
   initialData: RealtimeDataItem[],
   updateCallback: (events: Record<string, CalendarEvent<T, K>[]>,
     snapshotStore: SnapshotStore<T, K>, dataItems: RealtimeDataItem[],
@@ -284,10 +284,11 @@ const useUIRealtimeData = <T extends  BaseData<T>, K extends RealtimeData = any>
     }
   }
 
-  const fetchAndSetData = async () => {
+  const fetchAndSetData = async (id: number) => {
     try {
       // Fetch data from the API using the real-time endpoints
-      const result = await fetchData(endpoints.data.getData); // Use the correct endpoint
+      
+      const result = await fetchData(endpoints.data.getData, id); // Use the correct endpoint
       if (result) {
         // Extract relevant data from the result
         const { data } = result;
@@ -316,10 +317,17 @@ const useUIRealtimeData = <T extends  BaseData<T>, K extends RealtimeData = any>
       console.error('Error fetching or processing data:', error);
     }
   };
+  const actionHandlerService = new ActionHandlerService<AppActionsType>(); // Create an instance of ActionHandlerService
+
+  // Register the handler for `notificationReceived`
+  actionHandlerService.register('notificationReceived', (action: { message: string }) => {
+    console.log('Notification received:', action.message);
+    dispatch(action); // Optionally, dispatch the action if you still need Redux state updates
+  });
 
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT);
-
+    const id = useSecureUserId();
     socket.on(
       'updateData',
       (
@@ -328,17 +336,27 @@ const useUIRealtimeData = <T extends  BaseData<T>, K extends RealtimeData = any>
         snapshotStore: SnapshotStore<T, K>,
         dataItems: RealtimeDataItem[]
       ) => {
+        const eventId = data.eventId;
+        const updatedCallback = (dispatch: Dispatch<DocumentActionTypes>) => {
+          // Dispatch actions based on the updated data
+          // Example action for event updates
+          const action = EventActions.notificationReceived({
+            message: `Updated event with ID ${eventId}: ${JSON.stringify(event)}`,
+          });
+          actionHandlerService.handle(action); // Use handle() instead of dispatch
+        };
         // Call the provided updateCallback with the updated data, events, snapshotStore, and dataItems
-        updateCallback(events, snapshotStore, dataItems, dispatch);
+        updateCallback(events, snapshotStore, dataItems, updatedCallback);
 
         // Dispatch actions based on updated events
         Object.keys(events).forEach((eventId) => {
           const calendarEvents = events[eventId];
           calendarEvents.forEach((event) => {
             // Example action for event updates
-            dispatch(EventActions.notificationReceived({
+            const action = EventActions.notificationReceived({
               message: `Updated event with ID ${eventId}: ${JSON.stringify(event)}`,
-            }));
+            }); 
+            actionHandlerService.handle(action); // Use handle() instead of dispatchj
           });
         });
 
@@ -365,17 +383,19 @@ const useUIRealtimeData = <T extends  BaseData<T>, K extends RealtimeData = any>
     });
 
     // Initial fetch
-    fetchAndSetData();
+    if (typeof id === 'number') {
+      fetchAndSetData(id);
 
-    // Interval for periodic updates
-    const intervalId = setInterval(() => fetchAndSetData(), 5000); // Fetch data every 5 seconds (adjust as needed)
+      // Interval for periodic updates
+      const intervalId = setInterval(() => fetchAndSetData(id), 5000); // Fetch data every 5 seconds (adjust as needed)
 
-    return () => {
-      // Cleanup: Stop the interval and disconnect WebSocket when the component unmounts
-      clearInterval(intervalId);
-      socket.disconnect();
-    };
-  }, [dispatch, updateCallback]);
+      return () => {
+        // Cleanup: Stop the interval and disconnect WebSocket when the component unmounts
+        clearInterval(intervalId);
+        socket.disconnect();
+      };
+    }
+  }, [dispatch, updateCallback, fetchAndSetData]);
 
   return { realtimeData, fetchData: fetchAndSetData }; // Ensure to return fetchAndSetData as `fetchData`
 };
@@ -383,7 +403,7 @@ const useUIRealtimeData = <T extends  BaseData<T>, K extends RealtimeData = any>
 
 
 // Define your update callback function
-const updateCallback =<T extends  BaseData<T>, K extends RealtimeData = any>
+const updateCallback =<T extends BaseData<any> = BaseData<any, any>, K extends T = T>
   (events: Record<string, CalendarEvent<T, K>[]>,
   snapshotStore: SnapshotStore<RealtimeData, K>,
   dataItems: RealtimeDataItem[]

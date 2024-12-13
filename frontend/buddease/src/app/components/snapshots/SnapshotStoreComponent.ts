@@ -6,7 +6,7 @@
 // import { Snapshot } from '../snapshots/LocalStorageSnapshotStore';
 
 
-// class SnapshotStoreComponent<T extends  BaseData<T>,  
+// class SnapshotStoreComponent<T extends  BaseData<any>,  
 //   K extends T = T> {
 //   private id: string | number | null;
 //   private category: symbol | string | Category | undefined;

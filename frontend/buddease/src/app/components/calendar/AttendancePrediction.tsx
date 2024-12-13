@@ -1,11 +1,15 @@
 import { useState } from 'react';
 import { AttendancePredictionResult } from "../models/data/CalendarEventAttendancePrediction";
 import { Attendee } from "./Attendee";
+import { BaseEvent } from '@/app/components/event/BaseEvent'
+import { SharedSnapshotEvent } from "@/app/typings/eventTypes";
+import { T, K } from "../models/data/dataStoreMethods";
 
-interface EventAttendance {
+interface EventAttendance extends BaseEvent, SharedSnapshotEvent<T, K<T>> {
   eventId: string;
   attendees: Attendee[]; // Attendee IDs or emails
   attendanceProbability: Record<string, number>; // Attendee ID/email -> predicted attendance probability
+  eventType: "attendance"
 }
 
 interface AttendancePrediction {
@@ -60,4 +64,4 @@ const useAttendancePrediction = (): AttendancePrediction => {
 };
 
 export default useAttendancePrediction;
-export type { AttendancePrediction };
+export type { AttendancePrediction, EventAttendance };

@@ -1,3 +1,4 @@
+import { ModifiedDate } from '@/app/components/documents/DocType';
 var PizZip = require("pizzip");
 import { FileActions } from "@/app/components/actions/FileActions";
 import Draft from "immer";
@@ -10,6 +11,7 @@ import {
   loadPresentationFromDatabase,
 } from "@/app/api/ApiDocument";
 import { DatabaseConfig } from "@/app/configs/DatabaseConfig";
+import { T, K, Meta} from "@/app/components/models/data/dataStoreMethods";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import {
   loadDrawingFromDatabase,
@@ -32,7 +34,7 @@ import FormatEnum, { allowedDiagramFormats } from "../form/FormatEnum";
 import useErrorHandling from "../hooks/useErrorHandling";
 import { generatePresentationJSON } from "../libraries/presentations/generatePresentationJSON";
 import { FileLogger } from "../logging/Logger";
-import { Tracker } from "../models/tracker/Tracker";
+import Tracker from "../models/tracker/Tracker";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { Document } from "../state/stores/DocumentStore";
 import { DatasetModel } from "../todos/tasks/DataSetModel";
@@ -57,6 +59,9 @@ import Version from "../versions/Version";
 import { DocumentSize } from "../models/data/StatusType";
 import { loadCalendarEventsDocumentContent, loadClientPortfolioDocumentContent, loadCryptoWatchDocumentContent, loadDiagramDocumentContent, loadDraftDocumentContent, loadDrawingDocumentContent, loadFinancialReportDocumentContent, loadGenericDocumentContent, loadMarkdownDocumentContent, loadMarketAnalysisDocumentContent, loadOtherDocumentContent, loadPDFDocumentContent, loadPresentationDocumentContent, loadSQLDocumentContent, loadSpreadsheetDocumentContent, loadTextDocumentContent } from "./DocumentGeneratorMethods";
 import { FinancialReport } from "./documentation/report/Report";
+import { BaseData } from "../models/data/Data";
+import { Content } from "../models/content/AddContent";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 
 var xl = require("excel4node");
 
@@ -66,11 +71,17 @@ interface CustomPDFPage extends PDFPage {
   getText(): Promise<string>;
   getTextContent(): Promise<string>;
 }
-interface CustomDocxtemplater<TZip> extends Docxtemplater<TZip>, DocumentData {
+
+
+interface CustomDocxtemplater<TZip> extends Docxtemplater<TZip>, DocumentData<T, K, Meta> {
   load(content: any): void;
 }
 
-type DocumentPath = DocumentData | DatasetModel;
+type DocumentPath<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> = DocumentData<T, K, Meta> | DatasetModel<T, K, Meta>;
 type CustomPDFProxyPage = CustomPDFPage & PDFPageProxy;
 
 enum DocumentTypeEnum {
@@ -108,75 +119,67 @@ enum DocumentStatusEnum {
 }
 
 
-const documents: DocumentData[] = [
+const documents: DocumentData<any, any, any>[] = [
   {
-    id: 1,
-    title: "Financial Report",
-    type: DocumentTypeEnum.FinancialReport,
-    status: DocumentStatusEnum.Draft,
-    description: "Financial Report Description",
-    content: "Financial Report Content",
-    createdAt: "2021-07-01T00:00:00.000Z",
-    updatedAt: "2021-07-01T00:00:00.000Z",
-    createdBy: "John Doe",
-    updatedBy: "John Doe",
-
-    folderPath: "documents/financial-reports",
-    previousMetadata: {} as StructuredMetadata,
-    currentMetadata: {} as StructuredMetadata,
-    accessHistory: [],
-    report: {
-      id: 1,
-      title: "Financial Report",
-      description: "Detailed financial report for Q1",
-      reportContent: "Financial Report Content",
-      reportFileName: "financial_report.docx",
-      financialMetrics: "Q1 Financial Metrics",
-      financialReportContent: "Financial Report Content",
-      fiscalYear: 2023
-    } as FinancialReport,
-    tags: ["financial", "report", "2021"],
-    topics: ["goals", "executive summary", "financial report"],
-    highlights: ["goals", "objectives"],
-    keywords: [],
-    files: [],
+    id: "1",
+    _id: "1",
+    title: "Sample Financial Report",
+    content: {
+      value: "Financial Report Content",
+      id: "1",
+      title: "Sample Financial Report",
+      description: "This is a sample financial report",
+      subscriberId: "subscriber123",
+      category: "Finance",
+      categoryProperties: categoryProperties,
+      timestamp: new Date().toISOString(),
+      length: 1500, // Example length in characters
+      items: [], // Populate with items as necessary
+      data: {}, // Populate with appropriate data as needed
+    } as Content<any, any, StructuredMetadata<any, any>>, // Specify content structure
+    documents: [],
+    permissions: undefined,
     folders: [],
-    options: getDefaultDocumentOptions(),
-    load: function (content: any): void {
-      this.documentData = content;
-    },
-    lastModifiedDate: { value: new Date(), isModified: false } as ModifiedDate, // Initialize as not modified
-    version: {} as Version,
-    permissions: {} as DocumentPermissions,
-    versionData: {} as VersionData,
-    visibility: undefined,
-    completed: false,
-    _id: "",
-    documentSize: DocumentSize.A4,
-    lastModifiedBy: "",
-    name: "",
-    createdDate: undefined,
-    documentType: "",
-    _rev: "",
-    _attachments: undefined,
-    _links: undefined,
+    folderPath: "/path/to/folder",
+    previousContent: undefined,
+    currentContent: undefined,
+    previousMeta: {} as StructuredMetadata<T, K>,
+    currentMeta: {} as StructuredMetadata<T, K>,
+    accessHistory: [],
+    documentPhase: undefined,
+    version: undefined,
+    versionData: undefined,
+    visibility: "Public", // Example visibility
+    documentSize: {
+    // size: 1500
+  }, // Example document size
+    lastModifiedDate: {value: "", isModified: false } as ModifiedDate,
+    lastModifiedBy: "User1",
+    createdByRenamed: "User1",
+    createdDate: new Date().toISOString(),
+    documentType: "Financial Report",
+    documentData: undefined,
+    document: undefined,
+    _rev: "1",
+    _attachments: {},
+    _links: {},
     _etag: "",
     _local: false,
     _revs: [],
-    _source: undefined,
-    _shards: undefined,
-    _size: 0,
-    _version: 0,
+    _source: {},
+    _shards: {},
+    _size: 1500,
+    _version: 1,
     _version_conflicts: 0,
-    _seq_no: 0,
-    _primary_term: 0,
-    _routing: "",
-    _parent: "",
+    _seq_no: 1,
+    _primary_term: 1,
+    _routing: "someRouting",
+    _parent: "parent123",
     _parent_as_child: false,
     _slices: [],
-    _highlight: undefined,
-    _highlight_inner_hits: undefined,
-    _source_as_doc: false,
+    _highlight: {},
+    _highlight_inner_hits: {},
+    _source_as_doc: true,
     _source_includes: [],
     _routing_keys: [],
     _routing_values: [],
@@ -185,20 +188,10 @@ const documents: DocumentData[] = [
     _routing_values_as_array_of_objects_with_key: [],
     _routing_values_as_array_of_objects_with_key_and_value: [],
     _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
-    filePathOrUrl: "",
-    uploadedBy: 0,
-    uploadedAt: "",
-    tagsOrCategories: "",
-    format: "",
-    uploadedByTeamId: null,
-    uploadedByTeam: null,
-    documentPhase: undefined,
-    document: undefined,
-    all: null,
-    selectedDocument: null
   },
-  // Add more documents as needed
+  // Add more documents as necessary
 ];
+
 
 class DocumentGenerator {
   createTextDocument(
@@ -254,7 +247,7 @@ class DocumentGenerator {
 
   async loadDocumentContent(
     draftId: string | undefined,
-    document: DocumentObject,
+    document: DocumentObject<T, K, Meta>,
     newContent: CustomDocxtemplater<any>,
     dataCallback: (data: WritableDraft<DocumentObject>) => void,
     format: string,
@@ -372,7 +365,7 @@ async createCalendarEvents(options: DocumentOptions): Promise<string> {
 }
   // Define the function to save document content
   saveDocumentContent(
-    document: DocumentPath,
+    document: DocumentPath<T, K, Meta>,
     content: string
   ): Promise<string> {
     try {
@@ -411,7 +404,7 @@ async createCalendarEvents(options: DocumentOptions): Promise<string> {
 
   manageDocument(
     draftId: string,
-    documentPath: DocumentPath,
+    documentPath: DocumentPath<T, K, Meta>,
     newContent: CustomDocxtemplater<any>,
     dataCallback: (data: WritableDraft<DocumentObject>) => void,
     format: FormatEnum
@@ -442,7 +435,7 @@ async createCalendarEvents(options: DocumentOptions): Promise<string> {
 
   exportDocument(
     documentId: string,
-    documentPath: DocumentPath,
+    documentPath: DocumentPath<T, K, Meta>,
     exportPath: CustomDocxtemplater<any>,
     format: FormatEnum,
     dataCallback: (data: WritableDraft<DocumentPath>) => void,
@@ -454,7 +447,7 @@ async createCalendarEvents(options: DocumentOptions): Promise<string> {
         // Load the content of the document to export
         this.loadDocumentContent(
           documentId,
-          documentPath as DocumentObject,
+          documentPath as DocumentObject<T, K, Meta>,
           exportPath,
           dataCallback,
           format,

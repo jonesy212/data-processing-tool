@@ -359,7 +359,7 @@ declare module "drawingLibrary" {
       anticlockwise: boolean,
       options: DrawingOptions
     ) => void;
-
+    createDrawing: (name: string, content: string) => Drawing 
     // Add more drawing functions if needed
   }
 }

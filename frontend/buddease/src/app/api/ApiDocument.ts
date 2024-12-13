@@ -1,7 +1,8 @@
+// ApiDocument.ts
+import { current } from "immer";
 import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
 import { Tag } from '@/app/components/models/tracker/Tag';
 import { K, T } from './../components/models/data/dataStoreMethods';
-// ApiDocument.ts
 import {
     NotificationTypeEnum,
     useNotification,
@@ -28,13 +29,15 @@ import headersConfig from "./headers/HeadersConfig";
 
 import { ClientInformation, CustomMediaSession } from '../components/database/ClientInformation';
 import { DocumentData } from '../components/documents/DocumentBuilder';
+import { BaseData } from '../components/models/data/Data';
 import FileData from '../components/models/data/FileData';
 import { WritableDraft } from "../components/state/redux/ReducerGenerator";
 import { Document } from '../components/state/stores/DocumentStore';
 import { User } from '../components/users/User';
-import { Task } from '../typings/appTypes';
 import { endpoints } from './endpointConfigurations';
-import { BaseData } from '../components/models/data/Data';
+import { Content } from '../components/models/content/AddContent';
+import { StructuredMetadata } from '../configs/StructuredMetadata';
+import { Task } from "../components/models/tasks/Task";
 // Define the API base URL
 const API_BASE_URL = endpoints.data.documents;
 
@@ -309,13 +312,12 @@ const fetchDocumentById = createAsyncThunk<DocumentObject<T, K<T>>, number>(
 
 // Function to convert documentData to WritableDraft<DocumentObject>
 const createDraftDocument = <
-  T extends  BaseData<T>,
+  T extends  BaseData<any>,
   K extends T = T
   >(
-  data: DocumentObject<T, K>
+  data: WritableDraft<DocumentObject<T, K>>,
 ): WritableDraft<DocumentObject<T, K>> => {
   
-  // Get the languages from the window and ensure they're of type string[]
   const languages: string[] = [...window.navigator.languages];
   const supportedLanguages = languages.filter(lang =>
     Object.values(LanguageEnum).includes(lang as LanguageEnum)
@@ -324,9 +326,6 @@ const createDraftDocument = <
   return {
     ...data,
     artwork: data.artwork ? data.artwork.map(item => ({ ...item })) : [],
-    defaultView: data.defaultView ? 
-      ({ ...data.defaultView } as unknown as WritableDraft<Window>) : 
-      undefined,
     clientInformation: data.clientInformation
       ? {
           ...data.clientInformation,
@@ -345,57 +344,106 @@ const createDraftDocument = <
             : undefined,
         } as WritableDraft<ClientInformation>
       : undefined,
-    supportedLanguages: supportedLanguages.length > 0 ? supportedLanguages : ["en"], // Default to English if none are supported
+    supportedLanguages: supportedLanguages.length > 0 ? supportedLanguages : ["en"],
     doctype: data.doctype ? { ...data.doctype } as unknown as WritableDraft<DocumentType> : null,
     ownerDocument: data.ownerDocument ? { ...data.ownerDocument } as unknown as WritableDraft<Document<T, K>> : null,
     scrollingElement: data.scrollingElement ? { ...data.scrollingElement } as unknown as WritableDraft<Element> : null,
-    
+    body: data.body as unknown as WritableDraft<HTMLElement> | undefined,
     documentData: {
       ...data.documentData,
-      file: data.documentData?.file ? { ...data.documentData.file } as WritableDraft<FileData> : undefined,
-      subtasks: data.documentData?.subtasks?.map((subtask: Task) => ({
+      file: data.documentData?.file ? { ...data.documentData.file } as WritableDraft<FileData<T>> : undefined,
+      subtasks: data.documentData?.subtasks?.map((subtask) => ({
         ...subtask,
-        assignedTo: subtask.assignedTo ? { ...subtask.assignedTo } as WritableDraft<User> : null,
-        tags: subtask.tags ? Object.values(subtask.tags).map((tag: Tag<T, K<T>>) => ({ ...tag })) : [],
+        assignedTo: subtask.assignedTo ? { ...subtask.assignedTo } : null,
+        tags: subtask.tags ? Object.values(subtask.tags).map((tag) => ({ ...tag })) : [],
       })) || undefined,
     } as WritableDraft<DocumentData<T, K>>,
-    comments: data.comments ? {...data.comments } as WritableDraft<Comment<T, K>[]> : undefined
-  };
+    comments: data.comments ? {...data.comments } as WritableDraft<Comment[]> : undefined,
+    content: data.content as WritableDraft<Content<T, K>>,
+    selectedDocuments: data.selectedDocuments ? data.selectedDocuments.map(doc => ({ ...doc } as WritableDraft<DocumentData<T, K, StructuredMetadata<T, K>>>)) : undefined,
+    defaultView: data.defaultView as Window | undefined,
+  } as WritableDraft<DocumentObject<T, K>>;
+
 };
 
-
-const convertToDocumentObject = (draft: DocumentObject<T, K<T>>): DocumentObject<T, K<T>> => {
+const convertToDocumentObject = <
+  T extends BaseData<any>, 
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
+  draft: WritableDraft<DocumentObject<T, K>>
+): DocumentObject<T, K, Meta> => {  
+  
   return {
     ...draft,
-    // Convert or clean up any properties as necessary to ensure strict type compatibility
-    // For example, you may need to strip away references or reset certain properties
-    artwork: draft.artwork, // Ensure artwork is in the right format
-    // Ensure other properties are converted as necessary
-  };
+    artwork: draft.artwork ? draft.artwork.map(item => ({ ...item })) : undefined,
+    clientInformation: draft.clientInformation
+      ? {
+          ...draft.clientInformation,
+          mediaSession: draft.clientInformation.mediaSession
+            ? {
+                ...draft.clientInformation.mediaSession,
+                metadata: draft.clientInformation.mediaSession.metadata
+                  ? {
+                      ...draft.clientInformation.mediaSession.metadata,
+                      artwork: draft.clientInformation.mediaSession.metadata.artwork
+                        ? [...draft.clientInformation.mediaSession.metadata.artwork]
+                        : undefined,
+                    }
+                  : null,
+              }
+            : undefined,
+        }
+      : undefined,
+      doctype: draft.doctype
+      ? { ...draft.doctype } as unknown as DocumentType
+      : null,
+    ownerDocument: draft.ownerDocument ? { ...draft.ownerDocument } as Document<T, K> : null,
+    scrollingElement: draft.scrollingElement
+    ? { ...draft.scrollingElement } as unknown as Element
+      : null,
+    body: draft.body as HTMLElement | undefined,
+    documentData: {
+      ...draft.documentData,
+      file: draft.documentData?.file ? { ...draft.documentData.file } : undefined,
+      subtasks: draft.documentData?.subtasks?.map(subtask => ({
+        ...subtask,
+        assignedTo: subtask.assignedTo ? { ...subtask.assignedTo } : null,
+        tags: subtask.tags ? Object.values(subtask.tags).map(tag => ({ ...tag })) : [],
+      })) || undefined,
+    },
+    comments: draft.comments ? [...draft.comments] : undefined,
+    content: draft.content as Content<T, K>,
+    selectedDocuments: draft.selectedDocuments
+      ? draft.selectedDocuments.map(doc => ({ ...doc }))
+      : undefined,
+    defaultView: draft.defaultView as Window | undefined,
+  } as DocumentObject<T, K, Meta>;
 };
 
 
 
 // Mock API function for fetching a document by ID
-const fetchDocumentByIdAPI = (
+const fetchDocumentByIdAPI = <T extends BaseData<any>, K extends T = T>(
   documentId: number,
-  updateDocument: (data: WritableDraft<DocumentObject<T, K<T>>>) => void
-): Promise<DocumentObject<T, K<T>>> => {
+  updateDocument: (data: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>) => void
+): Promise<DocumentObject<T, K, StructuredMetadata<T, K>>> => {
   return new Promise(async (resolve, reject) => {  // Wrap in a new Promise
     try {
       // Use axios to fetch the document by ID
       const response = await axiosInstance.get(`/api/documents/${documentId}`);
       
       // Parse the document data from the response
-      const documentData: DocumentObject<T, K<T>> = response.data;
+      const documentData: DocumentObject<T, K, StructuredMetadata<T, K>> = response.data;
 
       // Create a draft document for updates
-      const draftDocument: WritableDraft<DocumentObject<T, K<T>>> = createDraftDocument(documentData);
+      const draftDocument: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>> = createDraftDocument(documentData as WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>);
       updateDocument(draftDocument);
 
-      // Convert draftDocument back to DocumentObject<T, K<T>> before resolving
-      const finalDocument: DocumentObject<T, K<T>> = convertToDocumentObject(draftDocument);
-      
+      // Convert draftDocument back to DocumentObject<T, K> before resolving
+      const finalDocument: DocumentObject<T, K, StructuredMetadata<T, K>> = convertToDocumentObject<T, K, StructuredMetadata<T, K>>(
+        current(draftDocument) // Convert draft to an immutable state
+      );      
       // Resolve the promise with the updated document data
       resolve(finalDocument);
     } catch (error: any) {
@@ -408,6 +456,7 @@ const fetchDocumentByIdAPI = (
     }
   });
 };
+
 
 const fetchJsonDocumentByIdAPI = async (documentId: string,
   config: DatabaseConfig,
@@ -691,7 +740,7 @@ const downloadDocument = async (
 
 // List documents API
 const listDocuments = async <
-  T extends  BaseData<T>,
+  T extends  BaseData<any>,
   K extends T = T
 >(): Promise<Document<T, K>[]> => {
   try {
@@ -874,7 +923,7 @@ const addDocument = async (newDocument: Document<T, K<T>>): Promise<Document<T, 
 
 // Update document API
 const updateDocument = async <
-  T extends  BaseData<T>,
+  T extends  BaseData<any>,
   K extends T = T>(
   documentId: string,
   updatedDocument: Document<T, K>
@@ -1435,7 +1484,7 @@ const resolveFeedbackOnDocument = async (
 
 const collaborativeEditing = async (
   documentId: string,
-  collaborators: string[]
+  collaborators: Collaborator[]
 ): Promise<any> => {
   try {
     const response = await axiosInstance.post(
@@ -2002,7 +2051,7 @@ const exportToExternalSystem = async (exportData: any): Promise<any> => {
 };
 
 const generateDocument = <
-  T extends  BaseData<T>,
+  T extends  BaseData<any>,
   K extends T = T>(
   documentData: any,
   options: DocumentOptions

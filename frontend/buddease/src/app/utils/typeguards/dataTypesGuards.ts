@@ -1,3 +1,5 @@
+import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+
 // dataTypeGuards.ts
 function isRealtimeDataItemArray(data: any[]): data is RealtimeDataItem[] {
     return data.every((item) => 

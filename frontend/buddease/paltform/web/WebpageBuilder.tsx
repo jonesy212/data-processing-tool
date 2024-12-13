@@ -12,16 +12,31 @@ import { useMovementAnimations } from "@/app/components/libraries/animations/mov
 import { WebLogger } from "@/app/components/logging/Logger";
 import axiosInstance from "@/app/components/security/csrfToken";
 import Clipboard from "@/app/ts/clipboard";
-import { Editor, EditorState, Modifier, RichUtils } from "draft-js";
+import { ContentState, Editor, EditorState, Modifier, RichUtils } from "draft-js";
 import React, { useState } from "react";
 
 const BASE_URL = "https://example.com";
 const API_BASE_URL = endpoints.web;
 
-const WebpageBuilder: React.FC = () => {
+
+interface DocumentProps {
+  title: string;
+  content: string;
+  author: string;
+  createdAt: Date;
+}
+
+// WebpageBuilderProps for passing editor and builder data
+interface WebpageBuilderProps {
+  document: DocumentProps;
+  onSave: (document: DocumentProps) => void;
+  onError: (error: string) => void;
+}
+const WebpageBuilder: React.FC<WebpageBuilderProps> = ({ document, onSave, onError }) => {
   const [editorState, setEditorState] = useState(() =>
-    EditorState.createEmpty()
+    EditorState.createWithContent(ContentState.createFromText(document.content))
   );
+
     
   const { panelSizes, handleResize } = useResizablePanels();
   const { slide, drag, show } = useMovementAnimations();

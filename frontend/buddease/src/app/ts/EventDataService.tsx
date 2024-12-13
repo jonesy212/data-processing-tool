@@ -1,6 +1,5 @@
 // EventDataService.tsx
-
-import { CalendarEvent } from "../components/state/stores/CalendarEvent";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import axiosInstance from '../components/security/csrfToken';
 import { AxiosResponse } from "axios";
 import { Config } from "../api/ApiConfig";

@@ -70,14 +70,14 @@ const useRealtimeData = <T extends RealtimeDataItem, K extends T = T>(
       }
     );  
 
-    socket.on("connect_error", (error) => {
+    socket.on("connect_error", (error: any) => {
       console.error("WebSocket connection error:", error);
       setTimeout(() => {
         socket.connect();
       }, 3000); // Retry connection after 3 seconds
     });
 
-    socket.on("disconnect", (reason) => {
+    socket.on("disconnect", (reason: string) => {
       console.log("WebSocket disconnected:", reason);
       if (reason === "io server disconnect") {
         socket.connect();

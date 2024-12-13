@@ -1,5 +1,5 @@
 // Import necessary libraries
-import axios from 'axios';
+import axiosInstance from "@/app/components/security/csrfToken";
 import React, { useEffect, useState } from "react";
 
 const UserActivityLogComponent = () => {
@@ -11,11 +11,11 @@ const UserActivityLogComponent = () => {
     const fetchUserActivityLog = async () => {
       try {
         // Make a GET request to the backend endpoint
-        const response = await axios.get('/auth/user-activity-log');
+        const response = await axios
 
         // Update the state with the fetched user activity log
         setUserActivityLog(response.data);
-      } catch (error) {
+      } catch (error: any) {
         // Handle errors
         setError(error.message || 'An error occurred');
       } finally {

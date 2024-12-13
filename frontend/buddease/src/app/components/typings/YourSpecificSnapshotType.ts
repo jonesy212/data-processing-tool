@@ -1,6 +1,6 @@
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { createSnapshot, getSnapshotContainer, getSnapshotId } from "@/app/api/SnapshotApi";
 import { Subscriber } from '@/app/components/users/Subscriber';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { categoryProperties, CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { useContext } from "react";
 import { CombinedEvents } from "../hooks/useSnapshotManager";
@@ -35,7 +35,7 @@ import { Subscription } from "react-redux";
 
 // Define YourSpecificSnapshotTywpe implementing Snapshot<T, K>
 class YourSpecificSnapshotType <
- T extends  BaseData<T>,
+ T extends  BaseData<any>,
   K extends T = T,
   ExcludedFields extends keyof T = never
 >
@@ -80,7 +80,7 @@ class YourSpecificSnapshotType <
 
 
 
-function flatMapImplementation<T extends  BaseData<T>, K extends Data, U extends Iterable<any>>(
+function flatMapImplementation<T extends  BaseData<any>, K extends Data, U extends Iterable<any>>(
   array: SnapshotStoreConfig<T, K>[],
   callback: (value: SnapshotStoreConfig<T, K>, index: number, array: SnapshotStoreConfig<T, K>[]) => U
 ): U extends Iterable<infer I> ? I[] : never {
@@ -118,7 +118,7 @@ console.log(specificSnapshot.data); // Output: 'updated snapshot data'
 
 
 // Example function to map SnapshotStoreConfig to DataStore
-const convertToDataStore = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertToDataStore = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   config: SnapshotStoreConfig<T, K>[]
 ): Promise<DataStore<T, K>[]> => {
   return Promise.resolve(
@@ -238,10 +238,10 @@ const convertToDataStore = <T extends  BaseData<T>, K extends T = T, Meta extend
 
 
 
-function convertToSnapshotStoreConfig <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertToSnapshotStoreConfig <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotStore: SnapshotStore<T, K>
 ): SnapshotStoreConfig<T, any> {
-  const mappedSnapshots: Snapshots<T> =
+  const mappedSnapshots: Snapshots<T, K> =
     snapshotStore.snapshots.map((s: Snapshot<T, any>) => ({
       ...s,
       ...snapshotStore,
@@ -276,7 +276,7 @@ function convertToSnapshotStoreConfig <T extends  BaseData<T>, K extends T = T, 
 
   const mappedState: Snapshot<T, K>[] | null = snapshotStore.state
     ? snapshotStore.state.map((
-      snapshot: SnapshotUnion<T>
+      snapshot: SnapshotUnion<T, K>
     ) => ({
       ...snapshot,
       store: snapshot.store
@@ -293,7 +293,7 @@ function convertToSnapshotStoreConfig <T extends  BaseData<T>, K extends T = T, 
     }))
     : null;
 
-  function isSubscriber <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  function isSubscriber <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     obj: any
   ): obj is Subscriber<T, K> {
     return (
@@ -442,13 +442,13 @@ function convertToSnapshotStoreConfig <T extends  BaseData<T>, K extends T = T, 
   };
 }
 
-function convertSnapshotStoreConfig<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(config: SnapshotStoreConfig<any, any>): SnapshotStoreConfig<T, K> {
+function convertSnapshotStoreConfig<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(config: SnapshotStoreConfig<any, any>): SnapshotStoreConfig<T, K> {
   // Implement conversion logic for SnapshotStoreConfig
   // This is a placeholder; adjust according to your actual conversion logic
   return config as SnapshotStoreConfig<T, K>;
 }
 
-function convertSnapshotToStore <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertSnapshotToStore <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: Snapshot<T, K>
 ): SnapshotStore<T, K> {
   // Manually convert snapshot to snapshot store
@@ -639,7 +639,7 @@ function convertSnapshotToStore <T extends  BaseData<T>, K extends T = T, Meta e
   }
 }
 
-const convertSnapshotStoreToSnapshot = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertSnapshotStoreToSnapshot = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   store: SnapshotStore<T, K>
 ): Snapshot<T, K> => {
   const snapshotStoreConfig = store.getConfig();
@@ -732,14 +732,14 @@ const convertSnapshotStoreToSnapshot = <T extends  BaseData<T>, K extends T = T,
 // Export the specific snapshot type if needed
 export { YourSpecificSnapshotType };
 
-const convertSnapshotData =  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertSnapshotData =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotConfigData: SnapshotDataType<T, K> 
 ): SnapshotDataType<T, K> => {
   return snapshotConfigData
 };
 
 
-function convertToDataSnapshot <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertToDataSnapshot <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: Snapshot<T, K>
 ): Snapshot<Data, Data> {
   return {
@@ -756,7 +756,7 @@ function convertToDataSnapshot <T extends  BaseData<T>, K extends T = T, Meta ex
       callback: (snapshotStore: SnapshotStore<T, K>) => void,
       dataStore: DataStore<T, K>,
       dataStoreMethods: DataStoreMethods<T, K>,
-      metadata: UnifiedMetaDataOptions,
+      metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
       subscriberId: string, // Add subscriberId here
       endpointCategory: string | number, // Add endpointCategory here
       storeProps: SnapshotStoreProps<T, K>,
@@ -799,14 +799,14 @@ function convertToDataSnapshot <T extends  BaseData<T>, K extends T = T, Meta ex
 
 
 
-const convertSnapshoStoretData =  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertSnapshoStoretData =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotStoreConfigData: SnapshotStoreConfig<any, K>
 ): SnapshotStoreConfig<any, K> => {
   return snapshotStoreConfigData
 };
 
 
-const snapshotType =  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const snapshotType =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: Snapshot<T, K>
 ): Snapshot<T, K> => {
   const defaultCategory: Category = "defaultCategory";
@@ -851,7 +851,7 @@ const snapshotType =  <T extends  BaseData<T>, K extends T = T, Meta extends Str
 };
 
 
-const snapshotStoreType = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const snapshotStoreType = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotStore: SnapshotStore<T, K>
 ): Promise<SnapshotStore<T, K>> => {
   const defaultCategory: Category = "defaultCategory";
@@ -911,7 +911,7 @@ const isSnapshotStore = (store: any): store is SnapshotStore<BaseData, K> => {
 
 
 
-const convertSnapshotStoreItemToT =  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertSnapshotStoreItemToT =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   item: Snapshot<T, K>
 ): T => {
   if (item.data) {
@@ -926,14 +926,14 @@ const convertSnapshotStoreItemToT =  <T extends  BaseData<T>, K extends T = T, M
   }
 };
 
-const convertSnapshotStoreItemToSnapshot =  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertSnapshotStoreItemToSnapshot =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   item: Snapshot<T, K>
 ): Snapshot<T, K> => {
   return item;
 };
 
 // Function to convert SnapshotStore<BaseData> to Map<string, T>
-const convertSnapshotStoreToMap =  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertSnapshotStoreToMap =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   store: SnapshotStore<T, K>
 ): Map<string, Snapshot<T, K>> => {
   const dataMap = new Map<string, Snapshot<T, K>>();
@@ -949,7 +949,7 @@ const convertSnapshotStoreToMap =  <T extends  BaseData<T>, K extends T = T, Met
 };
 
 
-function convertMapToSnapshotStore<T extends  BaseData<T>, K extends T>(
+function convertMapToSnapshotStore<T extends  BaseData<any>, K extends T>(
   map: Map<string, Snapshot<T, K>>,
   timestamp: string | number | Date | undefined,
   storeProps: SnapshotStoreProps<T, K>
@@ -978,7 +978,7 @@ const snapshotStore = new SnapshotStore<T, K>({ storeId, name, version, schema, 
 
 
 // Convert Map<string, T> to Snapshot<BaseData, BaseData>
-function convertMapToSnapshot<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertMapToSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   map: Map<string, Snapshot<T, K>>,
   timestamp: string | number | Date | undefined
 ): SnapshotDataType<T, K> | null  {
@@ -1024,7 +1024,6 @@ function convertMapToSnapshot<T extends  BaseData<T>, K extends T = T, Meta exte
     initialState: null,
     snapshotStoreConfig: {} as SnapshotStoreConfig<T, K>,
 
-    getSnapshotItems: [],
     defaultSubscribeToSnapshots: () => Promise.resolve(),
     transformSubscriber: (sub: Subscriber<T, K>): Subscriber<T, K> => {
       return {
@@ -1183,7 +1182,6 @@ function convertMapToSnapshot<T extends  BaseData<T>, K extends T = T, Meta exte
     clearSnapshots: () => { },
     addSnapshot: () => { },
     createSnapshot: () => { },
-    snapshotStoreConfig: {} as SnapshotStoreConfig<T, K>,
     meta: {},
     getSnapshotItems: () => [],
     createInitSnapshot: () => { },
@@ -1221,7 +1219,7 @@ function convertMapToSnapshot<T extends  BaseData<T>, K extends T = T, Meta exte
       snapshotData: T,
       category: Category | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T>,
+      snapshots: SnapshotsArray<T, K>,
       type: string,
       event: Event,
       snapshotContainer?: T,
@@ -1392,8 +1390,8 @@ function convertMapToSnapshot<T extends  BaseData<T>, K extends T = T, Meta exte
 
     batchTakeSnapshot: (
       snapshotStore: SnapshotStore<T, K>,
-      snapshots: Snapshots<T>
-    ): Promise<{ snapshots: Snapshots<T>; }> => {
+      snapshots: Snapshots<T, K>
+    ): Promise<{ snapshots: Snapshots<T, K>; }> => {
       // Implement the logic to batch take snapshots
       return Promise.resolve({ snapshots });
     },
@@ -1430,7 +1428,7 @@ function convertMapToSnapshot<T extends  BaseData<T>, K extends T = T, Meta exte
     onSnapshot: () => { },
     onSnapshots: () => { },
     events: {
-      callbacks: {} as Callback<Snapshots<T>>,
+      callbacks: {} as Callback<Snapshots<T, K>>,
       eventRecords: {} as Record<string, CalendarEvent[]>
     },
 
@@ -1560,7 +1558,7 @@ function convertSnapshotContent<T extends BaseData>(
   return content;
 }
 
-function convertSnapshotToMap<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertSnapshotToMap<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: Snapshot<T, K>
 ): Map<string, any> {
   const map = new Map<string, any>();
@@ -1586,7 +1584,7 @@ function convertSnapshotToMap<T extends  BaseData<T>, K extends T = T, Meta exte
 }
 
 
-const convertSnapshotContainerToStore = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertSnapshotContainerToStore = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotContainer: SnapshotContainer<T, K>
 ): SnapshotStore<Data, BaseData> => {
   return {
@@ -1616,13 +1614,13 @@ const convertSnapshotContainerToStore = <T extends  BaseData<T>, K extends T = T
 };
 
 
-const convertToSnapshot = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertToSnapshot = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   id: string | number | undefined,
   snapshotId: string | null,
   snapshotData: SnapshotData<T, K>,
   category: symbol | string | Category | undefined,
   categoryProperties: CategoryProperties | undefined,
-  metadata: UnifiedMetaDataOptions,
+  metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
   subscriberId: string,
   endpointCategory: string | number,
   storeProps: SnapshotStoreProps<T, K>,
@@ -1653,7 +1651,7 @@ const convertToSnapshot = <T extends  BaseData<T>, K extends T = T, Meta extends
 
 
 
-function convertSnapshotMap <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertSnapshotMap <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   dataMap: Map<string, Snapshot<Data, Data>>
 ): Map<string, Snapshot<T, K>> {
   const convertedMap = new Map<string, Snapshot<T, K>>();
@@ -1666,7 +1664,7 @@ function convertSnapshotMap <T extends  BaseData<T>, K extends T = T, Meta exten
   return convertedMap;
 }
 
-function isCoreSnapshot<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isCoreSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: any
 ): snapshot is CoreSnapshot<T, K> {
   return snapshot && Array.isArray(snapshot.children) && typeof snapshot.id === 'string';

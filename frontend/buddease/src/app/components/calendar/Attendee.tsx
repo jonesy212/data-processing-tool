@@ -1,8 +1,9 @@
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { projectMetadata, transformProjectToStructured } from "@/app/configs/StructuredMetadata";
+import { projectMetadata, transformProjectToUnifiedMetadata } from "@/app/configs/StructuredMetadata";
 import { useState } from "react";
 import { getDefaultDocumentOptions } from "../documents/DocumentOptions";
 import { BaseData, Data } from "../models/data/Data";
+import { K, T } from '../models/data/dataStoreMethods';
 import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { Team } from "../models/teams/Team";
 import { Member } from "../models/teams/TeamMembers";
@@ -147,7 +148,7 @@ const useAttendeeAvailabilityAnalysis = (
       // Add more busy times as needed
     ];
 
-    event.attendees?.forEach((attendee: Member["memberName"]) => {
+    event.attendees?.forEach((attendee: Attendee) => {
       attendeeBusyTimes[attendee.email] = busyTimes;
     });
 
@@ -166,10 +167,10 @@ const useAttendeeAvailabilityAnalysis = (
 
 export { useAttendeeAvailabilityAnalysis };
 export type {
-  Attendee,
-  AttendeeAvailability, AttendeeAvailabilityPrediction,
-  AttendeeAvailabilityPredictionConfidenceInterval, BusyTime,
-  ExtendedAttendeeAvailability
+    Attendee,
+    AttendeeAvailability, AttendeeAvailabilityPrediction,
+    AttendeeAvailabilityPredictionConfidenceInterval, BusyTime,
+    ExtendedAttendeeAvailability
 };
 
 const event: CalendarEvent = {
@@ -178,7 +179,7 @@ const event: CalendarEvent = {
   date: new Date(),
   startDate: new Date(),
   endDate: new Date(),
-  metadata: transformProjectToStructured(projectMetadata), // Transform ProjectMetadata to StructuredMetadata
+  metadata: transformProjectToUnifiedMetadata(projectMetadata), // Transform ProjectMetadata to StructuredMetadata
   rsvpStatus: "notResponded",
   host: {} as Member,
   color: "",
@@ -196,7 +197,7 @@ const event: CalendarEvent = {
   then: implementThen,
   analysisType: {} as AnalysisTypeEnum,
   analysisResults: [],
-  videoData: {} as VideoData<Data, K>,
+  videoData: {} as VideoData<Data<T>, K<T>>,
   content: "Event content",
   topics: [],
   highlights: [],
@@ -283,5 +284,5 @@ const calendarManagerState: CalendarManagerState = {
 
 export default calendarManagerState;
 export { event };
-export type { AttendeeAvailabilityAnalysis };
+export type { AttendeeAvailabilityAnalysis, Attendee };
 

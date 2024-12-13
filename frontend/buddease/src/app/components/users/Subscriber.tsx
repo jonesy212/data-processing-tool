@@ -1,93 +1,94 @@
 import apiNotificationsService from "@/app/api/NotificationsService";
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { addSnapshot } from "@/app/api/SnapshotApi";
+import { Payload, UpdateSnapshotPayload } from "@/app/components/database/Payload";
+import { TriggerIncentivesParams } from "@/app/components/utils/applicationUtils";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { BaseDatabaseService } from "@/app/configs/DatabaseConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { config } from "process";
 import { SubscriptionActions } from "../actions/SubscriptionActions";
 import { ModifiedDate } from "../documents/DocType";
 import {
-  CombinedEvents,
-  SnapshotStoreOptions,
-  convertSnapshotToContent,
+    CombinedEvents,
+    SnapshotStoreOptions,
+    convertSnapshotToContent,
 } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Content } from "../models/content/AddContent";
 import { BaseData, Data } from "../models/data/Data";
 import {
-  NotificationStatus,
-  SubscriberTypeEnum,
-  SubscriptionTypeEnum,
+    NotificationStatus,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum,
 } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import {
-  CustomSnapshotData,
-  K,
-  SnapshotConfig,
-  SnapshotData,
-  SnapshotItem,
-  SnapshotStoreConfig,
-  SnapshotWithCriteria
+    CustomSnapshotData,
+    SnapshotConfig,
+    SnapshotData,
+    SnapshotItem,
+    SnapshotStoreConfig,
+    SnapshotWithCriteria
 } from "../snapshots";
 import { FetchSnapshotPayload } from "../snapshots/FetchSnapshotPayload";
 import {
-  Snapshot,
-  Snapshots,
-  SnapshotsArray,
-  createSnapshotOptions,
+    Snapshot,
+    Snapshots,
+    SnapshotsArray,
+    createSnapshotOptions,
 } from "../snapshots/LocalStorageSnapshotStore";
-import { Payload, UpdateSnapshotPayload } from "@/app/components/database/Payload";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { SnapshotStorePublicMethods } from "../snapshots/SnapshotStorePublicMethods";
 import SnapshotStoreSubset from "../snapshots/SnapshotStoreSubset";
 import {
-  addSnapshotSuccess,
-  createInitSnapshot,
-  createSnapshotFailure,
-  createSnapshotSuccess,
-  updateSnapshot,
-  updateSnapshotFailure,
-  updateSnapshotSuccess,
-  updateSnapshots,
-  updateSnapshotsSuccess,
+    addSnapshotSuccess,
+    createInitSnapshot,
+    createSnapshotFailure,
+    createSnapshotSuccess,
+    updateSnapshot,
+    updateSnapshotFailure,
+    updateSnapshotSuccess,
+    updateSnapshots,
+    updateSnapshotsSuccess,
 } from "../snapshots/snapshotHandlers";
 import {
-  clearSnapshots,
-  removeSnapshot,
+    clearSnapshots,
+    removeSnapshot,
 } from "../state/redux/slices/SnapshotSlice";
 import {
-  FetchSnapshotByIdCallback,
-  Subscription,
+    FetchSnapshotByIdCallback,
+    Subscription,
 } from "../subscriptions/Subscription";
 import { SubscriptionLevel } from "../subscriptions/SubscriptionLevel";
 import {
-  NotificationType,
-  NotificationTypeEnum,
+    NotificationType,
+    NotificationTypeEnum,
 } from "../support/NotificationContext";
 import {
-  YourSpecificSnapshotType,
-  convertMapToSnapshot,
-  convertSnapshotToStore,
+    YourSpecificSnapshotType,
+    convertMapToSnapshot,
+    convertSnapshotToStore,
 } from "../typings/YourSpecificSnapshotType";
 import { isSnapshotStoreConfig } from "../utils/snapshotUtils";
 import { sendNotification } from "./UserSlice";
-import { BaseDatabaseService } from "@/app/configs/DatabaseConfig";
 
-type SnapshotStoreDelegate <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = (
+type SnapshotStoreDelegate<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = (
   snapshot: Snapshot<T, K>,
   initialState: Snapshot<T, K>,
   snapshotConfig: SnapshotStoreConfig<
     SnapshotWithCriteria<any, BaseData>,
-    Data
+    SnapshotWithCriteria<any, BaseData<any, any, StructuredMetadata<any, any>, Attachment>
+  >
   >[]
 ) => void;
 
-type Subscribers = Subscriber<CustomSnapshotData, Data>[];
+type Subscribers = Subscriber<CustomSnapshotData<T, K>, Data>[];
 
 type SubscribeResult<T, K> = {
   subscriber: Subscriber<T, K> | null;
-  snapshots: SnapshotsArray<T>;
+  snapshots: SnapshotsArray<T, K>;
 };
 
 
@@ -100,12 +101,12 @@ interface AuditRecord {
 
 type SnapshotCallback<T> = (data: T) => void;
 
-const delegateFunction: SnapshotStoreDelegate<CustomSnapshotData, Data> = (
-  snapshot: Snapshot<CustomSnapshotData>,
-  initialState: Snapshot<CustomSnapshotData>,
+const delegateFunction: SnapshotStoreDelegate<CustomSnapshotData<T, K>, Data> = (
+  snapshot: Snapshot<CustomSnapshotData<T, K>>,
+  initialState: Snapshot<CustomSnapshotData<T, K>>,
   snapshotConfig: SnapshotStoreConfig<
     SnapshotWithCriteria<any, BaseData>,
-    Data
+    SnapshotWithCriteria<any, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>
   >[]
 ) => {
   console.log("Delegate function called with snapshot:", snapshot);
@@ -113,7 +114,7 @@ const delegateFunction: SnapshotStoreDelegate<CustomSnapshotData, Data> = (
   console.log("Snapshot config:", snapshotConfig);
 };
 
-function convertSnapshotToSpecificType <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertSnapshotToSpecificType <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: Snapshot<T, K>
 ): Snapshot<T, K> {
   const newData = new Map<string, Snapshot<T, K>>();
@@ -143,7 +144,7 @@ function convertSnapshotToSpecificType <T extends  BaseData<T>, K extends T = T,
   };
 }
 
-function convertSnapshotItem <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertSnapshotItem <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   item: SnapshotItem<T, K>
 ): SnapshotItem<T, K> {
   // Ensure that `message` is a string and not undefined
@@ -335,7 +336,7 @@ function convertSnapshotItem <T extends  BaseData<T>, K extends T = T, Meta exte
 
 
 
-function convertSnapshotStore<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertSnapshotStore<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   store: SnapshotStore<T, K>
 ): SnapshotStorePublicMethods<T, K> {
   // Get the snapshot items array using the public method
@@ -346,7 +347,7 @@ function convertSnapshotStore<T extends  BaseData<T>, K extends T = T, Meta exte
     if (isSnapshotStoreConfig(item)) {
       // Use a type assertion here if you're sure about the types
       return convertSnapshotStoreConfig(
-          item as unknown as SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K>,
+          item as unknown as SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, StructuredMetadata<BaseData<any, any, StructuredMetadata<T, K>, Attachment>, K>, K>,
       );
       } else {
         return item as unknown as Snapshot<T, K>;
@@ -487,7 +488,7 @@ function convertSnapshotStore<T extends  BaseData<T>, K extends T = T, Meta exte
   } as SnapshotStorePublicMethods<T, K>;
 }
 
-const createSnapshotConfig =  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const createSnapshotConfig =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotStore: SnapshotStore<T, K>,
   snapshotContent?: Snapshot<T, K>
 ): SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K> => {
@@ -510,12 +511,12 @@ const createSnapshotConfig =  <T extends  BaseData<T>, K extends T = T, Meta ext
       id: string | number,
       snapshotId: string | null,
       snapshot: Snapshot<T, K> | null,
-      snapshots: Snapshots<T>,
+      snapshots: Snapshots<T, K>,
       category: string | symbol | Category | undefined,
       type: string,
       event: Event,
       snapshotContainer?: T,
-      snapshotStoreConfig?: SnapshotStoreConfig<T, K> | null, 
+      snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>  | null, 
     ): Promise<Snapshot<T, K> | null> => {
       if (snapshot) {
         console.log(`Handling snapshot with ID: ${snapshotId}`);
@@ -529,7 +530,7 @@ const createSnapshotConfig =  <T extends  BaseData<T>, K extends T = T, Meta ext
     subscribers: [],
     category: "default-category",
     getSnapshotId: async () => "default-id",
-    snapshot: async  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+    snapshot: async  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
       id: string,
       snapshotId: string | null,
       snapshotData: SnapshotData<T, K>,
@@ -578,7 +579,7 @@ const createSnapshotConfig =  <T extends  BaseData<T>, K extends T = T, Meta ext
       category?: string | Category,
       categoryProperties?: string | CategoryProperties,
       callback?: (snapshot: Snapshot<SnapshotWithCriteria<any, BaseData>, K>) => void,
-      SnapshotData?: SnapshotStore<T, K>,
+      snapshotData?: SnapshotStore<T, K>,
       snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
       snapshotStoreConfigSearch?: SnapshotStoreConfig<
         SnapshotWithCriteria<any, BaseData>,
@@ -612,7 +613,7 @@ const createSnapshotConfig =  <T extends  BaseData<T>, K extends T = T, Meta ext
   };
 };
 
-function convertSnapshotStoreConfig <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertSnapshotStoreConfig <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K>,
 ): SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K> {
   // Map or transform the fields as needed to match T and K types
@@ -624,7 +625,7 @@ function convertSnapshotStoreConfig <T extends  BaseData<T>, K extends T = T, Me
   };
 }
 
-interface SubscriberCallback <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface SubscriberCallback <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   id: string;
   _id: string;
   handleCallback: (data: Snapshot<T, K>) => void;
@@ -641,7 +642,7 @@ function hasTriggerIncentives(
 
 
 class Subscriber<
-  T extends BaseData<T>,
+  T extends BaseData<any>,
   K extends T = T, 
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
   > {
@@ -651,15 +652,14 @@ class Subscriber<
   private readonly name: string;
   private subscription: Subscription<T, K>;
   private subscriptionLevel: SubscriptionLevel; // Updated to hold a subscription level
-
   private subscriberId: string;
   private subscribersById: Map<string, Subscriber<T, K>> | undefined =
-    new Map();
+  new Map();
   private subscribers: SubscriberCallback<T, K>[] = []; // Use the SubscriberCallback type here
   private onSnapshotCallbacks: SubscriberCallback<T, K>[] = []; // Updated to SubscriberCallback
   private internalState: Map<string, Snapshot<T, K>> = new Map();
   private internalCache: Map<string, T>;
-
+  
   private onErrorCallbacks: ((error: Error) => void)[] = [];
   private onUnsubscribeCallbacks: ((data: Snapshot<T, K>) => void)[] = [];
   private state?: T | null = null;
@@ -669,17 +669,14 @@ class Subscriber<
   private updateProjectState: Function | undefined;
   private logActivity: Function | undefined;
   private triggerIncentives: (({ userId, incentiveType, params }: TriggerIncentivesParams) => void) | undefined;
-  private optionalData: CustomSnapshotData | null;
-
+  private optionalData: CustomSnapshotData<T, K> | null;
+  
   private email: string = "";
   private enabled = false;
   private tags: string[] = [];
   private snapshotIds: string[] = [];
   private readonly payload: T | undefined;
   
-  
-  
-
   private async fetchSnapshotIds(): Promise<string[]> {
     // Simulate an asynchronous operation to fetch snapshot IDs
     return new Promise<string[]>((resolve, reject) => {
@@ -701,7 +698,7 @@ class Subscriber<
     }
 
     this.state = data.data as T; // Type assertion to ensure type safety
-
+    
     this.callbackFunction && this.callbackFunction(data);
     this.onSnapshotCallbacks.forEach((subscriber) =>
       subscriber.handleCallback(data)
@@ -712,9 +709,10 @@ class Subscriber<
     this.notifyEventSystem && this.notifyEventSystem(data);
     this.triggerIncentives && this.triggerIncentives(data);
   };
+  
 
-
-
+  
+  public subscriber?: Subscriber<T, K>;
   public callTriggerIncentives(params: TriggerIncentivesParams) {
     if (hasTriggerIncentives(this)) {
       this.triggerIncentives(params);
@@ -926,19 +924,19 @@ class Subscriber<
    * @param data - The data to transform.
    * @returns - The transformed data.
    */
-
-  private transformData(data: T): T {
+  
+  private transformData(data: Snapshot<T, K>): Snapshot<T, K> {
     // Example transformation: Add a timestamp to the data if it doesn't exist
-    if (!(data as any).timestamp) {
-      (data as any).timestamp = new Date().toISOString();
+    if (!(data.data as any).timestamp) {
+      (data.data as any).timestamp = new Date().toISOString();
     }
-
+  
     // Example: Convert data values to uppercase (assuming 'data' has a 'name' field)
-    if ("name" in data) {
-      (data as any).name = (data as any).name.toUpperCase();
+    if ("name" in data.data) {
+      (data.data as any).name = (data.data as any).name.toUpperCase();
     }
-
-    // Return the transformed data
+  
+    // Return the transformed snapshot
     return data;
   }
 
@@ -972,7 +970,7 @@ class Subscriber<
     updateProjectState: Function,
     logActivity: Function,
     triggerIncentives: Function,
-    optionalData: CustomSnapshotData | null = null,
+    optionalData: CustomSnapshotData<T, K> | null = null,
     // data: Partial<SnapshotStore<T, K>>,
     payload: T | null = null
   ) {
@@ -1061,19 +1059,20 @@ class Subscriber<
   /**
    * Public method to transform the data.
    *
-   * @param data - The data to transform.
-   * @returns - The transformed data.
+   * @param data - The **Snapshot** to transform (not just raw data `T`).
+   * @returns - The transformed **Snapshot**.
    */
-  public getTransformData(data: T): T {
+  public getTransformData(data: Snapshot<T, K>): Snapshot<T, K> {
     return this.transformData(data);
   }
+
 
   /**
    * Public method to trigger actions based on processed data.
    *
    * @param data - The processed data.
    */
-  public getTriggerActions(data: T): Promise<void> {
+  public getTriggerActions(eventType: string, eventData: any, date: Date, type: NotificationTypeEnum, data: T): Promise<void> {
     return this.triggerActions(data);
   }
 
@@ -1278,7 +1277,7 @@ class Subscriber<
     this.triggerIncentives = func;
   }
 
-  set setOptionalData(data: CustomSnapshotData | null) {
+  set setOptionalData(data: CustomSnapshotData<T, K> | null) {
     this.optionalData = data;
   }
 
@@ -1324,7 +1323,7 @@ class Subscriber<
   }
 
   // Static method to transform Subscriber
-  static transformSubscriber <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  static transformSubscriber <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     sub: Subscriber<T, K>
   ): Subscriber<BaseData, BaseData> {
     const transformedSub = new Subscriber<BaseData, BaseData>(
@@ -1336,7 +1335,7 @@ class Subscriber<
       sub.updateProjectState ? sub.updateProjectState : SubscriptionActions,
       sub.logActivity ? sub.logActivity : SubscriptionActions,
       sub.triggerIncentives ? sub.triggerIncentives : SubscriptionActions,
-      sub.optionalData as unknown as CustomSnapshotData,
+      sub.optionalData as unknown as CustomSnapshotData<T, K>,
       sub.payload as unknown as BaseData
     );
 
@@ -1503,7 +1502,7 @@ class Subscriber<
     }
   }
 
-  getOptionalData(): CustomSnapshotData | null {
+  getOptionalData(): CustomSnapshotData<T, K> | null {
     return this.optionalData;
   }
 
@@ -1728,7 +1727,7 @@ class Subscriber<
     );
   }
 
-  async snapshots(): Promise<SnapshotConfig<BaseData, K>[]> {
+  async snapshots(): Promise<SnapshotConfig<T, K>[]> {
     try {
       // Fetch snapshot IDs asynchronously
       const snapshotIds = await this.fetchSnapshotIds();
@@ -1945,7 +1944,7 @@ class Subscriber<
           snapshotData: T,
           category: Category | undefined,
           callback: (snapshot: T) => void,
-          snapshots: SnapshotsArray<T>,
+          snapshots: SnapshotsArray<T, K>,
           type: string,
           event: Event,
           snapshotContainer?: T,
@@ -2150,7 +2149,7 @@ class Subscriber<
   }
   
 
-  static createSubscriber<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  static createSubscriber<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     id: string,
     name: string,
     subscription: Subscription<T, K>,
@@ -2159,7 +2158,7 @@ class Subscriber<
     updateProjectState: Function,
     logActivity: Function,
     triggerIncentives: Function,
-    optionalData: CustomSnapshotData | null = null,
+    optionalData: CustomSnapshotData<T, K> | null = null,
     data: T | null = null
   ) {
     return new Subscriber<T, K>(
@@ -2287,7 +2286,7 @@ result.snapshots.forEach(snapshot => {
   // Do something with each snapshot
 });
 
-const sampleSnapshot: CustomSnapshotData = {
+const sampleSnapshot: CustomSnapshotData<T, K> = {
   timestamp: new Date().toISOString(),
   value: "42",
 };

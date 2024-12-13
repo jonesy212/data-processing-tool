@@ -1,8 +1,12 @@
+import { UserData } from '@/app/components/users/User';
+import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { CommonData } from '@/app/components/models/CommonData';
 import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { Data, DataDetails } from "../models/data/Data";
+import { BaseData, Data, DataDetails } from "../models/data/Data";
 import { TagsRecord } from "../snapshots";
+import { VideoMetadata } from '@/app/configs/StructuredMetadata';
+import { ExcludedFields } from '../routing/Fields';
 
 interface BaseVideoProperties {
   id?: string | number | undefined;
@@ -59,7 +63,7 @@ interface BaseVideoProperties {
 
 
 // Updated VideoCommonData Interface
-interface VideoCommonData extends CommonData<UnifiedMetaDataOptions> {
+interface VideoCommonData extends CommonData<UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>> {
   uploadedAt?: Date;
   url?: string;
   thumbnailUrl?: string;
@@ -90,9 +94,13 @@ interface VideoCommonData extends CommonData<UnifiedMetaDataOptions> {
 
 
 
-interface Video extends BaseVideoProperties {
+interface Video<
+  T extends BaseData<any> = BaseData<any>,
+  K extends T = T
+>
+  extends BaseVideoProperties {
   // Additional properties specific to `Video` if any
-  tags?: TagsRecord;
+  tags?: TagsRecord<VideoData, VideoMetadata>;
   createdAt?: Date;
   updatedAt?: Date;
   createdBy?: string;
@@ -101,7 +109,13 @@ interface Video extends BaseVideoProperties {
 }
 
 
-interface VideoData<T extends Data<T>, K extends Data<T>> extends DataDetails<T, K>, VideoCommonData, BaseVideoProperties {
+interface VideoData<
+  T extends BaseData<any>,
+  K extends  T = T,
+  // Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>
+  extends DataDetails<T, K>,
+  VideoCommonData, BaseVideoProperties {
   // Additional properties specific to `VideoData`
   size?: string; // Size of the video file in bytes
   codec?: string;
@@ -155,7 +169,7 @@ class BasicVideoGenerator {
       isFamilyFriendly: false,
       isEmbeddable: false,
       isDownloadable: false,
-      videoData: {} as VideoData<Data, Data>,
+      videoData: {} as VideoData<BaseData, BaseData>,
     };
 
     const video: Video = {
@@ -198,10 +212,12 @@ class BasicVideoGenerator {
   }}
 
 
-const videoData: VideoData<T, Meta, K> = {
-
-  resolution: "1080p",
+const video: VideoData<UserData, UserData> = {
   id: "video123",
+  video: {}, 
+  date: new Date(),
+  label: {}, 
+  resolution: "1080p",
   aspectRatio: "16:9",
   language: "English",
   subtitles: [],

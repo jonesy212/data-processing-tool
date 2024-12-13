@@ -13,9 +13,21 @@ interface DocumentFormattingOptions extends BaseFormattingOptions {
   textColor?: string;
   backgroundColor?: string;
   fontFamily?: string;
-  bold?: boolean;
-  italic?: boolean;
-  underline?: boolean;
+  bold?:
+  | boolean
+  | {
+    enabled: boolean;
+  };
+  italic?:
+  | boolean
+  | {
+    enabled: boolean;
+  };
+  underline?:
+  | boolean
+  | {
+    enabled: boolean;
+  };
   pageSize?: number;
   margins?: number | {
     top: number;

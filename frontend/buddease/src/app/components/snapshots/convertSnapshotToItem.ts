@@ -3,7 +3,7 @@
 // import { SnapshotItem } from "./SnapshotList";
 
 // // convertSnapshotToItem.ts
-// function convertSnapshotToItem<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// function convertSnapshotToItem<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
 //   snapshot: Snapshot<T, K>,
 //   id: string
 // ): SnapshotItem<T, K> {

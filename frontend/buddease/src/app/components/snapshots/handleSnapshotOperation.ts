@@ -1,11 +1,12 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
+import * as snapshotApi from "@/app/api/SnapshotApi";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
 function handleMapOperation<
-  T extends BaseData<T>, 
+  T extends BaseData<any>, 
   K extends T = T, 
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = never
@@ -68,11 +69,11 @@ function handleMapOperation<
 
 // handleSnapshotOperation.ts
 // Define handleSnapshotOperation
-const handleSnapshotOperation = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const handleSnapshotOperation = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: Snapshot<T, K>,
   config: SnapshotStoreConfig<T, K>,
   mappedData: Map<string, SnapshotStoreConfig<T, K>>,
-  operation: SnapshotOperation,
+  operation: SnapshotOperation<T, K>,
   operationType: SnapshotOperationType
 ): Promise<Snapshot<T, K> | null> => {
   try {
@@ -127,7 +128,7 @@ const handleSnapshotOperation = async <T extends  BaseData<T>, K extends T = T, 
 
 
 
-function handleSnapshotStoreConfigOperation<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function handleSnapshotStoreConfigOperation<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: Snapshot<T, K>,
   data: SnapshotStoreConfig<T, K>,
   operationType: SnapshotOperationType
@@ -175,11 +176,11 @@ function handleSnapshotStoreConfigOperation<T extends  BaseData<T>, K extends T 
 
 
 // Define handleSnapshotStoreOperation
-const handleSnapshotStoreOperation = async <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const handleSnapshotStoreOperation = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string,
   snapshotStore: SnapshotStore<T, K>,
   snapshot: Snapshot<T, K>,
-  operation: SnapshotOperation,
+  operation: SnapshotOperation<T, K>,
   operationType: SnapshotOperationType,
   callback: (snapshotStore: SnapshotStore<T, K>) => void
 ): Promise<SnapshotStoreConfig<T, K> | null> => {
@@ -196,7 +197,7 @@ const handleSnapshotStoreOperation = async <T extends  BaseData<T>, K extends T 
   const mappedData = snapshotStore.getMappedData(); // Fetch mapped data from snapshot store
 
   // Use handleSnapshotOperation within handleSnapshotStoreOperation
-  const resultSnapshot = await handleSnapshotOperation(snapshot, config, mappedData, operation, operationType);
+  const resultSnapshot = handleSnapshotOperation (snapshot, config, mappedData, operation, operationType);
 
   // Example update for SnapshotStore actions
   if (resultSnapshot) {

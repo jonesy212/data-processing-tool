@@ -1,7 +1,7 @@
-import { ModifiedDate } from "../documents/DocType";
 import { action, observable } from 'mobx';
-import Web3Provider from "../web3/Web3Provider";
 import { AuthenticationProvider } from "../auth/AuthService";
+import { ModifiedDate } from "../documents/DocType";
+import Web3Provider from "../web3/Web3Provider";
 
 class SubscriptionService {
   @observable subscribers: Record<string, ((data: any) => void)[]> = {};
@@ -76,19 +76,19 @@ class SubscriptionService {
   };
 }
 
-export const subscriptionService = new SubscriptionService();
+export const subscriptionServiceInstance = new SubscriptionService();
 export default SubscriptionService;
 
 
 // example usage
-subscriptionService.setSubscriptions({
+subscriptionServiceInstance.setSubscriptions({
   snapshot: () => console.log('Snapshot callback executed'),
 });
 
-const subscription = subscriptionService.subscriptions['snapshot'] ?? {
+const subscription = subscriptionServiceInstance.subscriptions['snapshot'] ?? {
   callback: () => {},
   usage: '',
 };
 
 
-export  { subscription }
+export { subscription };

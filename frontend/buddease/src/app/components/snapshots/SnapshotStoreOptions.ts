@@ -1,4 +1,8 @@
+
+
+
 import { BaseData } from '@/app/components/models/data/Data';
+import { SimulatedDataSource } from "./createSnapshotOptions";
 import { K } from "@/app/components/models/data/dataStoreMethods";
 import { SnapshotStoreConfig } from '@/app/components/snapshots';
 import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
@@ -10,10 +14,11 @@ import { Category } from '../libraries/categories/generateCategoryProperties';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import {
   ConfigureSnapshotStorePayload, MultipleEventsCallbacks, Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotOperation, SnapshotOperationType, Snapshots,
-  SnapshotsArray, SnapshotStoreMethod, SnapshotStoreProps, SnapshotUnion, SnapshotWithCriteria
-} from '../snapshots/index';
+  SnapshotsArray, SnapshotStoreMethod, SnapshotStoreProps,
+  SnapshotWithCriteria
+} from './index';
   
-  import { SchemaField } from './../database/SchemaField';
+  import { SchemaField } from '../database/SchemaField';
 
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
@@ -22,67 +27,81 @@ import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import { DataStore, EventRecord, InitializedState } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Subscription } from '../subscriptions/Subscription';
 import { AllTypes } from '../typings/PropTypes';
-import { Subscriber, SubscribeResult } from '../users/Subscriber';
+import { Subscriber } from '../users/Subscriber';
+import { SnapshotStoreCore } from './SnapshotCore';
 
 
-type MetaDataOptions<T extends  BaseData<T>> = StructuredMetadata<T, K<T>> | ProjectMetadata<T, K<T>>;
+type MetaDataOptions<T extends  BaseData<any>,  K extends T = T> = StructuredMetadata<T, K> | ProjectMetadata<T, K>;
 
-// Define InitializedData with T and K<T>
-type InitializedData<T extends  BaseData<T>> = T | Map<string, Snapshot<T, K<T>>> | null;
+// Define InitializedData with T and K
+type InitializedData<T extends BaseData<any>, K extends T = T> = 
+  | T 
+  | Map<string, Snapshot<T, K, StructuredMetadata<T, K>>> 
+  | null;
 
-// Define InitializedDataStore with T and K<T>
-type InitializedDataStore<T extends  BaseData<T>> = T | DataStore<T, K<T>> | Map<string, SnapshotStore<T, K<T>>> | null;
+// Define InitializedDataStore with T and K
+type InitializedDataStore<T extends  BaseData<any>,  K extends T = T> = T | DataStore<T, K> | Map<string, SnapshotStore<T, K>> | null;
 
 // Renaming SnapshotStoreConfig to InitializedDelegate
-type InitializedDelegate<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
+type InitializedDelegate<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
     SnapshotStoreConfig<T, K>[] | (() => Promise<SnapshotStoreConfig<T, K>[]>);
 
 // New type for InitializedDelegateSearch
-type InitializedDelegateSearch<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
+type InitializedDelegateSearch<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
     () => Promise<SnapshotWithCriteria<T, K>[] | null>;
 
 
 
 interface SnapshotInstanceProps<
-  T extends  BaseData<T>,
-  K extends T = T
+  T extends  BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
 > extends SnapshotStoreCore<T, K> {
   name: string;
   schema: Record<string, SchemaField>;
+  options?: Record<string, any>; // General options
+  expirationDate: Date;
   additionalData?: CustomSnapshotData<T>
   description?: string; 
   priority?: string;
-  expirationDate: Date;
   version?: string;
-  operation: SnapshotOperation;     
-  id?: string | number;             
+  operation: SnapshotOperation<T, K>;     
+  id?: string | number | undefined;             
   localStorage?: Storage;           
   additionalHeaders?: Record<string, string>,
   configureSnapshot: (
     id: string,
     storeId: number,
     snapshotId: string,
-    snapshotData: SnapshotData<T, K>,
     dataStoreMethods: DataStore<T, K>,
     category?: string | symbol | Category,
     categoryProperties?: CategoryProperties | undefined,
     callback?: (snapshot: Snapshot<T, K>) => void,
-    SnapshotData?: SnapshotStore<T, K>,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, K>,
+    snapshotData?: SnapshotStore<T, K>,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, never>,
   ) => Promise<SnapshotStore<T, K>>,
 }
 
-interface SnapshotConfigOption<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+interface SnapshotConfigOption<
+  T extends BaseData<any>, 
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>
   extends Omit<SnapshotInstanceProps<T, K>, 'configureSnapshot'> {  // Exclude configureSnapshot
   snapshotStore: SnapshotStoreConfig<T, K> | null; // Define as config option
   taskIdToAssign: string;
   clearSnapshots: () => void;
   getParentId: (snapshot: Snapshot<T, K>) => string | null;
-  getChildIds: (childSnapshot: Snapshot<T, K>) => string[];
+  getChildIds: (id: string, childSnapshot: Snapshot<T, K>) => string[];
 }
 
 
-interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface SnapshotStoreOptions<
+  T extends BaseData<any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+  > {
   id: string | number | null;
   storeId: number;
   data?: InitializedData<T> | null;
@@ -90,14 +109,14 @@ interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta ext
   enabled: boolean;
   maxRetries: number;
   retryDelay: number;
-  maxAge: string | number;
+  maxAge: string | number | undefined;
   staleWhileRevalidate: number;
   cacheKey: string;
   initialState: InitializedState<T, K> | {};
   key?: string;
   keys?: string[];
   snapshotObj?: Snapshot<T, K> | null;
-  snapshots?: Snapshots<T>;
+  snapshots?: Snapshots<T, K>;
   eventRecords: Record<string, EventRecord<T, K>[]> | null;
   records: Record<string, CalendarManagerStoreClass<T, K>[]> | []; // Store calendar records
   snapshotRecords?: Record<string, Snapshot<T, K>[]>; // Add snapshotRecords to store snapshots
@@ -106,8 +125,8 @@ interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta ext
   date: string | number | Date | undefined;
   type: AllTypes;
   snapshotId?: string | number | null;
-  snapshotStoreConfig?: SnapshotStoreConfig<T, K> | undefined;
-  metadata?: UnifiedMetaDataOptions | {}
+  snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, ExcludedFields> | undefined;
+  metadata?: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields> | {}
   criteria: CriteriaType;
   callbacks: MultipleEventsCallbacks<Snapshot<T, K>>;
   snapshotConfig?: SnapshotConfig<T, K>[] | undefined;
@@ -120,11 +139,11 @@ interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta ext
     snapshotConfig: SnapshotStoreConfig<T, K>,
     callback: (
       snapshotStore: SnapshotStore<T, K>, 
-      snapshots: SnapshotsArray<T>
+      snapshots: SnapshotsArray<T, K>
     ) => Subscriber<T, K> | null,
-    snapshots: SnapshotsArray<T>,
+    snapshots: SnapshotsArray<T, K>,
     unsubscribe?: UnsubscribeDetails, 
-  ) => SnapshotsArray<T> | [];
+  ) => SnapshotsArray<T, K> | [];
 
   subscribeToSnapshot: (
     snapshotId: string,
@@ -148,15 +167,10 @@ interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta ext
   ) => void;
   delegate: InitializedDelegate<T, K> | null;
   searchDelegate?: InitializedDelegateSearch<T, K>;
-  getDelegate: (
-    | []
-    | (
-      (context: {
-        useSimulatedDataSource: boolean;
-        simulatedDataSource: SnapshotStoreConfig<T, K>[];
-      }) => SnapshotStoreConfig<T, K>[]
-    )
-  );
+  getDelegate: (context: {
+    useSimulatedDataSource: boolean;
+    simulatedDataSource: SnapshotStoreConfig<T, K>[];
+  }) => Promise<DataStore<T, K>[]>;
   
   getCategory: (
     snapshotId: string,
@@ -164,6 +178,7 @@ interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta ext
     type: string,
     event: Event,
     snapshotConfig: SnapshotConfig<T, K>,
+    categoryProps?: Category,
     additionalHeaders?: Record<string, string>
   ) => Promise<{ categoryProperties?: CategoryProperties; snapshots: Snapshot<T, K>[] }>;
 
@@ -198,7 +213,7 @@ interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta ext
       categoryProperties?: CategoryProperties | undefined,
       callback?: (snapshot: Snapshot<T, K>) => void,
       snapshotStore?: SnapshotStore<T, K>,
-      snapshotStoreConfig?: SnapshotStoreConfig<T, K>,
+      snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> ,
     ) => Promise<SnapshotStore<T, K>>,
   
     configureSnapshotStore: (
@@ -230,7 +245,7 @@ interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta ext
     snapshot: Snapshot<T, K>,
     data: SnapshotStoreConfig<T, K>,
     mappedData: Map<string, SnapshotStoreConfig<T, K>>,
-    operation: SnapshotOperation,
+    operation: SnapshotOperation<T, K>,
     operationType: SnapshotOperationType
   ) => Promise<Snapshot<T, K> | null> ;
 
@@ -240,7 +255,7 @@ interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta ext
     snapshotStore: SnapshotStore<T, K>,
     snapshot: Snapshot<T, K>,
     
-    operation: SnapshotOperation,
+    operation: SnapshotOperation<T, K>,
     operationType: SnapshotOperationType,
     callback: (snapshotStore: SnapshotStore<T, K>) => void,
   ) => Promise<SnapshotStoreConfig<T, K> | null>;
@@ -268,11 +283,11 @@ interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta ext
       snapshotData: SnapshotData<T, K>,
       category: symbol | string | Category | undefined,
       categoryProperties: CategoryProperties | undefined,
-      callback: (snapshotStore: Snapshot<T, K>) => void,
+      callback: (snapshotStore: SnapshotStore<T, K> | null) => void,
       dataStore: DataStore<T, K>,
       dataStoreMethods: DataStoreMethods<T, K>,
       // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-      metadata: UnifiedMetaDataOptions,
+      metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
       subscriberId: string, // Add subscriberId here
       endpointCategory: string | number,// Add endpointCategory here
       storeProps: SnapshotStoreProps<T, K>,
@@ -300,9 +315,8 @@ interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta ext
     categoryProperties: CategoryProperties | undefined,
     callback?: (snapshot: Snapshot<T, K>) => void,
     snapshotStore?: SnapshotStore<T, K>,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, K> | null,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>  | null,
     snapshotStoreConfigSearch?: SnapshotStoreConfig<T, T>
-   
   ) => Snapshot<T, K> | null,
 
   configureSnap: (
@@ -315,7 +329,7 @@ interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta ext
     categoryProperties?: CategoryProperties | undefined,
     callback?: (snapshot: Snapshot<T, K>) => void,
     snapshotStore?: SnapshotStore<T, K>,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, K>,
+    snapsohotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> ,
   ) => SnapshotConfig<T, K> | undefined,
 
   isAutoDismiss?: boolean;
@@ -328,12 +342,15 @@ interface SnapshotStoreOptions<T extends  BaseData<T>, K extends T = T, Meta ext
   isClosable?: boolean;
   optionalData?: any;
   useSimulatedDataSource?: boolean;
-  simulatedDataSource: any;
+  simulatedDataSource: SimulatedDataSource<T, K, Meta>;
+  browserSpecific?: {
+    isMobile?: boolean;
+    browserType?: string; // e.g., "Chrome", "Firefox"
+  };
 }
 
 export type {
   InitializedData, InitializedDataStore, InitializedDelegate,
-  InitializedDelegateSearch, MetaDataOptions, SnapshotInstanceProps, SnapshotStoreOptions,
-  
+  InitializedDelegateSearch, MetaDataOptions, SnapshotInstanceProps, SnapshotStoreOptions
 };
 

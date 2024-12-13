@@ -1,5 +1,5 @@
-import { AllCategoryValues } from "@/app/components/models/data/DataStructureCategories";
 import { BaseData } from '@/app/components/models/data/Data';
+import { AllCategoryValues } from "@/app/components/models/data/DataStructureCategories";
 import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
 // Type to represent data structures for various categories
 type CategoryData<T> = {
@@ -10,7 +10,7 @@ type CategoryData<T> = {
 };
 
 // Build snapshot data dynamically based on category and role (developer or non-developer)
-const buildSnapshotData = <T extends  BaseData<T>>(context: string, category: AllCategoryValues, userRole: boolean, initialData: Partial<T> = {}): CategoryData<T> => {
+const buildSnapshotData = <T extends  BaseData<any>>(context: string, category: AllCategoryValues, userRole: boolean, initialData: Partial<T> = {}): CategoryData<T> => {
   let snapshotData: T;
 
   // Adjust category structure based on role

@@ -1,29 +1,24 @@
 //  DataStoreMethods.ts
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { Data } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/components/models/data/Data';
 import { SnapshotContainer, SnapshotData } from '@/app/components/snapshots';
 import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject } from "@/app/components/snapshots/LocalStorageSnapshotStore";
-import SnapshotStore, { SubscriberCollection } from "@/app/components/snapshots/SnapshotStore";
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { SnapshotStoreMethod } from "@/app/components/snapshots/SnapshotStoreMethod";
 import { Subscriber } from "@/app/components/users/Subscriber";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { DataStore } from "./DataStore";
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
 
-interface DataStoreWithSnapshotMethods <T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> 
+interface DataStoreWithSnapshotMethods <T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> 
   extends DataStore<T, K> {
   snapshotMethods: SnapshotStoreMethod<T, K>[] | undefined
 }
 
-
-
-
-
 export interface DataStoreMethods <
-  T extends BaseData<T>,  
+  T extends BaseData<any>,  
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
   extends DataStoreWithSnapshotMethods<T, K> { 
@@ -67,7 +62,7 @@ export interface DataStoreMethods <
       data: K,
       index: number
     ) => SnapshotsObject<T, K>
-  ) => Promise<SnapshotsArray<T>>
+  ) => Promise<SnapshotsArray<T, K>>
 
   addSnapshot: (snapshot: Snapshot<T, K>,
     snapshotId: string,
@@ -95,10 +90,10 @@ export interface DataStoreMethods <
 
   getSnapshotSuccess: (snapshot: Snapshot<T, K>, subscribers: Subscriber<T, K>[]) => Promise<SnapshotStore<T, K>>;
   
-  getSnapshotsByTopic: (topic: string) => Promise<Snapshots<T>>;
+  getSnapshotsByTopic: (topic: string) => Promise<Snapshots<T, K>>;
 
-  getSnapshotsByCategory: (category: string) => Promise<Snapshots<T>>;
-  getSnapshotsByPriority: (priority: string) => Promise<Snapshots<T>>;
+  getSnapshotsByCategory: (category: string) => Promise<Snapshots<T, K>>;
+  getSnapshotsByPriority: (priority: string) => Promise<Snapshots<T, K>>;
 
   addData: (
     id: string,
@@ -112,18 +107,20 @@ export interface DataStoreMethods <
 
   getData: (
     id: number,
-    snapshot: Snapshot<T, K>
+    snapshot: Snapshot<T, K>,
+    data: Snapshot<T, K> | Snapshot<T, CustomSnapshotData & T>
   ) => Promise<SnapshotStore<T, K>[] | undefined>;
+
   removeData: (id: number) => void;
 
   updateData: (id: number, newData: Snapshot<T, K>) => void;
 
-  getSnapshotsByTopicSuccess: (snapshots: Snapshots<T>) => void;
-  getSnapshotsByCategorySuccess: (snapshots: Snapshots<T>) => void;
+  getSnapshotsByTopicSuccess: (snapshots: Snapshots<T, K>) => void;
+  getSnapshotsByCategorySuccess: (snapshots: Snapshots<T, K>) => void;
   getSnapshotsByKey: (key: string) => Promise<T[]>;
-  getSnapshotsByKeySuccess: (snapshots: Snapshots<T>) => void;
+  getSnapshotsByKeySuccess: (snapshots: Snapshots<T, K>) => void;
 
-  getSnapshotsByPrioritySuccess: (snapshots: Snapshots<T>) => void;
+  getSnapshotsByPrioritySuccess: (snapshots: Snapshots<T, K>) => void;
 
   snapshotMethods: SnapshotStoreMethod<T, K>[] | undefined;
   // More methods as required...

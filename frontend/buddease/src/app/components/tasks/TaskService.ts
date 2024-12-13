@@ -13,7 +13,10 @@ import { NotificationTypeEnum } from "../support/NotificationContext";
 
 const API_BASE_URL = endpoints.tasks;
 
-class TaskService {
+class TaskService<
+  T extends BaseData<any>,
+  K extends T = T,
+> {
 
   static instance: TaskService;
 

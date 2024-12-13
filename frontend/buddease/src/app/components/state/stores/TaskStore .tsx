@@ -1,6 +1,7 @@
 //TaskManagerStore.tsx
 import { addSnapshot } from '@/app/api/SnapshotApi';
 import { saveAs } from '@/app/components/documents/editing/autosave';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import { makeAutoObservable } from "mobx";
 import { title } from 'process';
@@ -9,7 +10,7 @@ import FilterTasksRequest from "../../../pages/searchs/FilterTasksRequest";
 import { TaskActions } from '../../actions/TaskActions';
 import useApiManager from "../../hooks/dynamicHooks/useApiManager";
 import { useSnapshotManager } from "../../hooks/useSnapshotManager";
-import { Data } from "../../models/data/Data";
+import { BaseData, Data } from "../../models/data/Data";
 import { PriorityTypeEnum, TaskStatus } from "../../models/data/StatusType";
 import { Task, tasksDataSource } from "../../models/tasks/Task";
 import { CustomSnapshotData, Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
@@ -25,6 +26,7 @@ import { taskService } from "../../tasks/TaskService";
 import { Todo } from "../../todos/Todo";
 import { Subscriber } from '../../users/Subscriber';
 import { User } from "../../users/User";
+import useSecureStoreId from '../../utils/useSecureStoreId';
 import { useApiManagerSlice } from "../redux/slices/ApiSlice";
 import { clearSnapshots, removeSnapshot } from '../redux/slices/SnapshotSlice';
 import { useTaskManagerSlice } from "../redux/slices/TaskSlice";
@@ -83,7 +85,7 @@ export interface TaskManagerStore {
   completeAllTasksFailure: (payload: { error: string }) => void;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
-  setDynamicNotificationMessage: (message: string) => void;
+   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
   takeTaskSnapshot: (taskId: string) => void;
   markTaskAsComplete: (taskId: string) => void;
 
@@ -304,30 +306,38 @@ const useTaskManagerStore = (): TaskManagerStore => {
     });
   };
 
-  const takeTaskSnapshot = async (taskId: string) => {
+  const takeTaskSnapshot = async <
+    T extends BaseData<any>,
+    K extends T = T,
+    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  >(taskId: string, storeId?: number) => {
     // Ensure the taskId exists in the tasks
     if (!tasks[taskId]) {
       console.error(`Task with ID ${taskId} does not exist.`);
       return;
     }
 
+    if(!storeId && storeId !== null){
+      storeId = useSecureStoreId()
+    }
     // Create a snapshot of the current tasks for the specified taskId
     const taskSnapshot = { [taskId]: [...tasks[taskId]] };
 
     // Store the snapshot in the SnapshotStore
-    useSnapshotManager().addSnapshot(
-      taskSnapshot as unknown as Omit<Todo, "id">
+    
+    (await useSnapshotManager(storeId)).snapshotManager.addSnapshot(
+      taskSnapshot as unknown as Omit<Todo<T, K, Meta>, "id">
     );
   };
 
-  const addTask = () => {
+  const addTask = (task: Task) => {
     // Ensure the title is not empty before adding a task
     if (taskTitle.trim().length === 0) {
       console.error("Task title cannot be empty.");
       return;
     }
 
-    const projectId = useSafeProjectId
+    const projectId = useSecurProjectId()
     const newTask = generateNewTask(
       projectId,
       title,
@@ -341,7 +351,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
       return;
     }
 
-    newTask.then((task) => {
+    newTask.then((task: Task) => {
       setTasks((prevTasks) => {
         const taskId = task.id;
         return { ...prevTasks, [taskId]: [...(prevTasks[taskId] || []), task] };
@@ -386,7 +396,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
     const taskSnapshot = { [taskId]: [...tasks[taskId]] };
     // Store the snapshot in the SnapshotStore
     useSnapshotManager().addSnapshot(
-      taskSnapshot as unknown as Omit<Todo, "id">
+      taskSnapshot as unknown as Omit<Todo<T, K, Meta>, "id">
     );
     // Update the task
     const updatedTask = { ...tasks[taskId][0], assignedUserId: newUserId };
@@ -490,7 +500,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
 
     // Store the snapshot in the SnapshotStore
     useSnapshotManager().addSnapshot(
-      taskSnapshot as unknown as Omit<Todo, "id">
+      taskSnapshot as unknown as Omit<Todo<T, K, Meta>, "id">
     );
   };
 

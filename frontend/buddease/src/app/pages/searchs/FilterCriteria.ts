@@ -1,10 +1,9 @@
 
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { extractCriteria } from '@/app/api/SnapshotApi';
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import {
-  CodingLanguageEnum,
-  LanguageEnum,
+    CodingLanguageEnum,
+    LanguageEnum,
 } from "@/app/components/communications/LanguageEnum";
 import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import { FileTypeEnum } from "@/app/components/documents/FileType";
@@ -26,36 +25,28 @@ import { FilterState } from "@/app/components/state/redux/slices/FilterSlice";
 import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
 import UserRoles from "@/app/components/users/UserRoles";
 import { IdeaCreationPhaseEnum } from "@/app/components/users/userJourney/IdeaCreationPhase";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { MessageType } from "@/app/generators/MessaageType";
 import { CategoryProperties } from "../personas/ScenarioBuilder";
 import {
-  BookmarkStatus,
-  CalendarStatus,
-  DataStatus,
-  DevelopmentPhaseEnum,
-  NotificationStatus,
-  PriorityTypeEnum,
-  PrivacySettingEnum,
-  ProjectPhaseTypeEnum,
-  StatusType,
-  SubscriberTypeEnum,
-  SubscriptionTypeEnum,
-  TaskStatus,
-  TeamStatus,
-  TodoStatus,
+    BookmarkStatus,
+    CalendarStatus,
+    DataStatus,
+    DevelopmentPhaseEnum,
+    NotificationStatus,
+    PriorityTypeEnum,
+    PrivacySettingEnum,
+    ProjectPhaseTypeEnum,
+    StatusType,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum,
+    TaskStatus,
+    TeamStatus,
+    TodoStatus,
 } from "./../../components/models/data/StatusType";
 import { CriteriaType } from "./CriteriaType";
 
 
-
-interface FilterCriteria extends Timestamped, StatusTrackable {
-  description?: string | null | undefined;
-  priority?: string | PriorityTypeEnum | null;
-  notificationType?: NotificationTypeEnum | null;
-  projectPhase?: ProjectPhaseTypeEnum | null;
-  // other existing properties unique to FilterCriteria
-  // ...
-}
 
 interface FilterCriteria extends Timestamped, StatusTrackable {
   description?: string | null | undefined;
@@ -455,7 +446,9 @@ const events: CalendarEvent[] = [
       profileVisibility: "",
       profileAccessControl: undefined,
       activityStatus: "",
-      isAuthorized: false
+      isAuthorized: false,
+      childIds: [],
+      relatedData: []
     },
     participants: [],
     teamMemberId: "",
@@ -549,7 +542,7 @@ const events: CalendarEvent[] = [
       })
     },
     
-    then: function <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+    then: function <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
       callback: (newData: Snapshot<T, K>) => void
     ): Snapshot<T, K> {
      
@@ -662,7 +655,7 @@ const events: CalendarEvent[] = [
           category?: string | symbol | Category,
           callback?: (snapshot: Snapshot<T, K>) => void,
           snapshotStore?: SnapshotStore<T, K>,
-          snapshotStoreConfig?: SnapshotStoreConfig<T, K>,
+          snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> ,
         ): Snapshot<T, K> | null {
           const newSnapshot: Snapshot<T, K> = {
             id,

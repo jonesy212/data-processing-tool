@@ -1,5 +1,4 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from "@/app/api/axiosInstance";
 import headersConfig from "@/app/api/headers/HeadersConfig";
@@ -12,6 +11,7 @@ import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/c
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import DatabaseClient from "@/app/components/todos/tasks/DatabaseClient";
 import { DatasetModel } from "@/app/components/todos/tasks/DataSetModel";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { AxiosError, AxiosResponse } from "axios";
 import { PoolConfig } from 'pg';
 import configData from "../configData";
@@ -33,7 +33,7 @@ const config: PoolConfig = {
 
 
 // Unified persistSnapshot function to handle both types (Snapshot, SnapshotData) and database operations
-async function persistSnapshot<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function persistSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotData: SnapshotDataType<T, K>,
   config: DatabaseConfig,
   snapshotId: string,

@@ -110,6 +110,7 @@ interface ResponsiveDesignStoreProps {
   performanceConsiderations: Record<string, boolean>;
   viewportMetaTagSettings: Record<string, string>;
   touchFeedbackStyles: Record<string, string>;
+  collaborationBoardStore: CollaborationBoardStore;
   cssGridFlexboxSettings: {
     small: {
       container: string;
@@ -339,11 +340,28 @@ class ResponsiveDesignStore {
       large: "shrink-grow-slow",
     },
     collaborationBoardStore: {
-      boardItems: [],
-      addBoardItem: (item: BoardItem) => {},
-      removeBoardItem: (itemId: string) => {},
-      updateBoardItem: (itemId: string, updatedItem: Partial<BoardItem>) => {}
-    }
+      boardItems: [], // Correctly typed as an array of BoardItem
+      addBoardItem: (item: BoardItem) => {
+        this.responsiveProps.collaborationBoardStore.boardItems.push(item);
+      },
+      removeBoardItem: (itemId: string) => {
+        this.responsiveProps.collaborationBoardStore.boardItems =
+          this.responsiveProps.collaborationBoardStore.boardItems.filter(
+            (item) => item.id !== itemId
+          );
+      },
+      updateBoardItem: (itemId: string, updatedItem: Partial<BoardItem>) => {
+        const itemIndex = this.responsiveProps.collaborationBoardStore.boardItems.findIndex(
+          (item) => item.id === itemId
+        );
+        if (itemIndex !== -1) {
+          this.responsiveProps.collaborationBoardStore.boardItems[itemIndex] = {
+            ...this.responsiveProps.collaborationBoardStore.boardItems[itemIndex],
+            ...updatedItem,
+          };
+        }
+      },
+    },
   };
 
   @action

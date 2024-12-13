@@ -1,5 +1,8 @@
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { fetchUserAreaDimensions, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { useMetadata } from "@/app/configs/useMetadata";
 import userSettings from "@/app/configs/UserSettings";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -11,14 +14,12 @@ import { createCustomTransaction } from "../../hooks/dynamicHooks/createCustomTr
 import { FakeData } from "../../intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
 import { Category } from "../../libraries/categories/generateCategoryProperties";
-import { Phase } from "../../phases/Phase";
 import { Label } from "../../projects/branding/BrandingSettings";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
-import { InitializedState } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Snapshot, Snapshots } from "../../snapshots/LocalStorageSnapshotStore";
-import { SnapshotStore } from "../../snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
+import { EventManager, InitializedState } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { Snapshot, Snapshots, SnapshotsArray } from "../../snapshots/LocalStorageSnapshotStore";
+import SnapshotStore, {  SnapshotStoreReference} from "../../snapshots/SnapshotStore";
 import {
   SnapshotWithCriteria,
   TagsRecord,
@@ -30,6 +31,7 @@ import { ReassignEventResponse } from "../../state/stores/AssignEventStore";
 import { AuthStore } from "../../state/stores/AuthStore";
 import BrowserCheckStore from "../../state/stores/BrowserCheckStore";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
+import { HighlightColor } from '../../styling/Palette';
 import { NotificationSettings } from "../../support/NotificationSettings";
 import { taskService } from "../../tasks/TaskService";
 import TodoImpl, { Todo, UserAssignee } from "../../todos/Todo";
@@ -37,11 +39,14 @@ import { AllTypes } from "../../typings/PropTypes";
 import { Idea } from "../../users/Ideas";
 import { User } from "../../users/User";
 import UserRoles from "../../users/UserRoles";
+import { cleanEmptyStrings } from "../../utils/cleanEmptyStrings";
+import { version } from "../../versions/Version";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
+import { Phase, PhaseData, PhaseData } from '@/app/components/phases/Phase';
 import { Task } from "../tasks/Task";
 import { Team } from "../teams/Team";
-import { Member } from "../teams/TeamMembers";
+import { Collaborator, Member } from "../teams/TeamMembers";
 import { TrackerProps } from "../tracker/Tracker";
 import { Comment } from "./Comments";
 import { K, Meta, T } from "./dataStoreMethods";
@@ -52,21 +57,37 @@ import {
   StatusType,
   SubscriptionTypeEnum,
 } from "./StatusType";
+import { useMeta } from "@/app/configs/useMeta";
+import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
+import { ScheduledData } from "../../calendar/ScheduledData";
 
+interface SharedBaseData<K> {
+  childIds?: K[] | undefined;
+  relatedData?: K[] | undefined,
+}
+
+interface SharedPhaseData {
+  phase: Phase<any, any> | null;
+  priority: PriorityTypeEnum
+}
+
+
+type DataWithOmittedFields<T, K, Meta, ExcludedFields extends keyof T = never> = Omit<Data<T, K, Meta>, ExcludedFields>;
 
 // Define the interface for DataDetails
 interface DataDetails<
-  T extends  BaseData<T>,
-  K extends T = T
+  T extends  BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
 > extends CommonData<T> {
   _id?: string;
   title?: string;
   description?: string | null;
-
   details?: DetailsItem<T>;
   completed?: boolean | undefined;
-  startDate?: string | Date | undefined;
-  endDate?: string | Date | undefined;
+  startDate?: string | Date;
+  endDate?: string | Date;
   createdAt?: string | Date;
   updatedAt?: string | Date;
   type?: AllTypes;
@@ -74,18 +95,21 @@ interface DataDetails<
   isActive?: boolean;
   status?: AllStatus | null;
   uploadedAt?: Date | undefined; //
-  phase?: Phase<T, K> | null;
+  phase?: Phase<PhaseData<T, K>, K> | null;
   fakeData?: FakeData;
-  comments?: (Comment<T, K> | CustomComment)[] | undefined;
+  comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
   todos?: Todo<T, K>[];
   analysisData?: {
     snapshots?: SnapshotStore<T, K>[];
     analysisResults?: DataAnalysisResult<T>[];
   };
-  data?: Data<T>;
-  analysisType?: AnalysisTypeEnum;
+
+  data?: DataWithOmittedFields<T, K, Meta, ExcludedFields>;
+  snapshots?: Snapshots<T, K, Meta>;
+  snapshotArray?: SnapshotsArray<T, K, Meta>;
+  analysisType?: AnalysisTypeEnum | null;
   analysisResults?: string | DataAnalysisResult<T>[] | undefined;
-  todo?: Todo<T, StructuredMetadata<T, K>>;
+  todo?: Todo<T, K>;
   // Add other properties as needed
 }
 
@@ -94,14 +118,25 @@ interface DataDetailsProps<T> {
   data: T;
 }
 
-type TodoSubtasks = Todo<BaseData<any>, Meta<any>, BaseData<any>>[]  & Task<any, any>[];
+type CommonRelationship<T extends BaseData<any, any> = any,
+K extends T = T> = {
+  childIds?: K[] | undefined,
+  relatedData?: K[],
+}
 
+type TodoSubtasks = Array<
+  | Todo<BaseData<any>, BaseData<any>, StructuredMetadata<BaseData<any>, BaseData<any>>>
+  | Task<any, any>
+  >;
+
+  
 interface BaseData<
-  T extends BaseData<T> = any,
+  T extends BaseData<any, any> = any,
   K extends T = T,
-  Meta = any,
-  > {
-
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment
+> extends SharedBaseData<K>{
+  childIds?: Meta['childIds'];
   _id?: string;
   id?: string | number | undefined;
   type?: AllTypes;
@@ -112,26 +147,24 @@ interface BaseData<
   startDate?: Date;
   label?: string | Label | null;
   endDate?: Date;
-  scheduled?: boolean;
+  scheduled?: ScheduledData<T>;
+  isScheduled?: boolean;
   status?: AllStatus | null;
   timestamp?: string | number | Date | undefined;
   isActive?: boolean;
   tags?: TagsRecord<T, K> | string[] | undefined; // Update as needed based on your schema
-
-  // | Tag[];
   phase?: Phase<T, K> | null;
   phaseType?: ProjectPhaseTypeEnum;
   key?: string;
-
-  value?: number | string | Snapshot<T, K> | null;
+  value?: number | string | Snapshot<T, K, Meta> | null;
   initialState?: InitializedState<T, K>;
   dueDate?: Date | null;
   priority?: string | AllStatus | null;
   assignee?: UserAssignee | null;
-  collaborators?: string[];
-  comments?: (Comment<T, K> | CustomComment)[] | undefined;
-  attachments?: Attachment[];
-  subtasks?: TodoImpl<any, any>[];
+  collaborators?: Collaborator[];
+  comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
+  attachments?: AttachmentType[];
+  subtasks?: TodoImpl<T, K>[];
   createdAt?: string | Date | undefined;
   updatedAt?: string | Date | undefined;
   createdBy?: string | undefined;
@@ -156,7 +189,7 @@ interface BaseData<
   ideas?: Idea[];
   members?: number[] | string[] | Member[];
   leader?: User | null;
-  snapshotStores?: SnapshotStore<T, K>[];
+  snapshotStores?: SnapshotStoreReference<T, K>[];
   snapshots?: Snapshots<BaseData<T, K>>;
   text?: string;
   category?: symbol | string | Category | undefined;
@@ -169,23 +202,30 @@ interface BaseData<
   //   SnapshotWithCriteria<Data<T>>>>;
 
   // // Implement the `then` function using the reusable function
-  // then?: <T extends  BaseData<T>, K extends Data<T>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
+  // then?: <T extends  BaseData<any>, K extends Data<T>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
 }
 
-
-interface Data<T extends BaseData<T>> extends BaseData<T> {
+interface Data<
+  T extends BaseData<any> = BaseData<any, any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+> extends BaseData<any> {
   category?: symbol | string | Category | undefined;
   categoryProperties?: CategoryProperties;
-  subtasks?: TodoImpl<T, Todo<T, K, Meta>>[];
+  subtasks?: TodoImpl<any, any>[];
   actions?: SnapshotStoreConfig<T, K>[];
   snapshotWithCriteria?: SnapshotWithCriteria<T, K>;
   value?: any;
   label?: any;
-  metadata?: UnifiedMetaDataOptions<T, K, Meta, ExcludeKeys> | {};
+  metadata?: UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, keyof T> | {};
+  major?: number;
+  minor?: number;
+  patch?: number;
   [key: string]: any;
 }
-// Define the UserDetails component
 
+
+// Define the UserDetails component
 const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
   
   const getTagNames = (tags: TagsRecord<T, K<T>> | string[]): string[] => {
@@ -203,6 +243,12 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
         description: "Data descriptions",
         details: data.details,
         completed: !!data.completed,
+        label: typeof data.label === 'string' ? { text: data.label, color: "" } : (data.label || { text: "", color: "" }),
+        currentMetadata: data.currentMetadata,
+        date: data.date,
+        createdBy: data.createdBy,
+        currentMeta: data.currentMeta,
+    
       }}
       details={{
         _id: data._id,
@@ -218,6 +264,8 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
         analysisType: data.analysisType,
         analysisResults: data.analysisResults,
         updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
+        currentMetadata: data.currentMetadata,
+        currentMeta: data.currentMeta,
       }}
     />
   );
@@ -225,7 +273,11 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
 
 
 
-const coreData: Data<BaseData, Meta, K<BaseData>> = {
+const area = fetchUserAreaDimensions().toString()
+const currentMetadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(area)
+const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
+
+const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
   _id: "1",
   id: "data1",
   title: "Sample Data",
@@ -234,7 +286,8 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
   category: "Sample category",
   startDate: new Date(),
   endDate: new Date(),
-  scheduled: true,
+  isScheduled: true,
+  scheduled: {},
   status: StatusType.Pending,
   isActive: true,
   tags: {
@@ -253,7 +306,12 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
     },
   },
   phase: {
-    label: "",
+    label: {
+      text: "",
+      color: "",
+    },
+    currentMetadata: currentMetadata,
+    currentMeta: currentMeta,
     date: "",
     id: "phase1",
     name: "Phase 1",
@@ -286,7 +344,11 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
   assignee: {
     id: "assignee1",
     username: "Assignee Name",
-  } as User,
+    firstName: "",
+    lastName: "",
+    email: "",
+    tier: "",
+  } as unknown as User,
 
 
 
@@ -305,9 +367,11 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
   videoDuration: 60,
   collaborationOptions: [],
   videoData: {
-    label: {},
-     date: new Date(),
-
+    label: {
+      text: '',
+      color: ''
+    },
+    date: new Date(),
     id: "video1",
     campaignId: 123,
     resolution: "1080p",
@@ -392,9 +456,9 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
       updatedAt: new Date(),
       category: "Sample Category",
     },
-  },
-  additionalData: {},
-  ideas: [],
+    currentMetadata: currentMetadata,
+    currentMeta: currentMeta, 
+  }, additionalData: {},  ideas: [],
   members: [],
   leader: {
     id: "leader1",
@@ -427,18 +491,18 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
     followers: [],
     activityStatus: "Active",
     isAuthorized: false,
-    
+
     preferences: {
-      
       id: "",
-      name:"",
+      name: "",
       phases: [],
-      trackFileChanges: (file: FileData): FileData => {
+      trackFileChanges: (file: FileData<T>): FileData<T> => {
         return {
           id: file.id,
           title: file.title,
-          fileName: file.fileName,
           description: file.description,
+          
+          fileName: file.fileName,
           fileSize: file.fileSize,
           fileType: file.fileType,
           filePath: file.filePath,
@@ -446,7 +510,12 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
           uploadDate: file.uploadDate,
           scheduledDate: file.scheduledDate,
           createdBy: file.createdBy,
-        }
+          childIds: file.childIds,
+          relatedData: file.relatedData,
+          major:  file.major,
+          minor:  file.minor,
+          patch:  file.patch,
+        };
       },
       stroke: {
         width: 0,
@@ -454,22 +523,33 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
       },
       strokeWidth: 0,
       fillColor: "",
-      flippedX: false,
-      flippedY: false,
+      isFlippedX: false,
+      isFlippedY: false,
       x: 0,
       y: 0,
-         // Update the method signature to match the expected type
+      // Update the method signature to match the expected type
       updateAppearance: (
         newStroke: { width: number; color: string; },
         newFillColor: string,
-        updates?: { stroke: Stroke },
+        updates: {
+          stroke?: Stroke;
+          fillColor?: string;
+          borderColor?: string;
+          textColor?: string;
+          highlightColor?: HighlightColor;
+          backgroundColor?: string;
+          fontSize?: string;
+          fontFamily?: string;
+        },
+        newBorderColor?: string, // Optional new border color
+        newHighlightColor?: string
       ) => {
-      // Implement your logic here
-      // Example implementation (adjust as necessary):
-      (this as typeof coreData.preferences).stroke = newStroke; 
-      (this as typeof coreData.preferences).fillColor = newFillColor; 
+        // Implement your logic here
+        // Example implementation (adjust as necessary):
+        (this as typeof coreData.preferences).stroke = newStroke;
+        (this as typeof coreData.preferences).fillColor = newFillColor;
       },
-      refreshUI: () => {},
+      refreshUI: () => { },
     },
 
     settings: {
@@ -478,7 +558,7 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
       todos: [],
       tasks: [],
       snapshotStores: [],
-     
+
       currentPhase: {
         id: "",
         name: "",
@@ -491,7 +571,7 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
       browserCheckStore: {} as BrowserCheckStore,
       trackerStore: {
         trackers: {},
-        addTracker: (newTracker: TrackerProps) => {},
+        addTracker: (newTracker: TrackerProps) => { },
         getTracker: (id: string): TrackerProps => {
           // Ensure you return a valid TrackerProps object
           const tracker = coreData.settings.trackerStore.trackers[id];
@@ -501,51 +581,48 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
           return tracker; // Return the tracker found
         },
         getTrackers: (filter?: { id?: string | undefined; name?: string | undefined; } | undefined) => [],
-       
-        removeTracker:(trackerToRemove: TrackerProps) => {},
-        dispatch: (action: any) => {},
-       
+
+        removeTracker: (trackerToRemove: TrackerProps) => { },
+        dispatch: (action: any) => { },
       },
-     
+
       todoStore: {
-        dispatch: (action: any) => {},
+        dispatch: (action: any) => { },
         todos: {},
         todoList: [],
-        toggleTodo: (id: string) => {},
-       
+        toggleTodo: (id: string) => { },
+
         assignedTaskStore: "",
         updateTaskTitle: "",
         updateTaskDescription: "",
         updateTaskStatus: "",
-        
-
       },
       taskManagerStore: {
         tasks: {},
         taskTitle: "",
         taskDescription: "",
         taskStatus: {},
-       
 
-        fetchTasksSuccess: (payload: { tasks: Task<T, K<T>>[]; }) => {},
-        fetchTasksFailure: (payload: { error: string; }) => {},
-        fetchTasksRequest: () => {},
-        completeAllTasksSuccess: (success: string) => {},
-       
-        completeAllTasks: (payload: { task: Task<T, K<T>>[]; }) => {},
-        completeAllTasksFailure: (payload: { error: string; }) => {},
+
+        fetchTasksSuccess: (payload: { tasks: Task<T, K<T>>[]; }) => { },
+        fetchTasksFailure: (payload: { error: string; }) => { },
+        fetchTasksRequest: () => { },
+        completeAllTasksSuccess: (success: string) => { },
+
+        completeAllTasks: (payload: { task: Task<T, K<T>>[]; }) => { },
+        completeAllTasksFailure: (payload: { error: string; }) => { },
         NOTIFICATION_MESSAGE: "",
         NOTIFICATION_MESSAGES: {},
-       
-        setDynamicNotificationMessage: (message: string) => {},
-        takeTaskSnapshot: (taskId: string) => {},
-        markTaskAsComplete: (taskId: string) => {},
-        updateTaskPositionSuccess: (payload: { task: Task<T, K<T>> }) => {},
-       
-        batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task<T, K<T>>[]>)  => {},
-        batchFetchTaskSnapshotsSuccess: (taskId: Record<string, Task<T, K<T>>[]>) => {},
-        batchFetchUserSnapshotsRequest: (snapshotData: Record<string, User[]>) => {},
-       
+
+        setDynamicNotificationMessage: (message: string) => { },
+        takeTaskSnapshot: (taskId: string) => { },
+        markTaskAsComplete: (taskId: string) => { },
+        updateTaskPositionSuccess: (payload: { task: Task<T, K<T>>; }) => { },
+
+        batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task<T, K<T>>[]>) => { },
+        batchFetchTaskSnapshotsSuccess: (taskId: Record<string, Task<T, K<T>>[]>) => { },
+        batchFetchUserSnapshotsRequest: (snapshotData: Record<string, User[]>) => { },
+
 
         assignedTaskStore: {
           snapshotStore: undefined,
@@ -589,19 +666,19 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
           assignBoardAutomationToTeam: {},
           assignBoardCustomFieldToTeam: {},
 
-          assignTask: (task) => {
+          assignTask: (task: Task<T, K<T>, StructuredMetadata<T, K<T>>>) => {
             // Logic to assign a task
           },
-          assignUsersToTasks: (taskId, userIds) => {
+          assignUsersToTasks: (taskId: string, userIds: string[]) => {
             // Logic to assign users
           },
-          unassignUsersFromTasks: (taskId, userIds) => {
+          unassignUsersFromTasks: (taskId: string, userIds: string[]) => {
             // Logic to unassign users
           },
-          setDynamicNotificationMessage: (message) => {
+          setDynamicNotificationMessage: (message: Message) => {
             // Logic to set notification message
           },
-          
+
           reassignUsersToTasks: function (taskIds: string[], oldUserId: string, newUserId: string): void {
             throw new Error("Function not implemented.");
           },
@@ -629,7 +706,7 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
           assignUserFailure: function (error: string): void {
             throw new Error("Function not implemented.");
           },
-          
+
           assignMeetingToTeam: function (meetingId: string, teamId: string): Promise<AxiosResponse> {
             throw new Error("Function not implemented.");
           },
@@ -682,17 +759,17 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
           unassignNoteFromTeam: function (noteId: string, teamId: string): Promise<void> {
             throw new Error("Function not implemented.");
           },
-          setAssignedTaskStore: function (store: SnapshotStore<Snapshot< BaseData<T>, BaseData<T>>>
+          setAssignedTaskStore: function (store: SnapshotStore<Snapshot<BaseData<any>, BaseData<any>>>
           ): void {
             throw new Error("Function not implemented.");
           }
         },
-        updateTaskTitle: (title: string, taskId: string) => {},
-        updateTaskDescription: (description: string, taskId: string) => {},
-        updateTaskStatus: (description: string, taskId: string) => {},
-        
-        updateTaskDueDate: (taskId: string, dueDate: Date) => {},
-        updateTaskPriority: (taskId: string, priority: PriorityTypeEnum) => {},
+        updateTaskTitle: (title: string, taskId: string) => { },
+        updateTaskDescription: (description: string, taskId: string) => { },
+        updateTaskStatus: (description: string, taskId: string) => { },
+
+        updateTaskDueDate: (taskId: string, dueDate: Date) => { },
+        updateTaskPriority: (taskId: string, priority: PriorityTypeEnum) => { },
         filterTasksByStatus: (status: AllStatus): Task<T, K<T>>[] => {
           // Implement logic to filter tasks by their status
           return coreData.tasks.filter((task: Task<T, K<T>>) => task.status === status);
@@ -702,9 +779,9 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
           // Implement logic to count tasks by status
           return coreData.tasks.filter((task: Task<T, K<T>>) => task.status === status).length;
         },
-             
-        clearAllTasks: () => {},
-        archiveCompletedTasks: () => {},
+
+        clearAllTasks: () => { },
+        archiveCompletedTasks: () => { },
         updateTaskAssignee: (taskId: string, assignee: User) => async (dispatch: any): Promise<void> => {
           // Implement logic to update the assignee of a task
           const taskIndex = coreData.tasks.findIndex((task: Task<T, K<T>>) => task._id === taskId);
@@ -714,29 +791,29 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
             dispatch({ type: 'UPDATE_TASK_ASSIGNEE', payload: { taskId, assignee } });
           }
         },
-        
+
         getTasksByAssignee: async (tasks: Task<T, K<T>>[], assignee: User): Promise<Task<T, K<T>>[]> => {
           // Implement logic to get tasks assigned to a specific user
           return tasks.filter(task => task.assigneeId === assignee._id);
         },
-        
-        
+
+
         getTaskById: (taskId: string): Task<T, K<T>> | null => {
           // Implement logic to find a task by its ID
           return coreData.tasks.find((task: Task<T, K<T>>) => task._id === taskId) || null;
         },
-        
-        
+
+
         sortByDueDate: () => { },
-        exportTasksToCSV:  () => {},
-        dispatch: (action: any) => {},
-        addTaskSuccess: (payload: { task: Task<T, K<T>> }) => {},
-        addTask: (task: Task<T, K<T>>) => {},
-        addTasks:(tasks: Task<T, K<T>>[]) => {},
-        assignTaskToUser: (taskId: string, userId: string) => {},
-       
-        removeTask: (taskId: string) => {},
-        removeTasks: (taskIds: string[]) => {},
+        exportTasksToCSV: () => { },
+        dispatch: (action: any) => { },
+        addTaskSuccess: (payload: { task: Task<T, K<T>>; }) => { },
+        addTask: (task: Task<T, K<T>>) => { },
+        addTasks: (tasks: Task<T, K<T>>[]) => { },
+        assignTaskToUser: (taskId: string, userId: string) => { },
+
+        removeTask: (taskId: string) => { },
+        removeTasks: (taskIds: string[]) => { },
         fetchTasksByTaskId: async (taskId: string): Promise<Task<T, K<T>> | null> => {
           try {
             const response = await taskService.getTaskById(taskId);
@@ -750,120 +827,85 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
           }
         }
       }
-        
-        
-        // fetchTasksSuccess: (payload: { tasks: Task[]; }) => { },
-        
-        // fetchTasksFailure: (payload: { error: string; }) => {},
-        // fetchTasksRequest: () => {},
-        // completeAllTasksSuccess: (success: string) => {},
-        // completeAllTasks: (payload: { task: Task[]; }) =>  {},
-       
-        // completeAllTasksFailure: (payload: { error: string; }) => {},
-        // NOTIFICATION_MESSAGE: "",
-        // NOTIFICATION_MESSAGES: {},
-        // setDynamicNotificationMessage: (message: string) => {},
-       
-        // takeTaskSnapshot: (taskId: string) => {},
-        // markTaskAsComplete: (taskId: string) => {},
-        // updateTaskPositionSuccess: (payload: { task: Task; }) => {},
-        // batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task[]>) => {},
-       
+      // fetchTasksSuccess: (payload: { tasks: Task[]; }) => { },
+      // fetchTasksFailure: (payload: { error: string; }) => {},
+      // fetchTasksRequest: () => {},
+      // completeAllTasksSuccess: (success: string) => {},
+      // completeAllTasks: (payload: { task: Task[]; }) =>  {},
+      // completeAllTasksFailure: (payload: { error: string; }) => {},
+      // NOTIFICATION_MESSAGE: "",
+      // NOTIFICATION_MESSAGES: {},
+      // setDynamicNotificationMessage: (message: string) => {},
+      // takeTaskSnapshot: (taskId: string) => {},
+      // markTaskAsComplete: (taskId: string) => {},
+      // updateTaskPositionSuccess: (payload: { task: Task; }) => {},
+      // batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task[]>) => {},
+    },
 
-      },
-     
-      // iconStore: {
-      //   dispatch: "",
-      // },
-     
-      // calendarStore: {
-      //   openScheduleEventModal: "",
-      //   openCalendarSettingsPage: "",
-      //   getData: async (): Promise<SnapshotStore<T, K>[]> => {
-      //     // Implement logic to get the data
-      //     try {
-      //       // Fetch or generate data for SnapshotStore instances
-      //       const snapshotStores = await snapshotApi.getSnapshotStores();
-      //       // someDataFetchingFunction();
-      //       return snapshotStores;
-      //     } catch (error) {
-      //       console.error("Failed to get data", error);
-      //       return [];
-      //     }
-      //   },
-      //   // updateDocumentReleaseStatus: "",
-       
-      //   // getState: "",
-      //   // action: "",
-      //   // events: "",
-      //   // eventTitle: "",
-      //   // eventDescription: "",
-      //   // eventStatus: "",
-      //   // assignedEventStore: "",
-      //   // snapshotStore: "",
-      // },
-     
-      // enableGroupManagement: true,
-      // enableTeamManagement: false,
-      // idleTimeout: undefined,
-      bannerUrl: "",
-      interests: [],
-      privacySettings: {
-        isDataSharingEnabled: true,
-        dataSharing: {
-            sharingLevel: "", // 'public', 'private', etc.
-            sharingScope: "", // 'team', 'organization', 'all', etc.
-            sharingFrequency: "", // e.g., 'daily', 'weekly'
-            sharingDuration: "", // e.g., '30 days'
-            sharingPermissions: [], // e.g., 'read', 'write', 'delete'
-            sharingAccess: "", // e.g., 'public', 'private'
-            sharingLocation: "", // e.g., 'global', 'local'
-            sharingTags: [], // Optional: tags for categorization
-            sharingGroups: [], // Optional: specify groups involved
-            sharingUsers: [], // Optional: specify individual users
-            allowSharing: false,
-            allowSharingWith: [], // Users, groups, or teams allowed to share with
-            allowSharingWithTeams: [], // Teams allowed for sharing
-            allowSharingWithGroups: [], // Groups allowed for sharing
-            allowSharingWithPublic: false, // Allows sharing with the public
-            allowSharingWithTeamsAndGroups: false, // Allows sharing with both teams and groups
-            isAllowingSharingWithPublic: [],
-            isAllowingingSharingWithTeamsAndGroups: [],
-            isAllowingSharingWithPublicAndTeamsAndGroups: [],
-            isAllowingingSharingWithPublicAndTeams: [],
-            isAllowingSharingWithPublicAndTeamsAndGroupsAndPublic: [],
-            isAllowingSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: [],
-            isAllowingSharingWithTeamsAndGroups: [],
-            isAllowingSharingingWithPublicAndTeamsAndGroups: [],
-            isAllowingSharingWithPublicAndTeams: [],
-            enableDatabaseEncryption: false,
-            sharingOptions: [], // Define additional sharing options if needed
-            sharingPreferences: {
-              email: false,
-              push: false,
-              sms: false,
-              chat: false,
-              calendar: false,
-              audioCall: false,
-              videoCall: false,
-              fileSharing: false,
-              blockchainCommunication: false,
-              decentralizedStorage: false,
-              databaseEncryption: false,
-              databaseVersion: '',
-              appVersion: '',
-              enableDatabaseEncryption: false
-            }, // Add the corresponding sharing preferences
-            allowSharingWithPublicAndTeams: false,
-            allowSharingWithPublicAndGroups: false,
-            allowSharingWithPublicAndTeamsAndGroups: false,
-            allowSharingWithPublicAndTeamsAndGroupsAndPublic: false,
-            allowSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: false,                },
-            thirdPartyTracking: true,
-       
-      },
-      notifications: {
-        channels: {
+    // iconStore: {
+    //   dispatch: "",
+    // },
+    // calendarStore: {
+    //   openScheduleEventModal: "",
+    //   openCalendarSettingsPage: "",
+    //   getData: async (): Promise<SnapshotStore<T, K>[]> => {
+    //     // Implement logic to get the data
+    //     try {
+    //       // Fetch or generate data for SnapshotStore instances
+    //       const snapshotStores = await snapshotApi.getSnapshotStores();
+    //       // someDataFetchingFunction();
+    //       return snapshotStores;
+    //     } catch (error) {
+    //       console.error("Failed to get data", error);
+    //       return [];
+    //     }
+    //   },
+    //   // updateDocumentReleaseStatus: "",
+    //   // getState: "",
+    //   // action: "",
+    //   // events: "",
+    //   // eventTitle: "",
+    //   // eventDescription: "",
+    //   // eventStatus: "",
+    //   // assignedEventStore: "",
+    //   // snapshotStore: "",
+    // },
+    // enableGroupManagement: true,
+    // enableTeamManagement: false,
+    // idleTimeout: undefined,
+    bannerUrl: "",
+    interests: [],
+    privacySettings: {
+      isDataSharingEnabled: true,
+      dataSharing: {
+        sharingLevel: "", // 'public', 'private', etc.
+        sharingScope: "", // 'team', 'organization', 'all', etc.
+        sharingFrequency: "", // e.g., 'daily', 'weekly'
+        sharingDuration: "", // e.g., '30 days'
+        sharingPermissions: [], // e.g., 'read', 'write', 'delete'
+        sharingAccess: "", // e.g., 'public', 'private'
+        sharingLocation: "", // e.g., 'global', 'local'
+        sharingTags: [], // Optional: tags for categorization
+        sharingGroups: [], // Optional: specify groups involved
+        sharingUsers: [], // Optional: specify individual users
+        allowSharing: false,
+        allowSharingWith: [], // Users, groups, or teams allowed to share with
+        allowSharingWithTeams: [], // Teams allowed for sharing
+        allowSharingWithGroups: [], // Groups allowed for sharing
+        allowSharingWithPublic: false, // Allows sharing with the public
+        allowSharingWithTeamsAndGroups: false, // Allows sharing with both teams and groups
+        isAllowingSharingWithPublic: [],
+        isAllowingingSharingWithTeamsAndGroups: [],
+        isAllowingSharingWithPublicAndTeamsAndGroups: [],
+        isAllowingingSharingWithPublicAndTeams: [],
+        isAllowingSharingWithPublicAndTeamsAndGroupsAndPublic: [],
+        isAllowingSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: [],
+        isAllowingSharingWithTeamsAndGroups: [],
+        isAllowingSharingingWithPublicAndTeamsAndGroups: [],
+        isAllowingSharingWithPublicAndTeams: [],
+        enableDatabaseEncryption: false,
+        sharingOptions: [], // Define additional sharing options if needed
+        sharingPreferences: {
           email: false,
           push: false,
           sms: false,
@@ -871,8 +913,33 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
           calendar: false,
           audioCall: false,
           videoCall: false,
-          screenShare: false,
-        },
+          fileSharing: false,
+          blockchainCommunication: false,
+          decentralizedStorage: false,
+          databaseEncryption: false,
+          databaseVersion: '',
+          appVersion: '',
+          enableDatabaseEncryption: false
+        }, // Add the corresponding sharing preferences
+        allowSharingWithPublicAndTeams: false,
+        allowSharingWithPublicAndGroups: false,
+        allowSharingWithPublicAndTeamsAndGroups: false,
+        allowSharingWithPublicAndTeamsAndGroupsAndPublic: false,
+        allowSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: false,
+      },
+      thirdPartyTracking: true,
+    },
+    notifications: {
+      channels: {
+        email: false,
+        push: false,
+        sms: false,
+        chat: false,
+        calendar: false,
+        audioCall: false,
+        videoCall: false,
+        screenShare: false,
+      },
       types: {
         mention: false,
         reaction: false,
@@ -894,15 +961,15 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
         like: false,
         dislike: false,
         bookmark: false,
-        },
-      enabled:  true,
-      notificationType: "all" 
       },
-      activityLog: [],
-      socialLinks: {},
-      relationshipStatus: "",
-     
-      hobbies: ["Reading", "Traveling"],
+      enabled: true,
+      notificationType: "all"
+    },
+    activityLog: [],
+    socialLinks: {},
+    relationshipStatus: "",
+
+    hobbies: ["Reading", "Traveling"],
     skills: ["Project Management", "Software Development"],
     achievements: ["Completed 100 projects", "Employee of the Month"],
     profileVisibility: "Public",
@@ -920,280 +987,281 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
       activityStatus: "active",
       isAuthorized: false,
     },
-      // startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {},
-      // idleTimeoutDuration: 300,
-      // activePhase: "development",
-      // realTimeChatEnabled: true,
-      // todoManagementEnabled: false,
-      // notificationEmailEnabled: true,
-      // analyticsEnabled: true,
-      // twoFactorAuthenticationEnabled: true,
-      // projectManagementEnabled: true,
-      // documentationSystemEnabled: false,
-      // versionControlEnabled: true,
-      // userProfilesEnabled: true,
-      // accessControlEnabled: true,
-      // taskManagementEnabled: true,
-      // loggingAndNotificationsEnabled: true,
-      // securityFeaturesEnabled: true,
-      // theme: ThemeEnum.DARK,
-      // language: LanguageEnum.English,
-      // fontSize: 14,
-      // darkMode: true,
-      // enableEmojis: true,
-      // enableGIFs: true,
-      // emailNotifications: true,
-      // pushNotifications: true,
-      // notificationSound: "ding",
-      // timeZone: "UTC",
-      // dateFormat: "YYYY-MM-DD",
-      // timeFormat: "24-hour",
-      // defaultProjectView: "list",
-      // taskSortOrder: "priority",
-      // showCompletedTasks: true,
-      // projectColorScheme: "blue",
-      // showTeamCalendar: false,
-      // teamViewSettings: [],
-      // defaultTeamDashboard: "overview",
-      // passwordExpirationDays: 90,
-      
-      // thirdPartyApiKeys: { key1: "value1", key2: "value2" },
-      // externalCalendarSync: true,
-      // dataExportPreferences: [],
-      // dashboardWidgets: [],
-      // customTaskLabels: [],
-      // customProjectCategories: [],
-      // customTags: [],
-      // formHandlingEnabled: true,
-      // paginationEnabled: true,
-      // modalManagementEnabled: true,
-      // sortingEnabled: true,
-      // notificationSoundEnabled: true,
-      // localStorageEnabled: true,
-      // clipboardInteractionEnabled: true,
-      // deviceDetectionEnabled: true,
-      // loadingSpinnerEnabled: true,
-      // errorHandlingEnabled: true,
-      // toastNotificationsEnabled: true,
-      // datePickerEnabled: true,
-      // themeSwitchingEnabled: true,
-      // imageUploadingEnabled: true,
-      // passwordStrengthEnabled: true,
-      // browserHistoryEnabled: true,
-      // geolocationEnabled: true,
-      // webSocketsEnabled: true,
-      // dragAndDropEnabled: true,
-      // idleTimeoutEnabled: true,
-      // enableAudioChat: true,
-      // enableVideoChat: true,
-      // enableFileSharing: true,
-      // enableBlockchainCommunication: true,
-      // enableDecentralizedStorage: true,
-      // selectDatabaseVersion: "v1.0",
-      // selectAppVersion: "v1.0",
-      // enableDatabaseEncryption: true,
+    currentMetadata: {
+      area: 'coreData', 
+      currentMeta: currentMeta,
+      metadataEntries: {},
     },
-    interests: [],
-    privacySettings: {
-      isDataSharingEnabled: true,
-      dataSharing: {
-        
-
-        sharingLevel: "public",
-        sharingScope: "all",
-        sharingFrequency: "daily",
-        sharingDuration: "30 days",
-        sharingPermissions: ["read", "write", "delete"],
-        sharingAccess: "public",
-        sharingLocation: "global",
-        sharingTags: ["tag1", "tag2"],
-        sharingGroups: ["group1", "group2"],
-        sharingUsers: ["user1", "user2"],
-        sharingPreferences: {
-          email: true,
-          push: true,
-          sms: true,
-          chat: true,
-          calendar: true,
-          audioCall: false,
-          videoCall: false,
-          fileSharing: true,
-          blockchainCommunication: false,
-          decentralizedStorage: false,
-          databaseEncryption: true,
-          databaseVersion: "v1.0",
-          appVersion: "v1.0",
-          enableDatabaseEncryption: true,
-        },
-
-        allowSharing: true,
-        allowSharingWith: ["user1", "user2"],
-        allowSharingWithTeams:  ["team1", "team2"],
-        allowSharingWithGroups: ["group1", "group2"],
-       
-        allowSharingWithPublic: true,
-        isAllowingSharingWithTeamsAndGroups: ["team1", "team2"],
-        allowSharingWithTeamsAndGroups: true,
-        enableDatabaseEncryption: true,
-        isAllowingSharingWithPublicAndTeams: ["team1", "team2"],
-        allowSharingWithPublicAndTeams: true,
-       
-        allowSharingWithPublicAndGroups: true,
-        isAllowingSharingingWithPublicAndTeamsAndGroups: ["team1", "team2"],
-        allowSharingWithPublicAndTeamsAndGroups: true,
-        allowSharingWithPublicAndTeamsAndGroupsAndPublic: true,
-        isAllowingSharingWithPublicAndTeamsAndGroupsAndPublic: [""],
-        isAllowingSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: [],
-        allowSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: true,
-        isAllowingSharingWithPublic: [],
-        isAllowingingSharingWithTeamsAndGroups: [],
-        isAllowingSharingWithPublicAndTeamsAndGroups: [],
-        isAllowingingSharingWithPublicAndTeams: [],
-       
-      },
-      thirdPartyTracking: false,
-      hidePersonalInfo: true,
-      enablePrivacyMode: false,
-      enableTwoFactorAuth: true,
-      restrictVisibilityToContacts: false,
-      restrictFriendRequests: false,
-      hideOnlineStatus: false,
-      showLastSeenTimestamp: true,
-      allowTaggingInPosts: true,
-      enableLocationPrivacy: true,
-      hideVisitedProfiles: true,
-      restrictContentSharing: true,
-      enableIncognitoMode: false,
-      restrictContentSharingToContacts: false,
-      restrictContentSharingToGroups: false,
-    },
-
-    notifications: {
-      channels: {
+    currentMeta: currentMeta,
+    // startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {},
+    // idleTimeoutDuration: 300,
+    // activePhase: "development",
+    // realTimeChatEnabled: true,
+    // todoManagementEnabled: false,
+    // notificationEmailEnabled: true,
+    // analyticsEnabled: true,
+    // twoFactorAuthenticationEnabled: true,
+    // projectManagementEnabled: true,
+    // documentationSystemEnabled: false,
+    // versionControlEnabled: true,
+    // userProfilesEnabled: true,
+    // accessControlEnabled: true,
+    // taskManagementEnabled: true,
+    // loggingAndNotificationsEnabled: true,
+    // securityFeaturesEnabled: true,
+    // theme: ThemeEnum.DARK,
+    // language: LanguageEnum.English,
+    // fontSize: 14,
+    // darkMode: true,
+    // enableEmojis: true,
+    // enableGIFs: true,
+    // emailNotifications: true,
+    // pushNotifications: true,
+    // notificationSound: "ding",
+    // timeZone: "UTC",
+    // dateFormat: "YYYY-MM-DD",
+    // timeFormat: "24-hour",
+    // defaultProjectView: "list",
+    // taskSortOrder: "priority",
+    // showCompletedTasks: true,
+    // projectColorScheme: "blue",
+    // showTeamCalendar: false,
+    // teamViewSettings: [],
+    // defaultTeamDashboard: "overview",
+    // passwordExpirationDays: 90,
+    // thirdPartyApiKeys: { key1: "value1", key2: "value2" },
+    // externalCalendarSync: true,
+    // dataExportPreferences: [],
+    // dashboardWidgets: [],
+    // customTaskLabels: [],
+    // customProjectCategories: [],
+    // customTags: [],
+    // formHandlingEnabled: true,
+    // paginationEnabled: true,
+    // modalManagementEnabled: true,
+    // sortingEnabled: true,
+    // notificationSoundEnabled: true,
+    // localStorageEnabled: true,
+    // clipboardInteractionEnabled: true,
+    // deviceDetectionEnabled: true,
+    // loadingSpinnerEnabled: true,
+    // errorHandlingEnabled: true,
+    // toastNotificationsEnabled: true,
+    // datePickerEnabled: true,
+    // themeSwitchingEnabled: true,
+    // imageUploadingEnabled: true,
+    // passwordStrengthEnabled: true,
+    // browserHistoryEnabled: true,
+    // geolocationEnabled: true,
+    // webSocketsEnabled: true,
+    // dragAndDropEnabled: true,
+    // idleTimeoutEnabled: true,
+    // enableAudioChat: true,
+    // enableVideoChat: true,
+    // enableFileSharing: true,
+    // enableBlockchainCommunication: true,
+    // enableDecentralizedStorage: true,
+    // selectDatabaseVersion: "v1.0",
+    // selectAppVersion: "v1.0",
+    // enableDatabaseEncryption: true,
+  },
+  interests: [],
+  privacySettings: {
+    isDataSharingEnabled: true,
+    dataSharing: {
+      sharingLevel: "public",
+      sharingScope: "all",
+      sharingFrequency: "daily",
+      sharingDuration: "30 days",
+      sharingPermissions: ["read", "write", "delete"],
+      sharingAccess: "public",
+      sharingLocation: "global",
+      sharingTags: ["tag1", "tag2"],
+      sharingGroups: ["group1", "group2"],
+      sharingUsers: ["user1", "user2"],
+      sharingPreferences: {
         email: true,
         push: true,
-        sms: true, 
-        
-        chat: true,
-        calendar: true,  
-        audioCall: false, 
-        videoCall: false,
-        screenShare: false,
-      
-      },
-      types: {},
-      enabled: true,
-      notificationType: "push",
-    },
-    activityLog: [
-      {
-        action: "Logged in",
-        timestamp: "2023-05-10T12:00:00Z",
-        id: "",
-        activity: "",
-      },
-      {
-        action: "Updated profile",
-        timestamp: "2023-05-10T12:00:00Z",
-        id: "",
-        activity: "",
-      },
-    ],
-  socialLinks: {
-    facebook: "https://facebook.com/leader",
-      twitter: "https://twitter.com/leader",
-      website: "",
-      linkedin: "",
-      instagram: "",
-    },
-    relationshipStatus: "Single",
-    
-    activityStatus: "Online",
-    isAuthorized: true,
-    notificationPreferences: {
-      cryptoPreferences: {},
-      emailNotifications: true,
-      pushNotifications: true,
-      enableNotifications: true,
-      notificationSound: "birds",
-      notificationVolume: 50,
-      smsNotifications: true,
-      desktopNotifications: true,
-      notificationTypes: {
-        mention: true,
-        reaction: true,
-        follow: true,
-        poke: true,
-        activity: true,
-        thread: true,
-        inviteAccepted: true,
-        meeting: true,
-        directMessage: true,
-        audioCall: true,
-        videoCall: true,
-        screenShare: true,
+        sms: true,
         chat: true,
         calendar: true,
-        task: true,
-        file: true,
+        audioCall: false,
+        videoCall: false,
+        fileSharing: true,
+        blockchainCommunication: false,
+        decentralizedStorage: false,
+        databaseEncryption: true,
+        databaseVersion: "v1.0",
+        appVersion: "v1.0",
+        enableDatabaseEncryption: true,
+      },
 
-        announcement: true,
-        reminder: true,
-        project: true,
-        inApp: true,
-      },
-      customNotificationSettings: "",
-      mobile: {
-        email: true,
-        sms: false,
-        pushNotifications: true,
-        desktopNotifications: true,
-        emailFrequency: "daily",
-        smsFrequency: "daily",
-      },
-      desktop: {
-        email: true,
-        sms: false,
-        pushNotifications: true,
-        desktopNotifications: true,
-        emailFrequency: "daily",
-        smsFrequency: "daily",
-      },
-      tablet: {
-        email: true,
-        sms: false,
-        pushNotifications: true,
-        desktopNotifications: true,
-        emailFrequency: "daily",
-        smsFrequency: "daily",
-      },
+      allowSharing: true,
+      allowSharingWith: ["user1", "user2"],
+      allowSharingWithTeams: ["team1", "team2"],
+      allowSharingWithGroups: ["group1", "group2"],
+
+      allowSharingWithPublic: true,
+      isAllowingSharingWithTeamsAndGroups: ["team1", "team2"],
+      allowSharingWithTeamsAndGroups: true,
+      enableDatabaseEncryption: true,
+      isAllowingSharingWithPublicAndTeams: ["team1", "team2"],
+      allowSharingWithPublicAndTeams: true,
+
+      allowSharingWithPublicAndGroups: true,
+      isAllowingSharingingWithPublicAndTeamsAndGroups: ["team1", "team2"],
+      allowSharingWithPublicAndTeamsAndGroups: true,
+      allowSharingWithPublicAndTeamsAndGroupsAndPublic: true,
+      isAllowingSharingWithPublicAndTeamsAndGroupsAndPublic: [""],
+      isAllowingSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: [],
+      allowSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: true,
+      isAllowingSharingWithPublic: [],
+      isAllowingingSharingWithTeamsAndGroups: [],
+      isAllowingSharingWithPublicAndTeamsAndGroups: [],
+      isAllowingingSharingWithPublicAndTeams: [],
     },
-    securitySettings: {
-      securityQuestions: ["What is your pet's name?"],
-      twoFactorAuthentication: false,
-      passwordPolicy: "StandardPolicy",
-      passwordExpirationDays: 90,
-      passwordStrength: "Strong",
-      passwordComplexityRequirements: {
-        minLength: 8,
-        requireUppercase: true,
-        requireLowercase: true,
-        requireDigits: true,
-        requireSpecialCharacters: false,
-      },
-      accountLockoutPolicy: {
-        enabled: true,
-        maxFailedAttempts: 5,
-        lockoutDurationMinutes: 15,
-      },
-      accountLockoutThreshold: 5,
+    thirdPartyTracking: false,
+    hidePersonalInfo: true,
+    enablePrivacyMode: false,
+    enableTwoFactorAuth: true,
+    restrictVisibilityToContacts: false,
+    restrictFriendRequests: false,
+    hideOnlineStatus: false,
+    showLastSeenTimestamp: true,
+    allowTaggingInPosts: true,
+    enableLocationPrivacy: true,
+    hideVisitedProfiles: true,
+    restrictContentSharing: true,
+    enableIncognitoMode: false,
+    restrictContentSharingToContacts: false,
+    restrictContentSharingToGroups: false,
+  },
+
+  notifications: {
+    channels: {
+      email: true,
+      push: true,
+      sms: true,
+
+      chat: true,
+      calendar: true,
+      audioCall: false,
+      videoCall: false,
+      screenShare: false,
     },
+    types: {},
+    enabled: true,
+    notificationType: "push",
+  },
+  activityLog: [
+    {
+      action: "Logged in",
+      timestamp: "2023-05-10T12:00:00Z",
+      id: "",
+      activity: "",
+    },
+    {
+      action: "Updated profile",
+      timestamp: "2023-05-10T12:00:00Z",
+      id: "",
+      activity: "",
+    },
+  ],
+  socialLinks: {
+    facebook: "https://facebook.com/leader",
+    twitter: "https://twitter.com/leader",
+    website: "",
+    linkedin: "",
+    instagram: "",
+  },
+  relationshipStatus: "Single",
+
+  activityStatus: "Online",
+  isAuthorized: true,
+  notificationPreferences: {
+    cryptoPreferences: {},
+    emailNotifications: true,
+    pushNotifications: true,
+    enableNotifications: true,
+    notificationSound: "birds",
+    notificationVolume: 50,
+    smsNotifications: true,
+    desktopNotifications: true,
+    notificationTypes: {
+      mention: true,
+      reaction: true,
+      follow: true,
+      poke: true,
+      activity: true,
+      thread: true,
+      inviteAccepted: true,
+      meeting: true,
+      directMessage: true,
+      audioCall: true,
+      videoCall: true,
+      screenShare: true,
+      chat: true,
+      calendar: true,
+      task: true,
+      file: true,
+
+      announcement: true,
+      reminder: true,
+      project: true,
+      inApp: true,
+    },
+    customNotificationSettings: "",
+    mobile: {
+      email: true,
+      sms: false,
+      pushNotifications: true,
+      desktopNotifications: true,
+      emailFrequency: "daily",
+      smsFrequency: "daily",
+    },
+    desktop: {
+      email: true,
+      sms: false,
+      pushNotifications: true,
+      desktopNotifications: true,
+      emailFrequency: "daily",
+      smsFrequency: "daily",
+    },
+    tablet: {
+      email: true,
+      sms: false,
+      pushNotifications: true,
+      desktopNotifications: true,
+      emailFrequency: "daily",
+      smsFrequency: "daily",
+    },
+  },
+  securitySettings: {
+    securityQuestions: ["What is your pet's name?"],
+    twoFactorAuthentication: false,
+    passwordPolicy: "StandardPolicy",
+    passwordExpirationDays: 90,
+    passwordStrength: "Strong",
+    passwordComplexityRequirements: {
+      minLength: 8,
+      requireUppercase: true,
+      requireLowercase: true,
+      requireDigits: true,
+      requireSpecialCharacters: false,
+    },
+    accountLockoutPolicy: {
+      enabled: true,
+      maxFailedAttempts: 5,
+      lockoutDurationMinutes: 15,
+    },
+    accountLockoutThreshold: 5,
+  },
   emailVerificationStatus: true,
   phoneVerificationStatus: true,
   walletAddress: "0x123456789abcdef",
-  
+
   transactionHistory: [
-     createCustomTransaction({
+    createCustomTransaction({
       id: "tx1",
       amount: 100,
       date: new Date(),
@@ -1217,7 +1285,7 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
       unsignedHash: "",
       from: null,
       fromPublicKey: null,
-     
+
       isSigned(): boolean {
         return !!(this.type && this.typeName && this.from && this.signature);
       },
@@ -1261,16 +1329,16 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
         );
       },
       isCancun() {
-      return (
-        this.type === 3 &&
-        this.to !== null &&
-        this.accessList !== null &&
-        this.maxFeePerGas !== null &&
-        this.maxPriorityFeePerGas !== null &&
-        this.maxFeePerBlobGas !== null &&
-        this.blobVersionedHashes !== null
-      );
-    } ,
+        return (
+          this.type === 3 &&
+          this.to !== null &&
+          this.accessList !== null &&
+          this.maxFeePerGas !== null &&
+          this.maxPriorityFeePerGas !== null &&
+          this.maxFeePerBlobGas !== null &&
+          this.blobVersionedHashes !== null
+        );
+      },
 
       clone(): CustomTransaction {
         const clonedData: CustomTransaction = {
@@ -1281,10 +1349,9 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
           description: this.description || "",
           startDate: this.startDate ? new Date(this.startDate) : undefined,
           endDate: this.endDate ? new Date(this.endDate) : undefined,
-          isSigned:
-            typeof this.isSigned === "function"
-              ? this.isSigned.bind(this)
-              : this.isSigned,
+          isSigned: typeof this.isSigned === "function"
+            ? this.isSigned.bind(this)
+            : this.isSigned,
           serialized: this.serialized || "",
           unsignedSerialized: this.unsignedSerialized || "",
           inferType: this.inferType?.bind(this),
@@ -1398,19 +1465,36 @@ const coreData: Data<BaseData, Meta, K<BaseData>> = {
       },
     }),
   ],
-  getData: function (): Promise<SnapshotStore< BaseData<T>, BaseData<T>, Meta<T, K<T>>>[]> {
+  getData: function (): Promise<SnapshotStore<BaseData<any>, BaseData<any>, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>>,
+    BaseData<any, any, StructuredMetadata<any, any>>>>[]> {
     return Promise.resolve([]);
   },
+
+  metadata: {
+    version: "",
+    permissions: [],
+    childIds: [],
+    relatedData: [],
+  },
+
+  configuration: {
+    timeout: 0,
+    retryAttempts: 0,
+    apiEndpoint: '',
+    apiKey: undefined,
+  },
+
 };
 
 export type {
-  BaseData,
-  Data,
+  BaseData, CommonRelationship, Data,
   DataDetails,
   DataDetailsComponent,
-  DataDetailsProps,
-  TodoSubtasks
+  DataDetailsProps, SharedBaseData, TodoSubtasks
 };
 
-  export { coreData };
 
+// Clean the coreData to replace empty strings with null
+const cleanedCoreData = cleanEmptyStrings(coreData);
+
+  export { cleanedCoreData };

@@ -6,6 +6,7 @@ import { Callback, SnapshotData, SnapshotStoreConfig, SnapshotStoreProps, Snapsh
 import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { Subscriber } from '@/app/components/users/Subscriber';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
 import { Content } from '../models/content/AddContent';
@@ -14,7 +15,7 @@ import { Subscription } from '../subscriptions/Subscription';
 import { NotificationType } from '../support/NotificationContext';
 
 interface SnapshotSubscriberManagement<
-  T extends BaseData<T>,
+  T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > {
@@ -25,10 +26,10 @@ interface SnapshotSubscriberManagement<
 
     getSubscribers: (
         subscribers: Subscriber<T, K>[], 
-        snapshots: Snapshots<T>
+        snapshots: Snapshots<T, K>
     )=> Promise<{
         subscribers: Subscriber<T, K>[]; 
-        snapshots: Snapshots<T>;
+        snapshots: Snapshots<T, K>;
     }>
     
     notifySubscribers: (
@@ -46,17 +47,17 @@ interface SnapshotSubscriberManagement<
         data: any,
         date: Date,
         type: NotificationType,
-        notificationPosition?: NotificationPosition
+        notificationPosition?: NotificationPosition | undefined
     ) => void;
     
-    subscribe: (snapshotId: string | number,
+    subscribe: (snapshotId: string | number | null,
         unsubscribe: UnsubscribeDetails,
         subscriber: Subscriber<T, K> | null,
         data: T,
         event: Event,
         callback: Callback<Snapshot<T, K>>,
         value: T,
-    ) => [] | SnapshotsArray<T>;
+    ) => [] | SnapshotsArray<T, K>;
 
       manageSubscription: (
         snapshotId: string,
@@ -71,7 +72,7 @@ interface SnapshotSubscriberManagement<
   
     subscribeToSnapshot: (
       snapshotId: string,
-      callback: Callback<Snapshot<T, K>>,
+      callback: (snapshot: Snapshot<T, K>) => Subscriber<T, K> | null,
       snapshot: Snapshot<T, K>
     ) => Snapshot<T, K>;
     
@@ -82,11 +83,11 @@ interface SnapshotSubscriberManagement<
 
   
       subscribeToSnapshotsSuccess: (
-        callback: (snapshots: Snapshots<T>) => void
+        callback: (snapshots: Snapshots<T, K>) => void
       ) => string;
   
       unsubscribeFromSnapshots: (
-        callback: (snapshots: Snapshots<T>) => void
+        callback: (snapshots: Snapshots<T, K>) => void
       ) => void;
   
 
@@ -112,10 +113,10 @@ interface SnapshotSubscriberManagement<
         snapshotData: SnapshotData<T, K>,
         category: symbol | string | Category | undefined,
         snapshotConfig: SnapshotStoreConfig<T, K>,
-        callback: (snapshots: SnapshotsArray<T>) => Subscriber<T, K> | null,
-        snapshots: SnapshotsArray<T>,
+        callback: (snapshots: SnapshotsArray<T, K>) => Subscriber<T, K> | null,
+        snapshots: SnapshotsArray<T, K>,
         unsubscribe?: UnsubscribeDetails, 
-    ) => SnapshotsArray<T> | [];
+    ) => SnapshotsArray<T, K> | [];
 
 
 
@@ -158,19 +159,19 @@ interface SnapshotSubscriberManagement<
 
     defaultSubscribeToSnapshots: (
         snapshotId: string,
-        callback: (snapshots: Snapshots<T>) => Subscriber<T, K> | null,
+        callback: (snapshots: Snapshots<T, K>) => Subscriber<T, K> | null,
         snapshot: Snapshot<T, K> | null
     ) => void;
 
 
     getSnapshotsBySubscriber: (subscriber: string) => Promise<T[]>;
 
-    getSnapshotsBySubscriberSuccess: (snapshots: Snapshots<T>) => void;
+    getSnapshotsBySubscriberSuccess: (snapshots: Snapshots<T, K>) => void;
 
     // More subscriber-related methods
 }
 
-interface SnapshotCRUD<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface SnapshotCRUD<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
     getAllSnapshots: (
         storeId: number,
         snapshotId: string,
@@ -187,8 +188,8 @@ interface SnapshotCRUD<T extends  BaseData<T>, K extends T = T, Meta extends Str
         filter?: (snapshot: Snapshot<T, K>) => boolean,
         dataCallback?: (
             subscribers: Subscriber<T, K>[],
-            snapshots: Snapshots<T>
-        ) => Promise<SnapshotUnion<T>[]>
+            snapshots: Snapshots<T, K>
+        ) => Promise<SnapshotUnion<T, K>[]>
     ) => Promise<Snapshot<T, K>[]>;
 
     updateData: (id: number, newData: Snapshot<T, K>) => void;

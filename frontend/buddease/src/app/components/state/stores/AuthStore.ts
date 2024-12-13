@@ -143,8 +143,9 @@ export class AuthStore {
   }
 
   getUserPermissions(): Permission[] | null {
-    return this.userPermissions;
+    return this.userPermissions.length > 0 ? this.userPermissions : null;
   }
+
 
   isLoggedIn(): boolean {
     return !!this.accessToken;
@@ -164,6 +165,20 @@ export class AuthStore {
   setNFTs(nfts: NFT[]) {
     this.nfts = nfts;
   }
+
+
+
+  // Sets the user permissions
+  setPermissions(permissions: Permission[]) {
+    this.userPermissions = permissions;
+  }
+  
+  // Method to fetch user-specific permissions
+  getPermissions(): Permissions | null {
+    const userRole = this.roles[0]; // Assume user has one role for simplicity
+    return getPermissions(userRole); // Get permissions based on the role
+  }
+
 
   setUserPreferences(preferences: UserPreferences) {
     this.userPreferences = preferences;

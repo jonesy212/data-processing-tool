@@ -10,10 +10,10 @@ interface CalendarSnapshotEvents {
 
 
 // Example implementation of CombinedEvents
-const combinedEvents: CombinedEvents<T, K> = {
+const combinedEvents: CombinedEvents<T, K<T>> = {
   eventRecords: {},
   callbacks: {
-      default: [(snapshot: Snapshot<T, K>) => {
+      default: [(snapshot: Snapshot<T, K<T>>) => {
           // Handle snapshot data
           console.log(snapshot);
       }]

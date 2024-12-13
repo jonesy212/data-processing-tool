@@ -6,13 +6,14 @@ import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
 import { Task } from "../../models/tasks/Task";
 import { NotificationType } from "../../support/NotificationContext";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { T, K } from "@/app/components/models/data/dataStoreMethods";
 
 export interface AssignTaskStore extends AssignBaseStore {
   assignTask: (taskId: string, userId: string) => void;
   assignUsersToTasks: (taskIds: string[], userId: string) => void;
   unassignUsersFromTasks: (taskIds: string[], userId: string) => void;
   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
-  snapshotStore: SnapshotStore<Task>;
+  snapshotStore: SnapshotStore<Task<T, K<T>>>;
 
   reassignUsersToTasks: (
     taskIds: string[],
@@ -36,7 +37,7 @@ export interface AssignTaskStore extends AssignBaseStore {
     newUserId: string
   ) => void;
   // Success and Failure methods
-  assignUserSuccess: () => void;
+  assignUserSuccess: (message: string) => void;
   assignUserFailure: (error: string) => void;
 
   // Add more methods or properties as needed

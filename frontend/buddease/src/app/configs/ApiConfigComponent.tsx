@@ -7,7 +7,7 @@ import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceCom
 import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
 import { frontendConfig } from "@/app/configs/FrontendConfig";
 import MainConfig from "@/app/configs/MainConfig";
-import {UserPreferences} from "@/app/configs/UserPreferences";
+import { UserPreferences, userPreferences } from "@/app/configs/UserPreferences";
 import UserSettings from "@/app/configs/UserSettings";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
@@ -24,6 +24,7 @@ import DeleteComponent from "../components/libraries/ui/components/DeleteCompone
 import UpdateComponent from "../components/libraries/ui/components/UpdateComponent";
 import FileData from '../components/models/data/FileData';
 import TaskTrackingComponent from "../components/models/tracker/TaskTrackingComponent";
+import { TrackerProps } from "../components/models/tracker/Tracker";
 import { Phase } from "../components/phases/Phase";
 import ProfileSetupPhase from "../components/phases/onboarding/ProfileSetupPhase";
 import axiosInstance from "../components/security/csrfToken";
@@ -31,9 +32,6 @@ import { selectApiConfigs } from "../components/state/redux/slices/ApiSlice";
 import { UserData } from "../components/users/User";
 import { getCurrentAppInfo } from "../components/versions/VersionGenerator";
 import UniqueIDGenerator from "../generators/GenerateUniqueIds";
-import { id_ID } from "@faker-js/faker";
-import { TrackerProps } from "../components/models/tracker/Tracker";
-import userPreferences from "@/app/configs/UserPreferences";
  
 
 
@@ -109,8 +107,8 @@ const getDynamicTrackerProps = (userPreferences: UserPreferences): TrackerProps 
     },
     strokeWidth: userPreferences.strokeWidth || 2, // Default value if undefined
     fillColor: userPreferences.fillColor || "blue", // Default value if undefined
-    flippedX: userPreferences.isFlippedX || false, // Set dynamically based on user preferences
-    flippedY: userPreferences.isFlippedY || false, // Set dynamically based on user preferences
+    isFlippedX: userPreferences.isFlippedX || false, // Set dynamically based on user preferences
+    isFlippedY: userPreferences.isFlippedY || false, // Set dynamically based on user preferences
     x: userPreferences.position?.x || 0, // Dynamic X-coordinate (default to 0)
     y: userPreferences.position?.y || 0  // Dynamic Y-coordinate (default to 0)
   };
@@ -136,8 +134,8 @@ const getDynamicTrackerProps = (userPreferences: UserPreferences): TrackerProps 
               }, 
               strokeWidth: 2,   // Replace with actual stroke width value
               fillColor: "blue", // Replace with actual fill color
-              flippedX: false,   // Set flippedX as true/false based on condition
-              flippedY: false,   // Set flippedY as true/false based on condition
+              isFlippedX: false,   // Set isFlippedX as true/false based on condition
+              isFlippedY: false,   // Set isFlippedY as true/false based on condition
               x: 10,             // X-coordinate (replace with actual value)
               y: 20,             // Y-coordinate (replace with actual value)
           trackFolderChanges(

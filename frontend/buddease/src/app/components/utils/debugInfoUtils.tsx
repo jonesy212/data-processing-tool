@@ -3,7 +3,7 @@ import { SnapshotStoreConfig } from "@/app/components/snapshots/SnapshotStoreCon
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 export function addDebugInfo<
-  T extends BaseData<T>,
+  T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >(

@@ -1,9 +1,16 @@
 // ProjectManagementActions.ts
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData, Data } from '@/app/components/models/data/Data';
 import { createAction } from "@reduxjs/toolkit";
 import { CustomSnapshotData } from '../snapshots';
-export const ProjectManagementActions = <T extends  BaseData<T>, K extends CustomSnapshotData<T> = T>() => ({
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
+
+export const ProjectManagementActions = <
+  T extends  BaseData<any> = BaseData<any, any>, 
+  K extends T = T,
+  ExcludedFields extends Data<T> = never,
+  S extends CustomSnapshotData<T, K> = CustomSnapshotData<T, K>,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>() => ({
   // Tenant-related actions
   addTenantToProject: createAction<{ projectId: number, tenantId: number }>("addTenantToProject"),
   removeTenantFromProject: createAction<{ projectId: number, tenantId: number }>("removeTenantFromProject"),
@@ -49,14 +56,6 @@ export const ProjectManagementActions = <T extends  BaseData<T>, K extends Custo
   mintNFT: createAction<{ tokenId: number, metadata: any }>("mintNFT"),
   transferNFT: createAction<{ tokenId: number, recipient: string }>("transferNFT"),
   burnNFT: createAction<{ tokenId: number }>("burnNFT"),
-
-
-
-
-
-
-
-
 
 
   // Resource Allocation and Tracking

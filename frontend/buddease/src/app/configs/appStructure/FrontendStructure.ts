@@ -6,13 +6,14 @@ import { AppStructureItem } from "../appStructure/AppStructure";
 import { VersionData, VersionHistory } from "@/app/components/versions/VersionData";
 import { hashString } from "@/app/generators/HashUtils";
 import { DataVersions } from "../DataVersionsConfig";
+import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 
 export default class FrontendStructure implements AppStructureItem {
   versions: DataVersions = {
-    backend: Promise.resolve(''), // Replace with actual logic
-    frontend: Promise.resolve('')  // Replace with actual logic
-  
+    backend: undefined,
+    frontend: undefined
   }
+  
   versionData: VersionData[] = []; // Changed to VersionData[] to match AppStructureItem
 
   id: string;
@@ -33,7 +34,12 @@ export default class FrontendStructure implements AppStructureItem {
   private structure?: Record<string, AppStructureItem> | undefined = {};
   private structureHash: string = '';
 
-  constructor(projectPath: string) {
+  // Add versioning properties
+  public major: number;
+  public minor: number;
+  public patch: number;
+
+  constructor(projectPath: string,  major: number = 1, minor: number = 0, patch: number = 0) {
     this.id = "";
     this.name = "";
     this.type = "";
@@ -48,6 +54,9 @@ export default class FrontendStructure implements AppStructureItem {
       execute: true,
     };
     this.items = {};
+    this.major = major;
+    this.minor = minor;
+    this.patch = patch;
 
     // Check if 'fs' is available (only in server-side)
     if (typeof window === "undefined") {
@@ -116,6 +125,34 @@ export default class FrontendStructure implements AppStructureItem {
     return items;
   }
 
+
+
+  async loadVersions(): Promise<void> {
+    const backend = await this.loadBackendVersions();
+    const frontend = await this.loadFrontendVersions();
+    this.versions = { backend, frontend };
+  }
+
+  async loadBackendVersions(): Promise<Record<string, AppStructureItem>> {
+    // Simulated async logic to load backend versions
+    return new Promise((resolve) => {
+      resolve({
+        version1: { /* app structure item */ },
+        version2: { /* app structure item */ }
+      });
+    });
+  }
+
+  async loadFrontendVersions(): Promise<Record<string, AppStructureItem>> {
+    // Simulated async logic to load frontend versions
+    return new Promise((resolve) => {
+      resolve({
+        versionA: { /* app structure item */ },
+        versionB: { /* app structure item */ }
+      });
+    });
+  }
+
   // Getter for structureHash
   public getStructureHash(): Promise<string> {
     return Promise.resolve(this.structureHash);
@@ -145,6 +182,30 @@ export default class FrontendStructure implements AppStructureItem {
     const frontendStructureItems = await frontendStructure.getStructureAsArray();
     const frontendStructureItemsWithVersions = frontendStructureItems.map((item) => {
       const { id, name, type, items, path, draft, content, permissions, versions, versionData } = item;
+      const currentVersion = versionData[versionData.length - 1]?.version;
+
+      // Ensure versionData is an array
+      const versionDataArray = Array.isArray(versionData) ? versionData : [];
+      
+      // Ensure versionData is not empty before accessing the last item
+      const latestVersionData: VersionData = versionDataArray.length > 0 
+        ? versionDataArray[versionDataArray.length - 1] 
+        : {
+            version: '0',
+            id, parentId, parentType, parentVersion,
+            
+            timestamp: '',
+            user: 'unknown',
+            changes: [],
+            lastUpdated: '',
+          };
+      
+      const history = versionData.map((version) => ({
+        version: version.version,
+        lastUpdated: version.lastUpdated,
+        timestamp: version.timestamp
+      }));
+
       return {
         id,
         name,
@@ -155,8 +216,12 @@ export default class FrontendStructure implements AppStructureItem {
         content,
         permissions,
         versions,
-        versionData
-      };
+        versionData: versionDataArray,
+        latestVersion: createLatestVersion(latestVersionData),
+        lastUpdated: latestVersion.lastUpdated,
+        timestamp: latestVersion.timestamp,
+        history: []
+      } as VersionHistory;
     });
     return frontendStructureItemsWithVersions;
   }

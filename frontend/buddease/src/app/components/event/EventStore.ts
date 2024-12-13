@@ -4,7 +4,6 @@ import { metadata } from '@/app/layout';
 import snapshotUtils from '@/app/components/utisnapshot/utils/snapshotUtils'
 import { DataStore } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { SubscriberCollection } from '@/app/components/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
 import { fetchAndCreateSnapshot } from '@/app/components/snapshots/defaultSnapshotSubscribeFunctions';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
@@ -13,6 +12,7 @@ import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { CombinedEvents } from '../hooks/useSnapshotManager';
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Data } from "../models/data/Data";
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { EventRecord } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
@@ -26,7 +26,7 @@ import { AllTypes } from '../typings/PropTypes';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 
-export type EventStore<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = {
+export type EventStore<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = {
     eventRecords: Record<string, EventRecord<T, K>[]> | null;
     callbacks: Record<string, Array<(snapshot: Snapshot<T, K>) => void>>;
     subscribers: SubscriberCollection<T, K>;
@@ -156,7 +156,7 @@ export type EventStore<T extends  BaseData<T>, K extends T = T, Meta extends Str
   
 
   // Define the default event store
-const defaultEventStore = <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const defaultEventStore = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string,
   storeId: number,
   additionalHeaders?: Record<string, string>
@@ -186,7 +186,7 @@ return {
     subscribers: {} as SubscriberCollection<T, K>[],
     snapshotData: coreSnapshot.snapshotData,
     snapshotId: '',
-    snapshot: coreSnapshot.snapshot,,    
+    snapshot: coreSnapshot.snapshot,   
     snapshotStore: {} as SnapshotStore<T, K>,
     dataItems: coreSnapshot.dataItems,
     isCore: true,

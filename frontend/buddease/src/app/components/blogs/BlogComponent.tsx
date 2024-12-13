@@ -13,8 +13,9 @@ import { Subscriber, SubscriberCallback } from '../users/Subscriber';
 import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '../utils/applicationUtils';
 import { snapshotId } from '../utils/snapshotUtils';
 import * as subscriberApi from './../../api/subscriberApi';
+import TrackerClass from '../models/tracker/Tracker';
 
-type BlogContentType = {
+type BlogContentType<T extends BaseData<any>, K extends T = T> = {
   body: string;                     // Main content of the blog post
   imageUrls?: string[];            // Optional list of image URLs
   tags?: string[];                  // Optional tags for categorization
@@ -23,8 +24,9 @@ type BlogContentType = {
   _id: string,
   date: Date,
   subtitle: string,
-  data?: Content<T, K<T>> | Snapshot<Data<T, K<T>>, Meta>,
+  data?: Content<T, K> | Snapshot<Data<T, K>, Meta<T, BaseMetaDataOptions<T, K>>>,
 };  
+
 
 type BlogOptionalType = {
   likes?: number;                  // Number of likes the blog post received
@@ -37,14 +39,14 @@ type BlogOptionalType = {
 };
 
 
-type BlogContentMeta = BlogContentType & Meta & {
-  content: string | Content<T, K<T>> | undefined;
-  // Add more properties as needed (date, author, etc.)
-};
+// Fixing BlogContentMeta
+type BlogContentMeta<T extends BaseData<any>, K extends T = T> = {
+  content: string | Content<T, K> | undefined;  // Align content type
+} & Base
 
 interface BlogProps<
-  T extends  BaseData<T>, 
-K extends T = T> {
+  T extends  BaseData<any>, 
+  K extends T = T> {
   title?: string;
   content: string | Content<T, K> | undefined;  // Use Content with the required type parameters
   subscriberId: string;
@@ -64,12 +66,25 @@ type BlogMetaType = BaseMetaDataOptions<BlogContentType, BlogContentMeta> & {
   commentsCount?: number;           // Optional count of comments
 };  
 
-type BlogDataMeta = BlogContentMeta & BlogOptionalType & BlogMetaType;
 
+// Fixing BlogDataMeta
+type BlogDataMeta<T extends BaseData<any>, K extends T = T> = 
+  BlogContentMeta<T, K> & 
+  BlogOptionalType & 
+  BlogMetaType;
 
-// SnapshotData that includes the required BlogData properties
-type SnapshotDataWithBlogData = SnapshotData<BlogData<Data<BaseData<any>>, BlogDataMeta>, BlogDataMeta>;
+// Use correct types in SnapshotData
+type SnapshotDataWithBlogData = SnapshotData<
+  BlogData<Data<BaseData<any>>, BlogDataMeta<Data<BaseData<any>>>>,
+  BlogDataMeta<Data<BaseData<any>>>
+>;
 
+// Example function to validate and sanitize input
+const validateAndSanitizeInput = (input: string) => {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(input, "text/html");
+  return doc.body.textContent || "";
+};
 
 const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataMeta>> = ({
   title,
@@ -79,6 +94,12 @@ const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataM
 }) => {
   const [subscriptionData, setSubscriptionData] = useState<Subscription<BlogData<Data<BaseData<any>>>, BlogDataMeta> | undefined>(); 
   const { sendNotification } = useNotification(); 
+
+  const tracker = new TrackerClass("blogPost123", "Blog Post Tracker", [], {
+    width: 100, 
+    color: "black",
+  }, 2, "#ff6347", false, false, 0, 0);
+
   const optionalData: CustomSnapshotData<BaseData> | null = null;
   const name = "Blog"; 
 
@@ -86,6 +107,8 @@ const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataM
   // Make sure your snapshotData has the required fields
   let snapshotData: SnapshotDataWithBlogData | null = null;
   let id: string | number | undefined = undefined;
+  let subtitle = "Blog Post";
+
   let data: Partial<SnapshotStore<BlogData<Data<BaseData<any>>>>> = {
     id: String(id || ""),
     // Add other properties as needed
@@ -96,6 +119,11 @@ const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataM
       id: id,
       snapshotId: snapshotId,
       data: optionalData,
+      // body: optionalData,
+      // state: "",
+      // length: 0,
+      // date: new Date(),
+      subtitle: subtitle,
       timestamp: new Date(),
       subscriberId: subscriberId,
       category: "Blog",
@@ -169,6 +197,46 @@ const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataM
   );
 
   useEffect(() => {
+    if (content === undefined) {
+      console.log("Content is undefined");
+    }
+    else{
+      console.log("Content is defined");
+    }
+      // Sanitize and set the content on mount
+      const sanitizedContent = validateAndSanitizeInput(content);
+      console.log("Sanitized content:", sanitizedContent);
+  
+      // Track file changes (Example)
+      tracker.trackFileChanges({
+        title,
+        previousMetadata: { title: "Old Title" },
+        metadata: { title },
+        fileSize: 0,
+        fileType: "",
+        filePath: "",
+        uploader: "",
+        fileName: "",
+        uploadDate: new Date(),
+        scheduledDate: new Date(),
+        
+      });
+  
+      // Update user profile (Example)
+      tracker.updateUserProfile({
+        fullName: "John Doe",
+        bio: "Content Manager",
+        uploadQuota: 100,
+        dispatch
+      });
+  
+      // Update appearance
+      tracker.updateAppearance("solid", "#ff6347", {
+        textColor: "blue",
+        fontSize: "16px",
+        fontFamily: "Arial",
+      });
+    
     subscriber.subscribe(((data: Snapshot<BlogData<Data<BaseData<any>>>, BlogDataMeta>) => {
       const subscription = data.data as Subscription<BlogData<Data<BaseData<any>>>, BlogDataMeta>;
       setSubscriptionData(subscription);
@@ -190,12 +258,13 @@ const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataM
         subscriber.notify!(data, callback);
       }
     };
-  }, []);
+  }, [content, title]);
 
   return (
     <div>
       <h2>{title}</h2>
       <p>{typeof content === 'string' ? content : ''}</p>
+      <button onClick={() => sendNotification("Blog updated!")}>Send Notification</button>
     </div>
   );
 };

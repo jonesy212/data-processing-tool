@@ -26,7 +26,7 @@ import AppVersionImpl, {
   selectAppVersion,
   selectDatabaseVersion,
 } from "../versions/AppVersion";
-import Version from "../versions/Version";
+import { Version } from "../versions/Version";
 import { ModifiedDate } from "./DocType";
 import DocumentBuilder, { DocumentData } from "./DocumentBuilder"; // Import the DocumentBuilder component
 import { DocumentTypeEnum } from "./DocumentGenerator";

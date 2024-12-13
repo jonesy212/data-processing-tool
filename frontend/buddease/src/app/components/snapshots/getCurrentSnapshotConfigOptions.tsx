@@ -1,5 +1,6 @@
 // getCurrentSnapshotConfigOptions.ts
-import { createSnapshotStoreConfig } from '@/app/components/snapshhots/createSnapshotStoreConfig';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { createSnapshotStoreConfig } from '@/app/components/snapshots/snapshotStorageOptionsInstance';
 import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
@@ -14,7 +15,11 @@ import { SnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
-export const getCurrentSnapshotConfigOptions = <T extends  BaseData<T>, Meta extends UnifiedMetaDataOptions, K extends T = T>(
+export const getCurrentSnapshotConfigOptions = <
+  T extends BaseData<any>, 
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
   snapshotId: string | null,
   snapshotContainer: SnapshotContainer<T, K>,
   criteria: CriteriaType,
@@ -73,7 +78,7 @@ export const getCurrentSnapshotConfigOptions = <T extends  BaseData<T>, Meta ext
       category?: string | symbol | Category,
       callback?: (snapshot: Snapshot<T, K>) => void,
       snapshotStore?: SnapshotStore<T, K>,
-      snapshotStoreConfig?: SnapshotStoreConfig<T, K>
+      snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> 
     ): { snapshot: Snapshot<T, K>, config: SnapshotConfig<T, K> } | null => {
       // Ensure snapshotStore exists within snapshotData
       if (!snapshotData.snapshotStore) {
@@ -84,7 +89,7 @@ export const getCurrentSnapshotConfigOptions = <T extends  BaseData<T>, Meta ext
       snapshotData.snapshotStore.snapshotStoreConfig = baseConfig;
 
       // Return configured snapshot and config
-      return { snapshot: snapshotData.snapshotStore, config: baseConfig };
+      return { snapshot: snapshotData.snapshotStore.snapshot, config: baseConfig };
     },
     // Ensure tempData access is part of the configuration
     tempData: baseConfig.tempData

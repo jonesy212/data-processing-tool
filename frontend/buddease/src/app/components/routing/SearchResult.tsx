@@ -3,13 +3,15 @@ import { searchDocumentAPI } from '@/app/api/ApiDocument'; // Import the searchD
 import SearchResultItem from '@/app/components/models/data/SearchResultItem';
 import ListGenerator from '@/app/generators/ListGenerator';
 import { useEffect, useState } from 'react';
-import * as React 'react';
+import * as React from 'react';
 import { DocumentOptions } from '../documents/DocumentOptions';
 import FolderData from '../models/data/FolderData';
 import SearchHistory from '../versions/SearchHistory';
 import Version from '../versions/Version';
 import { Entity } from './FuzzyMatch';
 import { DocumentData } from '../documents/DocumentBuilder';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData } from '../models/data/Data';
 
 
 // Define the SearchResultWithQuery interface that extends SearchResult
@@ -25,7 +27,11 @@ interface SearchResultProps<T> {
 }
 
 
-interface SearchResult<T> extends Entity, DocumentData {
+interface SearchResult<
+  T extends BaseData<any> = BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> extends Entity, DocumentData<T, K, Meta> {
   items: T[];
   totalCount: number;
   id: number;
@@ -53,7 +59,6 @@ interface SearchResult<T> extends Entity, DocumentData {
   repoName?: string;
   repoURL?: string
 }
-
 
 
 const SearchResultComponent: React.FC<SearchResultProps<any>> = ({ result }) => {
@@ -99,6 +104,8 @@ const SearchResultComponent: React.FC<SearchResultProps<any>> = ({ result }) => 
               description={result.description}
               source={result.source}
               result={result}
+              isGlobal={result.isGlobal} 
+              createdAt={result.createdAt}
             />
           )}
         </div>

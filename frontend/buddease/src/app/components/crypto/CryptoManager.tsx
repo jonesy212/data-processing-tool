@@ -122,7 +122,7 @@ const useCryptoManager = () => {
   }, []);
 
 
-  const collaborateHoldings = useCallback((collaborators: string[]): void => {
+  const collaborateHoldings = useCallback((collaborators: Collaborator[]): void => {
     
   }, []);
 

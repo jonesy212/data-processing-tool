@@ -6,13 +6,40 @@ import { observer } from "mobx-react-lite";
 import CommonEvent from "../../state/stores/CommonEvent";
 import { DetailsItem, DetailsItemExtended } from "../../state/stores/DetailsListStore";
 import { CommonData, Customizations } from "../CommonData";
-import { Data } from "./Data";
+import { BaseData, Data } from "./Data";
 import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
+import { Member } from "../teams/TeamMembers";
+import { FakeData } from "../../intelligence/FakeDataGenerator";
+import { Phase } from "../../phases/Phase";
+import { CustomComment } from "../../state/redux/slices/BlogSlice";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { Comment } from "./Comments";
 
-export type DataAndEventDetails = Data | CommonEvent;
+export type DataAndEventDetails = Data<any, any, any> | CommonEvent;
 
-interface DetailsProps<T> {
-  data?: CommonData; // Accept both CommonData and specific data type
+interface SharedDetails<
+  T extends BaseData<any> = BaseData<any, any>,
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>{
+  participants: Member[]
+  uploadedAt: Date | string;
+  phase: Phase
+  fakeData?: FakeData 
+  comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
+  isCompleted: boolean;
+  currentMeta: StructuredMetadata<T, K>
+  previousMeta?: StructuredMetadata<T, K>
+}
+
+
+
+interface DetailsProps<
+  T extends BaseData<any> = BaseData<any, any>,
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> {
+  data?: CommonData<T, K, Meta>; // Accept both CommonData and specific data type
   details: DetailsItemExtended<T>;
   customizations?: Customizations<T>;
   collaborationOptions?: CollaborationOptions;
@@ -113,4 +140,4 @@ const Details: React.FC<DetailsProps<DataAndEventDetails>> = observer(
 );
 
 export default DetailsProps;
-Details;
+export { Details }

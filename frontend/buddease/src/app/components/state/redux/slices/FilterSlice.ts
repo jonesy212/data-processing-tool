@@ -32,7 +32,6 @@ import { NotificationTypeEnum } from "@/app/components/support/NotificationConte
 import { IdeaCreationPhaseEnum } from "@/app/components/users/userJourney/IdeaCreationPhase";
 import { MessageType } from "@/app/generators/MessaageType";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Timestamped, StatusTrackable } from '@/pages/searches/FilterCriteria';
 
 interface FilterState extends Timestamped, StatusTrackable {
   startDate?: Date;

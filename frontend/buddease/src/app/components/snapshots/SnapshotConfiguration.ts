@@ -1,11 +1,11 @@
 // SnapshotConfiguration.ts
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseData } from '../data/Data';
 import { DebugInfo, TempData } from "../models/data/TempData";
 import { InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { BaseData } from '../data/Data';
 
-interface SnapshotConfiguration<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>{
+interface SnapshotConfiguration<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>{
     initialState: InitializedState<T, K> | {};
     configOption?: string | SnapshotStoreConfig<T, K> | null;
 

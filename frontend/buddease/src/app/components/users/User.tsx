@@ -1,6 +1,7 @@
 // User.tsx
 import { UserSettings } from "@/app/configs/UserSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { T, K, Meta} from "@/app/components/models/data/dataStoreMethods";
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import React from "react";
@@ -9,8 +10,8 @@ import ChatSettings from "../communications/chat/ChatSettingsPanel";
 import { RealtimeUpdates } from "../community/ActivityFeedComponent";
 import { CustomTransaction, SmartContractInteraction } from "../crypto/SmartContractInteraction";
 import { CryptoDocumentManager } from "../documents/cryptoDocumentManager";
-import CommonDetails from "../models/CommonData";
-import { BaseData, Data } from "../models/data/Data";
+import CommonDetails, { SupportedData } from "../models/CommonData";
+import { BaseData, Data, SharedBaseData } from "../models/data/Data";
 import generateTimeBasedCode from "../models/realtime/TimeBasedCodeGenerator";
 import { Task } from "../models/tasks/Task";
 import { Team } from "../models/teams/Team";
@@ -31,18 +32,32 @@ import { UserRole } from "./UserRole";
 import UserRoles from "./UserRoles";
 import { ActivityLogEntry } from "./UserSlice";
 import { UserPreferences } from "@/app/configs/UserPreferences";
-import { SnapshotStoreConfig } from "../snapshots";
+import { SnapshotStoreConfig, TagsRecord } from "../snapshots";
 import { NotificationSettings } from "../support/NotificationSettings";
 import { Product } from "../products/Product";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { fetchUserAreaDimensions, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { useMeta } from "@/app/configs/useMeta";
+import { ExcludedFields } from "../routing/Fields";
+import { useMetadata } from "@/app/configs/useMetadata";
+import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
+import { SharedVersionData } from "../versions/VersionData";
 
-export interface User extends UserData {
+export interface User<
+  T extends BaseData<any> = BaseData<any, any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,  // Update to match pattern
+  ExcludedFields extends keyof UserData<T, K, Meta> = never
+> extends UserData<T, K, Meta, ExcludedFields> {
+  id?: string | number | undefined;
   _id?: string; 
   username: string;
   firstName: string;
   lastName: string;
   type?: string
   email: string;
-  tags?: Tag[] | string[];
+
+  tags?: TagsRecord | string[];
   isUserMessage?: boolean;
   tier: string;
   token: string | null;
@@ -62,13 +77,16 @@ export interface User extends UserData {
   bio: string | null;
   userType: string;
   hasQuota: boolean;
+  school?: string;
+  grade?: string;
   profilePicture: string | null;
   processingTasks: DataProcessingTask[];
   data?: UserData;
+  createdBy?: string;
   role: UserRole | undefined;
   persona: Persona | null;
   friends: User[];
-  analysisResults?: DataAnalysisResult[];
+  analysisResults?: DataAnalysisResult<T>[];
   isLoggedIn?: boolean;
   isDeleted?: boolean;
   localeCompare?: (other: Message) => number;
@@ -87,7 +105,7 @@ export interface User extends UserData {
   language?: string;
   education?: Education[];
   employment?: Employment[];
-  dependencies?: Task[];
+  dependencies?: Task<T, K, StructuredMetadata<T, K>>[];
   dateOfBirth?: Date;
   skills: string[];
   achievements: string[];
@@ -115,6 +133,8 @@ export interface User extends UserData {
   decentralizedAuthentication?: any;
   twitterData?: TwitterData
   preferences: UserPreferences | undefined;
+  currentMetadata: UnifiedMetaDataOptions<T, K>
+  currentMeta: StructuredMetadata<T, K> | undefined
 }
 
 
@@ -169,13 +189,19 @@ interface Employment {
 
 const timeBasedCode: string = generateTimeBasedCode();
 
+
+
 // Placeholder for user data
-export interface UserData {
+export interface UserData<
+  T extends BaseData<any> = BaseData<any, any>, 
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> extends SharedBaseData<K>, SharedVersionData {
   _id?: string;
   id?: string | number | undefined;
   datasets?: string;
   username: string
-  tasks?: Task[];
+  tasks?: Task<T, K>[];
   questionnaireResponses?: any;
   chatSettings?: ChatSettings;
   projects?: Project[];
@@ -196,9 +222,9 @@ export interface UserData {
   occupation?: string;
   incomeLevel?: string;
   unreadNotificationCount?: number;
-  snapshots?: SnapshotStore<Data, BaseData>[] | undefined
+  snapshots?: SnapshotStore<Data<T>, K>[] | undefined
   snapshotConfiguration?: SnapshotStoreConfig<any, any>[];
-  analysisResults?: DataAnalysisResult[];
+  analysisResults?: DataAnalysisResult<T>[];
   role: UserRole | undefined;
   timestamp?: Date | string;
   category?: string
@@ -475,7 +501,7 @@ const userData: UserData = {
   location: "Texas",
   occupation: "Software Engineer",
   incomeLevel: "string",
-  snapshots: {} as SnapshotStore<Data, BaseData>[],
+  snapshots: {} as SnapshotStore<Data<T, K<T>, StructuredMetadata<T, K<T>>>, BaseData>[],
   role: {} as UserRole,
   deletedAt: null,
   lastLogin: new Date(),
@@ -505,7 +531,10 @@ const userData: UserData = {
   subscriptionEndDate: null,
   paymentMethodSubscriptionCancelAtPeriodEnd: null,
   paymentMethodSubscriptionCancelRetryAfter: null,
-  paymentMethodSubscriptionCanceledRetryAfter: null
+  paymentMethodSubscriptionCanceledRetryAfter: null,
+  major: 1,
+  minor: 0,
+  patch: 0,
 };
 
 // Instantiate a CryptoDocumentManager
@@ -536,23 +565,40 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
 
     return (
       <CommonDetails
-        details={{
-          id: id ? id.toString() : "",
-          analysisResults: [] as DataAnalysisResult[],
-          data: user.data,
-          tags: user.tags ? user.tags.map((tag) => typeof tag === 'string' ? tag : tag.getOptions().name) : [],
+      details={{
           ...rest,
+          id: id ? id.toString() : "",
+          analysisResults: [] as DataAnalysisResult<T>[],
+          data: user.data as UserData<BaseData<any, any, StructuredMetadata<any, any>>,
+            BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K>>,
+          createdBy: user.createdBy,
+          tags: Array.isArray(user.tags)
+          ? user.tags.map((tag) =>
+            typeof tag === "string" ? tag : (tag as Tag<any>).name
+          )
+          : [],
+          currentMetadata: user.currentMetadata,
+          currentMeta: user.currentMeta ? user.currentMeta : undefined,
         }}
       />
     );
   } else {
     return <div>User not available</div>;
   }
+
+
 };
-
-
+const area = fetchUserAreaDimensions().toString()
+const meta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
+const currentMetadata: UnifiedMetaDataOptions<
+  T, 
+  K<T>
+> = useMetadata<T, K<T>>(area)
 export const usersDataSource: Record<string, User> = {
   1: {
+
+    currentMetadata: currentMetadata,
+    currentMeta: meta,
     // User Data
     id: 1,
     username: "User 1",
@@ -577,6 +623,9 @@ export const usersDataSource: Record<string, User> = {
     storeId: 0,
     roles: [],
     preferences: {} as UserPreferences,
+    major: 1,
+    minor: 0,
+    patch: 0,
     data: {
       username: "username",
       role: UserRoles.Guest,
@@ -608,6 +657,8 @@ export const usersDataSource: Record<string, User> = {
       accessFailedCount: 0,
       subscriptionType: "",
       subscriptionEndDate: null,
+      childIds: [], 
+      relatedData: [],
       paymentMethod: "",
       paymentMethodId: "",
       paymentMethodExpiry: "",
@@ -630,6 +681,9 @@ export const usersDataSource: Record<string, User> = {
       paymentMethodSubscriptionCanceledReason: "",
       paymentMethodSubscriptionCanceledRedirectUrl: "",
       paymentMethodSubscriptionCanceledRetryAfter: null,
+      major: 1,
+      minor: 0,
+      patch: 0,
     },
     
     // Document Details
@@ -730,3 +784,4 @@ export const usersDataSource: Record<string, User> = {
 
 export default UserDetails;
 export type { Address, Education, Employment, SocialLinks, ExtendedUser };
+

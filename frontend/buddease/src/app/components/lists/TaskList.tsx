@@ -16,18 +16,51 @@ interface TaskListProps {
 const TaskList: React.FC<TaskListProps> = observer(({ tasks = [] }) => {
   // Explicitly type tasks as an array of Task
 
+  // Filter tasks into scheduled and unscheduled
+  const scheduledTasks = tasks.filter((task) => task.isScheduled);
+  const unscheduledTasks = tasks.filter((task) => !task.isScheduled);
+
+
+   // Sort tasks by priority (optional)
+   const sortTasksByPriority = (tasks: Task[]) =>
+    tasks.sort((a, b) => {
+    const priorityOrder = {
+      low: 1,
+      medium: 2,
+      high: 3,
+      scheduled: 4,
+      completed: 5,
+    };
+    return (priorityOrder[b.priority || "low"] - priorityOrder[a.priority || "low"]);
+  });
+
+
+  
   return (
     <div>
-      <h2>Task List</h2>
+      {/* Scheduled Tasks Section */}
+      <h2>Scheduled Task List</h2>
       <ul>
-        {tasks.map((task: Task) => (
+        {sortTasksByPriority(scheduledTasks).map((task) => (
           <li key={task.id}>
             <Link to={`/task-project-details/${task.id}`}>
-              {task.title} - {task.status}
+              {task.title} - {task.priority?.toUpperCase()} - {task.status}
             </Link>
-            {task.details && (
-              <TaskDetails task={task} completed={task.completed} />
-            )}
+            {task.scheduledDate && <span> (Scheduled: {task.scheduledDate.toLocaleDateString()})</span>}
+            {task.details && <TaskDetails task={task} completed={task.completed} />}
+          </li>
+        ))}
+      </ul>
+
+      {/* Unscheduled Tasks Section */}
+      <h2>Unscheduled Task List</h2>
+      <ul>
+        {sortTasksByPriority(unscheduledTasks).map((task) => (
+          <li key={task.id}>
+            <Link to={`/task-project-details/${task.id}`}>
+              {task.title} - {task.priority?.toUpperCase()} - {task.status}
+            </Link>
+            {task.details && <TaskDetails task={task} completed={task.completed} />}
           </li>
         ))}
       </ul>

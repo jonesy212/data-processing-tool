@@ -1,20 +1,25 @@
 import { getSnapshotId } from "@/app/api/SnapshotApi";
 import { SnapshotData } from '@/app/components/snapshots';
-import { SubscriberCollection } from '@/app/components/snapshots/SnapshotStore';
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from "../models/data/Data";
+import { BaseData } from "../models/data/Data";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { SnapshotStoreConfig } from "../snapshots";
-import { Snapshot, SnapshotsArray, SnapshotUnion, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
+import { Snapshot, SnapshotsArray, SnapshotUnion } from "../snapshots/LocalStorageSnapshotStore";
 import { SnapshotEvents } from "../snapshots/SnapshotEvents";
 import SnapshotStore from "../snapshots/SnapshotStore";
-import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { SnapshotStoreConfig } from "../snapshots/SnapshotStoreConfig";
 import { Subscriber } from "../users/Subscriber";
+import { SubscriberCollection } from "../users/SubscriberCollection";
 import { CategoryProperties } from "./../../pages/personas/ScenarioBuilder";
 
 // createSnapshotStore.ts
-function createSnapshotStore <T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  id: string,, K extends
+function createSnapshotStore <
+  T extends BaseData<any>,
+  K extends T = T,  
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
+  id: string,
   snapshotData: SnapshotData<T, K>,
   category?: string | symbol | Category,
   callback?: (snapshotStore: SnapshotStore<T, K>) => void,
@@ -59,10 +64,10 @@ function createSnapshotStore <T extends  BaseData<T>,  K extends T = T,  Meta ex
       id: string,
       snapshot: Snapshot<T, K>,
       snapshotId: string,
-      snapshotData: SnapshotData<T>,
+      snapshotData: SnapshotData<T, K, Meta>,
       category: Category | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T>,
+      snapshots: SnapshotsArray<T, K>,
       type: string,
       event: string | SnapshotEvents<T, K>,
       subscribers: SubscriberCollection<T, K>,
@@ -81,7 +86,7 @@ function createSnapshotStore <T extends  BaseData<T>,  K extends T = T,  Meta ex
             throw new Error('SnapshotStore ID could not be converted to a number');
           }
 
-          snapshot.updateData(idAsNumber, snapshotData);
+          snapshot.updateData(idAsNumber, snapshotData as unknown as T);
 
           // Step 3: If a category is provided, assign the snapshot to that category
           if (category) {
@@ -91,14 +96,12 @@ function createSnapshotStore <T extends  BaseData<T>,  K extends T = T,  Meta ex
           // Step 4: Perform an action based on the type (e.g., "restore", "revert")
           switch (type) {
             case 'restore':
-              // Add the snapshot to the snapshots array if not already present
-              if (!snapshots.includes(snapshotData)) {
-                snapshots.push(snapshotData);
+              if (!snapshots.includes(snapshotData as unknown as Snapshot<T, K, Meta>)) {
+                snapshots.push(snapshotData as unknown as Snapshot<T, K, Meta>);
               }
               break;
             case 'revert':
-              // Remove the snapshot from the snapshots array if present
-              const index = snapshots.indexOf(snapshotData);
+              const index = snapshots.indexOf(snapshotData as unknown as Snapshot<T, K, Meta>);
               if (index !== -1) {
                 snapshots.splice(index, 1);
               }
@@ -119,7 +122,8 @@ function createSnapshotStore <T extends  BaseData<T>,  K extends T = T,  Meta ex
           }
 
           // Step 7: Invoke the callback function with the updated snapshotData
-          callback(snapshotData);
+
+          callback(snapshotData as unknown as T);
 
           // Step 8: Trigger any necessary event actions
           if (event && typeof event.trigger === 'function') {

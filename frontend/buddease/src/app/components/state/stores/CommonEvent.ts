@@ -1,10 +1,11 @@
+// CommonEvent.ts
 import { snapshotContainer } from '@/app/api/SnapshotApi';
 import { SnapshotContainer } from '@/app/components/snapshots/SnapshotContainer';
-// CommonEvent.ts
 
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { StatusType } from '@/app/components/models/data/StatusType';
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { UnsubscribeDetails } from '../../event/DynamicEventHandlerExample';
 import { EventStore } from '../../event/EventStore';
@@ -24,7 +25,7 @@ import { Subscriber } from '../../users/Subscriber';
 import { ExtendedVersionData } from '../../versions/VersionData';
 import { VideoData } from "../../video/Video";
 
-interface CommonEvent extends Data {
+interface CommonEvent extends Data<T> {
   title: string;
 
   
@@ -46,13 +47,13 @@ interface CommonEvent extends Data {
   language?: string;
   agenda?: string;
   collaborationTool?: string;
-  metadata?: UnifiedMetaDataOptions
+  metadata?: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>
   // Implement the `then` function using the reusable function
-  then?: <T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
+  then?: <T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
 }
 
 // Define the function to implement the `then` functionality
-export function implementThen <T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   callback: (newData: Snapshot<T, K>) => void
 ): Snapshot<T, K> | undefined {
   const snapshot: Snapshot<T, K> = {
@@ -193,7 +194,7 @@ export function implementThen <T extends  BaseData<T>,  K extends T = T,  Meta e
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T>,
+      snapshots: SnapshotsArray<T, K>,
       type: string,
       event: Event,
       snapshotContainer?: T,
@@ -218,7 +219,7 @@ export function implementThen <T extends  BaseData<T>,  K extends T = T,  Meta e
       event: Event,
       callback: Callback<Snapshot<T, K>>,
       value: T,
-    ): SnapshotsArray<T> {
+    ): SnapshotsArray<T, K> {
       const foundSubscriber = subscriber as Subscriber<T, K>;
       if (foundSubscriber) {
         foundSubscriber.getState(data);
@@ -235,8 +236,8 @@ export function implementThen <T extends  BaseData<T>,  K extends T = T,  Meta e
       // Type assertion when passing to callback
       callback(newSnapshot as unknown as Snapshot<T, K>);
     
-      // Return an appropriate SnapshotsArray<T> value.
-      return [newSnapshot as unknown as SnapshotUnion<T>];
+      // Return an appropriate SnapshotsArray<T, K> value.
+      return [newSnapshot as unknown as SnapshotUnion<T, K>];
     }
   }
   callback(snapshot);
@@ -268,7 +269,7 @@ const commonEvent: CommonEvent = {
   tags: { },
   phase: null,
   // Implement the `then` function using the reusable function
-  then: <T extends  BaseData<T>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  then: <T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     callback: (newData: Snapshot<Data, K>) => void) => implementThen(callback),
   analysisType: {} as AnalysisTypeEnum.COMPARATIVE,
   analysisResults: [],

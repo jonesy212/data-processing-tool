@@ -1,4 +1,5 @@
 // responsetUtils.ts
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { fetchSnapshotById } from '@/app/api/SnapshotApi';
 import { SnapshotData } from '@/app/components/snapshots';
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
@@ -14,10 +15,10 @@ import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 import { SnapshotStoreDataResponse } from './SnapshotStoreDataResponse';
 import { SnapshotStoreProps } from './useSnapshotStore';
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 
-
-function handleSnapshot<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(snapshot: Snapshot<any, any>) {
+function handleSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(snapshot: Snapshot<any, any>) {
     if ('snapshotMethods' in snapshot.data) {
       // Safely access SnapshotStore specific methods
       const methods = (snapshot.data as SnapshotStoreDataResponse<T,K>).snapshotMethods;
@@ -30,7 +31,7 @@ function handleSnapshot<T extends  BaseData<T>, K extends T = T, Meta extends St
   }
 
 
-function mapResponseToSnapshot<T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function mapResponseToSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   response: any
 ): Snapshot<SnapshotStoreDataResponse<T, K>> {
     return {

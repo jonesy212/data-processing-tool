@@ -1,4 +1,5 @@
 // fetchInitialSnapshotData.ts
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "../libraries/categories/generateCategoryProperties";
@@ -12,10 +13,12 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { BaseData } from '../data/Data';
 
 // Example functions for fetching initial snapshot data and current data
-const fetchInitialSnapshotData = async  <T extends  BaseData<T>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<Snapshot<T, K>[]> => {
+const fetchInitialSnapshotData = async  <
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(): Promise<Snapshot<T, K>[]> => {
   await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate delay of 1 second
-
-
 
   const category = "someCategory"; // Define your category
   const documentManager = useDocumentStore(); // Instantiate DocumentManager
@@ -66,7 +69,7 @@ const fetchInitialSnapshotData = async  <T extends  BaseData<T>, K extends T = T
       },
       getSubscribers: (): Promise<{
         subscribers: Subscriber<T, K>[];
-        snapshots: Snapshots<T>;
+        snapshots: Snapshots<T, K>;
       }> => {
         // Implement the logic here
         return Promise.resolve({ subscribers: [], snapshots: {} }); // Return an object with subscribers and snapshots
@@ -79,6 +82,14 @@ const fetchInitialSnapshotData = async  <T extends  BaseData<T>, K extends T = T
         draft: true,
         userId: "userId",
         content: "content",
+        comments: [],
+        releaseDate: "2025-05-01",
+        lastUpdated: [],
+        major: 1,
+       
+        minor: 0,
+        patch: 0,
+       
         metadata: {
           author: 'author',
           timestamp: undefined, 
@@ -87,13 +98,13 @@ const fetchInitialSnapshotData = async  <T extends  BaseData<T>, K extends T = T
         versionData: [],
         checksum: ""
       },
-      transformSubscriber: (sub: Subscriber<T, K>): Subscriber<T, K> => {
+      transformSubscriber: (subscriberId: string, sub: Subscriber<T, K>): Subscriber<T, K> => {
         // Implement the logic here
         return sub; // Return the transformed subscriber
       },
-      transformDelegate: (): SnapshotStoreConfig<T, K>[] => {
+      transformDelegate: (): Promise<SnapshotStoreConfig<T, K>[]> => {
         // Implement the logic here
-        return []; // Return an array of SnapshotStoreConfig<T, K>
+        return Promise.resolve([]); // Return an array of SnapshotStoreConfig<T, K>
       },
       initializedState: {} as InitializedState<T, K>,
       getAllKeys: (): Promise<string[] | undefined> => {
@@ -111,11 +122,19 @@ const fetchInitialSnapshotData = async  <T extends  BaseData<T>, K extends T = T
       updateDataDescription: () => {},
       updateDataStatus: () => {},
       addDataSuccess: () => {},
-      getDataVersions: () => [],
+      getDataVersions: async (): Promise<Snapshot<T, K, Meta, never>[] | undefined> => {
+        // Implement the logic here
+        return Promise.resolve([]); // Return a Promise that resolves to an array of Snapshot<T, K> or undefined
+      },
       updateDataVersions: () => {},
       getBackendVersion: () => "1.0.0",
       getFrontendVersion: () => "1.0.0",
-      fetchData: () => {},
+      fetchData: (
+         endpoint: string,
+         id: number
+      ): Promise<SnapshotStore<T, K>> => {
+        
+        },
       defaultSubscribeToSnapshot: () => {},
       handleSubscribeToSnapshot: () => {},
       removeItem: () => {},
