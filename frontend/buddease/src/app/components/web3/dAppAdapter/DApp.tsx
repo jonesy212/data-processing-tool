@@ -1,9 +1,10 @@
 import appTreeApiService from "@/app/api/appTreeApi";
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
-import React, { FC } from "react";
-import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
-import YourClass from "@/app/utils/YourClass";
 import { ThemeEnum } from "@/app/components/libraries/ui/theme/Theme";
+import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import YourClass from "@/app/utils/YourClass";
+import React, { FC } from "react";
 import winston from "winston";
 import { authToken } from "../../auth/authToken";
 import { AquaChat } from "../../communications/chat/AquaChat";
@@ -14,22 +15,18 @@ import { DocumentOptions } from "../../documents/DocumentOptions";
 import useSocialAuthentication from "../../hooks/commHooks/useSocialAuthentication";
 import useErrorHandling from "../../hooks/useErrorHandling";
 import { DataLogger } from "../../logging/Logger";
+import { SupportedData } from "../../models/CommonData";
 import { BaseData, CommonRelationship } from "../../models/data/Data";
 import { DocumentSize } from "../../models/data/StatusType";
-import { Team } from "../../models/teams/Team";
-import { TeamMember } from "../../models/teams/TeamMembers";
-import { Project } from "../../projects/Project";
 import isValidAuthToken from "../../security/AuthValidation";
+import { UserData } from "../../users/User";
+import UserRoles from "../../users/UserRoles";
 import { DAppAdapterProps } from "../crossPlatformLayer/src/src/platform/DAppAdapter";
 import FluenceConnection from "../fluenceProtocoIntegration/FluenceConnection";
 import FluencePlugin from "../pluginSystem/plugins/fluencePlugin";
 import { AquaConfig } from "../web_configs/AquaConfig";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
 import { manageDocuments } from "./functionality/DocumentManagement";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { UserData } from "../../users/User";
-import UserRoles from "../../users/UserRoles";
-import { SupportedData } from "../../models/CommonData";
 
 export type CustomDocumentOptionProps = DocumentOptions & DappProps;
 
@@ -42,7 +39,7 @@ interface CustomApp<
   description: string;
   authToken: string;
   apiKey: string
-  childIds?: K[] | undefined,
+  childIds?: K[],
   relatedData?: K[],
   // Add any other properties as needed
 }

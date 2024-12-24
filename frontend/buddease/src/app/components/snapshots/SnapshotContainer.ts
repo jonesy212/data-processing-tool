@@ -1,13 +1,15 @@
 // SnapshotContainer.ts
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
+import { SnapshotOperationType } from "../snapshots/SnapshotActions";
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { apiCall, handleOtherStatusCodes } from "@/app/api/SnapshotApi";
 import { convertStoreId } from '@/app/components/snapshots/convertSnapshot';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { Callback } from '@/app/components/snapshots/subscribeToSnapshotsImplementation';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
-import { isSnapshotsArray } from '@/app/components/utils/snapshotUtils';
+import isSnapshotsArray from '@/app/components/utils/snapshotUtils';
 import { AppConfig, getAppConfig } from "@/app/configs/AppConfig";
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { SharedMetadata } from '@/app/configs/metadata/createMetadataState';
@@ -61,7 +63,8 @@ import { SnapshotStoreProps } from './useSnapshotStore';
 const API_BASE_URL = endpoints.snapshots
 
 
-type SnapshotDataType<T extends  BaseData<any>, 
+type SnapshotDataType<
+  T extends  BaseData<any>, 
   K extends T = T,
   ExcludedFields extends  BaseData<any> = never
 > =
@@ -103,6 +106,7 @@ interface SnapshotContainerData<
   K extends T = T, 
   ExcludedFields extends Data<T> = never
   > extends SharedMetadata<K> {
+  
   data: InitializedData<T> | undefined;
   items: ItemUnion[];
   config: Promise<SnapshotStoreConfig<T, K> | null>;
@@ -283,7 +287,7 @@ export const snapshotContainer = <
           dataCallback?: (
             subscribers: Subscriber<T, K>[],
             snapshots: Snapshots<T, K>
-          ) => Promise<SnapshotUnion<T, K>[]>
+          ) => Promise<SnapshotUnion<T, K, Meta>[]>
         ): Promise<Snapshot<T, K>[]> =>{
           // Implement logic to get all snapshots
           const allSnapshots: Snapshot<T, K>[] = []; // Placeholder for collected snapshots
@@ -861,20 +865,21 @@ export const snapshotContainer = <
 
 
           // Use the properties like timestamp, criteria, etc., as needed
-          const { timestamp, criteria, snapshotStore, content, snapshotCategory, snapshotSubscriberId, description,
-            isCore,
-            initialState,
-            data,
-            onInitialize
-          } = snapshotContainer;
-
+          
+          if (snapshotContainer && 'onInitialize' in snapshotContainer) {
+            const { timestamp, criteria, snapshotStore, content, snapshotCategory, snapshotSubscriberId, description,
+              isCore, initialState, data, onInitialize 
+            } = snapshotContainer;
+            
+            // Use the properties here
+          }
           if (criteria === undefined && description === undefined) {
             throw new Error("You must define a criteria")
           }
           // const description: string | undefined = storeProps.description; // Could be optional
           const priority: string | undefined = storeProps.priority; // Optional
-          const version: string | Version | undefined = storeProps.version; // Optional versioning
-          const additionalData: CustomSnapshotData<T, K, Meta> | undefined = storeProps.additionalData; // Custom additional data
+          const version: string | VersionData | VersionData[] | null = storeProps.version; // Optional versioning
+          const additionalData: CustomSnapshotData<T, K,  StructuredMetadata<T, K>> | undefined = storeProps.additionalData; // Custom additional data
 
           // Define or retrieve `existingConfigs` from somewhere in your system
           const existingConfigs: Map<string, SnapshotConfig<T, K>> = storeProps.existingConfigs || new Map();
@@ -1330,7 +1335,8 @@ export const snapshotContainer = <
                 config,
                 operation,
                 expirationDate,
-                payload, callback, storeProps, endpointCategory
+                payload, callback, storeProps, endpointCategory,
+                initialState
               });
 
 
@@ -1378,7 +1384,7 @@ export const snapshotContainer = <
                 categoryProperties: CategoryProperties | undefined,
                 dataStoreMethods: DataStore<T, K>,
                 data: T,
-                dataCallback?: (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T, K>) => Promise<SnapshotUnion<T, K>[]>
+                dataCallback?: (subscribers: Subscriber<T, K>[], snapshots: Snapshots<T, K>) => Promise<SnapshotUnion<T, K, Meta>[]>
               ): Promise<Snapshot<T, K>[]> => {
                 // Logic to fetch all snapshots
                 const snapshots = await snapshotStore.getAllSnapshots(

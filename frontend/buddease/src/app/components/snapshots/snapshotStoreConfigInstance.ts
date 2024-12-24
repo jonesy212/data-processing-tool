@@ -464,7 +464,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<T>({
                   },
                   createSnapshotFailure: (
                     snapshotId: string,
-                    snapshotManager: SnapshotManager<T, any>,
+                    snapshotManager: SnapshotManager<T, K>,
                     snapshot: Snapshot<T, K<T>>
                   ): Promise<void> => {
                     console.log("Creating snapshot failure:", snapshotId, snapshotManager, snapshot);

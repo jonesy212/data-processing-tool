@@ -1,5 +1,6 @@
 // createSnapshotStoreOptions.ts
 import { getCurrentSnapshot } from '@/app/api/SnapshotApi';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { getSubscribersAPI } from '@/app/api/subscriberApi';
 import { CombinedEvents, SnapshotManager, SnapshotStoreOptions, useSnapshotManager } from '@/app/components/hooks/useSnapshotManager';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
@@ -82,7 +83,7 @@ const createSnapshotStoreOptions =  <T extends BaseData<any>, K extends T = T, M
   // Initialize the configs map, this could be loaded from some external source or API
   const existingConfigsMap = new Map<string, SnapshotConfig<T, K>>();
  
-  const defaultVersion: Version = version
+  const defaultVersion: Version<T, K> = version
 
   // Initialize structured metadata, this could also come from some external source
   const structuredMetadata: StructuredMetadata<T, K> = {
@@ -119,6 +120,7 @@ const createSnapshotStoreOptions =  <T extends BaseData<any>, K extends T = T, M
     relatedData: [], // Add this property
     versionData: createDefaultVersionData(),
     latestVersion: createLatestVersion(),
+    keywords: []
   };
 
   // Define criteria that might be used to filter or find snapshots
@@ -128,7 +130,11 @@ const createSnapshotStoreOptions =  <T extends BaseData<any>, K extends T = T, M
   };
   
 
-  const version: Version = {
+
+  const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
+  const currentMetadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(area)
+
+  const version: Version<T, K> = {
     id: 1,
     versionData: null,
     buildVersions: undefined,

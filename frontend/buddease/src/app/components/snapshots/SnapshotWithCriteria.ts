@@ -3,18 +3,21 @@ import { Tag } from '@/app/components/models/tracker/Tag';
 import { Callback, SnapshotConfig, SnapshotData, SnapshotStoreProps } from '@/app/components/snapshots';
 import { useDataContext } from "@/app/context/DataContext";
 import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
-import { CombinedEvents, SnapshotManager, SnapshotStoreOptions } from "../hooks/useSnapshotManager";
+import { CombinedEvents, SnapshotManager  } from "../hooks/useSnapshotManager";
 import { BaseData, Data } from "../models/data/Data";
 import { NotificationPosition, StatusType } from "../models/data/StatusType";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SearchCriteria } from "../routing/SearchCriteria";
-import CalendarManagerStoreClass, { CalendarEvent } from "../state/stores/CalendarEvent";
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { NotificationType } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
-import { Payload, Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
+import { Payload } from '@/app/components/database/Payload';
+import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
 import { handleSnapshotSuccess } from "./snapshotHandlers";
 import SnapshotStore from "./SnapshotStore";
+import { InitializedDelegate, SnapshotStoreOptions } from '../snapshots/SnapshotStoreOptions';
 
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
@@ -27,6 +30,9 @@ import Version from "../versions/Version";
 import { SnapshotOperation } from "./SnapshotActions";
 import { SnapshotEvents } from './SnapshotEvents';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { unsubscribe } from 'node:diagnostics_channel';
+import { once } from 'node:events';
+import { SubscriberCollection } from '../users/SubscriberCollection';
 
 // Define BaseData interface
 interface TagsRecord<
@@ -47,8 +53,8 @@ type SnapshotWithCriteria<
   tags?: TagsRecord<T, K> | string[] | undefined;   // Update as needed based on your schema
   timestamp: string | number | Date | undefined;
   snapshots?: Snapshots<BaseData<any, any, StructuredMetadata<any, any>>>; // Ensure correct snapshot type
-};
-
+  delegate: InitializedDelegate<T, K>;
+}
 
 
 export class SnapshotStoreWithCriteria<
@@ -59,7 +65,7 @@ export class SnapshotStoreWithCriteria<
   constructor(
     storeId: string,
     name: string,
-    version: Version,
+    version: Version<T, K>,
     schema: Record<string, SchemaField>,
     options: SnapshotStoreOptions<T, K>,
     category: symbol | string | Category | undefined,

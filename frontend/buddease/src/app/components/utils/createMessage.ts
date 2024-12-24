@@ -13,7 +13,13 @@ import { UserPreferences } from "@/app/configs/UserPreferences";
 import userSettings from '@/app/configs/UserSettings';
 import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
 
-
+type MessageProps = {
+  type: NotificationType; 
+  content: string | Content<T, K> | undefined;  // Align content type
+  additionalData?: CustomSnapshotData<T, K, Meta>,
+  sender: Sender; 
+  channel: string; 
+}
 
 // The corrected createMessage function
 export const createMessage = (
@@ -153,4 +159,4 @@ export const createMessage = (
   return message;
 };
 
-  
+  export type { MessageProps }

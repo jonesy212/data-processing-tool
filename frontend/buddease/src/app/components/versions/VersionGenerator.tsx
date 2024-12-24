@@ -9,7 +9,13 @@ import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { AxiosError } from "axios";
 import getAppPath from "../../../../appPath";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
-import Version from "./Version";
+import Version, { version as versionImpl } from "./Version";
+import VersionImpl from "./Version";
+import { T, K } from "../models/data/dataStoreMethods";
+import DocumentPermissions from "@/app/components/documents/DocumentPermissions";
+import { backend, backendStructure } from "@/app/configs/appStructure/BackendStructure";
+import { frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
+
  const { notify } = useNotification();
 
 interface VersionGeneratorConfig {
@@ -24,7 +30,7 @@ interface VersionGeneratorConfig {
 }
 
 interface VersionResult {
-  version: Version;
+  version: Version<T, K<T>>;
   info: any; // Replace 'any' with the type of versionInfo object if available
 }
 
@@ -40,6 +46,8 @@ const getCurrentAppInfo = (): { versionNumber: string; appVersion: string } => {
     appVersion,
   };
 };
+
+// info@theneptune.com
 
 class VersionGenerator {
   static async generateVersion(
@@ -93,7 +101,8 @@ class VersionGenerator {
       TaskLogger.logTaskCompleted(
         "existingTaskId", // Provide existing task ID if available, otherwise pass null or an empty string
         "Version Generation Task",
-        (message, type, date, id) => {
+        NotificationTypeEnum.TaskBoardID,
+        (message: string, type: string, date: Date, id: string) => {
           notify(
             message,
             "", //todo update
@@ -104,7 +113,11 @@ class VersionGenerator {
         }
       );
 
-      const version = new Version({
+
+      
+      const version = new VersionImpl({
+        ...versionImpl,
+        
         id: 0, // Provide a default value for the missing 'id' property
         versionNumber: "1.0.0",
         appVersion: "1.0.0",
@@ -112,6 +125,27 @@ class VersionGenerator {
         data: [], // Provide a default value for the missing 'data' property
         name: "", // Provide a default value for the missing 'name' property
         url: "", // Provide a default value for the missing 'url' property
+
+        isDeleted: false,
+        publishedBy: "",
+        lastModifiedBy: "",
+        lastModifiedAt: new Date(),
+        rootId: "",
+        branchId: "",
+        isLocked: true,
+        lockedBy: "",
+        lockedAt: new Date(),
+        isArchived: false,
+        archivedBy: "",
+        archivedAt: new Date(),
+        tags: {},
+        categories: [],
+        permissions: new DocumentPermissions(false, false),
+        collaborators: [],
+        comments: [],
+        reactions: [],
+        changes: [],
+        attachments: [],
       });
 
       return { version, info: versionInfo };
@@ -138,7 +172,7 @@ class VersionGenerator {
     properties: Record<string, any>,
     additionalProperties: Record<string, any>,
     config: VersionGeneratorConfig
-  ): Promise<Version> {
+  ): Promise<Version<T, K<T>>> {
     try {
       const data = await config.getData();
       const changes = config.determineChanges(data);
@@ -159,13 +193,15 @@ class VersionGenerator {
       TaskLogger.logTaskCompleted(
         "existingTaskId",
         "Version Generation Task",
-        (message, type, date, id) => {
+        NotificationTypeEnum.TaskBoardID,
+        (message: string, type: string, date: Date, id: string) => {
           notify(id, message, type, date, NotificationTypeEnum.TaskBoardID);
         }
       );
 
       const { versionNumber, appVersion } = getCurrentAppInfo();
-      return new Version({
+      return new VersionImpl({
+        ...versionImpl,
         versionNumber,
         appVersion,
         id: 0, // Provide a default value for id
@@ -173,6 +209,32 @@ class VersionGenerator {
         data: [], // Provide a default value for data
         name: "", // Provide a default value for name
         url: "", // Provide a default value for url
+        isDeleted: false,
+        publishedBy: "",
+        lastModifiedBy: "",
+        lastModifiedAt: new Date(),
+        rootId: "",
+        branchId: "",
+        isLocked: true,
+        lockedBy: "",
+        lockedAt: new Date(),
+        isArchived: false,
+        archivedBy: "",
+        archivedAt: new Date(),
+        tags: {},
+        categories: [],
+        permissions: new DocumentPermissions(false, false),
+        collaborators: [],
+        comments: [],
+        reactions: [],
+        changes: [],
+        attachments: [],
+        buildVersions: {
+          data: data,
+          backend: backendStructure,
+          frontend: frontendStructure,
+         
+        }
       });
     } catch (error) {
       console.error("Error generating version:", error);

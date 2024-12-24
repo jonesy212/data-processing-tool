@@ -16,7 +16,7 @@ export interface SnapshotManagement<T extends  BaseData<any>, K extends T = T, M
   updateSnapshot(
     snapshotId: string, 
     data: Map<string, Snapshot<T, K>>,
-    events: Record<string, CalendarManagerStoreClass<SnapshotWithCriteria<BaseData, BaseData>, Meta, K>[]>,
+    events: Record<string, CalendarManagerStoreClass<SnapshotWithCriteria<BaseData, BaseData>, K, Meta>[]>,
     snapshotStore: SnapshotStore<T, K>, 
     dataItems: RealtimeDataItem[], 
     newData: Snapshot<T, K>, 
@@ -51,13 +51,13 @@ export interface SnapshotManagement<T extends  BaseData<any>, K extends T = T, M
     callback?: (snapshot: Snapshot<T, K>) => void,
     snapshotData?: SnapshotStore<T, K>,
     snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>  | null,
-    snapshotStoreConfigSearch?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K>,
+    snapshotStoreConfigSearch?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K, Meta>,
   ) => Snapshot<T, K> | null;
 
   updateSnapshots(
     snapshotsToUpdate: Snapshot<T, K>[], // Array of snapshots to be updated
     data: Map<string, Snapshot<T, K>>, // Map of existing data
-    events: Record<string, CalendarManagerStoreClass<SnapshotWithCriteria<BaseData, BaseData>, Meta, K>[]>, // Event records
+    events: Record<string, CalendarManagerStoreClass<SnapshotWithCriteria<BaseData, BaseData>, K, Meta>[]>, // Event records
     snapshotStore: SnapshotStore<T, K>, // SnapshotStore instance
     dataItems: RealtimeDataItem[], // Data items for updates
     payload: UpdateSnapshotPayload<T>, // Payload with additional update data

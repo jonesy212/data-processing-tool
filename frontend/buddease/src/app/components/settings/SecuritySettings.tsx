@@ -53,3 +53,5 @@ interface SecuritySettings {
 
 
   export default defaultSecuritySettings;
+
+  export type { SecuritySettings }

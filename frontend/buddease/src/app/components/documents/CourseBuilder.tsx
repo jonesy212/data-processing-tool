@@ -1,16 +1,14 @@
 // CourseBuilder.tsx
 
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
-import { CustomPhaseHooks, Phase, PhaseData, PhaseMeta } from "../phases/Phase";
-import { fetchUserAreaDimensions, FetchOptions } from '@/app/pages/layouts/fetchUserAreaDimmensions';
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { NotificationTypeEnum } from '@/app/components/support/NotificationContext';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { K, T } from "../models/data/dataStoreMethods";
-import { useMetadata } from "@/app/configs/useMetadata";
-import { usePhaseMeta } from "@/app/configs/metadata/usePhaseMeta";
-import { BaseData } from "../models/data/Data";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { createMeta } from "@/app/configs/metadata/createMetadataState";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { useMetadata } from "@/app/configs/useMetadata";
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { BaseData } from "../models/data/Data";
+import { CustomPhaseHooks, Phase, PhaseData, PhaseMeta } from "../phases/Phase";
 
 // Interfaces for course structure
 interface Lesson {

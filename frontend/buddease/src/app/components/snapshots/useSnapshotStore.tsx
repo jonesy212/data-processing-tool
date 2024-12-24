@@ -1,12 +1,13 @@
 // useSnapshotStore.ts
-import { SubscriberCollection } '@/app/components/users/SubscriberCollection';
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import {
     ConfigureSnapshotStorePayload,
     SnapshotConfig,
 } from "@/app/components/snapshots/SnapshotConfig";
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { getSubscriptionLevel } from '@/app/components/subscriptions/SubscriptionLevel';
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -163,7 +164,7 @@ const convertSubscriptionPayloadToSubscriber = <
 
 type SnapshotStoreProps<
   T extends  BaseData<any>,
-  K extends T = T
+  K extends T = T,
 > = {
   storeId: string | number;
   category: Category | undefined;
@@ -191,11 +192,11 @@ type SnapshotStoreProps<
   expirationDate: Date;
   localStorage?: Storage; 
   payload: Payload | undefined;
-  callback: (data: T) => void;
+  callback: (snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>>) => void;
   storeProps: Partial<SnapshotStoreProps<T, K>>;
   endpointCategory: string | number;
   browserBehaviorConfig?: BrowserBehaviorConfig;
-  findIndex?(predicate: (snapshot: SnapshotUnion<T, K>) => boolean): number;
+  findIndex?(predicate: (snapshot: SnapshotUnion<T, K, Meta>) => boolean): number;
 
 }
 type SubscriptionPayloadActions = SubscriptionPayload<any, any> & Payload
@@ -856,7 +857,7 @@ const useSnapshotStore = async  <
       dataCallback?: (
         subscribers: Subscriber<T, K>[],
         snapshots: Snapshots<T, K>
-      ) => Promise<SnapshotUnion<T, K>[]>
+      ) => Promise<SnapshotUnion<T, K, Meta>[]>
     ): Promise<Snapshot<T, K>[]> {
       throw new Error("Function not implemented.");
     },
@@ -4353,5 +4354,5 @@ const useSnapshotStore = async  <
 };
 
 export { useSnapshotStore };
-export type { SnapshotStoreProps, SnapshotStoreOptions };
+export type { SnapshotStoreOptions, SnapshotStoreProps };
 

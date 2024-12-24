@@ -2,6 +2,7 @@
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotManager } from "@/app/components/hooks/useSnapshotManager";
+
 import { Task, TaskData } from "@/app/components/models/tasks/Task";
 import { Attachment } from '@/app/components/documents/Attachment/attachment'
 import createSnapshotOptions from "@/app/components/snapshots/createSnapshotOptions";
@@ -15,7 +16,7 @@ import useSecureStoreId from "@/app/components/utils/useSecureStoreId";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { EventManager } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { IHydrateResult } from "mobx-persist";
-import { fetchUserAreaDimensions } from '@/app/pages/layouts'
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import {
   CreateSnapshotsPayload,
   Payload,
@@ -122,14 +123,13 @@ import { SnapshotStoreProps } from "./useSnapshotStore";
 
 // const SNAPSHOT_URL = endpoints.snapshots;
 
-// // Define SnapshotUnion without needing K
+// Define SnapshotUnion without needing K
 type SnapshotUnion<
-  T extends BaseData<any, any>,
+  T extends BaseData<any, any> = BaseData<any, any>, 
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> =
-  | Snapshot<T, K, Meta, never> // Snapshot with metadata
-  | (Snapshot<T, K, Meta, never> & T); // Snapshot with additional fields from T
+> = Snapshot<T, K, Meta> | (Snapshot<T, K, Meta> & T);
+
 
 // Update SnapshotStoreUnion to use K
 type SnapshotStoreUnion<T extends BaseData, K extends T = T> =
@@ -137,13 +137,18 @@ type SnapshotStoreUnion<T extends BaseData, K extends T = T> =
   | Snapshots<T, K>;
 
 // Update Snapshots to use K
-type Snapshots<T extends BaseData, K extends T = T> =
+type Snapshots<T extends BaseData, K extends T = T  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> =
   | SnapshotsArray<T, K>
   | SnapshotsObject<T, K>;
 
 // Update SnapshotsObject to use K
-type SnapshotsObject<T extends BaseData<any>, K extends T = T> = {
-  [key: string]: SnapshotUnion<T, K>;
+type SnapshotsObject<
+  T extends BaseData<any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> = {
+  [key: string]: SnapshotUnion<T, K, Meta>;
 };
 
 type SnapshotsArray<
@@ -161,7 +166,8 @@ type Result<T> = { success: true; data: T } | { success: false; error: Error };
 // Define the snapshot function correctly
 const snapshotFunction = <
   T extends BaseData<any> = BaseData<any, any>,
-  K extends T = T
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
 >(
   id: string | number | undefined,
   snapshotData: SnapshotData<T, K>,
@@ -172,6 +178,7 @@ const snapshotFunction = <
   snapshotStoreConfigData?: SnapshotStoreConfig<
     SnapshotWithCriteria<any, BaseData>,
     SnapshotWithCriteria<any, BaseData>
+    
   >,
   snapshotContainerData?: SnapshotStore<T, K> | Snapshot<T, K> | null
 ): Promise<SnapshotData<T, K>> => {
@@ -207,6 +214,10 @@ const criteria = await snapshotApi.getSnapshotCriteria<
   snapshotContainer as unknown as SnapshotContainer<Data<BaseData<any>>, K<T>>,
   (snapshot: unknown) => {
     if (isSnapshotWithCriteria<Data<BaseData<any>>, K<T>>(snapshot)) {
+
+      // Await snapshot.config if it's a Promise
+      const config = snapshot.config ? await snapshot.config : null;
+
       // Pass all necessary arguments to snapshotFunction
       return snapshotFunction(
         snapshot.id, // Assuming snapshot has an `id` property
@@ -217,7 +228,7 @@ const criteria = await snapshotApi.getSnapshotCriteria<
         },
         snapshot.criteria, // Assuming snapshot has criteria
         snapshot.snapshotId, // Optional snapshotId if available
-        snapshot.config, // Optional snapshotStoreConfigData if available
+        config, // Pass the resolved config here
         snapshot.containerData // Optional snapshotContainerData if available
       );
     } else {
@@ -309,6 +320,7 @@ interface Snapshot<
   relationships?: Map<string, K>;
   storeConfig?: SnapshotStoreConfig<T, K>;
   additionalData?: CustomSnapshotData<T>;
+  dataStores?: DataStore<T, K, Meta>[]
   snapshot: (
     id: string | number | undefined,
     snapshotData: SnapshotData<T, K>,
@@ -401,7 +413,7 @@ interface Snapshot<
     dataCallback?: (
       subscribers: Subscriber<T, K>[],
       snapshots: Snapshots<T, K>
-    ) => Promise<SnapshotUnion<T, K>[]>
+    ) => Promise<SnapshotUnion<T, K, Meta>[]>
   ) => Promise<Snapshot<T, K>[]>;
 
   transformDelegate?: (delegate: any) => Promise<SnapshotStoreConfig<T, K>[]>;
@@ -414,7 +426,7 @@ interface Snapshot<
     snapshot: Snapshot<T, K, Meta> | null,
     timestamp: string | number | Date | undefined,
     type: string,
-    event: Event,
+    event: SnapshotEvents<T, K>,
     id: number,
     snapshotStore: SnapshotStore<T, K>,
     data: T
@@ -571,7 +583,7 @@ interface Snapshot<
       snapshotData: SnapshotData<T, K>,
       category: Category
     ) => void
-  ) => SnapshotStoreConfig<T, K>[];
+  ) => SnapshotStoreConfig<T, K>[] | uundefined;
 
   getSnapshotListByCriteria: (
     criteria: SnapshotStoreConfig<T, K>
@@ -827,7 +839,7 @@ const snapshotType = <
       null,
       {} as SnapshotContainer<T, K>,
       {},
-      storeId,
+      Number(storeId),
       snapshotFunction
     );
 
@@ -1338,6 +1350,7 @@ const newTask: Task<TaskData> = {
       payload: storeProps.payload,
       callback: storeProps.callback,
       endpointCategory: storeProps.endpointCategory,
+      initialState: storeProps.initialState
     });
     setTimeout(() => {
       onFulfill({
@@ -1536,10 +1549,6 @@ const newTask: Task<TaskData> = {
                 SnapshotUnion<
                   Data<T, K<T>, StructuredMetadata<T, K<T>>>,
                   Data<T, K<T>, StructuredMetadata<T, K<T>>>,
-                  StructuredMetadata<
-                    Data<T, K<T>, StructuredMetadata<T, K<T>>>,
-                    Data<T, K<T>, StructuredMetadata<T, K<T>>>
-                  >
                 >[]
               >)
             | undefined
@@ -2845,7 +2854,7 @@ const newTask: Task<TaskData> = {
           throw new Error("Function not implemented.");
         },
         createdAt: undefined,
-        snapshotStore: undefined,
+        snapshotStore: {},
         setSnapshotCategory: function (
           id: string,
           newCategory: Category
@@ -2900,8 +2909,8 @@ const newTask: Task<TaskData> = {
           snapshot2: Snapshot<T, K<T>, StructuredMetadata<T, K<T>>, never>;
           differences: Record<string, { snapshot1: any; snapshot2: any }>;
           versionHistory: {
-            snapshot1Version?: string | number | Version;
-            snapshot2Version?: string | number | Version;
+            snapshot1Version?: string | number | Version<T, K<T>>;
+            snapshot2Version?: string | number | Version<T, K<T>>;
           };
         } | null {
           throw new Error("Function not implemented.");
@@ -3130,7 +3139,9 @@ const newTask: Task<TaskData> = {
         },
         handleSnapshotFailure: function (
           error: Error,
-          snapshotId: string
+          snapshotId: string,
+          snapshots: Snapshots<T, K<T>>
+
         ): void {
           throw new Error("Function not implemented.");
         },
@@ -3173,6 +3184,10 @@ const newTask: Task<TaskData> = {
         getStores: function (
           storeId: number,
           snapshotId: string,
+          snapshotStoreConfigs: SnapshotStoreConfig<
+            Data<T, K<T>, StructuredMetadata<T, K<T>>>,
+            Data<T, K<T>, StructuredMetadata<T, K<T>>>
+          >[],
           snapshotStores: SnapshotStore<
             Data<T, K<T>, StructuredMetadata<T, K<T>>>,
             Data<T, K<T>, StructuredMetadata<T, K<T>>>
@@ -3245,7 +3260,7 @@ const newTask: Task<TaskData> = {
         },
         addStore: function (
           storeId: number,
-          snapshotId: string,
+          snapshotId: string | null,
           snapshotStore: SnapshotStore<
             Data<T, K<T>, StructuredMetadata<T, K<T>>>,
             Data<T, K<T>, StructuredMetadata<T, K<T>>>
@@ -3253,7 +3268,7 @@ const newTask: Task<TaskData> = {
           snapshot: Snapshot<T, K<T>, StructuredMetadata<T, K<T>>, never>,
           type: string,
           event: Event
-        ) {
+        ): SnapshotStore<T, K> | null {
           throw new Error("Function not implemented.");
         },
         mapSnapshot: function (
@@ -3648,7 +3663,7 @@ export type {
   SnapshotStoreUnion
 };
 
-export { createSnapshotOptions, snapshots };
+export { snapshots };
 
 // Create a subscription object
 const subscription: Subscription<T, K<T>> = {
@@ -3669,7 +3684,7 @@ const subscription: Subscription<T, K<T>> = {
   portfolioUpdatesLastUpdated: null,
   getId: () => "id-123",
   determineCategory: (
-    data: string | Snapshot<T, K> | null | undefined
+    data: string | Snapshot<T, K<T>> | null | undefined
   ): string => {
     if (typeof data === "object" && data !== null) {
       // Ensure that `data.category` is converted to a string
@@ -3678,14 +3693,14 @@ const subscription: Subscription<T, K<T>> = {
     return "default";
   },
   data: {} as Snapshot<BaseData, BaseData>,
-  getSubscriptionLevel: () => {
+  getSubscriptionLevel: (price: number) => {
     return SubscriberTypeEnum.Individual;
   },
 };
 
 const subscriberId = getSubscriberId.toString();
 
-const subscriber = new Subscriber<T, K>(
+const subscriber = new Subscriber<T, K<T>>(
   "_id",
   "John Doe",
   subscription,

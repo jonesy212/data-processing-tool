@@ -26,7 +26,8 @@ interface TagOptions<
   color: string;
   description: string;
   enabled: boolean;
-  type: AllTypes;
+  type: string | AllTypes;
+  nulltype: AllTypes;
   tags?: TagsRecord<T, K> | string[] | undefined; 
   createdAt?: Date;
   updatedAt?: Date;
@@ -93,8 +94,9 @@ const tagOptions1: TagOptions<BaseData> = {
       updatedAt: undefined,
       createdBy: '',
       timestamp: 0
-    }
-  } ,
+    },
+    nulltype: {} as AllTypes
+  },
   createdAt: undefined,
   updatedAt: undefined,
   createdBy: '',
@@ -112,7 +114,8 @@ const tagOptions2: TagOptions<BaseData> = {
   createdAt: undefined,
   updatedAt: undefined,
   createdBy: '',
-  timestamp: 0
+  timestamp: 0,
+  nulltype: {} as AllTypes
 };
 
 // Create React elements
@@ -152,7 +155,8 @@ export const createTag =  <T extends BaseData, K extends T = T>(
   createdAt: undefined,
   updatedAt: undefined,
   createdBy: '',
-  timestamp: 0
+  timestamp: 0,
+  nulltype: {} as AllTypes
 });
 
 export type { Tag, TagOptions };

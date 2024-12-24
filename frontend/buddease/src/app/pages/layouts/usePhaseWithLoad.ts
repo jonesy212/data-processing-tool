@@ -5,7 +5,7 @@ export const usePhaseWithLoad = <
     T extends BaseData<any>, 
     K extends T = T
 >(
-  area: string, 
+  area: string | undefined, 
   initialPhaseMetadata: Partial<StructuredMetadata<T, K>> = {}
 ) => {
   const { phaseMetadata, setPhaseMetadata, updatePhaseMetadata, phaseOptions, setPhaseOptions, updatePhaseOptions } = usePhaseMeta<T, K>(area, initialPhaseMetadata);

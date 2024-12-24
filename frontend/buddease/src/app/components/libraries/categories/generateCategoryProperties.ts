@@ -1,5 +1,5 @@
 import { BaseData } from '@/app/components/models/data/Data';
-import { SnapshotData } from '@/app/components/snapshots';
+import { SnapshotConfig, SnapshotData } from '@/app/components/snapshots';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -17,7 +17,7 @@ function isCategoryProperties(category: Category): category is CategoryPropertie
 }
 
 // generateCategoryProperties.ts
-function generateCategoryProperties(area: string): CategoryProperties {
+function generateCategoryProperties(area: string | undefined): CategoryProperties {
   switch (area) {
     case "UserInterface":
       return {
@@ -232,12 +232,12 @@ function getOrSetCategoryForSnapshot <T extends  BaseData<any>, K extends T = T,
   snapshotConfig: SnapshotConfig<T, K>,
   categoryProps?: Category,
   additionalHeaders?: Record<string, string>
-): CategoryProperties {
+): Promise<{ categoryProperties?: CategoryProperties; snapshots: Snapshot<T, K>[] }> {
   // Check if the category is already set and is a string or symbol
   if (typeof snapshot.category === 'string' || typeof snapshot.category === 'symbol') {
     return {
       name: snapshot.category.toString(),
-      id, 
+      id: snapshot.id ? snapshot.id.toString() : "", 
       description: snapshot.description ? snapshot.description : "",
       type: snapshot.categoryProperties?.type ?? "",
       chartType: snapshot.categoryProperties?.chartType ?? "",
@@ -291,7 +291,10 @@ function getOrSetCategoryForSnapshot <T extends  BaseData<any>, K extends T = T,
     snapshot.categoryProperties = generateCategoryProperties(type);
   }
   
-  return snapshot.categoryProperties;
+  return {
+    categoryProperties: snapshot.categoryProperties,
+    snapshots: [snapshot] // Return an array of snapshots as required
+  };
 }
 
 

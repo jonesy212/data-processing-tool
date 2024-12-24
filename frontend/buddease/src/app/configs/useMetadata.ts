@@ -19,7 +19,7 @@ function useMetadata<
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, 
   ExcludedFields extends keyof T = never
 >(
-  area: string,
+  area: string | undefined,
   relatedKeys: Array<keyof K> = [],
   overrides: Partial<Omit<Meta, ExcludedFields>> & {
     versionData?: Meta["versionData"];

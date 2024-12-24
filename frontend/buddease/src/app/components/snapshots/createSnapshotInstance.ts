@@ -91,7 +91,7 @@ const createSnapshotInstance = <
   storeOptions?: SnapshotStoreOptions<T, K>,
 ): Promise<Snapshot<T, K>> => {
 
-  const id = snapshotApi.fetchSnapshotById(Number(snapshotId)).toString();
+  const id = snapshotApi.fetchSnapshotById(String(snapshotId)).toString();
   const existingSnapshot = internalCache.get(id);
 
   if (existingSnapshot) {
@@ -316,7 +316,7 @@ const createSnapshotInstance = <
         dataCallback?: (
           subscribers: Subscriber<T, K>[],
           snapshots: Snapshots<T, K>
-        ) => Promise<SnapshotUnion<T, K>[]>
+        ) => Promise<SnapshotUnion<T, K, Meta>[]>
       ): Promise<Snapshot<T, K>[]> => { },
 
       getSubscribers: (
@@ -2051,7 +2051,7 @@ const createSnapshotInstance = <
         switch (type) {
           case 'create': {
             // Handle snapshot creation logic
-            const newSnapshot: SnapshotUnion<T, K> = {
+            const newSnapshot: SnapshotUnion<T, K, Meta> = {
               id: snapshotId,
               data: snapshotData,
               category: category,
@@ -2682,7 +2682,7 @@ const createSnapshotInstance = <
       },
 
       // Other properties and methods from Snapshot<T, K> can follow similar structure
-      initializeWithData: (data: SnapshotUnion<T, K>[]): void | undefined => {
+      initializeWithData: (data: SnapshotUnion<T, K, Meta>[]): void | undefined => {
         // Logic to initialize the snapshot with data
       },
 
@@ -2733,7 +2733,7 @@ const createSnapshotInstance = <
           data // Pass the data again if needed
         )
         // Convert the array of Snapshot<T, K> to Snapshots<T, K>
-        const snapshotsArray: SnapshotsArray<T, K> = snapshots.map((snapshot: Snapshot<T, K>) => snapshot as SnapshotUnion<T, K>);
+        const snapshotsArray: SnapshotsArray<T, K> = snapshots.map((snapshot: Snapshot<T, K>) => snapshot as SnapshotUnion<T, K, Meta>);
 
         // Call getSubscribers with the converted snapshots
         const { subscribers } = await snapshotStore.getSubscribers(undefined, snapshotsArray);

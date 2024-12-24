@@ -36,6 +36,39 @@ class SecurityAudit {
     return findings;
   }
 
+
+  /**
+   * Sanitize the state based on user roles and admin rights.
+   * @param state - The metadata to sanitize.
+   * @param userRole - The role of the user (e.g., 'admin', 'user').
+   * @param isAdmin - Boolean indicating whether the user is an admin.
+   * @returns The sanitized state.
+   */
+  sanitizeState(
+    state: StructuredMetadata<any, any>,
+    userRole: string,
+    isAdmin: boolean
+  ): StructuredMetadata<any, any> {
+    const sanitizedMetadata = { ...state };
+    
+    // Loop through the metadata entries and apply sanitization based on user role
+    if (!isAdmin && state.metadataEntries) {
+      Object.keys(state.metadataEntries).forEach((key) => {
+        const metadataEntry = state.metadataEntries[key];
+        
+        // Sanitize based on user role
+        if (userRole !== this.config.adminRole) {
+          // Mask or remove sensitive information for non-admin users
+          metadataEntry.description = "Access restricted";
+          metadataEntry.keywords = []; // Remove sensitive keywords
+          metadataEntry.authors = []; // Remove authors for non-admins
+        }
+      });
+    }
+
+    return sanitizedMetadata;
+  }
+
   /**
    * Review and display audit findings.
    * @param findings - The array of audit findings.

@@ -1,3 +1,4 @@
+import { SecuritySettings } from '@/app/components/settings/SecuritySettings';
 
 const openSecuritySettingsModal = async (
     currentSettings: SecuritySettings,

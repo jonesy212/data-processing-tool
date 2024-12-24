@@ -7,8 +7,9 @@ import { Member } from "@/app/components/models/teams/TeamMembers";
 import { Tag } from "@/app/components/models/tracker/Tag";
 import { RootState } from '@/app/components/state/redux/slices/RootSlice';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { produce } from "immer"; // Import immer for immutable updates
+import { createSlice, PayloadAction, createSelector } from "@reduxjs/toolkit";
+import { produce } from "immer"; 
+// Import immer for immutable updates
 import { WritableDraft } from "../ReducerGenerator";
 
 interface FilteredEventsState<T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
@@ -150,11 +151,11 @@ export const useFilteredEventsSlice = createSlice({
     },
 
 
-    filterByTags: (state, action: PayloadAction<Tag[]>) => {
+    filterByTags: (state, action: PayloadAction<Tag<T, K>[]>) => {
       const tags = action.payload;
       produce(state, (draftState) => {
         draftState.filteredEvents = draftState.filteredEvents.filter((event) =>
-          event.tags?.some((tag: Tag) => tags.includes(tag))
+          event.tags?.some((tag: Tag<T, K>) => tags.includes(tag))
         );
       });
     },

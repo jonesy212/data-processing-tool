@@ -1,9 +1,15 @@
+// DataAnalysisResult.ts
 import { BaseData, SharedBaseData } from '@/app/components/models/data/Data';
 import { AllStatus } from "../../state/stores/DetailsListStore";
 import { AnalysisTypeEnum } from "./AnalysisType";
+import { Phase } from '@/app/components/phases/Phase';
+import { SnapshotStoreReference } from '@/app/components/snapshots/SnapshotStore'
+import { PriorityTypeEnum } from '../../models/data/StatusType';
 
-// DataAnalysisResult.ts
-export interface DataAnalysisResult<T extends  BaseData<any>> {
+export interface DataAnalysisResult<
+  T extends  BaseData<any>,
+  K extends T = T
+> {
   id: string | number; // Unique identifier for the data analysis result
   title: string; // Title of the data analysis result
   insights: string[]; // Array of insights gained from the data analysis
@@ -18,8 +24,8 @@ export interface DataAnalysisResult<T extends  BaseData<any>> {
   sentiment: number,
   recommendations: string[]; // Array of recommendations based on the analysis
   sentimentAnalysis: boolean;
-  phase: Phase<T, K<T>>;
-  priority: PriorityTypeEnum
+  phase: Phase<T, K>;
+  priority: PriorityTypeEnum;
   snapshotStores?: SnapshotStoreReference<T, K>[],
   metrics: {
     // Object containing various metrics related to the analysis

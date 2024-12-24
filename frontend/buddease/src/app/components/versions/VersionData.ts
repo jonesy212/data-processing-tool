@@ -32,9 +32,9 @@ interface SharedUpdateHistory extends SharedVersionData {
 interface VersionHistory extends SharedUpdateHistory{
   // Define the structure of the version history
   // Each element represents a version of the data
-  versionData: VersionData[] | {} | null;
+  versionData: string | VersionData | null | {} | null;
   latestVersion: VersionData; // A reference to the most recent version
-  history: HistoryEntry[]
+  history: HistoryEntry[] | undefined
 }
 
 
@@ -82,7 +82,7 @@ interface ExtendedVersionData {
   releaseDate: string;
   lastUpdated: Date | VersionHistory;
   buildVersions?: BuildVersion | undefined;
-  versionData?: VersionData[] | null;
+  versionData?: VersionData | null;
   major: number;
   minor: number;
   patch: number;
@@ -112,7 +112,7 @@ interface VersionData extends ExtendedVersionData {
   publishedAt: Date | null;
   source: string;
   status: string;
-  version: Version;
+  version: Version<T, K<T>>;
   timestamp: string | Date | undefined
   user: string;
   changes: string[];
@@ -124,9 +124,9 @@ interface VersionData extends ExtendedVersionData {
   workspaceAdmins: string[];
   workspaceMembers: string[];
   createdAt?: string | Date | undefined;
-  createdBy: string,
+  createdBy?: string ,
   updatedAt?: string | Date | undefined;
-  history: HistoryEntry[]
+  history: HistoryEntry[] | undefined
   _structure?: any; // Adjust as per actual type
   frontendStructure?: Promise<AppStructureItem[]>; // Adjust as per actual type
   backendStructure?: Promise<AppStructureItem[]>; // Adjust as per actual type
@@ -211,9 +211,9 @@ const createDefaultVersionData = (overrides?: Partial<VersionData>): VersionData
     data: [],
     _structure: {},
     versionHistory: {
-      versionData: undefined
+      versionData: null
     },
-    getVersionNumber: undefined,
+    getVersionNumber: () => "",
     updateStructureHash: function (): Promise<void> {
       throw new Error('Function not implemented.');
     },
@@ -443,7 +443,10 @@ const versionData: VersionData = (() => {
     updateStructureHash: "",
     getStructureHashAndUpdateIfNeeded: "",
     backendVersions: "",
-   }
+    transformToStructureItems: "",
+    getStructure: "",
+   },
+   
 })();
 
 // Function to calculate checksum (example implementation)

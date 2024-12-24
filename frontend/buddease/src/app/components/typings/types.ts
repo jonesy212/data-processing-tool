@@ -1,6 +1,6 @@
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { NestedEndpoints } from "@/app/api/ApiEndpoints";
 import { SearchNotesResponse } from "@/app/api/ApiNote";
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
 
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Exchange } from "../crypto/Exchange";
@@ -15,11 +15,11 @@ import { Phase } from "../phases/Phase";
 import { DataAnalysisResult } from '../projects/DataAnalysisPhase/DataAnalysisResult';
 import { Project } from "../projects/Project";
 import { ExcludedFields } from "../routing/Fields";
-import  SnapshotStoreUnion from "../snapshots";
+import  { Snapshot, SnapshotStoreUnion } from "../snapshots";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import BrowserCheckStore from "../state/stores/BrowserCheckStore";
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { CalendarManagerStore } from "@/app/components/state/stores/CalendarEvent";
+import { CalendarManagerStore } from "@/app/components/state/stores/CalendarManagerStore";
 
 import { IconStore } from "../state/stores/IconStore";
 import { Settings } from "../state/stores/SettingsStore";
@@ -28,6 +28,7 @@ import { TodoManagerStore } from "../state/stores/TodoStore";
 import { TrackerStore } from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
 import { User } from "../users/User";
+import { Attendee } from "../calendar/Attendee";
 
 export interface TodoType {
   id: string;                  // Unique identifier for the todo
@@ -86,11 +87,15 @@ export interface SnapshotStoreType<T> {
 
 
 
-interface BaseResponseType {
+interface BaseResponseType<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> {
   calendarEvents: CalendarEvent[];
-  todos: Todo[];
-  tasks: Task[];
-  snapshotStores: SnapshotStore<SnapshotStoreUnion<T>, K<T>>[];
+  todos: Todo<T, K, Meta>[]; // Assuming Todo is a type/interface for todos
+  tasks: Task<T, K, Meta>[];
+  snapshotStores: SnapshotStore<SnapshotStoreUnion<T>, K>[];
   currentPhase: Phase | null;
   comment: string;
   securityStamp?: string | null | undefined;
@@ -99,8 +104,8 @@ interface BaseResponseType {
 
 
 interface YourSettingsResponseType<
-  T extends BaseResponseType,
-  K extends T = T,
+T extends BaseData<any>, 
+K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > extends Settings, YourResponseType<T, K, Meta>
     //, 
@@ -110,12 +115,16 @@ interface YourSettingsResponseType<
     calendarEventTypes: CalendarEventType[];
     todoTypes: TodoType[];
     taskTypes: TaskType[];
-    snapshotStoreTypes: SnapshotStoreTyp<T>[];
+    snapshotStoreTypes: SnapshotStoreType<T>[];
 }
 
 
-type UserDataResponseType = User & BaseResponseType & YourSettingsResponseType<T, K, Meta>
 
+type UserDataResponseType<
+  T extends BaseData<any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> = User & BaseResponseType<T, K, Meta> & YourSettingsResponseType<T, K, Meta>
 
 
 // Define the structure of YourResponseType based on the actual response from the backend
@@ -123,7 +132,9 @@ interface YourResponseType<
   T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> extends BaseResponseType, DataWithComment<T>,
+> extends Partial<Snapshot<T, K, Meta, never>>, 
+  BaseResponseType<T, K, Meta>,
+  DataWithComment<T>,
   SearchNotesResponse {
   id?: string;
   forEach?: (arg0: (notification: import("../support/NofiticationsSlice").NotificationData) => void) => void;
@@ -147,7 +158,8 @@ interface YourResponseType<
   browsers?: any;
   endpoints: NestedEndpoints;
   highlights: HighlightEvent[];
-  data?: {
+  data: InitializedData<T>;
+  projectInfo?: {
     id: number;
     projectName: Project["name"];
     description: Project["description"];

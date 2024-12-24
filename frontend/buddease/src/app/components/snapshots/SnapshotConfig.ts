@@ -1012,7 +1012,7 @@ const updateSubscribersAndSnapshots = async <
           },
           getTriggerActions: async (eventType: string, eventData: any, date: Date, type: NotificationTypeEnum, data: T): Promise<void> => {
             // Logic to handle trigger actions, e.g., notifying subscribers or processing events
-            await apiNotificationsService.notify(eventType, eventData, date, type);
+            await apiNotificationsService.notify(eventType, message, eventData, date, type);
           }, 
           // Fetch an item from internal cache based on an ID, returning data of type T or undefined
           getFromInternalCache: (id: string): T | undefined => {
@@ -1084,7 +1084,7 @@ const updateSubscribersAndSnapshots = async <
           setUpdateProjectState: {} as Function, 
           setLogActivity: {} as Function,
           setTriggerIncentives: {} as Function, 
-          setOptionalData: {} as Function, 
+          setOptionalData: {} as CustomSnapshotData<T, K, StructuredMetadata<T, K>>, 
           setEmail: "", 
           setSnapshotIds: [],
           getPayload: {} as T,
@@ -1122,7 +1122,7 @@ const updateSubscribersAndSnapshots = async <
               const defaultSnapshotStore: Partial<SnapshotStore<T, K, StructuredMetadata<T, K>>> = {
                 id: 'default-store-id',
                 name: 'Default Store',
-                data: [] // Assume this data can be pre-filled
+                data: {} as InitializedData<T> | undefined // Assume this data can be pre-filled
               };
               return defaultSnapshotStore;
             } catch (error) {

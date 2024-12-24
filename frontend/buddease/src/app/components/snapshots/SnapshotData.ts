@@ -47,11 +47,11 @@ interface SnapshotRelationships<
   parentId?: string | null;
   parent?: Snapshot<T, K> | null;
   children?: CoreSnapshot<T, K>[];
-  childIds?: K[] | undefined;
+  childIds?: K[];
   getParentId(id: string, snapshot: Snapshot<T, K>): string | null;
   getChildIds(id: string, childSnapshot: CoreSnapshot<T, K>): (string | number | undefined)[]
   snapshotCategory: SnapshotCategory<T, K> | undefined, 
-  initializeWithData(data: SnapshotUnion<T, K>[]): void | undefined
+  initializeWithData(data: SnapshotUnion<T, K, Meta>[]): void | undefined
   hasSnapshots(): Promise<boolean>
   snapshotSubscriberId: string | null | undefined;
   addChild(parentId: string, childId: string, childSnapshot: CoreSnapshot<T, K>): void;
@@ -101,7 +101,7 @@ interface SnapshotData<
     | null;
   priority?: string | PriorityTypeEnum;
   subscription?: Subscription<T, K> | null;
-  version?: string | number | Version | undefined
+  version?: string | number | Version<T, K> | undefined
   versionHistory?: VersionHistory
   config: Promise<SnapshotStoreConfig<T, K> | null>;
   metadata?: UnifiedMetaDataOptions<T, K, Meta, MapExcludedFieldsToMetaKeys<T, K, StructuredMetadata<T, K>, ExcludedFields>

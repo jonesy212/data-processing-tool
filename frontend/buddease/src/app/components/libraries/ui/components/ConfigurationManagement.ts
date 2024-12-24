@@ -5,7 +5,7 @@ import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
 //ConfigurationManagement.ts
 interface ConfigurationManagement<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
-  applyStoreConfig(snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData, Meta>, Meta, K>): void;
+  applyStoreConfig(snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData, Meta>, K, Meta>): void;
   handleSnapshotConfig(config: SnapshotStoreConfig<T, K>): void;
   // other config-related methods
 }

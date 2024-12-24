@@ -36,7 +36,7 @@ interface HistoryEntry {
 }
 
 interface HistoryStore {
-  history: HistoryEntry[];
+  history: HistoryEntry[] | undefined;
   addHistoryEntry: (data: any) => void;
   undo: () => void;
   redo: () => void;

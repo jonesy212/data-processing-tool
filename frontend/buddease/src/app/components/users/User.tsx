@@ -1,14 +1,19 @@
 // User.tsx
+import { SecuritySettings } from "@/app/components/settings/SecuritySettings";
+import { Attachment } from "@/app/components/documents/Attachment/attachment";
 import { UserSettings } from "@/app/configs/UserSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { T, K, Meta} from "@/app/components/models/data/dataStoreMethods";
+import { T, K, Meta } from "@/app/components/models/data/dataStoreMethods";
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import React from "react";
 import { NotificationPreferences } from "../communications/chat/ChatSettingsModal";
 import ChatSettings from "../communications/chat/ChatSettingsPanel";
 import { RealtimeUpdates } from "../community/ActivityFeedComponent";
-import { CustomTransaction, SmartContractInteraction } from "../crypto/SmartContractInteraction";
+import {
+  CustomTransaction,
+  SmartContractInteraction,
+} from "../crypto/SmartContractInteraction";
 import { CryptoDocumentManager } from "../documents/cryptoDocumentManager";
 import CommonDetails, { SupportedData } from "../models/CommonData";
 import { BaseData, Data, SharedBaseData } from "../models/data/Data";
@@ -36,7 +41,10 @@ import { SnapshotStoreConfig, TagsRecord } from "../snapshots";
 import { NotificationSettings } from "../support/NotificationSettings";
 import { Product } from "../products/Product";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { fetchUserAreaDimensions, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import {
+  fetchUserAreaDimensions,
+  UnifiedMetaDataOptions,
+} from "@/app/configs/database/MetaDataOptions";
 import { useMeta } from "@/app/configs/useMeta";
 import { ExcludedFields } from "../routing/Fields";
 import { useMetadata } from "@/app/configs/useMetadata";
@@ -44,17 +52,17 @@ import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
 import { SharedVersionData } from "../versions/VersionData";
 
 export interface User<
-  T extends BaseData<any> = BaseData<any, any>, 
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,  // Update to match pattern
+  T extends BaseData<any> = BaseData<any, any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Update to match pattern
   ExcludedFields extends keyof UserData<T, K, Meta> = never
 > extends UserData<T, K, Meta, ExcludedFields> {
   id?: string | number | undefined;
-  _id?: string; 
+  _id?: string;
   username: string;
   firstName: string;
   lastName: string;
-  type?: string
+  type?: string;
   email: string;
 
   tags?: TagsRecord | string[];
@@ -71,7 +79,7 @@ export interface User<
   isVerified?: boolean;
   isActive?: boolean;
   isAdmin?: boolean;
-  isSubscribed?: boolean,
+  isSubscribed?: boolean;
   lastLogin?: Date;
   roles: UserRole[];
   bio: string | null;
@@ -96,7 +104,7 @@ export interface User<
   followers: User[];
   privacySettings: PrivacySettings | undefined;
   notifications: NotificationSettings | undefined;
-  activityLog: ActivityLogEntry[]
+  activityLog: ActivityLogEntry[];
   projects?: Project[]; // Define the type explicitly as an array of Project objects
   socialLinks: SocialLinks | undefined;
   relationshipStatus: string | null;
@@ -119,7 +127,7 @@ export interface User<
   emailVerificationStatus?: boolean;
   phoneVerificationStatus?: boolean;
   walletAddress?: string;
-  transactionHistory?: CustomTransaction[]
+  transactionHistory?: CustomTransaction[];
   tokenBalance?: number;
   smartContractInteractions?: SmartContractInteraction[];
   blockchainPermissions?: BlockchainPermissions;
@@ -131,13 +139,11 @@ export interface User<
   decentralizedIdentity?: any;
   decentralizedMessagingKeys?: any;
   decentralizedAuthentication?: any;
-  twitterData?: TwitterData
+  twitterData?: TwitterData;
   preferences: UserPreferences | undefined;
-  currentMetadata: UnifiedMetaDataOptions<T, K>
-  currentMeta: StructuredMetadata<T, K> | undefined
+  currentMetadata: UnifiedMetaDataOptions<T, K>;
+  currentMeta: StructuredMetadata<T, K> | undefined;
 }
-
-
 
 interface ExtendedUser extends User {
   workspaceUrl: string;
@@ -162,7 +168,6 @@ interface ExtendedUser extends User {
   activeRoleProducts: any[]; // Specify type as needed
 }
 
-
 interface Address {
   street: string;
   city: string;
@@ -186,29 +191,29 @@ interface Employment {
   endDate?: Date;
 }
 
-
 const timeBasedCode: string = generateTimeBasedCode();
-
-
 
 // Placeholder for user data
 export interface UserData<
-  T extends BaseData<any> = BaseData<any, any>, 
+  T extends BaseData<any> = BaseData<any, any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> extends SharedBaseData<K>, SharedVersionData {
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof UserData<T, K, Meta> = never
+> extends BaseData<T, K, StructuredMetadata<T, K>, Attachment>,
+    SharedBaseData<K>,
+    SharedVersionData {
   _id?: string;
   id?: string | number | undefined;
   datasets?: string;
-  username: string
+  username: string;
   tasks?: Task<T, K>[];
   questionnaireResponses?: any;
   chatSettings?: ChatSettings;
   projects?: Project[];
-  storeId: number
-  
+  storeId: number;
+
   teams?: Team[];
-  
+
   teamMembers?: TeamMember[];
   yourDocuments?: DocumentTree;
   visualizations?: VisualizationData[];
@@ -222,12 +227,12 @@ export interface UserData<
   occupation?: string;
   incomeLevel?: string;
   unreadNotificationCount?: number;
-  snapshots?: SnapshotStore<Data<T>, K>[] | undefined
+  snapshots?: SnapshotStore<Data<T>, K>[] | undefined;
   snapshotConfiguration?: SnapshotStoreConfig<any, any>[];
   analysisResults?: DataAnalysisResult<T>[];
   role: UserRole | undefined;
   timestamp?: Date | string;
-  category?: string
+  category?: string;
   deletedAt?: Date | null;
   lastLogin?: Date;
   lastLogout?: Date;
@@ -252,7 +257,7 @@ export interface UserData<
   phoneNumber?: string;
   securityStamp?: string | null;
   concurrencyStamp?: string | null;
-  accessFailedCount?: number | null,
+  accessFailedCount?: number | null;
   subscriptionType?: string | null;
   subscriptionEndDate?: Date | null;
   paymentMethod?: string | null;
@@ -501,7 +506,10 @@ const userData: UserData = {
   location: "Texas",
   occupation: "Software Engineer",
   incomeLevel: "string",
-  snapshots: {} as SnapshotStore<Data<T, K<T>, StructuredMetadata<T, K<T>>>, BaseData>[],
+  snapshots: {} as SnapshotStore<
+    Data<T, K<T>, StructuredMetadata<T, K<T>>>,
+    BaseData
+  >[],
   role: {} as UserRole,
   deletedAt: null,
   lastLogin: new Date(),
@@ -557,7 +565,7 @@ const handleDocumentEncryption = (document: DocumentTree) => {
 
 // using common details we generate details for components by mapping through the objects.
 const UserDetails: React.FC<{ user: User }> = ({ user }) => {
-  const { id, analysisResults, snapshots, ...rest } = user;
+  const { id, analysisResults, snapshots, label, ...rest } = user;
 
   if (user && user.data && user.yourDocuments!) {
     // Call handleDocumentEncryption with user's documents
@@ -565,38 +573,43 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
 
     return (
       <CommonDetails
-      details={{
+        details={{
           ...rest,
           id: id ? id.toString() : "",
           analysisResults: [] as DataAnalysisResult<T>[],
-          data: user.data as UserData<BaseData<any, any, StructuredMetadata<any, any>>,
-            BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K>>,
+          label: label ? label.toString() : label,
+          data: user.data as UserData<
+            BaseData<any, any, StructuredMetadata<any, any>>,
+            BaseData<any, any, StructuredMetadata<any, any>>,
+            StructuredMetadata<T, K<T>>
+          >,
           createdBy: user.createdBy,
           tags: Array.isArray(user.tags)
-          ? user.tags.map((tag) =>
-            typeof tag === "string" ? tag : (tag as Tag<any>).name
-          )
-          : [],
+            ? user.tags.map((tag) =>
+                typeof tag === "string" ? tag : (tag as Tag<any>).name
+              )
+            : [],
           currentMetadata: user.currentMetadata,
-          currentMeta: user.currentMeta ? user.currentMeta : undefined,
+          currentMeta:
+            user.currentMeta ||
+            ({} as StructuredMetadata<
+              BaseData<any, any, StructuredMetadata<any, any>, Attachment>,
+              BaseData<any, any, StructuredMetadata<any, any>, Attachment>
+            >),
         }}
       />
     );
   } else {
     return <div>User not available</div>;
   }
-
-
 };
-const area = fetchUserAreaDimensions().toString()
-const meta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
-const currentMetadata: UnifiedMetaDataOptions<
-  T, 
-  K<T>
-> = useMetadata<T, K<T>>(area)
-export const usersDataSource: Record<string, User> = {
+const area = fetchUserAreaDimensions().toString();
+const meta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area);
+const currentMetadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(
+  area
+);
+export const usersDataSource: Record<string, UserData> = {
   1: {
-
     currentMetadata: currentMetadata,
     currentMeta: meta,
     // User Data
@@ -604,21 +617,21 @@ export const usersDataSource: Record<string, User> = {
     username: "User 1",
     email: "<EMAIL>",
     role: UserRoles.Guest,
-    avatarUrl: "", 
+    avatarUrl: "",
     bannerUrl: "",
-    hasQuota: false, 
-    processingTasks: [], 
-    persona: null, 
-    friends: [], 
-    deletedAt: null, 
-    lastNameChange: new Date(), 
-    lockoutEnd: null, 
-    twoFactorEnabled: false, 
-    phoneNumberConfirmed: false, 
-    securityStamp: "", 
-    concurrencyStamp: "", 
-    accessFailedCount: 0, 
-    settings: null, 
+    hasQuota: false,
+    processingTasks: [],
+    persona: null,
+    friends: [],
+    deletedAt: null,
+    lastNameChange: new Date(),
+    lockoutEnd: null,
+    twoFactorEnabled: false,
+    phoneNumberConfirmed: false,
+    securityStamp: "",
+    concurrencyStamp: "",
+    accessFailedCount: 0,
+    settings: null,
     followers: [],
     storeId: 0,
     roles: [],
@@ -657,7 +670,7 @@ export const usersDataSource: Record<string, User> = {
       accessFailedCount: 0,
       subscriptionType: "",
       subscriptionEndDate: null,
-      childIds: [], 
+      childIds: [],
       relatedData: [],
       paymentMethod: "",
       paymentMethodId: "",
@@ -685,7 +698,7 @@ export const usersDataSource: Record<string, User> = {
       minor: 0,
       patch: 0,
     },
-    
+
     // Document Details
     yourDocuments: {
       public: {} as DocumentNode,
@@ -696,7 +709,7 @@ export const usersDataSource: Record<string, User> = {
       group: {} as DocumentNode,
       visualizations: {} as DocumentNode,
     },
-    
+
     // Personal Details
     firstName: "",
     lastName: "",
@@ -714,14 +727,14 @@ export const usersDataSource: Record<string, User> = {
     dateOfBirth: undefined,
     skills: [],
     achievements: [],
-    
+
     // Subscription Details
     tier: "0",
     isSubscribed: false,
     subscriptionType: "",
     subscriptionEndDate: null,
     paymentMethod: "",
-    
+
     // Activity Details
     isActive: true,
     lastLogin: new Date(),
@@ -741,7 +754,7 @@ export const usersDataSource: Record<string, User> = {
     lastLoginAttempt: new Date(),
     loginAttempts: 0,
     activityStatus: "",
-    
+
     // Other Details
     token: "",
     uploadQuota: 0,
@@ -784,4 +797,3 @@ export const usersDataSource: Record<string, User> = {
 
 export default UserDetails;
 export type { Address, Education, Employment, SocialLinks, ExtendedUser };
-

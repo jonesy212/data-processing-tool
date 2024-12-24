@@ -7,6 +7,7 @@ import { BaseData, Data, DataDetails } from "../models/data/Data";
 import { TagsRecord } from "../snapshots";
 import { VideoMetadata } from '@/app/configs/StructuredMetadata';
 import { ExcludedFields } from '../routing/Fields';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
 interface BaseVideoProperties {
   id?: string | number | undefined;
@@ -14,6 +15,7 @@ interface BaseVideoProperties {
   description?: string | null | undefined;
   url?: string;
   thumbnailUrl?: string;
+  isActive?: boolean;
   duration?: number;
   uploadedBy?: string;
   viewsCount?: number;
@@ -63,7 +65,13 @@ interface BaseVideoProperties {
 
 
 // Updated VideoCommonData Interface
-interface VideoCommonData extends CommonData<UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>> {
+interface VideoCommonData<
+  T extends BaseData, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends T = never
+>
+ extends CommonData<UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>> {
   uploadedAt?: Date;
   url?: string;
   thumbnailUrl?: string;
@@ -96,16 +104,21 @@ interface VideoCommonData extends CommonData<UnifiedMetaDataOptions<T, K, Meta, 
 
 interface Video<
   T extends BaseData<any> = BaseData<any>,
-  K extends T = T
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends T = never
 >
   extends BaseVideoProperties {
   // Additional properties specific to `Video` if any
-  tags?: TagsRecord<VideoData, VideoMetadata>;
+  tags?: TagsRecord<VideoData<T, K>, VideoMetadata<T, K, Meta, ExcludedFields>>;
   createdAt?: Date;
   updatedAt?: Date;
   createdBy?: string;
   thumbnail?: string;
   uploadedAt?: string
+
+  content: string;
+  watchLater: boolean;
 }
 
 
@@ -114,7 +127,7 @@ interface VideoData<
   K extends  T = T,
   // Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >
-  extends DataDetails<T, K>,
+extends Video, DataDetails<T, K>,
   VideoCommonData, BaseVideoProperties {
   // Additional properties specific to `VideoData`
   size?: string; // Size of the video file in bytes

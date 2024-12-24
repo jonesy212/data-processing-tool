@@ -106,6 +106,11 @@ export enum NotificationTypeEnum {
   // Example of injecting build-time configuration
   __FILE_PATH__ = "filePath",
 }
+
+
+export enum ApiTypeEnum {
+ PhaseApiError  = "PhaseApiError"
+}
 type NotificationContextType = Pick<NotificationContextProps, "notify">;
 
 export interface NotificationContextProps {
@@ -346,6 +351,7 @@ export type NotificationType =
   | NotificationTypeEnum
   | DocumentTypeEnum
   | PriorityTypeEnum
-  | CustomNotificationType;
+  | CustomNotificationType
+  | ApiTypeEnum
 export default DefaultNotificationContext;
 export type { NotificationContextType };

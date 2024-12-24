@@ -266,7 +266,7 @@ const snapshotDelegate = <T extends  BaseData<any>, K extends T = T, Meta extend
             message: string, subscribers: Subscriber<T, K>[], data: Partial<SnapshotStoreConfig<T, any>>
           ) => Subscriber<T, K>[];
           parentId: string;
-          childIds?: K[] | undefined;
+          childIds?: K[];
           getParentId: (id: string) => string;
           getChildIds: (id: string) => string[];
           addChild: (parentId: string, childId: string) => void;

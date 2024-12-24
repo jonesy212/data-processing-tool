@@ -1,3 +1,4 @@
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { createSnapshot, getSnapshotContainer, getSnapshotId } from "@/app/api/SnapshotApi";
 import { Subscriber } from '@/app/components/users/Subscriber';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
@@ -22,7 +23,7 @@ import {
     Callback
 } from "../snapshots/subscribeToSnapshotsImplementation";
 import { generateSnapshotId } from "../utils/snapshotUtils";
-import { CalendarEvent, eventRecords } from "./../state/stores/CalendarEvent";
+import { CalendarEvent } from "../calendar/CalendarEvent";
 
 import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { store } from "../state/stores/useAppDispatch";
@@ -37,22 +38,26 @@ import { Subscription } from "react-redux";
 class YourSpecificSnapshotType <
  T extends  BaseData<any>,
   K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, 
   ExcludedFields extends keyof T = never
 >
   implements Snapshot<T, K> {
   id: string;
-  data: Map<string, Snapshot<T, K>>;
-  meta: Map<string, Snapshot<T, K>>;
+  mappedData: Map<string, Snapshot<T, K>>;
+  data: InitializedData<T> | undefined;
+  meta: StructuredMetadata<T, K>
   events: CombinedEvents<T, K>
   
   constructor(
     id: string,
-    data: Map<string, Snapshot<T, K>>,
-    meta: Map<string, Snapshot<T, K>>,
+    mappedData: Map<string, Snapshot<T, K>>,
+    data: InitializedData<T> | undefined,
+    meta: Snapshot<T, K, StructuredMetadata<T, K>, ExcludedFields>,
     events?: CombinedEvents<T, K>) {
     this.id = id;
     this.data = data;
     this.meta = meta;
+    this.mappedData = mappedData
     this.events = {
       callbacks: events?.callbacks ?? ((snapshot: Snapshot<T, K>) => {
         console.log("callback called");
@@ -72,7 +77,7 @@ class YourSpecificSnapshotType <
     return this.id;
   }
 
-  setData(data: Map<string, Snapshot<T, K>>): void {
+  setData(id: string, data: Map<string, Snapshot<T, K>>): void {
     this.data = data;
     // Additional logic if necessary
   }
@@ -905,10 +910,22 @@ const snapshotStoreType = async <T extends  BaseData<any>, K extends T = T, Meta
 
 
 // Type guard to check if input is SnapshotStore<BaseData>
-const isSnapshotStore = (store: any): store is SnapshotStore<BaseData, K> => {
-  return store && store instanceof SnapshotStore;
-};
+function isSnapshotStore<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
+  data: any
+): data is SnapshotStore<T, K, Meta> {
+  return (
+    data && 
+    (data instanceof SnapshotStore || '#snapshotStores' in data)
+  );
+}
 
+
+
+function isYourResponseType<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
+  data: any
+): data is YourResponseType<T, K, Meta> {
+  return !isSnapshotStore(data) && !isSnapshot(data);
+}
 
 
 const convertSnapshotStoreItemToT =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
@@ -986,7 +1003,20 @@ function convertMapToSnapshot<T extends  BaseData<any>, K extends T = T, Meta ex
   const snapshotMap = new Map<string, Snapshot<T, K>>();
 
   map.forEach((value, key) => {
-    const snapshot: Snapshot<T, K> = {
+     // Create a default base snapshot instance
+     const baseSnapshot: Snapshot<T, K> = createSnapshotInstance<T, K, Meta>(
+      value.data, 
+      new Map<string, Snapshot<T, K>>(), 
+      key, 
+      "some-category", 
+      null, 
+      null, 
+      null
+    );
+
+    // Spread `baseSnapshot` to keep required properties and override what is needed
+    const newSnapshot: Snapshot<T, K> = {
+      ...baseSnapshot, // Spread the existing base snapshot to populate missing properties
       id: key,
       title: "Snapshot Title",
       timestamp: new Date(),
@@ -1607,6 +1637,9 @@ const convertSnapshotContainerToStore = <T extends  BaseData<any>, K extends T =
     updateDelegate, getSnapshotContainer, getSnapshotVersions, createSnapshot,
     maxAge, expirationDate, criteria, initializeWithData, hasSnapshots, getDataStoreMap, emit, removeChild,
     structuredMetadata, snapshotStoreConfig, getChildren, hasChildren,
+    get, isSubscribed, addToSnapshotList, handleSnapshotFailure, 
+    getEventsAsRecord, isDescendantOf, getInitialState, getConfigOption,
+    getAllSnapshots, getTimestamp, getStore, getStores, getData, addStore, removeStore, createSnapshots,
 
 
     // Map other propertiwes as needed
@@ -1677,7 +1710,7 @@ export {
     convertSnapshotStoreItemToT,
     convertSnapshotStoreToMap,
     convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
-    createSnapshotStoreConfig,
+    createSnapshotStoreConfig, isYourResponseType,
     createSnapshotStoreOptions, isCoreSnapshot, isSnapshotStore, snapshotType
 };
 

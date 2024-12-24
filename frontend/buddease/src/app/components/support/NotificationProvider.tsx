@@ -27,16 +27,35 @@ const generateNotificationMessage = (type: string, userName?: string | number): 
   }
 };
 
-export const NotificationProvider: React.FC<{ children: ReactNode }> = <
+interface NotificationProviderProps {
+  children: React.ReactNode;
+}
+
+
+
+export const NotificationProvider: React.FC<NotificationProviderProps> = <
   T extends BaseData<any> = BaseData<any, any>,
   K extends T = T
 >({
-  children,
-}) => {
+  children
+}: { children: React.ReactNode }) => {
   const area = 'notificationProvider'
   const [notifications, setNotifications] = useState <NotificationData[]>([]);
   const [duration, setDuration] = useState<number>(3000);  // Default duration
-  const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+
+  const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)?? {
+    metadataEntries: {}, // Provide default or fallback values
+    keywords: [],
+    version: '1.0.0',
+    isActive: false,
+    createdBy: 'system',
+    updatedBy: 'system',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    customFields: {},
+
+    // Add other required properties here
+  };
 
   const sendNotification = (
     type: string,
@@ -75,7 +94,10 @@ export const NotificationProvider: React.FC<{ children: ReactNode }> = <
         currentMeta: currentMeta, 
         metadataEntries: {},
       },
-      major: 1, minor: 0, patch: 0, currentMeta: {},
+      major: 1, 
+      minor: 0, 
+      patch: 0, 
+      currentMeta: currentMeta,
     });
   };
 

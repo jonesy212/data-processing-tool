@@ -297,6 +297,13 @@ class UniqueIDGenerator {
     return `cleared_failure_${snapshotID}`;
   }
 
+  static generateAppVersion(): string {
+    const major = Math.floor(Math.random() * 10);
+    const minor = Math.floor(Math.random() * 10);
+    const patch = Math.floor(Math.random() * 10);
+    return `${major}.${minor}.${patch}`;
+  }
+
   static generateID(
     prefix: string,
     name: string,
@@ -360,10 +367,10 @@ class UniqueIDGenerator {
         return UniqueIDGenerator.generateAnalyticsID();
       case NotificationTypeEnum.AppStructureID:
         return UniqueIDGenerator.generateAppStructureID();
-
       case NotificationTypeEnum.SnapshotID:
         return UniqueIDGenerator.generateSnapshotID();
-
+      case NotificationTypeEnum.AppVersion:
+        return UniqueIDGenerator.generateAppVersion();
       case NotificationTypeEnum.PresentationID:
         return UniqueIDGenerator.generatePresentationID(
           prefix,

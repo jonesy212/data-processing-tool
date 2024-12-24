@@ -1,4 +1,5 @@
 // DetailsListStore.ts
+import { PhaseData } from "../components/phases/Phase";
 import { BaseData } from '@/app/components/models/data/Data';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { makeAutoObservable } from "mobx";
@@ -40,6 +41,8 @@ import { InitializedConfig, } from "../../snapshots/SnapshotStoreConfig";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { AllTypes } from "../../typings/PropTypes";
 import { createSnapshotStoreOptions } from "../../typings/YourSpecificSnapshotType";
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
+
 const { notify } = useNotification();
 
 // Union type of all status enums
@@ -78,7 +81,7 @@ interface DetailsItem<
   author?: string;
   date?: Date;
   label?: string;
-  value: string;
+  label?: string | Label | null;
   collaborators?: Member[];
   tags?: string[] | Tag<T>[];
   analysisResults?: DataAnalysisResult<T>[];
@@ -126,7 +129,7 @@ interface DetailsItemExtended<
   // data?: T; // Make the data property optional
   teamMembers?: TeamMember[];
   communication?: CommunicationActionTypes;
-  label?: string;
+  label?: string | Label | null;
   value?: string;
   reminders?: string[];
   importance?: string;

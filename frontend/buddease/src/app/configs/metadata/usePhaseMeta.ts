@@ -9,7 +9,7 @@ import { createMetadata } from '../../configs/metadata/createMetadata';
 
 // Utility hooks for handling metadata
 export const usePhaseMeta = <T extends BaseData<any>, K extends T = T>(
-  area: string, 
+  area: string | undefined, 
   initialPhaseMetadata: Partial<StructuredMetadata<T, K>> = {}
 ) => {
   // Use `useMeta` hook to manage metadata

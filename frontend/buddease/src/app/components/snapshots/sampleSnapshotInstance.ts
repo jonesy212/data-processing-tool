@@ -296,7 +296,7 @@ const sampleSnapshot: Snapshot<T, K<T>, Meta<T>> = {
     dataCallback?: (
       subscribers: Subscriber<T, K<T>>[],
       snapshots: Snapshots<T, K>
-    ) => Promise<SnapshotUnion<T, K>[]>
+    ) => Promise<SnapshotUnion<T, K, Meta>[]>
   ): Promise<Snapshot<T, K<T>>[]> {
     throw new Error("Function not implemented.");
   },

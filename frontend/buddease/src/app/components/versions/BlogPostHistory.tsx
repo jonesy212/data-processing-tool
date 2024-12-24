@@ -11,7 +11,7 @@ interface HistoryEntry {
 
 interface BlogPostHistory extends BlogPost {
   version: Version; // Reference to the version of the post
-  history: HistoryEntry[]; // History of changes made to the post
+  history: HistoryEntry[] | undefined; // History of changes made to the post
 }
 
 interface BlogGeneratorProps {

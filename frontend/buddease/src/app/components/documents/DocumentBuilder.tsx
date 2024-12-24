@@ -1,4 +1,5 @@
 // DocumentBuilder.tsx
+
 import { useMetadata } from "@/app/configs/useMetadata";
 import {
     createContentStateFromText,
@@ -103,8 +104,10 @@ type WritableTodoSubtasks = WritableDraft<TodoSubtasks>;
 interface DocumentData<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
-  extends DocumentBase<T, K>, CommonData<T, K, Meta>, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+>
+  extends DocumentBase<T, K>, CommonData<T, K, Meta, ExcludedFields>, 
 DatasetModel<T, K> {
   id: string | number;
   _id: string;
@@ -135,8 +138,8 @@ DatasetModel<T, K> {
   folderPath: string;
   previousContent?: string | ContentState;
   currentContent?: ContentState;
-  previousMeta: StructuredMetadata<T, K> | undefined;
-  currentMeta: StructuredMetadata<T, K>
+  currentMeta: Meta
+  previousMeta?: Meta;
   previousMetadata?: UnifiedMetaDataOptions<T, K> | undefined;
   currentMetadata: UnifiedMetaDataOptions<T, K>
   accessHistory: AccessHistory[];
@@ -163,7 +166,7 @@ DatasetModel<T, K> {
         onChange: (phase: ProjectPhaseTypeEnum) => void;
       }
     | undefined;
-  version: Version | undefined | null;
+  version: Version<T, K> | undefined | null;
   versionData: VersionData | undefined;
   visibility: AllTypes;
   url?: string;
@@ -240,7 +243,9 @@ export interface CustomProjectPhaseType {
 }
 
 const initialOptions: DocumentOptions = {
-  previousMeta: undefined,
+  previousMeta: {
+    metadataEntries, keywords, version, isActive,
+  },
   currentMeta: undefined,
   uniqueIdentifier: "",
   documentType: typeof DocumentTypeEnum,
@@ -1262,7 +1267,9 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
     
 
 
-    const currentMetadata: UnifiedMetaDataOptions<T, K> = useMetadata<T, K>()
+    const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
+    const currentMetadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(area)
+
     // Create a document object
     const documentObject: DocumentObject<BaseData<string, string, StructuredMetadata<any, any>>> = {
       // Document Identification & Versioning
@@ -1296,7 +1303,10 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 
 
       // Content & Structure
-      content: {}, // Main content of the document
+      content: {
+        id, title, description, subscriberId,
+
+      }, // Main content of the document
       documents: [], // Array of sub-documents or sections
       folders: [], // Folder hierarchy related to the document
       rootElement: null, // Root HTML or XML element (if applicable)
@@ -1397,6 +1407,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       uploadedByTeamId: null,
       uploadedByTeam: null
     },
+      documentData,
       documentObject,
       documentType
     );

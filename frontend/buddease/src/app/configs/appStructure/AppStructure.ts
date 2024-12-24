@@ -1,19 +1,15 @@
-import { Permission } from "@/app/components/users/Permission";
+import { SecuritySettings } from '@/app/components/settings/SecuritySettings';
 import * as apiFile from '@/api/ApiFiles';
+import SecurityAPI from '@/app/api/SecurityAPI';
 import { FileType } from "@/app/components/documents/Attachment/attachment";
+import { Permission } from "@/app/components/users/Permission";
+import { versionData } from '@/app/components/versions/Version';
+import { VersionData } from '@/app/components/versions/VersionData';
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import * as fs from "fs";
 import * as path from "path";
 import getAppPath from "../../../../appPath";
-import DataVersionsComponent, { DataVersions } from '../DataVersionsConfig';
-import { VersionData } from '@/app/components/versions/VersionData';
-import BackendStructure, {
-  backend,
-  backendStructure,
-} from "@/app/configs/appStructure/BackendStructure";
-import FrontendStructure, { frontend } from "@/app/configs/appStructure/FrontendStructure";
-import { versionData } from '@/app/components/versions/Version';
-import SecurityAPI from '@/app/api/SecurityAPI';
+import { DataVersions } from '../DataVersionsConfig';
 
 // Define the interface for AppStructureItem
 interface AppStructureItem {
@@ -31,7 +27,7 @@ interface AppStructureItem {
     execute: boolean,
   }
   versions: DataVersions | undefined,
-  versionData: VersionData[],
+  versionData: string | VersionData | null,
   items?: {
     [key: string]: AppStructureItem 
   }

@@ -14,7 +14,7 @@ import { BaseData } from '../models/data/Data';
 import { dataStoreMethods } from "../models/data/dataStoreMethods";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { snapshotStoreConfigInstance } from "./snapshotStoreConfigInstance";
-import SnapshotEvent from '@/app/typings/eventTypes'
+import { SnapshotEvent } from '@/app/typings/eventTypes'
 // Subscription management logic
 
 const subscribeToSnapshots = () => {
@@ -89,7 +89,7 @@ const snapshotStore = snapshotManager?.state
 const createdSnapshotConfig = createSnapshotStoreConfig(snapshotStore)
 const getDelegate = () => delegate;
 
-const getCategory = <
+  const getCategory = <
   T extends  BaseData<any>,
   K extends T = T,
 >(

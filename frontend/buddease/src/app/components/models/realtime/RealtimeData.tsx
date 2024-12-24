@@ -18,7 +18,7 @@ interface BaseRealtimeData {
   id: string;
   name: string;
   value: string;
-  type: AllTypes;
+  type: string | AllTypes | null;
   // Add other common properties shared by RealtimeDataItem and RealtimeData here
 }
 
@@ -39,7 +39,7 @@ interface RealtimeData extends BaseRealtimeData {
   date: Date | string;
   timestamp: string | number | Date | undefined;
   eventId: string;
-  type: AllTypes;
+  type: string | AllTypes | null;
   userId: string;
   dispatch: (action: any) => void;
   value: string;

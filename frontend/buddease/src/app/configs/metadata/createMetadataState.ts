@@ -1,21 +1,22 @@
 // createMetadataState.ts
 
+import { useSecureUserId } from ' @/app/components/utils/useSecureUserId';
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { BaseData, SharedBaseData } from "@/app/components/models/data/Data";
-import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
+import { T, UserConfigData } from "@/app/components/models/data/dataStoreMethods";
 import { EventManager, createEventManager } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import SecureFieldManager from "@/app/components/security/SecureFieldManager";
 import { Snapshot } from "@/app/components/snapshots";
+import { Permission } from "@/app/components/users/Permission";
 import { UserData } from "@/app/components/users/User";
 import Version from "@/app/components/versions/Version";
 import { VersionHistory } from "@/app/components/versions/VersionData";
 import { useState } from 'react';
 import { AppStructureItem } from "../appStructure/AppStructure";
 import { StructuredMetadata } from "../StructuredMetadata";
-import { useSecureUserId } from ' @/app/components/utils/useSecureUserId';
-import SecureFieldManager from "@/app/components/security/SecureFieldManager";
-import { Permission } from "@/app/components/users/Permission";
 
 interface SharedMetadata<K> extends SharedBaseData<K> {
-  version?:  string | number | Version; 
+  version?:  string | number | Version<T, K>; 
   lastUpdated?: VersionHistory; 
   isActive?: boolean; 
   config?: Record<string, any>; 
@@ -42,9 +43,9 @@ function createMetaState<
   tags: string[], 
   metadata: any, 
   initialState: any, 
-  meta: Map<string, Snapshot<UserData<T, K>, K, StructuredMetadata<UserData<T, K>, K>, never>>, 
-  events: EventManager<UserData<T, K>, UserData<T, K>, StructuredMetadata<UserData<T, K>>>,
-  version: Version,
+  meta: Map<string, Snapshot<UserData<T, K>, Attachment>>,
+  events: EventManager<UserData<T, K, Attachment>, UserData<T, K>, StructuredMetadata<UserData<T, K, Attachment>>>,
+  version: Version<T, K>,
   lastUpdated: VersionHistory,
   isActive: boolean,
   config: Record<string, any>,
@@ -52,7 +53,7 @@ function createMetaState<
   customFields: Record<string, any>,
   baseUrl: string,
   relatedData?: K[],
-  childIds?: K[] | undefined,
+  childIds?: K[],
 ): StructuredMetadata<UserData<T, K>, K> {
   return {  
     id: new SecureFieldManager(id).setSensitive(true),
@@ -251,3 +252,4 @@ export const createMetadata = <T extends BaseData<any>, K extends T = T>(
 
 export { createMetaState };
 export type { SharedMetadata };
+

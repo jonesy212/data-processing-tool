@@ -178,7 +178,7 @@ const removeData = async (dataId: number): Promise<void> => {
 
 const getDataVersions = async (
   versionId: number
-): Promise<Version[]> => {
+): Promise<Version<T, K<T>>[]> => {
   try {
     const versionsEndpoint = `${API_BASE_URL}.getDataVersions.${versionId}`;
 
@@ -187,7 +187,7 @@ const getDataVersions = async (
         `Versions endpoint not found for version ID: ${versionId}`
       );
     }
-    const response:AxiosResponse = await axiosInstance.get<Version[]>(versionsEndpoint);
+    const response:AxiosResponse = await axiosInstance.get<Version<T, K<T>>[]>(versionsEndpoint);
     return response.data;
   } catch (error) {
     console.error("Error fetching versions:", error);

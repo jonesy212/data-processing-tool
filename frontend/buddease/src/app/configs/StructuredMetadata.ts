@@ -14,13 +14,12 @@ import { Comment } from '../components/models/data/Comments';
 import { Data } from '../components/models/data/Data';
 import { K, T } from '../components/models/data/dataStoreMethods';
 import { Task } from '../components/models/tasks/Task';
-import { Snapshot, TagsRecord } from '../components/snapshots';
+import { TagsRecord } from '../components/snapshots';
 import { CustomComment } from '../components/state/redux/slices/BlogSlice';
 import { Video } from '../components/state/stores/VideoStore';
-import { createLatestVersion } from '../components/versions/createLatestVersion';
 import { VersionData, VersionHistory } from '../components/versions/VersionData';
-import { baseConfig, BaseConfig } from './BaseConfig';
-import { MyDataType, UnifiedMetaDataOptions } from './database/MetaDataOptions';
+import { BaseConfig } from './BaseConfig';
+import { MyDataType } from './database/MetaDataOptions';
 import { SharedMetadata } from './metadata/createMetadataState';
 
 // Define interfaces for metadata structures
@@ -53,7 +52,7 @@ interface StructuredMetadata<
   };
 
   keywords: string;
-  childIds?: K[] | undefined;
+  childIds?: K[];
   relatedData?: K[] | undefined;
   version: Version; // Added
   lastUpdated?: Date | VersionHistory; // Added
@@ -62,7 +61,7 @@ interface StructuredMetadata<
   permissions: string[]; // Added
   customFields: Record<string, any>; // Added
   baseUrl?: string; // Added
-  versionData: VersionData[]; // Include versionData explicitly
+  versionData: string | VersionData | null; // Include versionData explicitly
   latestVersion: VersionData; // Include latestVersion explicitly
 }
 
@@ -121,7 +120,7 @@ interface ProjectMetadata<
   budget: number;
   status: string;
   description?: string | undefined;
-  versionData: VersionData[];
+  versionData: string | VersionData | null;
   teamMembers: string[];
   tasks: Task<T, K, Meta>[];
   milestones: string[];
@@ -360,5 +359,5 @@ const validatedVideoMetadata = validateVideoMetadata(videoMetadata);
 
 
 export { getStructureMetadataPath, projectMetadata, transformProjectToStructured, useUndoRedo, videoMetadata };
-export type { ProjectMetadata, StructuredMetadata, VideoMetadata, MetadataEntry };
+export type { MetadataEntry, ProjectMetadata, StructuredMetadata, VideoMetadata };
  

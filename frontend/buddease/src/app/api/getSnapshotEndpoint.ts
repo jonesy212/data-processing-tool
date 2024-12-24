@@ -18,7 +18,7 @@ interface SnapshotCategory<
     description?: string;
     snapshots: Snapshot<T, K>[]; 
     
-    // snapshots: Snapshot<Omit<T, ExcludedFields>, Meta, K>[]; // This should now be valid
+    // snapshots: Snapshot<Omit<T, ExcludedFields>, K, Meta>[]; // This should now be valid
 }
 
 // Update your function to accept SnapshotCategoryType

@@ -49,7 +49,7 @@ import { createSnapshotStoreConfig, snapshotStoreConfigInstance } from "./snapsh
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimmensions';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { ActivityStatus } from '@/app/pages/profile/Profile';
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";

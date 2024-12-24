@@ -28,7 +28,7 @@ import AccessHistory from "../versions/AccessHistory";
 import { DappProps } from "../web3/dAppAdapter/DAppAdapterConfig";
 import { CommunityData } from "./CommunityData";
 import { LogData } from "./LogData";
-import { BaseData, Data, DataDetails } from "./data/Data";
+import { BaseData, Data, DataDetails, DataWithOmittedFields } from "./data/Data";
 import DetailsProps from "./data/Details";
 import FolderData from "./data/FolderData";
 import { BookmarkStatus, CalendarStatus, DataStatus, NotificationStatus, PriorityTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "./data/StatusType";
@@ -36,6 +36,7 @@ import { RealtimeDataComponent } from "./realtime/RealtimeData";
 import { Task } from "./tasks/Task";
 import TeamData from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
+
 
 interface Timestamped {
   timestamp?: string | number | Date | undefined;
@@ -153,7 +154,7 @@ type ConditionalCommonData<T extends BaseData<any, any>> = T extends DappProps
     participants?: Member[];
     metadata?: UnifiedMetaDataOptions<T, K>
     details?: DetailsItem<T>
-    data?: Omit<T, ExcludedFields>; 
+    data?: DataWithOmittedFields<T, K, Meta, ExcludedFields>; 
       
     // data?: T extends CommonData<infer R> ? R : never;
     projectId?: string;

@@ -1,3 +1,4 @@
+import useDocumentManagement from '@/app/components/documents/useDocumentManagement';
 import appTreeApiService from "@/app/api/appTreeApi";
 import DataFrameAPI from "@/app/api/DataframeApi";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
@@ -21,7 +22,9 @@ import { NotificationManagerServiceProps } from "../notifications/NotificationSe
 import useNotificationManagerServiceProps from "../notifications/useNotificationManagerServiceProps";
 import { PromptPageProps } from "../prompts/PromptPage";
 import { headersConfig } from '../shared/SharedHeaders';
-import { SnapshotStoreProps, UpdateSnapshotPayload } from '../snapshots';
+import { SnapshotStoreProps } from '../snapshots';
+import { UpdateSnapshotPayload } from "@/app/components/database/Payload";
+
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { storeProps } from "../snapshots/SnapshotStoreProps";
 import { default as CalendarEvent, default as CalendarManagerStoreClass, updateCallback } from "../state/stores/CalendarEvent";
@@ -136,7 +139,7 @@ const updateSnapshotMethod = (
 
 
 // Assuming CalendarManagerStoreClass has a constructor that takes a snapshot as input
-const records: Record<string, CalendarManagerStoreClass< BaseData<any>, K<T>>[]> = 
+const records: Record<string, CalendarManagerStoreClass<BaseData<any>, K<T>>[]> = 
   Array.from(data.values()).reduce((acc, snapshot) => {
     const id = snapshot.id; // Replace with a unique identifier property of your snapshots
     if (!acc[id]) {
@@ -250,7 +253,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
   const updateSnapshot = async (
     snapshotId: string,
     data: Data,
-    events: Record<string, CalendarEvent<T, K>[]>,
+    events: Record<string, CalendarEvent<T, K<T>>[]>,
     snapshotStore: SnapshotStore<BaseData, K<T>>,
     dataItems: RealtimeDataItem[],
     newData: Data,
@@ -291,7 +294,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
     
     const snapshotStore = new SnapshotStore<BaseData, K>({
       storeId, name, version, schema, options, category, config, operation, expirationDate,
-      payload: mappedPayload, callback, storeProps, endpointCategory
+      payload: mappedPayload, callback, storeProps, endpointCategory, initialState
     });
     const dataItems: RealtimeDataItem[] = [];
 
@@ -480,9 +483,9 @@ export default YourComponent;
 
 // Example:
 
-const { callback, payload, endpointCategory} = storeProps as SnapshotStoreProps<T, K>
-const events: Record<string, CalendarEvent<T, K>[]> = {};
-const storeData = new SnapshotStore<T, K>({ storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory});
+const { callback, payload, endpointCategory} = storeProps as SnapshotStoreProps<T, K<T>>
+const events: Record<string, CalendarEvent<T, K<T>>[]> = {};
+const storeData = new SnapshotStore<T, K<T>>({ storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory, storeId });
 const data: Data= {
   title: "",
   category: "",
@@ -493,10 +496,15 @@ const data: Data= {
   projects: "",
   progress: "",
   phase: {
-    type,
-    duration,
-    value,
-    id, name, description, startDate, endDate,
+    type: "",
+    duration: "",
+    value: "",
+    id: "",
+    name: "",
+    description: "",
+    startDate: new Date(),
+    endDate: new Date(),
+   
   },
 }
 const snapshotStore = new SnapshotStore<BaseData, K>({ storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory});
@@ -532,6 +540,7 @@ const component = <YourComponent
     baseURL: baseURL,
     timeout: 1000,
     headers: headersConfig,
+    description: "Example API"
     retry: {
       enabled: enabled,
       maxRetries: maxRetries,

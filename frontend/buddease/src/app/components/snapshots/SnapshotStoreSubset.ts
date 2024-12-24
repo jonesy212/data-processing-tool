@@ -24,7 +24,7 @@ interface SnapshotStoreSubset<T extends  BaseData<any>, K extends T = T, Meta ex
 
   // Handles snapshot configuration with a snapshot and a list of configurations.
   onSnapshot: (snapshot: Snapshot<T, K>,
-    config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K>[]
+    config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K, Meta>[]
       
   ) => void;
 
@@ -132,7 +132,7 @@ interface SnapshotStoreSubset<T extends  BaseData<any>, K extends T = T, Meta ex
   clearSnapshot: (snapshotId: string) => void;
 
   // Merges multiple snapshots into one.
-  mergeSnapshots: (snapshots: Snapshots<T, K>) => void;
+  mergeSnapshots: (snapshots: Snapshots<T, K>,  category: string) => void;
 
   // Reduces a collection of snapshots to a single value.
   reduceSnapshots: <U>(callback: (acc: U, snapshot: Snapshot<T, K>) => U, initialValue: U) => U;

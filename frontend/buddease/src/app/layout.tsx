@@ -1,5 +1,5 @@
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimmensions';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import React from "react";
 import { BaseData, Data } from "./components/models/data/Data";
 import { EventManager } from "./components/projects/DataAnalysisPhase/DataProcessing/DataStore";

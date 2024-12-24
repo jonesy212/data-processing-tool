@@ -33,6 +33,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
   [NotificationTypeEnum.DataLoading]: "Data loading notification message",
   [NotificationTypeEnum.Dismiss]: "Dismiss notification message",
   [NotificationTypeEnum.DocumentEditID]: "Document edit ID notification message",
+  [NotificationTypeEnum.AppVersion]: "App version notification message",
   [NotificationTypeEnum.Error]: (userName: string) => `Error: ${userName}`,
   // Add more notification types as needed
 };

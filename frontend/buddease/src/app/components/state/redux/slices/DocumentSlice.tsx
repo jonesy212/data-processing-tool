@@ -60,7 +60,7 @@ interface DocumentSliceState<
   documentBuilder?: typeof DocumentBuilder;
 }
 
-const initialDocumentSliceState: DocumentSliceState<BaseData, Meta> = {
+const initialDocumentSliceState: DocumentSliceState<BaseData, Meta<T, K<T>>> = {
   documentList: [],
   selectedDocument: null,
   filteredDocuments: [],
@@ -128,11 +128,11 @@ const initialState: DocumentObject<BaseData, BaseData> = {
   category: "",
   categoryProperties: "",
   timestamp: "",
-  length: "",
+  length: 0,
   
-  items: "",
-  data: "",
-  contentItems: "",
+  items: [],
+  data: {},
+  contentItems: [],
  
   },
   topics: [],
@@ -151,8 +151,8 @@ const initialState: DocumentObject<BaseData, BaseData> = {
   keywords: [],
   options: {} as DocumentOptions,
   folderPath: "",
-  previousMetadata: {} as StructuredMetadata<T, K>,
-  currentMetadata: {} as StructuredMetadata<T, K>,
+  previousMetadata: {} as StructuredMetadata<T, K<T>>,
+  currentMetadata: {} as StructuredMetadata<T, K<T>>,
   accessHistory: [],
   folders: [],
   lastModifiedDate: {} as WritableDraft<ModifiedDate>,
@@ -1135,7 +1135,7 @@ export const restoreDocument = (state: WritableDraft<DocumentSliceState>, action
     const documentId = action.payload;
     const newDocument = createNewDocument(String(documentId));
     const newDocumentObject = toObject(newDocument as DocumentObject);
-    state.documentList?.push(newDocumentObject as WritableDraft<DocumentObject>);
+    state.documentList?.push(newDocumentObject as WritableDraft<DocumentObject<T, K, Meta>>);
     
     state.loading = false;  // Update loading state
     state.error = null;  // Clear error state
@@ -1228,7 +1228,7 @@ export const downloadDocument = createAsyncThunk(
     try {
       const fetchedDocument = await fetchDocumentByIdAPI(
         documentId,
-        (data: WritableDraft<DocumentObject>) => {
+        (data: WritableDraft<DocumentObject<T, K, Meta>>) => {
           data.status = DocumentStatusEnum.Draft;
           data.type = DocumentTypeEnum.Document;
         }
@@ -1249,7 +1249,7 @@ export const downloadDocumentAsync = createAsyncThunk(
       // Fetch document data based on the document ID
       const fetchedDocument = await fetchDocumentByIdAPI(
         documentId,
-        (data: WritableDraft<DocumentObject>) => {
+        (data: WritableDraft<DocumentObject<T, K, Meta>>) => {
           // Call the dispatch function to update the state with the fetched document data
           dispatch(setDownloadedDocument(data));
         }
@@ -1399,54 +1399,54 @@ export const exportDocumentsAsync = createAsyncThunk(
 );
 
 // Define the transformations object and applyTransformation function
-const applyTransformation = (
-  document: WritableDraft<DocumentObject>,
+const applyTransformation = <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K>>(
+  document: WritableDraft<DocumentObject<T, K, Meta>>,
   documentTag: string,
-  transformation: (doc: WritableDraft<DocumentObject>, value: string) => void,
+  transformation: (doc: WritableDraft<DocumentObject<T, K, Meta>>, value: string) => void,
   value: string
 ) => {
   transformation(document, value);
 };
 
 const transformations = {
-  tag: (document: WritableDraft<DocumentObject>, tag: string) => {
+  tag: (document: WritableDraft<DocumentObject<T, K, Meta>>, tag: string) => {
     document.content = `${tag} Tagged: ${document.content}`;
   },
 
-  categorize: (document: WritableDraft<DocumentObject>, category: string) => {
+  categorize: (document: WritableDraft<DocumentObject<T, K, Meta>>, category: string) => {
     document.content = `${category} Categorized: ${document.content}`;
   },
 
-  customizeView: (document: WritableDraft<DocumentObject>, view: string) => {
+  customizeView: (document: WritableDraft<DocumentObject<T, K, Meta>>, view: string) => {
     document.content = `${view} Customized: ${document.content}`;
   },
 
-  comment: (document: WritableDraft<DocumentObject>, comment: string) => {
+  comment: (document: WritableDraft<DocumentObject<T, K, Meta>>, comment: string) => {
     document.content = `${comment} Commented: ${document.content}`;
   },
 
-  mention: (document: WritableDraft<DocumentObject>, mention: string) => {
+  mention: (document: WritableDraft<DocumentObject<T, K, Meta>>, mention: string) => {
     document.content = `${mention} Mentioned: ${document.content}`;
   },
 
-  assignTask: (document: WritableDraft<DocumentObject>, task: string) => {
+  assignTask: (document: WritableDraft<DocumentObject<T, K, Meta>>, task: string) => {
     document.content = `${task} Assigned: ${document.content}`;
   },
 
-  requestReview: (document: WritableDraft<DocumentObject>, review: string) => {
+  requestReview: (document: WritableDraft<DocumentObject<T, K, Meta>>, review: string) => {
     document.content = `${review} Requested: ${document.content}`;
   },
 
-  approve: (document: WritableDraft<DocumentObject>, approval: string) => {
+  approve: (document: WritableDraft<DocumentObject<T, K, Meta>>, approval: string) => {
     document.content = `${approval} Approved: ${document.content}`;
   },
 
-  reject: (document: WritableDraft<DocumentObject>, rejection: string) => {
+  reject: (document: WritableDraft<DocumentObject<T, K, Meta>>, rejection: string) => {
     document.content = `${rejection} Rejected: ${document.content}`;
   },
 
   provideFeedback: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     feedback: string
   ) => {
     document.content = `${feedback} Provided: ${document.content}`;
@@ -1454,62 +1454,62 @@ const transformations = {
     
   },
 
-  requestFeedback: (document: WritableDraft<DocumentObject>, review: string) => {
+  requestFeedback: (document: WritableDraft<DocumentObject<T, K, Meta>>, review: string) => {
     document.content = `${review} Requested: ${document.content}`;
   },
 
   resolveFeedback: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     feedback: string
   ) => {
     document.content = `${feedback} Resolved: ${document.content}`;
   },
 
   collaborate: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     collaborator: string
   ) => {
     document.content = `${collaborator} Collaborated: ${document.content}`;
   },
 
-  version: (document: WritableDraft<DocumentObject>, version: string) => {
+  version: (document: WritableDraft<DocumentObject<T, K, Meta>>, version: string) => {
     document.content = `${version} Versioned: ${document.content}`;
   },
 
-  annotate: (document: WritableDraft<DocumentObject>, annotation: string) => {
+  annotate: (document: WritableDraft<DocumentObject<T, K, Meta>>, annotation: string) => {
     document.content = `${annotation} Annotated: ${document.content}`;
   },
 
-  logActivity: (document: WritableDraft<DocumentObject>, activity: string) => {
+  logActivity: (document: WritableDraft<DocumentObject<T, K, Meta>>, activity: string) => {
     document.content = `${activity} Logged: ${document.content}`;
   },
 
-  revert: (document: WritableDraft<DocumentObject>, revert: string) => {
+  revert: (document: WritableDraft<DocumentObject<T, K, Meta>>, revert: string) => {
     document.content = `${revert} Reverted: ${document.content}`;
   },
 
-  search: (document: WritableDraft<DocumentObject>, search: string) => {
+  search: (document: WritableDraft<DocumentObject<T, K, Meta>>, search: string) => {
     document.content = `${search} Searched: ${document.content}`;
   },
 
-  grantAccess: (document: WritableDraft<DocumentObject>, access: string) => {
+  grantAccess: (document: WritableDraft<DocumentObject<T, K, Meta>>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
-  viewHistory: (document: WritableDraft<DocumentObject>, view: string) => {
+  viewHistory: (document: WritableDraft<DocumentObject<T, K, Meta>>, view: string) => {
     document.content = `${view} Viewed: ${document.content}`;
   },
 
-  compare: (document: WritableDraft<DocumentObject>, compare: string) => {
+  compare: (document: WritableDraft<DocumentObject<T, K, Meta>>, compare: string) => {
     document.content = `${compare} Compared: ${document.content}`;
   },
 
-  revokeAccess: (document: WritableDraft<DocumentObject>, access: string) => {
+  revokeAccess: (document: WritableDraft<DocumentObject<T, K, Meta>>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
   managePermissions: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     permissions: string
   ) => {
     // Add permission transformation logic
@@ -1517,106 +1517,106 @@ const transformations = {
   },
 
   initiateWorkflow: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     workflow: string
   ) => {
     document.content = `${workflow} Initiated: ${document.content}`;
   },
 
-  automateTasks: (document: WritableDraft<DocumentObject>, tasks: string) => {
+  automateTasks: (document: WritableDraft<DocumentObject<T, K, Meta>>, tasks: string) => {
     document.content = `${tasks} Automated: ${document.content}`;
   },
 
-  triggerEvents: (document: WritableDraft<DocumentObject>, events: string) => {
+  triggerEvents: (document: WritableDraft<DocumentObject<T, K, Meta>>, events: string) => {
     document.content = `${events} Triggered: ${document.content}`;
   },
 
   approvalWorkflow: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     workflow: string
   ) => {
     document.content = `${workflow} Approved: ${document.content}`;
   },
 
   lifecycleManagement: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     lifecycle: string
   ) => {
     document.content = `${lifecycle} Lifecycle: ${document.content}`;
   },
 
   connectWithExternalSystem: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     externalSystem: string
   ) => {
     document.content = `${externalSystem} Connected: ${document.content}`;
   },
 
   synchronizeWithCloudStorage: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     cloudStorage: string
   ) => {
     document.content = `${cloudStorage} Synchronized: ${document.content}`;
   },
 
   importFromExternalSource: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     externalSource: string
   ) => {
     document.content = `${externalSource} Imported: ${document.content}`;
   },
 
   exportToExternalSystem: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     externalSystem: string
   ) => {
     document.content = `${externalSystem} Exported: ${document.content}`;
   },
 
-  generateReport: (document: WritableDraft<DocumentObject>, report: string) => {
+  generateReport: (document: WritableDraft<DocumentObject<T, K, Meta>>, report: string) => {
     document.content = `${report} Generated: ${document.content}`;
   },
 
-  exportReport: (document: WritableDraft<DocumentObject>, report: string) => {
+  exportReport: (document: WritableDraft<DocumentObject<T, K, Meta>>, report: string) => {
     document.content = `${report} Exported: ${document.content}`;
   },
 
   scheduleReportGeneration: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     report: string
   ) => {
     document.content = `${report} Scheduled: ${document.content}`;
   },
 
   customizeReportSettings: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     report: string
   ) => {
     document.content = `${report} Customized: ${document.content}`;
   },
 
-  backupDocuments: (document: WritableDraft<DocumentObject>, backup: string) => {
+  backupDocuments: (document: WritableDraft<DocumentObject<T, K, Meta>>, backup: string) => {
     document.content = `${backup} Backed up: ${document.content}`;
   },
 
-  retrieveBackup: (document: WritableDraft<DocumentObject>, backup: string) => {
+  retrieveBackup: (document: WritableDraft<DocumentObject<T, K, Meta>>, backup: string) => {
     document.content = `${backup} Retrieved: ${document.content}`;
   },
 
-  redaction: (document: WritableDraft<DocumentObject>, redaction: string) => {
+  redaction: (document: WritableDraft<DocumentObject<T, K, Meta>>, redaction: string) => {
     document.content = `${redaction} Redacted: ${document.content}`;
   },
 
-  accessControls: (document: WritableDraft<DocumentObject>, access: string) => {
+  accessControls: (document: WritableDraft<DocumentObject<T, K, Meta>>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
-  templates: (document: WritableDraft<DocumentObject>, template: string) => {
+  templates: (document: WritableDraft<DocumentObject<T, K, Meta>>, template: string) => {
     document.content = `${template} Templates: ${document.content}`;
   },
 
   updateDocumentVersion: (
-    document: WritableDraft<DocumentObject>,
+    document: WritableDraft<DocumentObject<T, K, Meta>>,
     version: string
   ) => {
     document.content = `${version} Version updated: ${document.content}`;
@@ -1961,13 +1961,13 @@ export const useDocumentManagerSlice = createSlice({
   initialState,
   reducers: {
     createDocument: {
-      reducer: (state, action: PayloadAction<WritableDraft<DocumentObject>>) => {
+      reducer: (state, action: PayloadAction<WritableDraft<DocumentObject<T, K, Meta>>>) => {
         state.selectedDocument = action.payload;
         state.documentList?.push(action.payload);
       },
       prepare: () => {
         // Generate a new document with default values
-        const newDocument: WritableDraft<DocumentObject> = {
+        const newDocument: WritableDraft<DocumentObject<T, K, Meta>> = {
           _id: "i989adn8dd",
           id: Math.floor(Math.random() * 1000).toString(), // Generate a unique ID
           title: "New Document",
@@ -1979,7 +1979,7 @@ export const useDocumentManagerSlice = createSlice({
           updatedBy: "Mattt Smooth", 
           documentPhase: "",
           createdByRenamed: "",
-          document: {} as WritableDraft<DocumentObject>,
+          document: {} as WritableDraft<DocumentObject<T, K, Meta>>,
           documentList: [],
 
           // Add other properties as needed
@@ -2468,12 +2468,12 @@ export const useDocumentManagerSlice = createSlice({
 
     addDocument: (
       state,
-      action: PayloadAction<WritableDraft<DocumentObject>>
+      action: PayloadAction<WritableDraft<DocumentObject<T, K, Meta>>>
     ) => {
       state.documentList?.push(action.payload);
     },
 
-    addDocumentSuccess: (state, action: PayloadAction<{ id: string; title: string; documentList: WritableDraft<DocumentObject>[]  }>) => {
+    addDocumentSuccess: (state, action: PayloadAction<{ id: string; title: string; documentList: WritableDraft<DocumentObject<T, K, Meta>>[]  }>) => {
       const documentIndex = state.documentList?.findIndex(doc => doc.id === action.payload.id);
       if (documentIndex !== -1) {
         state.documentList![documentIndex!].title = action.payload.title;
@@ -3467,7 +3467,7 @@ export const useDocumentManagerSlice = createSlice({
 //     // Implement document restoring functionality
 //     const newDocument = createNewDocument(String(documentId));
 //     const newDocumentObject = toObject(newDocument as DocumentObject); // Convert the new document to a plain object
-//     state.documentList?.push(newDocumentObject as WritableDraft<DocumentObject>); // Add the new document object to the state array
+//     state.documentList?.push(newDocumentObject as WritableDraft<DocumentObject<T, K, Meta>>); // Add the new document object to the state array
 
 //     // Notify success
 //     useNotification().notify(
@@ -3926,7 +3926,7 @@ export const useDocumentManagerSlice = createSlice({
     tagDocument: (
       state,
       action: PayloadAction<{
-        document: WritableDraft<DocumentObject>;
+        document: WritableDraft<DocumentObject<T, K, Meta>>;
         documentId: number;
         tag: string;
       }>

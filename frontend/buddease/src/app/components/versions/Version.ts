@@ -1,30 +1,33 @@
-import { useMeta } from '@/app/configs/useMeta';
 // Version.ts
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
+import { useMeta } from '@/app/configs/useMeta';
 
-import { fetchUserAreaDimensions } from '@/app/configs/database/MetaDataOptions';
-import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
-import BackendStructure, {  backendStructure } from "@/app/configs/appStructure/BackendStructure";
-import FrontendStructure, {  frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
-import crypto from "crypto";
-import { createHash } from 'node:crypto';
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
+import BackendStructure, { backendStructure } from "@/app/configs/appStructure/BackendStructure";
+import FrontendStructure, { frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
+import { fetchUserAreaDimensions } from '@/app/configs/database/MetaDataOptions';
+import crypto from "crypto";
 import getAppPath from "../../../../appPath";
-import { Data, BaseData } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 import { VersionData, VersionHistory } from "./VersionData";
-import { User } from "../users/User";
-import { TagsRecord } from "../snapshots/SnapshotWithCriteria";
-import { Attachment } from "../documents/Attachment/attachment";
-import { Category } from "../libraries/categories/generateCategoryProperties";
-import { Member } from "../models/teams/TeamMembers";
-import DocumentPermissions from "../documents/DocumentPermissions";
-import { fluenceApiKey } from "../web3/dAppAdapter/DAppAdapterConfig";
+
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { dataVersions } from "@/app/configs/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { Attachment } from "../documents/Attachment/attachment";
+import DocumentPermissions from "../documents/DocumentPermissions";
+import { Category } from "../libraries/categories/generateCategoryProperties";
 import { K, Meta, T } from "../models/data/dataStoreMethods";
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { Member } from "../models/teams/TeamMembers";
+import { TagsRecord } from "../snapshots/SnapshotWithCriteria";
+import { HistoryEntry } from '../state/stores/HistoryStore';
+import { User } from "../users/User";
+import { fluenceApiKey } from "../web3/dAppAdapter/DAppAdapterConfig";
+import { createLatestVersion } from './createLatestVersion';
 
 
-interface ExtendedVersion extends Version {
+interface ExtendedVersion extends Version<T, K<T>> {
   name: string;
   url: string;
   versionNumber: string;
@@ -35,16 +38,19 @@ interface ExtendedVersion extends Version {
 
 
 interface BuildVersion {
-  data: Data<T> | undefined,
+  data: BaseData<T> | undefined,
   backend: BackendStructure | undefined,
   frontend: FrontendStructure | undefined
 }
 
 
 
-interface Version {
+interface Version<
+  T extends BaseData<any>,  
+  K extends T = T
+> {
   id: number;
-  versionData?: VersionData | null; // Adjust based on actual type
+  versionData: string | VersionData | null; // Adjust based on actual type
   buildVersions?: BuildVersion | undefined; // Adjust based on actual type
   isActive: boolean;
   releaseDate: string | Date | undefined;
@@ -60,7 +66,7 @@ interface Version {
   content: string;
   description: string;
   buildNumber: string;
-  metadata?: UnifiedMetaDataOptions<T, K<T>, Meta<T, K<T>>>; // Adjust based on actual type
+  metadata?: UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>>; // Adjust based on actual type
   versions: Versions | null; // Adjust based on actual type
   appVersion: string;
   checksum: string;
@@ -89,12 +95,10 @@ interface Version {
   workspaceUrl: string;
   workspaceViewers: any[]; // Adjust based on actual type
   workspaceAdmins: any[]; // Adjust based on actual type
-  workspaceMembers: any[]; // Adjust based on actual type
-  data: VersionData | undefined;
+  workspaceMembers: any[];
+  data: InitializedData<T> | null | undefined,
   _structure: Record<string, AppStructureItem[]>;
-  versionHistory: {
-    versionData: any; // Adjust based on actual type
-  };
+  versionHistory: VersionHistory;
   getVersionNumber: (() => string) | undefined;
   updateStructureHash(): Promise<void>;
   setStructureData(newData: string): void;
@@ -106,22 +110,24 @@ interface Version {
 }
 
 interface Versions {
-  version?: Version[]; 
+  version?: Version<T, K<T>>[];
+  versionData?: string | VersionData | null;
   backend: BackendStructure | undefined;
   frontend: FrontendStructure | undefined;
+  history: HistoryEntry[] | undefined;
 }
 
 
 
 const area = fetchUserAreaDimensions().toString()
-const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
+const currentMeta: Meta<T, K<T>> = useMeta<T, K<T>>(area)
 
 
-function createVersion(overrides?: Partial<Version>): Version {
+function createVersion(overrides?: Partial<Version<T, K<T>>>): Version<T, K<T>> {
   const now = new Date();
 
   // Default structure
-  const defaultVersion: Version = {
+  const defaultVersion: Version<T, K<T>> = {
     id: 1,
     versionData: null,
     buildVersions: undefined,
@@ -140,7 +146,7 @@ function createVersion(overrides?: Partial<Version>): Version {
     description: "This is the initial release version.",
     buildNumber: "build_001",
     metadata: {
-      area: area, 
+      area: area,
       currentMeta: currentMeta,
       metadataEntries: {}
     },
@@ -178,6 +184,10 @@ function createVersion(overrides?: Partial<Version>): Version {
 
     versionHistory: {
       versionData: {},
+      latestVersion: createLatestVersion(), 
+      lastUpdated: new Date(),
+      history: [], 
+      timestamp: new Date(),
     },
 
     // Method to generate a version number string
@@ -215,94 +225,103 @@ function createVersion(overrides?: Partial<Version>): Version {
     currentHash: "", // Initialized to empty; will be set by `updateStructureHash`
     structureData: "", // Will be populated with actual data when needed
   };
+   
+  const isVersionDefined = <T>(value: T | undefined): value is T => value !== undefined;
 
   // Merge overrides (if any) with default values
-  return {
-    ...defaultVersion,
-    ...overrides,
-    metadata: {
-      area: overrides.metadata?.area ?? defaultVersion.metadata.area,
-      tags: overrides.metadata?.tags ?? defaultVersion.metadata.tags,
-      childIds: overrides.metadata?.childIds ?? defaultVersion.metadata.childIds,
-      relatedData: overrides.metadata?.relatedData ?? defaultVersion.metadata.relatedData,
-      baseUrl: overrides.metadata?.baseUrl ?? defaultVersion.metadata.baseUrl,
-    },
-    versionHistory: {
-      ...defaultVersion.versionHistory,
-      ...(overrides?.versionHistory ?? {}),
-    },
-  };
-}
-
-// DevVersion: Extends BaseVersion and adds development-specific properties
-interface DevVersion extends Version {
-  buildDate: string;
-  commitHash: string;
-  commitDate: string;
-  commitMessage: string;
-  commitAuthor: string;
-  commitAuthorEmail: string;
-  commitCommitter: string;
-  commitCommitterEmail: string;
-  branch: string;
-  tag: string;
-  remoteOrigin: string;
-  remoteOriginURL: string;
-  isRelease: boolean;
-  isBeta: boolean;
-  isAlpha: boolean;
-  isCandidate: boolean;
-  isSnapshot: boolean;
-  isPullRequest: boolean;
-  pullRequestNumber: string;
-  pullRequestUrl: string;
-  pullRequestAuthor: string;
-  pullRequestAuthorEmail: string;
-  pullRequestCommit: string;
-  pullRequestCommitUrl: string;
-  pullRequestCommitMessage: string;
-  pullRequestCommitDate: string;
-  pullRequestCommitAuthor: string;
-  pullRequestCommitAuthorEmail: string;
-  pullRequestCommitCommitter: string;
-  pullRequestCommitCommitterEmail: string;
-  pullRequestBranch: string;
-  pullRequestBaseBranch: string;
-  pullRequestMergeBranch: string;
-  pullRequestMergeCommit: string;
-  pullRequestMergeCommitUrl: string;
-  pullRequestMergeCommitMessage: string;
-  pullRequestMergeCommitDate: string;
-  pullRequestMergeCommitAuthor: string;
-  pullRequestMergeCommitAuthorEmail: string;
-  pullRequestMergeCommitCommitter: string;
-  pullRequestMergeCommitCommitterEmail: string;
+  if (isVersionDefined(defaultVersion)) {
+    return {
+      metadata: {
+        currentMeta: overrides?.metadata?.currentMeta ?? defaultVersion.metadata?.currentMeta,
+        metadataEntries: overrides?.metadata?.metadataEntries ?? defaultVersion.metadata?.metadataEntries,
+        area: overrides?.metadata?.area ? defaultVersion.metadata?.area : undefined,
+        tags: overrides?.metadata?.tags ?? defaultVersion.metadata?.tags,
+        childIds: overrides?.metadata?.childIds ?? defaultVersion.metadata?.childIds,
+        relatedData: overrides?.metadata?.relatedData ?? defaultVersion.metadata?.relatedData,
+        baseUrl: overrides?.metadata?.baseUrl ?? defaultVersion.metadata?.baseUrl,
+      },
+      versionHistory: {
+        ...defaultVersion.versionHistory,
+        ...(overrides?.versionHistory ?? {}),
+      },
+    };
+  } else {
+    throw new Error('defaultVersion is undefined');
+  }
 }
 
 
+  // DevVersion: Extends BaseVersion and adds development-specific properties
+  interface DevVersion<T extends BaseData<any>, K extends T = T> extends Version<T, K> {
+    buildDate: string;
+    commitHash: string;
+    commitDate: string;
+    commitMessage: string;
+    commitAuthor: string;
+    commitAuthorEmail: string;
+    commitCommitter: string;
+    commitCommitterEmail: string;
+    branch: string;
+    tag: string;
+    remoteOrigin: string;
+    remoteOriginURL: string;
+    isRelease: boolean;
+    isBeta: boolean;
+    isAlpha: boolean;
+    isCandidate: boolean;
+    isSnapshot: boolean;
+    isPullRequest: boolean;
+    pullRequestNumber: string;
+    pullRequestUrl: string;
+    pullRequestAuthor: string;
+    pullRequestAuthorEmail: string;
+    pullRequestCommit: string;
+    pullRequestCommitUrl: string;
+    pullRequestCommitMessage: string;
+    pullRequestCommitDate: string;
+    pullRequestCommitAuthor: string;
+    pullRequestCommitAuthorEmail: string;
+    pullRequestCommitCommitter: string;
+    pullRequestCommitCommitterEmail: string;
+    pullRequestBranch: string;
+    pullRequestBaseBranch: string;
+    pullRequestMergeBranch: string;
+    pullRequestMergeCommit: string;
+    pullRequestMergeCommitUrl: string;
+    pullRequestMergeCommitMessage: string;
+    pullRequestMergeCommitDate: string;
+    pullRequestMergeCommitAuthor: string;
+    pullRequestMergeCommitAuthorEmail: string;
+    pullRequestMergeCommitCommitter: string;
+    pullRequestMergeCommitCommitterEmail: string;
+  }
 
 
-class VersionImpl implements Version {
-  versionData?: VersionData | null | undefined;
-  buildVersions?: BuildVersion | undefined;
-  major: number;
-  minor: number;
-  patch: number;
+class VersionImpl<
+  T extends BaseData<any>, 
+  K extends T = T
+  > implements Version<T, K> {
+
+
+  major: number = 0;
+  minor: number = 0;
+  patch: number = 0;
+  appVersion: string = "1.0.0";
+  checksum: string = "";
+  releaseDate: string | Date = "";
+  description: string = "";
+  content: string = "";
+
   name: string;
   url: string;
   versionNumber: string;
   documentId: string;
   draft: boolean;
   userId: string;
-  content: string;
-  description: string;
   buildNumber: string;
-  metadata: UnifiedMetaDataOptions<T, K<T>, Meta<T, K<T>>, never> | undefined;
-  versions: Versions
-  appVersion: string;
-  published?: boolean;
-  checksum: string;
-
+  metadata?: UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, never> | undefined;
+  versions: Versions | null
+  
   // Add other properties as needed
   id: number;
   parentId: string | null;
@@ -320,7 +339,6 @@ class VersionImpl implements Version {
   isActive: boolean;
   isPublished: boolean;
   publishedAt: Date | null;
-  releaseDate: string | Date | undefined
   source: string;
   status: string;
   workspaceId: string;
@@ -330,19 +348,19 @@ class VersionImpl implements Version {
   workspaceViewers: string[];
   workspaceAdmins: string[];
   workspaceMembers: string[];
+  versionData?: string | VersionData | null;
+  buildVersions?: BuildVersion | undefined;
+  published?: boolean;
   createdAt?: string | Date | undefined;
   updatedAt?: string | Date | undefined;
   deletedAt?: string | Date | undefined;
   frontendStructure?: Promise<AppStructureItem[]>;
   backendStructure?: Promise<AppStructureItem[]>;
-  data: Data<BaseData<any>>[];
-
+  data: InitializedData<T> | null | undefined;
   getVersion?: () => Promise<string | null>;
 
   _structure: Record<string, AppStructureItem[]> = {}; // Define private property _structure
   versionHistory: VersionHistory; // Add version history property
-
-
 
   currentHash: string;
   structureData: string; // Data to be hashed
@@ -385,26 +403,17 @@ class VersionImpl implements Version {
     patch: number;
     versionNumber: string;
     structureData: string;
-    buildVersions: BuildVersion;
+    buildVersions?: BuildVersion | undefined;
     appVersion: string;
     description: string;
     content: string;
     checksum: string;
-    versionData: VersionData[];
-    data: Data<BaseData<any>>[];
+    versionData: string | VersionData | null;
+    data: InitializedData<T> | undefined
     name: string;
     url: string;
-    metadata: {
-      author: string;
-      timestamp: string | Date | undefined;
-      revisionNotes?: string;
-    } | undefined;
-    versions: {
-      data: VersionData | undefined;
-      backend: BackendStructure | undefined;
-      frontend: FrontendStructure | undefined;
-      history: HistoryEntry[];
-    } | null;
+    metadata?: UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>> | undefined;
+    versions: Versions | null;
     versionHistory: VersionHistory;
     userId: string;
     documentId: string;
@@ -534,7 +543,10 @@ class VersionImpl implements Version {
       draft: versionInfo.draft ?? false,
       userId: versionInfo.userId ?? '',
       content: versionInfo.content ?? '',
-      metadata: versionInfo.metadata ?? { author: '', timestamp: undefined },
+      metadata: versionInfo.metadata ?? {
+        ...{ author: "", timestamp: undefined, revisionNotes: undefined }, 
+        ...versionInfo.metadata,
+      },
       versionData: versionInfo.versionData ?? null,
       major: versionInfo.major ?? null,
       minor: versionInfo.minor ?? null,
@@ -556,7 +568,11 @@ class VersionImpl implements Version {
       publishedAt: versionInfo.publishedAt ?? null,
       source: versionInfo.source ?? 'initial',
       status: versionInfo.status ?? 'active',
-      version: versionInfo.versionNumber ?? '',
+      version: versionInfo.versionNumber ?? {
+        major: versionInfo.major ?? 0,
+        minor: versionInfo.minor ?? 0,
+        patch: versionInfo.patch ?? 0
+      } as Version<any, any>,
       timestamp: versionInfo.metadata?.timestamp ? versionInfo.metadata.timestamp.toString() : new Date().toString(),
       user: 'unknown', // Replace with actual user if available
       changes: versionInfo.changes ?? [],
@@ -609,7 +625,6 @@ class VersionImpl implements Version {
     );
     this.backendStructure = Promise.resolve(backendStructureInstance.getStructureAsArray());
   }
-
   /**
    * Static method to create a Version instance.
    * @param versionInfo - Object containing version details.
@@ -621,9 +636,9 @@ class VersionImpl implements Version {
     minor: number;
     patch: number;
     versionNumber: string;
-    buildVersions?: BuildVersion;
+    buildVersions?: BuildVersion | undefined;
     versionHistory?: VersionHistory;
-  }): VersionImpl {
+  }): VersionImpl<T, K> {
     return new VersionImpl({
       id: versionInfo.id,
       major: versionInfo.major,
@@ -631,11 +646,13 @@ class VersionImpl implements Version {
       patch: versionInfo.patch,
       versionData: {
         versionNumber: versionInfo.versionNumber,
-        releaseDate: new Date(),
+        releaseDate: "2015-03-25",
         description: "Generated version",
       },
       buildVersions: versionInfo.buildVersions,
       versionHistory: versionInfo.versionHistory || {
+        latestVersion: "",
+        timestamp: new Date(),
         history: [
           {
             versionId: `${versionInfo.id}`,
@@ -774,9 +791,9 @@ class VersionImpl implements Version {
     workspaceAdmins: string[];
     workspaceMembers: string[];
     createdAt: Date;
-    versionData: VersionData[];
+    versionData: string | VersionData | null;
     structureData: string;
-    buildVersions: BuildVersion;
+    buildVersions?: BuildVersion | undefined;
     deletedAt: Date | undefined,
     isDeleted: boolean,
     publishedBy: string,
@@ -857,7 +874,7 @@ class VersionImpl implements Version {
     };
 
     // Function to create a Version object from ExtendedVersion data
-    const createVersion = (versionData: ExtendedVersion): VersionImpl => {
+    const createVersion = (versionData: ExtendedVersion): VersionImpl<T, K> => {
       const {
         content,
         metadata,
@@ -905,7 +922,7 @@ class VersionImpl implements Version {
 
       const docPermissions = new DocumentPermissions(true, false);
 
-      const version: VersionImpl = new VersionImpl({
+      const version: VersionImpl<T, K> = new VersionImpl<T, K>({
         content,
         metadata,
         checksum,
@@ -1013,7 +1030,7 @@ class VersionImpl implements Version {
   }
 
   // Method to compare two versions
-  compare?(otherVersion: Version): number {
+  compare?(otherVersion: Version<T, K>): number {
     const currentParts = this.versionNumber
       .split(".")
       .map((part) => parseInt(part, 10));
@@ -1049,7 +1066,7 @@ class VersionImpl implements Version {
   }
 
   // Method to check if the version is newer than another
-  isNewer?(otherVersion: Version): boolean {
+  isNewer?(otherVersion: Version<T, K>): boolean {
     return Boolean(this.compare && this.compare(otherVersion) === 1);
   }
 
@@ -1116,10 +1133,6 @@ class VersionImpl implements Version {
     return crypto.createHash("sha256").update(value).digest("hex");
   }
 }
-
-export default Version;
-
-
 
 const versionData: VersionData = {
 id: 0,
@@ -1204,9 +1217,10 @@ const devVersion: DevVersion = {
   appVersion: '1.0.3',
   versions: {
     version: [],
-    backend: {},
-    frontend: {}
+    backend: backendStructure,
+    frontend: frontendStructure
   },
+  versionData: versionData,
   checksum: 'abc123checksum',
   parentId: null,
   parentType: 'document',
@@ -1285,9 +1299,9 @@ const devVersion: DevVersion = {
   pullRequestMergeCommitCommitterEmail: '',
 };
 
-export { versionData, VersionImpl, createVersion };
-export type { BuildVersion, Version }
-
+export default VersionImpl
+export { createVersion, versionData };
+export type { BuildVersion, Version, Versions };
 
 export const version = createVersion();
 

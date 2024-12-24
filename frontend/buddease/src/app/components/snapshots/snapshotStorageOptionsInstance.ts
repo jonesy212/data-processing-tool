@@ -1,9 +1,9 @@
-import { Result } from '@/app/components/snapshots';
 import { Data } from '@/app/components/models/data/Data';
+import { Result } from '@/app/components/snapshots';
 // snapshotStorageOptionsInstance.ts
 
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { Payload } from '@/app/components/database/Payload';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
 import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
@@ -17,7 +17,7 @@ import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPa
 import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { BaseData, Data, DataDetails } from "../models/data/Data";
+import { BaseData, DataDetails } from "../models/data/Data";
 import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
@@ -32,7 +32,7 @@ import { SnapshotActionType } from "./SnapshotActionType";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotItem } from "./SnapshotList";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { InitializedConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { Callback, MultipleEventsCallbacks } from "./subscribeToSnapshotsImplementation";
 
 // Define a specific set of options for snapshot storage
@@ -107,8 +107,8 @@ const snapshotStorageOptions: SnapshotStorageOptions<Data, BaseData> = {
 		additionalData: undefined,
 		initialState: undefined,
 		isCore: false,
-		initialConfig: {} || {} as InitializedConfig,
-		removeSubscriber: undefined,
+		initialConfig: {} as InitializedConfig,
+        removeSubscriber: removeSubscriber,
 		onInitialize: (callback: () => void) => {
 			throw new Error("Function not implemented.");
 		},
@@ -1172,7 +1172,7 @@ const snapshotConfigOptions: SnapshotConfigOptions<Data, BaseData> = {
       ) => Subscriber<Data, BaseData>[] 
   
 				parentId: string;
-				childIds?: K[] | undefined; 
+				childIds?: K[]; 
 			
 			getParentId: (id: string) => string; 
 			getChildIds: (id: string) => string[]; 
@@ -1381,6 +1381,6 @@ const snapshotConfigOptions: SnapshotConfigOptions<Data, BaseData> = {
 
 
 export {
-	snapshotConfigOptions
+    snapshotConfigOptions
 };
 

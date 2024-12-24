@@ -101,7 +101,7 @@ const useTodoManagerStore = <
   // Inside useTodoManagerStore function
   const snapshotStore = useSnapshotManager(storeId);
   // Initialize SnapshotStore
-  const onSnapshotCallbacks: ((snapshot: Snapshot<Todo<T, K, Meta>, Meta, K>) => void)[] = [];
+  const onSnapshotCallbacks: ((snapshot: Snapshot<Todo<T, K, Meta>, K, Meta>) => void)[] = [];
 
   const dispatch = (action: any) => {
     switch (action.type) {

@@ -1,12 +1,12 @@
 import axiosInstance from "@/app/api/axiosInstance";
+import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
+import { VersionData, VersionHistory } from "@/app/components/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
+import { hashString } from "@/app/generators/HashUtils";
 import getAppPath from "appPath";
 import * as path from "path";
 import { AppStructureItem } from "../appStructure/AppStructure";
-import { VersionData, VersionHistory } from "@/app/components/versions/VersionData";
-import { hashString } from "@/app/generators/HashUtils";
 import { DataVersions } from "../DataVersionsConfig";
-import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 
 export default class FrontendStructure implements AppStructureItem {
   versions: DataVersions = {
@@ -14,7 +14,7 @@ export default class FrontendStructure implements AppStructureItem {
     frontend: undefined
   }
   
-  versionData: VersionData[] = []; // Changed to VersionData[] to match AppStructureItem
+  versionData: string | VersionData | null = []; // Changed to VersionData[] to match AppStructureItem
 
   id: string;
   name: string;

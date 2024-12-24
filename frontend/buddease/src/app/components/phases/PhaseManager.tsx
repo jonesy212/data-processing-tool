@@ -28,11 +28,20 @@ const defaultCondition = async (idleTimeoutDuration: number): Promise<boolean> =
     const createPhases = () => {
       // Logic to create phases...
 
+
+
+    const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
+    const currentMetadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(area)
+
+   
       // Example: Create an array of phase objects
       const newPhases: Phase[] = [
         {
           id: "201-1",
           name: "Phase 1",
+          description, label, 
+          currentMeta, 
+          currentMetadata,
           startDate: new Date(),
           endDate: new Date(),
           component: () => <div>Phase 1 Component</div>,

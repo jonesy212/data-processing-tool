@@ -1,5 +1,6 @@
 // InternalCache.ts
 import { T , K, Meta } from "@/app/components/models/data/dataStoreMethods";
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 
 class InternalCache<T> {
   private cache: Map<string, T>;
@@ -30,20 +31,18 @@ class InternalCache<T> {
 }
 
 
-
-
 // Create a cache instance for your data type (e.g., BaseData)
-export const internalCache = new InternalCache<T>();
+export const internalCache = new InternalCache<Promise<Snapshot<T, K<T>>>>();
 
 // Example methods using the cache instance
 const cacheOperations = {
   // Fetch an item from internal cache based on an ID
-  getFromInternalCache: (id: string): T | undefined => {
+  getFromInternalCache: (id: string): Promise<Snapshot<T, K<T>>> | undefined => {
     return internalCache.get(id);
   },
 
   // Add an item to the internal cache
-  addToInternalCache: (id: string, item: T): void => {
+  addToInternalCache: (id: string, item: Promise<Snapshot<T, K<T>>>): void => {
     internalCache.set(id, item);
   },
 

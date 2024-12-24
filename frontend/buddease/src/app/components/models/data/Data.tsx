@@ -72,7 +72,12 @@ interface SharedPhaseData {
 }
 
 
-type DataWithOmittedFields<T, K, Meta, ExcludedFields extends keyof T = never> = Omit<Data<T, K, Meta>, ExcludedFields>;
+type DataWithOmittedFields<
+  T extends BaseData<any, any, StructuredMetadata<any, any>, Attachment>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+> = Omit<Data<T, K, Meta>, ExcludedFields>;
 
 // Define the interface for DataDetails
 interface DataDetails<
@@ -95,7 +100,7 @@ interface DataDetails<
   isActive?: boolean;
   status?: AllStatus | null;
   uploadedAt?: Date | undefined; //
-  phase?: Phase<PhaseData<T, K>, K> | null;
+  phase?: Phase<PhaseData<BaseData<any>>, K> | null;
   fakeData?: FakeData;
   comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
   todos?: Todo<T, K>[];
@@ -105,7 +110,7 @@ interface DataDetails<
   };
 
   data?: DataWithOmittedFields<T, K, Meta, ExcludedFields>;
-  snapshots?: Snapshots<T, K, Meta>;
+  snapshots?: Snapshots<T, K>;
   snapshotArray?: SnapshotsArray<T, K, Meta>;
   analysisType?: AnalysisTypeEnum | null;
   analysisResults?: string | DataAnalysisResult<T>[] | undefined;
@@ -153,7 +158,7 @@ interface BaseData<
   timestamp?: string | number | Date | undefined;
   isActive?: boolean;
   tags?: TagsRecord<T, K> | string[] | undefined; // Update as needed based on your schema
-  phase?: Phase<T, K> | null;
+  phase?: Phase<PhaseData<BaseData<any>>, K> | null;
   phaseType?: ProjectPhaseTypeEnum;
   key?: string;
   value?: number | string | Snapshot<T, K, Meta> | null;
@@ -287,7 +292,10 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
   startDate: new Date(),
   endDate: new Date(),
   isScheduled: true,
-  scheduled: {},
+  scheduled: {
+    scheduledDate: new Date(),
+    createdBy: "user1",
+  },
   status: StatusType.Pending,
   isActive: true,
   tags: {
@@ -1490,7 +1498,8 @@ export type {
   BaseData, CommonRelationship, Data,
   DataDetails,
   DataDetailsComponent,
-  DataDetailsProps, SharedBaseData, TodoSubtasks
+  DataDetailsProps, SharedBaseData, TodoSubtasks,
+  DataWithOmittedFields
 };
 
 

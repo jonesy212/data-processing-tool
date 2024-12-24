@@ -141,6 +141,14 @@ export const SnapshotProvider = <
             {
               id,
               storeId,
+
+
+              delegate, getDelegate, getCategory, initSnapshot,
+              createSnapshotStore, configureSnapshot, configureSnapshotStore, getDataStoreMethods,
+              getSnapshotConfig, createSnapshot, configureSnap,
+              
+
+
               baseURL: 'https://example.com/api', // Ensure this is properly set
               enabled: true, // Required boolean property
               maxRetries: 3,
@@ -163,7 +171,9 @@ export const SnapshotProvider = <
               subscribeToSnapshot: "",
               unsubscribeToSnapshots: "",
               unsubscribeToSnapshot: "",
-             
+              handleSnapshotOperation, handleSnapshotStoreOperation, displayToast, addToSnapshotList,
+              getSnapshotConfig, createSnapshot, configureSnap,
+
 
             } as SnapshotStoreOptions<T, K>, // Ensure correct type casting // Example `storeOptions`, pass necessary options here
           );

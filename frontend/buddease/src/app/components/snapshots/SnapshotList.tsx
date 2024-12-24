@@ -12,19 +12,21 @@ import { Sender } from "../communications/chat/Communication";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { NotificationType } from "../support/NotificationContext";
-import { createMessage } from "../utils/createMessage";
+import { createMessage, MessageProps } from "../utils/createMessage";
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
 import { useSecureUserId } from '../utils/useSecureUserId';
+import { InitializedData } from './SnapshotStoreOptions';
 
 interface SnapshotItem<
   T extends  BaseData<any>, 
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> extends Snapshot<T, K, Meta> {
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcExcludedFields extends keyof T = never
+> extends Snapshot<T, K, Meta, ExcExcludedFields> {
   id: string;
-  // value: string;
+  value: string | number | Snapshot<T, K, StructuredMetadata<T, K>, ExcExcludedFields> | null | undefined
   message?: (
     type: NotificationType, 
     content: string, 
@@ -34,11 +36,7 @@ interface SnapshotItem<
     channel?: ChatRoom
   ) => Message
   itemContent?: ContentItem; 
-  data: T | Map<string, Snapshot<T, K>> | null | undefined; // Data associated with the snapshot
-  value?: {
-    timestamp?: Date;
-    tags?: string[];
-  };
+  data: InitializedData<T> | undefined;
   user?: User;
   categories?: Category[];
   label: Label | undefined;
@@ -209,7 +207,7 @@ const createSnapshotItem = <T extends  BaseData<any>, K extends T = T, Meta exte
   snapshotStore: SnapshotStore<T, K> | null,
   snapshotStoreConfig: SnapshotStoreConfig<T, K> | null,
   snapshotManager: SnapshotManager<T, K> | null,  // Add snapshotManager as a parameter
-  storeProps?: SnapshotStoreProps<T, K>  // Optional
+  storeProps?: SnapshotStoreProps<T, K> & MessageProps // Combine store and message props
 ): SnapshotItem<T, K> => {
   
   const baseMeta = new Map<string, Snapshot<T, K>>();
@@ -227,12 +225,14 @@ const createSnapshotItem = <T extends  BaseData<any>, K extends T = T, Meta exte
   );
 
   const userId = useSecureUserId.toString();
+  if(!storeProps){
+    throw new Error("storeProps is undefined");
+  }
 
   const {     
     type,
     content,
     additionalData,
-    userId,
     sender,
     channel, 
   } = storeProps
@@ -241,7 +241,7 @@ const createSnapshotItem = <T extends  BaseData<any>, K extends T = T, Meta exte
     type,
     content,
     additionalData,
-    userId,
+    Number(userId),
     sender,
     channel,
  )
@@ -249,8 +249,9 @@ const createSnapshotItem = <T extends  BaseData<any>, K extends T = T, Meta exte
   // Extend baseSnapshot with additional properties for SnapshotItem
   const snapshotItem: SnapshotItem<T, K> = {
     ...baseSnapshot, // Spread the baseSnapshot properties
-    message: message,
-    itemContent: undefined, // Add additional fields specific to SnapshotItem
+    message: (type, content, additionalData, userId, sender, channel) => 
+      createMessage(type, content, additionalData, userId, sender, channel),
+      itemContent: undefined, // Add additional fields specific to SnapshotItem
     data, // This could be adjusted based on specific requirements
   };
 

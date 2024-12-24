@@ -23,7 +23,7 @@ import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
 import { DefaultCalendarEvent } from '../actions/CalendarEventActions';
 import { Theme } from '../libraries/ui/theme/Theme';
 import { encryptData } from "../security/encryptedData";
-import { Snapshot } from '../snapshots';
+import { Snapshot } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 
 const API_BASE_URL = endpoints.logging;
 const { notify } = useNotification();

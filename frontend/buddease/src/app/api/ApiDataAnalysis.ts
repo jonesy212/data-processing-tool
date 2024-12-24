@@ -11,12 +11,17 @@ import { PriorityTypeEnum } from "../components/models/data/StatusType";
 import { DataAnalysisResult } from "../components/projects/DataAnalysisPhase/DataAnalysisResult";
 import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { YourResponseType } from "../components/typings/types";
+import { isYourResponseType, isSnapshotStore } from "../components/typings/YourSpecificSnapshotType";
+import { YourResponseType } from "@/app/components/typings/types";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
+import { isSnapshot } from "../components/utils/snapshotUtils";
 import { T } from '../components/models/data/dataStoreMethods';
+import SnapshotStore from '../components/snapshots/SnapshotStore';
+import { createSnapshot } from '../components/snapshots/createSnapshot';
+
 const dispatch = useDispatch();
 // Define the API base URL for data analysis
 
@@ -78,11 +83,12 @@ export const handleDataAnalysisApiErrorAndNotify = (
   }
 };
 
-// Function to fetch data analysis
+
 export function fetchDataAnalysis<
   T extends BaseData,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
   endpoint: string,
   text?: string
 ): Promise<YourResponseType<T, K, Meta> | Snapshot<T, K, Meta>> {
@@ -94,8 +100,16 @@ export function fetchDataAnalysis<
 
   return axiosInstance
     .get<YourResponseType<T, K, Meta> | Snapshot<T, K, Meta>>(fetchDataAnalysisEndpoint, config)
-    .then((response: AxiosResponse<YourResponseType<T, K, Meta> | Snapshot<T, K, Meta>>) => {
-      return response.data; // Correctly extract the `data` from the AxiosResponse
+    .then((response: AxiosResponse<YourResponseType<T, K, Meta,>> | Snapshot<T, K, Meta, , never>>) => {
+      const data = response.data;
+
+      if (isSnapshotStore<T, K, Meta>(data)) {
+        return data as SnapshotStore<T, K, Meta>;
+      } else if (isSnapshot<T, K, Meta>(data)) {
+        return data as Snapshot<T, K, Meta>;
+      } else {
+        return data as YourResponseType<T, K, Meta>;
+      }
     })
     .catch((error) => {
       console.error("Error fetching data analysis:", error);
@@ -108,7 +122,6 @@ export function fetchDataAnalysis<
       return Promise.reject(error);
     });
 }
-
 
 
 
@@ -145,8 +158,167 @@ export const fetchAnalysisResults = <
         }
 
         // Return processed data
-        return {    
+        return createSnapshot<BaseData, BaseData>({  
           ...rest,
+          // Core Data
+          dataObject: analysisResults.snapshotStores[0].dataObject,
+          deleted: analysisResults.snapshotStores[0].deleted,
+          createdBy: analysisResults.snapshotStores[0].createdBy,
+          mappedSnapshot: analysisResults.snapshotStores[0].mappedSnapshot,
+
+          // Subscription Management
+          manageSubscription: analysisResults.snapshotStores[0].manageSubscription,
+          keys: analysisResults.snapshotStores[0].keys,
+          options: analysisResults.snapshotStores[0].options,
+          structuredMetadata: analysisResults.snapshotStores[0].structuredMetadata,
+
+          // Snapshot Retrieval
+          get: analysisResults.snapshotStores[0].get,
+          maxAge: analysisResults.snapshotStores[0].maxAge,
+          getSnapshotsByTopic: analysisResults.snapshotStores[0].getSnapshotsByTopic,
+          getSnapshotsByTopicSuccess: analysisResults.snapshotStores[0].getSnapshotsByTopicSuccess,
+          getSnapshotsByCategory: analysisResults.snapshotStores[0].getSnapshotsByCategory,
+          getSnapshotsByCategorySuccess: analysisResults.snapshotStores[0].getSnapshotsByCategorySuccess,
+          getSnapshotsByKey: analysisResults.snapshotStores[0].getSnapshotsByKey,
+          getSnapshotsByKeySuccess: analysisResults.snapshotStores[0].getSnapshotsByKeySuccess,
+          getSnapshotsByPriority: analysisResults.snapshotStores[0].getSnapshotsByPriority,
+          getSnapshotsByPrioritySuccess: analysisResults.snapshotStores[0].getSnapshotsByPrioritySuccess,
+
+          // Store Data Management
+          getStoreData: analysisResults.snapshotStores[0].getStoreData,
+          updateStoreData: analysisResults.snapshotStores[0].updateStoreData,
+          #snapshotStores: base.#snapshotStores ?? new Map(),
+          updateDelegate: analysisResults.snapshotStores[0].updateDelegate,
+
+          autoSyncData: analysisResults.snapshotStores[0].autoSyncData,
+          endpointCategory: analysisResults.snapshotStores[0].endpointCategory,
+          findIndex: analysisResults.snapshotStores[0].findIndex,
+          
+          splice: analysisResults.snapshotStores[0].splice,
+          getSnapshotStoreData: analysisResults.snapshotStores[0].getSnapshotStoreData,
+          // Snapshot Operations
+          getSnapshotContainer: analysisResults.snapshotStores[0].getSnapshotContainer,
+          getSnapshotVersions: analysisResults.snapshotStores[0].getSnapshotVersions,
+          getEventsAsRecord: analysisResults.snapshotStores[0].getEventsAsRecord,
+          addSnapshotToStore: analysisResults.snapshotStores[0].addSnapshotToStore,
+          updateSnapshotStore: analysisResults.snapshotStores[0].updateSnapshotStore,
+
+          // Data Transformation
+          mapDataStore: analysisResults.snapshotStores[0].mapDataStore,
+          transformInitialState: analysisResults.snapshotStores[0].transformInitialState,
+          transformSnapshot: analysisResults.snapshotStores[0].transformSnapshot,
+          transformMappedSnapshotData: analysisResults.snapshotStores[0].transformMappedSnapshotData,
+          transformSnapshotStore: analysisResults.snapshotStores[0].transformSnapshotStore,
+          transformSnapshotMethod: analysisResults.snapshotStores[0].transformSnapshotMethod,
+
+          // Store and Config Initialization
+          initializeOptions: analysisResults.snapshotStores[0].initializeOptions,
+          setConfig: analysisResults.snapshotStores[0].setConfig,
+          initializeStores: analysisResults.snapshotStores[0].initializeStores,
+          initializeDefaultConfigs: analysisResults.snapshotStores[0].initializeDefaultConfigs,
+
+          // Notifications and Error Handling
+          notifySuccess: analysisResults.snapshotStores[0].notifySuccess,
+          notifyFailure: analysisResults.snapshotStores[0].notifyFailure,
+          clearSnapshotFailure: analysisResults.snapshotStores[0].clearSnapshotFailure,
+
+          // Snapshot Store CRUD
+          findSnapshotStoreById: analysisResults.snapshotStores[0].findSnapshotStoreById,
+          getSnapshotStores: analysisResults.snapshotStores[0].getSnapshotStores,
+          defaultSaveSnapshotStore: analysisResults.snapshotStores[0].defaultSaveSnapshotStore,
+          saveSnapshotStore: analysisResults.snapshotStores[0].saveSnapshotStore,
+          _saveSnapshotStores: analysisResults.snapshotStores[0]._saveSnapshotStores,
+          _saveSnapshotStore: analysisResults.snapshotStores[0]._saveSnapshotStore,
+          defaultSaveSnapshotStores: analysisResults.snapshotStores[0].defaultSaveSnapshotStores,
+
+          // Delegate and Subscriptions
+          ensureDelegate: analysisResults.snapshotStores[0].ensureDelegate,
+          getFirstDelegate: analysisResults.snapshotStores[0].getFirstDelegate,
+          getInitialDelegate: analysisResults.snapshotStores[0].getInitialDelegate,
+          transformedDelegate: analysisResults.snapshotStores[0].transformedDelegate,
+
+          // Metadata and Configuration
+          consolidateMetadata: analysisResults.snapshotStores[0].consolidateMetadata,
+          getMetadata: analysisResults.snapshotStores[0].getMetadata,
+          getProjectMetadata: analysisResults.snapshotStores[0].getProjectMetadata,
+          getStructuredMetadata: analysisResults.snapshotStores[0].getStructuredMetadata,
+          getSnapshotStoreConfig: analysisResults.snapshotStores[0].getSnapshotStoreConfig,
+          defaultConfigs: analysisResults.snapshotStores[0].defaultConfigs,
+          storeProps: analysisResults.snapshotStores[0].storeProps,
+          callback: analysisResults.snapshotStores[0].callback,
+
+          // Store Utilities
+          getConfig: analysisResults.snapshotStores[0].getConfig,
+          getName: analysisResults.snapshotStores[0].getName,
+          getVersion: analysisResults.snapshotStores[0].getVersion,
+          getSchema: analysisResults.snapshotStores[0].getSchema,
+
+          // Data Store Handling
+          dataStores: analysisResults.snapshotStores[0].dataStores,
+          safeCastSnapshotStore: analysisResults.snapshotStores[0].safeCastSnapshotStore,
+          getItems: analysisResults.snapshotStores[0].getItems,
+          handleDelegate: analysisResults.snapshotStores[0].handleDelegate,
+
+          // Mapped Data
+          defaultCreateSnapshotStores: analysisResults.snapshotStores[0].defaultCreateSnapshotStores,
+          createSnapshotStores: analysisResults.snapshotStores[0].createSnapshotStores,
+          defaultOnSnapshots: analysisResults.snapshotStores[0].defaultOnSnapshots,
+          filterInvalidSnapshots: analysisResults.snapshotStores[0].filterInvalidSnapshots,
+          mapSnapshotsAO: analysisResults.snapshotStores[0].mapSnapshotsAO,
+
+          // Snapshot Analysis
+          getSnapshotIds: analysisResults.snapshotStores[0].getSnapshotIds,
+          getSnapshotArray: analysisResults.snapshotStores[0].getSnapshotArray,
+          getSavedSnapshotStore: analysisResults.snapshotStores[0].getSavedSnapshotStore,
+          getSavedSnapshotStores: analysisResults.snapshotStores[0].getSavedSnapshotStores,
+          getConfigs: analysisResults.snapshotStores[0].getConfigs,
+
+          // Miscellaneous
+          isCompatibleSnapshot: analysisResults.snapshotStores[0].isCompatibleSnapshot,
+          isSnapshotStoreConfig: analysisResults.snapshotStores[0].isSnapshotStoreConfig,
+          transformedSubscriber: analysisResults.snapshotStores[0].transformedSubscriber,
+          isMobile: analysisResults.snapshotStores[0].isMobile,
+          browserType: analysisResults.snapshotStores[0].browserType,
+
+          // Snapshot Store Operations
+          getTransformedSnapshot: analysisResults.snapshotStores[0].getTransformedSnapshot,
+          getTransformedInitialState: analysisResults.snapshotStores[0].getTransformedInitialState,
+          getFindSnapshotStoreById: analysisResults.snapshotStores[0].getFindSnapshotStoreById,
+          determineSnapshotStoreCategory: analysisResults.snapshotStores[0].determineSnapshotStoreCategory,
+          getNestedStores: analysisResults.snapshotStores[0].getNestedStores,
+
+          // Snapshot and Store Payload
+          getPayload: analysisResults.snapshotStores[0].getPayload,
+          setPayload: analysisResults.snapshotStores[0].setPayload,
+          getCallback: analysisResults.snapshotStores[0].getCallback,
+          setCallback: analysisResults.snapshotStores[0].setCallback,
+          getStoreProps: analysisResults.snapshotStores[0].getStoreProps,
+          setStoreProps: analysisResults.snapshotStores[0].setStoreProps,
+          getEndpointCategory: analysisResults.snapshotStores[0].getEndpointCategory,
+          setEndpointCategory: analysisResults.snapshotStores[0].setEndpointCategory,
+
+          // Security and Auditing
+          auditRecords: analysisResults.snapshotStores[0].auditRecords,
+          encrypt: analysisResults.snapshotStores[0].encrypt,
+          decrypt: analysisResults.snapshotStores[0].decrypt,
+          compress: analysisResults.snapshotStores[0].compress,
+
+          // Temporary Data
+          storeTempData: analysisResults.snapshotStores[0].storeTempData,
+          getTempData: analysisResults.snapshotStores[0].getTempData,
+
+          // Debugging
+          addDebugInfo: analysisResults.snapshotStores[0].addDebugInfo,
+
+          // Iterable support
+          [Symbol.iterator]: data[Symbol.iterator],
+
+
+          
+
+
+
+
           description: description ?? undefined,
           phase: phase ?? undefined,
           priority: priority as PriorityTypeEnum | undefined,
@@ -393,7 +565,7 @@ export const fetchAnalysisResults = <
           initializeWithData: analysisResults.snapshotStores[0].initializeWithData,
           hasSnapshots: analysisResults.snapshotStores[0].hasSnapshots,
           equals: analysisResults.snapshotStores[0].equals
-        } as Snapshot<BaseData, BaseData>
+        })
     } else {
       // Handle YourResponseType case if different processing is required
       return Promise.reject(new Error("Unexpected response format"));

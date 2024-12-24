@@ -10,8 +10,10 @@ export function waitForLoad<T>(
     const check = () => {
       try {
         const result = checkCondition();
-        if (result) {
-          resolve(result);
+
+
+        if (result !== false) {
+          resolve(result as T);
           return;
         }
       } catch (error) {

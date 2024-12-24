@@ -1,4 +1,5 @@
-import { version } from '@/app/components/versions/Version';
+import { versionData } from '@/app/configs/DocumentBuilderConfig';
+import VersionImpl, { version } from '@/app/components/versions/Version';
 
 import { T, K } from "@/app/components/models/data/dataStoreMethods";
 import { AllTypes } from '@/app/components/typings/PropTypes';
@@ -235,8 +236,8 @@ T extends BaseData<any> = BaseData<any, any>,
     customProp2: number;
     onChange: (phase: ProjectPhaseTypeEnum) => void;
   };
-  versionData: VersionData | undefined;
-  version?: Version | undefined;
+  versionData: string | VersionData | undefined;
+  version?: Version<T, K> | undefined;
   isDynamic: boolean | undefined;
   size: DocumentSize;
   animations: DocumentAnimationOptions | undefined;
@@ -854,12 +855,11 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
       timestamp: new Date().toISOString(),
       revisionNotes: undefined,
     },
-    versionData: [],
     backend: undefined,
     frontend: undefined,
 
     checksum: "",
-    version: version,
+    version: version as VersionImpl<T, K<T>>,
     timestamp: new Date().toISOString(),
     user: "Buddease",
     comments: [],

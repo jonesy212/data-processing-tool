@@ -2,21 +2,52 @@ import SecurityAudit from '@/app/components/security/SecurityAudit';
 import { SecureMetadata, SecureField } from "./SecureField";
 
 class SecureFieldManager {
-  #apiKey: string
-
+    #apiKey: string;
+    #fields: Map<string, SecureField<any>> = new Map();
+  
   /**
   * Wraps a value with sensitive field metadata.
   * @param value - The value to wrap.
   * @param isSensitive - Whether the field is sensitive.
   */
   static createField<T>(value: T, isSensitive: boolean, allowUserAccess = true, allowedRoles: string[] = [], canView: boolean = true): SecureField<T> {
-      return { value, isSensitive, allowUserAccess, allowedRoles, canView };
+    return { value, isSensitive, allowUserAccess, allowedRoles, canView };
   }
 
 
-    constructor(apiKey: string) {
-      this.#apiKey = apiKey
-    }
+  constructor(apiKey: string) {
+    this.#apiKey = apiKey
+  }
+
+  /**
+   * Set the field as sensitive and apply necessary configurations.
+   * @param isSensitive - Whether the field should be marked as sensitive.
+   * @param allowUserAccess - Whether the user can access the field (default is true).
+   * @param allowedRoles - The roles that can access this field (optional).
+   * @param canView - Whether the field is viewable (default is true).
+   */
+  setSensitive(isSensitive: boolean, allowUserAccess = true, allowedRoles: string[] = [], canView = true): this {
+    // Create the field with the sensitive metadata
+    const field = SecureFieldManager.createField(this.#apiKey, isSensitive, allowUserAccess, allowedRoles, canView);
+    
+    // Store the field in the internal fields map (you can customize this for each field)
+    this.#fields.set('apiKey', field);  // Example for apiKey field, use different key as needed
+
+    return this;
+  }
+
+  /**
+   * Static method to create a SecureField.
+   * @param value - The value to be wrapped.
+   * @param isSensitive - Whether the field is sensitive.
+   * @param allowUserAccess - Whether the field is accessible to the user.
+   * @param allowedRoles - The roles that can access the field.
+   * @param canView - Whether the field can be viewed.
+   */
+  static createField<T>(value: T, isSensitive: boolean, allowUserAccess = true, allowedRoles: string[] = [], canView: boolean = true): SecureField<T> {
+    return { value, isSensitive, allowUserAccess, allowedRoles, canView };
+  }
+
 
   /**
    * Sanitize all secure fields in the given SecureMetadata object.
@@ -107,9 +138,6 @@ class SecureFieldManager {
       const field = metadata[key];
       return this.sanitizeField(field, userRole, isAdmin);
   }
-
-  
-
 
 }
 

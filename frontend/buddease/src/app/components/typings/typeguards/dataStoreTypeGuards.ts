@@ -42,7 +42,7 @@ function isSnapshotStoreMethod<
   U extends BaseData,
   Meta extends StructuredMetadata<U, K>,
   K extends Data
->(value: any): value is SnapshotStore<U, Meta, K> {
+>(value: any): value is SnapshotStore<U, K, Meta> {
   // Implement logic to check if the value is a valid SnapshotStore method or object
   return typeof value === 'function' || (value && typeof value === 'object');
 }
@@ -52,7 +52,7 @@ function isSnapshotStoreMethod<
 // Example type guard for `SnapshotStoreMethod`
 function isSnapshotStoreMethod<U extends BaseData,   K extends Data>(
   value: unknown, K extends
-): value is SnapshotStoreMethod<U, Meta, K> {
+): value is SnapshotStoreMethod<U, K, Meta> {
   // Assuming SnapshotStoreMethod is a function or object with specific properties
   return typeof value === 'function' || (typeof value === 'object' && value !== null);
 }

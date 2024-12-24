@@ -185,7 +185,7 @@ export default class BackendStructure {
             type: "file",
             items: {},
             path: filePath,
-            draft: true,
+            draft: tue,
             content: fileContent,
             permissions: {
               read: true,

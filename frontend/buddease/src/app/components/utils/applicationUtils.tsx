@@ -148,7 +148,7 @@ const {
     participants: [],
     teamMemberId: "",
    
-    currentMeta: currentMeta as unknown as StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
+    currentMeta: currentMeta 
     currentMetadata: currentMetadata as unknown as UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
    
     id: UniqueIDGenerator.generateNotificationID(
@@ -180,25 +180,18 @@ const {
         rsvpStatus: "yes",
         participants: [],
         teamMemberId: "",
-        currentMeta: currentMeta as unknown as StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
+        currentMeta: currentMeta 
         currentMetadata: currentMetadata as unknown as UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
    
         getCalendarSnapshotStoreData: function (): Promise<CalendarEventWithCriteria[]> {
-          const snapshotStore = new SnapshotStore<CalendarEventWithCriteria, CalendarEventWithCriteria>({
-            storeId, name,
+          const snapshotStore = new SnapshotStore<T, K>({
+            storeId,
+            name,
             version,
             schema, 
-            options: options as SnapshotStoreOptions<
-            CalendarEventWithCriteria,
-            CalendarEventWithCriteria,
-            StructuredMetadata<CalendarEventWithCriteria, CalendarEventWithCriteria>
-            >, 
+            options, 
             category,
-            config: config as SnapshotStoreConfig<
-            CalendarEventWithCriteria,
-            CalendarEventWithCriteria,
-            StructuredMetadata<CalendarEventWithCriteria, CalendarEventWithCriteria>
-            >, 
+            config, 
             operation,
             expirationDate,
             payload,
@@ -212,7 +205,7 @@ const {
           const calendarSnapshots = snapshotStore.getSnapshotStoreData(snapshotStore,
             snapshot,
             snapshotId,
-            snapshotData
+            snapshotData,
           ).map((snapshot: Snapshot<BaseData<any, any, StructuredMetadata<any, any>>, 
             BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<any, any>, never>
           ) => ({
@@ -228,12 +221,12 @@ const {
           // Prepare the necessary inputs
           const snapshotManager = await useSnapshotManager<T, K>(storeId);
           const snapshotId = await snapshot.store.snapshotId;
-          const eventData: BaseData<any, any, StructuredMetadata<any, any>> = /* your event data */;
+          const eventData: BaseData<any, any, StructuredMetadata<any, any>> = {/* your event data */};
           const category = "EventSystem"; // Your category
-          const storeProps: SnapshotStoreProps<BaseData<any, any>, BaseData<any, any>> = /* your store props */;
+          const storeProps: SnapshotStoreProps<BaseData<any, any>, BaseData<any, any>> = {/* your store props */};
 
           // Create a snapshot instance using createSnapshotInstance
-          const newSnapshot = await createSnapshotInstance<BaseData<any, any>, BaseData<any, any>>(
+          const newSnapshot = createSnapshotInstance<BaseData<any, any>, BaseData<any, any>>(
             eventData, // data
             {
               baseMeta: {
@@ -290,7 +283,12 @@ const {
         participants: [],
         teamMemberId: "",
         getSnapshotStoreData: function (): Promise<SnapshotStore<T, K>[]> {
-          const snapshotStore = new SnapshotStore<T, K>(storeId, options, config, operation);
+
+          if (!storeProps){
+            return new Error("missing store props ")
+          }
+          const {  options, config, operation } = storeProps
+          const snapshotStore = new SnapshotStore<T, K>({  storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory, storeId, initialState });
           return Promise.resolve([snapshotStore]);
         },
         getData: function (): Promise<Snapshot<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {

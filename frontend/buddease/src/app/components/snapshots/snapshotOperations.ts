@@ -40,7 +40,7 @@ interface SnapshotOperations<T extends  BaseData<any>, K extends T = T, Meta ext
   onSnapshots: (snapshots: Snapshots< BaseData<any>, Meta>) => void;
   events: any[];
   parentId: string;
-  childIds?: K[] | undefined;
+  childIds?: K[];
 
   // New methods
   getParentId: (snapshot: Snapshot<T, K>) => string | null;
@@ -647,7 +647,7 @@ const getSnapshotContainer = <T extends  BaseData<any>, K extends T = T, Meta ex
     ) => Promise<SnapshotStore<T, K>>
     events: any[];
     parentId: string;
-    childIds?: K[] | undefined;
+    childIds?: K[];
     getParentId: () => string;
     getChildIds: () => string[];
     addChild: (id: string) => void;
@@ -735,7 +735,7 @@ const getSnapshotContainer = <T extends  BaseData<any>, K extends T = T, Meta ex
   onSnapshots: (snapshots: Snapshots< BaseData<any>, Meta>) => void;
   events: any[];
   parentId: string;
-  childIds?: K[] | undefined;
+  childIds?: K[];
   getParentId: () => string;
   getChildIds: () => string[];
   addChild: (id: string) => void;
@@ -934,9 +934,9 @@ const configureSnapshot = <T extends  BaseData<any>, K extends T = T, Meta exten
 
 
 export {
-  clearSnapshotFailure, configureSnapshot, getChildIds, getParentId, getSnapshot, getSnapshotById,
-  getSnapshotContainer, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot,
-  takeSnapshot, updateSnapshot, validateSnapshot
+    clearSnapshotFailure, configureSnapshot, getChildIds, getParentId, getSnapshot, getSnapshotById,
+    getSnapshotContainer, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot,
+    takeSnapshot, updateSnapshot, validateSnapshot
 };
 export type { SnapshotOperations };
 

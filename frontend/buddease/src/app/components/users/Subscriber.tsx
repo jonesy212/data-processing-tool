@@ -491,7 +491,7 @@ function convertSnapshotStore<T extends  BaseData<any>, K extends T = T, Meta ex
 const createSnapshotConfig =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotStore: SnapshotStore<T, K>,
   snapshotContent?: Snapshot<T, K>
-): SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K> => {
+): SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K, Meta> => {
 
   const content = snapshotContent
     ? convertSnapshotToContent(snapshotContent)
@@ -614,8 +614,8 @@ const createSnapshotConfig =  <T extends  BaseData<any>, K extends T = T, Meta e
 };
 
 function convertSnapshotStoreConfig <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K>,
-): SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K> {
+  config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K, Meta>,
+): SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K, Meta> {
   // Map or transform the fields as needed to match T and K types
   return {
     ...config,
@@ -1802,7 +1802,7 @@ class Subscriber<
         
         onSnapshot: (
           snapshot: Snapshot<T, K>,
-          config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K>[]
+          config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K, Meta>[]
         ) => {
           delegate(snapshot, initialState, config);
         },

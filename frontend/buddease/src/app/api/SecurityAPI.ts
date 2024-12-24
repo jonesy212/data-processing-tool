@@ -1,5 +1,6 @@
 // SecurityAPI
 import axiosInstance from './axiosInstance';
+import { SecuritySettings } from '@/app/components/settings/SecuritySettings'
 
 export default class SecurityAPI {
   private static API_BASE_URL = 'https://example.com/api';

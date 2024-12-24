@@ -139,6 +139,7 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K<T>
   getSnapshots: function (category: string, data: Snapshots<SnapshotContainerData<T, T, any>>): void {
     throw new Error('Function not implemented.');
   },
+  
   getAllSnapshots: function (
     storeId: number,
     snapshotId: string,

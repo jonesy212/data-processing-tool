@@ -7,7 +7,7 @@ if (typeof window === 'undefined') {
 import { Snapshot } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 import { version } from '@/app/components/versions/Version';
 import { BaseMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimmensions';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import * as path from 'path';
 import * as React from 'react';
 import useErrorHandling from '../components/hooks/useErrorHandling';

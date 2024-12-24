@@ -8,7 +8,7 @@ import Version from "../versions/Version";
 
 import {CommonAnimationOptions} from './SharedDocumentProps'
 import { BaseData } from "../models/data/Data";
-import { Attachment } from '@/app/components/documents/Attachment/attachment''
+import { Attachment } from '@/app/components/documents/Attachment/attachment'
 
 export interface Change {
   id: number;

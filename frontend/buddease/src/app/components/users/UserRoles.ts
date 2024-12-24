@@ -32,7 +32,7 @@ enum UserRoleEnum {
 
 const UserRoles: { [key in UserRoleEnum]: UserRole } = {
   System: {
-    role: UserRoleEnum.System,
+    roleType: UserRoleEnum.System,
     responsibilities: [
       'Automate maintenance tasks',
       'Monitor system health and performance',
@@ -55,7 +55,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     ],
   },
   Administrator: {
-    role: UserRoleEnum.Administrator,
+    roleType: UserRoleEnum.Administrator,
     responsibilities: [
       'Community Management',
       'Decision-Making Authority',
@@ -74,7 +74,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     includes: []
   },
   Editor: { // Define the Editor role
-    role: UserRoleEnum.Editor,
+    roleType: UserRoleEnum.Editor,
     responsibilities: [
       'Review and edit content before publication',
       'Ensure adherence to style guides and standards',
@@ -96,7 +96,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
   },
   
   Developer: {
-    role: UserRoleEnum.Developer,
+    roleType: UserRoleEnum.Developer,
     responsibilities: [
       'Write and maintain codebase',
       'Implement new features',
@@ -127,7 +127,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     ]
   },
   UXUIDesigner: {
-    role: UserRoleEnum.UXUIDesigner,
+    roleType: UserRoleEnum.UXUIDesigner,
     responsibilities: [
       'Conduct user research and create user personas',
       'Design wireframes, prototypes, and high-fidelity mockups',
@@ -158,7 +158,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     ]
   },
   Moderator: {
-    role: UserRoleEnum.Moderator,
+    roleType: UserRoleEnum.Moderator,
     responsibilities: [
       'Community Engagement',
       'Content Moderation',
@@ -174,7 +174,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     includes: []
   },
   Member: {
-    role: UserRoleEnum.Member,
+    roleType: UserRoleEnum.Member,
     responsibilities: [
       'Active Participation',
       'Collaboration',
@@ -190,7 +190,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     includes: []
   },
   Verified_User: {
-    role: UserRoleEnum.Verified_User,
+    roleType: UserRoleEnum.Verified_User,
     responsibilities: ['Same as regular member with verification status'],
     permissions: ['Same permissions as regular member'],
     positions: [],
@@ -198,14 +198,14 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
 
   },
   Guest: {
-    role: UserRoleEnum.Guest,
+    roleType: UserRoleEnum.Guest,
     responsibilities: ['Limited access to view public content'],
     permissions: ['View public content without registration'],
     positions: [],
     includes: []
   },
   TeamLeader: {
-    role: UserRoleEnum.TeamLeader,
+    roleType: UserRoleEnum.TeamLeader,
     responsibilities: [
       'Lead and supervise team members',
       'Coordinate team activities',
@@ -229,7 +229,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     ],
   },
   Coordinator: {
-    role: UserRoleEnum.Coordinator,
+    roleType: UserRoleEnum.Coordinator,
     responsibilities: [
       'Organize and schedule team meetings',
       'Manage team calendars and schedules',
@@ -253,7 +253,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     ],
   },
   PaidPosition: {
-    role: UserRoleEnum.PaidPosition,
+    roleType: UserRoleEnum.PaidPosition,
     responsibilities: ['Team Management', 'Data Analysis'],
     permissions: ['Manage team members access', 'Access sales analytics data'],
     positions: [],
@@ -263,7 +263,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
 
   // New roles added based on app growth
   CryptoInvestor: {
-    role: UserRoleEnum.CryptoInvestor,
+    roleType: UserRoleEnum.CryptoInvestor,
     responsibilities: [
       'Manage personal crypto portfolios',
       'Track portfolio performance',
@@ -287,7 +287,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     ],
   },
   CryptoAnalyst: {
-    role: UserRoleEnum.CryptoAnalyst,
+    roleType: UserRoleEnum.CryptoAnalyst,
     responsibilities: [
       'Provide market analysis and predictions',
       'Track cryptocurrency market trends',
@@ -311,7 +311,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     ],
   },
   BlockchainAdmin: {
-    role: UserRoleEnum.BlockchainAdmin,
+    roleType: UserRoleEnum.BlockchainAdmin,
     responsibilities: [
       'Oversee blockchain infrastructure',
       'Ensure security of blockchain systems',
@@ -334,7 +334,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     ],
   },
   RegionalManager: {
-    role: UserRoleEnum.RegionalManager,
+    roleType: UserRoleEnum.RegionalManager,
     responsibilities: [
       'Manage regional teams and users',
       'Oversee regional projects',
@@ -358,7 +358,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     ],
   },
   LegalAdvisor: {
-    role: UserRoleEnum.LegalAdvisor,
+    roleType: UserRoleEnum.LegalAdvisor,
     responsibilities: [
       'Ensure compliance with legal regulations',
       'Advise on contracts and agreements',
@@ -382,7 +382,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     ],
   },
   CustomerSupport: {
-    role: UserRoleEnum.CustomerSupport,
+    roleType: UserRoleEnum.CustomerSupport,
     responsibilities: [
       'Assist customers with inquiries',
       'Resolve customer complaints',
@@ -407,7 +407,7 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
   },
 
   DeFiInvestor: {
-    role: UserRoleEnum.DeFiInvestor,
+    roleType: UserRoleEnum.DeFiInvestor,
     responsibilities: [
       'Invest in decentralized finance (DeFi) projects',
       'Monitor and manage DeFi investments',

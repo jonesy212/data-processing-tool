@@ -1,6 +1,6 @@
 // components/Layout.tsx
 import React from 'react';
-import DashboardLoader from '../../components/dashboards/DashboardLoader';
+import DashboardLoader from '@/app/pages/dashboards/DashboardLoader';
 
 interface LayoutProps {
   children: React.ReactNode;

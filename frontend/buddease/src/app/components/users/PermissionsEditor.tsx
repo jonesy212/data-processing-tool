@@ -16,10 +16,10 @@ const PermissionsEditor: React.FC = () => {
       <button onClick={assignNFT}>Assign NFT</button>
       <h3>User Roles</h3>
       <ul>
-        {Object.values(UserRoles).map((role: UserRole) => (
-          <li key={role.role}>
-            <strong>{role.role}</strong>
-            <ul>
+      {Object.values(UserRoles).map((role: UserRole) => (
+          <li key={role.roleType.toString()}> {/* Use roleType as key */}
+              <strong>{typeof role.roleType === 'string' ? role.roleType : role.roleType.toString()}</strong> {/* Display roleType */}
+              <ul>
               <li>Responsibilities: {role.responsibilities.join(", ")}</li>
               <li>Permissions: {role.permissions.join(", ")}</li>
             </ul>

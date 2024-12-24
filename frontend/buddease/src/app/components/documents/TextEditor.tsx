@@ -8,11 +8,12 @@ import { useEffect, useState } from "react";
 import Quill from "react-quill";
 import { DocumentTypeEnum } from "./DocumentGenerator";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
+import { getToolbarOptions } from "./documents/ToolbarOptions";
 import React from "react";
 
 export interface TextEditorProps extends ToolbarOptionsProps {
   id: string;
-  fontSize: boolean;
+  fontSize: string | number | undefined;
   bold: boolean;
   italic: boolean;
   underline: boolean;
@@ -20,7 +21,7 @@ export interface TextEditorProps extends ToolbarOptionsProps {
   code: boolean;
   link: boolean;
   image: boolean;
-  toolbarOptions: typeof ToolbarOptions;
+  toolbarOptions: ToolbarOptions;
   isDocumentEditor?: boolean;
   isTextCard?: boolean;
   onChange?: (content: string) => void;
@@ -50,7 +51,7 @@ const TextEditor = ({
           theme: "snow",
           modules: {
             container: `#${id}-toolbar`,
-            toolbar: ToolbarOptions({
+            toolbar: getToolbarOptions({
               isDocumentEditor: true,
               fontSize,
               bold,
@@ -111,7 +112,7 @@ const TextEditor = ({
   return (
     <div>
       <div id={`${id}-toolbar`}>
-        <ToolbarOptions
+        <ToolbarOptionsComponent
           isDocumentEditor={true}
           isTextCard={false}
           onEditorStateChange={function (newEditorState: any): void {

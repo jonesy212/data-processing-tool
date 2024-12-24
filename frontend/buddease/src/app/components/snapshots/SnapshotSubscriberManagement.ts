@@ -2,10 +2,11 @@ import { Category } from '@/app/components/libraries/categories/generateCategory
 import { BaseData } from '@/app/components/models/data/Data';
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { DataStore } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { Callback, SnapshotData, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteria, SubscriberCollection } from '@/app/components/snapshots';
+import { Callback, SnapshotData, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteria } from '@/app/components/snapshots';
 import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { Subscriber } from '@/app/components/users/Subscriber';
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
@@ -14,10 +15,12 @@ import { NotificationPosition } from '../models/data/StatusType';
 import { Subscription } from '../subscriptions/Subscription';
 import { NotificationType } from '../support/NotificationContext';
 
+
 interface SnapshotSubscriberManagement<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  // ExcludedFields extends keyof T = never
 > {
     subscribers: SubscriberCollection<T, K>[];
     subscription?: Subscription<T, K> | null;
@@ -74,7 +77,7 @@ interface SnapshotSubscriberManagement<
       snapshotId: string,
       callback: (snapshot: Snapshot<T, K>) => Subscriber<T, K> | null,
       snapshot: Snapshot<T, K>
-    ) => Snapshot<T, K>;
+    ) =>  Subscriber<T, K> | null;
     
     unsubscribeFromSnapshot: (
         snapshotId: string,
@@ -113,7 +116,10 @@ interface SnapshotSubscriberManagement<
         snapshotData: SnapshotData<T, K>,
         category: symbol | string | Category | undefined,
         snapshotConfig: SnapshotStoreConfig<T, K>,
-        callback: (snapshots: SnapshotsArray<T, K>) => Subscriber<T, K> | null,
+        callback: (
+          snapshotStore: SnapshotStore<T, K>, 
+          snapshots: SnapshotsArray<T, K>
+        ) => Subscriber<T, K> | null,
         snapshots: SnapshotsArray<T, K>,
         unsubscribe?: UnsubscribeDetails, 
     ) => SnapshotsArray<T, K> | [];
@@ -189,7 +195,7 @@ interface SnapshotCRUD<T extends  BaseData<any>, K extends T = T, Meta extends S
         dataCallback?: (
             subscribers: Subscriber<T, K>[],
             snapshots: Snapshots<T, K>
-        ) => Promise<SnapshotUnion<T, K>[]>
+        ) => Promise<SnapshotUnion<T, K, Meta>[]>
     ) => Promise<Snapshot<T, K>[]>;
 
     updateData: (id: number, newData: Snapshot<T, K>) => void;

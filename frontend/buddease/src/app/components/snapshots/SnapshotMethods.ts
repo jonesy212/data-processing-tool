@@ -28,6 +28,12 @@ import { Snapshot, SnapshotUnion, Snapshots } from "./LocalStorageSnapshotStore"
 import { default as SnapshotStore, default as SnapshotStoreReference } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotSubscriberManagement } from './SnapshotSubscriberManagement';
+import { T, K } from "@/app/components/models/data/dataStoreMethods";
+
+
+
+
+type SnapshotMap = Map<T, [K<T>, SnapshotStore<Data, any>]>;
 
 interface SnapshotMethods<
   T extends BaseData<any>,
@@ -59,7 +65,7 @@ interface SnapshotMethods<
     dataCallback?: (
       subscribers: Subscriber<T, K>[],
       snapshots: Snapshots<T, K>
-    ) => Promise<SnapshotUnion<T, K>[]>
+    ) => Promise<SnapshotUnion<T, K, Meta>[]>
   ) => Promise<Snapshot<T, K>[]>;
 
   generateId: (
@@ -80,8 +86,8 @@ interface SnapshotMethods<
     snapshot2: Snapshot<T, K>;
     differences: Record<string, { snapshot1: any; snapshot2: any }>;
     versionHistory: {
-      snapshot1Version?: string | number | Version;
-      snapshot2Version?: string | number | Version;
+      snapshot1Version?: string | number | Version<T, K>;
+      snapshot2Version?: string | number | Version<T, K>;
     };
   } | null;
 
@@ -214,7 +220,7 @@ interface SnapshotMethods<
     snapshotId: string,
     snapshotStoreConfigs: SnapshotStoreConfig<T, K>[],
     snapshotStores?: SnapshotStoreReference<T, K>[],
-  ) =>  Map<T, K, SnapshotStore<Data, any>>[]; // Define an appropriate type if possible
+  ) => SnapshotMap
   
   
   getData: (id: number | string, snapshotStore: SnapshotStore<T, K>

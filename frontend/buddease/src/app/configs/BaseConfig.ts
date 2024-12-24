@@ -1,6 +1,6 @@
 // BaseConfig.ts
 import { TagsRecord } from '@/app/components/snapshots/SnapshotWithCriteria';
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimmensions';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { useSnapshot } from './../context/SnapshotContext';
 
 import { BaseData } from "../components/models/data/Data";

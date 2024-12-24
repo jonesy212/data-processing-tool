@@ -732,7 +732,7 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
       notifySubscribers: (message: string, subscribers: Subscriber<T, K>[], data: Partial<SnapshotStoreConfig<T, any>>) => Subscriber<T, K>[];
      
       parentId: string;
-      childIds?: K[] | undefined;
+      childIds?: K[];
       getParentId: (id: string, snapshot:Snapshot<BaseData, T>) => string;
       getChildIds: (id: string, childSnapshot: Snapshot<BaseData, K>) => string[];
       addChild: (parentId: string, childId: string) => void;
@@ -977,7 +977,7 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
       callback: (snapshotStores?: SnapshotStoreReference<T, K>[]) => void | null,
       snapshotStoreData?: SnapshotStore<T, K>[],
       category?: string | symbol | Category,
-      snapshotDataConfig?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Meta, K>[]
+      snapshotDataConfig?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K, Meta>[]
     ): SnapshotStore<T, K>[] | null => {
       try {
         // Step 1: Validate input parameters

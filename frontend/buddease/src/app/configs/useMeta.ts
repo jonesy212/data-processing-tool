@@ -1,28 +1,30 @@
 import { useMemo } from "react";
 import { BaseData } from "../components/models/data/Data";
+import { PhaseData } from "../components/phases/Phase";
 import { EventManager } from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from "../components/snapshots";
-import { StructuredMetadata } from "./StructuredMetadata";
 import Version, { VersionImpl } from "../components/versions/Version";
-import { PhaseData } from "../components/phases/Phase";
+import { StructuredMetadata } from "./StructuredMetadata";
 
 function useMeta<
     T extends BaseData<any>,
     K extends T = T
 >(
-  area: string, 
+  area: string | undefined, 
   relatedData?: K[],
-  childIds?: K[] | undefined,
+  childIds?: K[],
   description?: string
 ): StructuredMetadata<T, K> {
   const meta = useMemo<StructuredMetadata<T, K>>(() => {
 
-    const dynamicVersion: Version = VersionImpl.createVersion({
+    const dynamicVersion: Version<T, K> = VersionImpl.createVersion({
       id: 1, // Dynamically assign ID based on your logic
       major: 1,
       versionNumber: "1.0.0",
       versions: {},
       buildVersions: undefined, // You can populate this based on your logic
+      keywords: [], 
+      mappedSnapshot: {},
       versionHistory: {
         history: [
           {
@@ -33,7 +35,6 @@ function useMeta<
           },
         ],
       },
-      mappedSnapshot: undefined,
     });
     
     const generateMetadataEntry = (fileOrFolderId: string): StructuredMetadata<T, K>['metadataEntries'][string] => ({
@@ -85,6 +86,8 @@ function useMeta<
       versionData: {},
       latestVersion: {},
       version: dynamicVersion,
+      mappedSnapshot: undefined,
+      versionData: undefined
     };
   }, [description, childIds, relatedData]);
 
@@ -93,7 +96,7 @@ function useMeta<
 
 
 function usePhaseMeta(
-  area: string,
+  area: string | undefined,
   relatedPhases?: PhaseData[],
   childIds?: PhaseData[] | undefined,
   description?: string
@@ -101,4 +104,5 @@ function usePhaseMeta(
   return useMeta<PhaseData>(area, relatedPhases, childIds, description);
 }
 
-export { useMeta, usePhaseMeta};
+export { useMeta, usePhaseMeta };
+

@@ -29,7 +29,7 @@ const createVersionInfo = (versionData: string | VersionData): Version => {
     const docPermissions = new DocumentPermissions(true, true);
 
     // If the versionData is a string, construct a default versionInfo object
-  const defaultVersionInfo = {
+  const defaultVersionInfo: Version <any, any> = {
     id: 0,
 
     major: 0,
@@ -55,12 +55,15 @@ const createVersionInfo = (versionData: string | VersionData): Version => {
     description: 'Default version',
     content: '',
     checksum: '',
-    versionData: [], // Default to an empty array
+    versionData: versionData,
     data: [], // Default to an empty array
     name: 'Default Name',
     url: '',
     metadata: {
       author: 'System',
+      area: area,
+      currentMeta: currentMeta,
+      metadataEntries: {},
       timestamp: new Date(),
     },
     versions: null,
@@ -115,6 +118,7 @@ const createVersionInfo = (versionData: string | VersionData): Version => {
   };  if (typeof versionData !== 'string') {
     return new VersionImpl({
       ...defaultVersionInfo,
+      // ...defaultVersionData,
       versionData: [versionData], // Use the provided VersionData
       isDeleted: false,
       publishedBy: null,
@@ -168,7 +172,7 @@ export const handleSnapshot = (
   snapshots: SnapshotsArray<any, any>,
   type: string,
   event: Event,
-  snapshotContainer?: SnapshotContainer<T, K>,
+  snapshotContainer?: SnapshotContainer<T, K<T>>,
   snapshotStoreConfig?: SnapshotStoreConfig<Data, BaseData>
 ): Promise<Snapshot<Data, BaseData> | null> => {
   try {

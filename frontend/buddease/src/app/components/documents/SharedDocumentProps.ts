@@ -1,5 +1,7 @@
-import { ContentState } from 'draft-js';
 // SharedDocumentProps.ts
+
+import { ContentState } from 'draft-js';
+import { DocumentFormattingOptions } from '@/app/components/documents/ DocumentFormattingOptionsComponent';
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { EditorState } from "draft-js";
@@ -17,6 +19,9 @@ import { DocumentData } from "./DocumentBuilder";
 import { DocumentTypeEnum } from './DocumentGenerator';
 import { DocumentOptions } from "./DocumentOptions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
+import { BaseData } from '@/app/components/models/data/Data';
+import { ExcludedFields } from '@/app/components/routing/Fields';
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 
 export interface CommonAnimationOptions {
   type: "slide" | "fade" | "show" | "custom" | "none"; // Add more animation types as needed
@@ -26,9 +31,13 @@ export interface CommonAnimationOptions {
   // Add more animation-related properties
 }
 
-export interface DocumentBuilderProps extends DocumentData  {
- 
-
+export interface DocumentBuilderProps<
+  T extends BaseData<any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+>
+  extends DocumentData<T, K, Meta, ExcludedFields>  {
   isDynamic: boolean;
   setDocumentPhase?: (
     docPhase: string | Phase | undefined,
@@ -39,9 +48,9 @@ export interface DocumentBuilderProps extends DocumentData  {
     } | undefined;
   currentContent?: ContentState
   previousContent?: string | ContentState;
-  currentMetadata: StructuredMetadata<T, K> | undefined;
-  previousMetadata: StructuredMetadata<T, K> | undefined;
-  accessHistory: AccessHistory[];
+  previousMetadata?: UnifiedMetaDataOptions<T, K> | undefined;
+  currentMetadata: UnifiedMetaDataOptions<T, K>
+    accessHistory: AccessHistory[];
   lastModifiedDate: ModifiedDate | undefined;
   versionData: VersionData | undefined;
   documentPhase:
@@ -70,12 +79,12 @@ export interface DocumentBuilderProps extends DocumentData  {
   onOptionsChange: (newOptions: DocumentOptions) => void;
   onConfigChange: (newConfig: DocumentBuilderConfig) => void;
   setOptions: Dispatch<SetStateAction<DocumentOptions>>; 
-  documents: WritableDraft<DocumentObject>[]
+  documents: WritableDraft<DocumentObject<T, K, Meta>>[]
   options: DocumentOptions;
   editorState: EditorState
   projectPath: string;
-  buildDocument: (options: DocumentFormattingOptions, documentData: DocumentData, document: DocumentObject, documentType: DocumentTypeEnum) => void;
-  buildDocuments?: DocumentData[];
+  buildDocument: (options: DocumentFormattingOptions, documentData: DocumentData<T, K, Meta, ExcludedFields>, document: DocumentObject<T, K, Meta>, documentType: DocumentTypeEnum) => void;
+  buildDocuments?: DocumentData<T, K, Meta, ExcludedFields>[];
 }
 
 export interface DocumentAnimationOptions extends CommonAnimationOptions {

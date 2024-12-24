@@ -196,12 +196,16 @@ export interface DocumentStore <T extends  BaseData<any>, K extends T = T, Meta 
   updateDocument: (id: number, updatedDocument: Document<T, K>) => void;
   deleteDocument: (id: number) => void;
   updateDocumentTags: (id: number, newTags: string[]) => void;
-  selectedDocument: Document<T, K> | undefined;
+  selectedDocument: DocumentData<T, K, Meta> | null; // Specify type arguments for DocumentData
   selectedDocuments: Document<T, K>[] | undefined;
   // Add more methods as needed
 }
 
-const useDocumentStore = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): DocumentStore<T, K> => {
+const useDocumentStore = <
+  T extends  BaseData<any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(): DocumentStore<T, K> => {
   const [documents, setDocuments] = useState<Record<string, Document<T, K>>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -256,11 +260,8 @@ const useDocumentStore = <T extends  BaseData<any>, K extends T = T, Meta extend
     ); // Notify success
   };
 
-  
-
-
   // Function to load document content for calendar events
-  const loadCalendarEventsDocumentContent = async (eventId: string, area: string): Promise<DocumentContent<T, K, StructuredMetadata<T, K>>> => {
+  const loadCalendarEventsDocumentContent = async (eventId: string, area: string | undefined): Promise<DocumentContent<T, K, StructuredMetadata<T, K>>> => {
     try {
       // Fetch document content from the backend based on the event ID
       const response = await axiosInstance.get(`/api/calendar-events/${eventId}/document-content`);
@@ -282,6 +283,8 @@ const useDocumentStore = <T extends  BaseData<any>, K extends T = T, Meta extend
     throw error;
   }
 };
+
+
   const selectedDocument = useMemo(() => {
     return Object.values(documents).find((document) => document.id === selectedDocumentId);
   }, [documents, selectedDocumentId]);
@@ -399,7 +402,6 @@ const useDocumentStore = <T extends  BaseData<any>, K extends T = T, Meta extend
     }
   };
   
-
   const setDocumentReleaseStatus = async (id: number, eventId: number, releaseStatus: string) => {
     try {
       const response = await fetch(endpoints.documents.updateDocumentReleaseStatus.toString(), {

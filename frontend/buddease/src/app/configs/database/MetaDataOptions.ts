@@ -1,27 +1,25 @@
-import { TodoImpl } from '@/app/components/todos/Todo';
-import { useMeta } from '@/app/configs/useMeta';
-import { version } from './../../components/versions/Version';
 import { dynamicMeetingMetadata, MeetingMetadata } from '@/app/components/calendar/ScheduledData';
 import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
 import { BaseData } from '@/app/components/models/data/Data';
 import { TransactionData } from '@/app/components/payment/Transaction';
 import { AnalysisTypeEnum } from '@/app/components/projects/DataAnalysisPhase/AnalysisType';
+import { TagsRecord } from '@/app/components/snapshots/SnapshotWithCriteria';
+import { TodoImpl } from '@/app/components/todos/Todo';
+import { createLastUpdatedWithVersion } from "@/app/components/versions/createLatestVersion";
 import { MetadataEntry, projectMetadata, VideoMetadata } from '@/app/configs/StructuredMetadata';
+import { useMeta } from '@/app/configs/useMeta';
 import { ProjectMetadata, StructuredMetadata } from '../../../app/configs/StructuredMetadata';
 import { PriorityTypeEnum } from './../../components/models/data/StatusType';
 import { AllStatus } from './../../components/state/stores/DetailsListStore';
 import { User } from './../../components/users/User';
-import { TagsRecord } from '@/app/components/snapshots/SnapshotWithCriteria';
-import { createLastUpdatedWithVersion } from "@/app/components/versions/createLatestVersion";
+import { version } from './../../components/versions/Version';
 
 import { SharedBaseData } from "@/app/components/models/data/Data";
-import { SharedMetadata } from '../metadata/createMetadataState';
 import { K, T } from '@/app/components/models/data/dataStoreMethods';
-import { useMetadata } from '../useMetadata';
-import { Snapshot } from '@/app/components/snapshots';
-import { baseConfig } from '../BaseConfig';
-import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 import { Task } from '@/app/components/models/tasks/Task';
+import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
+import { baseConfig } from '../BaseConfig';
+import { SharedMetadata } from '../metadata/createMetadataState';
 
 
 interface BaseMetadata<K extends T = T> extends SharedBaseData<K>, SharedMetadata<K> {
@@ -127,10 +125,13 @@ interface UnifiedMetaDataOptions<
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = never
 > extends Omit<BaseMetadata, 'tags'>, SharedBaseData<K> {
-  area: string; // Area of the app (e.g., 'dashboard', 'profile')
+  author?: string;
+  timestamp?: string | Date | undefined;
+  revisionNotes?: string;
+  area: string | undefined; // Area of the app (e.g., 'dashboard', 'profile')
   currentMeta: Meta; // Core metadata, always required
   tags?: TagsRecord<T, K> | string[] | undefined; 
-  childIds?: K[] | undefined
+  childIds?: K[]
   relatedData?: K[] | undefined
   projectId?: number;
   overrides?: Partial<Omit<Meta, ExcludedFields>>; // Overrides excluding specific keys
@@ -612,4 +613,4 @@ const myMetaData: UnifiedMetaDataOptions<BaseData<MyDataType>> = {
   currentMeta: currentMeta
 };
 
-export { fetchUserAreaDimensions }
+export { fetchUserAreaDimensions };

@@ -165,7 +165,7 @@ const initialState: CollaborationState<Data, UniffiedMetaDataOptions> = {
   }
 };
 const handleCommunicationChange = (
-  state: WritableDraft<CollaborationState<T, Meta, K>>,
+  state: WritableDraft<CollaborationState<T, K, Meta>>,
   action: PayloadAction<WritableDraft<Communication>>
 ) => {
   switch (action.type) {
@@ -750,7 +750,7 @@ export const useCollaborationSlice = createSlice({
         startDate: Date;
         endDate: Date;
       }>
-    ): WritableDraft<CollaborationState<T, Meta, K>> => {
+    ): WritableDraft<CollaborationState<T, K, Meta>> => {
       const { startDate, endDate } = action.payload;
 
       // Logic to analyze collaboration data
@@ -854,7 +854,7 @@ export const useCollaborationSlice = createSlice({
         startDate?: string | Date;
         endDate: string;
       }>
-    ): WritableDraft<CollaborationState<T, Meta, K>> => {
+    ): WritableDraft<CollaborationState<T, K, Meta>> => {
       const { projectStats, startDate, endDate } = action.payload;
       const interpretation = {
         projectStatistics: projectStats,
@@ -898,7 +898,7 @@ export const useCollaborationSlice = createSlice({
       action: PayloadAction<{
         options: WritableDraft<CollaborationOptions>[];
       }>
-    ): WritableDraft<CollaborationState<T, Meta, K>> => {
+    ): WritableDraft<CollaborationState<T, K, Meta>> => {
       const { options } = action.payload;
 
       return {
@@ -912,7 +912,7 @@ export const useCollaborationSlice = createSlice({
       action: PayloadAction<{
         settings: (typeof CollaborationSettings)[];
       }>
-    ): WritableDraft<CollaborationState<T, Meta, K>> => {
+    ): WritableDraft<CollaborationState<T, K, Meta>> => {
       const { settings } = action.payload;
 
       // Validate settings

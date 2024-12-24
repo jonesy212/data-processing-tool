@@ -44,7 +44,7 @@ interface DatasetModel<
   documents: WritableDraft<DocumentObject<T, K, Meta>>[];
   createdAt: string | Date | undefined;
   updatedAt?: string | Date; 
-  selectedDocument: DocumentData<T, K> | null;
+  selectedDocument: DocumentData<T, K, Meta> | null; // Specify type arguments for DocumentData
   selectedDocuments?: DocumentData<T, K>[];
   content: Content<T, K>;
   phaseType: PhaseTypeEnums

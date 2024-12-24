@@ -14,7 +14,7 @@ interface BlogData<
   T extends  BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
-  > extends SharedBaseData {
+  > extends SharedBaseData<K> {
   _id: string;
   id: string;
   title?: string;
@@ -23,7 +23,8 @@ interface BlogData<
   date: string | Date | undefined;
   subtitle: string;
   description?: string | undefined;
-  data?: Content<T, K> | Snapshot<Data<T>, Meta>
+  data?: Content<T, K> | Snapshot<Data<T>, Meta>,
+  startDate: Date
 }
 
 // Define a type representing the details item specific to blog posts
@@ -48,6 +49,7 @@ const BlogList: React.FC<BlogListProps> = ({ blogPosts }) => {
     value: post.author,
     content: post.content,
     date: post.date ? new Date(post.date) : undefined, // Convert to Date if it's a string
+    startDate: post.startDate
   }));
 
   return (
