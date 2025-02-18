@@ -1,1 +1,0 @@
-getAllSnapshots.ts

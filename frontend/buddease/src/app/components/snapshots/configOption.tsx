@@ -1,1 +1,0 @@
-// configOption.tsx
