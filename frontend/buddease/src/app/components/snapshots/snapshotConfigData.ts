@@ -1,0 +1,1 @@
+// snapshotConfigData.ts

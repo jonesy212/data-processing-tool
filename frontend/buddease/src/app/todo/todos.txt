@@ -1,0 +1,44 @@
+
+<!-- 
+Frontend Store Associations
+Authentication Flow:
+
+AuthStore: Manages general authentication state.
+AuthComponentStore: Handles state related to the authentication component.
+AppRouterStore: Manages routing and navigation, may observe AuthStore for authentication changes.
+Card Components:
+
+CardsStore: Manages the state of various card components.
+Individual card stores (e.g., ChatCardStore, EmailCardStore, etc.): Handle specific card-related states.
+Communication Modules:
+
+CommunicationsStore: General store for communication-related components.
+ChatStore: Specific store for chat-related functionality.
+EmailStore: Manages state related to emails.
+Dashboard Management:
+
+DashboardsStore: General store for managing dashboards.
+DynamicDashboardStore: Handles state related to dynamically created dashboards.
+Prompt Handling:
+
+PromptsStore: Manages state related to prompts and notifications.
+PromptComponentStore: Handles state for individual prompt components.
+Routing and Navigation:
+
+RoutingStore: Manages general routing state.
+ProtectedRouteStore: Specific store for handling protected routes.
+Styling and Design:
+
+StylingStore: Manages overall styling and design-related states.
+Sub-stores like ColorPaletteStore, DynamicColorPaletteStore, etc.: Handle specific styling aspects.
+Support and Help Desk:
+
+SupportStore: General store for support-related functionalities.
+UserSupportStore: Manages user-specific support-related states.
+Version Control:
+
+VersionsStore: Handles overall version control.
+VersioningStore: Manages state related to versioning.
+Dynamic Components:
+
+Stores handling dynamic components, e.g., DynamicComponentsStore, DynamicIconsAndImagesStore, etc. -->

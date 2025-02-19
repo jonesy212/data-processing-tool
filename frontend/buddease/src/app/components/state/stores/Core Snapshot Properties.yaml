@@ -1,0 +1,196 @@
+Core Snapshot Properties
+Identifiers:
+
+id: retrievedSnapshot.id
+parentId: retrievedSnapshot.parentId
+label: undefined
+timestamp: retrievedSnapshot.timestamp
+Category:
+
+category: retrievedSnapshot.category
+setCategory: retrievedSnapshot.setCategory
+determineCategory: retrievedSnapshot.determineCategory
+Data:
+
+data: retrievedSnapshot.data as T | Map<string, Snapshot<T, K>> | null | undefined
+newData: retrievedSnapshot.newData
+dataItems: retrievedSnapshot.dataItems
+getData: retrievedSnapshot.getData
+setData: retrievedSnapshot.setData
+addData: retrievedSnapshot.addData
+addDataStatus: retrievedSnapshot.addDataStatus
+removeData: retrievedSnapshot.removeData
+updateData: retrievedSnapshot.updateData
+updateDataTitle: retrievedSnapshot.updateDataTitle
+updateDataDescription: retrievedSnapshot.updateDataDescription
+updateDataStatus: retrievedSnapshot.updateDataStatus
+updateDataVersions: retrievedSnapshot.updateDataVersions
+getDataVersions: retrievedSnapshot.getDataVersions
+Store Management
+Snapshot Store:
+snapshotStore: null
+snapshotStoreConfig: null
+applyStoreConfig: retrievedSnapshot.applyStoreConfig
+addStoreConfig: retrievedSnapshot.addStoreConfig
+getStores: retrievedSnapshot.getStores
+getStore: retrievedSnapshot.getStore
+addStore: retrievedSnapshot.addStore
+removeStore: retrievedSnapshot.removeStore
+mapSnapshot: retrievedSnapshot.mapSnapshot
+mapSnapshots: retrievedSnapshot.mapSnapshots
+configureSnapshotStore: retrievedSnapshot.configureSnapshotStore
+addNestedStore: retrievedSnapshot.addNestedStore
+clearSnapshots: retrievedSnapshot.clearSnapshots
+Event Handling
+
+
+
+Event Management:
+events:
+callbacks: retrievedSnapshot.callbacks
+eventRecords: retrievedSnapshot.events?.eventRecords ?? null
+eventIds: retrievedSnapshot.events?.eventIds ? retrievedSnapshot.events?.eventIds : []
+onSnapshotAdded: retrievedSnapshot.events?.onSnapshotAdded ?? (() => {})
+onSnapshotRemoved: retrievedSnapshot.events?.onSnapshotRemoved ?? (() => {})
+onSnapshotUpdated: retrievedSnapshot.events?.onSnapshotUpdated ?? (() => {})
+on: retrievedSnapshot.events?.on ?? (() => {})
+off: retrievedSnapshot.events?.off ?? (() => {})
+emit: retrievedSnapshot.emit
+once: retrievedSnapshot.events?.once ?? (() => {})
+addRecord: retrievedSnapshot.events?.addRecord ?? (() => {})
+removeAllListeners: retrievedSnapshot.events?.removeAllListeners ?? (() => {})
+subscribe: retrievedSnapshot.events?.subscribe ?? (() => {})
+unsubscribe: retrievedSnapshot.unsubscribe
+trigger: retrievedSnapshot.events?.trigger ?? (() => {})
+Snapshot Actions
+
+
+Snapshot Operations:
+createSnapshot: retrievedSnapshot.createSnapshot
+createSnapshots: retrievedSnapshot.createSnapshots
+createInitSnapshot: retrievedSnapshot.createInitSnapshot
+setSnapshotSuccess: retrievedSnapshot.setSnapshotSuccess
+setSnapshotFailure: retrievedSnapshot.setSnapshotFailure
+initSnapshot: retrievedSnapshot.initSnapshot
+takeSnapshot: retrievedSnapshot.takeSnapshot
+takeSnapshotSuccess: retrievedSnapshot.takeSnapshotSuccess
+takeSnapshotsSuccess: retrievedSnapshot.takeSnapshotsSuccess
+addSnapshot: retrievedSnapshot.addSnapshot
+addSnapshotItem: retrievedSnapshot.addSnapshotItem
+updateSnapshots: retrievedSnapshot.updateSnapshots
+updateSnapshotsSuccess: retrievedSnapshot.updateSnapshotsSuccess
+updateSnapshotsFailure: retrievedSnapshot.updateSnapshotsFailure
+removeSnapshot: retrievedSnapshot.removeSnapshot
+restoreSnapshot: retrievedSnapshot.restoreSnapshot
+mergeSnapshots: retrievedSnapshot.mergeSnapshots
+reduceSnapshots: retrievedSnapshot.reduceSnapshots
+sortSnapshots: retrievedSnapshot.sortSnapshots
+filterSnapshots: retrievedSnapshot.filterSnapshots
+filterSnapshotsByStatus: retrievedSnapshot.filterSnapshotsByStatus
+filterSnapshotsByCategory: retrievedSnapshot.filterSnapshotsByCategory
+filterSnapshotsByTag: retrievedSnapshot.filterSnapshotsByTag
+findSnapshot: retrievedSnapshot.findSnapshot
+
+
+
+Snapshot Configuration
+Snapshot Config:
+initialConfig: retrievedSnapshot.initialConfig
+handleSnapshotConfig: retrievedSnapshot.handleSnapshotConfig
+getSnapshotConfig: retrievedSnapshot.getSnapshotConfig
+transformSnapshotConfig: retrievedSnapshot.transformSnapshotConfig
+getSnapshotConfigItems: retrievedSnapshot.getSnapshotConfigItems
+getConfigOption: retrievedSnapshot.getConfigOption
+handleSnapshot: retrievedSnapshot.handleSnapshot
+Snapshot State Management
+State Management:
+getState: retrievedSnapshot.getState
+setState: retrievedSnapshot.setState
+compareSnapshotState: retrievedSnapshot.compareSnapshotState
+validateSnapshot: retrievedSnapshot.validateSnapshot
+getInitialState: retrievedSnapshot.getInitialState
+clearSnapshot: retrievedSnapshot.clearSnapshot
+getDataStoreMap: retrievedSnapshot.getDataStoreMap
+getDataStore: retrievedSnapshot.getDataStore
+getDataStoreMethods: retrievedSnapshot.getDataStoreMethods
+Subscriptions
+Subscription Management:
+subscribers: retrievedSnapshot.subscribers
+subscribeToSnapshots: retrievedSnapshot.subscribeToSnapshots
+subscribeToSnapshot: retrievedSnapshot.subscribeToSnapshot
+unsubscribeFromSnapshot: retrievedSnapshot.unsubscribeFromSnapshot
+unsubscribeFromSnapshots: retrievedSnapshot.unsubscribeFromSnapshots
+subscribeToSnapshotsSuccess: retrievedSnapshot.subscribeToSnapshotsSuccess
+addSnapshotSubscriber: retrievedSnapshot.addSnapshotSubscriber
+removeSnapshotSubscriber: retrievedSnapshot.removeSnapshotSubscriber
+subscribeToSnapshotList: retrievedSnapshot.subscribeToSnapshotList
+defaultSubscribeToSnapshots: retrievedSnapshot.defaultSubscribeToSnapshots
+defaultSubscribeToSnapshot: retrievedSnapshot.defaultSubscribeToSnapshot
+handleSubscribeToSnapshot: retrievedSnapshot.handleSubscribeToSnapshot
+getSubscribers: retrievedSnapshot.getSubscribers
+notify: retrievedSnapshot.notify
+notifySubscribers: retrievedSnapshot.notifySubscribers
+Snapshot Processing
+Data Transformation:
+deepCompare: retrievedSnapshot.deepCompare
+shallowCompare: retrievedSnapshot.shallowCompare
+transformSubscriber: retrievedSnapshot.transformSubscriber
+transformDelegate: retrievedSnapshot.transformDelegate
+reduceSnapshotItems: retrievedSnapshot.reduceSnapshotItems
+flatMap: retrievedSnapshot.flatMap
+mapSnapshots: retrievedSnapshot.mapSnapshots
+sortSnapshots: retrievedSnapshot.sortSnapshots
+filterSnapshots: retrievedSnapshot.filterSnapshots
+batchFetchSnapshots: retrievedSnapshot.batchFetchSnapshots
+batchUpdateSnapshotsRequest: retrievedSnapshot.batchUpdateSnapshotsRequest
+Batch Operations
+Batch Operations:
+batchTakeSnapshot: retrievedSnapshot.batchTakeSnapshot
+batchTakeSnapshotsRequest: retrievedSnapshot.batchTakeSnapshotsRequest
+batchUpdateSnapshotsRequest: retrievedSnapshot.batchUpdateSnapshotsRequest
+batchFetchSnapshotsSuccess: retrievedSnapshot.batchFetchSnapshotsSuccess
+batchFetchSnapshotsFailure: retrievedSnapshot.batchFetchSnapshotsFailure
+batchUpdateSnapshotsSuccess: retrievedSnapshot.batchUpdateSnapshotsSuccess
+batchUpdateSnapshotsFailure: retrievedSnapshot.batchUpdateSnapshotsFailure
+
+
+Snapshot Success & Failure Handlers
+Snapshot Handlers:
+addSnapshotSuccess: retrievedSnapshot.addSnapshotSuccess
+addSnapshotFailure: retrievedSnapshot.addSnapshotFailure
+getSnapshotSuccess: retrievedSnapshot.getSnapshotSuccess
+updateSnapshotSuccess: retrievedSnapshot.updateSnapshotSuccess
+createSnapshotSuccess: retrievedSnapshot.createSnapshotSuccess
+createSnapshotFailure: retrievedSnapshot.createSnapshotFailure
+getSnapshotItemsSuccess: retrievedSnapshot.getSnapshotItemsSuccess
+getSnapshotItemSuccess: retrievedSnapshot.getSnapshotItemSuccess
+getSnapshotIdSuccess: retrievedSnapshot.getSnapshotIdSuccess
+getSnapshotValuesSuccess: retrievedSnapshot.getSnapshotValuesSuccess
+setSnapshotFailure: retrievedSnapshot.setSnapshotFailure
+Nested Structures and Hierarchies
+Hierarchy:
+getParentId: retrievedSnapshot.getParentId
+getChildIds: retrievedSnapshot.getChildIds
+addChild: retrievedSnapshot.addChild
+removeChild: retrievedSnapshot.removeChild
+getChildren: retrievedSnapshot.getChildren
+hasChildren: retrievedSnapshot.hasChildren
+isDescendantOf: retrievedSnapshot.isDescendantOf
+Snapshot Retrieval & Comparison
+Snapshot Retrieval:
+
+getSnapshotId: retrievedSnapshot.getSnapshotId
+getSnapshot: retrievedSnapshot.getSnapshot
+getSnapshotWithCriteria: retrievedSnapshot.getSnapshotWithCriteria
+fetchSnapshot: retrievedSnapshot.fetchSnapshot
+getAllSnapshots: retrievedSnapshot.getAllSnapshots
+getSnapshotKeys: retrievedSnapshot.getSnapshotKeys
+getAllKeys: retrievedSnapshot.getAllKeys
+getAllValues: retrievedSnapshot.getAllValues
+getSnapshotEntries: retrievedSnapshot.getSnapshotEntries
+getAllSnapshotEntries: retrievedSnapshot.getAllSnapshotEntries
+getSnapshotItems: retrievedSnapshot.getSnapshotItems
+Comparison:
+
+compareSnapshots: retrievedSnapshot.compareSnapshots
+compareSnapshotItems: retrievedSnapshot.compareSnapshotItems

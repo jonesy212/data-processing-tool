@@ -1,0 +1,14 @@
+{
+    "presets": ["next/babel", "@babel/preset-typescript"],
+    "plugins": [
+      ["@babel/plugin-proposal-decorators", { "legacy": true }], // Add this line
+      ["react-native-web", { "commonjs": true }],
+      [
+        "module-resolver",
+        {
+          "root": ["./"],
+          "extensions": [".tsx", ".ts", ".js", ".json"]
+        }
+      ]
+    ]
+  }

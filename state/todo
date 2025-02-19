@@ -1,0 +1,176 @@
+# Backend Stores:
+
+# AuthenticationStore
+# Associated with: auth directory, including routes for login, registration, password reset, etc.
+# CompanyStore
+# Associated with: company directory.
+# DashboardStore
+# Associated with: dashboard directory.
+# DataAnalysisStore
+# Associated with: data_analysis directory.
+# DataProcessingStore
+# Associated with: dataprocessing directory.
+# DatasetStore
+# Associated with: dataset directory.
+# DeploymentStore
+# Associated with: deployment.py.
+# ErrorHandlingStore
+# Associated with: errorhandling directory.
+# InstanceStore
+# Associated with: instance directory.
+# LoggersStore
+# Associated with: loggers directory.
+# ModelsStore
+# Associated with: models directory.
+# MigrationsStore
+# Associated with: migrations directory.
+# ModulesStore
+# Associated with: modules directory.
+# NotesStore
+# Associated with: notes.txt.
+# OutlineStore
+# Associated with: outline.txt.
+# PermissionsStore
+# Associated with: permissions directory.
+# PreprocessingStore
+# Associated with: preprocessing directory.
+# RateLimitingStore
+# Associated with: rate_limiting directory.
+# RequirementsStore
+# Associated with: requirements.txt.
+# ScriptCommandsStore
+# Associated with: script_commands directory.
+# SecurityStore
+# Associated with: security directory.
+# SessionStore
+# Associated with: session directory.
+# SourceStore
+# Associated with: source directory.
+# SystemUtilsStore
+# Associated with: system_utils directory.
+# TaskStore
+# Associated with: task directory.
+# TestingStore
+# Associated with: testing directory.
+# TodoStore
+# Associated with: todo.sql and todos directory.
+# UserStore
+# Associated with: user directory.
+# WSGIStore
+# Associated with: wsgi.py.
+
+
+
+# Frontend MobX Stores:
+
+# BrowserCheckStore
+# Associated with: BrowserCompatibiity.tsx.
+# FeedbackLoopStore
+# Associated with: Feedbackoop.tsx.
+# LazyIconPropsStore
+# Associated with: LazyIconProps.tsx.
+# NamingConventionsStore
+# Associated with: NamingConventions.tsx.
+# ToolsStore
+# Associated with: Tools.tsx.
+# ActionsStore
+# Associated with: actions directory.
+# AuthStore
+# Associated with: auth directory.
+# CardsStore
+# Associated with: cards directory.
+# CommunicationsStore
+# Associated with: communications directory.
+# ContainersStore
+# Associated with: containers directory.
+# DashboardsStore
+# Associated with: dashboards directory.
+# ListsStore
+# Associated with: lists directory.
+# OnboardingStore
+# Associated with: onboarding directory.
+# PromptsStore
+# Associated with: prompts directory.
+# RoutingStore
+# Associated with: routing directory.
+# StylingStore
+# Associated with: styling directory.
+# SupportStore
+# Associated with: support directory.
+# VersionsStore
+# Associated with: versions directory.
+
+
+
+
+# Backend Store Associations
+# Authentication and Authorization:
+
+# auth: Manages authentication and authorization logic.
+# auth_routes: Contains routes and logic related to user authentication.
+# Company and Recruiter Management:
+
+# company: Manages company-related data and operations.
+# company_recruiters: Handles recruiters associated with companies.
+# User Management:
+
+# user: Manages user-related data and operations.
+# Task Handling:
+
+# task: Manages tasks and their execution.
+# task_history: Keeps a history of task executions.
+# Dataset and Data Handling:
+
+# dataset: Deals with dataset-related operations and metadata.
+# handle_uploaded_dataset: Handles uploaded datasets.
+
+
+
+
+
+
+# Dashboard Management:
+
+# dashboard: Manages dashboard-related data and configurations.
+# Logging and Error Handling:
+
+# loggers: Contains various loggers for different purposes.
+# errorhandling: Manages error handling logic.
+# Rate Limiting:
+
+# rate_limiting: Manages rate limiting for different API endpoints.
+# Configuration and Settings:
+
+# configs: Manages application configurations.
+# jwt_config: Deals with JWT (JSON Web Token) configurations.
+# User Feedback and Support:
+
+# user: Manages user feedback and support-related functionalities.
+# user_support: Handles user support-related operations.
+# Testing and Analysis:
+
+# testing: Contains testing-related functionalities.
+# data_analysis: Handles data analysis operations.
+# Task Processing:
+
+# dataprocessing: Contains data processing logic.
+# datapreview: Deals with data preview functionalities.
+# Preprocessing and Feature Engineering:
+
+# preprocessing: Manages data preprocessing operations.
+# feature_engineering: Handles feature engineering tasks.
+# Permission Handling:
+
+# permissions: Manages user permissions and access control.
+# Security Measures:
+
+# security: Contains security-related measures, such as CSRF protection.
+# Session Management:
+
+# session: Handles session-related functionalities and timeout.
+# System Utilities:
+
+# system_utils: Contains utility functions for system-related tasks.
+# Task Queue and Background Processing:
+
+# script_commands: Manages background tasks using Celery and other scripts.

@@ -1,0 +1,93 @@
+- Showcase Display / Marketplace
+  - User Dashboard
+    - Profile Management
+      - Personal Information
+      - Profile Picture
+      - Wallet Addresses
+
+    - Product Management
+      - Add New Product
+      - Edit Existing Product
+      - Delete Product
+
+    - Sales Analytics
+      - View Sales Statistics
+      - Revenue Overview
+
+  - Live Video Broadcasting
+    - Video Content Management
+      - Start Live Video
+      - Schedule Live Video
+      - End Live Video
+
+    - Viewer Interaction
+      - Chat Interface
+      - Product Click Actions
+
+  - Product Categories
+    - NFTs
+    - Lotions
+    - Custom Categories
+
+  - Product Listings
+    - Detailed Product Information
+    - Price
+    - Quantity
+    - Product Images
+    - Product Videos
+    - Product Reviews
+    - Product Ratings
+    - Discounts
+
+  - Backend Management
+    - Content Management
+      - Banner Management
+      - Landing Page Generator
+      - Promotional Content
+
+    - Sales and Discounts
+      - Set Discounts
+      - Promotional Sales
+      - Flash Sales
+      
+    - Inventory Management
+      - Track Stock Levels
+      - Manage Restocks
+
+    - Customer Management
+      - Customer Information
+      - Order History
+
+    - Financials
+      - Payment Processing
+      - Crypto Wallet Integration
+
+      - Fund Allocation
+        - Marketing Funds (0x099...098e8)
+        - Payroll Funds (0x9898...9089)
+
+  - Order Processing
+    - View Pending Orders
+    - Process Orders
+    - Order Fulfillment
+
+  - Cryptocurrency Payments
+    - Accept Various Cryptocurrencies
+    - Wallet Address Generation
+    - Crypto Payment Gateway Integration
+    
+  - Marketing and Promotion
+    - Marketing Campaigns
+    - Social Media Integration
+    - Email Marketing
+
+  - Reporting and Analytics
+
+    - Sales Reports
+    - Customer Behavior Analytics
+    - Financial Reports
+
+  - Settings
+    - General Settings
+    - Security Settings
+    - Notification Preferences

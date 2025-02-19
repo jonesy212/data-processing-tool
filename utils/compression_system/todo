@@ -1,0 +1,54 @@
+compression_system/
+|-- src/
+|   |-- compression/
+|   |   |-- lossless/
+|   |   |   |-- huffman_coding.py
+|   |   |   |-- lz77.py
+|   |   |   |-- arithmetic_coding.py
+|   |   |   |-- burrows_wheeler.py
+|   |   |   |-- run_length_encoding.py
+|   |   |
+|   |   |-- lossy/
+|   |       |-- discrete_cosine_transform.py
+|   |       |-- quantization.py
+|   |       |-- entropy_coding.py
+|   |       |-- predictive_coding.py
+|   |
+|   |-- decompression/
+|   |   |-- lossless/
+|   |   |   |-- huffman_decoding.py
+|   |   |   |-- lz77_decoding.py
+|   |   |   |-- arithmetic_decoding.py
+|   |   |   |-- burrows_wheeler_decoding.py
+|   |   |   |-- run_length_decoding.py
+|   |   |
+|   |   |-- lossy/
+|   |       |-- inverse_discrete_cosine_transform.py
+|   |       |-- dequantization.py
+|   |       |-- entropy_decoding.py
+|   |       |-- predictive_decoding.py
+|   |
+|   |-- utils/
+|       |-- file_utils.py
+|       |-- bitstream.py
+|
+|-- tests/
+|   |-- test_huffman_coding.py
+|   |-- test_lz77.py
+|   |-- test_arithmetic_coding.py
+|   |-- test_burrows_wheeler.py
+|   |-- test_run_length_encoding.py
+|   |-- test_discrete_cosine_transform.py
+|   |-- test_quantization.py
+|   |-- test_entropy_coding.py
+|   |-- test_predictive_coding.py
+|   |-- test_file_utils.py
+|   |-- test_bitstream.py
+|
+|-- examples/
+|   |-- compression_example.py
+|   |-- decompression_example.py
+|
+|-- README.md
+|-- requirements.txt
+|-- .gitignore

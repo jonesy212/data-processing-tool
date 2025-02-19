@@ -1,0 +1,68 @@
+ //todo using RabbitMQ
+ access the RabbitMQ management plugin at http://localhost:15672.
+
+
+
+flask commands:
+# create a migration repository with the following command:
+$ flask db init
+
+# generate an initial migration:
+$ flask db migrate -m "Initial migration."
+
+# apply the changes described by the migration script to your database:
+$ flask db upgrade
+
+
+create a multiple database migration repository, by adding the --multidb argument to the init command:
+$ flask db init --multidb
+
+available sub-commands:
+
+flask db --help
+Shows a list of available commands.
+flask db list-templates
+Shows a list of available database repository templates.
+flask db init [--multidb] [--template TEMPLATE] [--package]
+Initializes migration support for the application. The optional --multidb enables migrations for multiple databases configured as Flask-SQLAlchemy binds. The --template option allows you to explicitly select a database repository template, either from the stock templates provided by this package, or a custom one, given as a path to the template directory. The --package option tells Alembic to add __init__.py files in the migrations and versions directories.
+flask db revision [--message MESSAGE] [--autogenerate] [--sql] [--head HEAD] [--splice] [--branch-label BRANCH_LABEL] [--version-path VERSION_PATH] [--rev-id REV_ID]
+Creates an empty revision script. The script needs to be edited manually with the upgrade and downgrade changes. See Alembic’s documentation for instructions on how to write migration scripts. An optional migration message can be included.
+flask db migrate [--message MESSAGE] [--sql] [--head HEAD] [--splice] [--branch-label BRANCH_LABEL] [--version-path VERSION_PATH] [--rev-id REV_ID]
+Equivalent to revision --autogenerate. The migration script is populated with changes detected automatically. The generated script should to be reviewed and edited as not all types of changes can be detected automatically. This command does not make any changes to the database, just creates the revision script.
+flask db check
+Checks that a migrate command would not generate any changes. If pending changes are detected, the command exits with a non-zero status code.
+flask db edit <revision>
+Edit a revision script using $EDITOR.
+flask db upgrade [--sql] [--tag TAG] <revision>
+Upgrades the database. If revision isn’t given then "head" is assumed.
+flask db downgrade [--sql] [--tag TAG] <revision>
+Downgrades the database. If revision isn’t given then -1 is assumed.
+flask db stamp [--sql] [--tag TAG] <revision>
+Sets the revision in the database to the one given as an argument, without performing any migrations.
+flask db current [--verbose]
+Shows the current revision of the database.
+flask db history [--rev-range REV_RANGE] [--verbose]
+Shows the list of migrations. If a range isn’t given then the entire history is shown.
+flask db show <revision>
+Show the revision denoted by the given symbol.
+flask db merge [--message MESSAGE] [--branch-label BRANCH_LABEL] [--rev-id REV_ID] <revisions>
+Merge two revisions together. Creates a new revision file.
+flask db heads [--verbose] [--resolve-dependencies]
+Show current available heads in the revision script directory.
+flask db branches [--verbose]
+Show current branch points.
+
+
+verify noting is running
+    lsof -i :8000 
+    lsof -i :irdmi
+    
+
+verify permissions:
+ls -l
+
+verify command:
+chmod 755 instance
+
+ex to kill running connections if server not working:
+kill PID

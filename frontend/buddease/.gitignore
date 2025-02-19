@@ -1,0 +1,148 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Ignore compiled files
+*.class
+*.o
+*.pyc
+
+# Ignore temporary files
+*~
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+
+
+# Ignore build output
+/dist/
+
+# Ignore environment-specific files
+.env
+
+# Ignore editor-specific files
+.vscode/
+
+# Ignore logs
+logs/
+
+
+
+# Ignore specific files added in this commit
+tsconfig.json
+
+
+
+
+
+# Ignore specific files added or modified in this commit
+paltform/android/AndroidManifest.xml
+paltform/android/Podfile
+paltform/android/UserInterfaceState.xcuserstate
+paltform/android/build.gradle
+paltform/android/contents.xcworkspacedata
+paltform/android/gradle.properties
+paltform/android/settings.gradle
+
+pnpm-lock.yaml
+
+# Ignore modified files
+../../.vscode/settings.json
+package.json
+
+
+# Ignore specific files added or modified in this commit
+src/app/components/state/redux/sagas/teamManagementSagas.ts
+src/app/components/state/redux/sagas/tenantSags.ts
+src/app/components/state/redux/slices/ProjectOwnerSlice.ts
+src/app/components/state/redux/slices/TenantSlice.ts
+src/app/components/state/redux/slices/Untitled-3.ts
+src/app/components/state/stores/VersioningStore.ts
+src/app/components/typings/CredentialTypes.ts
+src/app/components/typings/DIDContext.tsx
+src/app/components/typings/DIDTypes.ts
+src/app/components/users/artist/ArtistManagementPHase.tsx
+src/app/components/users/artist/ArtistManagementPhaseComponent.tsx
+src/app/components/users/artist/ArtisticExpressionPage.tsx
+src/app/components/users/artist/CreateProductComponent.tsx
+src/app/components/users/artist/MusicAlbum.tsx
+src/app/components/users/artist/MusicSection.tsx
+src/app/components/users/artist/ReceiveDonationsComponent.tsx
+src/app/components/users/artist/artist_todos.md
+src/app/components/users/management/ManageContentComponent.tsx
+src/app/components/users/management/ManageFollowersComponent.tsx
+src/app/components/users/management/ManageTeamsComponent.tsx
+src/app/components/users/management/SellMerchandiseComponent.tsx
+src/app/components/versions/VersionGenerator.tsx
+src/app/components/web3/community/TaskManagementSmartContract.sol
+src/app/components/web3/contracts/NFT/DIDRegistry.sol
+src/app/components/web3/contracts/NFT/VerifiableCredential.sol
+src/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent.tsx
+
+# Ignore modified files
+src/app/components/state/redux/sagas/authorizationSagas.tsx
+src/app/components/state/redux/sagas/calendarSagas.tsx
+src/app/components/state/redux/sagas/detailsSaga.ts
+src/app/components/state/redux/sagas/teamSagas.ts
+src/app/components/state/redux/sagas/userPreferencesSagas.ts
+src/app/components/state/redux/slices/RootSlice.ts
+src/app/components/state/redux/slices/TaskSlice.ts
+src/app/components/state/redux/slices/TaskSlice.tsx
+src/app/components/state/stores/ApiStore.tsx
+src/app/components/state/stores/ErrorHandlingStore.ts
+src/app/components/subscriptions/Subscription.tsx
+src/app/components/support/NotificationContext.tsx
+src/app/components/support/NotificationMessages.ts
+src/app/components/support/NotificationTypes.ts
+src/app/components/teams/TeamActions.ts
+src/app/components/users/User.tsx
+src/app/components/users/UserRole.ts
+src/app/components/users/userJourney/IdeationPhase.tsx
+src/app/components/versions/DynamicVersioning.tsx
+src/app/components/versions/Version.ts
+src/app/components/video/Video.ts
+src/app/components/video/VideoManagementUI.tsx
+src/app/components/video/VideoSystem.ts
+src/app/components/video/ViewerScreen.tsx
+src/app/components/web3/CommunityGovernance.sol
+src/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent.tsx
+
+# Ignore all .py files
+*.py
+
+
+# Ignore all .py files
+*.py
+
+/frontend/buddease/src/app/components/documents/privateDocs
