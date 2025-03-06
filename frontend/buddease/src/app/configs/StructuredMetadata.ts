@@ -56,11 +56,8 @@ interface StructuredMetadata<
   keywords: string[];
   childIds?: K[];
   relatedData?: K[] | undefined;
-<<<<<<< HEAD
   version: Version<T, K>;// Added
-=======
   version?: string | number | Version<T, K>; 
->>>>>>> b0173ab (renamed shopping_center to shoppingCenter)
   lastUpdated?: Date | VersionHistory; // Added
   isActive: boolean; // Added
   config: Record<string, any>; // Added

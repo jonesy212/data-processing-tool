@@ -138,11 +138,8 @@ type SnapshotStoreUnion<T extends BaseData, K extends T = T> =
 
 // Update Snapshots to use K
 type Snapshots<
-<<<<<<< HEAD
   T extends BaseData, 
-=======
   T extends BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>, 
->>>>>>> b0173ab (renamed shopping_center to shoppingCenter)
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > =
