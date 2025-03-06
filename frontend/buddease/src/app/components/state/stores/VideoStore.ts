@@ -13,8 +13,13 @@ import axiosInstance from "../../security/csrfToken";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { VideoData } from "../../video/Video";
 
-export interface Video extends BaseData, {
 
+export interface Video extends BaseData {
+  content: string;
+  watchLater: boolean;
+  tags: string[];
+  isActive: boolean;
+  url: string;
   // Add more properties from Data and DataDetails as needed
 }
 

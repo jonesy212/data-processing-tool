@@ -100,7 +100,10 @@ export enum NotificationTypeEnum {
 
 type NotificationContextType = Pick<NotificationContextProps, "notify">;
 
+
 const NotificationContext = createContext<NotificationStore | undefined>(undefined);
+
+export const useNotification = () => useContext(NotificationContext);
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const notificationStore = new NotificationStore();

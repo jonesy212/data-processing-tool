@@ -61,11 +61,11 @@ logs/
 # Ignore specific files added in this commit
 tsconfig.json
 
-pnpm-lock.yaml
+# pnpm-lock.yaml
 
 # Ignore modified files
-../../.vscode/settings.json
-package.json
+# ../../.vscode/settings.json
+# package.json
 
 
 # Ignore all .py files

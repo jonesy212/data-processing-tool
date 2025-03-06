@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { NotificationTypeEnum, useNotification } from '../support/NotificationContext';
 import { NotificationPosition } from '../models/data/StatusType';
+
 const NavigationManager = () => {
   const [currentPath, setCurrentPath] = useState<string>('/');
   const { notify, setDuration } = useNotification();
