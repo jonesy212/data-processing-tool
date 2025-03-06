@@ -24,7 +24,7 @@ import {
 } from "../components/hooks/userInterface/UIPhaseHooks";
 import { Data } from "../components/models/data/Data";
 import { RealtimeData } from "../components/models/realtime/RealtimeData";
-import { CalendarEvent } from "../components/state/stores/CalendarEvent";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { VersionHistory } from "../components/versions/VersionData";
 import { backendConfig } from "../configs/BackendConfig";
 import { DataVersions } from "../configs/DataVersionsConfig";

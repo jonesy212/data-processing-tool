@@ -5,7 +5,7 @@ import { SystemConfigs } from "../api/systemConfigs";
 import { UserConfigs } from "../api/userConfigs";
 import { Project, isProjectInSpecialPhase } from "../components/projects/Project";
 import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
-import StoreConfig from "../shopping_center/ShoppingCenterConfig";
+import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
 import {
     BackendConfig,
     backendConfig,

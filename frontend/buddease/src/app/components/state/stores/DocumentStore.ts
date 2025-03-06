@@ -114,7 +114,6 @@ interface DocumentAdditionalProps <T extends  BaseData<any>, K extends T = T, Me
   location?: Location;
   onfullscreenchange?: ((this: Document<T, K>, ev: Event) => any) | null;
   onfullscreenerror?: ((this: Document<T, K>, ev: Event) => any) | null;
-
   onpointerlockerror?: ((this: Document<T, K>, ev: Event) => any) | null;
   onpointerlockchange?: ((this: Document<T, K>, ev: Event) => any) | null
   onreadystatechange?: ((this: Document<T, K>, ev: Event) => any) | null;

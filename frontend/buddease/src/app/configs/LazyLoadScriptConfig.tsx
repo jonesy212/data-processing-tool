@@ -3,7 +3,7 @@ import { traverseFrontendDirectory } from "@/app/configs/declarations/traverseFr
 import { SystemConfigs } from "../api/systemConfigs";
 import { UserConfigs } from "../api/userConfigs";
 import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
-import ShoppingCenterConfig from "../shopping_center/ShoppingCenterConfig";
+import ShoppingCenterConfig from "../shoppingCenter/ShoppingCenterConfig";
 import { BackendConfig, backendConfig } from "./BackendConfig";
 import { ApiConfig } from "./ConfigurationService";
 import { DataVersions } from "./DataVersionsConfig";
@@ -164,12 +164,17 @@ export const lazyLoadScriptConfig: LazyLoadScriptConfig =
       permissions: {
         read: false,
         write: false,
+        permissions: {},
         delete: false,
         share: false,
-        execute: false
+        execute: false,
+        userId: 'default', 
+        permissionType: 'read',
+        canView: true, 
+        canEdit: false
       },
       versions: undefined,
-      versionData: []
+      versionData: null
     },
     traverseDirectory: async (path: string) => { 
       return traverseFrontendDirectory(path);

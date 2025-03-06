@@ -9,7 +9,8 @@ interface EventAttendance extends BaseEvent, SharedSnapshotEvent<T, K<T>> {
   eventId: string;
   attendees: Attendee[]; // Attendee IDs or emails
   attendanceProbability: Record<string, number>; // Attendee ID/email -> predicted attendance probability
-  eventType: "attendance"
+  eventType: "attendance",
+  systemMessage: 
 }
 
 interface AttendancePrediction {

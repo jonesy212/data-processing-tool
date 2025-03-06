@@ -3,14 +3,20 @@ interface BasePermissions {
   canView: boolean;
   canEdit: boolean;
   canDelete?: boolean | undefined;
+  read?: boolean; // Add read
+  write?: boolean; // Add write
+  delete?: boolean; // Add delete
 }
 
 // Permission.ts
-interface Permission {
+interface Permission extends BasePermissions {
   userId: string;
   permissions: UserPermissions; // Using UserPermissions as the structure
   rolePermissions?: Permissions; // Optionally include role-specific permissions
-  permissionType: 'read' | 'write'
+  permissionType: 'read' | 'write';
+  share?: boolean; // Optional property for sharing permissions
+  execute?: boolean; // Optional property for execution permissions
+  [key: string]: any;
 }
 
 interface EncryptionSetting {

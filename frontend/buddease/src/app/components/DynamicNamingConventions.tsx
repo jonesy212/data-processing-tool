@@ -1,5 +1,5 @@
 // components/DynamicNamingConventions.tsx
-import configServiceInstance from '@/configs/ConfigurationService';
+import { configServiceInstance } from '@/configs/ConfigurationService';
 import React from 'react';
 import { NamingConventionsError } from '../shared/shared_error';
 import { useDynamicComponents } from './DynamicComponentsContext';

@@ -23,6 +23,7 @@ function FileSelect({ onChange }: FileSelectProps) {
         name: file.name,
         size: file.size,
         type: file.type,
+        bytes: file.bytes,
         lastModified: file.lastModified,
         lastModifiedDate: file.lastModifiedDate,
         webkitRelativePath: file.webkitRelativePath,

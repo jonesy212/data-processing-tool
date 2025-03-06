@@ -1,4 +1,4 @@
-import { Data } from "../components/models/data/Data";
+import { Data, BaseeData } from "../components/models/data/Data";
 import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
 import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
 import { useNotification } from "../components/support/NotificationContext";
@@ -33,13 +33,18 @@ abstract class AppCacheManagerBase<T extends Data> {
 
       const existingCache: Record<string, FrontendStructure> =
         this.frontendCacheManager.getCacheData();
+        
       const uniqueConstraints = {
         path: `/src/${key}.tsx`, // Example path, adjust as needed
         content: JSON.stringify(data),
       };
+
+      // Serialize the uniqueConstraints object to a string
+      const uniqueConstraintsString = JSON.stringify(uniqueConstraints);
+
       // Update cache with new data for the specified key
 
-      existingCache[key] = new FrontendStructure(uniqueConstraints);
+      existingCache[key] = new FrontendStructure(uniqueConstraintsString);
 
       // Save the updated cache
 

@@ -1,5 +1,6 @@
-import { Task } from '@/app/components/models/tasks/Task';
 // ScheduledData.ts
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { Task } from '@/app/components/models/tasks/Task';
 import { BaseData, Data } from "../models/data/Data";
 import { StatusType } from "../models/data/StatusType";
 import { AllStatus } from "../state/stores/DetailsListStore";
@@ -16,15 +17,17 @@ export interface Schedule {
   isRecurring?: boolean;
   [key: string]: any; // Add any additional shared scheduling fields
 }
+type TaskOrTodo<T extends BaseData<any>, K extends T> = Task<T, K> | TodoImpl<any, any, any, never>;
 
 export interface ScheduledData<
   T extends BaseData<any>,
   K extends T = T,
-  S = Task<T, K> | TodoImpl<any, any, any>
-  > 
-  extends Schedule, Data<T> {
+  S = TaskOrTodo<T, K>
+> extends Schedule, Data<T> {
+  // Explicitly define the `createdBy` property to resolve the conflict
+  createdBy: string | undefined;
   // Additional scheduling-specific properties
-  priority?: "scheduled" | "completed" | "canceled" | "rescheduled"; // General status for scheduling;
+  priority?: "scheduled" | "completed" | "canceled" | "rescheduled"; // General status for scheduling
   assignee?: UserAssignee | null;
   subtasks?: TodoImpl<any, any, any>[];
   additionalData?: any;

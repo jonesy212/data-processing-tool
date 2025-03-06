@@ -114,7 +114,7 @@ interface VersionData extends ExtendedVersionData {
   source: string;
   status: string;
   version: Version<T, K<T>>;
-  timestamp: string | Date | undefined
+  timestamp: number | string | Date | undefined
   user: string;
   changes: string[];
   workspaceId: string;

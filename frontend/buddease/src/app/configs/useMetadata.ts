@@ -17,7 +17,8 @@ function useMetadata<
   T extends BaseData<any>, 
   K extends T = T, 
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, 
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = never,
+  AttachmentType extends Attachment = Attachment
 >(
   area: string | undefined,
   relatedKeys: Array<keyof K> = [],

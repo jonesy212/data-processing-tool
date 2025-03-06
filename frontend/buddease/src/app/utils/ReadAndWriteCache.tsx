@@ -4,7 +4,7 @@ import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
 import { RealtimeData } from "../components/models/realtime/RealtimeData";
 import { CustomPhaseHooks } from "../components/phases/Phase";
 import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
-import { CalendarEvent } from "../components/state/stores/CalendarEvent";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import UserService, { userId, userService } from "../components/users/ApiUser";
 import { VersionHistory, versionHistory } from "../components/versions/VersionData";
 import { VideoData } from "../components/video/Video";

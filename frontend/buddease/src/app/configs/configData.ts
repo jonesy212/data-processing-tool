@@ -9,7 +9,7 @@ import UniqueIDGenerator from "../generators/GenerateUniqueIds";
 import ApiConfig from "./ApiConfigComponent";
 import dataVersions from "./DataVersionsConfig";
 import LazyLoadScriptConfig from './LazyLoadScriptConfig';
-import userPreferences from "./UserPreferences";
+import { userPreferences } from "./UserPreferences";
 import userSettings from "./UserSettings";
 import BackendStructure from "./appStructure/BackendStructure";
 import FrontendStructure from "./appStructure/FrontendStructure";

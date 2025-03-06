@@ -30,20 +30,28 @@ Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 
   return (
     <div>
-      {items.map((item, index) => (
+    {items.map((item, index) => {
+      // Ensure label is a string
+      const label = item.label ? item.label.toString() : '';
+
+      // Ensure value is a string (you might need to adjust this based on your actual data structure)
+      const value = item.value ? item.value.toString() : '';
+
+      return (
         <div key={index} onClick={() => item.tracker && handleContentItemClick(item, item.tracker as unknown as K)}>
           {/* Check if label and value are defined before passing them */}
-          {item.label !== undefined && item.value !== undefined && (
+          {label && value && (
             <DetailsListItem
               item={item}
-              label={item.label}
-              value={item.value}
+              label={label}
+              value={value}
             />
           )}
           {/* Render other item components or details as needed */}
         </div>
-      ))}
-    </div>
+      );
+    })}
+  </div>
   );
 };
 

@@ -1,5 +1,5 @@
 import { BaseData } from '@/app/components/models/data/Data';
-import { simulateFetch } from "@/app/simuuate/simulateFetch";
+import { simulateFetch } from "@/app/simulate/simulateFetch";
 import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
 import { CalendarEvent } from "../calendar/CalendarEvent";
 import { Category } from "../libraries/categories/generateCategoryProperties";

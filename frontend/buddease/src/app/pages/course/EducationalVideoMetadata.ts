@@ -2,6 +2,7 @@ import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
 import { BaseData } from '@/app/components/models/data/Data';
 import { UserData } from '@/app/components/users/User';
 import { StructuredMetadata, VideoMetadata } from '@/app/configs/StructuredMetadata';
+
 // EducationalVideoMetadata.ts
 interface EducationalVideoMetadata<
   T extends BaseData<any>, // Content-specific data

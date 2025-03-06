@@ -11,11 +11,88 @@ const useDocumentManagement = () => {
   const { isAuthenticated, user } = useAuth();
   const documentStore = useDocumentStore(); // Initialize the document store
 
+  const documents = async (): Promise<DocumentObject<any, any>[]> => {
+    try {
+      if (!isAuthenticated) {
+        throw new Error("User not authenticated");
+      }
+  
+      const fetchedDocuments = await fetchUserDocuments(user.id); // Example function
+      return fetchedDocuments;
+    } catch (error) {
+      handleError(error);
+      return [];
+    }
+  };
+   
+  /**
+   * Fetches documents belonging to the authenticated user.
+   */
+  const fetchDocuments = async (): Promise<DocumentObject<any, any>[]> => {
+    try {
+      if (!isAuthenticated) {
+        throw new Error("User not authenticated");
+      }
 
-  const documents = async ()
-  // fetchDocuments, getSnapshotDataKey, updateDocumentReleaseStatus
+      // Fetch documents from backend
+      const documents = await fetchUserDocuments(user.id); // Assume this API call exists
 
+      // Store fetched documents in documentStore
+      documentStore.setDocuments(documents);
 
+      return documents;
+    } catch (error: any) {
+      handleError(error.message);
+      return [];
+    }
+  };
+
+  /**
+   * Retrieves a unique snapshot key for a document.
+   */
+  const getSnapshotDataKey = (document: DocumentObject<any, any>): string => {
+    try {
+      if (!document || !document.id) {
+        throw new Error("Invalid document");
+      }
+
+      return `snapshot-${document.id}`;
+    } catch (error: any) {
+      handleError(error.message);
+      return "";
+    }
+  };
+
+  /**
+   * Updates the release status of a document.
+   */
+  const updateDocumentReleaseStatus = async (
+    documentId: string | number,
+    newStatus: string
+  ): Promise<boolean> => {
+    try {
+      if (!isAuthenticated) {
+        throw new Error("User not authenticated");
+      }
+
+      // Find the document in the store
+      const document = documentStore.getDocument(documentId);
+      if (!document) {
+        throw new Error("Document not found");
+      }
+
+      // Update release status in backend
+      await updateDocumentStatusInBackend(documentId, newStatus); // Assume API call exists
+
+      // Update local store
+      documentStore.updateDocument(documentId, { releaseStatus: newStatus });
+
+      return true;
+    } catch (error: any) {
+      handleError(error.message);
+      return false;
+    }
+  };
 
 
   const fetchDocumentContent = async (documentKey: string): Promise<string | null> => {
@@ -38,7 +115,7 @@ const useDocumentManagement = () => {
       const content = await fetchDocumentContentFromBackend(documentKey);
 
        // Optionally, add the fetched document to the store
-       documentStore.addDocument(document, content); // Add content to the document
+       documentStore.addDocument(document, { documentContent: content } as Content<any, any, any>);
     
       return content;
     } catch (error: any) {
@@ -65,7 +142,14 @@ const fetchDocumentContentFromBackend = async (documentKey: string): Promise<str
   }
 };
 
-  return { fetchDocumentContent };
+  return { 
+    documents,
+    fetchDocumentContent,
+    fetchDocuments,
+    getSnapshotDataKey,
+    updateDocumentReleaseStatus,
+    fetchDocumentContentFromBackend,
+   };
 };
 
 export default useDocumentManagement;

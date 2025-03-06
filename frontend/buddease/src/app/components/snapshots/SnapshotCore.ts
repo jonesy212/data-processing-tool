@@ -1,5 +1,5 @@
-import { SnapshotStore } from '@/app/components/snapshots/SnapshotStore';
 // SnapshotCore.ts
+import { SnapshotStore } from '@/app/components/snapshots/SnapshotStore';
 import { BaseData } from '@/app/components/models/data/Data';
 import { InitializedState } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';

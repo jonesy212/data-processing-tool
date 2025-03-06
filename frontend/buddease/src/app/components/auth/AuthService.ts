@@ -144,11 +144,14 @@ class AuthService {
         preferences: payload.preferences,
         storeId: payload.storeId,
        
-        bannerUrl: payload.bannerUrl
+        bannerUrl: payload.bannerUrl,
+        currentMetadata: payload.currentMetadata,
+        currentMeta: payload.currentMeta 
+       
         // Add other claims as needed
       };
       
-      const newAccessToken = generateToken(newPayload,scopes,{ expiresIn: '1h' });
+      const newAccessToken = generateToken(newPayload, scopes,{ expiresIn: '1h' });
   
       return { accessToken: newAccessToken };
     } catch (error) {

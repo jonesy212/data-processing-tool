@@ -32,7 +32,7 @@ const FileSharingComponent: React.FC = <T extends  BaseData<any>, K extends T = 
   const [inputValue, setInputValue] = useState<string>("");
   // Define state variables
   const [uploadError, setUploadError] = useState<string | null>(null); // State to store upload error message
-  const [realtimeData, setRealtimeData] = useState<SupportedData<T>[]>([]);
+  const [realtimeData, setRealtimeData] = useState<SupportedData<T, K, Meta>[]>([]);
   const { handleFileChanges, uploadFile } = useFileUpload({
     inputValue,
     handleInputChange: (event: ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +45,7 @@ const FileSharingComponent: React.FC = <T extends  BaseData<any>, K extends T = 
 
   // Implement the update callback function
   const updateCallback = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-    data: SupportedData<T>[],
+    data: SupportedData<T, K, Meta>[],
     events: Record<string, CalendarEvent[]>,
     snapshotStore: SnapshotStore<T, K>,
     dataItems: RealtimeDataItem[]

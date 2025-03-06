@@ -5,6 +5,7 @@ import {
     SnapshotConfig,
 } from "@/app/components/snapshots/SnapshotConfig";
 import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
+import { BrowserBehaviorConfig } from "../components/state/BrowserBehaviorManager";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { getSubscriptionLevel } from '@/app/components/subscriptions/SubscriptionLevel';
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
@@ -231,6 +232,7 @@ const useSnapshotStore = async  <
   const [snapshots, setSnapshots] = useState<SnapshotStore<any>>(
     new SnapshotStore<any>({
       storeId,
+      initialState,
       name,
       version,
       schema,

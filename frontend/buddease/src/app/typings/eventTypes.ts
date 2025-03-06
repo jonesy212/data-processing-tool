@@ -13,16 +13,13 @@ import { SnapshotEvents } from '../components/snapshots/SnapshotEvents';
 import { SubscriberCollection } from "../components/users/SubscriberCollection";
 import { EventManager } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
 
-
-
 interface SharedSnapshotEvent<T extends BaseData<any>, K extends T = T> extends BaseEvent {
     snapshotId?: string | number | null;
     snapshotStore: SnapshotStore<T, K>
     error?: any
   }
 
-  
-interface UserEvent<T extends BaseData<any>, K extends T = T>
+interface UserEvent <T extends BaseData<any>, K extends T = T>
     extends BaseEvent, SharedSnapshotEvent<T, K> {
     eventType: "user";
     userId: string;
@@ -30,7 +27,7 @@ interface UserEvent<T extends BaseData<any>, K extends T = T>
     metadata?: Record<string, any>; // Optional additional data about the action
 }
 
-interface TaskEvent <T extends BaseData<any>, K extends T = T>
+interface TaskEvent<T extends BaseData<any>, K extends T = T>
     extends BaseEvent, SharedSnapshotEvent<T, K> {
     eventType: "task";
     taskId: string;
@@ -39,8 +36,7 @@ interface TaskEvent <T extends BaseData<any>, K extends T = T>
     changes?: Record<string, any>; // Details about what was changed
 }
 
-
-interface ProjectEvent <T extends BaseData<any>, K extends T = T>
+interface ProjectEvent<T extends BaseData<any>, K extends T = T>
     extends BaseEvent, SharedSnapshotEvent<T, K> {
     eventType: "project";
     projectId: string;
@@ -49,15 +45,13 @@ interface ProjectEvent <T extends BaseData<any>, K extends T = T>
     changes?: Record<string, any>;
 }
 
-
-interface ErrorEvent <T extends BaseData<any>, K extends T = T>
+interface ErrorEvent<T extends BaseData<any>, K extends T = T>
     extends BaseEvent, SharedSnapshotEvent<T, K> {
     eventType: "error";
     errorCode: string;
     errorMessage: string;
     userId?: string; // Optional, if the error is user-related
 }
-
 
 interface IntegrationEvent <T extends BaseData<any>, K extends T = T>
     extends BaseEvent, SharedSnapshotEvent<T, K> {
@@ -84,7 +78,6 @@ interface NotificationEvent <T extends BaseData<any>, K extends T = T>
     status: "sent" | "read" | "dismissed";
 }
 
-
 interface MilestoneEvent <T extends BaseData<any>, K extends T = T>
     extends BaseEvent, SharedSnapshotEvent<T, K> {
     eventType: "milestone";
@@ -95,7 +88,6 @@ interface MilestoneEvent <T extends BaseData<any>, K extends T = T>
     description?: string; // Optional milestone description
 }
 
-
 interface CommentEvent <T extends BaseData<any>, K extends T = T>
     extends BaseEvent, SharedSnapshotEvent<T, K> {
     eventType: "comment";
@@ -105,7 +97,6 @@ interface CommentEvent <T extends BaseData<any>, K extends T = T>
     userId: string;
     content?: string; // Comment content
 }
-
 
 interface MeetingEvent <T extends BaseData<any>, K extends T = T>
     extends BaseEvent, SharedSnapshotEvent<T, K> {

@@ -242,7 +242,7 @@ export interface SnapshotStoreConfig<
       data: SnapshotStoreConfig<T, K>
     ) => Promise<Snapshot<T, K>>;
 
-    mapSnapsohts: (
+    mapSnapshots: (
       snapshots: Snapshots<T, K>, 
       category: string
     ) => void;

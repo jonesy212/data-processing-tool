@@ -55,7 +55,7 @@ class BackendStructureWrapper {
     // Implement logic to control what is exposed during traversal
     // Example: Exclude files in a certain directory
     const excludedDirectory = "excludeThisDirectory";
-    const files = await this.backendStructure.traverseDirectory(dir);
+    const files = await this.backendStructure?.traverseDirectory?.(dir) || [];
 
     if (this.exposeAll) {
       // Return all files if the toggle is turned on

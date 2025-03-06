@@ -1,4 +1,6 @@
 import { backend, backendStructure } from "@/app/configs/appStructure/BackendStructure";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import DocumentPermissions from "../documents/DocumentPermissions";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
@@ -9,10 +11,7 @@ import Version, { VersionImpl } from "./Version";
 import { VersionData, VersionHistory } from "./VersionData";
 import { frontend, frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
 import { T, K } from "../models/data/dataStoreMethods";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-
-
-
+ 
 // Default reusable data
 const defaultData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
   id: 'default-id', // Replace with a unique identifier logic if needed
@@ -26,8 +25,12 @@ const defaultData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
 
 
 const createVersionInfo = (versionData: string | VersionData): Version => {
-    const docPermissions = new DocumentPermissions(true, true);
+  const docPermissions = new DocumentPermissions(true, true);
 
+  const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
+
+  const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
+  
     // If the versionData is a string, construct a default versionInfo object
   const defaultVersionInfo: Version <any, any> = {
     id: 0,
@@ -172,9 +175,24 @@ export const handleSnapshot = (
   snapshots: SnapshotsArray<any, any>,
   type: string,
   event: Event,
+  storeProps: SnapshotStoreProps<T, K>,
   snapshotContainer?: SnapshotContainer<T, K<T>>,
   snapshotStoreConfig?: SnapshotStoreConfig<Data, BaseData>
 ): Promise<Snapshot<Data, BaseData> | null> => {
+
+  const {
+    storeId,
+    name,
+    version,
+    schema,
+    options,
+    category,
+    config,
+    operation,
+    expirationDate, payload, callback, 
+      endpointCategory, findIndex
+  } = storeProps;
+
   try {
     if (snapshot) {
       callback(snapshot);
@@ -190,16 +208,18 @@ export const handleSnapshot = (
       const versionInfo = createVersionInfo(snapshotStoreConfig.version || '0.0.0');
 
       // Create a new SnapshotStore with provided configuration
-      snapshotStore = new SnapshotStore<Data, BaseData>(
-        snapshotStoreConfig.storeId,
-        snapshotStoreConfig.name || '',
-        versionInfo,  // Use the constructed version object
-        snapshotStoreConfig.schema,
-        snapshotStoreConfig.options,
-        snapshotStoreConfig.category,
-        snapshotStoreConfig.config || undefined,
-        snapshotStoreConfig.operation,
-      );
+      snapshotStore = new SnapshotStore<Data, BaseData>({
+        storeId,
+        name,
+        version,
+        schema,
+        options,
+        category,
+        config,
+        operation,
+        expirationDate,
+        payload, callback, storeProps, endpointCategory, findIndex
+      });
     } else {
       // Fallback to a default or empty instance
       snapshotStore = {} as SnapshotStore<Data, BaseData>;
@@ -216,7 +236,7 @@ export const handleSnapshot = (
       isCore: false, // Populate based on your logic
       initialConfig: {}, // Populate based on your actual logic
       removeSubscriber: () => {}, // Provide an appropriate method if needed
-      onInitialize, onError, taskIdToAssign, schema, 
+      onInitialize: "", onError: "", taskIdToAssign: "", schema: "", 
     };
 
     return Promise.resolve(processedSnapshot);

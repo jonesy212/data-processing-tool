@@ -1,11 +1,17 @@
 import { BaseData } from '@/app/components/models/data/Data';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { SnapshotDataType } from "../components/snapshots";
-import { DataWithPriority } from "../utils/versionUtils";
+import { DataWithPriority } from "@/app/components/utils/versionUtils";
+import { SnapshotStore } from '@/app/components/snapshots/SnapshotStore';
+import { Snapshot, SnapshotData } from '@/app/components/snapshots';
 
-
-
-const findSnapshotStoresById = async (id: number): Promise<SnapshotStore<T, K>[] | undefined> => {
+// Define generic types T and K for the function
+const findSnapshotStoresById = async <
+  T extends BaseData<any>,
+  K extends T = T
+>(
+  id: number
+): Promise<SnapshotStore<T, K>[] | undefined> => {
   // Simulate an asynchronous operation to retrieve SnapshotStores by ID
   // Assume `snapshotStoresDatabase` is a Map or database you’re querying from
   const snapshotStoresDatabase: Map<number, SnapshotStore<T, K>[]> = new Map(); // Replace with actual data source
@@ -15,16 +21,24 @@ const findSnapshotStoresById = async (id: number): Promise<SnapshotStore<T, K>[]
   return stores ? stores : undefined;
 };
 
-
-
 // Example helper to check if input is CustomSnapshotData
-const isCustomSnapshotData = (input: any): input is Snapshot<T, CustomSnapshotData> => {
+const isCustomSnapshotData = <
+  T extends BaseData<any>,
+  K extends T = T
+>(
+  input: any
+): input is Snapshot<T, CustomSnapshotData> => {
   // Define custom criteria for identifying `CustomSnapshotData`
   return 'customProperty' in input;
 };
 
 // Transform `CustomSnapshotData` to `Snapshot<T, K>`
-const transformCustomSnapshotToSnapshot = (input: Snapshot<T, CustomSnapshotData>): Snapshot<T, K> => {
+const transformCustomSnapshotToSnapshot = <
+  T extends BaseData<any>,
+  K extends T = T
+>(
+  input: Snapshot<T, CustomSnapshotData>
+): Snapshot<T, K> => {
   // Convert CustomSnapshotData fields to match `Snapshot<T, K>`
   const convertedData = {
     ...input, // Copy existing data
@@ -33,9 +47,12 @@ const transformCustomSnapshotToSnapshot = (input: Snapshot<T, CustomSnapshotData
   return convertedData as Snapshot<T, K>;
 };
 
-
-// processSnapshotData.ts// processSnapshotData.ts
-function processSnapshotData<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// Process snapshot data
+function processSnapshotData<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
   snapshotDataType: SnapshotDataType<T, K> | SnapshotData<T, K> | undefined
 ): void {
   if (!snapshotDataType) {
@@ -58,7 +75,11 @@ function processSnapshotData<T extends  BaseData<any>, K extends T = T, Meta ext
 }
 
 // Helper function to handle priority data within the snapshot
-const processPriorityData = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const processPriorityData = <
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
   snapshotData: Snapshot<T, K> | SnapshotData<T, K>
 ): void => {
   const dataWithPriority: Partial<DataWithPriority> = {
@@ -74,10 +95,16 @@ const processPriorityData = <T extends  BaseData<any>, K extends T = T, Meta ext
 };
 
 // Type guard to check if an object has the 'priority' property
-function hasPriority<T extends Partial<DataWithPriority>>(data: T): data is T & DataWithPriority {
+function hasPriority<T extends Partial<DataWithPriority>>(
+  data: T
+): data is T & DataWithPriority {
   return (data as DataWithPriority).priority !== undefined;
 }
 
-
-export { findSnapshotStoresById, hasPriority, isCustomSnapshotData, processSnapshotData, transformCustomSnapshotToSnapshot };
-
+export {
+  findSnapshotStoresById,
+  hasPriority,
+  isCustomSnapshotData,
+  processSnapshotData,
+  transformCustomSnapshotToSnapshot,
+};

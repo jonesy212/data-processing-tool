@@ -42,7 +42,7 @@ const NoteBuilder: React.FC = () => {
       {} as Map<string, Snapshot<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never, StructuredMetadata<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never>, never>>, // meta: additional metadata, can be an empty array if not needed
       { eventRecords: {} }, // events: event manager data, initializing with an empty event record
       [], // relatedData: related data associated with metadata, empty array for now
-      {} as Version<T, K>, // version: version information, can be undefined if not applicable
+      {} as Version, // version: version information, can be undefined if not applicable
       {} as VersionHistory, // lastUpdated: last updated version history, it should be provided
       true, // isActive: boolean flag indicating whether metadata is active or not
       {}, // config: configuration settings for the metadata, using an empty object

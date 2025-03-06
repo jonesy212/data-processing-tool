@@ -35,7 +35,7 @@ import UniqueIDGenerator from "../generators/GenerateUniqueIds";
  
 
 
-const handleFileChanges = (file: FileData): FileData => file; // Handles file change logic
+const handleFileChanges = (file: FileData<T>): FileData<T> => file; // Handles file change logic
 
 const ApiConfigComponent: React.FC = () => {
   // Access API configurations from Redux state
@@ -98,7 +98,7 @@ const getDynamicTrackerProps = (userPreferences: UserPreferences): TrackerProps 
     id: userPreferences.trackerId || generateTrackerID, // Function to dynamically generate or fetch the tracker ID
     name: "dynamic-task-tracker", // You can set this dynamically based on preferences
     phases: [], // Dynamically fetch or calculate the phases here
-    trackFileChanges: (file: FileData) => handleFileChanges(file), // Your dynamic file handler
+    trackFileChanges: (file: FileData<T>) => handleFileChanges(file), // Your dynamic file handler
 
     // Dynamic stroke settings based on user preferences
     stroke: {
@@ -109,13 +109,13 @@ const getDynamicTrackerProps = (userPreferences: UserPreferences): TrackerProps 
     fillColor: userPreferences.fillColor || "blue", // Default value if undefined
     isFlippedX: userPreferences.isFlippedX || false, // Set dynamically based on user preferences
     isFlippedY: userPreferences.isFlippedY || false, // Set dynamically based on user preferences
-    x: userPreferences.position?.x || 0, // Dynamic X-coordinate (default to 0)
-    y: userPreferences.position?.y || 0  // Dynamic Y-coordinate (default to 0)
+    x: userPreferences.position.x || 0, // Dynamic X-coordinate (default to 0)
+    y: userPreferences.position.y || 0  // Dynamic Y-coordinate (default to 0)
   };
 };
 
   // Example usage of userPreferences.modules, userPreferences.actions, and userPreferences.reducers
-  const renderModuleContent = (userPreferences: typeof UserPreferences) => {
+  const renderModuleContent = (userPreferences: UserPreferences) => {
     switch (userPreferences.modules) {
       case "profileManagement":
         return <ProfileSetupPhase onSubmit={handleProfileSetupSubmit} />;
@@ -126,7 +126,7 @@ const getDynamicTrackerProps = (userPreferences: UserPreferences): TrackerProps 
               name: "task-tracker",
               id: "taskId",
               phases: {} as Phase[],
-          trackFileChanges: (file: FileData) => file,
+          trackFileChanges: (file: FileData<T>) => file,
               // Updated key-value pairs
               stroke: {
                 width: 0,
@@ -139,8 +139,8 @@ const getDynamicTrackerProps = (userPreferences: UserPreferences): TrackerProps 
               x: 10,             // X-coordinate (replace with actual value)
               y: 20,             // Y-coordinate (replace with actual value)
           trackFolderChanges(
-                content: FileData,
-                fileLoader?: FileData,
+                content: FileData<T>,
+                fileLoader?: FileData<T>,
               ) {
                 // Make fileLoader optional
                 if (fileLoader) {

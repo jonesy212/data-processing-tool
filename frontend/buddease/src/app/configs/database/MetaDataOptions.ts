@@ -1,10 +1,10 @@
 import { dynamicMeetingMetadata, MeetingMetadata } from '@/app/components/calendar/ScheduledData';
 import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
 import { BaseData } from '@/app/components/models/data/Data';
-import { TransactionData } from '@/app/components/payment/Transaction';
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";import { TransactionData } from '@/app/components/payment/Transaction';
 import { AnalysisTypeEnum } from '@/app/components/projects/DataAnalysisPhase/AnalysisType';
-import { TagsRecord } from '@/app/components/snapshots/SnapshotWithCriteria';
-import { TodoImpl } from '@/app/components/todos/Todo';
+import { data, TagsRecord } from '@/app/components/snapshots/SnapshotWithCriteria';
+import  TodoImpl from '@/app/components/todos/Todo';
 import { createLastUpdatedWithVersion } from "@/app/components/versions/createLatestVersion";
 import { MetadataEntry, projectMetadata, VideoMetadata } from '@/app/configs/StructuredMetadata';
 import { useMeta } from '@/app/configs/useMeta';
@@ -20,6 +20,8 @@ import { Task } from '@/app/components/models/tasks/Task';
 import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 import { baseConfig } from '../BaseConfig';
 import { SharedMetadata } from '../metadata/createMetadataState';
+import { PhaseMeta } from '@/app/components/phases/Phase';
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 
 
 interface BaseMetadata<K extends T = T> extends SharedBaseData<K>, SharedMetadata<K> {
@@ -38,7 +40,7 @@ interface BaseMetaDataOptions<
     id: string
     title?: string;
     description?: string | undefined;
-    createdBy: string;
+    createdBy?: string | undefined;
     createdAt?: string | Date;
     updatedBy?: string;
     updatedAt?: string | Date;
@@ -154,6 +156,24 @@ function transformProjectToUnifiedMetadata<
   K extends T = T
 >(projectMetadata: ProjectMetadata<T, K>): UnifiedMetaDataOptions<T, K> {
   
+
+  const versionData: VersionImpl<T, K> = {
+    // Populate required properties for `VersionImpl`
+    transformToStructureItems: () => {
+      // Provide implementation or mock as required
+      return [];
+    },
+    getStructure: () => {
+      // Provide implementation or mock as required
+      return {};
+    },
+    ...projectMetadata.versionData, // Include other version data from `projectMetadata`
+  };
+    // Generate a project ID if it is undefined
+    if (!projectMetadata.projectId) {
+      projectMetadata.projectId = UniqueIDGenerator.generateProjectID("defaultProjectName");
+    }
+
    // Create metadata entries based on project metadata
   const metadataEntries: Record<string, MetadataEntry> = {};
 
@@ -181,9 +201,9 @@ function transformProjectToUnifiedMetadata<
   const structuredMetadata: StructuredMetadata<T, K> = {
     ...baseConfig,
     description: projectMetadata.description || "A project to manage structured metadata.",
-    versionData: projectMetadata.versionData || [], 
+    versionData: [versionData],
     latestVersion: createLatestVersion({
-      id: 1,
+      id: "1",
       name: "Initial Release",
       versionNumber: "1.0.0",
       userId: "user123",
@@ -226,7 +246,7 @@ function transformProjectToUnifiedMetadata<
       major: 1, minor: 0, patch: 0,
       id: 0,
       isActive: false,
-      releaseDate: undefined,
+      releaseDate: "",
       name: '',
       url: '',
       versionNumber: '',
@@ -261,12 +281,12 @@ function transformProjectToUnifiedMetadata<
       workspaceViewers: [],
       workspaceAdmins: [],
       workspaceMembers: [],
-      data: data,
+      data: data as InitializedData<T>,
       _structure: {},
       versionHistory: {
-        versionData: undefined
+        versionData: {}
       },
-      getVersionNumber: undefined,
+      getVersionNumber: () => "",
       updateStructureHash: function (): Promise<void> {
         throw new Error('Function not implemented.');
       },
@@ -288,7 +308,7 @@ function transformProjectToUnifiedMetadata<
     lastUpdated: new Date("2024-11-24T12:00:00Z"),
     history: [],
     latestVersion: {
-      id: 0,
+      id: "0",
       parentId: null,
       parentType: null,
       parentVersion: '',
@@ -466,9 +486,11 @@ const mediaData: UnifiedMetaDataOptions<MyDataType> = {
     relatedData: []
   },
   mediaMetadata: {
+    id, createdBy, timestamp,
     title: 'My Awesome Video',
     artist: 'John Doe',
     album: 'Greatest Hits',
+    metadataEntries: [], 
     artwork: [{ /* MediaImage data */ 
       src: ""
     }]
@@ -533,17 +555,45 @@ function createVideoMetadata<T extends BaseData<any>, K extends T>(
 }
 
 
-
 function createMediaMetadata(
   title: string,
   artist: string,
   album: string,
-  artworkSrc: string = ""
+  artworkSrc: string = "",
+  metadataOptions: {
+    id: string;
+    createdBy: string;
+    timestamp: Date;
+    metadataEntries: Record<string, MetadataEntry>;
+    keywords: string[];
+    version: string;
+    isActive: boolean;
+    config: Record<string, any>;
+  }
 ): UnifiedMetaDataOptions<MyDataType>["mediaMetadata"] {
+  const {
+    id,
+    createdBy,
+    timestamp,
+    metadataEntries,
+    keywords,
+    version,
+    isActive,
+    config,
+  } = metadataOptions;
+
   return {
+    id,
     title,
     artist,
     album,
+    createdBy,
+    timestamp,
+    metadataEntries,
+    keywords,
+    version,
+    isActive,
+    config,
     artwork: [
       {
         src: artworkSrc,
@@ -563,8 +613,70 @@ const dynamicVideoMetadata = createVideoMetadata("Sample Video", "https://exampl
 });
 
 // Generate dynamic media metadata
-const dynamicMediaMetadata = createMediaMetadata("Dynamic Title", "Dynamic Artist", "Dynamic Album");
+const dynamicMediaMetadata = createMediaMetadata(
+  "Dynamic Title",
+   "Dynamic Artist",
+    "Dynamic Album",
+    "https://example.com/artwork.jpg", // Provide artworkSrc
+    {
+      id: "media123",
+      createdBy: "user456",
+      timestamp: new Date(),
+      metadataEntries: {},
+      keywords: ["music", "album"],
+      version: "1.0",
+      isActive: true,
+      config: {},
+    }
+  );
 
+
+const task: Task<MyDataType, MyDataType> = {
+
+  
+  id: "task123",
+  title: "Sample Task",
+  description: "This is a sample task.",
+  _id, config, permissions, customFields, 
+
+  assignedTo: null,
+  assigneeId: "user456",
+  dueDate: new Date(),
+  priority: undefined,
+  type: "general",
+  status: "open",
+  isComplete: false,
+  estimatedHours: null,
+  actualHours: null,
+  completionDate: null,
+  dependencies: [],
+  previouslyAssignedTo: [],
+  done: false,
+  data: undefined,
+  source: "user",
+  some: () => false,
+  startDate: new Date(),
+  endDate: new Date(),
+  isActive: true,
+  tags: undefined,
+  analysisType: undefined,
+  analysisResults: [],
+  videoThumbnail: "",
+  videoDuration: 0,
+  videoUrl: "",
+  userId: undefined,
+  query: "",
+  getData: async () => task,
+
+  scheduled: {
+    startDate: new Date(),
+    scheduledDate: new Date(),
+    createdBy: "system",
+  },
+
+  // Optional properties
+  details: undefined,
+};
 
 
 // Dynamically create TaskMetadata based on the Task interface
@@ -578,16 +690,31 @@ export const taskMetadata = <T extends BaseData<any>, K extends T = T>(
     taskName: task.taskName,
     _id: task._id,
     priority: task.priority,
-    assignedTo: "",
-    id: "",
-    createdBy: "",
-    timestamp: "",
+    assignedTo: task.assignedTo,
+    id: task.id,
+    createdBy: task.createdBy,
+    name: task.name,
+    category: task.category,
+    timestamp: task.timestamp,
    
-    metadataEntries: "",
-    version: "",
-    isActive: "",
-    config: "",
-   
+    metadataEntries: task.metadataEntries,
+    version: task.version,
+    isActive: task.isActive,
+    config: task.config,
+    keywords: task.keywords,
+    permissions: task.permissions,
+    customFields: task.customFields,
+    versionData: task.versionData,
+    latestVersion: task.latestVersion,
+    apiEndpoint: task.apiEndpoint,
+    apiKey: task.apiKey,
+    timeout: task.timeout,
+    retryAttempts: task.retryAttempts,
+    metadata: task.metadata,
+    initialState: task.initialState,
+    meta: task.meta,
+    mappedSnapshot: task.mappedSnapshot,
+    events: task.events,
     // Add other dynamic properties here as needed
   };
 };
@@ -602,7 +729,7 @@ const myMetaData: UnifiedMetaDataOptions<BaseData<MyDataType>> = {
   videoMetadata: dynamicVideoMetadata,
   mediaMetadata: dynamicMediaMetadata,
   projectMetadata: projectMetadata,
-  taskMetadata: taskMetadata,
+  taskMetadata: taskMetadata(task), // Invoke the function with `task`
   meetingMetadata: dynamicMeetingMetadata,
   structuredMetadata: currentMeta, 
   metadataEntries: {},

@@ -1,7 +1,7 @@
 // autosaveDrawing.ts
 // Import necessary dependencies
 import { saveDrawingToDatabase } from '@/app/api/ApiDrawing';
-import { Tracker } from '../../models/tracker/Tracker';
+import Tracker from '../../models/tracker/Tracker';
 import { WritableDraft } from '../../state/redux/ReducerGenerator';
 
 // Define the Draw type representing the structure of a drawing

@@ -1,7 +1,6 @@
 import { NotificationPreferences } from "@/app/components/communications/chat/ChatSettingsModal";
 import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import dotProp from 'dot-prop';
 import { UserPreferences } from "../../configs/UserPreferences";
 import { endpointPreferences } from "../ApiPreferencesEndpoints";
 import axiosInstance from "../axiosInstance";
@@ -18,7 +17,7 @@ type ApiUserPreferences = {
   setFontSize: (fontSize: string) => Promise<void>;
   saveNotificationPreferencesToBackend: (
     notificationPreferences: NotificationPreferences
-  ) => Promise<void>
+  ) => Promise<void>;
 };
 
 const useApiUserPreferences = (): ApiUserPreferences => {
@@ -26,9 +25,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
 
   const fetchUserPreferences = async (): Promise<UserPreferences> => {
     try {
-      const response = await axiosInstance.get(
-        dotProp.getProperty(endpointPreferences, 'userPreferences.fetchUserPreferences')
-      );
+      const response = await axiosInstance.get(endpointPreferences.userPreferences.fetchUserPreferences);
       return response.data.preferences;
     } catch (error) {
       console.error("Error fetching user preferences:", error);
@@ -47,10 +44,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
     updatedPreferences: UserPreferences
   ): Promise<void> => {
     try {
-      await axiosInstance.put(
-        dotProp.getProperty(endpointPreferences, 'userPreferences.updateUserPreferences'),
-        updatedPreferences
-      );
+      await axiosInstance.put(endpointPreferences.userPreferences.updateUserPreferences, updatedPreferences);
       notify(
         "User preferences updated successfully",
         "User preferences updated successfully",
@@ -63,7 +57,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
       notify(
         "Error updating user preferences",
         "Failed to update user preferences",
-        NOTIFICATION_MESSAGES.UserPreferences.USER__PREFERENCE_UPDATED_FAILED,
+        NOTIFICATION_MESSAGES.UserPreferences.USER_PREFERENCE_UPDATED_FAILED,
         new Date(),
         NotificationTypeEnum.OperationError
       );
@@ -73,10 +67,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
 
   const setTheme = async (theme: string): Promise<void> => {
     try {
-      await axiosInstance.put(
-        dotProp.getProperty(endpointPreferences, 'userPreferences.setTheme'),
-        { theme }
-      );
+      await axiosInstance.put(endpointPreferences.userPreferences.setTheme, { theme });
       notify(
         "Theme set successfully",
         "Theme set successfully",
@@ -99,11 +90,8 @@ const useApiUserPreferences = (): ApiUserPreferences => {
 
   const setFontSize = async (fontSize: string): Promise<void> => {
     try {
-      await axiosInstance.put(
-        dotProp.getProperty(endpointPreferences, 'userPreferences.setFontSize'),
-        { fontSize }
-      );
-    } catch (error) { 
+      await axiosInstance.put(endpointPreferences.userPreferences.setFontSize, { fontSize });
+    } catch (error) {
       console.error("Error setting font size:", error);
       notify(
         "Error setting font size",
@@ -113,14 +101,11 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         NotificationTypeEnum.OperationError
       );
     }
-  }
+  };
 
   const setIdeationPhase = async (ideationPhase: string): Promise<void> => {
     try {
-      await axiosInstance.put(
-        dotProp.getProperty(endpointPreferences, 'userPreferences.setIdeationPhase'),
-        { ideationPhase }
-      );
+      await axiosInstance.put(endpointPreferences.userPreferences.setIdeationPhase, { ideationPhase });
       notify(
         "IdeationPhaseSetSuccess",
         "Ideation phase set successfully",
@@ -143,9 +128,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
 
   const deleteUserPreferences = async (): Promise<void> => {
     try {
-      await axiosInstance.delete(
-        dotProp.getProperty(endpointPreferences, 'userPreferences.deleteUserPreferences')
-      );
+      await axiosInstance.delete(endpointPreferences.userPreferences.deleteUserPreferences);
       notify(
         "UserPreferencesDeleteSuccessful",
         "User preferences deleted successfully",
@@ -166,13 +149,9 @@ const useApiUserPreferences = (): ApiUserPreferences => {
     }
   };
 
-
   const setBrainstormingPhase = async (brainstormingPhase: string): Promise<void> => {
     try {
-      await axiosInstance.put(
-        dotProp.getProperty(endpointPreferences, 'userPreferences.setBrainstormingPhase'),
-        { brainstormingPhase }
-      );
+      await axiosInstance.put(endpointPreferences.userPreferences.setBrainstormingPhase, { brainstormingPhase });
       notify(
         "brainistormingPhaseSetSuccess",
         "Brainstorming phase set successfully",
@@ -192,13 +171,10 @@ const useApiUserPreferences = (): ApiUserPreferences => {
       throw error;
     }
   };
-  
+
   const setLaunchPhase = async (launchPhase: string): Promise<void> => {
     try {
-      await axiosInstance.put(
-        dotProp.getProperty(endpointPreferences, 'userPreferences.setLaunchPhase'),
-        { launchPhase }
-      );
+      await axiosInstance.put(endpointPreferences.userPreferences.setLaunchPhase, { launchPhase });
       notify(
         "launchPhaseSetSuccessfully",
         "Launch phase set successfully",
@@ -218,13 +194,10 @@ const useApiUserPreferences = (): ApiUserPreferences => {
       throw error;
     }
   };
-  
+
   const setDataAnalysisPhase = async (dataAnalysisPhase: string): Promise<void> => {
     try {
-      await axiosInstance.put(
-        dotProp.getProperty(endpointPreferences, 'userPreferences.setDataAnalysisPhase'),
-        { dataAnalysisPhase }
-      );
+      await axiosInstance.put(endpointPreferences.userPreferences.setDataAnalysisPhase, { dataAnalysisPhase });
       notify(
         "DataAnalysisPhaseSetSuccessfully",
         "Data analysis phase set successfully",
@@ -245,22 +218,18 @@ const useApiUserPreferences = (): ApiUserPreferences => {
     }
   };
 
-
-
-  const saveNotificationPreferencesToBackend = async (notificationPreferences: NotificationPreferences): Promise<void> => {
+  const saveNotificationPreferencesToBackend = async (
+    notificationPreferences: NotificationPreferences
+  ): Promise<void> => {
     try {
-      await axiosInstance.put(
-        dotProp.getProperty(endpointPreferences, 'userPreferences.setNotificationPreferences'),
-        { notificationPreferences }
-      );
-
+      await axiosInstance.put(endpointPreferences.userPreferences.setNotificationPreferences, { notificationPreferences });
       notify(
         "NotificationPreferencesSavedSuccessfully",
         "Notification preferences saved successfully",
         NOTIFICATION_MESSAGES.UserPreferences.NOTIFICATION_PREFERENCES_SAVED_SUCCESSFULLY,
         new Date(),
         NotificationTypeEnum.OperationSuccess
-      )
+      );
     } catch (error) {
       console.error("Error saving notification preferences:", error);
       notify(
@@ -269,11 +238,9 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         NOTIFICATION_MESSAGES.UserPreferences.NOTIFICATION_PREFERENCES_SAVING_FAILED,
         new Date(),
         NotificationTypeEnum.OperationError
-      )
+      );
     }
-  }
-
-  // Add more functions for other user preferences operations as needed...
+  };
 
   return {
     fetchUserPreferences,
@@ -285,7 +252,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
     setBrainstormingPhase,
     setLaunchPhase,
     setDataAnalysisPhase,
-    saveNotificationPreferencesToBackend
+    saveNotificationPreferencesToBackend,
   };
 };
 

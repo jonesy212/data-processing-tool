@@ -43,7 +43,7 @@ import { cleanEmptyStrings } from "../../utils/cleanEmptyStrings";
 import { version } from "../../versions/Version";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
-import { Phase, PhaseData, PhaseData } from '@/app/components/phases/Phase';
+import { Phase, PhaseData } from '@/app/components/phases/Phase';
 import { Task } from "../tasks/Task";
 import { Team } from "../teams/Team";
 import { Collaborator, Member } from "../teams/TeamMembers";
@@ -139,6 +139,7 @@ interface BaseData<
   T extends BaseData<any, any> = any,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never,
   AttachmentType extends Attachment = Attachment
 > extends SharedBaseData<K>{
   childIds?: Meta['childIds'];
@@ -312,6 +313,7 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
       createdBy: "creator1",
       timestamp: new Date().getTime(),
     },
+    nulltype: ""
   },
   phase: {
     label: {

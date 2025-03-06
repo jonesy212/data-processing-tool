@@ -15,12 +15,12 @@ import { useMetadata } from "./configs/useMetadata";
 import { useSnapshot } from "./context/SnapshotContext";
 
 const area = fetchUserAreaDimensions().toString()
-const metadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, any>(area);
+const metadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>(area);
 const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
 
 const { snapshotMap } = useSnapshot<T, K<T>, StructuredMetadata<T, K<T>>, keyof T>();
 
-const mappedSnapshot: Map<string, Snapshot<T, K<T>, StructuredMetadata<T, K<T>>, never>> = snapshotMap;
+const mappedSnapshot: Map<string, Snapshot<T, K<T>, StructuredMetadata<T, K<T>>, keyof T>> = snapshotMap;
 
 export const defaultMetadata = <
   T extends BaseData<any> = BaseData<any>,
@@ -41,7 +41,7 @@ export const defaultMetadata = <
    
     permissions: [],
     customFields: {},
-    versionData: [],
+    versionData: null,
   
     metadataEntries: {},
     id: "",

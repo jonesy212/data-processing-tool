@@ -19,7 +19,7 @@ import { SnapshotOperation, SnapshotOperationType } from '../components/snapshot
 import { SnapshotItem } from '../components/snapshots/SnapshotList';
 import { SnapshotStoreConfig } from '../components/snapshots/SnapshotStoreConfig';
 import { InitializedData, InitializedDataStore } from '../components/snapshots/SnapshotStoreOptions';
-import CalendarManagerStoreClass from '../components/state/stores/CalendarEvent';
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { convertSnapshotToMap } from '../components/typings/YourSpecificSnapshotType';
 import { Subscriber } from '../components/users/Subscriber';
 import { snapshotId } from "../components/utils/snapshotUtils";
@@ -233,7 +233,7 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
 ): SnapshotStore<T, K> => {
 
   const {storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, endpointCategory} = storeProps
-  const snapshotData = new SnapshotStore<T, K>({ storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory});
+  const snapshotData = new SnapshotStore<T, K>({ initialState, storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory});
   // Create the Snapshot object from retrievedSnapshot
   const snapshot = {
     // Core Snapshot Properties
@@ -486,7 +486,7 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
     key: retrievedSnapshot.id,
     state: [snapshot],
     store: null,
-    stores: [],
+    stores: (storeProps: SnapshotStoreProps<T, K>) => [], // Return an array or null
     findIndex: () => -1,
     splice: () => [],
     id: retrievedSnapshot.id,
@@ -497,7 +497,7 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
     category: retrievedSnapshot.category,
     description: '',
     isActive: true,
-    version: {} as Version,
+    version: {} as Version<T, K>,
     status: StatusType.Inactive,
     createdAt: new Date(),
     updatedAt: new Date(),

@@ -9,6 +9,7 @@ import {
 } from "@/app/components/support/NotificationContext";
 import { AxiosError } from "axios";
 import { DocumentOptions } from "../components/documents/DocumentOptions";
+import Collaborator from "../components/models/TeamMembers";
 import { Presentation } from "../components/documents/Presentation";
 
 import {

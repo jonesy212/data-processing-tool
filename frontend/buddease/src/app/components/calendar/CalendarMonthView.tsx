@@ -1,4 +1,6 @@
 // MonthView.jsx
+import { NotificationType } from "../../support/NotificationContext";
+import { NotificationPosition, ProjectStateEnum } from '../models/data/StatusType';
 import TaskList from "@/app/components/lists/TaskList";
 import { Project } from "@/app/components/projects/Project";
 import React from "react";
@@ -14,7 +16,6 @@ import { useDispatch } from "react-redux";
 import {
   dropTask,
   resizeTask,
- 
   updateTaskPositionAsync,
 } from "../state/redux/slices/TaskSlice";
 import { updateTask } from "../state/redux/slices/CollaborationSlice";
@@ -57,7 +58,7 @@ const MonthView: React.FC<MonthViewProps> = ({
   ...taskHandlers
 }) => {
   // Assuming you have access to the root state of your application and projectId is defined
-  const state: RootState = rootStores.calendarStore.getState(); // Get the root state
+  const state: RootState = rootStores.calendarManager.getState(); // Get the root state
   const dispatch = useDispatch();
   const selectedProjectData = selectedProject
     ? selectedProject(state, projectId)
@@ -94,8 +95,6 @@ const MonthView: React.FC<MonthViewProps> = ({
     console.log(task);
   };
 
-  // Define the updateTaskPosition action
-
 // Define the Thunk action
 const updateTaskPosition = (
   taskId: string,
@@ -104,16 +103,45 @@ const updateTaskPosition = (
   return async (dispatch: Dispatch<Action<string>>, getState: () => RootState) => {
     try {
       // Make an API call to update the task's position in the database
-      await taskApi.updateTaskPosition(taskId, newPosition, dispatch, notify());
+      await taskApi.updateTaskPosition(
+        taskId,
+        newPosition,
+        dispatch,
+        () => {
+          // Call notify with the required arguments
+          notify(
+            `task-position-updated-${taskId}`, // Unique ID for the notification
+            "Task position updated", // Notification message
+            { taskId, newPosition }, // Notification content
+            new Date(), // Date of the notification
+            NotificationType.OperationSuccess, // Notification type
+            NotificationPosition.BottomRight // Optional: Notification position
+          ).catch((error) => {
+            console.error("Failed to send notification:", error);
+          });
+        }
+      );
 
       // Dispatch an action to update the task's position in the Redux state
       dispatch(updateTaskPositionSuccess(taskId, newPosition));
     } catch (error) {
       // Handle error, if any
       console.error('Error updating task position:', error);
+
+      // Notify about the error
+      notify(
+        `task-position-update-failed-${taskId}`, // Unique ID for the notification
+        "Failed to update task position", // Notification message
+        { taskId, error }, // Notification content
+        new Date(), // Date of the notification
+        NotificationType.OperationError, // Notification type
+        NotificationPosition.BottomRight // Optional: Notification position
+      ).catch((error) => {
+        console.error("Failed to send error notification:", error);
+      });
     }
-  };
-};
+  }
+}
 
 
   const updateTaskPositionSuccess = (taskId: string, newPosition: number) => ({

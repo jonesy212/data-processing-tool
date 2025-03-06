@@ -1,15 +1,15 @@
 import axiosInstance from "@/app/api/axiosInstance";
 import { NotificationType, useNotification } from "@/app/components/support/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
-import dotProp from 'dot-prop';
 import { useParams } from "react-router-dom";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import headersConfig from "./headers/HeadersConfig";
+import { endpoints } from "@/app/api/endpointConfigurations";
 
 // Define the API base URL
-const API_BASE_URL = dotProp.getProperty(endpoints, 'teams');
+const API_BASE_URL = endpointCs.teams;
 
 // Define API notification messages
 interface TeamNotificationMessages {
@@ -71,8 +71,8 @@ class TeamApiService {
   private async requestHandler(
     request: () => Promise<AxiosResponse>,
     errorMessage: string,
-    successMessageId: DataeamNotificationMessages,
-    errorMessageId: DataeamNotificationMessages,
+    successMessageId: keyof TeamNotificationMessages, // Use keyof TeamNotificationMessages
+    errorMessageId: keyof TeamNotificationMessages, // Use keyof TeamNotificationMessages  
     notificationData: any = null
   ): Promise<AxiosResponse> {
     try {
@@ -113,28 +113,29 @@ class TeamApiService {
   }
 
   async fetchTeams(): Promise<AxiosResponse> {
+    const endpoint = endpointConfigurations.teams.list;
     return await this.requestHandler(
-      () => axiosInstance.get(`${API_BASE_URL}/teams`), // Adjust the endpoint URL
+      () => axiosInstance.get(endpoint.path),
       "Failed to fetch teams",
       "FETCH_TEAMS_SUCCESS",
       "FETCH_TEAMS_ERROR"
     );
   }
 
-  
-  async getTeamById(todoId: string): Promise<AxiosResponse> { 
+  async getTeamById(teamId: number): Promise<AxiosResponse> {
+    const endpoint = endpointConfigurations.teams.single(teamId);
     return await this.requestHandler(
-      () => axiosInstance.get(`${API_BASE_URL}/teams/${teamId}`),
+      () => axiosInstance.get(endpoint.path),
       "Failed to fetch team by ID",
       "FETCH_TEAM_DATA_SUCCESS",
-      "FETCH_TEAM_DATA_ERROR",
-    )
-
+      "FETCH_TEAM_DATA_ERROR"
+    );
   }
 
   async addTeam(newTeam: any): Promise<AxiosResponse> {
+    const endpoint = endpointConfigurations.teams.add;
     return await this.requestHandler(
-      () => axiosInstance.post(`${API_BASE_URL}/teams`, newTeam), // Adjust the endpoint URL
+      () => axiosInstance.post(endpoint.path, newTeam),
       "Failed to add team",
       "ADD_TEAM_SUCCESS",
       "ADD_TEAM_ERROR"
@@ -142,8 +143,9 @@ class TeamApiService {
   }
 
   async removeTeam(teamId: number): Promise<AxiosResponse> {
+    const endpoint = endpointConfigurations.teams.remove(teamId);
     return await this.requestHandler(
-      () => axiosInstance.delete(`${API_BASE_URL}/teams/${teamId}`), // Adjust the endpoint URL
+      () => axiosInstance.delete(endpoint.path),
       "Failed to remove team",
       "REMOVE_TEAM_SUCCESS",
       "REMOVE_TEAM_ERROR"
@@ -151,8 +153,9 @@ class TeamApiService {
   }
 
   async updateTeam(teamId: number, updatedTeam: any): Promise<AxiosResponse> {
+    const endpoint = endpointConfigurations.teams.update(teamId);
     return await this.requestHandler(
-      () => axiosInstance.put(`${API_BASE_URL}/teams/${teamId}`, updatedTeam), // Adjust the endpoint URL
+      () => axiosInstance.put(endpoint.path, updatedTeam),
       "Failed to update team",
       "UPDATE_TEAM_SUCCESS",
       "UPDATE_TEAM_ERROR"
@@ -160,41 +163,34 @@ class TeamApiService {
   }
 
   async fetchTeamMembers(teamId: number): Promise<AxiosResponse> {
+    const endpoint = endpointConfigurations.teams.single(teamId);
     return await this.requestHandler(
-      () => axiosInstance.get(`${API_BASE_URL}/teams/${teamId}/members`),
+      () => axiosInstance.get(`${endpoint.path}/members`),
       "Failed to fetch team members",
       "FETCH_TEAM_MEMBERS_SUCCESS",
       "FETCH_TEAM_MEMBERS_ERROR"
     );
   }
-  
- 
-  // Update the fetchTeamData method
+
   async fetchTeamData(teamId: number): Promise<AxiosResponse> {
-    const fetchTeamDataPath = `teams.fetchTeamData.${teamId}`;
-    if (endpoints[fetchTeamDataPath]) {
-      const fetchTeamDataEndpoint = endpoints[fetchTeamDataPath];
-      return await this.requestHandler(
-        () => axiosInstance.get(`${API_BASE_URL}/teams`),
-        "Failed to fetch team data",
-        "FETCH_TEAM_DATA_SUCCESS",
-        "FETCH_TEAM_DATA_ERROR"
-      );
-    } else {
-      throw new Error(`The fetchTeamData endpoint is not defined.`);
-    }
+    const endpoint = endpointConfigurations.teams.fetchTeamData(teamId);
+    return await this.requestHandler(
+      () => axiosInstance.get(endpoint.path),
+      "Failed to fetch team data",
+      "FETCH_TEAM_DATA_SUCCESS",
+      "FETCH_TEAM_DATA_ERROR"
+    );
   }
 
-
-  async assignNoteToTeam(teamId: string, noteId: string): Promise<AxiosResponse>{
+  async assignNoteToTeam(teamId: number, noteId: string): Promise<AxiosResponse> {
+    const endpoint = endpointConfigurations.teams.single(teamId);
     return await this.requestHandler(
-      () => axiosInstance.post(`${API_BASE_URL}/teams/${teamId}/notes/${noteId}`),
+      () => axiosInstance.post(`${endpoint.path}/notes/${noteId}`),
       "Failed to assign note to team",
       "FETCH_TEAM_DATA_SUCCESS",
       "FETCH_TEAM_DATA_ERROR"
-      );
-   }
-
+    );
+  }
   // Additional team API methods can be added here...
 }
 

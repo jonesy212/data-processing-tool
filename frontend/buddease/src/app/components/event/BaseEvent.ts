@@ -4,7 +4,7 @@ import { SharedSnapshotEvent } from "@/app/typings/eventTypes";
 interface BaseEvent {
   eventId: string;
   eventType: string; // A string or enum to identify the event type
-  timestamp: Date; // Timestamp of the event
+  timestamp: number; // Timestamp of the event
   type: string;
 }
 

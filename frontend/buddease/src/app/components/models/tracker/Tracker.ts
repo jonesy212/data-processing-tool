@@ -41,6 +41,7 @@ interface CommonTrackerProps {
   updateUserProfile?: (userData: User, dispatch: any) => void;  // Optional
   sendNotification?: (notification: NotificationData, userData: User) => void;  // Optional
   stroke?: Stroke;
+  strokeColor?: string;
   strokeWidth?: number;
   fillColor?: string;
   isFlippedX?: boolean;

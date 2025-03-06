@@ -2,6 +2,7 @@ import { handleApiError } from "@/app/api/ApiLogs";
 import { createSnapshot, snapshotContainer } from '@/app/api/SnapshotApi';
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
 import { BaseData, Data } from '@/app/components/models/data/Data';
+import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import { CustomApp } from "@/app/components/web3/dAppAdapter/DApp";
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
@@ -20,6 +21,7 @@ import { authenticationPhaseHook, dataAnalysisPhaseHook, generalCommunicationFea
 import useErrorHandling from "../components/hooks/useErrorHandling";
 import { darkModeTogglePhaseHook, notificationBarPhaseHook } from "../components/hooks/userInterface/UIPhaseHooks";
 import { getCategoryFromFilePath } from '../components/libraries/categories/getCategoryFromFilePath';
+import { ThemeEnum } from "../components/libraries/ui/theme/Theme";
 import { SupportedData } from "../components/models/CommonData";
 import FileData from "../components/models/data/FileData";
 import { BorderStyle, DocumentSize } from '../components/models/data/StatusType';
@@ -52,7 +54,7 @@ import { endpoints } from "./ApiEndpoints";
 import { getSnapshotConfig, getSnapshotsAndCategory } from "./SnapshotApi";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
-import { ThemeEnum } from "../components/libraries/ui/theme/Theme";
+import { version } from "@/app/components/versions/Version";
 
 
 // Define the API base URL
@@ -75,7 +77,7 @@ interface CacheResponse<
   ExcludedFields extends keyof T = never
 > {
   id?: string | number | undefined;
-  data: SupportedData<T>;
+  data: SupportedData<T, K, Meta>;
 }
 
 
@@ -89,7 +91,7 @@ interface CustomStyle extends DocxStyle {
 
 const createDefaultVersionData = (overrides?: Partial<VersionData>): VersionData => ({
   versionNumber: "16px",
-  id: 0,
+  id: '0',
   parentId: "",
   parentType: "",
   parentVersion: "",
@@ -98,7 +100,7 @@ const createDefaultVersionData = (overrides?: Partial<VersionData>): VersionData
   parentContent: "",
   parentName: "",
   parentUrl: "",
-
+  notes: "",
   parentChecksum: "",
   parentAppVersion: "",
   parentVersionNumber: "",
@@ -110,7 +112,7 @@ const createDefaultVersionData = (overrides?: Partial<VersionData>): VersionData
   source: "",
   status: "",
 
-  version: "",
+  version: version,
   timestamp: "",
   user: "",
   changes: [],
@@ -136,7 +138,8 @@ const createDefaultVersionData = (overrides?: Partial<VersionData>): VersionData
   documentId: "",
   draft: false,
   userId: "",
-
+  lastUpdated: createLastUpdatedWithVersion(),
+  latestVersion: createLatestVersion(),
   content: "",
   metadata: {
     author: "",
@@ -778,7 +781,7 @@ const cacheData: SupportedData<Data<BaseData<any>>> = {
 
     fullName: "",
     avatarUrl: "",
-
+    tier, token, uploadQuota, bannerUrl,
   },
   assignedUsers: [],
   collaborators: [],
@@ -840,10 +843,10 @@ writeAndUpdateCache(writePath, cacheData)
   });
 
 
-// Update readCache to return SupportedData<T>
+// Update readCache to return SupportedData<T, K, Meta>
 const readCache = async <T extends BaseData<any>>(
   { filePath, currentEvent }: CacheReadOptions<T> & { currentEvent: EventAttendance | null }
-): Promise<SupportedData<T> | undefined> => {
+): Promise<SupportedData<T, K, Meta> | undefined> => {
   try {
 
     function handleEvent(event: SnapshotEvent): void {
@@ -940,7 +943,7 @@ const readCache = async <T extends BaseData<any>>(
 
     if (cacheResponse) {
       // Example: Extract relevant data from cacheResponse
-      const data: SupportedData<T> = cacheResponse.data; // Assuming cacheResponse.data is of type SupportedData<T>
+      const data: SupportedData<T, K, Meta> = cacheResponse.data; // Assuming cacheResponse.data is of type SupportedData<T, K, Meta>
       return data;
     }
     // Handle the response as needed
@@ -988,7 +991,7 @@ const fetchCacheData = async <
       // minor, patch, createdBy
       lastUpdated: versionHistory,
       userSettings: userSettings,
-      dataVersions: dataVersions ?? [],
+      dataVersions: dataVersions ?? { frontend: {}, backend: {} },
       frontendStructure: frontendStructure,
       backendStructure: backendStructure,
       backendConfig: backendConfig,
@@ -1012,19 +1015,19 @@ const fetchCacheData = async <
       calendarEvent: calendarEvent,
       fileType: fileType,
       analysisResults: [],
-      data: {}, // Adjust based on your SupportedData<T> structure
+      data: {}, // Adjust based on your SupportedData<T, K, Meta> structure
     };
 
     // Correct usage of T and M based on constraints
-    const cacheResponse: CacheResponse<T, Meta> = {
+    const cacheResponse: CacheResponse<T, K, Meta> = {
       id: "exampleId",
-      data: mockCacheData as SupportedData<T>, // Ensure data matches SupportedData<T>
+      data: mockCacheData as SupportedData<T, K, Meta>, // Ensure data matches SupportedData<T, K, Meta>
     };
 
     // Return a Promise that resolves to the mock cache data
-    return Promise.resolve<CacheResponse<T, Meta>>({
+    return Promise.resolve<CacheResponse<T, K, Meta>>({
       id: "exampleId",
-      data: cacheResponse.data as SupportedData<T>, // Ensure type consistency
+      data: cacheResponse.data as SupportedData<T, K, Meta>, // Ensure type consistency
     });
 
   } catch (error: any) {

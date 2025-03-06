@@ -1,12 +1,10 @@
-// appPath.ts
-import path from 'path';
+import * as path from "path";
 
 const getAppPath = (versionNumber: string, appVersion: string) => {
-  const currentFilePath = __filename;
-  const appPath = path.resolve(currentFilePath, '../..'); // Go up three levels to reach the app root
+  const appPath = path.resolve(__filename, "../..");
 
-  // Handle variations in app folder names (convert to lowercase)
-  const normalizedAppPath = appPath.toLowerCase().replace(/[_ ]/g, ''); 
+  // Normalize app path (convert to lowercase, remove underscores and spaces)
+  const normalizedAppPath = appPath.toLowerCase().replace(/[_ ]/g, "");
 
   // Include version information in the app path
   const versionedAppPath = path.join(normalizedAppPath, `${versionNumber}_${appVersion}`);

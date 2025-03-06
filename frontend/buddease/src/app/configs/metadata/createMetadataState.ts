@@ -1,6 +1,7 @@
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 // createMetadataState.ts
 
-import { useSecureUserId } from ' @/app/components/utils/useSecureUserId';
+import { useSecureUserId } from '@/app/components/utils/useSecureUserId';
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { BaseData, SharedBaseData } from "@/app/components/models/data/Data";
 import { T, UserConfigData } from "@/app/components/models/data/dataStoreMethods";
@@ -12,11 +13,12 @@ import { UserData } from "@/app/components/users/User";
 import Version from "@/app/components/versions/Version";
 import { VersionHistory } from "@/app/components/versions/VersionData";
 import { useState } from 'react';
-import { AppStructureItem } from "../appStructure/AppStructure";
-import { StructuredMetadata } from "../StructuredMetadata";
+import { AppStructureItem } from "@/app/appStructure/AppStructure";
+import { StructuredMetadata } from "@/app/StructuredMetadata";
+import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/components/versions/createLatestVersion";
 
 interface SharedMetadata<K> extends SharedBaseData<K> {
-  version?:  string | number | Version<T, K>; 
+  version?: string | number | Version<T, K>; 
   lastUpdated?: VersionHistory; 
   isActive?: boolean; 
   config?: Record<string, any>; 
@@ -24,8 +26,6 @@ interface SharedMetadata<K> extends SharedBaseData<K> {
   customFields?: Record<string, any>; 
   baseUrl?: string; 
 }
-
-
 
 function createMetaState<
   T extends BaseData<any, any, StructuredMetadata<any, any>>, 
@@ -43,8 +43,8 @@ function createMetaState<
   tags: string[], 
   metadata: any, 
   initialState: any, 
-  meta: Map<string, Snapshot<UserData<T, K>, Attachment>>,
-  events: EventManager<UserData<T, K, Attachment>, UserData<T, K>, StructuredMetadata<UserData<T, K, Attachment>>>,
+  meta: Map<string, Snapshot<BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>, Attachment>>,
+  events: EventManager<UserData<T, K>, UserData<T, K>, StructuredMetadata<UserData<T, K>, Attachment>>,
   version: Version<T, K>,
   lastUpdated: VersionHistory,
   isActive: boolean,
@@ -211,15 +211,19 @@ export const createMeta = <T extends BaseData<any>, K extends T = T>(
   data: Partial<StructuredMetadata<T, K>>
 ): StructuredMetadata<T, K> => {
   const id = useSecureUserId()
-  const apiEndpoint
+  const apiEndpoint 
   return {
     id: id,
     description: '',
     metadataEntries: {},
     childIds: [],
     relatedData: [],
-    version: { id: '', name: '', createdAt: new Date() }, // Adjust `Version` fields
-    lastUpdated: { versionData: {} }, // Adjust `VersionHistory` fields
+    version: { id: 0, name: '', createdAt: new Date() }, // Adjust `Version` fields
+    lastUpdated: { versionData: {},
+    latestVersion: createLatestVersion(),
+    history: [], 
+    timestamp: new Date(),
+  }, // Adjust `VersionHistory` fields
     isActive: false,
     config: {},
     permissions: [],

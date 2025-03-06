@@ -52,9 +52,12 @@ interface Task<
   id: string;
   title: string;
   description: string;
+  position?: { x: number; y: number }; // Update `position` to be an object
+  property?: string;
   projectName?: string;
   scheduled?: ScheduledData<T>;
   isScheduled?: boolean;
+  size?: number;
   assignedTo: User | User[] | null;
   assigneeId: User["id"];
   dueDate: Date | null | undefined
@@ -131,7 +134,7 @@ const TaskDetails = <T extends BaseData<any>, K extends T = T, Meta extends Stru
       fakeData: task.fakeData,
       comments: task.comments,
       analysisResults: task.analysisResults,
-      completed: task.isCompleted,
+      completed: task.isComplete,
       currentMeta: task.currentMeta,
       currentMetadata: task.currentMetadata,
     }}

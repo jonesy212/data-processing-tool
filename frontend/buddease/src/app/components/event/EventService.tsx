@@ -1,5 +1,13 @@
 // EventService.ts
-
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { Attachment } from '@/app/components/documents/Attachment/attachment'
+import { useMeta } from "@/app/configs/useMeta";
+import { createMeta } from "@/app/configs/metadata/createMetadataState";
+import { VersionHistory } from "@/app/components/versions/VersionData";
+import Version from "../versions/Version";
+import { useMetadata } from "@/app/configs/useMetadata";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import {
     BaseSyntheticEvent,
@@ -7,6 +15,8 @@ import {
     MouseEvent,
     SyntheticEvent,
 } from "react";
+import { BaseData } from '@/app/components/models/data/Data';
+import { T, K, Meta, UserConfigData } from '@/app/components/models/data/dataStoreMethods';
 import { useDispatch, useSelector } from "react-redux";
 import { EventActions } from "../actions/EventActions";
 import { UIActions } from "../actions/UIActions";
@@ -19,6 +29,10 @@ import { RootState } from "../state/redux/slices/RootSlice";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
 import { CustomEventExtension } from "./BaseCustomEvent";
+import { createMetaState } from '@/app/configs/metadata/createMetadataState';
+import { UserData } from '@/app/components/users/User';
+import { Snapshot } from '@/app/components/snapshots';
+import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 
 
 interface CustomMouseEvent<T = Element>
@@ -114,6 +128,10 @@ interface CustomEventWithProperties extends CustomEvent {
   endDate: Date;
   startTime?: Date;
   endTime?: Date;
+  snapshotStore: SnapshotStore<T, K<T>>;
+  eventId: string;
+  eventType: string;
+  timestamp: number;
   addEventListener: (
     type: string,
     listener: EventListenerOrEventListenerObject,
@@ -137,17 +155,23 @@ export const createCustomEvent = (
   startDate: Date,
   endDate: Date
 ): CustomEventExtension => {
+
   const customEvent: CustomEventWithProperties = {
     id,
     title,
     description,
     startDate,
     endDate,
+    snapshotStore: {}, 
+    eventId: "event-id", 
+    eventType: "custom-event", 
+    timestamp: Date.now(), 
     bubbles: false,
     cancelBubble: false,
     cancelable: false,
     startTime: new Date(),
     endTime: new Date(),
+
     // Methods and properties related to event handling
     addEventListener: (
       type: string,
@@ -329,6 +353,7 @@ class EventService {
     eventService.removeEventListener(type, listener, options, useCapture);
   }
 
+
   // Function to create a new event
   static createCustomEvent(
     id: string,
@@ -337,6 +362,11 @@ class EventService {
     startDate: Date,
     endDate: Date
   ): CalendarEvent {
+
+    const area = fetchUserAreaDimensions().toString()
+    const metadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>(area);
+    const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
+
     // Create a new CalendarEvent object with the provided parameters
     const customEvent: CalendarEvent = {
       _id: "",
@@ -351,6 +381,32 @@ class EventService {
       rsvpStatus: "notResponded", // Example RSVP status value, adjust as needed
       priority: "low", // Example priority value, adjust as needed
 
+      currentMeta: currentMeta,
+      currentMetadata: createMetaState(
+        "", // id: unique identifier for the metadata
+        "", // apiEndpoint: endpoint for the API to fetch metadata
+        "", // apiKey: authentication key for API requests
+        0, // timeout: request timeout in milliseconds
+        0, // retryAttempts: number of retry attempts in case of failure
+        "", // name: name of the metadata entity
+        "", // category: category for metadata
+        "", // timestamp: timestamp when the metadata was last modified
+        "", // createdBy: user who created the metadata
+        [], // tags: tags associated with the metadata
+        undefined, // metadata: metadata object, can be undefined initially
+        undefined, // initialState: initial state of the metadata, can be undefined
+        {} as Map<string, Snapshot<BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>>>, // meta: additional metadata, can be an empty array if not needed
+        { eventRecords: {} }, // events: event manager data, initializing with an empty event record
+        {} as Version<T, K<T>>, // version: version information, can be undefined if not applicable
+        {} as VersionHistory, // lastUpdated: last updated version history, it should be provided
+        true, // isActive: boolean flag indicating whether metadata is active or not
+        {}, // config: configuration settings for the metadata, using an empty object
+        [], // permissions: permissions associated with the metadata, empty for now
+        {}, // customFields: any custom fields you might have for metadata, empty object
+        "", // baseUrl: the base URL for API requests, can be an empty string if not used
+        [], // relatedData: related data associated with metadata, empty array for now
+        [], 
+      ),
       // Initialize other properties with default values
       participants: [], // Example empty array, adjust as needed
       options: getDefaultDocumentOptions(),
@@ -363,8 +419,8 @@ class EventService {
       date: new Date(),
       then: implementThen,
       analysisType: {} as AnalysisTypeEnum,
-      analysisResults: {} as DataAnalysisResult[],
-      videoData: {} as VideoData,
+      analysisResults: {} as DataAnalysisResult<T, K<T>>[],
+      videoData: {} as VideoData<T, K<T>>,
       timestamp: undefined,
       meta: {
         createdAt: new Date(),
@@ -558,6 +614,7 @@ const customEvent = createCustomEvent(
 
 // Add events
 const event1: CustomMouseEvent = {
+  
   initCustomEvent(
     type: string,
     bubbles?: boolean, // Optional, can be undefined
@@ -574,16 +631,23 @@ const event1: CustomMouseEvent = {
   bubbles: false,
   cancelBubble: false,
   cancelable: false,
+
+  // Add missing properties
+  snapshotStore: {} as SnapshotStore<T, T, StructuredMetadata<T, T>, never>, // Example value for snapshotStore
+  eventId: "event1-id", // Example value for eventId
+  eventType: "custom-event", // Example value for eventType
+  timestamp: Date.now(), // Example value for timestamp
+  
   composed: false,
-  currentTarget: null || ({} as EventTarget & Element),
+  currentTarget: {} as EventTarget & Element,
   defaultPrevented: false,
   eventPhase: 0,
   isTrusted: false,
   returnValue: false,
   srcElement: null,
-  target: null || ({} as EventTarget & Element),
+  target: {} as EventTarget & Element,
   type: "",
-  timeStamp: 0,
+  timeStamp: Date.now(),
   startTime: new Date(),
   endTime: new Date(),
   composedPath: function (): EventTarget[] {

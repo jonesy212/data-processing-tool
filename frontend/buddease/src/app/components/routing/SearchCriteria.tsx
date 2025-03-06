@@ -86,7 +86,7 @@ interface SupportedSearchResult<T extends  BaseData<any>> extends Entity, Docume
 
 
 // You can also make SupportedData extend SearchResult
-type EnhancedSupportedData<T extends  BaseData<any>> = SupportedData<T> & SupportedSearchResult<T>;
+type EnhancedSupportedData<T extends  BaseData<any>> = SupportedData<T, K, Meta> & SupportedSearchResult<T>;
 
 
 

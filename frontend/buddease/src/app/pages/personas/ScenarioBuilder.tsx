@@ -943,6 +943,10 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
         createdByRenamed: "user1",
         createdAt: new Date(),
         updatedBy: "user1",
+        currentMeta: "",
+        phaseType: "",
+        label: "",
+        date: new Date()
         
       },
       // Add more document data as needed

@@ -5,15 +5,6 @@ class SecureFieldManager {
     #apiKey: string;
     #fields: Map<string, SecureField<any>> = new Map();
   
-  /**
-  * Wraps a value with sensitive field metadata.
-  * @param value - The value to wrap.
-  * @param isSensitive - Whether the field is sensitive.
-  */
-  static createField<T>(value: T, isSensitive: boolean, allowUserAccess = true, allowedRoles: string[] = [], canView: boolean = true): SecureField<T> {
-    return { value, isSensitive, allowUserAccess, allowedRoles, canView };
-  }
-
 
   constructor(apiKey: string) {
     this.#apiKey = apiKey
@@ -46,6 +37,48 @@ class SecureFieldManager {
    */
   static createField<T>(value: T, isSensitive: boolean, allowUserAccess = true, allowedRoles: string[] = [], canView: boolean = true): SecureField<T> {
     return { value, isSensitive, allowUserAccess, allowedRoles, canView };
+  }
+
+
+  /**
+   * Sanitize sensitive fields in the state based on user role and permissions.
+   * @param state - The state object to sanitize.
+   * @param userRole - The role of the user accessing the state.
+   * @param isAdmin - Whether the user has admin privileges.
+   * @returns The sanitized state object.
+   */
+  static sanitizeState(state: any, userRole: string, isAdmin: boolean): any {
+    return Object.keys(state).reduce<Record<string, any>>((sanitized, key) => {
+      const field = state[key];
+      if (field && field.isSensitive) {
+        if (
+          field.allowUserAccess ||
+          isAdmin ||
+          field.allowedRoles?.includes(userRole)
+        ) {
+          sanitized[key] = field.value;
+        } else {
+          sanitized[key] = "REDACTED";
+        }
+      } else {
+        sanitized[key] = field;
+      }
+      return sanitized;
+    }, {});
+  }
+
+  /**
+   * Sanitize a single secure field based on user role and permissions.
+   * @param field - The secure field to sanitize.
+   * @param userRole - The role of the user accessing the field.
+   * @param isAdmin - Whether the user has admin privileges.
+   * @returns Sanitized value or "REDACTED".
+   */
+  static sanitizeField<T>(field: SecureField<T>, userRole: string, isAdmin: boolean): T | "REDACTED" {
+    if (isAdmin || field.allowUserAccess || field.allowedRoles?.includes(userRole)) {
+      return field.value;
+    }
+    return "REDACTED";
   }
 
 
@@ -90,21 +123,6 @@ class SecureFieldManager {
           }
           return sanitized;
       }, {});
-  }
-
-  /**
-   * Sanitize a single secure field based on user role and permissions.
-   * @param field - The secure field to sanitize.
-   * @param userRole - The role of the user accessing the field.
-   * @param isAdmin - Whether the user has admin privileges.
-   * @returns Sanitized value or "REDACTED".
-   */
-
-  static sanitizeField<T>(field: SecureField<T>, userRole: string, isAdmin: boolean): T | "REDACTED" {
-      if (isAdmin || field.allowUserAccess || field.allowedRoles?.includes(userRole)) {
-          return field.value;
-      }
-      return "REDACTED";
   }
 
   /**

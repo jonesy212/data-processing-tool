@@ -2,10 +2,11 @@
 import  FileImportData  from '../components/documents/FileImportData';
 import axiosInstance from "@/app/api/axiosInstance";
 import {
-  NotificationType,
-  NotificationTypeEnum,
+  
   useNotification,
 } from "@/app/components/support/NotificationContext";
+import { NotificationType } from "../components/support/NotificationContext";
+import { NotificationTypeEnum } from "../context/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { headersConfig } from '../components/shared/SharedHeaders';
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
@@ -33,6 +34,7 @@ interface ClientNotificationMessages {
   FETCH_CLIENT_DETAILS_ERROR: string;
   UPDATE_CLIENT_DETAILS_SUCCESS: string;
   UPDATE_CLIENT_DETAILS_ERROR: string;
+  REMOVE_CALENDAR_EVENT_ERROR: string
   // Add more keys as needed
 }
 
@@ -41,6 +43,7 @@ const clientNotificationMessages: ClientNotificationMessages = {
   FETCH_CLIENT_DETAILS_ERROR: NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_ERROR,
   UPDATE_CLIENT_DETAILS_SUCCESS: NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_SUCCESS,
   UPDATE_CLIENT_DETAILS_ERROR: NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_ERROR,
+  REMOVE_CALENDAR_EVENT_ERROR: NOTIFICATION_MESSAGES.Client.REMOVE_CALENDAR_EVENT_ERROR,
   // Add more properties as needed
 };
 

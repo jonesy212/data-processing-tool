@@ -1,7 +1,8 @@
-import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
+import { NotificationTypeEnum, useNotification, NotificationType } from '@/app/components/support/NotificationContext';
 import { AxiosError } from 'axios';
 import { DocumentData } from '../components/documents/DocumentBuilder';
 import { WritableDraft } from '../components/state/redux/ReducerGenerator';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
@@ -10,7 +11,6 @@ import headersConfig from './headers/HeadersConfig';
 // Define the API base URL for trading operations
 const TRADING_API_BASE_URL = endpoints.trading;
 
-// Define trading-specific notification messages
 // Define trading-specific notification messages
 interface TradingNotificationMessages {
     FETCH_TRADING_SUCCESS: string;
@@ -78,20 +78,19 @@ const tradingNotificationMessages: TradingNotificationMessages = {
   FETCH_HISTORICAL_DATA_ERROR: 'Failed to fetch historical data',
   CONFIRM_TRADE_CREATION_ERROR: 'Failed to create trade',
  };
-
-  // Define API notification messages for trading
   
 // Function to handle API errors and notify for trading
 const handleTradingApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: TradingNotificationMessages
+  errorMessageId: keyof TradingNotificationMessages
 ) => {
   handleApiError(error, errorMessage);
   if (errorMessageId) {
+    const errorMessageText = tradingNotificationMessages[errorMessageId] || errorMessage
     useNotification().notify(
       errorMessageId,
-      tradingNotificationMessages[errorMessageId] || errorMessage,
+      errorMessageText,
       null,
       new Date(),
       "TradingError" as NotificationTypeEnum
@@ -100,9 +99,14 @@ const handleTradingApiErrorAndNotify = (
 };
 
 // Trading API functions
-export const fetchTradingDataAPI = async (
+export const fetchTradingDataAPI = async <
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+>(
   tradingId: number,
-  dataCallback: (data: WritableDraft<DocumentData>) => void
+  dataCallback: (data: WritableDraft<DocumentData<T, K, Meta, ExcludedFields>>) => void
 ): Promise<any> => {
   try {
     const fetchTradingEndpoint = `${TRADING_API_BASE_URL}/trading/${tradingId}`;
@@ -121,7 +125,7 @@ export const fetchTradingDataAPI = async (
     handleTradingApiErrorAndNotify(
       error as AxiosError<unknown>,
       errorMessage,
-      'FETCH_TRADING_ERROR'
+      'FETCH_TRADING_ERROR' as NotificationType
     );
     throw error;
   }
@@ -146,7 +150,7 @@ export const updateTradingDataAPI = async (
     handleTradingApiErrorAndNotify(
       error as AxiosError<unknown>,
       errorMessage,
-      'UPDATE_TRADING_ERROR'
+      'UPDATE_TRADING_ERROR' as NotificationType
     );
     throw error;
   }
@@ -170,7 +174,7 @@ export const fetchMarketDataAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_MARKET_DATA_ERROR'
+        'FETCH_MARKET_DATA_ERROR' as NotificationType
       );
       throw error;
     }
@@ -192,7 +196,7 @@ export const fetchMarketDataAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_HISTORICAL_DATA_ERROR'
+        'FETCH_HISTORICAL_DATA_ERROR' as NotificationType
       );
       throw error;
     }
@@ -213,7 +217,7 @@ export const fetchMarketDataAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_NEWS_ERROR'
+        'FETCH_NEWS_ERROR' as NotificationType
       );
       throw error;
     }
@@ -234,7 +238,7 @@ export const fetchMarketDataAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TECHNICAL_ANALYSIS_ERROR'
+        'FETCH_TECHNICAL_ANALYSIS_ERROR' as NotificationType
       );
       throw error;
     }
@@ -255,7 +259,7 @@ export const fetchMarketDataAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_MARKET_SENTIMENT_ERROR'
+        'FETCH_MARKET_SENTIMENT_ERROR' as NotificationType
       );
       throw error;
     }
@@ -277,7 +281,7 @@ export const fetchMarketDataAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TOP_GAINERS_ERROR'
+        'FETCH_TOP_GAINERS_ERROR' as NotificationType
       );
       throw error;
     }
@@ -296,7 +300,7 @@ export const fetchMarketDataAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TOP_LOSERS_ERROR'
+        'FETCH_TOP_LOSERS_ERROR' as NotificationType
       );
       throw error;
     }
@@ -315,7 +319,7 @@ export const fetchMarketDataAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_EXCHANGE_RATES_ERROR'
+        'FETCH_EXCHANGE_RATES_ERROR' as NotificationType
       );
       throw error;
     }
@@ -336,7 +340,7 @@ export const fetchMarketDataAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_ORDER_BOOK_ERROR'
+        'FETCH_ORDER_BOOK_ERROR' as NotificationType
       );
       throw error;
     }
@@ -357,7 +361,7 @@ export const fetchMarketDataAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TRADE_HISTORY_ERROR'
+        'FETCH_TRADE_HISTORY_ERROR' as NotificationType
       );
       throw error;
     }
@@ -423,7 +427,7 @@ export const executeTradeAPI = async (
     handleTradingApiErrorAndNotify(
       error as AxiosError<unknown>,
       errorMessage,
-      'CONFIRM_TRADE_CREATION_ERROR'
+      'CONFIRM_TRADE_CREATION_ERROR' as NotificationType
     );
     throw error;
   }
@@ -442,7 +446,7 @@ export const executeTradeAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_PORTFOLIO_SUMMARY_ERROR'
+        'FETCH_PORTFOLIO_SUMMARY_ERROR' as NotificationType
       );
       throw error;
     }
@@ -463,7 +467,7 @@ export const executeTradeAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_ASSET_DETAILS_ERROR'
+        'FETCH_ASSET_DETAILS_ERROR' as NotificationType
       );
       throw error;
     }
@@ -483,7 +487,7 @@ export const executeTradeAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_MARKET_NEWS_ERROR'
+        'FETCH_MARKET_NEWS_ERROR' as NotificationType
       );
       throw error;
     }
@@ -502,7 +506,7 @@ export const executeTradeAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_ECONOMIC_CALENDAR_ERROR'
+        'FETCH_ECONOMIC_CALENDAR_ERROR' as NotificationType
       );
       throw error;
     }
@@ -521,7 +525,7 @@ export const executeTradeAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TRADING_SIGNALS_ERROR'
+        'FETCH_TRADING_SIGNALS_ERROR' as NotificationType
       );
       throw error;
     }
@@ -540,7 +544,7 @@ export const executeTradeAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_TOP_PERFORMING_ASSETS_ERROR'
+        'FETCH_TOP_PERFORMING_ASSETS_ERROR' as NotificationType
       );
       throw error;
     }
@@ -561,7 +565,7 @@ export const executeTradeAPI = async (
       handleTradingApiErrorAndNotify(
         error as AxiosError<unknown>,
         errorMessage,
-        'FETCH_ASSET_PRICE_HISTORY_ERROR'
+        'FETCH_ASSET_PRICE_HISTORY_ERROR' as NotificationType
       );
       throw error;
     }

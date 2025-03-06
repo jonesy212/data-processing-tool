@@ -1,7 +1,7 @@
 import UserRoles from '@/app/components/users/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
 import { User } from "../../users/User";
-import { UserRole } from "../../users/UserRole";
+import { UserRole } from "../users/UserRole";
 import { Team } from './Team';
 import { Task } from '../tasks/Task';
 
@@ -45,7 +45,11 @@ interface TeamMember extends MemberData {
   
 
   const memberData: MemberData = {
-    bannerUrl: "", roles: "", followers: "", preferences: "", storeId: "",
+    bannerUrl: "", 
+    roles: [], 
+    followers: [], 
+    preferences: "", 
+    storeId: 0,
     id: 1,
     username: 'member1',
     email: 'member1@example.com',
@@ -91,6 +95,7 @@ interface TeamMember extends MemberData {
     activityStatus: "",
     isAuthorized: false
   };
+  
   const teamMember: TeamMember = {
     id: 1,
     username: "user1",
@@ -102,6 +107,6 @@ interface TeamMember extends MemberData {
   } as TeamMember
 
 export default MemberData; 
-  export type { Contributor, TeamMember };
+export type { Contributor, TeamMember };
 
-  export { memberData, teamMember };
+export { memberData, teamMember };

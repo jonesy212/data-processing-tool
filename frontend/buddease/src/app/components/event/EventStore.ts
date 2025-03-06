@@ -1,7 +1,9 @@
 // EventStore.ts
 import { BaseData } from '@/app/components/models/data/Data';
-import { metadata } from '@/app/layout';
-import snapshotUtils from '@/app/components/utisnapshot/utils/snapshotUtils'
+import metadata from '@/app/layout';
+import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
+import { EventManager, InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStore } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
@@ -24,6 +26,10 @@ import { Subscription } from '../subscriptions/Subscription';
 import { useSecureUserId } from '../utils/useSecureUserId';
 import { AllTypes } from '../typings/PropTypes';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
+import { ExcludedFields } from '@/app/components/routing/Fields';
+import { SnapshotEvents } from '@/app/components/snapshots/SnapshotEvents';
+import { Subscriber } from "@/app/components/users/Subscriber";
 
 
 export type EventStore<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = {
@@ -155,74 +161,167 @@ export type EventStore<T extends  BaseData<any>, K extends T = T, Meta extends S
   };
   
 
-  // Define the default event store
-const defaultEventStore = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// Define the default event store
+const defaultEventStore = async <
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
   snapshotId: string,
   storeId: number,
-  additionalHeaders?: Record<string, string>
-): EventStore<T, K> => {
+  additionalHeaders?: Record<string, string>,
+  storeProps?: SnapshotStoreProps<T, K>
+): Promise<EventStore<T, K>> => {
   // Fetch the snapshot data using fetchAndCreateSnapshot
   const coreSnapshot = await fetchAndCreateSnapshot<T, K>(snapshotId, storeId, additionalHeaders);
+  const { category, config, expirationDate, payload, callback, endpointCategory } = storeProps || {};
 
-
-return {
-  initialConfig: {
-    // Provide a default initialConfig or modify according to your needs
+  // Define the initialConfig object
+  const initialConfig = {
     id: "snapshot-1",
     description: "Description of the snapshot",
-    category: category, // Replace with a valid Category instance
-    metadata: metadata, // Replace with structured metadata
-    snapshotCriteria: snapshotCriteria,
-    criteria: criteria,
+    category: {} as Category,
+    metadata: {} as UnifiedMetaDataOptions<T, K, Meta, ExcludedFields<T, K>>,
+    snapshotCriteria: {} as SnapshotWithCriteria<T, K>,
+    criteria: {} as CriteriaType,
     priority: "high",
     version: 1,
-    data: initializedData, // Ensure this is of type InitializedData
-    subscribers: [], // Appropriate subscriber list
-    storeConfig: someStoreConfig, // If applicable
-    initialState: someInitializedState, // Ensure type matches InitializedState<T, K>
+    data: {} as InitializedData<T>,
+    subscribers: [],
+    storeConfig: {} as StoreConfig,
+    initialState: {} as InitializedState<T, K>,
     isCore: true,
-    additionalData: customSnapshotData,
-    
-    subscribers: {} as SubscriberCollection<T, K>[],
+    additionalData: {} as CustomSnapshotData<T, K, Meta>,
     snapshotData: coreSnapshot.snapshotData,
-    snapshotId: '',
-    snapshot: coreSnapshot.snapshot,   
+    snapshotId: coreSnapshot.snapshotId || '',
+    snapshot: coreSnapshot.snapshot || {} as Snapshot<T, K>, // Safely access `snapshot` with a fallback
     snapshotStore: {} as SnapshotStore<T, K>,
     dataItems: coreSnapshot.dataItems,
-    isCore: true,
-    category: {} as Category,
-    data: {} as Map<string, Snapshot<T, K>>,
     events: {} as CombinedEvents<T, K>,
     newData: {} as Snapshot<T, K>,
     payload: {} as UpdateSnapshotPayload<T>,
-      criteria: {} as CriteriaType,
-      snapshotCriteria: {} as SnapshotWithCriteria<T, K>,
-      eventRecords: {} as Record<string, CalendarManagerStoreClass<T, K>[]>,
-      store: {} as SnapshotStore<any, K>,
-  },
+    eventRecords: {} as Record<string, CalendarManagerStoreClass<T, K>[]>,
+    store: {} as SnapshotStore<any, K>,
+  };
 
-  eventRecords: {},
-  callbacks: {},
-  subscribers: {} as SubscriberCollection<T, K>,
-  eventIds: [],
-  onSnapshotAdded: coreSnapshot.onSnapshotAdded, // Using the default implementation or as required
-  onSnapshotRemoved: coreSnapshot.onSnapshotRemoved,
-  removeSubscriber: coreSnapshot.removeSubscriber,
-  onError: coreSnapshot.onError,
-  onInitialize: coreSnapshot.onInitialize,
-  onSnapshotUpdated: coreSnapshot.onSnapshotUpdated,
-  on: coreSnapshot.on,
-  off: coreSnapshot.off,
-  emit: coreSnapshot.emit,
-  once: coreSnapshot.once,
-  addRecord: coreSnapshot.addRecord,
-  removeAllListeners: coreSnapshot.removeAllListeners,
-  subscribe: coreSnapshot.subscribe,
-  unsubscribe: coreSnapshot.unsubscribe,
-  trigger: coreSnapshot.trigger,
-  eventsDetails: coreSnapshot.eventsDetails, // or undefined if you don't have a default value
-  }
+  // Define event handlers (mocked or implemented as needed)
+  const eventHandlers: SnapshotEvents<T, K> = {
+    onSnapshotAdded: (
+      event: string,
+      snapshot: Snapshot<T, K>,
+      snapshotId: string,
+      subscribers: SubscriberCollection<T, K>,
+      snapshotStore: SnapshotStore<T, K>,
+      dataItems: RealtimeDataItem[],
+      subscriberId: string,
+      criteria: SnapshotWithCriteria<T, K>,
+      category: Category
+    ) => {
+      // Implementation...
+    },
+    onSnapshotRemoved: (
+      event: string,
+      snapshot: Snapshot<T, K>,
+      snapshotId: string,
+      subscribers: SubscriberCollection<T, K>,
+      snapshotStore: SnapshotStore<T, K>,
+      dataItems: RealtimeDataItem[],
+      criteria: SnapshotWithCriteria<T, K>,
+      category: Category
+    ) => {
+      // Implementation...
+    },
+    onError: (
+      event: string,
+      error: Error,
+      snapshot: Snapshot<T, K>,
+      snapshotId: string,
+      snapshotStore: SnapshotStore<T, K>,
+      dataItems: RealtimeDataItem[],
+      criteria: SnapshotWithCriteria<T, K>,
+      category: Category
+    ) => {
+      // Implementation...
+    },
+    onSnapshotUpdated: (
+      event: string,
+      snapshotId: string,
+      snapshot: Snapshot<T, K>,
+      data: Map<string, Snapshot<T, K>>,
+      events: Record<string, CalendarManagerStoreClass<T, K>[]>,
+      snapshotStore: SnapshotStore<T, K>,
+      dataItems: RealtimeDataItem[],
+      newData: Snapshot<T, K>,
+      payload: UpdateSnapshotPayload<T>,
+      store: SnapshotStore<any, K>
+    ) => {
+      // Implementation...
+    },
+    emit: (
+      event: string,
+      snapshot: Snapshot<T, K>,
+      snapshotId: string,
+      subscribers: SubscriberCollection<T, K>,
+      type: string,
+      snapshotStore: SnapshotStore<T, K>,
+      dataItems: RealtimeDataItem[],
+      criteria: SnapshotWithCriteria<T, K>,
+      category: Category,
+      snapshotData: SnapshotData<T, K>
+    ) => {
+      // Implementation...
+    },
+    once: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => {
+      // Implementation...
+    },
+    addRecord: (
+      event: string,
+      record: CalendarManagerStoreClass<T, K>,
+      callback: (snapshot: CalendarManagerStoreClass<T, K>) => void
+    ) => {
+      // Implementation...
+    },
+    removeSubscriber: (
+      event: string,
+      snapshotId: string,
+      snapshot: Snapshot<T, K>,
+      snapshotStore: SnapshotStore<T, K>,
+      dataItems: RealtimeDataItem[],
+      criteria: SnapshotWithCriteria<T, K>,
+      category: Category
+    ) => {
+      // Implementation...
+    },
+    removeAllListeners: (event?: string) => {
+      // Implementation...
+    },
+    subscribe: (
+      subscriber: Subscriber<T, K>,
+      callback: (snapshot: Snapshot<T, K>) => void
+    ) => {
+      // Implementation...
+    },
+    unsubscribe: (
+      subscriber: Subscriber<T, K>,
+      callback: (snapshot: Snapshot<T, K>) => void
+    ) => {
+      // Implementation...
+    },
+    trigger: (event: string, snapshot: Snapshot<T, K>) => {
+      // Implementation...
+    },
+    eventsDetails: {}, // Add actual event details if needed
+  };
+
+  // Return the final object
+  return {
+    initialConfig, // Define `initialConfig` only once
+    eventRecords: {},
+    callbacks: {},
+    subscribers: {} as SubscriberCollection<T, K>,
+    eventIds: [],
+    ...eventHandlers, // Spread all event handlers into the returned object
+  };
 };
-
 
 export { defaultEventStore };

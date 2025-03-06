@@ -92,7 +92,4 @@ function validateSnapshotStoreProps<T>(
   
     return snapshotStore.getAllData(); // Example function to fetch all snapshot data
   }
-  
-  
 
-  export {isCalendarEventWithCriteria, getCalendarSnapshotStoreData }

@@ -11,6 +11,7 @@ import FrontendStructure, { frontend } from "@/app/configs/appStructure/Frontend
 import { VersionData } from "./VersionData";
 import getAppPath from 'appPath';
 import { globalState } from 'mobx/dist/internal';
+import { useAuth } from "../../auth/AuthContext";
 
 
 interface Versionable {
@@ -38,17 +39,7 @@ interface AppVersion extends Versionable {
   getAppName: () => string;
 }
 
-// Define selector functions to extract appVersion and databaseVersion from the state
-export const selectAppVersion = (state: RootState) =>
-  state.versionManager.appVersion;
-export const selectDatabaseVersion = (state: RootState) =>
-  state.versionManager.databaseVersion;
 
-
-const { versionNumber } = getCurrentAppInfo();
-const projectPath = getAppPath(versionNumber, appVersion);
-
-// Implement the AppVersion interface
 class AppVersionImpl implements AppVersion, Versionable {
   appName: string = "";
   releaseDate: string = "2023-04-20"; // Ensure releaseDate is typed as a string
@@ -61,178 +52,81 @@ class AppVersionImpl implements AppVersion, Versionable {
   build: number = 0;
   isDevBuild: boolean = false;
 
-
-
   frontendStructure: Promise<FrontendStructure>;
   backendStructure: Promise<BackendStructure>;
 
   constructor(versionInfo: {
-    id: number;
     appName: string;
-    versionNumber: string;
-    checksum: string;
-    appVersion: string;
     releaseDate: string;
     releaseNotes: string[];
-    creator: {
-      id: number;
-      name: string;
-    };
-    content: string;
-    data: any;
-    name: string;
-    url: string;
-    versionHistory: any;
-    draft: boolean;
-    userId: string;
-    documentId: string;
-    parentId: string;
-    parentType: string;
-    parentVersion: string;
-    parentTitle: string;
-    parentContent: string;
-    parentName: string;
-    parentUrl: string;
-    parentChecksum: string;
-    parentMetadata: {};
-    parentAppVersion: string;
-    parentVersionNumber: string;
-    documentType: DocumentTypeEnum;
-    documentName: string;
-    documentDescription: string;
-    documentTags: [];
-    documentStatus: string;
-    documentVisibility: string;
-    documentCreatedAt: Date;
-    documentUpdatedAt: Date;
-    description: string;
-
-    createdAt: Date;
-    updatedAt: Date;
-    isLatest: boolean;
-    isPublished: boolean;
-    publishedAt: Date | null;
-    source: string;
-    status: string;
-    workspaceId: string;
-    workspaceName: string;
-    workspaceType: string;
-    workspaceUrl: string;
-    workspaceViewers: string[];
-    workspaceAdmins: string[];
-    workspaceMembers: string[];
-    workspaceRoles: string[];
-
-    workspacePermissions: string[];
-    workspaceSettings: {};
-    workspaceMetadata: {};
-    workspaceCreator: {
-      id: number;
-      name: string;
-    };
-    workspaceCreatedAt: string;
-    workspaceUpdatedAt: string;
-    workspaceArchivedAt: string;
-    workspaceDeletedAt: string;
-    workspaceVersion: string;
-    workspaceVersionHistory: string[] | null;
-    metadata: {
-      author: string;
-      timestamp: string | Date;
-    };
-    buildNumber: string;
-    versions: {
-      data: VersionData;
-      frontend: FrontendStructure;
-      backend: BackendStructure;
-    };
   }) {
-    this.appName = versionInfo.appName ? versionInfo.appName : "";
+    this.appName = versionInfo.appName || "";
     this.releaseDate = versionInfo.releaseDate;
-    this.releaseNotes = versionInfo.releaseNotes;
-     this.frontendStructure = this.getFrontendStructure();
-     this.backendStructure = this.getBackendStructure();
-  
+    this.releaseNotes = versionInfo.releaseNotes || [];
+    
+    // Initialize structures
+    this.frontendStructure = this.getFrontendStructure();
+    this.backendStructure = this.getBackendStructure();
   }
 
-  // Example function to retrieve FrontendStructure (returns a promise)
-  private getFrontendStructure(): Promise<FrontendStructure> {
+  private async getFrontendStructure(): Promise<FrontendStructure> {
     return Promise.resolve({
-
-      id: 0,
-      name: "",
+      id: 1,
+      name: "Frontend",
       components: ["Header", "Footer", "Sidebar"],
       layout: "Grid",
       version: "1.0.0",
-      versions: {
-        backend: backend,
-        frontend: frontend
-      },
-      versionData: {},
-  
-      description: "",
+      description: "Frontend structure metadata",
       createdAt: new Date(),
       updatedAt: new Date(),
-      isLatest: false,
-      isPublished: false,
-      publishedAt: null,
+      isLatest: true,
+      isPublished: true,
+      publishedAt: new Date(),
       metadata: {},
-      type: "",
-      path: "",
-      content: "",
-      draft: "",
-      permissions: "",
-      structureHash: "",
-      getStructureHash: "",
-      getStructure: "",
-      frontendVersions: "",
-      getStructureAsArray: "",
-      getStructureChecksum: "",
-      major: "", 
-      minor: "",
-      patch: "",
-      backend: backendStructure,
-      frontend: this.frontendStructure,
+      type: "UI",
+      path: "/frontend",
+      content: "<div>...</div>",
+      draft: false,
+      permissions: ["read", "write"],
+      structureHash: "abc123",
+      getStructureHash: () => "abc123",
+      getStructure: () => "Structure Data",
+      frontendVersions: ["1.0.0", "1.1.0"],
+      getStructureAsArray: () => ["Component1", "Component2"],
+      getStructureChecksum: () => "checksum123",
+      major: 1, 
+      minor: 0,
+      patch: 0
     });
   }
 
-  // Example function to retrieve BackendStructure (returns a promise)
-  private getBackendStructure(): Promise<BackendStructure> {
-    const backendStructure = new BackendStructure(projectPath, globalState);
+  private async getBackendStructure(): Promise<BackendStructure> {
+    const backendStructure = new BackendStructure("/backend/path", {});
     backendStructure.setStructureHash("exampleHash");
 
+    const userRole: UserRole | undefined = getCurrentUserRole();
+    const isAdmin: boolean = checkIfAdmin(userRole);
+
     return Promise.resolve({
-      // #structureHash,
-      toSecureMetadata, sanitize,
-      major: 1, minor: 0, patch: 0,
+      structureHash: backendStructure.getStructureHash(),
+      version: "1.0.0",
       services: ["UserService", "AuthService"],
       databaseSchema: "v1.2",
-      version: "1.0.0",
-      structureHash: "",
-      globalState: {},
-      setDatabaseSchema: (schema: string) => {},
+      major: 1,
+      minor: 0,
+      patch: 0,
+      toSecureMetadata: backendStructure.toSecureMetadata(),
+      sanitize: backendStructure.sanitize(userRole, isAdmin),
       getDatabaseSchema: () => "v1.2",
-      addService: (service: string) => {},
-      removeService: (service: string) => {},
-      updateVersion: (version: string) => {},
       getVersion: () => "1.0.0",
       getServices: () => ["UserService", "AuthService"],
       validateStructure: () => true,
-      serializeStructure: () => "",
-      deserializeStructure: (serialized: string) => {},
+      serializeStructure: () => "{}",
       compareStructures: (other: BackendStructure) => true,
-      migrateStructure: (newStructure: BackendStructure) => Promise.resolve(),
-      setServices: "",
-      getStructure: "",
-      getStructureAsArray: "",
-      traverseDirectoryPublic: "",
-      getStructureHash: "",
-      setStructureHash: "",
-      updateStructureHash: "",
-      getStructureHashAndUpdateIfNeeded: "",
-      backendVersions: "",
+      migrateStructure: async (newStructure: BackendStructure) => {},
     });
   }
+
   getAppName(): string {
     return this.appName;
   }
@@ -254,11 +148,7 @@ class AppVersionImpl implements AppVersion, Versionable {
   }
 
   getVersionString(): string {
-    const versionString = `${this.major}.${this.minor}.${this.patch}.${this.build}`;
-    const apiVersionHeader = API_VERSION_HEADER
-      ? `- API Version: ${API_VERSION_HEADER}`
-      : "";
-    return `${versionString} ${apiVersionHeader}`;
+    return `${this.major}.${this.minor}.${this.patch}.${this.build}`;
   }
 
   getVersionStringWithBuildNumber(buildNumber: number): string {
@@ -267,6 +157,12 @@ class AppVersionImpl implements AppVersion, Versionable {
 }
 
 export { AppVersionImpl as AppVersion };
+
+
+
+
+
+
 
 // Define the appVersion object with the correct structure
 const appVersion: AppVersion = new AppVersionImpl({
@@ -348,6 +244,16 @@ const appVersion: AppVersion = new AppVersionImpl({
     backend: {} as BackendStructure,
   },
 });
+
+const { versionNumber } = getCurrentAppInfo();
+const projectPath = getAppPath(versionNumber, appVersion);
+
+
+// Define selector functions to extract appVersion and databaseVersion from the state
+export const selectAppVersion = (state: RootState) =>
+  state.versionManager.appVersion;
+export const selectDatabaseVersion = (state: RootState) =>
+  state.versionManager.databaseVersion;
 
 // Update the appName
 appVersion.updateAppName("NewApp");

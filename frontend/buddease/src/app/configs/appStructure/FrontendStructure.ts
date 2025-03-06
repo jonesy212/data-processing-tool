@@ -1,3 +1,4 @@
+import { Permission } from '@/app/components/users/Permission';
 import axiosInstance from "@/app/api/axiosInstance";
 import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import { VersionData, VersionHistory } from "@/app/components/versions/VersionData";
@@ -9,12 +10,14 @@ import { AppStructureItem } from "../appStructure/AppStructure";
 import { DataVersions } from "../DataVersionsConfig";
 
 export default class FrontendStructure implements AppStructureItem {
+  [key: string]: any;
+  
   versions: DataVersions = {
     backend: undefined,
     frontend: undefined
   }
   
-  versionData: string | VersionData | null = []; // Changed to VersionData[] to match AppStructureItem
+  versionData: string | VersionData | null; // Changed to VersionData[] to match AppStructureItem
 
   id: string;
   name: string;
@@ -22,13 +25,7 @@ export default class FrontendStructure implements AppStructureItem {
   path: string;
   content: string;
   draft: boolean;
-  permissions: {
-    read: boolean;
-    write: boolean;
-    delete: boolean;
-    share: boolean;
-    execute: boolean;
-  };
+  permissions: Permission
   items?: Record<string, AppStructureItem>;
 
   private structure?: Record<string, AppStructureItem> | undefined = {};
@@ -47,17 +44,22 @@ export default class FrontendStructure implements AppStructureItem {
     this.content = "";
     this.draft = false;
     this.permissions = {
-      read: true,
-      write: true,
-      delete: true,
-      share: true,
-      execute: true,
+      userId: 'default', // Provide a default userId
+      permissions: {}, // Default empty UserPermissions
+      permissionType: 'read', // Default permission type
+      canView: true, // From BasePermissions
+      canEdit: false, // From BasePermissions
+      read: true, // New property
+      write: false, // New property
+      delete: false, // New property
+      share: false, // New property
+      execute: false, // New property
     };
     this.items = {};
     this.major = major;
     this.minor = minor;
     this.patch = patch;
-
+    this.versionData = "";
     // Check if 'fs' is available (only in server-side)
     if (typeof window === "undefined") {
       import("fs").then((fsModule) => {
@@ -108,15 +110,20 @@ export default class FrontendStructure implements AppStructureItem {
           items: {},
           draft: false,
           permissions: {
-            read: true,
-            write: true,
-            delete: true,
-            share: true,
-            execute: true,
+            userId: 'default', // Provide a default userId
+            permissions: {}, // Default empty UserPermissions
+            permissionType: 'read', // Default permission type
+            canView: true, // From BasePermissions
+            canEdit: false, // From BasePermissions
+            read: true, // New property
+            write: false, // New property
+            delete: false, // New property
+            share: false, // New property
+            execute: false, // New property
           },
           content: fileContent,
           versions: undefined,
-          versionData: []
+          versionData: null
         };
         items.push(fileItem);
       }
@@ -137,8 +144,58 @@ export default class FrontendStructure implements AppStructureItem {
     // Simulated async logic to load backend versions
     return new Promise((resolve) => {
       resolve({
-        version1: { /* app structure item */ },
-        version2: { /* app structure item */ }
+        version1: {
+          id: "version1",
+          name: "Backend Version 1",
+          type: "backend",
+          path: "/backend/version1",
+          content: "Backend version 1 content",
+          draft: false,
+          permissions: {
+            userId: 'default', // Provide a default userId
+            permissions: {}, // Default empty UserPermissions
+            permissionType: 'read', // Default permission type
+            canView: true, // From BasePermissions
+            canEdit: false, // From BasePermissions
+            read: true, // New property
+            write: false, // New property
+            delete: false, // New property
+            share: false, // New property
+            execute: false, // New property
+          },
+          versions: {
+            backend: undefined,
+            frontend: undefined,
+          },
+          versionData: null,
+          items: {}, // Optional, can be an empty object
+        },
+        version2: {
+          id: "version2",
+          name: "Backend Version 2",
+          type: "backend",
+          path: "/backend/version2",
+          content: "Backend version 2 content",
+          draft: false,
+          permissions: {
+            userId: 'default', // Provide a default userId
+            permissions: {}, // Default empty UserPermissions
+            permissionType: 'read', // Default permission type
+            canView: true, // From BasePermissions
+            canEdit: false, // From BasePermissions
+            read: true, // New property
+            write: false, // New property
+            delete: false, // New property
+            share: false, // New property
+            execute: false, // New property
+          },  
+          versions: {
+            backend: undefined,
+            frontend: undefined,
+          },
+          versionData: null,
+          items: {}, // Optional, can be an empty object
+        },
       });
     });
   }
@@ -147,8 +204,58 @@ export default class FrontendStructure implements AppStructureItem {
     // Simulated async logic to load frontend versions
     return new Promise((resolve) => {
       resolve({
-        versionA: { /* app structure item */ },
-        versionB: { /* app structure item */ }
+        versionA: {
+          id: "versionA",
+          name: "Frontend Version A",
+          type: "frontend",
+          path: "/frontend/versionA",
+          content: "Frontend version A content",
+          draft: false,
+          permissions: {
+            userId: 'default', // Provide a default userId
+            permissions: {}, // Default empty UserPermissions
+            permissionType: 'read', // Default permission type
+            canView: true, // From BasePermissions
+            canEdit: false, // From BasePermissions
+            read: true, // New property
+            write: false, // New property
+            delete: false, // New property
+            share: false, // New property
+            execute: false, // New property
+          },  
+          versions: {
+            backend: undefined,
+            frontend: undefined,
+          },
+          versionData: null,
+          items: {}, // Optional, can be an empty object
+        },
+        versionB: {
+          id: "versionB",
+          name: "Frontend Version B",
+          type: "frontend",
+          path: "/frontend/versionB",
+          content: "Frontend version B content",
+          draft: false,
+          permissions: {
+            userId: 'default', // Provide a default userId
+            permissions: {}, // Default empty UserPermissions
+            permissionType: 'read', // Default permission type
+            canView: true, // From BasePermissions
+            canEdit: false, // From BasePermissions
+            read: true, // New property
+            write: false, // New property
+            delete: false, // New property
+            share: false, // New property
+            execute: false, // New property
+          },  
+          versions: {
+            backend: undefined,
+            frontend: undefined,
+          },
+          versionData: null,
+          items: {}, // Optional, can be an empty object
+        },
       });
     });
   }
@@ -181,30 +288,43 @@ export default class FrontendStructure implements AppStructureItem {
     const frontendStructure: FrontendStructure = new FrontendStructure(projectPath);
     const frontendStructureItems = await frontendStructure.getStructureAsArray();
     const frontendStructureItemsWithVersions = frontendStructureItems.map((item) => {
-      const { id, name, type, items, path, draft, content, permissions, versions, versionData } = item;
-      const currentVersion = versionData[versionData.length - 1]?.version;
-
-      // Ensure versionData is an array
-      const versionDataArray = Array.isArray(versionData) ? versionData : [];
-      
-      // Ensure versionData is not empty before accessing the last item
-      const latestVersionData: VersionData = versionDataArray.length > 0 
-        ? versionDataArray[versionDataArray.length - 1] 
-        : {
-            version: '0',
-            id, parentId, parentType, parentVersion,
-            
-            timestamp: '',
-            user: 'unknown',
-            changes: [],
-            lastUpdated: '',
-          };
-      
-      const history = versionData.map((version) => ({
-        version: version.version,
-        lastUpdated: version.lastUpdated,
-        timestamp: version.timestamp
+    const { id, name, type, items, path, draft, content, permissions, versions, versionData } = item;
+    
+    // Ensure versionData is an array
+    const versionDataArray = Array.isArray(versionData) ? versionData : [];
+    
+    // Ensure versionData is not empty before accessing the last item
+    const latestVersionData: VersionData = versionDataArray.length > 0 
+    ? versionDataArray[versionDataArray.length - 1] 
+    : {
+      version: '1.0.0',
+      id: '123',
+      parentId: '456',
+      parentType: 'feature',
+      parentVersion: '1.0.0',
+      timestamp: '2023-10-01T12:00:00Z',
+      user: 'admin',
+      changes: ['Initial version'],
+      lastUpdated: '2023-10-01T12:00:00Z',
+    };
+    
+      // Define data and changes
+      const data = latestVersionData.changes; // or any other logic to derive data
+      const changes = latestVersionData.changes; // or any other logic to derive changes
+  
+    
+    // Map versionDataArray to history
+      const history = versionDataArray.map((version: VersionData) => ({
+      id: version.id,
+      version: version.version,
+      lastUpdated: version.lastUpdated,
+        timestamp: version.timestamp,
+        data: version.changes,
+        changes: version.changes,
       }));
+      
+    // Use currentVersion if needed
+    const currentVersion = latestVersionData.version;
 
       return {
         id,
@@ -216,11 +336,14 @@ export default class FrontendStructure implements AppStructureItem {
         content,
         permissions,
         versions,
+        data,
+        changes,
         versionData: versionDataArray,
         latestVersion: createLatestVersion(latestVersionData),
-        lastUpdated: latestVersion.lastUpdated,
-        timestamp: latestVersion.timestamp,
-        history: []
+        lastUpdated: latestVersionData.lastUpdated,
+        timestamp: latestVersionData.timestamp,
+        history,
+        currentVersion,
       } as VersionHistory;
     });
     return frontendStructureItemsWithVersions;

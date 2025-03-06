@@ -138,12 +138,17 @@ type SnapshotStoreUnion<T extends BaseData, K extends T = T> =
 
 // Update Snapshots to use K
 type Snapshots<
+<<<<<<< HEAD
   T extends BaseData, 
+=======
+  T extends BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>, 
+>>>>>>> b0173ab (renamed shopping_center to shoppingCenter)
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > =
-  | SnapshotsArray<T, K>
-  | SnapshotsObject<T, K>;
+  | SnapshotsArray<T, K, Meta>
+  | SnapshotsObject<T, K, Meta>;
+
 
 // Update SnapshotsObject to use K
 type SnapshotsObject<
@@ -155,13 +160,17 @@ type SnapshotsObject<
 };
 
 type SnapshotsArray<
-  T extends BaseData,
+  T extends BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > = Array<SnapshotUnion<T, K, Meta>>;
 
-type SnapshotStoreObject<T extends BaseData, K extends T = T> = {
-  [key: string]: SnapshotStoreUnion<T, K>;
+type SnapshotsObject<
+  T extends BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> = {
+  [key: string]: SnapshotUnion<T, K, Meta>;
 };
 
 type Result<T> = { success: true; data: T } | { success: false; error: Error };
@@ -3666,7 +3675,7 @@ export type {
   SnapshotStoreUnion
 };
 
-export { snapshots };
+export { snapshots, snapshotFunction };
 
 // Create a subscription object
 const subscription: Subscription<T, K<T>> = {

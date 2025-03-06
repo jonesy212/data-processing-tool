@@ -2,7 +2,7 @@
 
 import { createAction } from '@reduxjs/toolkit';
 import { CollaborationPreferences } from '../interfaces/settings/CollaborationPreferences';
-
+import { Collaborator }  from '@/app/components/models/teams/TeamMembers'
 // Collaboration actions
 export const CollaborationActions = {
 

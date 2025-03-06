@@ -1,3 +1,4 @@
+import { Attachment } from '@/app/components/documents/Attachment/attachment'
 import { handleApiError } from '@/app/api/ApiLogs';
 import { BaseData } from '@/app/components/models/data/Data';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
@@ -126,14 +127,32 @@ const updateTaskPositionSuccess = <T extends  BaseData<any>, K extends T = T, Me
     },
   };
 };
-
-
-const updateTaskPosition = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(taskId: string, newPosition: number, dispatch: Dispatch, notify: () => void): Promise<void> => {
+const updateTaskPosition = async <
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
+  taskId: string,
+  newPosition: { x: number; y: number }, // Update to accept an object
+  dispatch: Dispatch,
+  notify: () => void
+): Promise<void> => {
   try {
     const updateTaskEndpoint = `${API_BASE_URL}/updatePosition`; // Adjust the API endpoint according to your project's API structure
-    const response: AxiosResponse<Task<T, K>> = await axiosInstance.post(updateTaskEndpoint, { task: taskId, position: newPosition });
 
-    const updatedTask: Task<T, K> = response.data;
+    // Define the Task type explicitly to match the expected type
+    type ExpectedTask = Task<
+      BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>,
+      BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>,
+      StructuredMetadata<any, any>
+    >;
+
+    const response: AxiosResponse<ExpectedTask> = await axiosInstance.post(updateTaskEndpoint, {
+      task: taskId,
+      position: newPosition, // Pass the object with `x` and `y` properties
+    });
+
+    const updatedTask: ExpectedTask = response.data;
 
     // Update task in task manager store (if applicable)
     const taskManagerStore = useTaskManagerStore(); // Ensure this hook is correctly used

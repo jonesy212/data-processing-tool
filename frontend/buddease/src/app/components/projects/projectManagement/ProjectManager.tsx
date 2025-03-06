@@ -1,7 +1,15 @@
+import { Attachment } from '@/app/components/documents/Attachment/attachment'
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { addSnapshot, mergeSnapshots, snapshotContainer, takeSnapshot } from "@/app/api/SnapshotApi";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import React, { useRef, useState } from "react";
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
+import { storeProps } from '@/app/components/snapshots/SnapshotStoreProps';
+import {
+  addSnapshot, mergeSnapshots, snapshotContainer, takeSnapshot,
+  mapSnapshots,
+  updateSnapshotStore,
+  deleteSnapshotStore
+ } from "@/app/api/SnapshotApi";
+import React, { useRef, useState, useEffect } from "react";
 import { useSnapshotManager } from "../../hooks/useSnapshotManager";
 import useStorageManager from "../../hooks/useStorageManager";
 import { BaseData, Data } from "../../models/data/Data";
@@ -14,7 +22,12 @@ import {
     deleteSnapshot,
     updateSnapshot,
 } from "../../snapshots/snapshotHandlers";
-import { useSnapshotStore } from "./useSnapshotStore";
+import { useSnapshotStore } from '../../snapshots/useSnapshotStore';
+import { T, K, Meta} from "@/app/components/models/data/dataStoreMethods";
+import { Project } from '@/app/components/projects/Project';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+
+
 // Define project phases
 enum ProjectPhase {
   PHASE_1 = "Phase 1",
@@ -25,66 +38,92 @@ enum ProjectPhase {
 
 
 // Define Data for the snapshot
-interface ProjectData<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends BaseData {
+interface ProjectData<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> extends BaseData<any, any, StructuredMetadata<any, any>, never, Attachment> {
   currentPhase: ProjectPhase;
   tasks: Task<T, K>[];
 }
 
-
 interface ProjectManagerProps {
-  storeProps: SnapshotStoreProps<ProjectData<T, K>>; // Adjust type according to your structure
+  storeProps: SnapshotStoreProps<ProjectDataManagement>; // Adjust type according to your structure
+}
+
+type ProjectDataManagement = ProjectData<T, K<T>, StructuredMetadata<T, K<T>>>
+
+interface ProjectSnapshot extends Snapshot<BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>, StructuredMetadata<any, any>, never> {
+  projectData: ProjectDataManagement;
 }
 
 const ProjectManager: React.FC<ProjectManagerProps> = async ({ storeProps }) => {
+    const {
+      storeId,
+      initialState,
+      name,
+      version,
+      schema,
+      options,
+      category,
+      config,
+      operation,
+      expirationDate,
+      payload,
+      callback,
+    
+      endpointCategory,
+    } = storeProps;
+
   const storageManager = useStorageManager("project-phase-data");
-  const initialData = storageManager.getItem() as ProjectData | undefined;
-  const [currentPhase, setCurrentPhase] = useState<ProjectPhase>(
-    initialData?.currentPhase || ProjectPhase.PHASE_1
-  );
-  const {
-    states,
-    currentState,
-    handleSelectSnapshot,
-    handleAddSnapshot,
-    handleDeleteSnapshot,
-    restoreSnapshot,
-    clearSnapshots,
-  } = useSnapshotStore(initialStates);
+  const initialData = storageManager.getItem() as ProjectDataManagement | undefined;
+  const [currentPhase, setCurrentPhase] = useState<ProjectPhase>(initialData?.currentPhase || ProjectPhase.PHASE_1);
+  const initialStates: Snapshot<T, K<T>>[] = []; // Explicitly define the type
 
-  const snapshot = snapshotApi.getSnapshot()
-  const criteria = await snapshotApi.getSnapshotCriteria(
-    snapshotContainer as unknown as SnapshotContainer<Data<BaseData<any>>, Data<BaseData<any>>>, 
-    snapshot
-  );
-  const snapshotId = await snapshotApi.getSnapshotId(criteria);
-  const storeId = await snapshotApi.getSnapshotStoreId(snapshotId); 
-  const operation: SnapshotOperation<T, K> = {
-    // Provide the required operation details
-    operationType: SnapshotOperationType.TaskSnapshotReference
-  };
-  const options = await useSnapshotManager(storeId) 
-  ? new SnapshotManagerOptions().get() 
-  : {};
+  const [states, setStates] = useState<any[]>([]); // Replace `any` with the actual type
+  const [currentState, setCurrentState] = useState<any>(null); // Replace `any` with the actual type
 
-  
-  const [tasks, setTasks] = useState<Task<T, K>[]>(initialData?.tasks || []);
-  const {
-    toreId, 
-    name, 
-    version, 
-    schema, 
+  const snapshotStoreRef = useRef(new SnapshotStore<ProjectDataManagement>({storeId, initialState, storeProps, name, version, schema, options, category, config, operation, expirationDate, payload, callback, endpointCategory }))
 
-    category, 
-    config, 
+  let snapshotId: string;
+  useEffect(() => {
+    
+    const fetchSnapshotData = async () => {
+      const snapshotStore = await useSnapshotStore(
+        async (snapshot, subscribers, storeProps) => {
+          // Implement the logic to add a snapshot to the list
+          return Promise.resolve(null); // Replace with actual logic
+        },
+        storeProps
+      );
 
-    expirationDate, 
-    payload, 
-    callback, 
+      snapshotStoreRef.current = snapshotStore;
+       // Fetch initial snapshot data
+       const snapshot = await snapshotApi.getSnapshot("", Number(storeId), additionalHeaders); // Await the promise
 
-    endpointCategory 
-  } = storeProps
+      const criteria: CriteriaType = await snapshotApi.getSnapshotCriteria(
+        snapshotContainer as unknown as SnapshotContainer<Data<BaseData<any>>, Data<BaseData<any>>>, 
+        snapshot
+      );
 
-  const snapshotStoreRef = useRef(new SnapshotStore<ProjectData>({storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, endpointCategory }))
+      const snapshotId = snapshotApi.getSnapshotId(criteria).toString();
+
+      const operation: SnapshotOperation<any, any> = {
+        operationType: SnapshotOperationType.TaskSnapshotReference,
+      };
+      const options = await useSnapshotManager(Number(storeId)) 
+        ? new SnapshotManagerOptions().get() 
+        : {};
+
+      // Set initial states
+      setStates(snapshotStore.states);
+      setCurrentState(snapshotStore.currentState);
+    };
+
+    fetchSnapshotData();
+  }, [storeId, additionalHeaders]);
+
+  const [tasks, setTasks] = useState<Task<T, K<T>>[]>(initialData?.tasks || []);
 
   const advanceToNextPhase = () => {
     const nextPhase = getNextPhase(currentPhase);
@@ -106,25 +145,47 @@ const ProjectManager: React.FC<ProjectManagerProps> = async ({ storeProps }) => 
     updateLocalStorage(previousPhase, tasks);
   };
 
-  const updateLocalStorage = (phase: ProjectPhase, taskList: Task<T, K>[]) => {
+  const updateLocalStorage = (phase: ProjectPhase, taskList: Task<T, K<T>>[]) => {
     storageManager.setItem({ currentPhase: phase, tasks: taskList });
   };
 
-  const getActionHistory = async (): Promise<SnapshotStoreConfig<Snapshot<ProjectData>, ProjectData>> => {
-    const entityActions = useSnapshotManager(storeId);
-    const snapshotStoreSnapshots = await entityActions.getSnapshots(snapshotStoreRef.current);
+  const getActionHistory = async (): Promise<
+    SnapshotStoreConfig<Snapshot<BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>>, ProjectDataManagement>
+  > => {
+    const entityActions = useSnapshotManager(Number(storeId));
+    const rawSnapshots = await entityActions.getAllSnapshots(snapshotStoreRef.current);
+
+    // Map rawSnapshots to ProjectSnapshot
+    const snapshotStoreSnapshots: ProjectSnapshot[] = rawSnapshots.map((data: ProjectSnapshot) => ({
+      ...data, // Include all Snapshot properties
+      projectData: data, // Include the project-specific data
+    }));
+
+        // Map snapshotStoreSnapshots to ProjectSnapshot
+    const mappedSnapshots: ProjectSnapshot[] = snapshotStoreSnapshots.map((data: ProjectSnapshot) => ({
+      ...data, // Include all Snapshot properties
+      projectData: data, // Include the project-specific data
+    }));
+    
     const actions = {
       takeSnapshot: takeSnapshot,
       updateSnapshot: updateSnapshot,
       deleteSnapshot: deleteSnapshot,
       addSnapshot: addSnapshot,
       mergeSnapshots: mergeSnapshots,
+      mapSnapshots: mapSnapshots,
+      updateSnapshotStore: updateSnapshotStore,
+      deleteSnapshotStore: deleteSnapshotStore
     };
 
-    const actionHistory: SnapshotStoreConfig<Snapshot<ProjectData>, ProjectData> = {
-      snapshots: snapshotStoreSnapshots,
-      actions: actions,
-    };
+
+  const actionHistory: SnapshotStoreConfig<
+        ProjectSnapshot,
+        ProjectDataManagement
+      > = {
+        snapshots: mappedSnapshots,
+        actions: actions,
+      };
 
     return actionHistory;
   };
@@ -132,7 +193,7 @@ const ProjectManager: React.FC<ProjectManagerProps> = async ({ storeProps }) => 
   const undoLastAction = () => {
     if (snapshotStoreRef.current) {
       getActionHistory().then(
-        (value: SnapshotStoreConfig<T, ProjectData>) => {
+        (value: SnapshotStoreConfig<T, ProjectDataManagement>) => {
           const actionHistory = value.actions || [];
           if (Array.isArray(actionHistory) && actionHistory.length > 0) {
             const lastAction = actionHistory.pop();
@@ -173,13 +234,13 @@ const ProjectManager: React.FC<ProjectManagerProps> = async ({ storeProps }) => 
       <ul>
         {tasks.map((task) => (
           <li key={task.id}>
-            {task.description} - {task.completed ? "Completed" : "Incomplete"}
+            {task.description} - {task.isComplete ? "Completed" : "Incomplete"}
             <button onClick={() => markTaskAsComplete(task.id as string)}>Mark as Complete</button>
           </li>
         ))}
       </ul>
     </div>
   );
-
 };
+
 export default ProjectManager;

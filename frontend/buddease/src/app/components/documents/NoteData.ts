@@ -56,8 +56,8 @@ export interface NoteData<
   currentMetadata: StructuredMetadata<T, K>;
   accessHistory: any[];
   lastModifiedDate: Date;
-  version: Version;
-  versionHistory: NoteVersion[] | Version[]; // Use a union type to allow either NoteVersion or Version
+  version: Version<T, K>;
+  versionHistory: NoteVersion[] | Version<T, K>[]; // Use a union type to allow either NoteVersion or Version
   colorLabel?: string; // Hex color code or predefined label
   collaborators: Collaborator[]; // Array of user IDs
   reminderDate?: Date;

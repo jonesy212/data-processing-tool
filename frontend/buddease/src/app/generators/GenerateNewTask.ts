@@ -1,3 +1,4 @@
+import { PriorityTypeEnum } from './../components/models/data/StatusType';
 import { Task } from "../components/models/tasks/Task";
 
 let currentTaskId = 1;
@@ -25,7 +26,7 @@ export const generateNewTask = (
     assignedTo: [],
     dueDate: new Date(),
     status: status,
-    priority: "medium",
+    priority: PriorityTypeEnum,
     estimatedHours: 0,
     actualHours: 0,
     startDate: new Date(),

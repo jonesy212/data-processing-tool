@@ -80,6 +80,7 @@ interface BaseSnapshotEvents<T extends  BaseData<any>, K extends T = T, Meta ext
   eventsDetails?: CalendarManagerStoreClass<T, K>[] | undefined;
 }
 
+
 // Step 2:  Define the common SnapshotEvents interface
 interface SnapshotEvents<
   T extends BaseData<any>,
@@ -100,6 +101,7 @@ interface SnapshotEvents<
     criteria: SnapshotWithCriteria<T, K>,
     category: Category
   ) => void;
+
   onSnapshotRemoved: (
     event: string,
     snapshot: Snapshot<T, K>,
@@ -110,6 +112,7 @@ interface SnapshotEvents<
     criteria: SnapshotWithCriteria<T, K>,
     category: Category
   ) => void;
+
   onError: (
     event: string,
     error: Error,
@@ -145,14 +148,16 @@ interface SnapshotEvents<
     criteria: SnapshotWithCriteria<T, K>,
     category: Category,
     snapshotData: SnapshotData<T, K>
-
   ) => void;
+
   once: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
+
   addRecord: (
     event: string,
     record: CalendarManagerStoreClass<T, K>,
     callback: (snapshot: CalendarManagerStoreClass<T, K>) => void
   ) => void;
+
   removeSubscriber: (
     event: string,
     snapshotId: string,
@@ -162,9 +167,28 @@ interface SnapshotEvents<
     criteria: SnapshotWithCriteria<T, K>,
     category: Category
   ) => void;
-  removeAllListeners: (event?: string) => void
+
+  removeAllListeners: (event?: string) => void;
+
+  // Additional methods from SnapshotStoreMethod
+  subscribe: (
+    subscriber: Subscriber<T, K>,
+    callback: (snapshot: Snapshot<T, K>) => void
+  ) => void;
+
+  unsubscribe: (
+    subscriber: Subscriber<T, K>,
+    callback: (snapshot: Snapshot<T, K>) => void
+  ) => void;
+
+  // Additional properties
+  snapshotData?: SnapshotData<T, K>;
+  dataItems?: RealtimeDataItem[];
+  onInitialize?: () => void;
+  on?: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
+  off?: (event: string) => void;
+  trigger?: (event: string, snapshot: Snapshot<T, K>) => void;
+  eventsDetails?: Record<string, any>;
 }
-
-
 
 export type { BaseSnapshotEvents, SnapshotEvents };

@@ -49,6 +49,8 @@ export const fetchAndCreateSnapshot = async <T extends  BaseData<any>, K extends
     
     // Create CoreSnapshot using fetched data
     const coreSnapshot: CoreSnapshot<T, K> = {
+      manageSubscription, subscribeToSnapshotList, subscribeToSnapshot, unsubscribeFromSnapshot,
+      
       subscribers: snapshot.subscribers,
       snapshotSubscriberId: snapshot.snapshotSubscriberId,
       isSubscribed: snapshot.isSubscribed,

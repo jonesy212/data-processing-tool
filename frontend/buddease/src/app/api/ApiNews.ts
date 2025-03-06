@@ -1,5 +1,4 @@
 // ApiNews.ts
-// NewsApi.ts
 import axiosInstance from './axiosInstance';
 import { AxiosError, AxiosResponse } from 'axios';
 import { endpoints } from './endpointConfigurations';

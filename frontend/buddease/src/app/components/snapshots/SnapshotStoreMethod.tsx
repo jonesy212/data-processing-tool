@@ -13,12 +13,16 @@ import { SnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
-
-
+import { ExcludedFields } from '@/app/components/routing/Fields';
 
 
 // Define the necessary types
-interface SnapshotStoreMethod<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface SnapshotStoreMethod<
+  T extends BaseData<any>, 
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+  > {
   snapshot: (
     id: string | number | undefined,
     snapshotId: string | null,

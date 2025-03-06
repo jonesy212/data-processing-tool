@@ -1,5 +1,6 @@
 import { BaseData, Data } from '@/app/components/models/data/Data';
 import { DetailsItem } from "../../state/stores/DetailsListStore";
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
 
 // Define a mapped type to include all properties of Data
 export type AllProperties<T extends BaseData<any>> = {
@@ -11,7 +12,7 @@ type DetailsItemAll<T extends BaseData<any>> = DetailsItem<Partial<AllProperties
 
 interface DetailsListItemProps<T extends BaseData<any>> {
   item: DetailsItemAll<T>; // Use DetailsItemAll type
-  label: string;
+  label: string
   value: string;
 }
 

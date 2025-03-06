@@ -5,7 +5,8 @@ import BackendStructure from './BackendStructure';
 class ExtendedBackendStructure extends BackendStructure {
   // Override traverseDirectory for customization
   async traverseDirectory(dir: string): Promise<AppStructureItem[]> {
-    const originalFiles = await super.traverseDirectory(dir);
+  // Call the parent class's traverseDirectory method (fallback to empty array if undefined)
+  const originalFiles = (await super.traverseDirectory?.(dir)) || [];
     
     // Add custom logic or modifications to the result
     const modifiedFiles = originalFiles.map((file) => {

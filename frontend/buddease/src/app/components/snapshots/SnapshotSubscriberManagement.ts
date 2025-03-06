@@ -93,10 +93,6 @@ interface SnapshotSubscriberManagement<
         callback: (snapshots: Snapshots<T, K>) => void
       ) => void;
   
-
-
-     
-
     unsubscribe: (
     unsubscribeDetails: {
       userId: string; 

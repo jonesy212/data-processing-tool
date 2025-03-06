@@ -84,6 +84,7 @@ import { ToolbarOptionsComponent, ToolbarOptionsProps } from "./ToolbarOptions";
 import { ResearchReport, TechnicalReport } from "./documentation/report/Report";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
 import { T } from "../models/data/dataStoreMethods";
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 

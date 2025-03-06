@@ -51,12 +51,18 @@ function addSource<T>(metadata: T, source: string): T & { source: string } {
 }
 
 // Type guard functions to determine the origin
-function isTaskMetadata<T>(metadata: any): metadata is TaskMetadata<T, K> {
+function isTaskMetadata<
+  T extends BaseData<any>,
+  K extends T = T
+>(metadata: any): metadata is TaskMetadata<T, K> {
   return metadata?.source === 'TaskMetadata';
 }
 
 
-function isProjectMetadata<T>(metadata: any): metadata is ProjectMetadata<T, K> {
+function isProjectMetadata<
+  T extends BaseData<any>,
+  K extends T = T
+>(metadata: any): metadata is ProjectMetadata<T, K> {
   return metadata?.source === 'ProjectMetadata';
 }
 
@@ -89,10 +95,16 @@ function processMetadata<T extends UnifiedMetaDataOptions<any>>(metadata: T) {
   console.log("Excluded Fields:", excludedFields);
 }
 // Creating an example task metadata object that satisfies UnifiedMetaDataOptions
-const exampleTaskMeta: UnifiedMetaDataOptions = {
+const exampleTaskMeta: UnifiedMetaDataOptions<
+  T extends BaseData<any> = BaseData<any, any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never,
+  > = {
   taskMetadata: {
     taskId: '123',
     taskName: 'Complete documentation',
+    _id, priority, assignedTo, id, 
   },
   source: 'TaskMetadata', // If needed, adjust this according to your type definitions
 };

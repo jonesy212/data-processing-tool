@@ -1,7 +1,11 @@
 // CalendarApp.tsx
+import { DataAnalysisResult } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisResult";
+import { addToSnapshotList, generateSnapshotId } from "../utils/snapshotUtils";
+import { refreshUI } from '@/app/components/snapshots/refreshUI'
 import { findSnapshotStoresById, snapshotContainer } from '@/app/api/SnapshotApi';
 import { useSnapshotManager } from "@/app/components/hooks/useSnapshotManager";
 import AnalyzeData from "@/app/components/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
+import { MeetingStatus } from "../../models/data/StatusType";
 import { SnapshotData, SnapshotStoreProps } from '@/app/components/snapshots';
 import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
 import { Todo } from "@/app/components/todos/Todo";
@@ -33,7 +37,8 @@ import {
   Snapshot,
   SnapshotsArray,
   SnapshotsObject,
-  SnapshotUnion
+  SnapshotUnion,
+  snapshotFunction
 } from "../snapshots/LocalStorageSnapshotStore";
 import {
   default as SnapshotStore,
@@ -45,7 +50,7 @@ import { snapshotType } from "../typings/YourSpecificSnapshotType";
 import { User } from "../users/User";
 import UserRoles from "../users/UserRoles";
 import { processSnapshotData } from '../utils/versionUtils';
-
+import { isSnapshotContainer } from '../utils/snapshotUtils'
 
 
 // Define SnapshotWithData to include only essential properties and methods
@@ -172,6 +177,15 @@ const CalendarApp = async <
 
   const [snapshot, setSnapshot] = useState<Snapshot<T, K> | null>(null);
   
+  const currentMeta: Meta = createMeta<T, K>({
+    id: 'calendar-meta-id',   // Updated ID for calendar context
+    description: 'Calendar Meta', // More relevant description
+  });
+  
+  // Use `useMetadata` with appropriate type arguments for UnifiedMetaDataOptions
+  const currentMetadata: UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>> = 
+    useMetadata<T, K, Meta>({ area: 'calendar-area' }); // Updated area for calendar
+  
    // Destructure the required properties from props
    const {
     options,
@@ -205,7 +219,7 @@ const CalendarApp = async <
     iconColor: "",
     type: "",
     chartType: "", 
-    dataProperties: {}, 
+    dataProperties: [], 
     formFields: [],
     isActive: false,
     isPublic: false,
@@ -393,14 +407,19 @@ const CalendarApp = async <
       return new Promise(async (resolve, reject) => {
         try {
           // Ensure getSnapshotStore is correctly used
-          const snapshotStoreFromFunction = await snapshotApi.getSnapshotStore(storeId, snapshotContainer, criteria);
+          const snapshotStoreFromFunction = await snapshotApi.getSnapshotStore(snapshotId,
+            snapshotContainer,
+            storeId,
+            criteria,
+            snapshotFunction
+          );
 
           if (!snapshotStoreFromFunction) {
             return reject(new Error("Snapshot store not found"));
           }
 
           // Call getSnapshot with an appropriate function
-          const fetchedSnapshot = await snapshotStoreFromFunction.getSnapshot(async (id: string) => {
+          const fetchedSnapshot = await snapshotStoreFromFunction.getSnapshot(async (id: string | numbe) => {
             // This is your actual logic to retrieve snapshot data by id
             const snapshotData = await snapshotApi.fetchSnapshotById(id);
 
@@ -621,8 +640,6 @@ const CalendarApp = async <
     },
   };
 
-  
-
   const criteria = await snapshotApi.getSnapshotCriteria(
     snapshotContainer as unknown as SnapshotContainer<Data<BaseData<any>>, Data<BaseData<any>>>, 
     snapshot
@@ -631,7 +648,7 @@ const CalendarApp = async <
   const storeId = snapshotApi.getSnapshotStoreId(snapshotId);
 
 
-  const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots, } =  new useSnapshotStore(storeId, options, category, config, operation);
+  const { addSnapshot, updateSnapshot, removeSnapshot, clearSnapshots, } =  new useSnapshotStore(addToSnapshotList);
 
   const snapshotManager = useSnapshotManager<Todo<T, K, Meta>, K>(storeId); // Initialize the snapshot manager
 
@@ -681,14 +698,14 @@ const CalendarApp = async <
     analysisResults: [],
     snapshots: [],
     getData: function (): Promise<Snapshot<T, K>> {
-      return [];
+      return {} as Promise<Snapshot<T, K, StructuredMetadata<T, K>, never>>;
     },
     timestamp: undefined,
     meta: {},
     getSnapshotStoreData: async function (
       
     ): Promise<SnapshotStore<CalendarEvent<T, K>, K, 
-    UnifiedMetaDataOptions>[]> {
+    UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>>[]> {
       return [];
     }
   };
@@ -704,6 +721,10 @@ const CalendarApp = async <
       "timestamp" in snapshot
     );
   }
+
+  const validAnalysisResults: DataAnalysisResult<T, K>[] | undefined = isDataAnalysisResult(analysisResults)
+  ? [analysisResults]
+  : undefined;
 
   return (
     <div>
@@ -734,8 +755,10 @@ const CalendarApp = async <
             calendarEvent: calendarEvent,
             label: {}, 
             date: new Date(),
-            createdBy: ""
-          } as CommonData<T>
+            createdBy: "",
+            currentMeta, 
+            currentMetadata
+          } as CommonData<T>,
         }
         details={{
           _id: calendarEvent.id,
@@ -754,7 +777,7 @@ const CalendarApp = async <
           // You can include additional details based on the interface
           isRecurring: false, // Example of additional detail
           status: CalendarStatus.Pending, // Example of status using enum
-          analysisResults: {}, 
+          analysisResults: validAnalysisResults, 
           createdBy: "",
         }}
       />
@@ -797,7 +820,7 @@ const CalendarApp = async <
               roles: [],
               followers: [],
               preferences: {
-                refreshUI: {}
+                refreshUI: refreshUI
               },
               storeId: 0,
               refreshUI: {},
@@ -933,6 +956,7 @@ const CalendarApp = async <
               },
               timestamp: undefined,
               category: "",
+              status: MeetingStatus
             },
           ],
           reassignedProjects: [
@@ -1011,6 +1035,7 @@ const CalendarApp = async <
     </div>
   );
 };
+
 export default CalendarApp;
 
 export { assignProject, reassignProject, unassignProject, updateProgress };

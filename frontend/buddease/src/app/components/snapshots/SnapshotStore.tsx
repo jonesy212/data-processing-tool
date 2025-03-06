@@ -715,6 +715,11 @@ class SnapshotStore<
   updatedBy?: string | undefined = undefined
   maxAge: string | number | undefined = undefined
   state?: SnapshotsArray<T, K> | null = null;
+   // Add new properties
+   states: SnapshotsArray<T, K> = []; // Array of snapshots representing historical states
+   currentState: Snapshot<T, K> | null = null; // The current snapshot state
+ 
+   
   store: SnapshotStore<T, K> | null = null;
   stores: (storeProps: SnapshotStoreProps<T, K>) => SnapshotStore<T, K>[] | null = () => null;
   snapshots: SnapshotsArray<T, K> = [];
@@ -731,6 +736,22 @@ class SnapshotStore<
   isCompressed?: boolean;
   isSubscribed: boolean = false;
   snapshotMethods: SnapshotStoreMethod<T, K>[] = []; // Initialized to an empty array
+
+  // Example method to update states and currentState
+  updateState(newState: Snapshot<T, K>): void {
+    this.states.push(newState); // Add the new state to the history
+    this.currentState = newState; // Set the new state as the current state
+  }
+
+  // Example method to get the current state
+  getCurrentState(): Snapshot<T, K> | null {
+    return this.currentState;
+  }
+
+  // Example method to get all historical states
+  getStates(): SnapshotsArray<T, K> {
+    return this.states;
+  }
 
   addToSnapshotList = async (
     snapshots: Snapshot<T, K>[], 

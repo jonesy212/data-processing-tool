@@ -22,6 +22,7 @@ function useMeta<
       major: 1,
       versionNumber: "1.0.0",
       versions: {},
+      
       buildVersions: undefined, // You can populate this based on your logic
       keywords: [], 
       mappedSnapshot: {},
@@ -61,6 +62,7 @@ function useMeta<
       apiKey: "default-api-key",
       lastUpdated: new Date(),
       timeout: 5000,
+      keywords: "",
       description: description || "Default Description",
       retryAttempts: 3, // Default retry attempts
       name: "Default Name", // Default name

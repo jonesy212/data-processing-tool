@@ -19,13 +19,7 @@ interface AppStructureItem {
   path: string;
   content: string;
   draft: boolean;
-  permissions: {
-    read: boolean,
-    write: boolean,
-    delete: boolean,
-    share: boolean,
-    execute: boolean,
-  }
+  permissions: AppStructurePermissions | undefined; 
   versions: DataVersions | undefined,
   versionData: string | VersionData | null,
   items?: {
@@ -33,6 +27,11 @@ interface AppStructureItem {
   }
   getStructure?(): Promise<Record<string, AppStructureItem>>;
   
+}
+
+interface AppStructurePermissions extends Permission {
+  // Add any additional properties specific to AppStructureItem
+  customPermission?: boolean;
 }
 
 const { versionNumber, appVersion } = getCurrentAppInfo();
@@ -61,15 +60,22 @@ export default class AppStructure {
   private getPermissionsForPath(path: string, securitySettings: SecuritySettings): Permission {
     // Default permissions if not explicitly set in security settings
     const defaultPermissions: Permission = {
-      read: true,
-      write: false,
-      delete: false,
-      share: false,
-      execute: false,
+
+      userId: 'default', // Provide a default userId
+      permissions: {}, // Default empty UserPermissions
+      permissionType: 'read', // Default permission type
+      canView: true, // From BasePermissions
+      canEdit: false, // From BasePermissions
+      read: true, // New property
+      write: false, // New property
+      delete: false, // New property
+      share: false, // New property
+      execute: false, // New property
+   
     };
 
     // Check if securitySettings has permissions for this path
-    const pathPermissions = securitySettings?.permission?.[path];
+    const pathPermissions = securitySettings?.permission?.[path] ?? undefined;
 
     if (pathPermissions) {
       return {
@@ -78,6 +84,12 @@ export default class AppStructure {
         delete: pathPermissions.delete ?? defaultPermissions.delete,
         share: pathPermissions.share ?? defaultPermissions.share,
         execute: pathPermissions.execute ?? defaultPermissions.execute,
+        userId: pathPermissions.userId ?? defaultPermissions.userId,
+        permissions: pathPermissions.permissions ?? defaultPermissions.permissions,
+        permissionType: pathPermissions.permissionType ?? defaultPermissions.permissionType,
+        canView: pathPermissions.canView ?? defaultPermissions.canView,
+        canEdit: pathPermissions.canEdit ?? defaultPermissions.canEdit,
+        
       };
     }
 
@@ -118,7 +130,7 @@ export default class AppStructure {
             backend: backendStructure, // Include the fetched backend structure
             frontend: frontendStructure, // Include the fetched frontend structure
           },
-          versionData: [],  // Empty for now; populate it as needed
+          versionData: "",  // Empty for now; populate it as needed
         };
       } else {
         // Handle file-specific logic for backend or frontend types
@@ -141,7 +153,7 @@ export default class AppStructure {
               backend: backendStructure, // Include the backend structure
               frontend: frontendStructure, // Include the frontend structure
             },
-            versionData: [],  // Empty for now; populate it as needed
+            versionData: null,  // Empty for now; populate it as needed
           };
         }
       }
@@ -155,8 +167,13 @@ export default class AppStructure {
  * This function can be used to determine the backend structure.
  * You can customize it to return a more detailed structure for backend files.
  */
-private fetchBackendStructure(filePath: string): Record<string, AppStructureItem> {
+private async fetchBackendStructure(filePath: string): Promise<Record<string, AppStructureItem>> {
   const fileName = path.basename(filePath); // Get the file name from the file path
+
+  // Await the backend and frontend structure fetching
+  const backendStructure = await this.fetchBackendStructure(filePath); 
+  const frontendStructure = await this.fetchFrontendStructure(filePath); 
+
   return {
     [filePath]: {
       id: fileName, // Unique identifier for the item (can use the file name or a UUID)
@@ -165,14 +182,23 @@ private fetchBackendStructure(filePath: string): Record<string, AppStructureItem
       draft: false, // Set the draft flag (you can set this based on your logic)
       path: filePath, // The full path to the file
       content: fs.readFileSync(filePath, "utf-8"), // Read the content of the file
-      permissions: [],
-      versions: [],
+      permissions: {
+        userId: 'default', // Provide a default userId
+        permissions: {}, // Default empty UserPermissions
+        permissionType: 'read', // Default permission type
+        canView: true, // From BasePermissions
+        canEdit: false, // From BasePermissions
+        read: true, // New property
+        write: false, // New property
+        delete: false, // New property
+        share: false, // New property
+        execute: false, // New property
+      },
+      versions: {
+        backend: backendStructure, // Include the fetched backend structure
+        frontend: frontendStructure, // Include the fetched frontend structure
+      },
       versionData: versionData,
-      read: true,
-      write: true,
-      delete: true,
-      share: true,
-      execute: true,
     }
   };
 }
@@ -181,27 +207,41 @@ private fetchBackendStructure(filePath: string): Record<string, AppStructureItem
  * This function can be used to determine the frontend structure.
  * You can customize it to return a more detailed structure for frontend files.
  */
-  private fetchFrontendStructure(filePath: string): Record<string, AppStructureItem> {
-    const fileName = path.basename(filePath); // Get the file name from the file path
-    return {
-      [filePath]: {
-        id: fileName, // Unique identifier for the item (can use the file name or a UUID)
-        name: fileName, // The name of the file
-        type: "file", // The type of the item (can be a directory, file, etc.)
-        draft: false, // Set the draft flag (you can set this based on your logic)
-        path: filePath, // The full path to the file
-        content: fs.readFileSync(filePath, "utf-8"), // Read the content of the file
-        permissions: [],
-        versions: [],
-        versionData: versionData,
-        read: true,
-        write: true,
-        delete: true,
-        share: true,
-        execute: true,
-      }
-    };
-  }
+private async fetchFrontendStructure(filePath: string): Promise<Record<string, AppStructureItem>> {
+  const fileName = path.basename(filePath); // Get the file name from the file path
+
+  // Await the backend and frontend structure fetching
+  const backendStructure = await this.fetchBackendStructure(filePath); 
+  const frontendStructure = await this.fetchFrontendStructure(filePath); 
+
+  return {
+    [filePath]: {
+      id: fileName, // Unique identifier for the item (can use the file name or a UUID)
+      name: fileName, // The name of the file
+      type: "file", // The type of the item (can be a directory, file, etc.)
+      draft: false, // Set the draft flag (you can set this based on your logic)
+      path: filePath, // The full path to the file
+      content: fs.readFileSync(filePath, "utf-8"), // Read the content of the file
+      permissions: {
+        userId: 'default', // Provide a default userId
+        permissions: {}, // Default empty UserPermissions
+        permissionType: 'read', // Default permission type
+        canView: true, // From BasePermissions
+        canEdit: false, // From BasePermissions
+        read: true, // New property
+        write: false, // New property
+        delete: false, // New property
+        share: false, // New property
+        execute: false, // New property
+      },
+      versions: {
+        backend: backendStructure, // Include the fetched backend structure
+        frontend: frontendStructure, // Include the fetched frontend structure
+      },
+      versionData: versionData,
+    }
+  };
+}
   
   // Public method to access the backend structure
   public async getBackendStructure(filePath: string): Promise<Record<string, AppStructureItem>> {
@@ -250,6 +290,11 @@ private fetchBackendStructure(filePath: string): Record<string, AppStructureItem
           delete: true,
           share: true,
           execute: true,
+          canView: true, 
+          canEdit: false,
+          userId: "userId",
+          permissionType: 'read', 
+          permissions: {},
         },
         type: fs.statSync(filePath).isDirectory() ? "directory" : "file",
         versions: {
@@ -258,15 +303,14 @@ private fetchBackendStructure(filePath: string): Record<string, AppStructureItem
           backend: backendStructure,
           frontend: frontendStructure
         },
-        versionData: []
+        versionData: null
       };
-
     } catch (error) {
       console.error(`Error handling file change: ${error}`);
     }
-
-  }}
+  }
+}
 
 // Remove the export of AppStructureItem since it's already exported as a type
-export type { AppStructureItem };
+export type { AppStructureItem, AppStructurePermissions };
 export const appStructure: AppStructureItem = {} as AppStructureItem;

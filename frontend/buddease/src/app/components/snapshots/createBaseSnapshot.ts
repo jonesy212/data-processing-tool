@@ -1,6 +1,7 @@
 // createBaseSnapshot.ts
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { getSnapshotConfig, getSnapshotId } from "@/app/api/SnapshotApi";
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { SnapshotStoreMethod, SnapshotStoreProps } from '@/app/components/snapshots';
 import { createSnapshotInstance } from '@/app/components/snapshots/createSnapshotInstance';
@@ -130,8 +131,6 @@ const createSnapshot = async <
 
   return { snapshot: newSnapshot, snapshotStore };
 };
-
-
 
 
 function createBaseSnapshot<
@@ -1776,7 +1775,6 @@ function createBaseSnapshot<
       ) => Promise.resolve(),
       createSnapshot: (
         id: string,
-        snapshotData: SnapshotData<T, K>,
         category?: string | symbol | Category,
         callback?: (snapshot: Snapshot<T, K>) => void,
         snapshotData?: SnapshotStore<T, K>,

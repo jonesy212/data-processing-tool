@@ -1,5 +1,5 @@
 // snapshot
-
+import { useMeta } from "@/app/configs/useMeta";
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { Stroke } from "@/app/components/state/redux/slices/DrawingSlice";
 import { Persona } from "@/app/pages/personas/Persona";
@@ -107,7 +107,7 @@ function isCombinedEvents<
 }
 
 const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
-const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
 
 // Define T as a generic type parameter
 function processSnapshot<

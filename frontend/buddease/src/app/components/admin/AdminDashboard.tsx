@@ -20,6 +20,8 @@ import { UserRole } from "../users/UserRole";
 import { ConfigCard } from "./DashboardConfigCard";
 import { T, K, Meta } from "../models/data/dataStoreMethods";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import SecurityAudit from '@/app/components/security/SecurityAudit';
+import SecureFieldManager from '@/app/components/security/SecureFieldManager';
 
 interface AdminDashboardProps extends YourComponentProps {
   isAuthenticated: boolean;

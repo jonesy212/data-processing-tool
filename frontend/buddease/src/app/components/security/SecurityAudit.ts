@@ -1,5 +1,6 @@
 import SecureFieldManager from "./SecureFieldManager";
 import { useSecurityAudit } from '@/app/components/utils/useSecurityAudit';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 class SecurityAudit {
   private config: { userRoles: string[]; adminRole: string };

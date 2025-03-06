@@ -1227,4 +1227,3 @@ export const endpoints: Endpoints = {
 };
 
 export type { Endpoints, NestedEndpoints };
-

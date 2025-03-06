@@ -262,15 +262,22 @@ function getSnapshotData<
 }
 
 
-
-const getSnapshot = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const getSnapshot = <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string | number | null,
   storeId: number,
   additionalHeaders?: Record<string, string>
-): Promise<Snapshot<T, K>> => {
+): Promise<Snapshot<T, K, Meta>> => {
   return new Promise((resolve, reject) => {
-    // synchronous logic here
-    const snapshot: Snapshot<T, K> = {/* logic to fetch snapshot */ } as Snapshot<T, K>;
+    // Simulate fetching a snapshot
+    const snapshot: Snapshot<T, K, Meta> = {
+      // Add required properties for Snapshot
+      dataObject: {} as T,
+      deleted: false,
+      isCore: true,
+      initialConfig: {},
+      // Add other required properties
+    };
+
     if (snapshot) {
       resolve(snapshot);
     } else {
@@ -278,7 +285,6 @@ const getSnapshot = <T extends  BaseData<any>, K extends T = T, Meta extends Str
     }
   });
 };
-
 
 const findSubscriberById = async   <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   subscriberId: string,
@@ -2600,6 +2606,152 @@ const deleteSnapshot = async <
   }
 };
 
+
+const updateSnapshotStore = async <
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
+  storeId: number, // ID of the SnapshotStore to update
+  updatedData: Partial<SnapshotStore<T, K>>, // Partial data to update
+  additionalHeaders?: Record<string, string> // Optional headers
+): Promise<SnapshotStore<T, K>> => {
+  try {
+    // Fetch the existing SnapshotStore
+    const existingStore = await fetchSnapshotStoreData<T, K>(storeId);
+
+    if (!existingStore) {
+      throw new Error(`SnapshotStore with ID ${storeId} not found.`);
+    }
+
+    // Merge the existing store with the updated data
+    const updatedStore: SnapshotStore<T, K> = {
+      ...existingStore,
+      ...updatedData,
+    };
+
+    // Prepare headers
+    const accessToken = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
+    const currentAppVersion = configData.currentAppVersion;
+    const authenticationHeaders: AuthenticationHeaders =
+      createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+    const headersArray = [
+      authenticationHeaders,
+      createCacheHeaders(),
+      createContentHeaders(),
+      generateCustomHeaders({}),
+      createRequestHeaders(accessToken || ""),
+      additionalHeaders || {},
+    ];
+    const headers = Object.assign({}, ...headersArray);
+
+    // Make the API request to update the SnapshotStore
+    const response = await axiosInstance.put<SnapshotStore<T, K>>(
+      `${API_BASE_URL}/snapshotStores/${storeId}`,
+      updatedStore,
+      { headers }
+    );
+
+    if (response.status === 200) {
+      console.log(`SnapshotStore with ID ${storeId} updated successfully.`);
+      return response.data;
+    } else {
+      throw new Error(`Failed to update SnapshotStore. Status: ${response.status}`);
+    }
+  } catch (error) {
+    const errorMessage = `Failed to update SnapshotStore with ID ${storeId}`;
+    handleApiError(error as AxiosError<unknown>, errorMessage);
+    throw error;
+  }
+};
+
+const deleteSnapshotStore = async <
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
+  storeId: number, // ID of the SnapshotStore to delete
+  additionalHeaders?: Record<string, string> // Optional headers
+): Promise<boolean> => {
+  try {
+    // Prepare headers
+    const accessToken = localStorage.getItem("accessToken");
+    const userId = localStorage.getItem("userId");
+    const currentAppVersion = configData.currentAppVersion;
+    const authenticationHeaders: AuthenticationHeaders =
+      createAuthenticationHeaders(accessToken, userId, currentAppVersion);
+    const headersArray = [
+      authenticationHeaders,
+      createCacheHeaders(),
+      createContentHeaders(),
+      generateCustomHeaders({}),
+      createRequestHeaders(accessToken || ""),
+      additionalHeaders || {},
+    ];
+    const headers = Object.assign({}, ...headersArray);
+
+    // Make the API request to delete the SnapshotStore
+    const response = await axiosInstance.delete(
+      `${API_BASE_URL}/snapshotStores/${storeId}`,
+      { headers }
+    );
+
+    if (response.status === 204) {
+      console.log(`SnapshotStore with ID ${storeId} deleted successfully.`);
+      return true;
+    } else {
+      throw new Error(`Failed to delete SnapshotStore. Status: ${response.status}`);
+    }
+  } catch (error) {
+    const errorMessage = `Failed to delete SnapshotStore with ID ${storeId}`;
+    handleApiError(error as AxiosError<unknown>, errorMessage);
+    throw error;
+  }
+};
+
+
+const mapSnapshots = async <
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
+  snapshots: Snapshot<T, K>[], // Array of snapshots to process
+  mapper: (snapshot: Snapshot<T, K>) => Promise<Snapshot<T, K>>, // Mapping function
+  additionalHeaders?: Record<string, string> // Optional headers
+): Promise<Snapshot<T, K>[]> => {
+  try {
+    // Validate input
+    if (!Array.isArray(snapshots)) {
+      throw new Error("snapshots must be an array.");
+    }
+
+    if (typeof mapper !== "function") {
+      throw new Error("mapper must be a function.");
+    }
+
+    // Apply the mapper function to each snapshot
+    const mappedSnapshots = await Promise.all(
+      snapshots.map(async (snapshot) => {
+        try {
+          // Apply the mapper function to the snapshot
+          const mappedSnapshot = await mapper(snapshot);
+          return mappedSnapshot;
+        } catch (error) {
+          console.error(`Error mapping snapshot with ID ${snapshot.id}:`, error);
+          throw error; // Rethrow to stop processing if any snapshot fails
+        }
+      })
+    );
+
+    console.log("Successfully mapped snapshots.");
+    return mappedSnapshots;
+  } catch (error) {
+    const errorMessage = "Failed to map snapshots.";
+    handleApiError(error as AxiosError<unknown>, errorMessage);
+    throw error;
+  }
+};
  
 
 export {
@@ -2613,6 +2765,6 @@ export {
   getSnapshotId, getSnapshots, getSnapshotsAndCategory, getSnapshotStore, getSnapshotStoreConfig,
   getSnapshotStoreConfigData, getSnapshotStoreId, getSortedList,
   handleOtherApplicationLogic, handleOtherStatusCodes, handleSpecificStatusCode, mapSnapshotData, mergeSnapshots, removeSnapshot, retrieveSnapshots, saveSnapshotToDatabase, searchSnapshotData,
-  snapshotContainer, sortSnapshotData, takeSnapshot, 
+  snapshotContainer, sortSnapshotData, takeSnapshot, updateSnapshotStore, deleteSnapshotStore, mapSnapshots
 };
 

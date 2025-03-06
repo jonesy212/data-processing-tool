@@ -28,9 +28,10 @@ interface BaseHistoryStore {
   redoHistory: () => void;
 }
 
+
 interface HistoryEntry {
   id: string;
-  timestamp: number;
+  timestamp: number | string | Date | undefined;
   data: any; // Data representing the state or action captured in the history entry
   changes: string[];
 }

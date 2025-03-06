@@ -12,6 +12,8 @@ import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
 import { NotificationSettings } from "../components/support/NotificationSettings";
+import { T } from "@/app/components/models/data/dataStoreMethods";
+
 
 const API_BASE_URL = endpoints.projectOwner.base;
 
@@ -383,7 +385,7 @@ export const ApiProject = observable({
 
   uploadFileToProjectAPI: async (
     projectId: string,
-    fileData: FileData
+    fileData: FileData<T>
   ): Promise<void> => {
     try {
       await axiosInstance.post(`${API_BASE_URL}/${projectId}/files`, fileData);

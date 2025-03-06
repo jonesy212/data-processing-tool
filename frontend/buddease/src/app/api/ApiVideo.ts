@@ -11,6 +11,8 @@ import { VideoData } from "../components/video/Video";
 import { VideoMetadata } from "../configs/StructuredMetadata";
 import { endpoints } from "./ApiEndpoints";
 import axiosInstance from "./axiosInstance";
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
+import { ExcludedFields } from '@/app/components/routing/Fields';
 
 const API_BASE_URL = endpoints.videos.list;
 
@@ -103,7 +105,7 @@ export const videoService = observable({
 
   updateVideoData: async (
     id: string,
-    metadata: VideoMetadata
+    metadata: VideoMetadata<T, K, Meta, ExcludedFields>
   ): Promise<{ video: Video }> => {
     try {
       const response = await axiosInstance.put(`${API_BASE_URL}/${id}`, {
@@ -314,7 +316,7 @@ export const videoService = observable({
 
   updateVideoMetadata: async (
     id: string,
-    metadata: VideoMetadata
+    metadata: VideoMetadata<T, K, Meta, ExcludedFields>
   ): Promise<{ video: Video }> => {
     try {
       const response = await axiosInstance.put(
@@ -382,7 +384,7 @@ export const videoService = observable({
       isFamilyFriendly: false,
       isEmbeddable: false,
       isDownloadable: false,
-      videoData: {} as VideoData,
+      videoData: {} as VideoData<T, K>,
       title: "",
       description: "",
       videoDislikes: 0,

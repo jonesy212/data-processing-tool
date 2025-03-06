@@ -32,7 +32,7 @@ interface BaseConfig<
   description?: string
   category: string;
   timestamp: string | number | Date | undefined;
-  createdBy: string;
+  createdBy?: string | undefined;
   tags: string[] | TagsRecord<BaseMetadata<T>, BaseMetadata<T>> | undefined
   metadata: UnifiedMetaDataOptions<T, K>;
   initialState: InitializedState<T, K>;

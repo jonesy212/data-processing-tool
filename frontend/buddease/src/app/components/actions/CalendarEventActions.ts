@@ -7,13 +7,15 @@ import { Theme } from "../libraries/ui/theme/Theme";
 import { BaseData } from "../models/data/Data";
 import { PriorityTypeEnum } from "../models/data/StatusType";
 import { NotificationData } from "../support/NofiticationsSlice";
+import { T, K } from '@/app/components/models/data/dataStoreMethods';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 // Define the action using createAction
 export const setEventColor = createAction<{ eventId: string; color: Theme }>(
   "setEventColor"
 );
 
-type DefaultCalendarEvent = CalendarEvent<BaseData, CustomSnapshotData>;
+type DefaultCalendarEvent = CalendarEvent<BaseData, CustomSnapshotData<T, K<T>, StructuredMetadata<T, K<T>>>>;
 
 export const CalendarActions = {
 

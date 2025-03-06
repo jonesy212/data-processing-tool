@@ -1,7 +1,7 @@
 // Function to initiate data analysis process
 import axiosInstance from "../api/axiosInstance";
 import dataProcessingService, { DataProcessing, DataProcessingResult } from "../components/projects/DataAnalysisPhase/DataProcessing/DataProcessingService";
-import { CalendarEvent } from "../components/state/stores/CalendarEvent";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 
 export const sendDataToBackend = async (data: any) => {
   try {

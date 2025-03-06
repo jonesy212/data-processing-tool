@@ -1,4 +1,4 @@
-import configurationService, { ApiConfig } from '@/app/configs/ConfigurationService';
+import { ApiConfig, configServiceInstance } from '@/app/configs/ConfigurationService';
 import React from 'react';
 
 
@@ -7,7 +7,7 @@ interface ConfigurationServiceComponentProps {
 }
 
 const ConfigurationServiceComponent: React.FC<ConfigurationServiceComponentProps> = () => {
-  const apiConfig = configurationService.getCurrentApiConfig();
+  const apiConfig = configServiceInstance.getCurrentApiConfig();
 
   return (
     <div>

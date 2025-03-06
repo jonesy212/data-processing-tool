@@ -8,7 +8,7 @@ import { User } from "../components/users/User";
 import { UserRole } from "../components/users/UserRole";
 import { AppVersion, currentAppName } from "../components/versions/AppVersion";
 import Version from "../components/versions/Version";
-import configServiceInstance, { ApiConfig, CacheConfig, RetryConfig } from "./ConfigurationService";
+import { ApiConfig, CacheConfig, RetryConfig, configServiceInstance } from "./ConfigurationService";
 import AppStructure, { AppStructureItem } from "./appStructure/AppStructure";
 import { frontendStructure } from "./appStructure/FrontendStructure";
 
@@ -136,7 +136,7 @@ export const getAppConfig = (): AppConfig => {
         }
       },
 
-      compare(otherVersion: Version): number {
+      compare(otherVersion: Version<T, K>): number {
         if (!(otherVersion instanceof AppVersion)) {
           throw new Error("Invalid version type for comparison.");
         }

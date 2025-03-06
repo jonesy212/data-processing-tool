@@ -247,7 +247,7 @@ export type TaskType = "addTask" | "removeTask" | "bug" | "feature" | "epic" | "
 
 // Define a union type for the supported data types
 type SupportedData<
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseData<any, any> = BaseData<any, any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
 > = 

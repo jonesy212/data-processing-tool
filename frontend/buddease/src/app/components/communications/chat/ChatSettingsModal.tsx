@@ -4,6 +4,7 @@ import { DocumentEditingPermissions } from "../../users/Permission";
 import { NotificationTypeEnum } from "../../support/NotificationContext";
 import { GeneralNotificationTypes } from "../../settings/NotificationChannels";
 import { CryptoPreferences } from "@/app/configs/UserPreferences";
+import { SecuritySettings } from '@/app/components/settings/SecuritySettings'
 
 // Define the ChatSettingsModal type
 type ChatSettingsModal = {

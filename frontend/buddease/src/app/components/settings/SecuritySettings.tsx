@@ -33,7 +33,9 @@ interface SecuritySettings {
     permission: {
       userId: "",
       permissions: {},
-      permissionType: "read"
+      permissionType: "read",
+      canView: true,
+      canEdit: false,
     },
     passwordComplexityRequirements: {
       minLength: 8,

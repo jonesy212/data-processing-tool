@@ -31,6 +31,7 @@ interface UserPreferences extends Partial<CommonTrackerProps> {
   colorScheme?: string; // Color scheme for UI
   fontStyles?: { fontFamily: string; fontSize: number }; // Font styles
   trackerId?: string;
+  actions?: string;
   // Notifications Preferences
   notifications?: {
     email: boolean; // Email notifications enabled/disabled

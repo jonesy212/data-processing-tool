@@ -178,7 +178,15 @@ interface EndpointConfigurations {
     backend: EndpointConfig;
     frontend: EndpointConfig
   };
-  logging: EndpointConfig;
+  logging: {
+    logs: EndpointConfig,
+    logInfo: EndpointConfig,
+    logWarning: EndpointConfig,
+    logError: EndpointConfig,
+    logSuccess: EndpointConfig,
+    logFailure: EndpointConfig,
+    
+  };
   news: NewsEndpoints;
 
   notes: NotesEndpoints
@@ -232,6 +240,16 @@ interface EndpointConfigurations {
     update: (taskId: number) => string;
   };
 
+  teams: {
+    list: EndpointConfig;
+    single: (teamId: number) => EndpointConfig;
+    add: EndpointConfig;
+    fetchTeamData: (teamId: number) => EndpointConfig;
+    remove: (teamId: number) => EndpointConfig;
+    update: (teamId: number) => EndpointConfig;
+    updateTeams: (teamIds: number[]) => EndpointConfig;
+  };
+
   todos: {
     create: string;
     list: EndpointConfig;
@@ -276,8 +294,6 @@ const endpointConfigurations: EndpointConfigurations = {
     login: { path: "/login", method: "POST" },
     logout: { path: "/logout", method: "POST" },
   },
-
-
   comments: {
     list: { path: "/api/comments/list", method: "GET" },
     single: (commentId: number) => ({ path: `/note/${commentId}`, method: "GET" }),
@@ -569,6 +585,15 @@ const endpointConfigurations: EndpointConfigurations = {
     markInProgress: (taskId: number) => `/api/tasks/${taskId}/markInProgress`,
     update: (taskId: number) => `/api/tasks/${taskId}/update`,
   },
+  teams: {
+    list: { path: "/api/teams", method: "GET" },
+    single: (teamId: number) => ({ path: `/api/teams/${teamId}`, method: "GET" }),
+    add: { path: "/api/teams", method: "POST" },
+    fetchTeamData: (teamId: number) => ({ path: `/api/teams/${teamId}/data`, method: "GET" }),
+    remove: (teamId: number) => ({ path: `/api/teams/${teamId}`, method: "DELETE" }),
+    update: (teamId: number) => ({ path: `/api/teams/${teamId}`, method: "PUT" }),
+    updateTeams: (teamIds: number[]) => ({ path: `/api/teams/${teamIds.join(",")}`, method: "PUT" }),
+  },
   todos: {
     create: `${BASE_URL}/api/todos/create`,
     list: { path: "/api/todos", method: "GET" },
@@ -854,6 +879,21 @@ const updatedEndpoints = {
     bulkAdd: generateEndpointUrl("snapshots", "bulkAdd"),
     bulkRemove: generateEndpointUrl("snapshots", "bulkRemove"),
     bulkUpdate: generateEndpointUrl("snapshots", "bulkUpdate"),
+  }),
+
+  teams: mergeConfigurations(endpointConfigurations.teams, {
+    list: generateEndpointUrl("teams", "list"),
+    single: (teamId: number) =>
+      generateEndpointUrl("teams", "single", teamId),
+    add: generateEndpointUrl("teams", "add"),
+    fetchTeamData: (teamId: number) =>
+      generateEndpointUrl("teams", "fetchTeamData", teamId),
+    remove: (teamId: number) =>
+      generateEndpointUrl("teams", "remove", teamId),
+    update: (teamId: number) =>
+      generateEndpointUrl("teams", "update", teamId),
+    updateTeams: (teamIds: number[]) =>
+      generateEndpointUrl("teams", "updateTeams", teamIds),
   }),
 
   todos: mergeConfigurations(endpointConfigurations.todos, {

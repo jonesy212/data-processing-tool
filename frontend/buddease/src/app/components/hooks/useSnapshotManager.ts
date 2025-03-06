@@ -139,7 +139,7 @@ interface SnapshotManager<
   snapshotStore: SnapshotStore<T, K>,
   data:  BaseData<any>
   state: SnapshotStore<T, K>[];
-
+  getSnapshots: () => Promise<Snapshot<T, K>[]>;
   updateSnapshots: (snapshots: Snapshots<T, K>) => void;
 }
 
@@ -592,7 +592,7 @@ export const useSnapshotManager = async <T extends  BaseData<any>, K extends T =
           const snapshotConfig: SnapshotStoreConfig<T, K> = {
             id: `snapshot-config-${storeId}`, // Example ID generation
             criteria: {}, // Populate with your criteria as needed
-            data: {}, // Add any initial data if needed
+            data: {} as InitializedData<T> | undefined, // Add any initial data if needed
             createdAt: new Date(),
             updatedAt: new Date(),
             category,
@@ -616,11 +616,16 @@ export const useSnapshotManager = async <T extends  BaseData<any>, K extends T =
         initialState: null,
         snapshotId: "initial-snapshot-id",
         category: {
+          id: "initial-category", 
           name: "initial-category",
           description: "This is the initial category for the snapshot store.",
           icon: "folder",
           color: "#ff5733",
           iconColor: "#ffffff",
+          type: "report",
+          chartType: "none", 
+          dataProperties: {}, 
+          formFields: [],
           isActive: true,
           isPublic: false,
           isSystem: false,
@@ -655,6 +660,7 @@ export const useSnapshotManager = async <T extends  BaseData<any>, K extends T =
         unsubscribeToSnapshot: function() {
           throw new Error("Function not implemented.");
         },
+
         getCategory: async function (
           snapshotId: string,
           snapshot: Snapshot<T, K>,
@@ -783,6 +789,13 @@ export const useSnapshotManager = async <T extends  BaseData<any>, K extends T =
       const snapshotStore = new SnapshotStore<T, K>({storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory });
       const snapshotConfig = createSnapshotConfig(snapshotStore);
 
+       // Add getAllSnapshots method to snapshotConfig
+       snapshotConfig.getAllSnapshots = async (ref) => {
+         // Implement logic to fetch all snapshots
+         // For example, fetch snapshots from an API or local storage
+         const snapshots = await fetchSnapshotsFromAPI(ref); // Replace with actual logic
+         return snapshots as Snapshot<T, K>[];
+       };
       setSnapshotManager(snapshotConfig);
       setSnapshotStore(snapshotStore);
     };
@@ -791,8 +804,6 @@ export const useSnapshotManager = async <T extends  BaseData<any>, K extends T =
   }, []);
   return { snapshotManager, snapshotStore };
 };
-
-
 
 
 export { completeDataStoreMethods, convertMapToCustomSnapshotData, convertSnapshotToContent, createSnapshotStore };

@@ -4,7 +4,7 @@ import { ScheduledData } from '../../calendar/ScheduledData';
 import { Attachment } from '@/app/components/documents/Attachment/attachment'
 import { User } from '../../users/User'
 
-interface FolderData extends ScheduledData<<T, K, S>> {
+interface FolderData extends ScheduledData<T, K, S> {
   folderSize: number; // Size of the folder in bytes
   folderPath: string; // Path to the folder location
   uploader: User; // User who uploaded the folder

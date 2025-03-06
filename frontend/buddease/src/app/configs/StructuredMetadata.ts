@@ -1,5 +1,6 @@
-import Version from '@/app/components/versions/Version';
 // StructuredMetadata.ts
+import Version from '@/app/components/versions/Version';
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";import { TransactionData } from '@/app/components/payment/Transaction';
 
 let fs: any;
 if (typeof window === 'undefined') {
@@ -31,6 +32,7 @@ interface StructuredMetadata<
   fileType?: string; // Add this property to the top level
   alternatePaths?: string[]; // Add this property to the top level
   originalPath?: string; // Add this property to the top level
+  createdBy?: string | undefined;
   metadataEntries: {
     [fileOrFolderId: string]: {
       originalPath: string;
@@ -51,10 +53,14 @@ interface StructuredMetadata<
     };
   };
 
-  keywords: string;
+  keywords: string[];
   childIds?: K[];
   relatedData?: K[] | undefined;
+<<<<<<< HEAD
   version: Version<T, K>;// Added
+=======
+  version?: string | number | Version<T, K>; 
+>>>>>>> b0173ab (renamed shopping_center to shoppingCenter)
   lastUpdated?: Date | VersionHistory; // Added
   isActive: boolean; // Added
   config: Record<string, any>; // Added
@@ -120,7 +126,7 @@ interface ProjectMetadata<
   budget: number;
   status: string;
   description?: string | undefined;
-  versionData: string | VersionData | null;
+  versionData: string | VersionData | [];
   teamMembers: string[];
   tasks: Task<T, K, Meta>[];
   milestones: string[];
@@ -165,7 +171,7 @@ interface MetadataEntry {
   copyright: string;
   license: string;
   links: string[];
-  tags?: TagsRecord<T, K> | string[] | undefined;
+  tags?: TagsRecord<T, K<T>> | string[] | undefined;
 }
 
 
@@ -175,6 +181,13 @@ function transformProjectToStructured<
   K extends T = T
 >(projectMetadata: ProjectMetadata<T, K>): StructuredMetadata<T, K> {
   
+   
+    // Generate a project ID if it is undefined
+    if (!projectMetadata.projectId) {
+      projectMetadata.projectId = UniqueIDGenerator.generateProjectID("defaultProjectName");
+    }
+
+ 
   // Create metadata entries based on project metadata
   const metadataEntries: Record<string, MetadataEntry> = {};
 
@@ -202,8 +215,8 @@ function transformProjectToStructured<
   // Populate the StructuredMetadata object with necessary details
   const structuredMetadata: StructuredMetadata<T, K> = {
     description: projectMetadata.description || "A project to manage structured metadata.",
-    metadataEntries,
-    versionData: projectMetadata.versionData || [],
+    metadataEntries: metadataEntries || [],
+    versionData: projectMetadata.versionData || null,
     author: projectMetadata.teamMembers.length > 0 ? projectMetadata.teamMembers[0] : "Unknown",
     timestamp: new Date(), // Or the appropriate timestamp from projectMetadata
     keywords: projectMetadata.tasks.map(task => task.taskName), // Use task names as keywords
