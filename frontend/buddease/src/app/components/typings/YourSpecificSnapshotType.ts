@@ -1,5 +1,5 @@
-import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { createSnapshot, getSnapshotContainer, getSnapshotId } from "@/app/api/SnapshotApi";
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { Subscriber } from '@/app/components/users/Subscriber';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { categoryProperties, CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -15,20 +15,20 @@ import { CoreSnapshot, Snapshot, snapshots, Snapshots, SnapshotsArray, SnapshotU
 import { SnapshotConfig } from "../snapshots/SnapshotConfig";
 import { default as SnapshotStore } from "../snapshots/SnapshotStore";
 import { createSnapshotStoreOptions } from '../snapshots/createSnapshotStoreOptions';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 import { SnapshotContext } from "@/app/context/SnapshotContext";
+import { CalendarEvent } from "../calendar/CalendarEvent";
 import { SnapshotContent } from "../snapshots/SnapshotContent";
 import { convertBaseDataToK } from "../snapshots/convertSnapshot";
 import {
     Callback
 } from "../snapshots/subscribeToSnapshotsImplementation";
 import { generateSnapshotId } from "../utils/snapshotUtils";
-import { CalendarEvent } from "../calendar/CalendarEvent";
 
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { store } from "../state/stores/useAppDispatch";
 
-import { K, T } from "../models/data/dataStoreMethods";
+import { T } from "../models/data/dataStoreMethods";
 
 import { Subscription } from "react-redux";
 
@@ -761,7 +761,7 @@ function convertToDataSnapshot <T extends  BaseData<any>, K extends T = T, Meta 
       callback: (snapshotStore: SnapshotStore<T, K>) => void,
       dataStore: DataStore<T, K>,
       dataStoreMethods: DataStoreMethods<T, K>,
-      metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+      metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
       subscriberId: string, // Add subscriberId here
       endpointCategory: string | number, // Add endpointCategory here
       storeProps: SnapshotStoreProps<T, K>,
@@ -1653,7 +1653,7 @@ const convertToSnapshot = <T extends  BaseData<any>, K extends T = T, Meta exten
   snapshotData: SnapshotData<T, K>,
   category: symbol | string | Category | undefined,
   categoryProperties: CategoryProperties | undefined,
-  metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+  metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
   subscriberId: string,
   endpointCategory: string | number,
   storeProps: SnapshotStoreProps<T, K>,
@@ -1710,7 +1710,6 @@ export {
     convertSnapshotStoreItemToT,
     convertSnapshotStoreToMap,
     convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
-    createSnapshotStoreConfig, isYourResponseType,
-    createSnapshotStoreOptions, isCoreSnapshot, isSnapshotStore, snapshotType
+    createSnapshotStoreConfig, createSnapshotStoreOptions, isCoreSnapshot, isSnapshotStore, isYourResponseType, snapshotType
 };
 

@@ -1,4 +1,4 @@
-import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
+import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError } from 'axios';
 import { Data } from '../components/models/data/Data';
 import { useDetailsContext } from '../components/models/data/DetailsContext';

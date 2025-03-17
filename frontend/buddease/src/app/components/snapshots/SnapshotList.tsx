@@ -4,6 +4,7 @@ import { createSnapshotInstance } from '@/app/components/snapshots/createSnapsho
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { User } from "@/app/components/users/User";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { NotificationType } from '@/app/context/NotificationContext';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { ChatRoom } from "../calendar/CalendarSlice";
@@ -11,13 +12,13 @@ import { ContentItem } from "../cards/DummyCardLoader";
 import { Sender } from "../communications/chat/Communication";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { NotificationType } from "../support/NotificationContext";
 import { createMessage, MessageProps } from "../utils/createMessage";
+import { useSecureUserId } from '../utils/useSecureUserId';
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotStoreProps } from "./useSnapshotStore";
-import { useSecureUserId } from '../utils/useSecureUserId';
 import { InitializedData } from './SnapshotStoreOptions';
+import { SnapshotStoreProps } from "./useSnapshotStore";
+
 
 interface SnapshotItem<
   T extends  BaseData<any>, 

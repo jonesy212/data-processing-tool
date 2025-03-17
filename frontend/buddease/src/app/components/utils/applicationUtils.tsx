@@ -25,6 +25,8 @@ import {
     NotificationTypeEnum,
     useNotification,
 } from "../support/NotificationContext";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+
 import NotificationManager from "../support/NotificationManager";
 import { useSecureUserId } from "./useSecureUserId";
 import { CalendarEventWithCriteria } from '@/app/pages/searchs/FilterCriteria';
@@ -111,7 +113,7 @@ const notifyEventSystem = <
 ) => {
   const area = fetchUserAreaDimensions().toString()
   const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
-  const currentMetadata: UnifiedMetaDataOptions<T, K> = useMetadata<T, K>(area)
+  const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
   // Logic to notify the event system
   console.log(`Event '${eventType}' occurred from ${source}. Data:`, eventData);
   // Additional logic to trigger any necessary actions based on the event

@@ -4,7 +4,7 @@ import { Data } from "@/app/components/models/data/Data";
 import SnapshotStore, {
     Snapshot,
 } from "@/app/components/snapshots/SnapshotStore";
-import { useNotification } from "@/app/components/support/NotificationContext";
+import { useNotification } from "@/app/context/NotificationContext";
 import React, { useEffect, useState } from "react";
 import generateTimeBasedCode from "../../components/models/realtime/TimeBasedCodeGenerator";
 import CourseLearningPhase from "./CourseLearningPhase";

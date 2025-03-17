@@ -1,6 +1,7 @@
 import { BaseData, Data } from '@/app/components/models/data/Data';
 import { DetailsItem } from "../../state/stores/DetailsListStore";
 import { Label } from '@/app/components/projects/branding/BrandingSettings';
+import React from 'react';
 
 // Define a mapped type to include all properties of Data
 export type AllProperties<T extends BaseData<any>> = {

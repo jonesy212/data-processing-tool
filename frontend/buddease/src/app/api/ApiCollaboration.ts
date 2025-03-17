@@ -2,7 +2,7 @@
 
 import { endpoints } from '@/app/api/ApiEndpoints';
 import { handleApiError } from '@/app/api/ApiLogs';
-import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
+import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError, AxiosResponse } from 'axios';
 import { CollaborationLogger } from '../components/logging/Logger';
 import axiosInstance from './axiosInstance';

@@ -1,6 +1,5 @@
 // createSnapshotStoreOptions.ts
 import { getCurrentSnapshot } from '@/app/api/SnapshotApi';
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { getSubscribersAPI } from '@/app/api/subscriberApi';
 import { CombinedEvents, SnapshotManager, SnapshotStoreOptions, useSnapshotManager } from '@/app/components/hooks/useSnapshotManager';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
@@ -13,7 +12,8 @@ import { versionData } from '@/app/components/versions/Version';
 import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 import { baseConfig } from '@/app/configs/BaseConfig';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { Subscription } from 'react-redux';
@@ -132,7 +132,7 @@ const createSnapshotStoreOptions =  <T extends BaseData<any>, K extends T = T, M
 
 
   const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
-  const currentMetadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(area)
+  const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
 
   const version: Version<T, K> = {
     id: 1,
@@ -603,7 +603,7 @@ const createSnapshotStoreOptions =  <T extends BaseData<any>, K extends T = T, M
       callback: (snapshotStore: SnapshotStore<T, K>) => void,
       dataStore: DataStore<T, K>,
       dataStoreMethods: DataStoreMethods<T, K>,
-      metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+      metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
       subscriberId: string,
       endpointCategory: string | number,
       storeProps: SnapshotStoreProps<T, K>,

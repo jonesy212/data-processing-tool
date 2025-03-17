@@ -1,38 +1,39 @@
 
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { Payload } from '@/app/components/database/Payload';
 import { Tag } from '@/app/components/models/tracker/Tag';
 import { Callback, SnapshotConfig, SnapshotData, SnapshotStoreProps } from '@/app/components/snapshots';
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { useDataContext } from "@/app/context/DataContext";
+import { NotificationType } from '@/app/context/NotificationContext';
 import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
-import { CombinedEvents, SnapshotManager  } from "../hooks/useSnapshotManager";
+import { CombinedEvents, SnapshotManager } from "../hooks/useSnapshotManager";
 import { BaseData, Data } from "../models/data/Data";
 import { NotificationPosition, StatusType } from "../models/data/StatusType";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SearchCriteria } from "../routing/SearchCriteria";
-import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { NotificationType } from "../support/NotificationContext";
+import { InitializedDelegate, SnapshotStoreOptions } from '../snapshots/SnapshotStoreOptions';
 import { Subscriber } from "../users/Subscriber";
-import { Payload } from '@/app/components/database/Payload';
 import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
 import { handleSnapshotSuccess } from "./snapshotHandlers";
 import SnapshotStore from "./SnapshotStore";
-import { InitializedDelegate, SnapshotStoreOptions } from '../snapshots/SnapshotStoreOptions';
+
 
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { FilterCriteria } from "@/app/pages/searchs/FilterCriteria";
+import { unsubscribe } from 'node:diagnostics_channel';
+import { once } from 'node:events';
 import { SchemaField } from "../database/SchemaField";
 import { ModifiedDate } from "../documents/DocType";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
+import { SubscriberCollection } from '../users/SubscriberCollection';
 import Version from "../versions/Version";
 import { SnapshotOperation } from "./SnapshotActions";
 import { SnapshotEvents } from './SnapshotEvents';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { unsubscribe } from 'node:diagnostics_channel';
-import { once } from 'node:events';
-import { SubscriberCollection } from '../users/SubscriberCollection';
 
 // Define BaseData interface
 interface TagsRecord<
@@ -423,12 +424,126 @@ const exampleSnapshotStore: SnapshotStore<BaseData, BaseData> = {
 
     return Promise.resolve(transformedDataStore);
   },
-  addSnapshotItem: undefined,
-  addNestedStore: undefined,
-  defaultSubscribeToSnapshots: undefined,
-  subscribeToSnapshots: undefined,
-  transformSubscriber: undefined,
-  transformDelegate: undefined,
+  // Implement the required methods
+  addSnapshotItem: function (item: SnapshotItem<BaseData, BaseData> | SnapshotStoreConfig<BaseData, BaseData>): void {
+    console.log("Adding snapshot item:", item);
+    // Add logic to handle the snapshot item
+  },
+
+  addNestedStore: function (store: SnapshotStore<BaseData, BaseData>): void {
+    console.log("Adding nested store:", store);
+    // Add logic to handle the nested store
+  },
+
+  defaultSubscribeToSnapshots: function (
+    snapshotId: string,
+    callback: (snapshots: Snapshots<BaseData, BaseData>) => Subscriber<BaseData, BaseData> | null,
+    snapshot: Snapshot<BaseData, BaseData> | null = null
+  ): void {
+    console.warn("Default subscription to snapshots is being used.");
+    console.log(`Subscribed to snapshot with ID: ${snapshotId}`);
+
+    // Simulate receiving a snapshot update
+    setTimeout(() => {
+      const data: BaseData = {
+        id: "data1",
+        title: "Sample Data",
+        description: "Sample description",
+        timestamp: new Date(),
+        category: "Sample category",
+        startDate: new Date(),
+        endDate: new Date(),
+        isScheduled: true,
+        scheduled: {},
+        status: "Pending",
+        isActive: true,
+        tags: {
+          "1": {
+            id: "1",
+            name: "Important",
+            color: "red",
+            tags: [],
+            description: "",
+            enabled: false,
+            type: "",
+            relatedTags: [],
+            nulltype: "",
+            createdBy: "", 
+            timestamp: new Date()
+          },
+        },
+      };
+
+      const snapshot: Snapshot<BaseData, BaseData> = {
+        id: snapshotId,
+        data: data,
+        timestamp: new Date(),
+
+        unsubscribe: function (
+          unsubscribeDetails: {
+            userId: string;
+            snapshotId: string;
+            unsubscribeType: string;
+            unsubscribeDate: Date;
+            unsubscribeReason: string;
+            unsubscribeData: any;
+          },
+          callback: Callback<Snapshot<BaseData, BaseData>>
+        ): void {
+          console.log("Unsubscribing from snapshot:", unsubscribeDetails);
+        },
+
+        fetchSnapshot: function (
+          snapshotId: string,
+          callback: (snapshot: Snapshot<BaseData, BaseData>) => void
+        ): void {
+          console.log("Fetching snapshot:", snapshotId);
+        },
+
+        handleSnapshot: function (
+          id: string,
+          snapshotId: string | number | null,
+          snapshot: BaseData,
+          category: Category | undefined,
+          categoryProperties: CategoryProperties | undefined,
+          callback: (snapshot: BaseData) => void,
+          snapshots: SnapshotsArray<BaseData, BaseData>,
+          type: string,
+          event: Event,
+          snapshotContainer?: BaseData,
+          snapshotStoreConfig?: SnapshotStoreConfig<BaseData, BaseData> | null,
+          storeConfigs?: SnapshotStoreConfig<BaseData, BaseData>[]
+        ): Promise<Snapshot<BaseData, BaseData> | null> {
+          console.log("Handling snapshot:", snapshotId);
+          return Promise.resolve(null);
+        },
+        events: undefined,
+        meta: {} as StructuredMetadata<BaseData, BaseData>,
+      };
+
+      callback([snapshot]);
+    }, 1000); // Simulate a delay before receiving the update
+  },
+
+  // Other required properties and methods
+  subscribeToSnapshots: function (
+    snapshotId: string,
+    callback: (snapshots: Snapshots<BaseData, BaseData>) => Subscriber<BaseData, BaseData> | null,
+    snapshot: Snapshot<BaseData, BaseData> | null = null
+  ): void {
+    console.log("Subscribing to snapshots:", snapshotId);
+  },
+
+  transformSubscriber: function (subscriber: Subscriber<BaseData, BaseData>): Subscriber<BaseData, BaseData> {
+    console.log("Transforming subscriber:", subscriber);
+    return subscriber;
+  },
+
+  transformDelegate: function (delegate: SnapshotStoreConfig<BaseData, BaseData>): SnapshotStoreConfig<BaseData, BaseData> {
+    console.log("Transforming delegate:", delegate);
+    return delegate;
+  },
+
   initializedState: undefined,
   getAllKeys: undefined,
   getAllItems: undefined,

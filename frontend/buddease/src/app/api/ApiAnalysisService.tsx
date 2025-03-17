@@ -1,6 +1,6 @@
 // ApiAnalysisService.tsx
 import { AxiosError, AxiosResponse } from "axios";
-import { NotificationType } from "../components/support/NotificationContext";
+import { NotificationType } from "@/app/components/context/NotificationContext";
 import { sendNotification } from "../components/users/UserSlice";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";

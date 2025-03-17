@@ -1,17 +1,15 @@
 // SnapshotContainer.ts
-import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
-import { SnapshotOperationType } from "../snapshots/SnapshotActions";
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { apiCall, handleOtherStatusCodes } from "@/app/api/SnapshotApi";
 import { convertStoreId } from '@/app/components/snapshots/convertSnapshot';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { Callback } from '@/app/components/snapshots/subscribeToSnapshotsImplementation';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import isSnapshotsArray from '@/app/components/utils/snapshotUtils';
 import { AppConfig, getAppConfig } from "@/app/configs/AppConfig";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { SharedMetadata } from '@/app/configs/metadata/createMetadataState';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -31,11 +29,11 @@ import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStor
 import { ExcludedFields } from '../routing/Fields';
 import { BaseEntity } from '../routing/FuzzyMatch';
 import axiosInstance from "../security/csrfToken";
+import { SnapshotOperationType } from "../snapshots/SnapshotActions";
 import { Subscription } from "../subscriptions/Subscription";
 import { NotificationType, NotificationTypeEnum } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 import { isSnapshotDataType } from "../utils/snapshotUtils";
-import Version from "../versions/Version";
 import { handleApiError } from "./../../api/ApiLogs";
 import { AuthenticationHeaders, createAuthenticationHeaders } from "./../../api/headers/authenticationHeaders";
 import createCacheHeaders from "./../../api/headers/cacheHeaders";
@@ -59,6 +57,7 @@ import { InitializedData, SnapshotStoreOptions } from "./SnapshotStoreOptions";
 import { SnapshotSubscriberManagement } from './SnapshotSubscriberManagement';
 import { SnapshotWithCriteria, TagsRecord } from './SnapshotWithCriteria';
 import { SnapshotStoreProps } from './useSnapshotStore';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 const API_BASE_URL = endpoints.snapshots
 
@@ -154,7 +153,7 @@ interface SnapshotContainer<
     dataStore: DataStore<T, K>,
     dataStoreMethods: DataStoreMethods<T, K>,
     // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-    metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+    metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
     subscriberId: string, // Add subscriberId here
     endpointCategory: string | number,// Add endpointCategory here
     storeProps: SnapshotStoreProps<T, K>,
@@ -815,7 +814,7 @@ export const snapshotContainer = <
           dataStore: DataStore<T, K>,
           dataStoreMethods: DataStoreMethods<T, K>,
           // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-          metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+          metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
           subscriberId: string, // Add subscriberId here
           endpointCategory: string | number, // Add endpointCategory here
           storeProps: SnapshotStoreProps<T, K>,

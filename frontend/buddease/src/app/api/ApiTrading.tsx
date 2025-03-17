@@ -1,4 +1,4 @@
-import { NotificationTypeEnum, useNotification, NotificationType } from '@/app/components/support/NotificationContext';
+import { NotificationTypeEnum, useNotification, NotificationType } from "@/app/context/NotificationContext";
 import { AxiosError } from 'axios';
 import { DocumentData } from '../components/documents/DocumentBuilder';
 import { WritableDraft } from '../components/state/redux/ReducerGenerator';

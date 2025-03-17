@@ -51,6 +51,8 @@ import { ExcludedFields } from "../routing/Fields";
 import { useMetadata } from "@/app/configs/useMetadata";
 import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
 import { SharedVersionData } from "../versions/VersionData";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { SharedTimestamps, SharedStatusFlags, SharedIdentifiers } from '@/app/components/documents/RelatedProps'
 
 export interface User<
   T extends BaseData<any> = BaseData<any, any>,
@@ -142,7 +144,7 @@ export interface User<
   decentralizedAuthentication?: any;
   twitterData?: TwitterData;
   preferences: UserPreferences | undefined;
-  currentMetadata: UnifiedMetaDataOptions<T, K>;
+  currentMetadata: UnifiedMetadata<T, K>;
   currentMeta: StructuredMetadata<T, K> | undefined;
 }
 
@@ -194,17 +196,17 @@ interface Employment {
 
 const timeBasedCode: string = generateTimeBasedCode();
 
-// Placeholder for user data
 export interface UserData<
   T extends BaseData<any, any, StructuredMetadata<any, any>, never, Attachment> = BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof UserData<T, K, Meta> = never
 > extends BaseData<T, K, StructuredMetadata<T, K>, Attachment>,
-    SharedBaseData<K>,
-    SharedVersionData {
-  _id?: string;
-  id?: string | number | undefined;
+  SharedBaseData<K>,
+  SharedVersionData,
+  SharedTimestamps,
+  SharedStatusFlags,
+  SharedIdentifiers {
   datasets?: string;
   username: string;
   tasks?: Task<T, K, Meta>[];
@@ -212,27 +214,23 @@ export interface UserData<
   chatSettings?: ChatSettings;
   projects?: Project[];
   storeId: number;
-
   teams?: Team[];
-
   teamMembers?: TeamMember[];
   yourDocuments?: DocumentTree;
   visualizations?: VisualizationData[];
   traits?: typeof CommonDetails;
-  timeBasedCode?: typeof timeBasedCode; // Generate the time-based code for the user
+  timeBasedCode?: typeof timeBasedCode;
   realtimeUpdates?: RealtimeUpdates[];
-  // New properties for the persona
   age?: number;
   gender?: string;
   location?: string;
   occupation?: string;
   incomeLevel?: string;
   unreadNotificationCount?: number;
-  snapshots?: Snapshots<T, K, Meta> | undefined;
+  snapshots?: Snapshots<BaseData<T, K, Meta, AttachmentType>>;
   snapshotConfiguration?: SnapshotStoreConfig<any, any>[];
   analysisResults?: DataAnalysisResult<T>[];
   role: UserRole | undefined;
-  timestamp?: Date | string;
   category?: string;
   deletedAt?: Date | null;
   lastLogin?: Date;
@@ -608,7 +606,7 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
 };
 const area = fetchUserAreaDimensions().toString();
 const meta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area);
-const currentMetadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(
+const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(
   area
 );
 export const usersDataSource: Record<string, UserData> = {

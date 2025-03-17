@@ -1,6 +1,6 @@
 // createSnapshotOptions.ts
 
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { snapshotStoreConfigInstance } from './snapshotStoreConfigInstance';
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';

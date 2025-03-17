@@ -1,17 +1,11 @@
 // createMessage.ts
+import { UserPreferences } from "@/app/configs/UserPreferences";
+import { NotificationType } from '@/app/context/NotificationContext';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { v4 as uuidv4 } from "uuid"; // Ensure you have 'uuid' installed or use another method for unique IDs
-import { ExtendedUser, User } from "../users/User";
 import { ChatRoom } from "../calendar/CalendarSlice";
-import { NotificationType } from "../support/NotificationContext";
-import UserRoles, { UserRoleEnum } from "../users/UserRoles";
-import UserRole from "../users/UserRoles";
-import { ActivityStatus } from '@/app/pages/profile/Profile'
-import { DataSharingPreferences } from "../settings/PrivacySettings";
 import { Sender } from "../communications/chat/Communication";
-import { UserPreferences } from "@/app/configs/UserPreferences";
-import userSettings from '@/app/configs/UserSettings';
-import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
+
 
 type MessageProps = {
   type: NotificationType; 
@@ -159,4 +153,4 @@ export const createMessage = (
   return message;
 };
 
-  export type { MessageProps }
+  export type { MessageProps };

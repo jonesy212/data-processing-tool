@@ -1,16 +1,18 @@
 // SnapshotStoreConfig.ts
 import { getAllKeys, getDataVersions, getFrontendVersion, removeData } from "@/app/api/ApiData";
 import { fetchCategoryByName } from "@/app/api/CategoryApi";
-import { AllStatus } from '@/app/components/state/stores/DetailsListStore';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { fetchSnapshotStoreData } from "@/app/api/SnapshotApi";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { Payload, UpdateSnapshotPayload } from "@/app/components/database/Payload";
 import { Content } from '@/app/components/models/content/AddContent';
 import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import { InitializedState } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { SnapshotErrorHandling } from '@/app/components/snapshots/SnapshotErrorHandling';
 import { RetentionPolicy } from '@/app/components/snapshots/SnapshotConfig';
+import { SnapshotErrorHandling } from '@/app/components/snapshots/SnapshotErrorHandling';
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { AllStatus } from '@/app/components/state/stores/DetailsListStore';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { IHydrateResult } from "mobx-persist";
@@ -32,9 +34,7 @@ import { DataStoreMethods, DataStoreWithSnapshotMethods } from "../projects/Data
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { updateDataDescription, updateDataStatus, updateDataTitle } from "../state/redux/slices/DataSlice";
 import { batchFetchSnapshotsFailure, batchFetchSnapshotsSuccess, batchUpdateSnapshotsFailure, batchUpdateSnapshotsRequest, batchUpdateSnapshotsSuccess } from "../state/redux/slices/SnapshotSlice";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
-import { NotificationType, NotificationTypeEnum } from "../support/NotificationContext";
+import { NotificationType, NotificationTypeEnum } from "@/app/context/support/NotificationContext";
 import { PortfolioUpdatesLastUpdated } from "../trading/PortfolioUpdatesLastUpdated";
 import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from "../trading/TradingUtils";
 import { AuditRecord, Subscriber } from "../users/Subscriber";
@@ -48,9 +48,11 @@ import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } f
 import { returnsSnapshotStore } from "./responsetUtils";
 import { Callback, MultipleEventsCallbacks } from "./subscribeToSnapshotsImplementation";
   
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { UserConfig as ViteUserConfig } from 'vite';
 import { SchemaField } from "../database/SchemaField";
 import { K, T } from "../models/data/dataStoreMethods";
+import { PrivacySettings } from "../settings/PrivacySettings";
 import { SubscriberCollection } from "../users/SubscriberCollection";
 import Version from "../versions/Version";
 import { SnapshotOperation } from "./SnapshotActions";
@@ -70,8 +72,6 @@ import { SnapshotSubscriberManagement } from "./SnapshotSubscriberManagement";
 import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
 import { subscribeToSnapshotImpl } from "./subscribeToSnapshotsImplementation";
 import { SnapshotStoreProps } from "./useSnapshotStore";
-import { UserConfig as ViteUserConfig } from 'vite';
-import { PrivacySettings } from "../settings/PrivacySettings";
 
 
 interface UserConfig<
@@ -206,7 +206,7 @@ export interface SnapshotStoreConfig<
     dataStore: DataStore<T, K>,
     dataStoreMethods: DataStoreMethods<T, K>,
     // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-    metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+    metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
     subscriberId: string, // Add subscriberId here
     endpointCategory: string | number ,// Add endpointCategory here
     storeProps: SnapshotStoreProps<T, K>,
@@ -805,7 +805,7 @@ export interface SnapshotStoreConfig<
   isExpired?: (() => boolean) | undefined;
   priority?: AllStatus;
    tags?: TagsRecord<T, K> | string[] | undefined; 
-  metadata?: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields> | {}
+  metadata?: UnifiedMetadata<T, K, Meta, ExcludedFields> | {}
   status?: StatusType | undefined
   isCompressed?: boolean;
   compress?: () => void;
@@ -1097,7 +1097,6 @@ const snapshotStoreConfigs: SnapshotStoreConfig<BaseData, BaseData>[] = [
       tag1: {
         id: "0292",
         name: "tag1",
-        tagName: "tag1",
         color: "red",
         attribs: {},
         relatedTags: []
@@ -1396,7 +1395,7 @@ const snapshotStoreConfigs: SnapshotStoreConfig<BaseData, BaseData>[] = [
             callback: (snapshotStore: SnapshotStore<BaseData, BaseData>) => void,
             dataStoreMethods: DataStore<BaseData, BaseData>[],
             // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-            metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+            metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
             subscriberId: string, // Add subscriberId here
             endpointCategory: string | number ,// Add endpointCategory here
             storeProps: SnapshotStoreProps<T, K>,
@@ -1736,7 +1735,7 @@ const snapshotStoreConfigs: SnapshotStoreConfig<BaseData, BaseData>[] = [
             category: symbol | string | Category | undefined,
             payloadData: T | K,
             mappedSnapshotData: Map<string, Snapshot<T, K>>,
-            delegate: SnapshotWithCriteria<T, K>[],
+            delegate: SnapshotWithCriteria<T, K<T>>[],
             store: SnapshotStore<any, K<T>>
           ): void {
             throw new Error("Function not implemented.");
@@ -5344,7 +5343,7 @@ const snapshotStoreConfigs: SnapshotStoreConfig<BaseData, BaseData>[] = [
         const snapshotWithValidTimestamp: SnapshotStore<BaseData, K> = {
           ...snapshot,
           timestamp: new Date(snapshot.timestamp as unknown as string),
-          // Ensure all required properties of SnapshotStore<Snapshot<T, K>> are included
+          // Ensure all required properties of SnapshotStore<T, K> are included
           id: snapshot.id!.toString(),
           snapshotId: snapshot.snapshotId!.toString(),
           taskIdToAssign: snapshot.taskIdToAssign,

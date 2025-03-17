@@ -5,7 +5,7 @@ import Logger from "@/app/components/logging/Logger";
 import { SecureField, SecureMetadata } from '@/app/components/security/SecureField';
 import SecureFieldManager from '@/app/components/security/SecureFieldManager';
 import SecurityAudit from '@/app/components/security/SecurityAudit';
-import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { VersionHistory } from "@/app/components/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";

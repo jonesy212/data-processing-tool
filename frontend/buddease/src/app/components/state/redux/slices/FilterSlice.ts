@@ -1,26 +1,26 @@
 import {
-  CodingLanguageEnum,
-  LanguageEnum,
+    CodingLanguageEnum,
+    LanguageEnum,
 } from "@/app/components/communications/LanguageEnum";
 import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import { FileTypeEnum } from "@/app/components/documents/FileType";
 import FormatEnum from "@/app/components/form/FormatEnum";
 import AnimationTypeEnum from "@/app/components/libraries/animations/AnimationLibrary";
 import {
-  BookmarkStatus,
-  CalendarStatus,
-  DataStatus,
-  DevelopmentPhaseEnum,
-  NotificationStatus,
-  PriorityTypeEnum,
-  PrivacySettingEnum,
-  ProjectPhaseTypeEnum,
-  StatusType,
-  SubscriberTypeEnum,
-  SubscriptionTypeEnum,
-  TaskStatus,
-  TeamStatus,
-  TodoStatus,
+    BookmarkStatus,
+    CalendarStatus,
+    DataStatus,
+    DevelopmentPhaseEnum,
+    NotificationStatus,
+    PriorityTypeEnum,
+    PrivacySettingEnum,
+    ProjectPhaseTypeEnum,
+    StatusType,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum,
+    TaskStatus,
+    TeamStatus,
+    TodoStatus,
 } from "@/app/components/models/data/StatusType";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
@@ -28,8 +28,8 @@ import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "@/app/components/phases/TenantManagementPhase";
 import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
 import { SecurityFeatureEnum } from "@/app/components/security/SecurityFeatureEnum";
-import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
 import { IdeaCreationPhaseEnum } from "@/app/components/users/userJourney/IdeaCreationPhase";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { MessageType } from "@/app/generators/MessaageType";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 

@@ -14,6 +14,7 @@ import useErrorHandling from '../components/hooks/useErrorHandling';
 import { K, T } from '../components/models/data/dataStoreMethods';
 import determineFileType from './DetermineFileType';
 import { StructuredMetadata, getStructureMetadataPath, useUndoRedo } from './StructuredMetadata';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 
 // Define any extended metadata type if needed
@@ -24,7 +25,7 @@ interface ExtendedMetadata extends BaseMetadata {
 
 
 const area = fetchUserAreaDimensions().toString()
-const metadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(area)
+const metadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
 const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
 
 const initialState: StructuredMetadata<BaseMetadata, UnifiedMetaDataOptions<BaseMetadata>> = {

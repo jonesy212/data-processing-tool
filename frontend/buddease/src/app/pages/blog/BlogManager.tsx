@@ -1,6 +1,6 @@
 import { logData } from '@/app/components/notifications/NotificationService';
 import { addNotification } from '@/app/components/support/NofiticationsSlice';
-import { NotificationContext, NotificationType } from '@/app/components/support/NotificationContext';
+import { NotificationContext, NotificationType } from "@/app/context/NotificationContext";
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import { AndroidBlogPosts } from './AIoSBlogPosts';

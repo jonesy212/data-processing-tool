@@ -1,7 +1,6 @@
 // createBaseSnapshot.ts
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { getSnapshotConfig, getSnapshotId } from "@/app/api/SnapshotApi";
-import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { SnapshotStoreMethod, SnapshotStoreProps } from '@/app/components/snapshots';
 import { createSnapshotInstance } from '@/app/components/snapshots/createSnapshotInstance';
@@ -9,6 +8,7 @@ import isSnapshotArrayState from '@/app/components/snapshots/createSnapshotOptio
 import { toSnapshotsArray } from '@/app/components/snapshots/createSnapshotStoreOptions';
 import handleSnapshotStoreOperation from '@/app/components/snapshots/handleSnapshotStoreOperation';
 import { Snapshots } from '@/app/components/snapshots/LocalStorageSnapshotStore';
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { useSecureSnapshotId } from '@/app/components/utils/useSecureSnapshotId';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
@@ -18,18 +18,19 @@ import { BaseData, Data } from "../models/data/Data";
 import { snapshotStoreConfigInstance } from './snapshotStoreConfigInstance';
 import { useSnapshotStore } from "./useSnapshotStore";
 
+import { NotificationType } from '@/app/context/NotificationContext';
 import { CalendarEvent } from "../calendar/CalendarEvent";
 import { NotificationPosition, StatusType } from "../models/data/StatusType";
 import { displayToast } from "../models/display/ShowToast";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore, useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { NotificationType } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 import { addToSnapshotList } from "../utils/snapshotUtils";
 import { SimulatedDataSource } from "./createSnapshotOptions";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { Snapshot, SnapshotsArray } from "./LocalStorageSnapshotStore";
+;
 
 import { versionData } from '@/app/configs/DocumentBuilderConfig';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
@@ -191,7 +192,7 @@ function createBaseSnapshot<
           // Implement addStore logic
         },
         mapSnapshot: (
-          storeIds: number,
+          storeId: number,
           snapshotId: string,
           snapshot: Snapshot<T, K>,
           type: string,
@@ -250,7 +251,7 @@ function createBaseSnapshot<
         },
         
         removeStore: (
-          storeIds: number,
+          storeId: number,
           store: SnapshotStore<T, K>,
           snapshotId: string,
           snapshot: Snapshot<T, K>,

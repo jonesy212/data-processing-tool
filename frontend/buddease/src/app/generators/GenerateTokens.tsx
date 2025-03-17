@@ -1,4 +1,4 @@
-import { useNotification } from '@/app/components/support/NotificationContext';
+import { useNotification } from "@/app/context/NotificationContext";
 import { endpoints } from "../api/ApiEndpoints";
 import axiosInstance from "../api/axiosInstance";
 import { NotificationTypeEnum } from "../components/support/NotificationContext";

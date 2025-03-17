@@ -13,8 +13,6 @@ import MobXEntityStore from '../state/stores/MobXEntityStore';
 import Version, { BuildVersion, version } from "./Version";
 import { getCurrentAppInfo } from "./VersionGenerator";
 
-
-
 interface SharedVersionData { 
   major?: number,
   minor?: number,
@@ -32,11 +30,10 @@ interface SharedUpdateHistory extends SharedVersionData {
 interface VersionHistory extends SharedUpdateHistory{
   // Define the structure of the version history
   // Each element represents a version of the data
-  versionData: string | VersionData | null | {} | null;
-  latestVersion: VersionData; // A reference to the most recent version
+  versionData: string | VersionData<T, K> | null | {} | null;
+  latestVersion: VersionData<T, K>; // A reference to the most recent version
   history: HistoryEntry[] | undefined;
 }
-
 
 
 // Import necessary dependencies if needed
@@ -54,7 +51,6 @@ export function createLastUpdated(
 ): LastUpdated {
   const now = new Date();
   return {
-
     lastUpdated: now || {},
     timestamp: now,
     updatedBy: "system",
@@ -64,11 +60,11 @@ export function createLastUpdated(
 
 
 interface ExtendedVersionData {
-  name: string;
-  url: string;
-  versionNumber: string;
+  name?: string;
+  url?: string;
+  versionNumber?: string | undefined;
   appVersion?: string;
-  documentId: string;
+  documentId?: string;
   draft: boolean;
   userId: string;
   content: string; // Include content here if needed
@@ -79,19 +75,20 @@ interface ExtendedVersionData {
     // Add other metadata fields as needed
   };
   comments: (Comment<T, K<T>, StructuredMetadata<T, K<T>>> | CustomComment)[] | undefined;
-  releaseDate: string;
+  releaseDate?: string;
   lastUpdated: Date | VersionHistory;
   buildVersions?: BuildVersion | undefined;
-  versionData?: VersionData | null;
+  versionData?: string | VersionData<T, K<T>> | null;
   major: number;
   minor: number;
   patch: number;
   published?: boolean;
   checksum: string;
-
+  appPathWithVersion: string;
 }
 
-interface VersionData extends ExtendedVersionData {
+interface VersionData<T extends BaseData<any>, K extends T = T> 
+  extends ExtendedVersionData {
   // Add more specific properties if needed
   id: string;
   parentId: string | null;
@@ -101,7 +98,7 @@ interface VersionData extends ExtendedVersionData {
   parentContent: string;
   parentName: string;
   parentUrl: string;
-  notes: string
+  notes: string[]
   parentChecksum: string;
   parentMetadata?: {}; // Adjust as per actual type
   parentAppVersion: string;
@@ -113,7 +110,7 @@ interface VersionData extends ExtendedVersionData {
   publishedAt: Date | null;
   source: string;
   status: string;
-  version: Version<T, K<T>>;
+  version: Version<T, K>;
   timestamp: number | string | Date | undefined
   user: string;
   changes: string[];
@@ -143,35 +140,13 @@ const author = "John Doe";
 const timestamp = new Date();
 const revisionNotes = "Added new section and fixed typos.";
 
-
-const createDefaultVersionData = (overrides?: Partial<VersionData>): VersionData => ({
-  versionNumber: "1.0.0", // Example semantic version
-  id: 1, // Unique identifier for the version
-  lastUpdated: new Date(),
-  parentId: "123", // Example parent ID
-  parentType: "document", // Parent type like 'document' or 'file'
-  parentVersion: "v0.9.0", // Previous version for the parent
-
-  parentTitle: "Introduction to TypeScript", // Example title of the parent
-  parentContent: "This is the initial draft of the document.", // Example content
-  parentName: "TS Guide", // Parent name, e.g., project or file name
-  parentUrl: "https://example.com/parent", // Example URL for the parent resource
-
-  parentChecksum: "abc123xyz", // Simulated checksum
-  parentAppVersion: "1.0.1", // Example app version related to the parent
-  parentVersionNumber: "v1", // Parent version identifier
-  isLatest: true, // Indicates if it's the latest version
-
-  isActive: true, // Indicates if the version is active
-  isPublished: true, // Indicates if the version is published
-  publishedAt: new Date(), // Current date and time
-  source: "user_upload", // Example source, e.g., "user_upload" or "imported"
-  status: "active", // Status of the version, e.g., 'active' or 'archived'
-
+const createDefaultVersionData = <T extends BaseData<any> = BaseData<any>, K extends T = T>(
+  overrides?: Partial<VersionData<T, K>>
+): VersionData<T, K> => ({
   version: {
     id: 0,
     isActive: false,
-    releaseDate: undefined,
+    releaseDate: '',
     major: 0,
     minor: 0,
     patch: 0,
@@ -209,27 +184,26 @@ const createDefaultVersionData = (overrides?: Partial<VersionData>): VersionData
     workspaceViewers: [],
     workspaceAdmins: [],
     workspaceMembers: [],
-    data: [],
+    data: undefined,
     _structure: {},
     versionHistory: {
-      versionData: null
+      versionData: null,
+      latestVersion: createLatestVersion(),
+      history: [],
+      timestamp: new Date(),
     },
     getVersionNumber: () => "",
-    updateStructureHash: function (): Promise<void> {
-      throw new Error('Function not implemented.');
-    },
-    setStructureData: function (newData: string): void {
-      throw new Error('Function not implemented.');
-    },
-    hash: function (value: string): string {
-      throw new Error('Function not implemented.');
-    },
+    updateStructureHash: async () => {},
+    setStructureData: (newData: string) => {},
+    hash: (value: string) => value,
     currentHash: '',
     structureData: '',
-    calculateHash: function (): string {
-      throw new Error('Function not implemented.');
-    }
-  }, // Current version
+    calculateHash: () => "hash",
+    getStructure: async (): Promise<Record<string, AppStructureItem> | undefined> => {
+      throw new Error("getStructure not implemented");
+    },
+  },
+  // Current version
   timestamp: new Date().toISOString(), // Example ISO timestamp
   user: "user123", // Example user identifier
   changes: ["Added introduction section", "Fixed typos"], // Example changes
@@ -280,9 +254,8 @@ const createDefaultVersionData = (overrides?: Partial<VersionData>): VersionData
       childIds: ["doc1", "doc2"],
       relatedData: ["relatedDoc1", "relatedDoc2"],
     },
-  }], // Example history as HistoryEntry
-  ...overrides, // Apply overrides for custom values
-
+  }],
+  ...overrides, 
 });
 
 const versions: VersionHistory = {
@@ -290,7 +263,7 @@ const versions: VersionHistory = {
   minor: 1, 
   patch: 0,
   history: [],
-  latestVersion: createDefaultVersionData({ id: 1, isLatest: true }),
+  latestVersion: createDefaultVersionData({ id: "1", isLatest: true }),
   lastUpdated: new Date("2024-01-01T00:00:00Z"),
 
   timestamp: new Date("2024-11-24T12:00:00Z"),
@@ -355,31 +328,46 @@ const projectPath = getAppPath(versionNumber, appVersion);
 const backendStructure = new BackendStructure(projectPath, globalState);
 
 
-const versionData: VersionData = (() => {
- 
+const versionData: VersionData<BaseData<any>> = (() => {
   let databaseSchema: Record<string, any> | undefined;
   let services: Record<string, any> | undefined;
 
-  // const mergedStructure = this.getStructure?.();
+  // Generate appVersion and versionNumber using the provided generators
+  const { versionNumber, appVersion } = getCurrentAppInfo();
 
-  // const mergedStructure = this.getStructure ? this.getStructure() : null;
+  // Use getAppPath to get the app path with version information
+  const appPathWithVersion = getAppPath(versionNumber, appVersion);
 
-    // Simulate the structure for demonstration purposes
+  // Simulate the structure for demonstration purposes
   const getStructure = async (): Promise<Record<string, AppStructureItem> | undefined> => {
     return undefined; // Simulate structure or return an actual structure
   };
+
+    // Call getStructure and await its result
+    let structure: Record<string, AppStructureItem> | undefined;
+    try {
+      structure = await getStructure();
+    } catch (error) {
+      console.error("Error fetching structure:", error);
+      structure = undefined; // Fallback to undefined in case of error
+    }
   
+   // Ensure transformToStructureItems is defined
+   const transformToStructureItems = backend.transformToStructureItems ?? ((data: any) => []);
+
+
   return {
-    
     ...backend,
     ...backendStructure,
-    id: 0,
-    
+
+    id: "0",
     name: "Version 1",
     lastUpdated: new Date(),
+    appPathWithVersion,
     url: "https://example.com/version1",
     timestamp: new Date("2022-03-27T12:00:00Z"),
     versionNumber: versionNumber,
+    notes: [],
     documentId: "documentId",
     isActive: true,
     releaseDate: "2022-03-27",
@@ -419,12 +407,9 @@ const versionData: VersionData = (() => {
     version: version,
     user: "user@example.com",
     comments: [],
-    // Backend structure matching the BackendStructure class
     backend: backendStructure,
-
     frontend: frontendStructure,
     changes: [],
-    // Versioning properties
     buildVersions: {
       data: {
         major: 1,
@@ -433,22 +418,22 @@ const versionData: VersionData = (() => {
       },
       backend: backendStructure,
       frontend: frontendStructure,
-     
-    },  // Example version history
-
-    major: 1,  // Current major version
-    minor: 1,  // Current minor version
-    patch: 1,  // Current patch version
+    },
+    major: 1,
+    minor: 1,
+    patch: 1,
     history: [],
-    setStructureHash: "", 
+    setStructureHash: "",
     updateStructureHash: "",
     getStructureHashAndUpdateIfNeeded: "",
     backendVersions: "",
-    transformToStructureItems: "",
-    getStructure: "",
-   },
-   
+    databaseSchema, // Include databaseSchema
+    services, // Include services
+    transformToStructureItems,
+    structure 
+  };
 })();
+
 
 // Function to calculate checksum (example implementation)
 function calculateChecksum(content: string): string {

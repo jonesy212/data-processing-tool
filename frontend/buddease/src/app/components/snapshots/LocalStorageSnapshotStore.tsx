@@ -71,7 +71,7 @@ import {
 
 import { AddReport, AddReportType } from "@/app/api/ApiReport";
 import { getSubscriberId } from "@/app/api/subscriberApi";
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { getCachedSnapshotData } from "@/app/generators/snapshotCache";
@@ -130,7 +130,6 @@ type SnapshotUnion<
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > = Snapshot<T, K, Meta> | (Snapshot<T, K, Meta> & T);
 
-
 // Update SnapshotStoreUnion to use K
 type SnapshotStoreUnion<T extends BaseData, K extends T = T> =
   | SnapshotStoreObject<T, K>
@@ -162,14 +161,6 @@ type SnapshotsArray<
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > = Array<SnapshotUnion<T, K, Meta>>;
 
-type SnapshotsObject<
-  T extends BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>, 
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> = {
-  [key: string]: SnapshotUnion<T, K, Meta>;
-};
-
 type Result<T> = { success: true; data: T } | { success: false; error: Error };
 
 // Define the snapshot function correctly
@@ -187,7 +178,6 @@ const snapshotFunction = <
   snapshotStoreConfigData?: SnapshotStoreConfig<
     SnapshotWithCriteria<any, BaseData>,
     SnapshotWithCriteria<any, BaseData>
-    
   >,
   snapshotContainerData?: SnapshotStore<T, K> | Snapshot<T, K> | null
 ): Promise<SnapshotData<T, K>> => {
@@ -338,7 +328,7 @@ interface Snapshot<
     callback: (snapshotStore: SnapshotStore<T, K>) => void,
     dataStore: DataStore<T, K>,
     dataStoreMethods: DataStoreMethods<T, K>,
-    metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+    metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
     subscriberId: string, // Add subscriberId here
     endpointCategory: string | number, // Add endpointCategory here
     storeProps: SnapshotStoreProps<T, K>,
@@ -392,7 +382,8 @@ interface Snapshot<
 
   getSnapshotItems: (
     category: symbol | string | Category | undefined,
-    snapshots: SnapshotsArray<T, K>
+    
+     SnapshotsArray<T, K>
   ) => (
     | SnapshotItem<Data<T, K, Meta>, any>
     | SnapshotStoreConfig<T, K>

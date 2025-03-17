@@ -1,6 +1,6 @@
 // ButtonGenerator.tsx
 import { Router, useRouter } from "next/router";
-import React from "react";
+import React, { useState , useEffect} from "react";
 import { useDispatch } from "react-redux";
 import { useDynamicComponents } from "../components/DynamicComponentsContext";
 import {
@@ -19,6 +19,9 @@ import { AllTypes } from "../components/typings/PropTypes";
 import userService from "../components/users/ApiUser";
 import { brandingSettings } from "../libraries/theme/BrandingService";
 import { ExtendedRouter } from "../pages/MyAppWrapper";
+import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
+import { fetchEventData } from '@/app/api/ApiEvent'
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
 
 startVoiceRecognition;
 /**
@@ -70,15 +73,13 @@ import { Router } from 'react-router-dom';
  * @returns {JSX.Element} - The rendered ButtonGenerator component.
  */
 
-interface ButtonGeneratorProps {
-  variant?: Record<string, string>;
-  label?: Record<string, string>;
-  buttonTypes?: string[];
-  type?: AllTypes;
-  htmlType?: string;
+interface ButtonGeneratorProps extends SharedIdentifiers {
+  variant?: Record<string, string>; // Keep this as is for variant options
+  date?: Date | string;
+  value?: any;
+  timestamp?: string | Date;
   onSubmit?: () => void;
   onReset?: () => void;
-  onCanceVideoChannel?: () => void;
   onCancel?: () => void;
   onLogicalAnd?: () => void;
   onLogicalOr?: () => void;
@@ -87,7 +88,8 @@ interface ButtonGeneratorProps {
   onRoutesLayout?: (phase: string) => void;
   onSwitchLayout?: (layout: string) => void;
   onOpenDashboard?: (dashboard: string) => void;
-  
+  onCanceVideoChannel?: () => void;
+
   onTransitionToPreviousPhase?: (
     setCurrentPhase: React.Dispatch<React.SetStateAction<Phase>>,
     currentPhase: Phase
@@ -97,6 +99,7 @@ interface ButtonGeneratorProps {
     setCurrentPhase: React.Dispatch<React.SetStateAction<Phase>>,
     currentPhase: Phase
   ) => void;
+  label?: Label | string | Record<string, string> | null; // Allow Record<string, string> as well
 
   // generateButtonDispatch?: React.Dispatch<React.SetStateAction<any>>;
   // ... (other props)
@@ -172,16 +175,28 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
   onOpenDashboard,
   onTransitionToPreviousPhase,
   onTransitionToNextPhase,
+  id,
+  name,
+  type,
+  date,
+  value,
+  timestamp,
   // generateButtonDispatch
   // ... (other props)
 }) => {
+  const [eventId, setEventId] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   const buttonTypes = Object.keys(label);
-  const { dynamicContent } = useDynamicComponents(); // Access the dynamicContent flag from the naming convention context
+  const { dynamicContent, dynamicConfig } = useDynamicComponents(); // Access the dynamicContent flag from the naming convention context
   const initUserId = ""
   const router = useRouter(); // Get the router object using useRouter hook
 
   const userId = await userService.fetchUserById(initUserId)
- const dispatch = useDispatch()
+  const dispatch = useDispatch()
+  const title = dynamicConfig.document?.getTitle() || "Untitled Document";
+  
   // generateButtonDispatch({
   //   onSubmit,
   //   onReset,
@@ -193,6 +208,31 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
   //   onSwitchLayout,
   //   onOpenDashboard,
   // })
+
+   // Fetch eventId on component mount
+   useEffect(() => {
+    const fetchEventId = async () => {
+      try {
+        const eventData = await fetchEventData(String(id));
+        const matchingEvent = eventData.find(
+          (event) => event.id === id && event.name === name && event.type === type
+        );
+
+        if (!matchingEvent) {
+          throw new Error('Event not found');
+        }
+
+        setEventId(matchingEvent.eventId);
+      } catch (err) {
+        setError('Failed to fetch eventId');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEventId();
+  }, [id, name, type]);
 
   const handleVoiceControl = () => {
     const recognition = startVoiceRecognition((result: string) => {
@@ -281,8 +321,17 @@ const ButtonGenerator: React.FC<ButtonGeneratorProps> = async ({
       </button>
       {/* Include RealtimeData component */}
       <RealtimeDataComponent
+        id={id}
+        name={name}
+        type={type}
+        eventId={eventId || ''} // Pass the fetched eventId
+       
         userId={userId}
         dispatch={dispatch}
+        date={date}
+        value={value}
+        title={title}
+        timestamp={timestamp}
       />
     </div>
   );

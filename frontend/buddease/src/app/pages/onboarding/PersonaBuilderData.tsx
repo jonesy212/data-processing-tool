@@ -4,7 +4,7 @@ import { RealtimeUpdates } from "@/app/components/community/ActivityFeedComponen
 import { Team } from "@/app/components/models/teams/Team";
 import { TeamMember } from "@/app/components/models/teams/TeamMembers";
 import { Project } from "@/app/components/projects/Project";
-import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { DocumentTree, User, UserData, VisualizationData } from "@/app/components/users/User";
 import CommonDetails from '../../components/models/CommonDetails';

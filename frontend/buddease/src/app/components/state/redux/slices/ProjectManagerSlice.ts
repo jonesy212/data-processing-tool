@@ -1,11 +1,11 @@
 import Milestone from "@/app/components/calendar/CalendarSlice";
 import { Task } from "@/app/components/models/tasks/Task";
-import {Project} from "@/app/components/projects/Project";
-import { NotificationData } from "@/app/components/support/NofiticationsSlice";
-import { useNotification } from "@/app/components/support/NotificationContext";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import {ProjectState} from "./ProjectSlice";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
+import { Project } from "@/app/components/projects/Project";
+import { NotificationData } from "@/app/components/support/NofiticationsSlice";
+import { useNotification } from "@/app/context/NotificationContext";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ProjectState } from "./ProjectSlice";
 
 // Define and export the Notification type
 

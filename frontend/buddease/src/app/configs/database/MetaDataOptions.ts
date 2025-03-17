@@ -1,11 +1,13 @@
 import { dynamicMeetingMetadata, MeetingMetadata } from '@/app/components/calendar/ScheduledData';
+import { Permission } from "@/app/components/users/Permission";
 import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
 import { BaseData } from '@/app/components/models/data/Data';
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";import { TransactionData } from '@/app/components/payment/Transaction';
+import { VersionData } from "@/app/components/versions/VersionData";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { TransactionData } from '@/app/components/payment/Transaction';
 import { AnalysisTypeEnum } from '@/app/components/projects/DataAnalysisPhase/AnalysisType';
 import { data, TagsRecord } from '@/app/components/snapshots/SnapshotWithCriteria';
 import  TodoImpl from '@/app/components/todos/Todo';
-import { createLastUpdatedWithVersion } from "@/app/components/versions/createLatestVersion";
 import { MetadataEntry, projectMetadata, VideoMetadata } from '@/app/configs/StructuredMetadata';
 import { useMeta } from '@/app/configs/useMeta';
 import { ProjectMetadata, StructuredMetadata } from '../../../app/configs/StructuredMetadata';
@@ -13,29 +15,31 @@ import { PriorityTypeEnum } from './../../components/models/data/StatusType';
 import { AllStatus } from './../../components/state/stores/DetailsListStore';
 import { User } from './../../components/users/User';
 import { version } from './../../components/versions/Version';
-
+import VersionImpl from '@/app/components/versions/Version';
+import Version from "@/app/components/versions/Version";
 import { SharedBaseData } from "@/app/components/models/data/Data";
 import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { Task } from '@/app/components/models/tasks/Task';
-import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
+import { createLatestVersion, createLastUpdatedWithVersion } from '@/app/components/versions/createLatestVersion';
 import { baseConfig } from '../BaseConfig';
 import { SharedMetadata } from '../metadata/createMetadataState';
 import { PhaseMeta } from '@/app/components/phases/Phase';
 import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
+import { FileMetadata } from '@/app/components/models/file/FileManager'
 
-
-interface BaseMetadata<K extends T = T> extends SharedBaseData<K>, SharedMetadata<K> {
+interface BaseMetadata<K extends T = T> extends SharedMetadata<K> {
   description?: string; // Common descriptive text
   title?: string; // A generic title for all metadata
-  tags?: TagsRecord<T, K> | string[] | undefined; 
+  tags?: TagsRecord<T, K> | string[] | undefined;  
   author?: string; // Optional, common metadata
+
 }
 
 // Define the base interface
 interface BaseMetaDataOptions<
   T extends BaseData<any> = BaseData<any, any>,
   K extends T = T>
-  extends StructuredMetadata<T, K>,
+  extends Omit<StructuredMetadata<T, K>, 'customFields' | "isActive">,
   BaseMetadata<K>  {
     id: string
     title?: string;
@@ -47,34 +51,42 @@ interface BaseMetaDataOptions<
     maxAge?: string | number;
     source?: string;  // Add source information for identification
     timestamp: string | number | Date | undefined;
-    tags?: TagsRecord<T, K> | string[] | undefined;
-
-  }
+    tags?: TagsRecord<T, K> | string[] | undefined; 
+    customFields: Record<string, any>;
+    isActive: boolean;
+    permissions: Permission[];
+    version: Version<T, K>
+}
+  
 
 // Define extended interfaces
 interface SnapshotMetaDataOptions<
   T extends  BaseData<any>,
   K extends T = T>
-  extends StructuredMetadata<T, K>, BaseMetaDataOptions<T, K> {
+  extends Omit<StructuredMetadata<T, K>, "tags" | " version" | "customFields">,
+  BaseMetaDataOptions<T, K> {
   structuredMetadata: StructuredMetadata<T, K>;
   simulatedDataSource?: Record<string, any>;
+  tags?: TagsRecord<T, K> | string[] | undefined; 
+  version: VersionImpl<T, K>
   // simulatedDataSource?: { [key: string]: string | number | boolean | object };
 }
 
 interface ProjectMetaDataOptions<
   T extends  BaseData<any>, 
   K extends T = T
-> extends ProjectMetadata<T, K>, BaseMetaDataOptions<T, K> {
+  > extends Omit<ProjectMetadata<T, K>, "versionData">, 
+ BaseMetaDataOptions<T, K> {
   simulatedDataSource?: Record<string, any>;
+  versionData: string | VersionData | null;
+  tags?: TagsRecord<T, K> | string[] | undefined; 
 }
-
 
 // Define the task metadata options interface
 interface TaskMetaDataOptions<
   T extends  BaseData<any>, 
   K extends T = T
->
-  extends BaseMetaDataOptions<T, K> {
+> extends BaseMetaDataOptions<T, K> {
   priority: PriorityTypeEnum | undefined; // Specific to tasks
   assignedTo: User | User[] | null;
   status?: AllStatus; // Status specific to tasks
@@ -120,6 +132,18 @@ interface AdditionalMetaDataOptions {
   eventRecords?: any[];  
 }
 
+
+
+type UnifiedMetadata<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+> = UnifiedMetaDataOptions<T, K, Meta, ExcludedFields> & {
+  fileMetadata?: FileMetadata; // Optional file-specific metadata
+  customMetadata?: Record<string, any>; // Optional custom metadata
+};
+
 // Unified metadata interface with two required type arguments T and K
 interface UnifiedMetaDataOptions<
   T extends BaseData<any>,
@@ -147,14 +171,13 @@ interface UnifiedMetaDataOptions<
   customMediaSession?: CustomMediaSession;
   phaseMetadata?: PhaseMeta<T, K>;
   structuredMetadata?: StructuredMetadata<T, K>;
-
 }
 
 
 function transformProjectToUnifiedMetadata<
   T extends  BaseData<any> = BaseData<any, any>,
   K extends T = T
->(projectMetadata: ProjectMetadata<T, K>): UnifiedMetaDataOptions<T, K> {
+>(projectMetadata: ProjectMetadata<T, K>): UnifiedMetadata<T, K> {
   
 
   const versionData: VersionImpl<T, K> = {
@@ -201,7 +224,7 @@ function transformProjectToUnifiedMetadata<
   const structuredMetadata: StructuredMetadata<T, K> = {
     ...baseConfig,
     description: projectMetadata.description || "A project to manage structured metadata.",
-    versionData: [versionData],
+    versionData: versionData instanceof VersionImpl ? versionData : new VersionImpl(versionData),
     latestVersion: createLatestVersion({
       id: "1",
       name: "Initial Release",
@@ -284,7 +307,10 @@ function transformProjectToUnifiedMetadata<
       data: data as InitializedData<T>,
       _structure: {},
       versionHistory: {
-        versionData: {}
+        versionData: {},
+        latestVersion: createLatestVersion(),
+        history: [],
+        timestamp: new Date()
       },
       getVersionNumber: () => "",
       updateStructureHash: function (): Promise<void> {
@@ -327,7 +353,7 @@ function transformProjectToUnifiedMetadata<
       publishedAt: null,
       source: '',
       status: '',
-      version: version,
+      version: version instanceof VersionImpl ? version : new VersionImpl(version),
       timestamp: undefined,
       user: '',
       changes: [],
@@ -397,7 +423,8 @@ function transformProjectToUnifiedMetadata<
 export type {
     AdditionalMetaDataOptions, BaseMetadata,
     BaseMetaDataOptions, MediaMetadata, MyDataType, ProjectMetaDataOptions,
-    SnapshotMetaDataOptions, TaskMetadata, UnifiedMetaDataOptions
+    SnapshotMetaDataOptions, TaskMetadata, UnifiedMetaDataOptions,
+    UnifiedMetadata
 };
 
 
@@ -423,14 +450,18 @@ const fetchUserAreaDimensions = (): Promise<{ width: number; height: number }> =
 
 
 // Convert the dimensions into a string format: "width x height"
-const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
+const dimensions = await fetchUserAreaDimensions();
+const area = `${dimensions.width}x${dimensions.height}`;
+console.log(area);
+
+
 const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
 // console.log(area);  // Output: "1920x1080"
 
 // const currentMeta = useMeta<MyDataType, MyDataType>(area)
 
 // Example media data
-const mediaData: UnifiedMetaDataOptions<MyDataType> = {
+const mediaData: UnifiedMetadata<MyDataType> = {
   area: "", 
   tags: [],
   structuredMetadata: currentMeta,
@@ -486,20 +517,28 @@ const mediaData: UnifiedMetaDataOptions<MyDataType> = {
     relatedData: []
   },
   mediaMetadata: {
-    id, createdBy, timestamp,
+    id: "user",
+    createdBy: '',
+    timestamp: "",
     title: 'My Awesome Video',
     artist: 'John Doe',
     album: 'Greatest Hits',
-    metadataEntries: [], 
+    metadataEntries: {}, 
     artwork: [{ /* MediaImage data */ 
       src: ""
-    }]
+    }],
+    keywords: [],
+    isActive: true,
+    permissions: [],
+    customFields: "",
+   
   },
   customMediaSession: {
     sessionId: 'session-001',
     status: 'active' // Currently playing
   },
-  childIds: [], relatedData: []
+  childIds: [],
+  relatedData: []
 };
 
 
@@ -555,6 +594,16 @@ function createVideoMetadata<T extends BaseData<any>, K extends T>(
 }
 
 
+const transformedMetadataEntries: Record<string, any> = {};
+for (const key in metadataEntries) {
+  transformedMetadataEntries[key] = {
+    ...metadataEntries[key],
+    tags: Array.isArray(metadataEntries[key].tags)
+      ? metadataEntries[key].tags
+      : metadataEntries[key].tags ? Object.values(metadataEntries[key].tags) : [], // Convert TagsRecord to string[]
+  };
+}
+
 function createMediaMetadata(
   title: string,
   artist: string,
@@ -570,7 +619,7 @@ function createMediaMetadata(
     isActive: boolean;
     config: Record<string, any>;
   }
-): UnifiedMetaDataOptions<MyDataType>["mediaMetadata"] {
+): UnifiedMetadata<MyDataType>["mediaMetadata"] {
   const {
     id,
     createdBy,
@@ -589,11 +638,13 @@ function createMediaMetadata(
     album,
     createdBy,
     timestamp,
-    metadataEntries,
+    metadataEntries: transformedMetadataEntries,
     keywords,
-    version,
+    version: typeof version === "string" ? new VersionImpl(version) : version, // Convert if necessary
     isActive,
     config,
+    customFields, initialState, category, meta,
+    permissions, name, metadata, versionData, 
     artwork: [
       {
         src: artworkSrc,
@@ -632,12 +683,19 @@ const dynamicMediaMetadata = createMediaMetadata(
 
 
 const task: Task<MyDataType, MyDataType> = {
-
-  
   id: "task123",
   title: "Sample Task",
   description: "This is a sample task.",
-  _id, config, permissions, customFields, 
+  _id: "",
+  config: {} as Record<string, any>,
+  permissions: [],
+  customFields: "",
+  
+  timestamp: "",
+  initialState: {} as InitializedState<MyDataType, MyDataType>,
+  category: "",
+  meta: {} as StructuredMetadata<MyDataType, MyDataType>,
+ 
 
   assignedTo: null,
   assigneeId: "user456",
@@ -698,7 +756,7 @@ export const taskMetadata = <T extends BaseData<any>, K extends T = T>(
     timestamp: task.timestamp,
    
     metadataEntries: task.metadataEntries,
-    version: task.version,
+    version: task.version || undefined,
     isActive: task.isActive,
     config: task.config,
     keywords: task.keywords,
@@ -718,12 +776,10 @@ export const taskMetadata = <T extends BaseData<any>, K extends T = T>(
     // Add other dynamic properties here as needed
   };
 };
+
 // console.log(area);  // Output: "1920x1080"
-  
 // const currentMeta = useMeta<MyDataType, MyDataType>(area)
-
-
-const myMetaData: UnifiedMetaDataOptions<BaseData<MyDataType>> = {
+const myMetaData: UnifiedMetadata<BaseData<MyDataType>> = {
   area: '',
   tags: [],
   videoMetadata: dynamicVideoMetadata,
@@ -737,7 +793,15 @@ const myMetaData: UnifiedMetaDataOptions<BaseData<MyDataType>> = {
     sessionId: 'session123',
     status: 'active'
   },
-  currentMeta: currentMeta
+  currentMeta: currentMeta,
+  fileMetadata: { 
+    fileName: 'example.txt', 
+    fileSize: 1024, 
+    size: 1024, 
+    createdAt: new Date(), 
+    updatedAt: new Date()
+  },
+  customMetadata: { customField: 'customValue' }
 };
 
-export { fetchUserAreaDimensions };
+export { fetchUserAreaDimensions }

@@ -210,6 +210,7 @@ const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataM
       // Track file changes (Example)
       tracker.trackFileChanges({
         title,
+        createdBy,
         previousMetadata: { title: "Old Title" },
         metadata: { title },
         fileSize: 0,

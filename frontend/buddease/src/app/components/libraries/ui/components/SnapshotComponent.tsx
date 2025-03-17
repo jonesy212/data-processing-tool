@@ -3,17 +3,16 @@ import { BaseData, Data } from '@/app/components/models/data/Data';
 import { DataStoreMethods } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import {
-    CustomSnapshotData,
-    SnapshotConfig,
-    SnapshotContainer,
-    SnapshotData,
-    SnapshotStoreConfig,
-    SnapshotStoreProps,
+  CustomSnapshotData,
+  SnapshotConfig,
+  SnapshotContainer,
+  SnapshotData,
+  SnapshotStoreConfig,
+  SnapshotStoreProps,
 } from "@/app/components/snapshots";
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { isSnapshot } from "@/app/components/utils/snapshotUtils";
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { useEffect, useState } from "react";
@@ -33,7 +32,7 @@ interface SnapshotProps<T extends  BaseData<any>, K extends T = T, Meta extends 
   createSnapshot: CreateSnapshotType<T, K> | null | undefined;
   dataStore: DataStore<T, K>;
   dataStoreMethods: DataStoreMethods<T, K>;
-  metadata: UnifiedMetaDataOptions;
+  metadata: UnifiedMetadata;
   subscriberId: string;
   endpointCategory: string | number;
   storeProps: SnapshotStoreProps<T, K>;

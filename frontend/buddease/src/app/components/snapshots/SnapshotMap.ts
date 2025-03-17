@@ -2,9 +2,9 @@
 
 import { BaseData } from '@/app/components/models/data/Data';
 import { SnapshotData } from '@/app/components/snapshots';
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
@@ -120,7 +120,7 @@ function isSnapshotFunction<T extends  BaseData<any>, K extends T = T, Meta exte
   callback: (snapshotStore: SnapshotStore<T, K> | null) => void,
   dataStore: DataStore<T, K>,
   dataStoreMethods: DataStoreMethods<T, K>,
-  metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+  metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
   subscriberId: string,
   endpointCategory: string | number,
   storeProps: SnapshotStoreProps<T, K>,

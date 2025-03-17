@@ -6,7 +6,6 @@ import { endpoints } from "@/app/api/endpointConfigurations";
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { Payload, UpdateSnapshotPayload } from "@/app/components/database/Payload";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CustomSnapshotData, SnapshotData, SnapshotStoreProps, SnapshotWithCriteria } from ".";
 import { CalendarEvent } from "../calendar/CalendarEvent";
@@ -30,6 +29,7 @@ import { generateSnapshotId } from "../utils/snapshotUtils";
 import { ExtendedVersionData } from "../versions/VersionData";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { Snapshot, Snapshots, SnapshotsArray, } from "./LocalStorageSnapshotStore";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
@@ -761,7 +761,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<T>({
         dataStore: DataStore<T, K<T>>,
 dataStoreMethods: DataStoreMethods<T, K<T>>,
         // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K<T>>,
-        metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+        metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
         subscriberId: string, // Add subscriberId here
         endpointCategory: string | number ,// Add endpointCategory here
         storeProps: SnapshotStoreProps<T, K<T>>,

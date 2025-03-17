@@ -21,7 +21,7 @@ const processSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ex
   snapshotStore: SnapshotStore<T, K>
 ) => {
   Object.keys(snapshotStore).forEach((snapshotId) => {
-    const typedSnapshotId = snapshotId as keyof SnapshotStore<Snapshot<T, K>>;
+    const typedSnapshotId = snapshotId as keyof SnapshotStore<T, K>;
     const snapshotData = snapshotStore[typedSnapshotId];
     console.log(`Processing snapshot with ID ${String(typedSnapshotId)}:`, snapshotData);
   });

@@ -1,10 +1,10 @@
 // CommonEvent.ts
 import { snapshotContainer } from '@/app/api/SnapshotApi';
 import { SnapshotContainer } from '@/app/components/snapshots/SnapshotContainer';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { StatusType } from '@/app/components/models/data/StatusType';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { UnsubscribeDetails } from '../../event/DynamicEventHandlerExample';
@@ -47,7 +47,7 @@ interface CommonEvent extends Data<T> {
   language?: string;
   agenda?: string;
   collaborationTool?: string;
-  metadata?: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>
+  metadata?: UnifiedMetadata<T, K, Meta, ExcludedFields>
   // Implement the `then` function using the reusable function
   then?: <T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
 }

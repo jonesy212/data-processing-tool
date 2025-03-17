@@ -1,14 +1,13 @@
 // userScenarioCreation.ts
 
+import { DocumentData } from '@/app/components/documents/DocumentBuilder'; // Corrected import without using 'new'
+import PersonaTypeEnum, { PersonaBuilder } from "@/app/pages/personas/PersonaBuilder";
+import { useState } from "react";
+import { getDefaultDocumentOptions } from "../documents/DocumentOptions";
+import { DocumentBuilderProps } from "../documents/SharedDocumentProps";
 import { Phase } from "../phases/Phase";
 import PhaseManager from "../phases/PhaseManager";
-import PersonaTypeEnum, { PersonaBuilder } from "@/app/pages/personas/PersonaBuilder";
-import { PhaseActions } from "../phases/PhaseActions"; // Import PhaseActions from PhaseActions file
-import DocumentBuilder, { DocumentData } from '@/app/components/documents/DocumentBuilder'; // Corrected import without using 'new'
-import  useDocumentManagerSlice  from "../state/redux/slices/DocumentSlice";
-import { useState } from "react";
-import { DocumentOptions, getDefaultDocumentOptions } from "../documents/DocumentOptions";
-import { DocumentBuilderProps } from "../documents/SharedDocumentProps";
+import useDocumentManagerSlice from "../state/redux/slices/DocumentSlice";
 
 // Define function to create user scenarios and map out user journey
 export function createUserScenarios() {
@@ -84,7 +83,7 @@ const documentsData: DocumentData[] = [
 // Now you can pass documentsData to your hook
 const documents = useDocumentManagerSlice().documentBuilder({
   documents: documentsData,
-});;
+});
 
 
   let phases: Phase[] = [];
@@ -100,4 +99,4 @@ const documents = useDocumentManagerSlice().documentBuilder({
 }
 
 
-export {documentOptions}
+export { documentOptions };

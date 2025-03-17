@@ -1,7 +1,7 @@
 // snapshot
-import { useMeta } from "@/app/configs/useMeta";
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { Stroke } from "@/app/components/state/redux/slices/DrawingSlice";
+import { useMeta } from "@/app/configs/useMeta";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { Signature } from "ethers";
@@ -47,7 +47,7 @@ import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 import { createSnapshotStoreConfig, snapshotStoreConfigInstance } from "./snapshotStoreConfigInstance";
  
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -1843,7 +1843,7 @@ const snapshot: Snapshot<BaseData, BaseData> = {
           initializedState: undefined,
           criteria: undefined,
           snapshot: function (id: string | number | undefined, snapshotData: SnapshotData<Data<T, K, StructuredMetadata<T, K>>, Meta, StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>, never>, category: symbol | string | Category | undefined, categoryProperties: CategoryProperties | undefined, callback: (snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>) => void, 
-          dataStore: DataStore<Data<T, K, StructuredMetadata<T, K>>, Meta, StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>>, dataStoreMethods: DataStoreMethods<Data<T, K, StructuredMetadata<T, K>>, Meta, StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>>, metadata: UnifiedMetaDataOptions<Data<T, K, StructuredMetadata<T, K>>, Meta, StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>, never>, subscriberId: string, endpointCategory: string | number, storeProps: SnapshotStoreProps<T, K, StructuredMetadata<T, K>, Meta>, snapshotConfigData: SnapshotConfig<Data<T, K, StructuredMetadata<T, K>>, Meta, StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>>, subscription: Subscription<T, K, StructuredMetadata<T, K>, Meta>, snapshotId?: string | number | null, snapshotStoreConfigData?: any, snapshotContainer?: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta> | Snapshot<T, K, StructuredMetadata<T, K>, never> | null): Snapshot<T, K, StructuredMetadata<T, K>, never> | Promise<{ snapshot: Snapshot<T, K, StructuredMetadata<T, K>, never>; }> {
+          dataStore: DataStore<Data<T, K, StructuredMetadata<T, K>>, Meta, StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>>, dataStoreMethods: DataStoreMethods<Data<T, K, StructuredMetadata<T, K>>, Meta, StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>>, metadata: UnifiedMetadata<Data<T, K, StructuredMetadata<T, K>>, Meta, StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>, never>, subscriberId: string, endpointCategory: string | number, storeProps: SnapshotStoreProps<T, K, StructuredMetadata<T, K>, Meta>, snapshotConfigData: SnapshotConfig<Data<T, K, StructuredMetadata<T, K>>, Meta, StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>>, subscription: Subscription<T, K, StructuredMetadata<T, K>, Meta>, snapshotId?: string | number | null, snapshotStoreConfigData?: any, snapshotContainer?: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta> | Snapshot<T, K, StructuredMetadata<T, K>, never> | null): Snapshot<T, K, StructuredMetadata<T, K>, never> | Promise<{ snapshot: Snapshot<T, K, StructuredMetadata<T, K>, never>; }> {
             throw new Error("Function not implemented.");
           },
           setCategory: function (category: symbol | string | Category | undefined): void {

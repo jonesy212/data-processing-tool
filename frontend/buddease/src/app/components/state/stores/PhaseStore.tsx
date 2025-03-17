@@ -1,12 +1,12 @@
 // PhaseStore.tsx
-import { useNotification } from "@/app/components/support/NotificationContext";
+import { useNotification } from "@/app/context/NotificationContext";
+import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { Data } from "../../models/data/Data";
+import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { snapshotStore } from "../../snapshots/SnapshotStore";
 import { VideoData } from "../../video/Video";
-import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
-import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 
 export interface PhaseStore {
   phases: Record<string, OnboardingPhase[]>;

@@ -2,7 +2,7 @@
 import {
   NotificationTypeEnum,
   useNotification,
-} from "@/app/components/support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";

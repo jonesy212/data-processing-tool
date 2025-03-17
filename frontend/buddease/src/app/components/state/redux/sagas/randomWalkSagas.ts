@@ -1,7 +1,7 @@
 // randomWalkSagas.ts
 import { RandomWalkActions } from "@/app/components/hooks/userInterface/RandomWalkActions";
-import { useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import { useNotification } from "@/app/context/NotificationContext";
 import { all, call, put, takeLatest } from "redux-saga/effects";
 
 // Simulate an asynchronous API call for random walks

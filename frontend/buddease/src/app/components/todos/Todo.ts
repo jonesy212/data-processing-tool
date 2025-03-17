@@ -25,7 +25,8 @@ import { LocalStorageSnapshotStore, Result, Snapshot, Snapshots, SnapshotsArray,
 import { ConfigureSnapshotStorePayload } from "../snapshots/SnapshotConfig";
 import SnapshotStore, { initialState } from "../snapshots/SnapshotStore";
 import { CustomComment } from "../state/redux/slices/BlogSlice";
-import { NotificationType } from "../support/NotificationContext";
+import { NotificationType } from 
+ '@/app/context/support/NotificationContext';;
 import { Idea } from "../users/Ideas";
 import { Subscriber } from "../users/Subscriber";
 import { User } from "../users/User";

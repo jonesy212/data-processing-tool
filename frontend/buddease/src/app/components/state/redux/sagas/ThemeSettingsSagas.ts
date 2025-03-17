@@ -5,7 +5,6 @@ import { Theme } from "@/app/components/libraries/ui/theme/Theme";
 import Logger from "@/app/components/logging/Logger";
 import { ValidationActionTypes, ValidationActions, validationSuccess } from "@/app/components/security/ValidationActions";
 import ThemeValidator from "@/app/components/security/validateTheme";
-import { useNotification } from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";

@@ -1,6 +1,6 @@
 import { useAuth } from '@/app/components/auth/AuthContext';
 import { sanitizeData, validateUserData } from '@/app/components/security/SanitizationFunctions';
-import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
+import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import React, { useEffect } from 'react';
 import { AppDevelopmentPhase } from '../../components/phases/AppDevelopmentPhase';
 import TempUserData from './OnboardingPhase';

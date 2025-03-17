@@ -3,20 +3,20 @@ import { Category } from '@/app/components/libraries/categories/generateCategory
 import { ConfigureSnapshotStorePayload, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreProps } from '@/app/components/snapshots';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { Subscription } from 'react-redux';
 import { K, Snapshot, snapshot, snapshotContainer, SnapshotOperation, SnapshotOperationType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotWithCriteria, subscribeToSnapshot, subscribeToSnapshots, T } from ".";
 import { CreateSnapshotStoresPayload } from "../database/Payload";
 import { SnapshotManager, useSnapshotManager } from "../hooks/useSnapshotManager";
 import { BaseData, Data } from "../models/data/Data";
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import SnapshotManagerOptions from "./SnapshotManagerOptions";
-import SnapshotStore from "./SnapshotStore";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import { Subscription } from 'react-redux';
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { ExcludedFields } from '../routing/Fields';
 import CalendarManagerStoreClass from '../state/stores/CalendarManagerStore';
+import SnapshotManagerOptions from "./SnapshotManagerOptions";
+import SnapshotStore from "./SnapshotStore";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 const snapConfig: SnapshotConfig<T, K> | undefined = {/* your snapshot configuration logic here */}
 
@@ -67,7 +67,7 @@ export const createSnapshotStores = async <T extends  BaseData<any>, K extends T
             dataStore: DataStore<T, K>,
             dataStoreMethods: DataStoreMethods<T, K>,
             // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-            metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+            metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
             subscriberId: string, // Add subscriberId here
             endpointCategory: string | number,// Add endpointCategory here
             storeProps: SnapshotStoreProps<T, K>,

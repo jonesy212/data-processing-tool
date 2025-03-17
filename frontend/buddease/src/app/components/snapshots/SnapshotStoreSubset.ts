@@ -1,15 +1,16 @@
 import { SnapshotData } from '@/app/components/snapshots';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { NotificationType } from '@/app/context/NotificationContext';
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { NotificationType } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 import { Payload, Snapshot, Snapshots, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
 import { SnapshotOperation } from "./SnapshotActions";
 import { CustomSnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
+
 
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";

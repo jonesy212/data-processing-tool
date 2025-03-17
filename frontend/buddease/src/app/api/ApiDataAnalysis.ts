@@ -3,7 +3,7 @@ import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import {
     NotificationType,
     useNotification
-} from "@/app/components/support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 import { BaseData } from "../components/models/data/Data";

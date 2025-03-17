@@ -5,7 +5,7 @@ import { Tag } from '@/app/components/models/tracker/Tag';
 import {
     NotificationTypeEnum,
     useNotification,
-} from "@/app/components/support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import { AxiosError } from "axios";
 import { ModifiedDate } from "../components/documents/DocType";
 import { NoteData } from "../components/documents/NoteData";
@@ -104,7 +104,7 @@ interface Note<
   encryption: Encryption;
   currentMetadata: StructuredMetadata<any, any>;
   searchHistory: SearchHistory[];
-  version: Version;
+  version: Version<T, K>;
   // Add more properties as needed
 }
 
@@ -124,7 +124,6 @@ export const handleNoteApiErrorAndNotify = (
     useNotification().notify(
       errorMessageId,
       errorMessageText,
-      null,
       new Date(),
       "NoteError" as NotificationTypeEnum
     );

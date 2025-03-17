@@ -5,12 +5,13 @@ import { refreshUI } from '@/app/components/snapshots/refreshUI'
 import { findSnapshotStoresById, snapshotContainer } from '@/app/api/SnapshotApi';
 import { useSnapshotManager } from "@/app/components/hooks/useSnapshotManager";
 import AnalyzeData from "@/app/components/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
-import { MeetingStatus } from "../../models/data/StatusType";
+import { MeetingStatus } from "@/app/components/models/data/StatusType";
 import { SnapshotData, SnapshotStoreProps } from '@/app/components/snapshots';
 import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
 import { Todo } from "@/app/components/todos/Todo";
+import { useMetadata } from "@/app/configs/useMetadata";
 import { castToSnapshot } from '@/app/components/utils/snapshotUtils';
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { useState } from "react";
 import * as snapshotApi from '../../api/SnapshotApi';
@@ -22,7 +23,7 @@ import { BaseData, Data, DataDetails } from "../models/data/Data";
 import { CalendarStatus, StatusType } from "../models/data/StatusType";
 import { DataDetailsComponent, Team, TeamDetails } from "../models/teams/Team";
 import { Member, TeamMember } from "../models/teams/TeamMembers";
-
+import React from 'react'
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
@@ -51,6 +52,7 @@ import { User } from "../users/User";
 import UserRoles from "../users/UserRoles";
 import { processSnapshotData } from '../utils/versionUtils';
 import { isSnapshotContainer } from '../utils/snapshotUtils'
+import { createMeta } from "@/app/configs/metadata/createMetadataState";
 
 
 // Define SnapshotWithData to include only essential properties and methods
@@ -177,13 +179,13 @@ const CalendarApp = async <
 
   const [snapshot, setSnapshot] = useState<Snapshot<T, K> | null>(null);
   
-  const currentMeta: Meta = createMeta<T, K>({
+  const currentMeta: StructuredMetadata<T, K> = createMeta<T, K>({
     id: 'calendar-meta-id',   // Updated ID for calendar context
     description: 'Calendar Meta', // More relevant description
   });
   
   // Use `useMetadata` with appropriate type arguments for UnifiedMetaDataOptions
-  const currentMetadata: UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>> = 
+  const currentMetadata: UnifiedMetadata<T, K, StructuredMetadata<T, K>> = 
     useMetadata<T, K, Meta>({ area: 'calendar-area' }); // Updated area for calendar
   
    // Destructure the required properties from props
@@ -739,9 +741,9 @@ const CalendarApp = async <
           id: "1",
           // _id: calendarEvent.id,
           subtitle: "Discuss project plans",
-          value: "10:00 AM",
           title: "Meeting",
           description: "Discuss project plans",
+          value: "10:00 AM",
           startDate: new Date(),
           endDate: new Date(),
           updatedAt: new Date(),
@@ -753,7 +755,10 @@ const CalendarApp = async <
           {
             id: "1",
             calendarEvent: calendarEvent,
-            label: {}, 
+            label: {
+              text: "",
+              color: ""
+            }, 
             date: new Date(),
             createdBy: "",
             currentMeta, 
@@ -819,6 +824,9 @@ const CalendarApp = async <
               tier: "",
               roles: [],
               followers: [],
+              bannerUrl: "", 
+              currentMetadata: {}, 
+              currentMeta: {},
               preferences: {
                 refreshUI: refreshUI
               },
@@ -855,6 +863,8 @@ const CalendarApp = async <
               profileAccessControl: undefined,
               activityStatus: "",
               isAuthorized: false,
+              bannerUrl, currentMetadata, 
+              currentMeta: currentMeta
             },
           ],
           projects: [

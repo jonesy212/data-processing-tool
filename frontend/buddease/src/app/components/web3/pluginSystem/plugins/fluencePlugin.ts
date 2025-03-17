@@ -79,7 +79,7 @@ class FluencePlugin extends YourClass implements DAppPlugin {
       
       // Implement specific logic for Fluence collaboration
       console.log(`${this.name} plugin: Realtime collaboration enabled.`);
-      return this;;
+      return this;
   }
   
   enableChatFunctionality(aquaConfig?: Record<string, any>): YourClass {

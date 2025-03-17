@@ -1,7 +1,8 @@
-import { versionData } from '@/app/configs/DocumentBuilderConfig';
 import VersionImpl, { version } from '@/app/components/versions/Version';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
-import { T, K } from "@/app/components/models/data/dataStoreMethods";
+import { CustomStyle } from '@/app/api/ApiService';
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { AllTypes } from '@/app/components/typings/PropTypes';
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
@@ -11,33 +12,31 @@ import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import * as docx from "docx";
 import { ContentState } from "draft-js";
 import {
-  CodingLanguageEnum,
-  LanguageEnum,
+    CodingLanguageEnum,
+    LanguageEnum,
 } from "../communications/LanguageEnum";
+import { BaseData } from "../models/data/Data";
 import {
-  BorderStyle,
-  DocumentSize,
-  Layout,
-  PrivacySettingEnum,
-  ProjectPhaseTypeEnum,
+    BorderStyle,
+    DocumentSize,
+    Layout,
+    PrivacySettingEnum,
+    ProjectPhaseTypeEnum,
 } from "../models/data/StatusType";
 import { Phase, PhaseData, PhaseMeta } from "../phases/Phase";
 import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
+import { Document } from "../state/stores/DocumentStore";
 import { CustomProperties, HighlightColor } from "../styling/Palette";
 import { UserIdea } from "../users/Ideas";
 import Version from "../versions/Version";
 import { VersionData } from "../versions/VersionData";
+import { createLastUpdatedWithVersion } from '../versions/createLatestVersion';
 import { ModifiedDate } from "./DocType";
 import { computeChecksum, DocumentData, RevisionOptions } from "./DocumentBuilder";
 import { DocumentTypeEnum } from "./DocumentGenerator";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 import { NoteAnimationOptions, NoteOptions } from "./NoteData";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
-import { CustomStyle } from '@/app/api/ApiService';
-import { Document } from "../state/stores/DocumentStore";
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
-import { BaseData } from "../models/data/Data";
-import { createLastUpdatedWithVersion } from '../versions/createLatestVersion';
 
 export interface CustomDocument extends docx.Document {
   createSection(): docx.SectionProperties;
@@ -487,8 +486,8 @@ T extends BaseData<any> = BaseData<any, any>,
   };
   previousMeta: StructuredMetadata<T, K> | undefined;
   currentMeta: StructuredMetadata<T, K>;
-  previousMetadata?: UnifiedMetaDataOptions<T, K> | undefined;
-  currentMetadata?: UnifiedMetaDataOptions<T, K> | undefined;
+  previousMetadata?: UnifiedMetadata<T, K> | undefined;
+  currentMetadata?: UnifiedMetadata<T, K> | undefined;
   currentContent: ContentState
   previousContent: ContentState | undefined
   lastModifiedDate: ModifiedDate | undefined;
@@ -1067,6 +1066,6 @@ const mapDocumentToProjectPhase = (document: Document<T, K<T>, StructuredMetadat
 };
 
 
-export { mapDocumentToProjectPhase }
-export type { AccessRecord, Style};
+export { mapDocumentToProjectPhase };
+export type { AccessRecord, Style };
 

@@ -1,7 +1,6 @@
 import { handleApiError } from "@/app/api/ApiLogs";
-import { NotificationTypeEnum } from '@/app/components/support/NotificationContext';
+import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import { sanitizeInput } from "../components/security/SanitizationFunctions";
-import { useNotification } from "../components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 
 // Import any other necessary dependencies
@@ -20,9 +19,16 @@ const defaultConfig: Config = {
 
 };
 
+const defaultNotificationContext = {
+  notify: () => {
+    console.warn("Notification context is not available.");
+  },
+};
+
+
 class ConfigManager {
   private currentConfig: Config = { ...defaultConfig };
-  private notificationContext = useNotification();
+  private notificationContext = useNotification() || defaultNotificationContext;
 
   getConfig(): Config {
     return this.currentConfig;
@@ -46,8 +52,8 @@ class ConfigManager {
     this.notificationContext.notify(
       "Config Updated",
       "API configuration updated successfully.",
-      NOTIFICATION_MESSAGES.Config.CONFIG_UPDATED,
       new Date,
+      NOTIFICATION_MESSAGES.Config.CONFIG_UPDATED,
       NotificationTypeEnum.Configuration
     );
   }
@@ -58,8 +64,8 @@ class ConfigManager {
     this.notificationContext.notify(
       "Config Rolled Back",
       "API configuration rolled back to default.",
-      NOTIFICATION_MESSAGES.Config.CONFIG_ROLLEDBACK,
       new Date,
+      NOTIFICATION_MESSAGES.Config.CONFIG_ROLLEDBACK,
       NotificationTypeEnum.Info
    
     );

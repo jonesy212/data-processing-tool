@@ -1,16 +1,15 @@
 // ProjectOwnerSlice.ts
 import { ProjectDetails } from "@/app/components/projects/Project";
 import {
-  NotificationTypeEnum,
-  useNotification,
-} from "@/app/components/support/NotificationContext";
+    NotificationTypeEnum,
+    useNotification,
+} from "@/app/context/NotificationContext";
 import { DeveloperPersona } from "@/app/pages/personas/DeveloperPersona";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Meeting } from "../communications/scheduler/Meeting";
 import { Task } from "../models/tasks/Task";
 import { Team } from "../models/teams/Team";
 import { TeamMember } from "../models/teams/TeamMembers";
-import UpdatedProjectDetails from "../projects/UpdateProjectDetails";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { RootState } from "../state/redux/slices/RootSlice";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
@@ -933,4 +932,5 @@ export const selectProjectOwner = (state: RootState) => state.projectOwner;
 
 // Export the reducer
 export default useProjectOwnerSlice.reducer;
-export type { ProjectOwnerState};
+export type { ProjectOwnerState };
+

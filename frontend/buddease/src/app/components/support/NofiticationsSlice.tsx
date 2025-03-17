@@ -8,8 +8,11 @@ import SnapshotStore from '../snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '../snapshots/SnapshotWithCriteria';
 import { WritableDraft } from '../state/redux/ReducerGenerator';
 import { AllStatus } from '../state/stores/DetailsListStore';
-import { NotificationTypeEnum } from './NotificationContext';
-
+import { NotificationTypeEnum, NotificationType } from '@/app/context/NotificationContext';
+import { T, K, Meta} from "@/app/components/models/data/dataStoreMethods";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+ import { Attachment } from '@/app/components/documents/Attachment/attachment'
+ 
 
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";
 
@@ -18,7 +21,11 @@ export type TeamStatus = "active" | "inactive" | "onHold"; // Define TeamStatus 
 export type DataStatus = "processing" | "completed" | "failed"; // Define DataStatus enum
 
 
-interface NotificationData extends Data, CalendarEvent {
+interface NotificationData<
+  T extends BaseData<any, any, any, Attachment>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> extends Data<T, K, Meta>, CalendarEvent<T, K> {
   id: string;
   message: string;
 
@@ -27,7 +34,7 @@ interface NotificationData extends Data, CalendarEvent {
   content: any;
   // type: NotificationType;
   sendStatus?: SendStatus | boolean; // Add sendStatus property
-  completionMessageLog: LogData | undefined;
+  completionMessageLog: LogData<T, K, Meta> | undefined;
   date?: Date | undefined;
   email?: string;
   status?: AllStatus
@@ -40,7 +47,7 @@ interface NotificationData extends Data, CalendarEvent {
 }
 
 interface NotificationsState {
-  notifications: NotificationData[];
+  notifications: NotificationData<T, K, Meta>[];
 }
 
 const initialState: NotificationsState = {
@@ -64,7 +71,7 @@ export const dispatchNotification = (
         // createdAt: new Date(),
         date: new Date(),
         content: successMessage,
-        completionMessageLog: {} as WritableDraft<LogData>,
+        completionMessageLog: {} as WritableDraft<LogData<T, K, Meta>>,
         type: NotificationTypeEnum.Info,
         message: successMessage,
         status: "tentative",
@@ -96,7 +103,7 @@ export const dispatchNotification = (
         id: actionType,
         createdAt: new Date(),
         content: errorMessage + ". Payload received: " + JSON.stringify(payload),
-        completionMessageLog: {} as WritableDraft<LogData>,
+        completionMessageLog: {} as WritableDraft<LogData<T, K, Meta>>,
         type: NotificationTypeEnum.Error,
         message: errorMessage + ": " + error,
         status: "tentative",
@@ -117,7 +124,7 @@ export const dispatchNotification = (
         rsvpStatus: 'yes',
         participants: [],
         teamMemberId: '',
-        meta: WritableDraft<Data>,
+        meta: {} as WritableDraft<Data<T, K, Meta>>,
         getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
           throw new Error('Function not implemented.');
         }
@@ -133,7 +140,7 @@ const notificationsSlice = createSlice({
   name: 'notifications',
   initialState,
   reducers: {
-    addNotification: (state, action: PayloadAction<WritableDraft<NotificationData>>) => {
+    addNotification: (state, action: PayloadAction<WritableDraft<NotificationData<T, K, Meta>>>) => {
       state.notifications.push(action.payload);
     },
     removeNotification: (state, action: PayloadAction<string>) => {

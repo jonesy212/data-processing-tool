@@ -2,7 +2,7 @@
 
 import { AxiosError } from "axios";
 import axiosInstance from "./axiosInstance"; // Ensure this is set up correctly for API calls
-import { NotificationType, useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { handleApiError } from "./ApiLogs";
 import { YourResponseType } from "../components/typings/types";

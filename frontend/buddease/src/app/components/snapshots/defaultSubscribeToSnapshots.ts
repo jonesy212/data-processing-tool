@@ -21,7 +21,8 @@ import { NotificationPosition } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { NotificationType } from "../support/NotificationContext";
+import { NotificationType } from 
+ '@/app/context/support/NotificationContext';;
 import { Subscriber } from "../users/Subscriber";
 import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
 import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";

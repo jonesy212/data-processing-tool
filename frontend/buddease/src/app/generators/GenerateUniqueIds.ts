@@ -1,4 +1,4 @@
-import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { DataDetails } from "../components/models/data/Data";
 import { NotificationData } from "../components/support/NofiticationsSlice";
 import {

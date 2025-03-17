@@ -1,10 +1,11 @@
 // SharedDocumentProps.ts
 
-import { ContentState } from 'draft-js';
 import { DocumentFormattingOptions } from '@/app/components/documents/ DocumentFormattingOptionsComponent';
+import { BaseData } from '@/app/components/models/data/Data';
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { EditorState } from "draft-js";
+import { ContentState, EditorState } from 'draft-js';
 import { Dispatch, SetStateAction } from "react";
 import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
 import { Phase } from "../phases/Phase";
@@ -19,9 +20,6 @@ import { DocumentData } from "./DocumentBuilder";
 import { DocumentTypeEnum } from './DocumentGenerator';
 import { DocumentOptions } from "./DocumentOptions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
-import { BaseData } from '@/app/components/models/data/Data';
-import { ExcludedFields } from '@/app/components/routing/Fields';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 
 export interface CommonAnimationOptions {
   type: "slide" | "fade" | "show" | "custom" | "none"; // Add more animation types as needed
@@ -48,8 +46,8 @@ export interface DocumentBuilderProps<
     } | undefined;
   currentContent?: ContentState
   previousContent?: string | ContentState;
-  previousMetadata?: UnifiedMetaDataOptions<T, K> | undefined;
-  currentMetadata: UnifiedMetaDataOptions<T, K>
+  previousMetadata?: UnifiedMetadata<T, K> | undefined;
+  currentMetadata: UnifiedMetadata<T, K>
     accessHistory: AccessHistory[];
   lastModifiedDate: ModifiedDate | undefined;
   versionData: VersionData | undefined;

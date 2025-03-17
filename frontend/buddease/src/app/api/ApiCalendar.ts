@@ -1,9 +1,9 @@
 // ApiCalendar.ts
-import { NotificationTypeEnum } from '@/app/components/support/NotificationContext';
 import {
   NotificationType,
   useNotification,
-} from "@/app/components/support/NotificationContext";
+  NotificationTypeEnum
+} from "@/app/context/NotificationContext";
 import { AxiosResponse } from "axios";
 import {
   SimpleCalendarEvent,

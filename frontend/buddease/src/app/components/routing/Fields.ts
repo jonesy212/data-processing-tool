@@ -2,6 +2,7 @@ import { Project } from "@/app/components/projects/Project";
 import { TaskMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { ProjectMetadata, StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { } from '@/app/typings/appTypes';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { BaseData } from '../models/data/Data';
 import { K, Meta } from '../models/data/dataStoreMethods';
 import { Task, TaskData } from '../models/tasks/Task';
@@ -95,7 +96,7 @@ function processMetadata<T extends UnifiedMetaDataOptions<any>>(metadata: T) {
   console.log("Excluded Fields:", excludedFields);
 }
 // Creating an example task metadata object that satisfies UnifiedMetaDataOptions
-const exampleTaskMeta: UnifiedMetaDataOptions<
+const exampleTaskMeta: UnifiedMetadata<
   T extends BaseData<any> = BaseData<any, any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,

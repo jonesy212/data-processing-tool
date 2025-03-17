@@ -1,5 +1,5 @@
 // CommunicationAPI.ts
-import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
+import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError } from 'axios';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';

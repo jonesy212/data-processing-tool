@@ -1,35 +1,43 @@
 // components/Details.tsx
 
-import React from "react";
-import ListGenerator from "./../../../../app/generators/ListGenerator";
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { Participant } from "@/app/pages/management/ParticipantManagementPage";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { observer } from "mobx-react-lite";
-import CommonEvent from "../../state/stores/CommonEvent";
-import { DetailsItem, DetailsItemExtended } from "../../state/stores/DetailsListStore";
-import { CommonData, Customizations } from "../CommonData";
-import { BaseData, Data } from "./Data";
-import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
-import { Member } from "../teams/TeamMembers";
+import React from "react";
 import { FakeData } from "../../intelligence/FakeDataGenerator";
+import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
 import { Phase } from "../../phases/Phase";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import CommonEvent from "../../state/stores/CommonEvent";
+import { DetailsItemExtended } from "../../state/stores/DetailsListStore";
+import { CommonData, Customizations } from "../CommonData";
+import ListGenerator from "./../../../../app/generators/ListGenerator";
 import { Comment } from "./Comments";
+import { BaseData, Data } from "./Data";
+
 
 export type DataAndEventDetails = Data<any, any, any> | CommonEvent;
 
+
 interface SharedDetails<
-  T extends BaseData<any> = BaseData<any, any>,
-  K extends T = T, 
+  T extends BaseData<any, any, any, Attachment>,
+  K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
->{
-  participants: Member[]
-  uploadedAt: Date | string;
+> {
+  participants: Participant[]
+  uploadedAt: Date
   phase: Phase
-  fakeData?: FakeData 
+  phaseName: string
+  fakeData?: FakeData
   comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
   isCompleted: boolean;
-  currentMeta: StructuredMetadata<T, K>
-  previousMeta?: StructuredMetadata<T, K>
+  currentMeta: Meta;
+  previousMeta?: StructuredMetadata<T, K>;
+  currentMetadata: UnifiedMetadata<T, K>
+  label: Label
 }
 
 
@@ -140,4 +148,5 @@ const Details: React.FC<DetailsProps<DataAndEventDetails>> = observer(
 );
 
 export default DetailsProps;
-export { Details }
+export { Details };
+export type { SharedDetails };

@@ -20,7 +20,7 @@ export interface DappProps {
   // User-related props
   currentUser: {
     id: string | number;
-    name: string;
+    username: string;
     role?: string;
     teams?: Team[];
     
@@ -32,7 +32,7 @@ export interface DappProps {
   // Project-related props
   currentProject: {
     id: string;
-    name: string;
+    username: string;
     description: string;
     tasks: Task[];
     teamMembers: TeamMember[];

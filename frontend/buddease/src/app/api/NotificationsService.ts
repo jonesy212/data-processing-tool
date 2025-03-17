@@ -3,7 +3,7 @@ import {
   NotificationType,
   NotificationTypeEnum,
   useNotification,
-} from "@/app/components/support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { NotificationData } from "../components/support/NofiticationsSlice";
 import { endpoints } from "./ApiEndpoints";

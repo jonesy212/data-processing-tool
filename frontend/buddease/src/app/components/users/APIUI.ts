@@ -2,8 +2,8 @@
 import { endpoints } from '@/app/api/ApiEndpoints';
 import { handleApiError } from '@/app/api/ApiLogs';
 import headersConfig from '@/app/api/headers/HeadersConfig';
-import { NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
 import { UserSettings } from '@/app/configs/UserSettings';
+import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import ErrorHandler from '@/app/shared/ErrorHandler';
 import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';

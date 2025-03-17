@@ -22,7 +22,7 @@ import { SnapshotData, SnapshotStoreConfig, SnapshotWithCriteria } from '@/app/c
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { FilterState } from "@/app/components/state/redux/slices/FilterSlice";
-import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import UserRoles from "@/app/components/users/UserRoles";
 import { IdeaCreationPhaseEnum } from "@/app/components/users/userJourney/IdeaCreationPhase";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";

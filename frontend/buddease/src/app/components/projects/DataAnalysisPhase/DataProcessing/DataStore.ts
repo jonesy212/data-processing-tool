@@ -11,6 +11,7 @@ import { SnapshotManager } from '@/app/components/hooks/useSnapshotManager';
 import { getCategoryProperties } from '@/app/components/libraries/categories/CategoryManager';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from "@/app/components/models/data/Data";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { allCategories } from '@/app/components/models/data/DataStructureCategories';
 import { NotificationPosition, StatusType } from '@/app/components/models/data/StatusType';
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
@@ -30,24 +31,23 @@ import { SnapshotSubscriberManagement } from "@/app/components/snapshots/Snapsho
 import { SnapshotWithCriteria } from '@/app/components/snapshots/SnapshotWithCriteria';
 import { BaseSnapshotProps } from "@/app/components/snapshots/createBaseSnapshot";
 import { createSnapshotInstance } from '@/app/components/snapshots/createSnapshotInstance';
+import { default as isSnapshotArrayState, default as isSnapshotsArray } from '@/app/components/snapshots/createSnapshotOptions';
 import { getSnapshotItems } from '@/app/components/snapshots/snapshotOperations';
 import { Callback } from '@/app/components/snapshots/subscribeToSnapshotsImplementation';
 import transformDataToSnapshot from '@/app/components/snapshots/transformDataToSnapshot';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { store } from '@/app/components/state/stores/useAppDispatch';
 import { Subscription } from '@/app/components/subscriptions/Subscription';
-import { NotificationType } from '@/app/components/support/NotificationContext';
 import { convertMapToSnapshot, convertSnapshotStoreToSnapshot, isSnapshotStore } from '@/app/components/typings/YourSpecificSnapshotType';
 import { Subscriber } from '@/app/components/users/Subscriber';
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { isSnapshot, isSnapshotOfType } from "@/app/components/utils/snapshotUtils";
-import isSnapshotArrayState from '@/app/components/snapshots/createSnapshotOptions';
-import isSnapshotsArray from '@/app/components/snapshots/createSnapshotOptions';
+import { NotificationType } from "@/app/context/NotificationContext";
+;
 
 import { getCurrentAppInfo } from '@/app/components/versions/VersionGenerator';
 import { createVersionInfo } from '@/app/components/versions/createVersionInfo';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { DataContext } from '@/app/context/DataContext';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { MixedCriteria } from '@/app/pages/searchs/CriteriaOptions';
@@ -125,7 +125,7 @@ export interface DataStore<T extends  BaseData<any>, K extends T = T, Meta exten
   ) => Promise<Snapshot<T, K> | null | undefined>;
   
   mapSnapshots: (
-    storeIds: number,
+    storeIds: number[],
     snapshotId: string,
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
@@ -1423,7 +1423,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
         dataStore: DataStore<T, K>,
         dataStoreMethods: DataStoreMethods<T, K>,
         // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-        metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+        metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
         subscriberId: string, // Add subscriberId here
         endpointCategory: string | number,// Add endpointCategory here
         storeProps: SnapshotStoreProps<T, K>,

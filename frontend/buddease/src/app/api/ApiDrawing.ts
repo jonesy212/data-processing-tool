@@ -3,7 +3,7 @@ import {
   NotificationType,
   NotificationTypeEnum,
   useNotification,
-} from "@/app/components/support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import { AxiosError } from "axios";
 import { YourResponseType } from "../components/typings/types";
 import { endpoints } from "./ApiEndpoints";

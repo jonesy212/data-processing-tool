@@ -2,17 +2,16 @@
 import {
     NotificationTypeEnum,
     useNotification,
-} from "@/app/components/support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import useErrorHandling from "../../hooks/useErrorHandling";
-import axiosInstance from "../../security/csrfToken";
-import { UserManagerState } from "../../users/UserSlice";
 import { CodingLanguageEnum, LanguageEnum } from "../../communications/LanguageEnum";
-import { NotificationData } from "../../support/NofiticationsSlice";
+import useErrorHandling from "../../hooks/useErrorHandling";
 import { ThemeEnum } from "../../libraries/ui/theme/Theme";
-import { BaseResponseType, YourResponseType, YourSettingsResponseType } from "../../typings/types";
-import { ParsedData } from "../../crypto/parseData";
+import axiosInstance from "../../security/csrfToken";
+import { NotificationData } from "../../support/NofiticationsSlice";
+import { YourResponseType, YourSettingsResponseType } from "../../typings/types";
+import { UserManagerState } from "../../users/UserSlice";
 
 // Define the interface for different types of settings
 export interface Settings extends YourResponseType {

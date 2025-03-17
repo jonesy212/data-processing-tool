@@ -1,6 +1,5 @@
 // // SnapshotStoreMethod.tsx
 import { BaseData } from '@/app/components/models/data/Data';
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "../libraries/categories/generateCategoryProperties";
@@ -13,7 +12,7 @@ import { SnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
-import { ExcludedFields } from '@/app/components/routing/Fields';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 
 // Define the necessary types
@@ -33,7 +32,7 @@ interface SnapshotStoreMethod<
     dataStore: DataStore<T, K>,
     dataStoreMethods: DataStoreMethods<T, K>,
     // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-    metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+    metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
     subscriberId: string, // Add subscriberId here
     endpointCategory: string | number,// Add endpointCategory here
     storeProps: SnapshotStoreProps<T, K>,

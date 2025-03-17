@@ -1,5 +1,5 @@
 import axiosInstance from "@/app/api/axiosInstance";
-import { NotificationType, useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { useParams } from "react-router-dom";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";

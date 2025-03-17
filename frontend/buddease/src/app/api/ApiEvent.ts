@@ -1,5 +1,5 @@
 // EventApi.ts
-import { NotificationType, useNotification } from '@/app/components/support/NotificationContext';
+import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError } from 'axios';
 import { addLog } from '../components/state/redux/slices/LogSlice';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';

@@ -66,7 +66,7 @@ import Layout from "./layouts/Layouts";
 import PersonaTypeEnum from "./personas/PersonaBuilder";
 import SearchComponent from "./searchs/SearchComponent";
 
-import { NotificationType } from "@/app/components/support/NotificationContext";
+import { NotificationType } from "@/app/context/NotificationContext";
 import { EditorState } from "draft-js";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ChatSidebarProvider } from "../api/ChatSidebarProvider";

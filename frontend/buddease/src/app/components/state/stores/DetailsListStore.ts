@@ -82,7 +82,7 @@ interface DetailsItem<
   subtitle: string;
   author?: string;
   date?: Date;
-  
+  value?: string
   label?: string | Label | null;
   collaborators?: Member[];
   tags?: string[] | Tag<T>[];

@@ -5,7 +5,7 @@ import {
     SnapshotConfig,
 } from "@/app/components/snapshots/SnapshotConfig";
 import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
-import { BrowserBehaviorConfig } from "../components/state/BrowserBehaviorManager";
+import { BrowserBehaviorConfig } from "@/app/components/state/BrowserBehaviorManager";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { getSubscriptionLevel } from '@/app/components/subscriptions/SubscriptionLevel';
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
@@ -95,7 +95,7 @@ import { CreateSnapshotsPayload, Payload } from "../database/Payload";
 import { SchemaField } from "../database/SchemaField";
 import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { Subscription } from '../subscriptions/Subscription';
+import { Subscription } from '@/app/components/subscriptions/SubscriptionPlan';
 import Version from "../versions/Version";
 import { createSnapshotInstance } from "./createSnapshotInstance";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
@@ -188,7 +188,7 @@ type SnapshotStoreProps<
   existingConfigs?: Map<string, SnapshotConfig<T, K>>;
   description?: string | undefined; // Could be optional
   priority?: string | undefined;
-  version?: string | Version | undefined;
+  version?: string | Version<T, K> | undefined;
   additionalData?: CustomSnapshotData<T> | undefined; // Custom additional data
   expirationDate: Date;
   localStorage?: Storage; 
@@ -197,9 +197,9 @@ type SnapshotStoreProps<
   storeProps: Partial<SnapshotStoreProps<T, K>>;
   endpointCategory: string | number;
   browserBehaviorConfig?: BrowserBehaviorConfig;
-  findIndex?(predicate: (snapshot: SnapshotUnion<T, K, Meta>) => boolean): number;
-
+  findIndex?(predicate: (snapshot: SnapshotUnion<T, K, StructuredMetadata<T, K>>) => boolean): number;
 }
+
 type SubscriptionPayloadActions = SubscriptionPayload<any, any> & Payload
 
 // Create the snapshot store
@@ -225,7 +225,8 @@ const useSnapshotStore = async  <
     config,
     operation,
     expirationDate, payload, callback, 
-      endpointCategory, findIndex
+    endpointCategory, findIndex,
+    initialState
   } = storeProps;
 
   // Initialize state for snapshots
@@ -274,6 +275,7 @@ const useSnapshotStore = async  <
       config,
       operation,
       expirationDate, 
+      initialState,
       payload, callback, storeProps, endpointCategory,
     });
 

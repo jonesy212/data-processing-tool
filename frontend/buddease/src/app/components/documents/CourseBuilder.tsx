@@ -1,10 +1,10 @@
 // CourseBuilder.tsx
 
-import { NotificationTypeEnum } from '@/app/components/support/NotificationContext';
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { createMeta } from "@/app/configs/metadata/createMetadataState";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useMetadata } from "@/app/configs/useMetadata";
+import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { BaseData } from "../models/data/Data";
@@ -86,7 +86,7 @@ class CourseBuilder {
     });
 
     // Use `useMetadata` with appropriate type arguments for UnifiedMetaDataOptions
-    const currentMetadata: UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>> = 
+    const currentMetadata: UnifiedMetadata<T, K, StructuredMetadata<T, K>> = 
       useMetadata<T, K, Meta>({ area: 'phase-area' });
 
     

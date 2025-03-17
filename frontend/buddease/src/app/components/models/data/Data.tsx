@@ -3,6 +3,7 @@ import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useMetadata } from "@/app/configs/useMetadata";
 import userSettings from "@/app/configs/UserSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -40,6 +41,7 @@ import { Idea } from "../../users/Ideas";
 import { User } from "../../users/User";
 import UserRoles from "../../users/UserRoles";
 import { cleanEmptyStrings } from "../../utils/cleanEmptyStrings";
+import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 import { version } from "../../versions/Version";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
@@ -60,6 +62,8 @@ import {
 import { useMeta } from "@/app/configs/useMeta";
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
 import { ScheduledData } from "../../calendar/ScheduledData";
+import { SharedTimestamps, SharedStatusFlags, SharedIdentifiers } from '@/app/components/documents/RelatedProps'
+
 
 interface SharedBaseData<K> {
   childIds?: K[] | undefined;
@@ -73,7 +77,7 @@ interface SharedPhaseData {
 
 
 type DataWithOmittedFields<
-  T extends BaseData<any, any, StructuredMetadata<any, any>, Attachment>,
+  T extends BaseData<any, any, StructuredMetadata<any, any>>, // Removed Attachment
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = never
@@ -133,36 +137,27 @@ type TodoSubtasks = Array<
   | Todo<BaseData<any>, BaseData<any>, StructuredMetadata<BaseData<any>, BaseData<any>>>
   | Task<any, any>
   >;
-
   
-interface BaseData<
-  T extends BaseData<any, any> = any,
+  interface BaseData<
+  T extends BaseData<any, any, any, Attachment> = any,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never,
+  Meta extends { childIds?: any } & Partial<StructuredMetadata<T, K>> = any,
   AttachmentType extends Attachment = Attachment
-> extends SharedBaseData<K>{
+> extends SharedTimestamps, SharedStatusFlags, SharedIdentifiers {
   childIds?: Meta['childIds'];
-  _id?: string;
-  id?: string | number | undefined;
-  type?: AllTypes;
-  title?: string;
+  sharedData?: SharedBaseData<K>;
   data?: any;
   size?: number;
   description?: string | null;
   startDate?: Date;
-  label?: string | Label | null;
   endDate?: Date;
   scheduled?: ScheduledData<T>;
   isScheduled?: boolean;
   status?: AllStatus | null;
   timestamp?: string | number | Date | undefined;
-  isActive?: boolean;
-  tags?: TagsRecord<T, K> | string[] | undefined; // Update as needed based on your schema
+  tags?: TagsRecord<T, K> | string[] | undefined;
   phase?: Phase<PhaseData<BaseData<any>>, K> | null;
   phaseType?: ProjectPhaseTypeEnum;
-  key?: string;
-  value?: number | string | Snapshot<T, K, Meta> | null;
   initialState?: InitializedState<T, K>;
   dueDate?: Date | null;
   priority?: string | AllStatus | null;
@@ -171,35 +166,23 @@ interface BaseData<
   comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
   attachments?: AttachmentType[];
   subtasks?: TodoImpl<T, K>[];
-  createdAt?: string | Date | undefined;
-  updatedAt?: string | Date | undefined;
-  createdBy?: string | undefined;
-  updatedBy?: string;
   updatedDetails?: DetailsItem<T>;
-  isArchived?: boolean;
-  isCompleted?: boolean;
-  isBeingEdited?: boolean;
-  isBeingDeleted?: boolean;
-  isBeingCompleted?: boolean;
-  isBeingReassigned?: boolean;
   analysisType?: AnalysisTypeEnum | null;
   analysisResults?: DataAnalysisResult<T>[] | string;
-
   audioUrl?: string;
   videoUrl?: string;
   videoThumbnail?: string;
   videoDuration?: number;
-  collaborationOptions?: CollaborationOptions[]; // Or whatever type is appropriate
+  collaborationOptions?: CollaborationOptions[];
   videoData?: VideoData<T, K>;
   additionalData?: any;
   ideas?: Idea[];
   members?: number[] | string[] | Member[];
   leader?: User | null;
   snapshotStores?: SnapshotStoreReference<T, K>[];
-  snapshots?: Snapshots<BaseData<T, K>>;
+  snapshots?: Snapshots<BaseData<T, K, Meta, AttachmentType>> | undefined;
   text?: string;
   category?: symbol | string | Category | undefined;
-
   notificationTypes?: NotificationSettings;
   categoryProperties?: CategoryProperties;
   [key: string]: any;
@@ -212,7 +195,7 @@ interface BaseData<
 }
 
 interface Data<
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseData<any, any, any, Attachment>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
 > extends BaseData<any> {
@@ -223,7 +206,7 @@ interface Data<
   snapshotWithCriteria?: SnapshotWithCriteria<T, K>;
   value?: any;
   label?: any;
-  metadata?: UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, keyof T> | {};
+  metadata?: UnifiedMetadata<T, K, StructuredMetadata<T, K>, keyof T> | {};
   major?: number;
   minor?: number;
   patch?: number;
@@ -280,7 +263,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
 
 
 const area = fetchUserAreaDimensions().toString()
-const currentMetadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(area)
+const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
 const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
 
 const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
@@ -312,8 +295,8 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
       updatedAt: new Date(),
       createdBy: "creator1",
       timestamp: new Date().getTime(),
+      nulltype: ""
     },
-    nulltype: ""
   },
   phase: {
     label: {
@@ -343,6 +326,7 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
         updatedAt: new Date(),
         createdBy: "creator1",
         timestamp: new Date().getTime(),
+        nulltype: ""
       },
     }, // This should match the type defined in Tag
     subPhases: [],
@@ -362,7 +346,7 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
 
 
 
-  collaborators: ["collab1", "collab2"],
+  collaborators: {["collab1", "collab2"]},
   comments: [],
   attachments: [],
   subtasks: [],
@@ -1001,6 +985,8 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
       area: 'coreData', 
       currentMeta: currentMeta,
       metadataEntries: {},
+      latestVersion: createLatestVersion(),
+
     },
     currentMeta: currentMeta,
     // startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {},

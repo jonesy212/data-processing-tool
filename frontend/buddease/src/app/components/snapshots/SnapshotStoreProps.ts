@@ -20,8 +20,8 @@ import { createSnapshotInstance } from '@/app/components/snapshots/createSnapsho
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import {
     useNotification
-} from "@/app/components/support/NotificationContext";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+} from "@/app/context/NotificationContext";
+import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { useEffect, useState } from "react";

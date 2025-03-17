@@ -1,32 +1,30 @@
-import { createVersionInfo } from "@/app/components/versions/createVersionInfo";
-import { Draft, produce  } from "immer";
 import CommunicationAPI from "@/app/api/CommunicationAPI";
 import { CrossCulturalCommunication, Language, TimeZone } from "@/app/components/communications/Language";
 import { DataAnalysisTool, Decision, VisualizationResult } from "@/app/components/interfaces/options/CollaborationOptions";
 import { CloudStorageProvider } from "@/app/components/interfaces/provider/CloudStorageProvider";
 import { BaseData, Data } from "@/app/components/models/data/Data";
 import { PriorityTypeEnum } from "@/app/components/models/data/StatusType";
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { Task } from "@/app/components/models/tasks/Task";
 import { Phase } from "@/app/components/phases/Phase";
 import { AnalyticsTool } from "@/app/components/projects/DataAnalysisPhase/AnalyticsTool";
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
-import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
+import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Payment, Revenue, SubscriptionPlan } from "@/app/components/subscriptions/SubscriptionPlan";
 import { EncryptionSetting, Permission } from "@/app/components/users/Permission";
+import Version, { version } from "@/app/components/versions/Version";
+import { VersionHistory } from "@/app/components/versions/VersionData";
+import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { fetchUserAreaDimensions, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { useMetadata } from "@/app/configs/useMetadata";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Draft } from "immer";
 import { useDispatch } from "react-redux";
 import { DetailsItem } from "../../stores/DetailsListStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { addTask } from "./TaskSlice";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { Task } from "@/app/components/models/tasks/Task";
-import { T, K } from "@/app/components/models/data/dataStoreMethods";
-import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { fetchUserAreaDimensions, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
-import { useMetadata } from "@/app/configs/useMetadata";
-import Version, { version } from "@/app/components/versions/Version";
-import { VersionHistory } from "@/app/components/versions/VersionData";
-import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 
 interface CommunityEvent {
   id: string;
@@ -159,7 +157,7 @@ const dispatch = useDispatch();
 
 
 const area = fetchUserAreaDimensions().toString()
-const currentMetadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(area)
+const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
 
 const initializedState: InitializedState<T, K<T>> = {
   metadata: currentMetadata,
@@ -731,7 +729,7 @@ function convertToWritableMetadata<
   T extends BaseData<any>,
   K extends T
 >(
-  metadata: UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, never>
+  metadata: UnifiedMetadata<T, K, StructuredMetadata<T, K>, never>
 ): WritableDraft<UnifiedMetaDataOptions<BaseData<any>, BaseData<any>, StructuredMetadata<any>, never>> {
   const mutableMetadata: WritableDraft<UnifiedMetaDataOptions<BaseData<any>, BaseData<any>, StructuredMetadata<any>, never>> = {
     ...metadata,

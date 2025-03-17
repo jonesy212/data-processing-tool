@@ -1,8 +1,9 @@
-import { Data, BaseeData } from "../components/models/data/Data";
+import { Data, BaseData } from "../components/models/data/Data";
 import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
 import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
-import { useNotification } from "../components/support/NotificationContext";
-import { VideoData } from "../components/video/Video";
+import { NotificationTypeEnum, useNotification } from '@/app/context/support/NotificationContext';
+
+import  { VideoData } from "../components/video/Video";
 import FrontendStructure from "../configs/appStructure/FrontendStructureComponent";
 import AppCacheManagerExtended from "./AppCacheManagerExtended";
 import BackendCacheManager from "./BackendCacheManager";
@@ -48,7 +49,7 @@ abstract class AppCacheManagerBase<T extends Data> {
 
       // Save the updated cache
 
-      this.frontendCacheManager.updateCache(existingCache);
+      this.frontendCacheManager.updateCache(existingCache, uniqueConstraints);
 
       return "Frontend Cache updated successfully";
     } catch (error) {
@@ -114,12 +115,12 @@ const backendData: {
     tags: [],
     data: {
       then: function <T extends Data>(
-        callback: (newData: Snapshot<Snapshot<T, K>>) => void
+        callback: (newData: Snapshot<BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>>) => void
       ): void {
         // Fetch existing data from backend cache
         appCacheManager.getBackendCache("backendCache").then((cachedData) => {
           if (cachedData !== null) {
-            callback(cachedData as Snapshot<Snapshot<T, K>>);
+            callback(cachedData as Snapshot<BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>>);
           }
         });
       },

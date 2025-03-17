@@ -1,9 +1,11 @@
-import { NotificationType } from '@/app/components/support/NotificationContext';
+import { NotificationType } from "@/app/context/NotificationContext";
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { generateSnapshotId } from './../../utils/snapshotUtils';
 // TodoManagerStore.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { BaseData } from '@/app/components/models/data/Data';
+import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { makeAutoObservable } from "mobx";
 import { MutableRefObject, useRef, useState } from "react";
@@ -11,7 +13,6 @@ import { useSnapshotManager } from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { Snapshot, Snapshots } from '../../snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from "../../snapshots/SnapshotStore";
-import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import {
     NotificationTypeEnum,
     useNotification,
@@ -21,7 +22,6 @@ import { Todo } from "../../todos/Todo";
 import { todoService } from "../../todos/TodoService";
 import useSecureStoreId from '../../utils/useSecureStoreId';
 import { AllStatus } from './DetailsListStore';
-import { T, K, Meta} from "@/app/components/models/data/dataStoreMethods";
 
 const { notify } = useNotification();
 

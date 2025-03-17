@@ -1,5 +1,5 @@
 import { BaseData } from '@/app/components/models/data/Data';
-import { useNotification } from '@/app/components/support/NotificationContext';
+import { useNotification } from "@/app/context/NotificationContext";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { SystemConfigs } from "../api/systemConfigs";
 import { UserConfigs } from "../api/userConfigs";
@@ -103,12 +103,12 @@ interface ConfigurationOptions {
   // other configuration options
 }
 
-
-
 // Define the API_VERSION_HEADER and DATA_PATH directly in the ConfigurationService file
 export const DATA_PATH = getConfigsData()
 
 const notify = useNotification
+
+
 export class ConfigurationService {
   protected static instance: ConfigurationService;
   private apiConfig: ApiConfig;

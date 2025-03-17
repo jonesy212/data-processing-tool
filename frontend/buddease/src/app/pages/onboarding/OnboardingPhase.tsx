@@ -12,7 +12,7 @@ import WelcomePhase from "@/app/components/phases/onboarding/WelcomePhase";
 import {
   NotificationTypeEnum,
   useNotification,
-} from "@/app/components/support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { UserData } from "@/app/components/users/User";
 import React, { useState } from "react";

@@ -1,12 +1,17 @@
 import { version } from '@/app/components/versions/Version';
 import { createLastUpdated, VersionData, VersionHistory } from "./VersionData";
+import { BaseData } from '@/app/components/models/data/Data';
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
+import VersionImpl from "@/app/components/versions/Version";
 
 // Define a default latestVersion generator
-export function createLatestVersion(versionData: Partial<VersionData> = {}): VersionData {
+export function createLatestVersion<T extends BaseData<any>, K extends T = T>(
+  versionData: Partial<VersionData<T, K>> = {}
+): VersionData<T, K> {
   const now = new Date();
 
-  const defaultVersion: VersionData = {
-    id: 0,
+  const defaultVersion: VersionData<T, K> = {
+    id: '0',
     name: "Default Version",
     url: "/default-version",
     versionNumber: "0.0.1",
@@ -14,6 +19,8 @@ export function createLatestVersion(versionData: Partial<VersionData> = {}): Ver
     draft: true,
     userId: "default-user",
     content: "Default content",
+    notes: [],
+    appPathWithVersion: "",
     metadata: {
       author: "System",
       timestamp: new Date(),
@@ -39,7 +46,18 @@ export function createLatestVersion(versionData: Partial<VersionData> = {}): Ver
     publishedAt: null,
     source: "System Generated",
     status: "Draft",
-    version: version,
+    version: {
+      transformToStructureItems: function (data: any): AppStructureItem[] {
+        return data.map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          children: item.children ? this.transformToStructureItems(item.children) : undefined,
+        }));
+      },
+      getStructure: function (): Promise<Record<string, AppStructureItem> | undefined> {
+        return Promise.resolve({});
+      },
+    } as VersionImpl<T, K>, // Cast to VersionImpl to ensure type safety
     timestamp: new Date(),
     user: "System",
     changes: [],
@@ -67,7 +85,7 @@ export function createLatestVersion(versionData: Partial<VersionData> = {}): Ver
 
 
 
-export function createLastUpdatedWithVersion(
+export function createLastUpdatedWithVersion<T extends BaseData<any>, K extends T = T>(
     summary?: string
   ): VersionHistory {
     const now = new Date();
@@ -76,8 +94,19 @@ export function createLastUpdatedWithVersion(
       timestamp: now,
       changeLogSummary: summary || "No changes recorded.",
       versionData: [], // Initialize as empty array or appropriate value
-      latestVersion: createLatestVersion({
-        version: version, // Example default version
+      latestVersion: createLatestVersion<T, K>({
+        version: {
+          transformToStructureItems: function (data: any): AppStructureItem[] {
+            return data.map((item: any) => ({
+              id: item.id,
+              name: item.name,
+              children: item.children ? this.transformToStructureItems(item.children) : undefined,
+            }));
+          },
+          getStructure: function (): Promise<Record<string, AppStructureItem> | undefined> {
+            return Promise.resolve({});
+          },
+        } as VersionImpl<T, K>,
         description: "Initial version", // Example description
         createdAt: now,
         createdBy: "system", // Example author
@@ -90,7 +119,7 @@ const versionHistory: VersionHistory = {
   versionData: [],
   history: [],
   latestVersion: createLatestVersion({
-    id: 1,
+    id: "1",
     name: "Initial Release",
     versionNumber: "1.0.0",
     userId: "user123",

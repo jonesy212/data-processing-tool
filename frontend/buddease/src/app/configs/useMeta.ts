@@ -62,7 +62,7 @@ function useMeta<
       apiKey: "default-api-key",
       lastUpdated: new Date(),
       timeout: 5000,
-      keywords: "",
+      keywords: [],
       description: description || "Default Description",
       retryAttempts: 3, // Default retry attempts
       name: "Default Name", // Default name
@@ -89,7 +89,6 @@ function useMeta<
       latestVersion: {},
       version: dynamicVersion,
       mappedSnapshot: undefined,
-      versionData: undefined
     };
   }, [description, childIds, relatedData]);
 

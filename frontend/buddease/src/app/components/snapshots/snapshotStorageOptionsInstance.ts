@@ -8,7 +8,6 @@ import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { CustomSnapshotData, SnapshotContainer, SnapshotData, SnapshotStoreProps, SnapshotWithCriteria } from ".";
@@ -34,6 +33,7 @@ import { SnapshotItem } from "./SnapshotList";
 import SnapshotStore from "./SnapshotStore";
 import { InitializedConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { Callback, MultipleEventsCallbacks } from "./subscribeToSnapshotsImplementation";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 // Define a specific set of options for snapshot storage
 interface SnapshotStorageOptions<
@@ -56,7 +56,7 @@ K extends T = T,
 	category: Category;
 	date: Date;
 	snapshotId?: string | number | null;
-	metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>;
+	metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>;
 	criteria: CriteriaType;
 	callbacks: MultipleEventsCallbacks<Snapshot<Data, BaseData>>;
 	snapshotConfig?: SnapshotConfig<Data, BaseData>[];
@@ -124,7 +124,7 @@ const snapshotStorageOptions: SnapshotStorageOptions<Data, BaseData> = {
 			callback: (snapshotStore: SnapshotStore<T, K>) => void,
 			dataStore: DataStore<T, K>,
 			dataStoreMethods: DataStoreMethods<T, K>,
-			metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+			metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
 			subscriberId: string, // Add subscriberId here
 			endpointCategory: string | number, // Add endpointCategory here
 			storeProps: SnapshotStoreProps<T, K>,
@@ -928,7 +928,7 @@ const snapshotConfigOptions: SnapshotConfigOptions<Data, BaseData> = {
 			dataStore: DataStore<Data, BaseData>,
 			dataStoreMethods: DataStoreMethods<Data, BaseData>,
 			// dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<Data, BaseData>,
-			metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+			metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
 			subscriberId: string, // Add subscriberId here
 			endpointCategory: string | number ,// Add endpointCategory here
 			storeProps: SnapshotStoreProps<Data, BaseData>,

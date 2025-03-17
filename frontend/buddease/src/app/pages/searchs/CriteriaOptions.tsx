@@ -23,7 +23,7 @@ import { FileTypeEnum } from "@/app/components/documents/FileType";
 import AnimationTypeEnum from "@/app/components/libraries/animations/AnimationLibrary";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
-import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { MessageType } from "@/app/generators/MessaageType";
 
 

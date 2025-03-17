@@ -1,5 +1,5 @@
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
 import { Data } from "../models/data/Data";
 import { SnapshotStoreConfig } from "./snapshotStoreConfig";
 import { BaseData } from '@/app/components/models/data/Data';

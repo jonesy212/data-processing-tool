@@ -1,13 +1,33 @@
 import SecurityAudit from '@/app/components/security/SecurityAudit';
 import { SecureMetadata, SecureField } from "./SecureField";
+import crypto from 'crypto';
 
 class SecureFieldManager {
     #apiKey: string;
     #fields: Map<string, SecureField<any>> = new Map();
-  
+    #allowUserAccess: boolean = true;
+    #encryptionKey: string;
 
-  constructor(apiKey: string) {
-    this.#apiKey = apiKey
+
+
+  constructor(apiKey: string, encryptionKey: string) {
+    this.#apiKey = apiKey;
+    this.#encryptionKey = encryptionKey;
+
+  }
+
+  encrypt(data: string): string {
+    const cipher = crypto.createCipher('aes-256-cbc', this.#encryptionKey);
+    let encrypted = cipher.update(data, 'utf8', 'hex');
+    encrypted += cipher.final('hex');
+    return encrypted;
+  }
+
+  decrypt(encryptedData: string): string {
+    const decipher = crypto.createDecipher('aes-256-cbc', this.#encryptionKey);
+    let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
   }
 
   /**
@@ -24,6 +44,12 @@ class SecureFieldManager {
     // Store the field in the internal fields map (you can customize this for each field)
     this.#fields.set('apiKey', field);  // Example for apiKey field, use different key as needed
 
+    return this;
+  }
+
+
+  setUserAccess(allow: boolean): this {
+    this.#allowUserAccess = allow;
     return this;
   }
 

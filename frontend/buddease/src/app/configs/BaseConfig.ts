@@ -2,6 +2,7 @@
 import { TagsRecord } from '@/app/components/snapshots/SnapshotWithCriteria';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { useSnapshot } from './../context/SnapshotContext';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 import { BaseData } from "../components/models/data/Data";
 import { K, T } from "../components/models/data/dataStoreMethods";
@@ -10,10 +11,11 @@ import { Snapshot } from "../components/snapshots";
 import { createLastUpdatedWithVersion, createLatestVersion } from "../components/versions/createLatestVersion";
 import { version } from "../components/versions/Version";
 import { BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, } from "./ConfigurationService";
-import { BaseMetadata, UnifiedMetaDataOptions } from './database/MetaDataOptions';
+import { BaseMetadata } from './database/MetaDataOptions';
 import { StructuredMetadata } from "./StructuredMetadata";
 import { useMeta } from "./useMeta";
 import { useMetadata } from "./useMetadata";
+import { Taggable } from '@/app/components/models/CommonData';
 
 // Combine the base interfaces into a single interface
 interface BaseConfig<
@@ -22,7 +24,7 @@ interface BaseConfig<
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > extends BaseRetryConfig, 
     BaseCacheConfig, 
-    BaseMetadataConfig<T, K>, BaseMetadata<K> {
+    BaseMetadataConfig<T, K>, BaseMetadata<K>, Taggable<T, K> {
   id: string;
   apiEndpoint: string;
   apiKey: string | undefined;
@@ -33,8 +35,8 @@ interface BaseConfig<
   category: string;
   timestamp: string | number | Date | undefined;
   createdBy?: string | undefined;
-  tags: string[] | TagsRecord<BaseMetadata<T>, BaseMetadata<T>> | undefined
-  metadata: UnifiedMetaDataOptions<T, K>;
+  tags?: string[] | TagsRecord<BaseMetadata<T>, BaseMetadata<T>> | undefined
+  metadata: UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, never>;
   initialState: InitializedState<T, K>;
   meta: StructuredMetadata<T, K>;
   mappedSnapshot: Map<string, Snapshot<T, K>>;
@@ -66,7 +68,7 @@ interface CryptoConfig<
 
 
 const area = fetchUserAreaDimensions().toString()
-const metadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(area)
+const metadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
 const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
 
 const mappedSnapshot: Map<string, Snapshot<T, K<T>, StructuredMetadata<T, K<T>>, never>> = new Map(

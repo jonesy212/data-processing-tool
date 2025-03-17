@@ -11,7 +11,7 @@ import ProjectTimelineDashboard from "@/app/components/projects/projectManagemen
 import ColorPalette from "@/app/components/styling/ColorPalette";
 import PaletteManager from "@/app/components/styling/PaletteManager";
 import UsageExamplesBox from "@/app/components/styling/UsageExamplesBox";
-import { NotificationType, useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { AquaConfig } from "@/app/components/web3/web_configs/AquaConfig";
 import { useState } from "react";

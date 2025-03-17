@@ -11,7 +11,7 @@ import { CollaborationOptions } from "../../interfaces/options/CollaborationOpti
 type CalendarDataAndEventDetails = Data | CommonEvent;
 
 interface CalendarDetailsProps<T> {
-  data?: CommonData // Make data prop optional
+  data?: CommonData<T, K, Meta, ExcludedFields> // Make data prop optional
   details: DetailsItem<T>;
   customizations?: Customizations<T>;
   collaborationOptions?: CollaborationOptions;

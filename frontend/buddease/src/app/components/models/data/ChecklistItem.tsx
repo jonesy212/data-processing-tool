@@ -56,4 +56,4 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({ item }) => {
 };
 
 export default ChecklistItem;
-export type { ChecklistItemProps };;
+export type { ChecklistItemProps };

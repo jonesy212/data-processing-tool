@@ -17,11 +17,11 @@ import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { NotificationType } from "@/app/components/support/NotificationContext";
 import { Subscriber } from "@/app/components/users/Subscriber";
 import { sendNotification } from "@/app/components/users/UserSlice";
 import { findCorrectSnapshotStore, isSnapshot } from "@/app/components/utils/snapshotUtils";
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { NotificationType } from "@/app/context/NotificationContext";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { FC } from "react";
 import { WritableDraft } from "../ReducerGenerator";
 

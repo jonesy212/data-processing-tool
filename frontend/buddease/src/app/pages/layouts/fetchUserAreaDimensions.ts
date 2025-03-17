@@ -1,4 +1,4 @@
-import { NotificationTypeEnum } from '@/app/components/support/NotificationContext';
+import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 
 interface AreaDimensions {
   width: number;
@@ -139,4 +139,5 @@ const initializeArea = async (): Promise<Area> => {
 
 initializeArea();
 
+export { FetchOptions };
 export type { Area };

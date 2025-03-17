@@ -5,6 +5,7 @@ import * as snapshotApi from '@/app/api/SnapshotApi';
 import { UpdateSnapshotPayload } from "@/app/components/database/Payload";
 import { getCategoryProperties } from '@/app/components/libraries/categories/CategoryManager';
 import { BaseData } from '@/app/components/models/data/Data';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { ConfigurableSnapshotStore } from '@/app/components/projects/DataAnalysisPhase/DataStore';
 import { ExcludedFields } from '@/app/components/routing/Fields';
 import { processSnapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreProps } from '@/app/components/snapshots';
@@ -14,12 +15,11 @@ import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
 import { storeProps } from '@/app/components/snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from '@/app/components/snapshots/SnapshotWithCriteria';
 import { createSnapshotInstance } from '@/app/components/snapshots/createSnapshotInstance';
-import {
-  useNotification
-} from "@/app/components/support/NotificationContext";
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import {
+  useNotification
+} from "@/app/context/NotificationContext";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { useEffect, useState } from "react";
@@ -47,6 +47,7 @@ import CalendarManagerStoreClass from "../state/stores/CalendarManagerStore";
 import { SubscriberCallbackType, Subscription } from '../subscriptions/Subscription';
 import { addToSnapshotList, isSnapshotStoreConfig, isSnapshotWithCriteria } from '../utils/snapshotUtils';
 import { LibraryAsyncHook } from "./useAsyncHookLinker";
+;
 
 const { notify } = useNotification();
 
@@ -474,7 +475,7 @@ const createSnapshotConfig = <
       dataStore: DataStore<T, K>,
       dataStoreMethods: DataStoreMethods<T, K>,
       // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-      metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+      metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
       subscriberId: string, // Add subscriberId here
       endpointCategory: string | number,// Add endpointCategory here
       storeProps: SnapshotStoreProps<T, K>,
@@ -721,7 +722,7 @@ export const useSnapshotManager = async <T extends  BaseData<any>, K extends T =
             dataStore: DataStore<T, K>,
             dataStoreMethods: DataStoreMethods<T, K>,
             // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-            metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields<T, K>>,
+            metadata: UnifiedMetadata<T, K, Meta, ExcludedFields<T, K>>,
             subscriberId: string, // Add subscriberId here
             endpointCategory: string | number ,// Add endpointCategory here
             storeProps: SnapshotStoreProps<T, K>,

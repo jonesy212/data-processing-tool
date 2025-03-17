@@ -1,5 +1,5 @@
 import { fetchSnapshotById } from "@/app/api/SnapshotApi";
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { endpoints } from "../../api/endpointConfigurations";
@@ -144,7 +144,7 @@ function createOptions<
 			dataStore: DataStore<T, K>,
 			dataStoreMethods: DataStoreMethods<T, K>,
 			// dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-			metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+			metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
 			subscriberId: string, // Add subscriberId here
 			endpointCategory: string | number,// Add endpointCategory here
 			storeProps: SnapshotStoreProps<T, K>,

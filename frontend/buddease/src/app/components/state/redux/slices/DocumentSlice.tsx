@@ -1,5 +1,5 @@
 // DocumentSlice.tsx
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
 import { fetchDocumentById, fetchDocumentByIdAPI } from "@/app/api/ApiDocument";
 import { ModifiedDate } from "@/app/components/documents/DocType";
 import DocumentBuilder, {
@@ -16,7 +16,7 @@ import { DocumentSize } from "@/app/components/models/data/StatusType";
 import {
     NotificationTypeEnum,
     useNotification,
-} from "@/app/components/support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import Version, { version } from "@/app/components/versions/Version";
 import { VersionData } from "@/app/components/versions/VersionData";
@@ -1949,7 +1949,7 @@ const transformations = {
 //         }, // Version of the frontend
 //       },
 //     },
-//   } as DocumentObject;;
+//   } as DocumentObject;
 //   return produce(initialDocumentSliceState, (draftState) => {
 //     return { ...draftState };
 //   });

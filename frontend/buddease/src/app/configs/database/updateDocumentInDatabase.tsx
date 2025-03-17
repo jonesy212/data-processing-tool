@@ -7,7 +7,7 @@ import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { DocumentId, DocumentStatus } from "@/app/components/documents/types";
 import { Drawing } from "@/app/components/libraries/drawing/generateDrawingJSON";
 import { BaseData } from '@/app/components/models/data/Data';
-import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import DatabaseClient from "@/app/components/todos/tasks/DatabaseClient";
 import { DatasetModel } from "@/app/components/todos/tasks/DataSetModel";

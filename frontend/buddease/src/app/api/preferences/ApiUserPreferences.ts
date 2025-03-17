@@ -1,5 +1,5 @@
 import { NotificationPreferences } from "@/app/components/communications/chat/ChatSettingsModal";
-import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { UserPreferences } from "../../configs/UserPreferences";
 import { endpointPreferences } from "../ApiPreferencesEndpoints";

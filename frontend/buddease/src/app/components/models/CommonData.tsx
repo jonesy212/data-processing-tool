@@ -1,7 +1,8 @@
 // CommonDetails.tsx
 import { Label } from "@/app/components/projects/branding/BrandingSettings";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { NotificationType } from '@/app/context/NotificationContext';
 import { CacheData } from "@/app/generators/GenerateCache";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -19,7 +20,6 @@ import { ProjectData } from "../projects/Project";
 import { TagsRecord } from "../snapshots";
 import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { AllStatus, DetailsItem } from "../state/stores/DetailsListStore";
-import { NotificationType } from "../support/NotificationContext";
 import { Todo } from "../todos/Todo";
 import { TradeData } from "../trading/TradeData";
 import { AllTypes } from "../typings/PropTypes";
@@ -34,7 +34,7 @@ import FolderData from "./data/FolderData";
 import { BookmarkStatus, CalendarStatus, DataStatus, NotificationStatus, PriorityTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "./data/StatusType";
 import { RealtimeDataComponent } from "./realtime/RealtimeData";
 import { Task } from "./tasks/Task";
-import TeamData from "./teams/TeamData";
+import { TeamData } from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
 
 
@@ -152,7 +152,7 @@ type ConditionalCommonData<T extends BaseData<any, any>> = T extends DappProps
     status?: AllStatus | null;
     collaborationOptions?: CollaborationOptions[] | undefined;
     participants?: Member[];
-    metadata?: UnifiedMetaDataOptions<T, K>
+    metadata?: UnifiedMetadata<T, K>
     details?: DetailsItem<T>
     data?: DataWithOmittedFields<T, K, Meta, ExcludedFields>; 
       
@@ -177,8 +177,8 @@ type ConditionalCommonData<T extends BaseData<any, any>> = T extends DappProps
     folderPath?: string;
     currentMeta: Meta;
     previousMeta?: Meta;
-    currentMetadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>;
-    previousMetadata?: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>;  
+    currentMetadata: UnifiedMetadata<T, K, Meta, ExcludedFields>;
+    previousMetadata?: UnifiedMetadata<T, K, Meta, ExcludedFields>;  
     accessHistory?: AccessHistory[];
     folders?: FolderData[];
     lastModifiedDate?: ModifiedDate;
@@ -369,23 +369,24 @@ const CommonDetails = <T extends SupportedData<BaseData<any, any>>>({
 
       {/* Include RealtimeData component */}
       <RealtimeDataComponent
-         id={data?.id ? data?.id.toString() : ""} // Updated from `_id` to `id` to match the property (`BaseRealtimeData.id: string`)
-         name={data?.name || ""} // Match `RealtimeDataItem.name: string`
-         date={data?.date ? new Date(data.date).toString() : new Date().toString()} // Handles both `string` and `Date`
-         userId={userId}
-         dispatch={dispatch}
-         value={data?.value || ""} // Match `RealtimeDataItem.value: string`
-         eventId={data?.eventId || ""} // Match `EventData.eventId: string`
-         type={data?.type || {} as AllTypes} // Correct `AllTypes` type assignment
-         timestamp={data?.timestamp ? new Date(data.timestamp).toString() : new Date().toString()} // Handles both `string` and `Date`
-         blockNumber={data?.blockNumber != null ? data.blockNumber.toString() : ""} // Convert `string | number | bigint | undefined` to `string`
-         transactionHash={data?.transactionHash || ""} // Add fallback value `""` if `transactionHash` is `undefined`
-         event={data?.event || ""} // Add fallback value `""` if `event` is `undefined`
-         signature={data?.signature || ""} // Add fallback value `""` if `signature` is `undefined`
+        id={data?.id ? data?.id.toString() : ""} // Updated from `_id` to `id` to match the property (`BaseRealtimeData.id: string`)
+        name={data?.name || ""} // Match `RealtimeDataItem.name: string`
+        date={data?.date ? new Date(data.date).toString() : new Date().toString()} // Handles both `string` and `Date`
+        userId={userId}
+        dispatch={dispatch}
+        value={data?.value || ""} // Match `RealtimeDataItem.value: string`
+        eventId={data?.eventId || ""} // Match `EventData.eventId: string`
+        type={data?.type || {} as AllTypes} // Correct `AllTypes` type assignment
+        timestamp={data?.timestamp ? new Date(data.timestamp).toString() : new Date().toString()} // Handles both `string` and `Date`
+        blockNumber={data?.blockNumber != null ? data.blockNumber.toString() : ""} // Convert `string | number | bigint | undefined` to `string`
+        transactionHash={data?.transactionHash || ""} // Add fallback value `""` if `transactionHash` is `undefined`
+        event={data?.event || ""} // Add fallback value `""` if `event` is `undefined`
+        signature={data?.signature || ""} // Add fallback value `""` if `signature` is `undefined`
+        latestVersion={data?.latestVersion || {} }
       />
     </div>
   );
 };
 export default CommonDetails;
-export type { CommonData, ConditionalCommonData, Customizations, DocumentContent, StatusTrackable, SupportedData, Timestamped, Taggable};
+export type { CommonData, ConditionalCommonData, Customizations, DocumentContent, StatusTrackable, SupportedData, Taggable, Timestamped };
 

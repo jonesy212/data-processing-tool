@@ -1,25 +1,26 @@
-import { snapshot } from '.';
 import * as snapshotApi from '@/app/api/SnapshotApi';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { SnapshotOperation, SnapshotStoreProps } from '@/app/components/snapshots';
-import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
+import { InitializedData, SnapshotStoreOptions } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { SnapshotSubscriberManagement } from "@/app/components/snapshots/SnapshotSubscriberManagement";
 import { getCategory } from '@/app/components/snapshots/snapshotContainerUtils';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { AxiosError } from "axios";
 import { useDispatch } from 'react-redux';
+import { snapshot } from '.';
 import { subscriptionServiceInstance } from '../components/hooks/dynamicHooks/dynamicHooks';
 import useErrorHandling from "../components/hooks/useErrorHandling";
 import determineFileCategory from "../components/libraries/categories/determineFileCategory";
 import { processSnapshotsByCategory } from "../components/libraries/categories/fileCategoryMapping";
-import { SnapshotStoreOptions } from '@/app/components/snapshots/SnapshotStoreOptions';
 
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { Category } from "../components/libraries/categories/generateCategoryProperties";
 import { Content } from "../components/models/content/AddContent";
 import { BaseData } from "../components/models/data/Data";
 import {
-  PriorityTypeEnum,
-  ProjectStateEnum
+    PriorityTypeEnum,
+    ProjectStateEnum
 } from "../components/models/data/StatusType";
 import { RealtimeDataItem } from '../components/models/realtime/RealtimeData';
 import { Member } from "../components/models/teams/TeamMembers";
@@ -30,8 +31,8 @@ import { ProjectType } from "../components/projects/Project";
 import { ExcludedFields } from '../components/routing/Fields';
 import { ConfigureSnapshotStorePayload, SnapshotConfig, SnapshotData, SnapshotDataType, SnapshotStoreConfig, SnapshotWithCriteria, useSnapshotStore } from "../components/snapshots";
 import {
-  Snapshot,
-  Snapshots
+    Snapshot,
+    Snapshots
 } from "../components/snapshots/LocalStorageSnapshotStore";
 import { SnapshotContainer, SnapshotContainerData } from "../components/snapshots/SnapshotContainer";
 import SnapshotList from "../components/snapshots/SnapshotList";
@@ -40,13 +41,12 @@ import SnapshotStore from "../components/snapshots/SnapshotStore";
 import { isValidFileCategory } from "../components/snapshots/isValidFileCategory";
 import { updateUIWithSnapshotStore } from '../components/snapshots/updateUIWithSnapshotStore';
 import { FilterState } from "../components/state/redux/slices/FilterSlice";
-import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { Subscription } from '../components/subscriptions/Subscription';
 import { defaultCategoryProperties } from '../pages/personas/ScenarioBuilder';
 
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "../components/support/NotificationContext";
 import { Subscriber } from '../components/users/Subscriber';
 import { addToSnapshotList } from "../components/utils/snapshotUtils";
@@ -63,8 +63,8 @@ import { constructTarget, Target } from "./EndpointConstructor";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
 import {
-  AuthenticationHeaders,
-  createAuthenticationHeaders,
+    AuthenticationHeaders,
+    createAuthenticationHeaders,
 } from "./headers/authenticationHeaders";
 import createCacheHeaders from "./headers/cacheHeaders";
 import createContentHeaders from "./headers/contentHeaders";
@@ -1730,7 +1730,7 @@ function createSnapshotContainer<
       callback: (snapshotStore: SnapshotStore<T, K>) => void,
       dataStore: DataStore<T, K>,
       dataStoreMethods: DataStoreMethods<T, K>,
-      metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+      metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
       subscriberId: string,
       endpointCategory: string | number,
       storeProps: SnapshotStoreProps<T, K>,
@@ -1970,7 +1970,7 @@ const getSnapshotConfig = <T extends  BaseData<any>, K extends T = T, Meta exten
     callback: (snapshotStore: SnapshotStore<T, K> | null) => void,
     dataStore: DataStore<T, K>,
     dataStoreMethods: DataStoreMethods<T, K>,
-    metadata: UnifiedMetaDataOptions<T, K, Meta, keyof T>,    // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
+    metadata: UnifiedMetadata<T, K, Meta, keyof T>,    // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
     subscriberId: string, // Add subscriberId here
     endpointCategory: string | number,// Add endpointCategory here
     storeProps: SnapshotStoreProps<T, K>,
@@ -2755,16 +2755,16 @@ const mapSnapshots = async <
  
 
 export {
-  addSnapshot,
-  addSnapshotSuccess,
-  apiCall, categorizeSnapshotData, createSnapshot,
-  createSnapshotContainer, deleteSnapshot, extractCriteria, fetchAllSnapshots, fetchSnapshotById,
-  fetchSnapshotIds, fetchSnapshotStoreData, findSnapshotsBySubscriber, findSnapshotStoresById, findSubscriberById,
-  getCurrentSnapshot, getSnapshot, getSnapshotConfig, getSnapshotConfigData,
-  getSnapshotContainer, getSnapshotCriteria, getSnapshotData,
-  getSnapshotId, getSnapshots, getSnapshotsAndCategory, getSnapshotStore, getSnapshotStoreConfig,
-  getSnapshotStoreConfigData, getSnapshotStoreId, getSortedList,
-  handleOtherApplicationLogic, handleOtherStatusCodes, handleSpecificStatusCode, mapSnapshotData, mergeSnapshots, removeSnapshot, retrieveSnapshots, saveSnapshotToDatabase, searchSnapshotData,
-  snapshotContainer, sortSnapshotData, takeSnapshot, updateSnapshotStore, deleteSnapshotStore, mapSnapshots
+    addSnapshot,
+    addSnapshotSuccess,
+    apiCall, categorizeSnapshotData, createSnapshot,
+    createSnapshotContainer, deleteSnapshot, deleteSnapshotStore, extractCriteria, fetchAllSnapshots, fetchSnapshotById,
+    fetchSnapshotIds, fetchSnapshotStoreData, findSnapshotsBySubscriber, findSnapshotStoresById, findSubscriberById,
+    getCurrentSnapshot, getSnapshot, getSnapshotConfig, getSnapshotConfigData,
+    getSnapshotContainer, getSnapshotCriteria, getSnapshotData,
+    getSnapshotId, getSnapshots, getSnapshotsAndCategory, getSnapshotStore, getSnapshotStoreConfig,
+    getSnapshotStoreConfigData, getSnapshotStoreId, getSortedList,
+    handleOtherApplicationLogic, handleOtherStatusCodes, handleSpecificStatusCode, mapSnapshotData, mapSnapshots, mergeSnapshots, removeSnapshot, retrieveSnapshots, saveSnapshotToDatabase, searchSnapshotData,
+    snapshotContainer, sortSnapshotData, takeSnapshot, updateSnapshotStore
 };
 

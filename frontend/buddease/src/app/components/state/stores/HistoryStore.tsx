@@ -30,10 +30,12 @@ interface BaseHistoryStore {
 
 
 interface HistoryEntry {
-  id: string;
+  versionId: string;
   timestamp: number | string | Date | undefined;
+  description: string
   data: any; // Data representing the state or action captured in the history entry
   changes: string[];
+  releaseDate: Date
 }
 
 interface HistoryStore {
@@ -135,10 +137,12 @@ const historyManagerStore = (): HistoryStore => {
   const addHistoryEntry = (data: any) => {
     // Add a new history entry with a unique ID and timestamp
     const newEntry: HistoryEntry = {
-      id: uuidv4(),
+      versionId: uuidv4(),
       timestamp: Date.now(),
+      description: "New action added",
       data: data,
-      changes: []
+      changes: [],
+      releaseDate: new Date(),
     };
     setHistory([...history, newEntry]);
   };

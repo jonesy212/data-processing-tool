@@ -1,5 +1,5 @@
 // GenerateDatabase.tsx
-import { NotificationType } from "@/app/components/support/NotificationContext";
+import { NotificationType } from "@/app/context/NotificationContext";
 import axios from "axios";
 import React, { useState } from "react";
 import {

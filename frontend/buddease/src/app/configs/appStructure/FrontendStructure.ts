@@ -1,6 +1,8 @@
 import { Permission } from '@/app/components/users/Permission';
 import axiosInstance from "@/app/api/axiosInstance";
+import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
 import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
+import { UserData } from "@/app/components/users/User";
 import { VersionData, VersionHistory } from "@/app/components/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import { hashString } from "@/app/generators/HashUtils";
@@ -8,8 +10,32 @@ import getAppPath from "appPath";
 import * as path from "path";
 import { AppStructureItem } from "../appStructure/AppStructure";
 import { DataVersions } from "../DataVersionsConfig";
+import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
-export default class FrontendStructure implements AppStructureItem {
+
+interface MyData extends BaseData<any> {
+  customField: string;
+}
+
+interface MyExtendedData extends MyData {
+  additionalField: number;
+}
+
+type MyMetadata = StructuredMetadata<MyData, MyExtendedData>;
+
+
+// Define UserConfigData with type arguments
+type UserConfigDataWithArgs = UserConfigData<UserData, UserData, StructuredMetadata<UserData, UserData>>;
+
+
+const userConfigData: UserConfigData<MyData, MyExtendedData, MyMetadata> = {
+  settings: { /* UserSettings object */ },
+  enabledFeatures: ["feature1", "feature2"],
+  userSpecificData: { customField: "value", additionalField: 123 },
+};
+
+export default class FrontendStructure<T extends BaseData<any>, K extends T = T> implements AppStructureItem {
   [key: string]: any;
   
   versions: DataVersions = {
@@ -17,7 +43,7 @@ export default class FrontendStructure implements AppStructureItem {
     frontend: undefined
   }
   
-  versionData: string | VersionData | null; // Changed to VersionData[] to match AppStructureItem
+  versionData: string | VersionData<T, K> | null; // Changed to VersionData[] to match AppStructureItem
 
   id: string;
   name: string;
@@ -285,7 +311,7 @@ export default class FrontendStructure implements AppStructureItem {
   async frontendVersions(): Promise<VersionHistory[]> {
     const { versionNumber, appVersion } = getCurrentAppInfo();
     const projectPath = getAppPath(versionNumber, appVersion);
-    const frontendStructure: FrontendStructure = new FrontendStructure(projectPath);
+    const frontendStructure: FrontendStructure<T, K> = new FrontendStructure(projectPath);
     const frontendStructureItems = await frontendStructure.getStructureAsArray();
     const frontendStructureItemsWithVersions = frontendStructureItems.map((item) => {
     const { id, name, type, items, path, draft, content, permissions, versions, versionData } = item;
@@ -294,7 +320,7 @@ export default class FrontendStructure implements AppStructureItem {
     const versionDataArray = Array.isArray(versionData) ? versionData : [];
     
     // Ensure versionData is not empty before accessing the last item
-    const latestVersionData: VersionData = versionDataArray.length > 0 
+    const latestVersionData: VersionData<T, K> = versionDataArray.length > 0 
     ? versionDataArray[versionDataArray.length - 1] 
     : {
       version: '1.0.0',
@@ -314,14 +340,16 @@ export default class FrontendStructure implements AppStructureItem {
   
     
     // Map versionDataArray to history
-      const history = versionDataArray.map((version: VersionData) => ({
-      id: version.id,
+    const history = versionDataArray.map((version: VersionData<T, K>) => ({
+      versionId: version.id,
       version: version.version,
+      description: version.description || "No description", // Default description
+      releaseDate: version.releaseDate || new Date().toISOString(), // Default release date
       lastUpdated: version.lastUpdated,
-        timestamp: version.timestamp,
-        data: version.changes,
-        changes: version.changes,
-      }));
+      timestamp: version.timestamp,
+      data: version.changes,
+      changes: version.changes,
+    }));
       
     // Use currentVersion if needed
     const currentVersion = latestVersionData.version;
@@ -386,15 +414,18 @@ export default class FrontendStructure implements AppStructureItem {
 }
 
 // Instantiate FrontendStructure
-
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
 
-const frontendStructure: FrontendStructure = new FrontendStructure(projectPath);
+const frontendStructure: FrontendStructure<UserData, UserConfigDataWithArgs> = new FrontendStructure<UserData, UserConfigDataWithArgs>(projectPath);
 
 // const frontend = new FrontendStructure()
 // Export frontendStructure
 export { frontendStructure };
+
+
+
+
 
 const dir = path.join(
   getAppPath(getCurrentAppInfo().versionNumber, getCurrentAppInfo().appVersion),

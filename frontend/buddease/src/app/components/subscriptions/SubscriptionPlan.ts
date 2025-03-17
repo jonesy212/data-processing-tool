@@ -1,11 +1,4 @@
 
-// Interface for the subscription
-interface Subscription<T, K> {
-  subscriberType: SubscriberTypeEnum;
-  data: Snapshot<T, K>;
-  getSubscriptionLevel: () => SubscriptionLevel;
-}
-
 interface SubscriptionPlan {
   id: string;
   price: number;

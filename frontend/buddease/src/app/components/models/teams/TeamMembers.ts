@@ -48,7 +48,7 @@ interface TeamMember extends MemberData {
     bannerUrl: "", 
     roles: [], 
     followers: [], 
-    preferences: "", 
+    preferences: {}, 
     storeId: 0,
     id: 1,
     username: 'member1',

@@ -1,7 +1,6 @@
 // getCurrentSnapshotConfigOptions.ts
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { createSnapshotStoreConfig } from '@/app/components/snapshots/snapshotStorageOptionsInstance';
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
 import { Category } from '../libraries/categories/generateCategoryProperties';

@@ -14,10 +14,10 @@ export const ENDPOINT = endpoints.backend
 
 export type RealtimeUpdateCallback<T extends RealtimeData, K extends T = T> = (
   id: string,
-  data: SnapshotStore<T, K>,
   events: Record<string, CalendarEvent[]>,
   snapshotStore: SnapshotStore<T, K>,
-  dataItems: T[]
+  dataItems: T[],
+  data?: SnapshotStore<T, K>,
 ) => void;
 
 const useRealtimeData = <T extends RealtimeDataItem, K extends T = T>(
@@ -57,9 +57,13 @@ const useRealtimeData = <T extends RealtimeDataItem, K extends T = T>(
         dataItems: RealtimeDataItem[]
       ) => {
 
+        if (!data ||!snapshotStore ||!dataItems) {
+          console.error("Received data, snapshotStore, or dataItems is null");
+          return;
+        }
         
         if (isArrayOfTypeT<T>(dataItems)) {
-          updateCallback(id, data, events, snapshotStore, dataItems);
+          updateCallback(id, events, snapshotStore, dataItems, data);
           setRealtimeData(dataItems);
         } else {
           console.error("Received dataItems do not match the expected type T");

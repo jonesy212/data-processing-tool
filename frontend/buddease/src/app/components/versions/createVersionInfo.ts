@@ -11,7 +11,8 @@ import Version, { VersionImpl } from "./Version";
 import { VersionData, VersionHistory } from "./VersionData";
 import { frontend, frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
 import { T, K } from "../models/data/dataStoreMethods";
- 
+import { SnapshotOperation, SnapshotStoreProps } from '@/app/components/snapshots/useSnapshoStore';
+
 // Default reusable data
 const defaultData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
   id: 'default-id', // Replace with a unique identifier logic if needed
@@ -186,10 +187,10 @@ export const handleSnapshot = (
     version,
     schema,
     options,
-    category,
     config,
     operation,
-    expirationDate, payload, callback, 
+    expirationDate, 
+    payload, 
       endpointCategory, findIndex
   } = storeProps;
 
@@ -236,7 +237,10 @@ export const handleSnapshot = (
       isCore: false, // Populate based on your logic
       initialConfig: {}, // Populate based on your actual logic
       removeSubscriber: () => {}, // Provide an appropriate method if needed
-      onInitialize: "", onError: "", taskIdToAssign: "", schema: "", 
+      onInitialize: (callback: () => void) => void, 
+      onError: "", 
+      taskIdToAssign: "", 
+      schema: "", 
     };
 
     return Promise.resolve(processedSnapshot);

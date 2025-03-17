@@ -35,7 +35,7 @@ interface CustomApp<
   K extends T = T
 > extends CommonRelationship<T, K>{
   id: string;
-  name: string;
+  username: string;
   description: string;
   authToken: string;
   apiKey: string
@@ -44,11 +44,8 @@ interface CustomApp<
   // Add any other properties as needed
 }
 
-
 const {handleError} = useErrorHandling()
 type DatabaseType = 'fluence' | 'postgres' | 'mysql' | 'other';
-
-
 
 class CustomDAppAdapter<
   T extends DappProps, 
@@ -122,8 +119,6 @@ class CustomDAppAdapter<
     this.adapter = AdapterComponent as FC<DAppAdapterProps>;
   }
 
-
-
   private initDatabaseConnections(): void {
     // Initialize connections to different databases
     this.databaseConnections = new Map<DatabaseType, any>();
@@ -131,7 +126,6 @@ class CustomDAppAdapter<
     this.databaseConnections.set('postgres', new Connection(this.config.postgresConfig!)); // Example, adjust as needed
     // Add other database connections as required
   }  
-
 
   private getDatabaseConnection(databaseType: DatabaseType): any {
     // Retrieve database connection based on type
@@ -168,7 +162,6 @@ class CustomDAppAdapter<
     }
   }
 
-
   // Getter for appData
   public get appData(): CustomApp | undefined {
     return this._appData;
@@ -185,14 +178,10 @@ class CustomDAppAdapter<
     this._apiKey = data.apiKey;
   }
 
-
-
   // Getter for apiKey to be used elsewhere
   public get apiKey(): string | undefined {
     return this._apiKey;
   }
-
-
 
   createCustomApp(appData: CustomApp, errorMessage: string): YourClass {
     try {
@@ -215,8 +204,10 @@ class CustomDAppAdapter<
       }
       // Generate headers with the authToken
       const options = {
-        apiKey: appData.apiKey, // Assuming `appData` has an apiKey property
-        token: authToken,
+        additionalHeaders: {
+          apiKey: appData.apiKey, // Move apiKey inside additionalHeaders
+          token: authToken,       // Move token inside additionalHeaders
+        }
       };
 
       const additionalHeaders = generateAllHeaders(options, authToken);
@@ -257,7 +248,7 @@ class CustomDAppAdapter<
     
     return {
       id: appId,
-      name: "Custom App",
+      username: "Custom App",
       description: "This is a custom app.",
       authToken: authToken,
       apiKey: this.appData.apiKey,
@@ -385,7 +376,7 @@ class CustomDAppAdapter<
     // Simulate fetching team details from an API
     return {
       id: teamId,
-      name: "Sample Team",
+      username: "Sample Team",
       members: ["User1", "User2", "User3"],
       // Add more details as needed
     };
@@ -414,7 +405,7 @@ class CustomDAppAdapter<
     // Simulate fetching user data from a central server
     return {
       id: "123",
-      name: "John Doe",
+      username: "John Doe",
       role: "Developer",
       teams: ["Team1", "Team2"],
       // Add more details as needed
@@ -467,7 +458,9 @@ class CustomDAppAdapter<
     return component;
   }
 
-  manageDocuments<T extends SupportedData<any, any> = SupportedData<any, any>, K extends T = T,
+  manageDocuments<
+  T extends SupportedData<any, any> = SupportedData<any, any>, 
+  K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >(newDocument: DocumentData<T, K, Meta>) {
     // Implement your logic here for document management
@@ -661,7 +654,7 @@ const dappConfig: DAppAdapterConfig<DappProps> = {
     appVersion: "",
     currentUser: {
       id: "",
-      name: "",
+      username: "",
       role: "",
       teams: [],
       projects: [],
@@ -669,7 +662,7 @@ const dappConfig: DAppAdapterConfig<DappProps> = {
     },
     currentProject: {
       id: "",
-      name: "",
+      username: "",
       description: "",
       tasks: [],
       teamMembers: [],

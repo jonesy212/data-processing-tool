@@ -1,7 +1,7 @@
 import { action, makeObservable, observable } from 'mobx';
 import { createContext } from 'react';
 import { NotificationData } from '../../support/NofiticationsSlice';
-import { NotificationContextProps, NotificationTypeEnum } from '../../support/NotificationContext';
+import { NotificationContextProps, NotificationTypeEnum } from '@/app/context/support/NotificationContext';
 
 // Define the type for notification messages
 interface NotificationMessages {
@@ -72,12 +72,18 @@ class NotificationStore {
     content: string,
     date: Date,
     notificationType: NotificationTypeEnum,
+    options?: {
+      additionalOptions?: readonly string[] | string | number | any[] | undefined;
+      additionalDocumentOptions?: DocumentOptions;
+      additionalOptionsLabel?: string;
+    },
     userName?: string
   ) => {
     const message = this.generateNotificationMessage(
       notificationType,
       userName
     );
+
     this.addNotification({
       id,
       content: message,
@@ -98,6 +104,10 @@ class NotificationStore {
         responded: null,
         date: new Date(),
       },
+      topics: [],
+      highlights: [],
+      files: [],
+      meta: "",
     });
   };
 

@@ -6,7 +6,7 @@ import { K, T } from './../components/models/data/dataStoreMethods';
 import {
     NotificationTypeEnum,
     useNotification,
-} from "@/app/components/support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import { AxiosError } from "axios";
 import { DocumentOptions } from "../components/documents/DocumentOptions";
 import Collaborator from "../components/models/TeamMembers";

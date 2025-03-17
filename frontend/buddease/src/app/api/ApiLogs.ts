@@ -2,7 +2,7 @@
 import { endpoints } from "@/app/api/endpointConfigurations";
 import DefaultNotificationContext, {
   NotificationTypeEnum,
-} from "@/app/components/support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
 import { addLog } from "../components/state/redux/slices/LogSlice";

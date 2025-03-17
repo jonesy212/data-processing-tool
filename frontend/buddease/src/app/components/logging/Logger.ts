@@ -1,3 +1,4 @@
+import { TeamData } from '@/app/components/models/teams/TeamData';
 // Logger.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { BaseData } from '@/app/components/models/data/Data';
@@ -8,7 +9,8 @@ import {
     NotificationType,
     NotificationTypeEnum,
     useNotification,
-} from "@/app/components/support/NotificationContext";
+} from "@/app/context/NotificationContext";
+
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -26,7 +28,8 @@ import { encryptData } from "../security/encryptedData";
 import { Snapshot } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 
 const API_BASE_URL = endpoints.logging;
-const { notify } = useNotification();
+const { notify } = useNotification() || { notify: () => {} };
+
 
 function createErrorNotificationContent(error: Error): any {
   // Extract relevant information from the error object
@@ -422,7 +425,7 @@ class TeamLogger extends Logger {
         }
 
         // Now that we've confirmed teamData is not null, we can assert its type as TeamData
-        const teamDataTyped: TeamData = teamData!;
+        const teamDataTyped: TeamData<T, K, Meta> = teamData!;
         const teamDataString = JSON.stringify(teamData);
         const teamDataStringLength = teamDataString.length;
         if (teamDataStringLength > 10000) {
@@ -585,11 +588,11 @@ class AnimationLogger extends Logger {
     }
   }
 
-  static generateID<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+ static generateID<T extends BaseData<any>, K extends T, Meta extends StructuredMetadata<T, K>>(
     prefix: string,
     name: string,
     type: NotificationType,
-    dataDetails?: DataDetails<T, K>
+    dataDetails?: DataDetails<T, K, Meta>
   ): string {
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 10);
@@ -1057,7 +1060,6 @@ class FileLogger extends Logger {
 class TaskLogger<
   T extends BaseData<any>, 
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > extends Logger {
   static logTaskEvent<
     DataType extends BaseData<DataType>, 
@@ -1095,7 +1097,7 @@ class TaskLogger<
       topics: [],
       highlights: [],
       files: [],
-      meta: meta
+      meta: meta as Map<string, Snapshot<DataType, KeyType, StructuredMetadata<DataType, KeyType>>>,
     };
 
     if (completionMessageLog.createdAt) {

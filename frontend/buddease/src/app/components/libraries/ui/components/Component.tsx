@@ -9,11 +9,11 @@ import { Project } from "@/app/components/projects/Project";
 import UpdatedProjectDetails from "@/app/components/projects/UpdateProjectDetails";
 import { WritableDraft } from "@/app/components/state/redux/ReducerGenerator";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
-import {
-  NotificationTypeEnum,
-  useNotification,
-} from "@/app/components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import {
+    NotificationTypeEnum,
+    useNotification,
+} from "@/app/context/NotificationContext";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";

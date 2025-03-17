@@ -1,7 +1,7 @@
 // Comments.ts
 import { Content } from '@/app/components/models/content/AddContent';
 import { BaseData, Data } from '@/app/components/models/data/Data';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
 import { ColorPalettes } from 'antd/es/theme/interface';
 import { TagsRecord } from '../../snapshots/SnapshotWithCriteria';
 import { Attachment } from '@/app/components/documents/Attachment/attachment''

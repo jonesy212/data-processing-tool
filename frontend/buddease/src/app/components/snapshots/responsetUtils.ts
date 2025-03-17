@@ -2,7 +2,7 @@
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { fetchSnapshotById } from '@/app/api/SnapshotApi';
 import { SnapshotData } from '@/app/components/snapshots';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { Data } from '../models/data/Data';
@@ -265,7 +265,7 @@ const returnsSnapshotStore = async (
         categoryProperties: CategoryProperties | undefined,
         callback: (snapshot: Snapshot<any, any>) => void,
         dataStoreMethods: DataStore<any, any>[],
-        metadata: UnifiedMetaDataOptions<any, any>,
+        metadata: UnifiedMetadata<any, any>,
         subscriberId: string, // Add subscriberId here
         endpointCategory: string | number,// Add endpointCategory here
         storeProps: SnapshotStoreProps<any, any>,

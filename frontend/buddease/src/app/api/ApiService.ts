@@ -2,9 +2,9 @@ import { handleApiError } from "@/app/api/ApiLogs";
 import { createSnapshot, snapshotContainer } from '@/app/api/SnapshotApi';
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
 import { BaseData, Data } from '@/app/components/models/data/Data';
+import { version } from "@/app/components/versions/Version";
 import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import { CustomApp } from "@/app/components/web3/dAppAdapter/DApp";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import metadata from '@/app/layout';
 import { AxiosError, AxiosRequestConfig } from "axios";
@@ -54,7 +54,6 @@ import { endpoints } from "./ApiEndpoints";
 import { getSnapshotConfig, getSnapshotsAndCategory } from "./SnapshotApi";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
-import { version } from "@/app/components/versions/Version";
 
 
 // Define the API base URL

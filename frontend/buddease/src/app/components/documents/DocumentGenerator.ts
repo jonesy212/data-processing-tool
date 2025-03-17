@@ -1,67 +1,41 @@
 import { ModifiedDate } from '@/app/components/documents/DocType';
 var PizZip = require("pizzip");
-import { FileActions } from "@/app/components/actions/FileActions";
-import Draft from "immer";
 // DocumentGenerator.ts
-import calendarApiService from "@/app/api/ApiCalendar";
 import {
-  fetchDocumentByIdAPI,
-  generateDocument,
-  // getDocument,
-  loadPresentationFromDatabase,
+    generateDocument
 } from "@/app/api/ApiDocument";
+import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
 import { DatabaseConfig } from "@/app/configs/DatabaseConfig";
-import { T, K, Meta} from "@/app/components/models/data/dataStoreMethods";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import {
-  loadDrawingFromDatabase,
-  saveDocumentToDatabase,
+    saveDocumentToDatabase
 } from "@/app/configs/database/updateDocumentInDatabase";
 import { generateDiagram } from "@/app/generators/diagramGenerationLibrary";
-import generateDraftJSON from "@/app/generators/generateDraftJSON";
-import {} from "@faker-js/faker";
+import { } from "@faker-js/faker";
 import Docxtemplater from "docxtemplater";
 import { DrawingFunctions, DrawingOptions } from "drawingLibrary";
 import fs from "fs";
-import Papa from "papaparse";
 import * as path from "path";
-import { PDFDocument, PDFPage } from "pdf-lib";
-import { loadCryptoWatchlistFromDatabase } from "../crypto/CryptoWatchlist";
-import { generateCryptoWatchlistJSON } from "../crypto/generateCryptoWatchlistJSON";
-import { ParsedData } from "../crypto/parseData";
-import loadDraftFromDatabase from "../database/loadDraftFromDatabase";
-import FormatEnum, { allowedDiagramFormats } from "../form/FormatEnum";
+import { PDFPage } from "pdf-lib";
+import { PDFPageProxy } from "pdfjs-dist";
+import FormatEnum from "../form/FormatEnum";
 import useErrorHandling from "../hooks/useErrorHandling";
-import { generatePresentationJSON } from "../libraries/presentations/generatePresentationJSON";
 import { FileLogger } from "../logging/Logger";
 import Tracker from "../models/tracker/Tracker";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
-import { Document } from "../state/stores/DocumentStore";
 import { DatasetModel } from "../todos/tasks/DataSetModel";
 import { userId, userService } from "../users/ApiUser";
 import { DocumentData } from "./DocumentBuilder";
-import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
+import { DocumentOptions } from "./DocumentOptions";
 import { generateFinancialReportContent } from "./documentation/report/generateFinancialReportContent";
 import { autosaveDrawing } from "./editing/autosaveDrawing";
-import { parseCSV } from "./parseCSV";
-import { parseExcel } from "./parseExcel";
-import { AppType, PDFData, extractPDFContent, pdfParser } from "./parsePDF";
-import { parseXML } from "./parseXML";
-import { getDocument, GlobalWorkerOptions, PDFPageProxy } from "pdfjs-dist";
 
 import generateDevConfigurationSummaryContent from "@/app/generators/generateDevConfigurationSummaryContent";
-import { VersionData } from "../versions/VersionData";
-import { ModifiedDate, YourPDFType } from "./DocType";
-import { parseDocx } from "./parseDocx";
-import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
+import { Content } from "../models/content/AddContent";
+import { BaseData } from "../models/data/Data";
 import { DocumentObject } from "../state/redux/slices/DocumentSlice";
-import Version from "../versions/Version";
-import { DocumentSize } from "../models/data/StatusType";
 import { loadCalendarEventsDocumentContent, loadClientPortfolioDocumentContent, loadCryptoWatchDocumentContent, loadDiagramDocumentContent, loadDraftDocumentContent, loadDrawingDocumentContent, loadFinancialReportDocumentContent, loadGenericDocumentContent, loadMarkdownDocumentContent, loadMarketAnalysisDocumentContent, loadOtherDocumentContent, loadPDFDocumentContent, loadPresentationDocumentContent, loadSQLDocumentContent, loadSpreadsheetDocumentContent, loadTextDocumentContent } from "./DocumentGeneratorMethods";
 import { FinancialReport } from "./documentation/report/Report";
-import { BaseData } from "../models/data/Data";
-import { Content } from "../models/content/AddContent";
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 
 var xl = require("excel4node");
 
@@ -636,5 +610,5 @@ async createCalendarEvents(options: DocumentOptions): Promise<string> {
 }
 
 export default DocumentGenerator;
-export { DocumentStatusEnum, DocumentTypeEnum, }
-export type { CustomDocxtemplater, DocumentPath, CustomPDFProxyPage, CustomPDFPage, FinancialReport };
+export { DocumentStatusEnum, DocumentTypeEnum };
+export type { CustomDocxtemplater, CustomPDFPage, CustomPDFProxyPage, DocumentPath, FinancialReport };

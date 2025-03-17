@@ -1,5 +1,7 @@
-import { Task } from "../models/tasks/Task";
 // CommonDocumentPropertiesAndMethods.ts
+import { Task } from "../models/tasks/Task";
+import Collaborator from "../models/teams/TeamMembers";
+
 interface CommonDocumentPropertiesAndMethods {
   //Common propertis and methods for a document ypes
   getTitle(): string;

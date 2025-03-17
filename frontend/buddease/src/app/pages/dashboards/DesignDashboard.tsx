@@ -105,7 +105,7 @@ import { saveProfile } from "@/app/components/snapshots/userSnapshotData";
 import { selectApiConfigs } from "@/app/components/state/redux/slices/ApiSlice";
 import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
-import { NotificationType, NotificationTypeEnum } from "@/app/components/support/NotificationContext";
+import { NotificationType, NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { notificationData } from "@/app/components/support/NotificationProvider";
 import { PermissionsEditor } from "@/app/components/users/PermissionsEditor";
 import UserRolesEditor from "@/app/components/users/UserRolesEditor";

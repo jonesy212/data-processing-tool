@@ -1,11 +1,11 @@
 // CoreSnapshot.ts
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { Task } from '@/app/components/models/tasks/Task';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { SnapshotData } from ".";
-import { Attachment } from '@/app/components/documents/Attachment/attachment'
 import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
 import { ChatRoom } from '../calendar/CalendarSlice';
 import { ContentItem } from "../cards/DummyCardLoader";
@@ -24,14 +24,14 @@ import { Subscriber } from "../users/Subscriber";
 import { SubscriberCollection } from '../users/SubscriberCollection';
 import { User } from "../users/User";
 import {
-  Snapshot,
-  Snapshots,
-  SnapshotsArray
+    Snapshot,
+    Snapshots,
+    SnapshotsArray
 } from "./LocalStorageSnapshotStore";
 import { SnapshotOperation } from "./SnapshotActions";
 import { SnapshotConfig } from "./SnapshotConfig";
 import {
-  SnapshotRelationships,
+    SnapshotRelationships,
 } from "./SnapshotData";
 import { SnapshotEvents } from "./SnapshotEvents";
 import { SnapshotItem } from "./SnapshotList";
@@ -52,7 +52,7 @@ interface CoreSnapshot<
     SnapshotRelationships<T, K>,
     SnapshotEvents<T, K> // Extend SnapshotEvents to include event-related methods
 {
-  metadata?: UnifiedMetaDataOptions<T, K>;
+  metadata?: UnifiedMetadata<T, K>;
   id: string | number | undefined;
   config: Promise<SnapshotStoreConfig<T, K> | null>;
   configs?: SnapshotStoreConfig<T, K>[] | null;

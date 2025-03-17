@@ -3,7 +3,7 @@
 import { T , K, Meta } from "@/app/components/models/data/dataStoreMethods";
 
 import { fetchUserIdsFromDatabase } from "../api/ApiDatabase";
-import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
+import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError, AxiosResponse } from 'axios';
 import HighlightEvent from '../components/documents/screenFunctionality/HighlightEvent';
 import { useDataStore } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
@@ -18,6 +18,7 @@ import NotificationStore from '../components/state/stores/NotificationStore';
 import { notificationStore } from '../components/support/NotificationProvider';
 import { endpoints } from './endpointConfigurations';
 import { StructuredMetadata } from "../configs/StructuredMetadata";
+
 // Define the API base URL
 const { data: API_BASE_URL } = endpoints;
 export let setDynamicData: React.Dispatch<React.SetStateAction<any>>; // Define setDynamicData globally
@@ -30,7 +31,7 @@ interface DataNotificationMessages {
   ERROR_WRITING_TO_CACHE: string;
   FETCH_DEX_DATA_ERROR: string;
   FETCH_EXCHANGE_DATA_ERROR: string;
-  // Add more keys as needed
+  GENERATE_VERSION_ERROR_ID: string; // Add this key
 }
 
 // Define API notification messages
@@ -41,9 +42,10 @@ const apiNotificationMessages: DataNotificationMessages = {
   UPDATE_DATA_DETAILS_ERROR: NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_ERROR,
   ERROR_WRITING_TO_CACHE: NOTIFICATION_MESSAGES.Cache.ERROR_WRITING_TO_CACHE,
   FETCH_DEX_DATA_ERROR: NOTIFICATION_MESSAGES.DEX.FETCH_DEX_DATA_ERROR,
-  FETCH_EXCHANGE_DATA_ERROR: NOTIFICATION_MESSAGES.DEX.FETCH_DEX_DATA_ERROR,
-  // Add more properties as needed
+  FETCH_EXCHANGE_DATA_ERROR: NOTIFICATION_MESSAGES.DEX.FETCH_EXCHANGE_DATA_ERROR,
+  GENERATE_VERSION_ERROR_ID: NOTIFICATION_MESSAGES.Version.GENERATE_VERSION_ERROR_ID
 };
+
 // Function to handle API errors and notify
 const handleApiErrorAndNotify = (
   error: AxiosError<unknown>,
@@ -56,13 +58,21 @@ const handleApiErrorAndNotify = (
     useNotification().notify(
       errorMessageId,
       errorMessageText,
-      null,
       new Date(),
       "ApiClientError" as NotificationType
     );
   }
 };
 
+// Handle the error and notify
+const errorMessage = 'Failed to generate version';
+const errorKey: keyof DataNotificationMessages = 'GENERATE_VERSION_ERROR_ID'; // Use the correct key
+
+handleApiErrorAndNotify(
+  error as AxiosError<unknown>,
+  errorMessage,
+  errorKey
+);
 
 
 const fetchData = async (endpoint: string, id: number): Promise<{ data: YourResponseType<T, K<T>, StructuredMetadata<T, K<T>>> } | null> => {
@@ -126,7 +136,7 @@ const fetchHighlights = async (id: number): Promise<HighlightEvent[]> => {
   } catch (error: any) {
     handleApiError(
       error,
-      NOTIFICATION_MESSAGES.errorMessage.FETCH_HIGHLIGHTS_ERROR
+      NOTIFICATION_MESSAGES.Error.FETCH_HIGHLIGHTS_ERROR
     );
     throw error;
   }
@@ -151,7 +161,8 @@ const addData = async (newData: Omit<any, 'id'>, highlight: Omit<HighlightEvent,
     }
   } catch (error) {
     console.error('Error adding data:', error);
-    handleApiErrorAndNotify(error as AxiosError<unknown>,
+    handleApiErrorAndNotify(
+      error as AxiosError<unknown>,
       'Failed to add data',
       'AddDataErrorId' as keyof DataNotificationMessages
     );

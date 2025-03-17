@@ -4,17 +4,16 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import {
   NotificationTypeEnum,
   useNotification,
-} from "@/app/components/support/NotificationContext"; // Import useNotification
+} from "@/app/context/NotificationContext"; 
 import { AxiosError } from "axios";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import { Data } from "../../models/data/Data";
 import axiosInstance from "../../security/csrfToken";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { VideoData } from "../../video/Video";
-
-
+ 
 export interface Video extends BaseData {
+  id: string;
   content: string;
   watchLater: boolean;
   tags: string[];
@@ -27,23 +26,87 @@ export interface VideoStore<
   T extends  BaseData<any>,
   K extends T = T
 > {
+  isLoading: boolean; // Add isLoading
+  error: string | null; // Add error
   videos: Record<string, VideoData<T, K>[]>;
   fetchVideos: () => void;
   addVideo: (video: Video) => void;
   updateVideo: (id: string, updatedVideo: Video) => void;
   deleteVideo: (id: string) => void;
   getVideoData: (id: string, video: Video) => VideoData<T, K> | null;
-  getVideosData: (ids: string[], videos: VideoData<T, K>[]) => Promise<Record<string, VideoData<T, K>>>
+  getVideosData: (ids: string[], videos: VideoData<T, K>[]) => Promise<Record<string, VideoData<T, K>>>;
   updateVideoTags: (id: string, tags: string[]) => void;
+  setCurrentVideoMeta: (meta: any) => void; // Add this method
+  setCurrentVideoMetadata: (metadata: any) => void; // Add this method
+  setCurrentVideoDate: (date: Date) => void; // Add this method
 }
+
+
+
+const convertToVideoData = <T extends BaseData<any>, K extends T = T>(
+  video: Video
+): VideoData<T, K> => {
+  return {
+    ...video,
+    currentMeta: {}, // Provide default values or actual data
+    currentMetadata: {},
+    date: new Date(),
+    video: {} as T, // Provide default values or actual data
+  };
+};
+
+
+
 
 const useVideoStore = <T extends BaseData<any>, K extends T = T>(): VideoStore<T, K> => {
 
-  const [videos, setVideos] = useState<Record<string, Video[]>>({});
+  const [videos, setVideos] = useState<Record<string, VideoData<T, K>[]>>({});
+  const [video, setVideo] = useState<VideoData<T, K> | null>(null); 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [currentMeta, setCurrentMeta] = useState<any>(null); 
+  const [currentMetadata, setCurrentMetadata] = useState<any>(null); 
+  const [date, setDate] = useState<Date | null>(null); 
   const { notify } = useNotification();
 
+  const setCurrentVideoMeta = (meta: any) => {
+    setCurrentMeta(meta);
+  };
+  
+  const setCurrentVideoMetadata = (metadata: any) => {
+    setCurrentMetadata(metadata);
+  };
+  
+  const setCurrentVideoDate = (date: Date) => {
+    setDate(date);
+  };
+
+
+  // Method to get video data by ID
+  const getVideoData = (id: string, video: Video): VideoData<T, K> | null => {
+    const videoEntry = videos[id]?.find((v) => v.id === id);
+    return videoEntry || null;
+  };
+
+  // Method to get videos data by IDs
+  const getVideosData = async (
+    ids: string[],
+    videos: VideoData<T, K>[]
+  ): Promise<Record<string, VideoData<T, K>>> => {
+    try {
+      const response = await axiosInstance.get("/videos", {
+        params: {
+          ids,
+          videos: videos.map((video) => video.id),
+        },
+      });
+      return response.data as Record<string, VideoData<T, K>>;
+    } catch (error) {
+      handleError(error, "fetching videos data");
+      return {};
+    }
+  };
+ 
   const fetchVideos = async () => {
     setIsLoading(true);
     setError(null);
@@ -53,7 +116,11 @@ const useVideoStore = <T extends BaseData<any>, K extends T = T>(): VideoStore<T
         throw new Error("Failed to fetch videos");
       }
       const data = await response.json();
-      setVideos(data);
+      const videoData = Object.keys(data).reduce((acc, key) => {
+        acc[key] = data[key].map(convertToVideoData<T, K>);
+        return acc;
+      }, {} as Record<string, VideoData<T, K>[]>);
+      setVideos(videoData);
     } catch (error) {
       handleError(error, "fetching videos");
     } finally {
@@ -61,44 +128,11 @@ const useVideoStore = <T extends BaseData<any>, K extends T = T>(): VideoStore<T
     }
   };
 
-  const getVideoData = (id: string, video: Video): VideoData<T, K> => {
-    if (video && video.videoData) {
-      return video.videoData;
-    }
-    return {} as VideoData<T, K>;
-  };
-
-  const getVideosData = async (
-    ids: string[],
-    videos: Video[]
-  ): Promise<Record<string, VideoData<T, K>>> => {
-    try {
-      const response = await axiosInstance.get("/videos", {
-        params: {
-          ids,
-          videos: videos.map((video) => video.id),
-        },
-      });
-
-      // Assuming the response data structure is an object where keys are video IDs
-      return response.data as Record<string, VideoData<T, K>>;
-    } catch (error) {
-      notify(
-        "getVideosData",
-        "Video data fetched successfully",
-        NOTIFICATION_MESSAGES.Video.FETCH_VIDEOS_ERROR,
-        new Date,
-        NotificationTypeEnum.OperationError,
-      );
-      // Return an empty object if there's an error
-      return {};
-    }
-  };
-
   const addVideo = (video: Video) => {
+    const videoData = convertToVideoData<T, K>(video);
     setVideos((prevVideos) => ({
       ...prevVideos,
-      [video.id]: [video],
+      [String(video.id)]: [videoData], // Convert video.id to a string
     }));
     notify(
       "addVideoSuccess",
@@ -110,9 +144,10 @@ const useVideoStore = <T extends BaseData<any>, K extends T = T>(): VideoStore<T
   };
 
   const updateVideo = (id: string, updatedVideo: Video) => {
+    const videoData = convertToVideoData<T, K>(updatedVideo);
     setVideos((prevVideos) => ({
       ...prevVideos,
-      [id]: [updatedVideo],
+      [id]: [videoData],
     }));
     notify(
       "updateVideoSuccess",
@@ -120,7 +155,7 @@ const useVideoStore = <T extends BaseData<any>, K extends T = T>(): VideoStore<T
       NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_SUCCESS,
       new Date(),
       NotificationTypeEnum.OperationSuccess
-    ); // Notify success
+    );
   };
 
   const deleteVideo = async (id: string) => {
@@ -141,7 +176,7 @@ const useVideoStore = <T extends BaseData<any>, K extends T = T>(): VideoStore<T
     ); // Notify success
   };
 
-  
+
   const updateVideoTags = (id: string, tags: string[]) => {
     setVideos((prevVideos) => {
       const updatedVideos = [...prevVideos[id]];
@@ -167,16 +202,25 @@ const useVideoStore = <T extends BaseData<any>, K extends T = T>(): VideoStore<T
 
   const store: VideoStore<T, K> = makeAutoObservable({
     videos,
-    video, currentMeta, currentMetadata, date,
+    isLoading,
+    error,
+    video, // Include video in the store
+    currentMeta, // Include currentMeta in the store
+    currentMetadata, // Include currentMetadata in the store
+    date, // Include date in the store
     fetchVideos,
     addVideo,
     updateVideo,
     deleteVideo,
     getVideoData,
     getVideosData,
-
-    updateVideoTags
+    updateVideoTags,
+    setCurrentVideoMeta, 
+    setCurrentVideoMetadata, 
+    setCurrentVideoDate,
+    setVideo,
   });
+
 
   return store;
 };

@@ -105,6 +105,17 @@ const options: SearchOptions = {
 // Initialize the useFiltering hook with the provided options
 const { addFilter } = useFiltering(options);
 
+interface ReassignedProject {
+  getData: () => Promise<SnapshotStore<BaseData>[]>;
+  projectId: string;
+  timestamp?: Date;
+  category: string;
+  project: Project | undefined;
+  projectName: Project["name"];
+  previousTeam: Team;
+  reassignmentDate: Date;
+}
+
 interface Team extends Data {
   team: {
     id: string;
@@ -142,13 +153,8 @@ interface Team extends Data {
 
   assignedProjects: Project[];
 
-  reassignedProjects: {
-    projectId: string;
-    project: Project | undefined;
-    projectName: Project["name"];
-    previousTeam: Team;
-    reassignmentDate: Date;
-  }[];
+  reassignedProjects: ReassignedProject[];
+  
   assignProject(team: Team, project: Project, assignedDate: Date): void;
   reassignProject(
     team: Team,

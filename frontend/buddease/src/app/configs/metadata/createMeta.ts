@@ -1,11 +1,9 @@
 // createMeta.ts
 import { BaseData } from "@/app/components/models/data/Data";
 import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
-import { UserData } from "@/app/components/users/User";
 import { StructuredMetadata } from "../StructuredMetadata";
 
 import { useSecurityAudit } from "@/app/components/utils/useSecurityAudit";
-import { UnifiedMetaDataOptions } from "../database/MetaDataOptions";
 
 const createMeta = <T extends BaseData<any>, K extends T = T>(
   data: Partial<StructuredMetadata<T, K>>
@@ -36,7 +34,7 @@ const createMeta = <T extends BaseData<any>, K extends T = T>(
 
 export const createMetadata = <T extends BaseData<any>, K extends T = T>(
   data: Partial<UnifiedMetaDataOptions<T, K>>
-): UnifiedMetaDataOptions<T, K> => {
+): UnifiedMetadata<T, K> => {
   const { sanitizeMetadata } = useSecurityAudit();
 
   // Optionally sanitize incoming data
@@ -70,4 +68,4 @@ const meta = createMeta<
   []  // related
 );
 
-export { createMeta }
+export { createMeta };

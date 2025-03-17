@@ -1,17 +1,16 @@
-import  metadata from '@/app/layout';
-import { baseConfig } from '@/app/configs/BaseConfig';
-import { useMemo } from "react";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { BaseData } from "../components/models/data/Data";
-import { StructuredMetadata } from "./StructuredMetadata";
-import { Snapshot } from "../components/snapshots";
-import { EventManager } from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { createLastUpdated } from '../components/versions/VersionData';
-import { createLatestVersion, createLastUpdatedWithVersion } from '../components/versions/createLatestVersion';
 import SecurityAudit from "@/app/components/security/SecurityAudit"; // Assuming this is the correct path to the SecurityAudit class
-import { UserRole } from '../components/users/UserRole';
+import { baseConfig } from '@/app/configs/BaseConfig';
+import metadata from '@/app/layout';
+import { useMemo } from "react";
 import { useAuth } from '../components/auth/AuthContext';
+import { BaseData } from "../components/models/data/Data";
+import { UserRole } from '../components/users/UserRole';
 import UserRoles, { UserRoleEnum } from '../components/users/UserRoles';
+import { createLastUpdatedWithVersion, createLatestVersion } from '../components/versions/createLatestVersion';
+import { StructuredMetadata } from "./StructuredMetadata";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { Attachment } from '@/app/components/documents/Attachment/attachment'
+
 
 function useMetadata<
   T extends BaseData<any>, 
@@ -27,25 +26,39 @@ function useMetadata<
     latestVersion?: Meta["latestVersion"];
   } = {},
   projectId?: number,
-): UnifiedMetaDataOptions<T, K, Meta, ExcludedFields> {
+): UnifiedMetadata<T, K, Meta, ExcludedFields> & {
+  options: UnifiedMetaDataOptions<T, K>;
+  updateOptions: (newOptions: Partial<UnifiedMetaDataOptions<T, K>>) => void;
+} {
+  // Initialize options state
+  const [options, setOptions] = useState<UnifiedMetaDataOptions<T, K>>({
+    // Default options here
+  });
+
+  // Function to update options
+  const updateOptions = (newOptions: Partial<UnifiedMetaDataOptions<T, K>>) => {
+    setOptions((prevOptions) => ({ ...prevOptions, ...newOptions }));
+  };
 
   // Retrieve the user role from authentication hook
   const { user } = useAuth();
 
-// Check if the user.role is a valid UserRoleEnum before using it:
-const userRole: UserRole | undefined = user?.role && (Object.values(UserRoles) as unknown as UserRoleEnum[]).includes(user.role.roleType as UserRoleEnum)
+  // Check if the user.role is a valid UserRoleEnum before using it:
+  const userRole: UserRole | undefined = user?.role && (Object.values(UserRoles) as unknown as UserRoleEnum[]).includes(user.role.roleType as UserRoleEnum)
     ? {
-    roleType: user.role.roleType,
-    responsibilities: [],
-    permissions: [],
-    positions: [],
-    includes: [],
-  }
-  : undefined;
+        roleType: user.role.roleType,
+        responsibilities: [],
+        permissions: [],
+        positions: [],
+        includes: [],
+      }
+    : undefined;
+
   // Create instance of SecurityAudit
   const securityAudit = useMemo(() => new SecurityAudit(), []); 
-  
-  return useMemo(() => {
+
+  // Generate metadata
+  const generatedMetadata = useMemo(() => {
     // Define default metadata entry
     const generateMetadataEntry = (
       fileOrFolderId: string
@@ -66,48 +79,44 @@ const userRole: UserRole | undefined = user?.role && (Object.values(UserRoles) a
       links: ["http://example.com"],
       tags: ["tag1", "tag2"],
     } as Meta["metadataEntries"][string]);
-    // Structured metadata object
-    
-    // Add missing properties to structuredMetadata
-    const structuredMetadata = {
-        ...baseConfig,
-        meta: metadata,
-        id: "default-id",
-        apiEndpoint: "https://api.example.com",
-        apiKey: "default-api-key",
-        timeout: 5000,
-        description: "Default Description",
-        metadataEntries: {
-          file1: generateMetadataEntry("file1"),
-          file2: generateMetadataEntry("file2"),
-        },
-        childIds: [],
-        relatedData: [],
-        version: "1.0.0",
-        latestVersion: overrides.latestVersion || createLatestVersion(),
-        isActive: true,
-        config: {},
-        permissions: [],
-        customFields: {},
-        lastUpdated: createLastUpdatedWithVersion(),
-        baseUrl: "http://example-base-url.com",
-        versionData: overrides.versionData || [],       
-        timestamp: new Date("2023-01-01"),
-        ...overrides,
-      } as unknown as Meta
-   
 
-    //    // Conduct audit and sanitize metadata
-        // Perform sanitization or audit based on user role
+    // Structured metadata object
+    const structuredMetadata = {
+      ...baseConfig,
+      meta: metadata,
+      id: "default-id",
+      apiEndpoint: "https://api.example.com",
+      apiKey: "default-api-key",
+      timeout: 5000,
+      description: "Default Description",
+      metadataEntries: {
+        file1: generateMetadataEntry("file1"),
+        file2: generateMetadataEntry("file2"),
+      },
+      childIds: [],
+      relatedData: [],
+      version: "1.0.0",
+      latestVersion: overrides.latestVersion || createLatestVersion(),
+      isActive: true,
+      config: {},
+      permissions: [],
+      customFields: {},
+      lastUpdated: createLastUpdatedWithVersion(),
+      baseUrl: "http://example-base-url.com",
+      versionData: overrides.versionData || [],       
+      timestamp: new Date("2023-01-01"),
+      ...overrides,
+    } as unknown as Meta;
+
+    // Conduct audit and sanitize metadata
     let sanitizedMetadataEntries = structuredMetadata.metadataEntries;
     if (userRole) {
-
-        const sanitizedMetadata = securityAudit.sanitizeState(structuredMetadata, userRole.roleType.toString(), userRole.roleType === UserRoles.Administrator);
-        const findings = securityAudit.conductAudit(sanitizedMetadata);
-        // Review findings (optional: log or process the findings further)
-        securityAudit.reviewFindings(findings);
-        sanitizedMetadataEntries = sanitizedMetadata.metadataEntries;
+      const sanitizedMetadata = securityAudit.sanitizeState(structuredMetadata, userRole.roleType.toString(), userRole.roleType === UserRoles.Administrator);
+      const findings = securityAudit.conductAudit(sanitizedMetadata);
+      securityAudit.reviewFindings(findings);
+      sanitizedMetadataEntries = sanitizedMetadata.metadataEntries;
     }
+
     return {
       area,
       currentMeta: structuredMetadata as Meta,
@@ -122,9 +131,17 @@ const userRole: UserRole | undefined = user?.role && (Object.values(UserRoles) a
       meetingMetadata: undefined, // Extend as needed
       customMediaSession: undefined, // Extend as needed
       childIds: [],
-      relatedData: []
-
+      relatedData: [],
+      latestVersion: structuredMetadata.latestVersion,
     };
-    }, [area, relatedKeys, overrides, projectId, userRole, securityAudit]);
+  }, [area, relatedKeys, overrides, projectId, userRole, securityAudit]);
 
-}  export { useMetadata }
+    // Return metadata along with options and updateOptions function
+    return {
+      ...generatedMetadata,
+      options,
+      updateOptions,
+    };
+}  
+
+export { useMetadata };

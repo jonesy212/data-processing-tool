@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { createContext, ReactNode, useContext } from 'react';
 import NotificationStore from '../components/state/stores/NotificationStore';
+import { NotificationContextProps } from "@/app/context/NotificationContext";
 
 interface NotificationProviderProps {
   children: ReactNode;
@@ -9,7 +10,13 @@ interface NotificationProviderProps {
  
 type CustomNotificationType = "RandomDismiss";
 
-export enum NotificationTypeEnum {
+type NotificationType =
+  | NotificationTypeEnum
+  | DocumentTypeEnum
+  | PriorityTypeEnum
+  | CustomNotificationType;
+
+enum NotificationTypeEnum {
   AccountCreated = "AccountCreated",
   AnalyticsID = "AnalyticsID",
   Announcement = "Announcement",
@@ -47,6 +54,7 @@ export enum NotificationTypeEnum {
   AppStructureID = "AppStructureID",
   FileID = "FileID",
   GeneratedID = "GeneratedID",
+  GetStoreSuccess = "GetStoreSuccess",
   LocationID = "LocationID",
   MeetingID = "MeetingId",
   PhaseID = "PhaseID",
@@ -100,10 +108,18 @@ export enum NotificationTypeEnum {
 
 type NotificationContextType = Pick<NotificationContextProps, "notify">;
 
+const NotificationContext = createContext<NotificationStore | null>(null);
 
-const NotificationContext = createContext<NotificationStore | undefined>(undefined);
+const useNotification = () => {
+  const store = useNotificationStore();
+  return {
+    notify: store.notify,
+    addNotification: store.addNotification,
+    removeNotification: store.removeNotification,
+    clearNotifications: store.clearNotifications,
+  };
+};
 
-export const useNotification = () => useContext(NotificationContext);
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
   const notificationStore = new NotificationStore();
@@ -116,10 +132,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
 export const useNotificationStore = (): NotificationStore => {
   const context = useContext(NotificationContext);
-  if (context === undefined) {
+  if (context === null) {
     throw new Error('useNotificationStore must be used within a NotificationProvider');
   }
   return context;
 };
  
-export { NotificationTypeEnum }
+export { useNotification, NotificationTypeEnum, NotificationType }

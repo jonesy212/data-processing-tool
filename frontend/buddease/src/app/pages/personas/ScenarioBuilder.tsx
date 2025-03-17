@@ -1,38 +1,34 @@
-import * as React from  'react' 
-import { Label } from '@/app/components/projects/branding/BrandingSettings';
 import { categorizeNews } from "@/app/components/community/articleKeywords";
 import { ModifiedDate } from "@/app/components/documents/DocType";
-import DocumentBuilder, { DocumentData } from "@/app/components/documents/DocumentBuilder";
+import { DocumentData } from "@/app/components/documents/DocumentBuilder";
+import { buildDocument } from '@/app/components/documents/DocumentBuilderComponent';
 import {
     getDefaultDocumentOptions,
     getDocumentPhase,
     mapDocumentToProjectPhase
 } from "@/app/components/documents/DocumentOptions";
-import { DocumentSize } from "@/app/components/models/data/StatusType";
-import PhaseManager from "@/app/components/phases/PhaseManager";
-import { generateValidationRulesCode } from "@/app/components/security/validationRulesCode";
-import Version from "@/app/components/versions/Version";
-import { VersionData, VersionHistory } from "@/app/components/versions/VersionData";
-import fs from "fs";
-import { useState } from "react";
-import PersonaTypeEnum, { PersonaBuilder } from "./PersonaBuilder";
-import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
-import { CategoryKeys } from "@/app/components/libraries/categories/CategoryManager";
 import DocumentPermissions from "@/app/components/documents/DocumentPermissions";
-import { allCategories, AllCategoryValues } from "@/app/components/models/data/DataStructureCategories";
-import { Phase } from "@/app/components/phases/Phase";
-import { DocumentObject } from '@/app/components/state/redux/slices/DocumentSlice';
-import { buildDocument } from '@/app/components/documents/DocumentBuilderComponent';
-import { T, K, Meta, UserConfigData } from '@/app/components/models/data/dataStoreMethods';
-import { UserData } from '@/app/components/users/User';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { EventManager, EventRecord } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { CategoryKeys } from "@/app/components/libraries/categories/CategoryManager";
 import { Content } from '@/app/components/models/content/AddContent';
 import { BaseData } from '@/app/components/models/data/Data';
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
+import { allCategories, AllCategoryValues } from "@/app/components/models/data/DataStructureCategories";
+import { DocumentSize } from "@/app/components/models/data/StatusType";
 import { ProgressPhase } from '@/app/components/models/tracker/ProgressBar';
-import { createMetaState } from '@/app/configs/metadata/createMetadataState';
+import { Phase } from "@/app/components/phases/Phase";
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
+import { generateValidationRulesCode } from "@/app/components/security/validationRulesCode";
 import { Snapshot } from '@/app/components/snapshots';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { DocumentObject } from '@/app/components/state/redux/slices/DocumentSlice';
+import { UserData } from '@/app/components/users/User';
+import Version from "@/app/components/versions/Version";
+import { VersionData, VersionHistory } from "@/app/components/versions/VersionData";
+import { createMetaState } from '@/app/configs/metadata/createMetadataState';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import fs from "fs";
+import * as React from 'react';
+import { useState } from "react";
+import PersonaTypeEnum, { PersonaBuilder } from "./PersonaBuilder";
 
 
 

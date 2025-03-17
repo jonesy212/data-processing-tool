@@ -159,4 +159,28 @@ export const createTag =  <T extends BaseData, K extends T = T>(
   nulltype: {} as AllTypes
 });
 
+
+function processTags<T extends BaseData<any>, K extends T = T>(
+  tags: TagsRecord<T, K> | string[]
+): void {
+  if (Array.isArray(tags)) {
+    console.log("Simple tags:", tags);
+  } else {
+    console.log("Complex tags:", tags);
+  }
+}
+
+
+function processVideoMetadata<T extends BaseData<any>, K extends T = T>(
+  metadata: SpecificMetadata<T, K>
+): void {
+  if (metadata.tags) {
+    if (Array.isArray(metadata.tags)) {
+      console.log("Simple tags:", metadata.tags);
+    } else {
+      console.log("Complex tags:", metadata.tags);
+    }
+  }
+}
+
 export type { Tag, TagOptions };

@@ -13,11 +13,14 @@ import { refreshUIForFile } from "../../snapshots/refreshUI"
 import { FilteredEventsState } from '../../state/redux/slices/FilteredEventState'
 
 interface File {
-    id?: string;
-    name?: string | undefined;
-    metadata: FileMetadata
-  }
+  id?: string;
+  name?: string | undefined;
+  metadata: FileMetadata
+}
+
 interface FileMetadata {
+    fileName: string;
+    fileSize: number;
     size: number;
     createdAt: Date;
     updatedAt: Date;

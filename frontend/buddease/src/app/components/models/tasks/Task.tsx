@@ -23,26 +23,7 @@ import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { Comment } from "../data/Comments";
 
 export type TaskData = SupportedData<T, K<T>, StructuredMetadata<T, any>>;
-
-
-interface SharedDetails<
-  T extends SupportedData<any, any>,
-  K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> {
-  participants: Participant[]
-  uploadedAt: Date
-  phase: Phase
-  phaseName: string
-  fakeData?: FakeData
-  comments?: number | (Comment<T, K, StructuredMetadata<T, K>> | CustomComment)[] | undefined;
-  currentMeta: Meta
-  currentMetadata: UnifiedMetaDataOptions<T, K>,
-  label: Label
-}
-
-
-
+ 
 // Remove the 'then' method from the Task interface
 interface Task<
   T extends BaseData<any> = BaseData<any, any>,

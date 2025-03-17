@@ -1,20 +1,23 @@
 // DocumentBuilder.tsx
 
-import { useMetadata } from "@/app/configs/useMetadata";
 import {
     createContentStateFromText,
     fetchContentIdFromAPI
 } from "@/app/api/ApiContent";
+import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+
 import { endpoints } from "@/app/api/ApiEndpoints";
-import { BaseData, SharedBaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/components/models/data/Data';
+import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure, { backendStructure } from "@/app/configs/appStructure/BackendStructure";
 import { frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { saveDocumentToDatabase } from "@/app/configs/database/updateDocumentInDatabase";
+import { useMetadata } from "@/app/configs/useMetadata";
 import { usePanelContents } from "@/app/generators/usePanelContents";
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import Clipboard from "@/app/ts/clipboard";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import crypto from "crypto";
@@ -41,6 +44,7 @@ import { Data, TodoSubtasks } from "../models/data/Data";
 import FileData from "../models/data/FileData";
 import FolderData from "../models/data/FolderData";
 import { DocumentSize, ProjectPhaseTypeEnum } from "../models/data/StatusType";
+import { T } from "../models/data/dataStoreMethods";
 import { Team } from "../models/teams/Team";
 import { Phase } from "../phases/Phase";
 import PromptViewer from "../prompts/PromptViewer";
@@ -66,7 +70,6 @@ import AccessHistory, {
 import AppVersionImpl from "../versions/AppVersion";
 import Version from "../versions/Version";
 import { VersionData } from "../versions/VersionData";
-import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
 import { ModifiedDate } from "./DocType";
 import {
@@ -83,8 +86,6 @@ import {
 import { ToolbarOptionsComponent, ToolbarOptionsProps } from "./ToolbarOptions";
 import { ResearchReport, TechnicalReport } from "./documentation/report/Report";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
-import { T } from "../models/data/dataStoreMethods";
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 
@@ -141,8 +142,8 @@ DatasetModel<T, K> {
   currentContent?: ContentState;
   currentMeta: Meta
   previousMeta?: Meta;
-  previousMetadata?: UnifiedMetaDataOptions<T, K> | undefined;
-  currentMetadata: UnifiedMetaDataOptions<T, K>
+  previousMetadata?: UnifiedMetadata<T, K> | undefined;
+  currentMetadata: UnifiedMetadata<T, K>
   accessHistory: AccessHistory[];
   documentPhase:
     | string
@@ -582,7 +583,7 @@ const extractMetadata = async (
 
 
 
- const updateMetadata = (newMetadata: UnifiedMetaDataOptions) => {
+ const updateMetadata = (newMetadata: UnifiedMetadata) => {
   // Save current metadata as previous before updating
   setPreviousMetadata(currentMetadata);
   // Update the current metadata
@@ -1269,7 +1270,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 
 
     const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
-    const currentMetadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(area)
+    const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
 
     // Create a document object
     const documentObject: DocumentObject<BaseData<string, string, StructuredMetadata<any, any>>> = {
@@ -1673,5 +1674,5 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 };
 
 export default DocumentBuilder;
-export type { RevisionOptions, WritableTodoSubtasks, DocumentData};
-export { computeChecksum }
+export { computeChecksum };
+export type { DocumentData, RevisionOptions, WritableTodoSubtasks };

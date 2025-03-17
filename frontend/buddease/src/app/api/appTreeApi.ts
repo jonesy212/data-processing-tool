@@ -5,7 +5,7 @@ import {
   NotificationType,
   NotificationTypeEnum,
   useNotification,
-} from "@/app/components/support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import { setThreshold } from '@/app/utils/setThresholdUtils';
 import { AxiosError } from "axios";
 import {

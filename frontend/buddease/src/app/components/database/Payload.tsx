@@ -1,9 +1,9 @@
 // Payload.ts
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { SnapshotActions } from '@/app/components/snapshots/SnapshotActions';
-import { useNotification } from '@/app/components/support/NotificationContext';
 import { addToSnapshotList, category } from '@/app/components/utils/snapshotUtils';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { useNotification } from "@/app/context/NotificationContext";
 import { LiveEvent } from '@refinedev/core';
 import { useDispatch } from 'react-redux';
 import { SubscriptionPayload } from "../actions/SubscriptionActions";

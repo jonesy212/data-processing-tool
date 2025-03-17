@@ -2,8 +2,8 @@
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
 import { SnapshotDataType } from '@/app/components/snapshots';
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Order } from "../crypto/Orders";
 import { Category } from "../libraries/categories/generateCategoryProperties";
@@ -104,7 +104,7 @@ interface SnapshotData<
   version?: string | number | Version<T, K> | undefined
   versionHistory?: VersionHistory
   config: Promise<SnapshotStoreConfig<T, K> | null>;
-  metadata?: UnifiedMetaDataOptions<T, K, Meta, MapExcludedFieldsToMetaKeys<T, K, StructuredMetadata<T, K>, ExcludedFields>
+  metadata?: UnifiedMetadata<T, K, Meta, MapExcludedFieldsToMetaKeys<T, K, StructuredMetadata<T, K>, ExcludedFields>
   > | {};
   isExpired: () => boolean | undefined
   isCompressed?: boolean;
@@ -154,8 +154,9 @@ interface SnapshotData<
     snapshotId?: string | number | null,
     storeId?: number
   ) => Promise<SnapshotDataType<T, K>>;
-  
 }
+
+
 export type {
     CustomSnapshotData,
     SnapshotData,

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Stopwatch from "../calendar/Stopwatch";
 import { enhancedPhaseHook, setCurrentPhase } from "../hooks/phaseHooks/EnhancePhase";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { PhaseHookConfig } from "../hooks/phaseHooks/PhaseHooks";
 import useAsyncHookLinker from "../hooks/useAsyncHookLinker";
 import { Phase, CustomPhaseHooks } from "./Phase";
@@ -31,7 +32,7 @@ const defaultCondition = async (idleTimeoutDuration: number): Promise<boolean> =
 
 
     const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
-    const currentMetadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<T, K<T>>(area)
+    const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
 
    
       // Example: Create an array of phase objects

@@ -1,28 +1,29 @@
-import { SnapshotContainerData } from '@/app/components/snapshots/SnapshotContainer';
 import { Data } from '@/app/components/models/data/Data';
 import { ConvertMeta } from '@/app/components/models/data/dataStoreMethods';
-import { Subscription } from '@/app/components/subscriptions/Subscription';
-import { Subscriber } from '@/app/components/users/Subscriber';
-import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotData } from '@/app/components/snapshots';
 import { getAllSnapshotEntries } from '@/app/components/snapshots/getSnapshotEntries';
 import {
-  Snapshot,
-  SnapshotUnion,
-  Snapshots,
-  SnapshotsArray,
-  SnapshotsObject
+    Snapshot,
+    SnapshotUnion,
+    Snapshots,
+    SnapshotsArray,
+    SnapshotsObject
 } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { SnapshotContainerData } from '@/app/components/snapshots/SnapshotContainer';
+import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
+import { Subscription } from '@/app/components/subscriptions/Subscription';
+import { Subscriber } from '@/app/components/users/Subscriber';
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { initialState } from "../state/redux/slices/FilteredEventsSlice";
 import { CoreSnapshot } from './CoreSnapshot';
+import { SharedTimestamps, SharedStatusFlags, SharedIdentifiers } from '@/app/components/documents/RelatedProps'
 
 import { handleApiError } from "@/app/api/ApiLogs";
 import { getSnapshotStoreConfig } from "@/app/api/SnapshotApi";
-import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/components/support/NotificationContext';
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { getConfigPromise } from "@/app/configs/getConfigPromise";
 import { ProjectMetadata, StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { MessageType } from "@/app/generators/MessaageType";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
@@ -30,7 +31,9 @@ import { FilterCriteria } from "@/app/pages/searchs/FilterCriteria";
 import retrieveSnapshotData from "@/app/utils/retrieveSnapshotData";
 import { prefix } from "@fortawesome/free-solid-svg-icons";
 import { AxiosError } from "axios";
+;
 
+import { Video } from "@/app/components/state/stores/VideoStore";
 import { find, findIndex } from "lodash";
 import { IHydrateResult } from "mobx-persist";
 import getConfig from "next/config";
@@ -40,11 +43,12 @@ import { version } from "node:os";
 import { config } from "node:process";
 import { callback } from "node_modules/chart.js/dist/helpers/helpers.core";
 import { prop } from "node_modules/cheerio/lib/esm/api/attributes";
-import {  useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { SnapshotWithData } from "../calendar/CalendarApp";
 import { CodingLanguageEnum, LanguageEnum } from "../communications/LanguageEnum";
 import { CreateSnapshotStoresPayload, CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "../database/Payload";
 import { SchemaField } from "../database/SchemaField";
+import { Attachment } from '../documents/Attachment/attachment';
 import { DocumentTypeEnum } from "../documents/DocumentGenerator";
 import { FileTypeEnum } from "../documents/FileType";
 import defaultImplementation from "../event/defaultImplementation";
@@ -65,8 +69,7 @@ import { TaskPhaseEnum } from "../phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "../phases/TenantManagementPhase";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { CommonDataStoreMethods, DataStore, EventRecord, InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { ExcludedFields } from "../routing/Fields";
+import { DataStore, EventRecord, InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SearchCriteria } from "../routing/SearchCriteria";
 import { SecurityFeatureEnum } from "../security/SecurityFeatureEnum";
 import CalendarManagerStoreClass from "../state/stores/CalendarManagerStore";
@@ -96,8 +99,6 @@ import { InitializedData, InitializedDataStore } from "./SnapshotStoreOptions";
 import { SnapshotWithCriteria, TagsRecord, data } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
 import { SnapshotStoreProps } from "./useSnapshotStore";
-import { Video } from "@/app/components/state/stores/VideoStore";
-import { Attachment } from '../documents/Attachment/attachment';
 
 
 const { notify } = useNotification();
@@ -180,7 +181,6 @@ function isCompatibleTempData<
 
 type U = T
 type WrappedU = U extends BaseData ? U : BaseData<U, U, StructuredMetadata<WrappedU, WrappedU>, Attachment>;
-
 
 // Function to transform config options
 function createStoreConfig<
@@ -318,7 +318,6 @@ function createStoreConfig<
     handleSnapshotError: config.handleSnapshotError,
     resetErrorState: config.resetErrorState,
    
-    
     dataStoreMethods: transformedDataStoreMethods,
     criteria: config.criteria,
     content: config.content,
@@ -621,7 +620,10 @@ function getDefaultValueForField(defaultType: string): any {
 }
 
 interface InitializableWithData<T extends  BaseData<any>, 
-  K extends T = T> {
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+> {
   initializeWithData(data: SnapshotUnion<T, K, Meta>[]): void | undefined;
   hasSnapshots(): Promise<boolean>;   
   addSnapshot(
@@ -650,32 +652,107 @@ interface SnapshotStoreReference<T extends BaseData<any>, K extends T = T> {
 
 
 class SnapshotStore<
-  T extends  BaseData<any>,
+  T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = never
->
-  // implements
-  // //   DataStore<T, K>
-    // SnapshotWithCriteria<T, K>
+> implements SharedTimestamps, SharedStatusFlags, SharedIdentifiers
+  //   DataStore<T, K>
+  //   SnapshotWithCriteria<T, K>
   //   SnapshotStoreMethod<T, K>,
   //   CommonDataStoreMethods<T, K>
 {
-  id: string | number | undefined = "";
-  snapshotId?: string | number  | undefined = undefined
-  key: string = "";
-  keys: string[] = [];
-  topic: string = "";
-  date: string | number | Date | undefined;
-  // metadata: Meta;
-
+  // SharedIdentifiers properties
+  _id?: string;
+  id?: string | number | undefined;
+  type?: string;
+  title?: string;
+  label?: Label | string | null;
+  key?: string;
+  value?: string | number | Snapshot<T, K> | undefined | null = 0;
   configOption?:
     | string
     | SnapshotConfig<T, K>
     | SnapshotStoreConfig<T, K>
     | null;
+
+  // SharedTimestamps properties
+  createdAt?: string | Date | undefined;
+  updatedAt?: string | Date | undefined;
+  createdBy?: string | undefined;
+  updatedBy?: string;
+  deletedAt?: Date | null;
+  lastLogin?: Date;
+  lastLogout?: Date;
+  lastPasswordChange?: Date;
+  lastEmailChange?: Date;
+  lastProfileChange?: Date;
+  lastAvatarChange?: Date;
+  lastBannerChange?: Date;
+  lastStatusChange?: Date;
+  lastRoleChange?: Date;
+  lastTierChange?: Date;
+  lastPaymentChange?: Date;
+  lastSubscriptionChange?: Date;
+  lastEmailVerification?: Date;
+  lastPasswordReset?: Date;
+  lastLoginAttempt?: Date;
+  loginAttempts?: number;
+  lockoutEnd?: Date | null;
+
+  // SharedStatusFlags properties
+  isActive?: boolean;
+  isArchived?: boolean;
+  isCompleted?: boolean;
+  isBeingEdited?: boolean;
+  isBeingDeleted?: boolean;
+  isBeingCompleted?: boolean;
+  isBeingReassigned?: boolean;
+  isDeleted?: boolean;
+  isBanned?: boolean;
+  isDisabled?: boolean;
+  isSuspended?: boolean;
+  isPending?: boolean;
+  isRequested?: boolean;
+  isRecommended?: boolean;
+  isPopular?: boolean;
+  isTrending?: boolean;
+  isViral?: boolean;
+  isControversial?: boolean;
+  isFeatured?: boolean;
+  isSponsored?: boolean;
+  isPromoted?: boolean;
+  isBoosted?: boolean;
+  isBookmarked?: boolean;
+  isSaved?: boolean;
+  isLiked?: boolean;
+  isDisliked?: boolean;
+  isShared?: boolean;
+  isViewed?: boolean;
+  isRead?: boolean;
+  isUnread?: boolean;
+  isNotified?: boolean;
+  isNoteworthy?: boolean;
+  isResponsible?: boolean;
+  isAccountable?: boolean;
+  isConsulted?: boolean;
+  isInformed?: boolean;
+  isEngaged?: boolean;
+  isAvailable?: boolean;
+  isOnline?: boolean;
+  isOffline?: boolean;
+  isAway?: boolean;
+  isBusy?: boolean;
+  isDoNotDisturb?: boolean;
+  isUnderMaintenance?: boolean;
+
+  // SnapshotStore-specific properties
+  snapshotId?: string | number | undefined = undefined;
+  keys: string[] = [];
+  topic: string = "";
+  date: string | number | Date | undefined;
+  configOption?: string | SnapshotConfig<T, K> | SnapshotStoreConfig<T, K> | null;
   operation!: SnapshotOperation<T, K>;
-  title: string = "";
   subscription?: Subscription<T, K> | null = null;
   description?: string | undefined = "";
   category: symbol | string | Category | undefined;
@@ -683,14 +760,32 @@ class SnapshotStore<
   categoryProperties: CategoryProperties | undefined;
   message: string | undefined = undefined;
   timestamp: string | number | Date | undefined;
-  logging?: boolean;  // Whether to enable logging for the store
+  logging?: boolean; // Whether to enable logging for the store
   autoSync?: boolean; // Whether to enable auto-sync for the store
- 
-  createdBy: string = "";
   eventRecords?: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
-  type: string | AllTypes | null = "";
   structuredMetadata: StructuredMetadata<T, K> = {} as StructuredMetadata<T, K>;
-  subscribers: SubscriberCollection<T, K>[] = []
+  subscribers: SubscriberCollection<T, K>[] = [];
+  data?: InitializedData<T> | null = null;
+  storeId: number = 0;
+  videos?: Video[];
+  maxAge: string | number | undefined = undefined;
+  state?: SnapshotsArray<T, K> | null = null;
+  states: SnapshotsArray<T, K> = []; // Array of snapshots representing historical states
+  currentState: Snapshot<T, K> | null = null; // The current snapshot state
+  store: SnapshotStore<T, K> | null = null;
+  stores: (storeProps: SnapshotStoreProps<T, K>) => SnapshotStore<T, K>[] | null = () => null;
+  snapshots: SnapshotsArray<T, K> = [];
+  snapshotConfig: SnapshotConfig<T, K>[] = [];
+  snapshotStoreConfig: SnapshotStoreConfig<T, K>[] = [];
+  expirationDate: Date;
+  priority?: PriorityTypeEnum | undefined;
+  tags?: TagsRecord<T, K> | string[] | undefined;
+  metadata?: UnifiedMetadata<T, K, Meta, ExcludedFields> | {};
+  meta: Map<string, Snapshot<T, K>> | {} = {};
+  status?: StatusType | undefined;
+  isCompressed?: boolean;
+  isSubscribed: boolean = false;
+  snapshotMethods: SnapshotStoreMethod<T, K>[] = []; // Initialized to an empty array
 
   get(id: string): CoreSnapshot<T, K> | undefined {
     return this.snapshots.get(id);
@@ -707,36 +802,7 @@ class SnapshotStore<
     type: string,
     event: Event
   ) => void | null;
-  data?: InitializedData<T> | null = null;
-  createdAt: string | Date | undefined;
-  storeId: number = 0;
-  updatedAt?: string | Date | undefined;
-  videos?: Video[]
-  updatedBy?: string | undefined = undefined
-  maxAge: string | number | undefined = undefined
-  state?: SnapshotsArray<T, K> | null = null;
-   // Add new properties
-   states: SnapshotsArray<T, K> = []; // Array of snapshots representing historical states
-   currentState: Snapshot<T, K> | null = null; // The current snapshot state
- 
-   
-  store: SnapshotStore<T, K> | null = null;
-  stores: (storeProps: SnapshotStoreProps<T, K>) => SnapshotStore<T, K>[] | null = () => null;
-  snapshots: SnapshotsArray<T, K> = [];
   
-  snapshotConfig: SnapshotConfig<T, K>[] = [];
-  snapshotStoreConfig: SnapshotStoreConfig<T, K>[] = [];
-  expirationDate: Date;
-  priority?: PriorityTypeEnum | undefined;
-  tags?: TagsRecord<T, K> | string[] | undefined;
-  metadata?: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields> | {};
-  // delegate: SnapshotStoreConfig<T, K>[] = []
-  meta: Map<string, Snapshot<T, K>> | {} = {};
-  status?: StatusType | undefined;
-  isCompressed?: boolean;
-  isSubscribed: boolean = false;
-  snapshotMethods: SnapshotStoreMethod<T, K>[] = []; // Initialized to an empty array
-
   // Example method to update states and currentState
   updateState(newState: Snapshot<T, K>): void {
     this.states.push(newState); // Add the new state to the history
@@ -987,19 +1053,20 @@ class SnapshotStore<
     return new Date();
   };
 
+  
+  // Get store method
   getStore = (
     storeId: number,
-    snapshotStore: SnapshotStore<T, K>,
+    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
     snapshotId: string | null,
-    snapshot: Snapshot<T, K>,
-    snapshotStoreConfig: SnapshotStoreConfig<T, K>,
+    snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+    snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
     type: string,
     event: Event
-  ): SnapshotStore<T, K> | null => {
+  ): SnapshotStore<T, K, Meta, ExcludedFields> | null => {
     // Step 1: Check if snapshotId is provided
     if (snapshotId) {
       // Step 2: Find the snapshot with the given snapshotId in the store
-    
       const existingSnapshot = this.snapshots.find((s: SnapshotUnion<T, K, Meta>) => {
         return isSnapshot<T, K>(s) && s.id === snapshotId;
       });
@@ -1012,39 +1079,37 @@ class SnapshotStore<
           existingSnapshot.category = snapshot.category;
           // Add any other updates needed
         }
-  
+
         // Step 4: Optionally update configuration
         if (snapshotStoreConfig) {
-          this.config = snapshotStoreConfig;
+          this.config = Promise.resolve(snapshotStoreConfig); // Wrap in a promise
         }
-  
+
         // Step 5: Return updated store
         return this;
       } else {
-
         // Step 6: If no snapshot found and a snapshot is provided, add it to the store
         if (snapshot && isSnapshot<T, K>(snapshot)) {
           // Add the new snapshot to the array
           this.snapshots.push(convertToSnapshotUnion(snapshot));
 
           if (snapshotStoreConfig) {
-            this.config = snapshotStoreConfig;
+            this.config = Promise.resolve(snapshotStoreConfig); // Wrap in a promise
           }
 
           return this;
         }
-
       }
     } else {
       // Step 7: Handle the case where snapshotId is null (e.g., apply global config or return null)
       if (snapshotStoreConfig) {
         // Apply the new configuration to the store
-        this.config = snapshotStoreConfig;
+        this.config = Promise.resolve(snapshotStoreConfig); // Wrap in a promise
       }
       // If no snapshotId and no snapshot, simply return the current store or null
       return this;
     }
-  
+
     // Step 8: If no suitable action was taken, return null (or handle differently as needed)
     return null;
   };
@@ -1139,7 +1204,7 @@ onSnapshot = (
     
 
     // Initialize options based on the config
-    protected initializeOptions(): Promise<void> {
+    protected async initializeOptions(): Promise<void> {
       const config = await this.config; // Await the promise to get the resolved config
 
       if (config?.logging) {
@@ -1152,7 +1217,7 @@ onSnapshot = (
       }
     }
 
-    protected setConfig(config: Promise<SnapshotStoreConfig<T, K>>): Promise<void>{
+    protected async setConfig(config: Promise<SnapshotStoreConfig<T, K>>): Promise<void>{
       console.log('Base SnapshotStore setConfig called.');
       this.config = config;
       this.initializeOptions(); // Re-apply the options whenever the config is updated
@@ -3167,7 +3232,7 @@ onSnapshot = (
   subscriberId: string | undefined = undefined;
   length: number | undefined = 0;
   content: string | Content<T, K> | undefined = "";
-  value: string | number | Snapshot<T, K> | undefined | null = 0;
+
   todoSnapshotId: string | undefined = "";
 
   snapshotStore: SnapshotStore<T, K> | null = null;
@@ -4454,7 +4519,7 @@ onSnapshot = (
     dataStore: DataStore<T, K>,
     dataStoreMethods: DataStoreMethods<T, K>,
     // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-    metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+    metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
     subscriberId: string, // Add subscriberId here
     endpointCategory: string | number, // Add endpointCategory here
     storeProps: SnapshotStoreProps<T, K>,
@@ -7674,10 +7739,10 @@ onSnapshot = (
 export default SnapshotStore;
 
 export {
-  // createStoreConfig, 
-  handleSnapshotEvent,
-  //  initializeData, 
-  initialState
+    // createStoreConfig, 
+    handleSnapshotEvent,
+    //  initializeData, 
+    initialState
 };
 
-export type { SnapshotStoreReference }
+    export type { SnapshotStoreReference };

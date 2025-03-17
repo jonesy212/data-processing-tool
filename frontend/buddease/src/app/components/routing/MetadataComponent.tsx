@@ -2,13 +2,13 @@ import { StatusType } from "@/app/components/models/data/StatusType";
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { UnifiedMetaDataOptions } from '../../configs/database/MetaDataOptions';
+import { UnifiedMetadata } from '../../configs/database/MetaDataOptions';
 // Assume selectedmetadata is derived based on your logic (e.g., API call, user action, etc.)
 // Usage Example
 
 
 
-const selectedmetadata: UnifiedMetaDataOptions<T, K<T>> = {
+const selectedmetadata: UnifiedMetadata<T, K<T>> = {
   videoMetadata: {
     title: "",
     url: "",
@@ -79,7 +79,7 @@ const selectedmetadata: UnifiedMetaDataOptions<T, K<T>> = {
   const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetaDataOptions<T, K<T>>(selectedmetadata);
 
   // If you need to update the metadata, for example on a user action or API call
-  const updateMetadata = (newMetadata: UnifiedMetaDataOptions<T, K<T>>) => {
+  const updateMetadata = (newMetadata: UnifiedMetadata<T, K<T>>) => {
     // Save current metadata as previous before updating
     setPreviousMetadata(currentMetadata);
     // Update the current metadata
@@ -90,7 +90,7 @@ const selectedmetadata: UnifiedMetaDataOptions<T, K<T>> = {
     // Example logic if metadata changes come from external sources like API
     // Call to fetch metadata, then set the metadata state
     const fetchMetadata = async () => {
-      const fetchedMetadata: UnifiedMetaDataOptions<T, K<T>> = await getMetadataFromAPI(); // Replace with real API call
+      const fetchedMetadata: UnifiedMetadata<T, K<T>> = await getMetadataFromAPI(); // Replace with real API call
       updateMetadata(fetchedMetadata);
     };
     fetchMetadata();

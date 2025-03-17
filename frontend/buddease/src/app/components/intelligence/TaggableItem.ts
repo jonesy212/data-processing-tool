@@ -6,6 +6,6 @@ export interface TaggableItem {
   id: string;
   title: string;
   description: string;
-  localeCompare: (otherTag: Tag) => number;
+  localeCompare: (otherTag: Tag<T, K>) => number;
   // Add any other properties specific to the taggable item
 }

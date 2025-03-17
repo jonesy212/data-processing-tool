@@ -1,21 +1,20 @@
 // TaskSlice.ts
+import { updateTaskPosition } from "@/app/api/TasksApi";
+import { BaseData } from '@/app/components/models/data/Data';
 import { PriorityTypeEnum } from "@/app/components/models/data/StatusType";
 import { Task } from "@/app/components/models/tasks/Task";
-import { BaseData } from '@/app/components/models/data/Data';
 import { Tag } from "@/app/components/models/tracker/Tag";
-import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
-import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import {
-  PayloadAction,
-  ThunkAction,
-  createSlice,
+    PayloadAction,
+    ThunkAction,
+    createSlice,
 } from "@reduxjs/toolkit";
 import { produce } from "immer";
 import { AllStatus } from "../../stores/DetailsListStore";
 import { MobXRootState } from "../../stores/RootStores";
 import { WritableDraft } from "../ReducerGenerator";
 import { updateTask } from "./CollaborationSlice";
-import { updateTaskPosition } from "@/app/api/TasksApi";
 
 // Inside the function where `notify` is used
 const { notify } = useNotification();

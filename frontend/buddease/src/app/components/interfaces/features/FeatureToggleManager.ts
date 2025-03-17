@@ -1,4 +1,4 @@
-import { NotificationTypeEnum, useNotification } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import focusManagerInstance from "../../models/accessibility/FocusManager";
 import axiosInstance from "../../security/csrfToken";

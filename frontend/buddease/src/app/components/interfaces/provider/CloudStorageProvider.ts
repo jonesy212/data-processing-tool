@@ -1,10 +1,5 @@
 // CloudStorageProvider.ts
-
-
-interface FileMetadata {
-  fileName: string;
-  fileSize: number;
-}
+import { FileMetadata } from '@/app/models/file/FileManager'
 
 export class CloudStorageProvider {
     providerName: string;
@@ -52,5 +47,7 @@ export class CloudStorageProvider {
       console.log(`${file.fileName} - ${file.fileSize} MB`);
     });
   }
-  }
+}
   
+
+export type { FileMetadata }

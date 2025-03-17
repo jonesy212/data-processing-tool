@@ -5,56 +5,53 @@ import { ExchangeData } from "@/app/components/models/data/ExchangeData";
 import { fetchDEXData } from "@/app/components/models/data/fetchExchangeData";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { EventData } from "@/app/components/state/stores/AssignEventStore";
+import { Attachment } from '@/app/components/documents/Attachment/attachment'
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
-import React, { Key, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { AllTypes } from "../../typings/PropTypes";
 import { BaseData } from "../data/Data";
+import { T, K, Meta } from "@/app/components/models/data/dataStoreMethods";
+import { ExcludedFields } from '@/app/components/routing/Fields';
 
 interface BaseRealtimeData {
-  id: string;
+  id: string | number | undefined;
   name: string;
   value: string;
   type: string | AllTypes | null;
+  date: Date; // Standardize to Date
   // Add other common properties shared by RealtimeDataItem and RealtimeData here
 }
 
-interface RealtimeDataItem extends BaseRealtimeData, EventData, SharedMetadata<Key> {
+interface RealtimeDataItem extends BaseRealtimeData, EventData, SharedMetadata<K<T>> {
   title?: string;
-  date: Date | string;
-  forEach?: (callback: (item: RealtimeDataItem) => void) => void;
   userId: string;
   dispatch: (action: any) => void;
-  value: string;
-  name: string;
-  timestamp: string | Date;
-  data?: Snapshot<any, any>;
+  timestamp: Date; // Standardize to Date
+  data?: Snapshot<T, K<T>, Meta<T, K>, ExcludedFields>;
   // Add other properties specific to RealtimeDataItem here
 }
 
 interface RealtimeData extends BaseRealtimeData {
-  date: Date | string;
-  timestamp: string | number | Date | undefined;
   eventId: string;
-  type: string | AllTypes | null;
   userId: string;
   dispatch: (action: any) => void;
-  value: string;
-  // type: ExchangeDataTypeEnum;
-
+  timestamp: Date; // Standardize to Date
   // Define other properties specific to RealtimeData here
-}
+} 
+
 
 const processSnapshotStore = <T extends BaseData<any, any>, K extends T = T>(
-  snapshotStore: SnapshotStore<Snapshot<T, K>>
+  snapshotStore: SnapshotStore<T, K>
 ) => {
   Object.keys(snapshotStore).forEach((snapshotId) => {
     // Perform actions based on each snapshotId
     // For example, you can access the snapshot data using snapshotStore[snapshotId]
-    const typedSnapshotId = snapshotId as keyof SnapshotStore<Snapshot<T, K>>;
+    const typedSnapshotId = snapshotId as keyof SnapshotStore<T, K>;
     const snapshotData = snapshotStore[typedSnapshotId];
     console.log(
       `Processing snapshot with ID ${String(typedSnapshotId)}:`,
@@ -84,19 +81,19 @@ const RealtimeDataComponent: React.FC<RealtimeDataItem> = <
   // Custom update callback function
   // Adjust the type of updateCallback to match the expected signature
   const updateCallback: <
-    T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseData<any> = BaseData<any, any, any, Attachment>,
     K extends T = T>(
     id: string,
-    data: SnapshotStore<T, K>,
     events: Record<string, CalendarEvent[]>,
     snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[]
+    dataItems: RealtimeDataItem[],
+    data?: InitializedData<T> | null,
   ) => void = (
     id: string,
-    data: SnapshotStore<T, K>,
     events: Record<string, CalendarEvent[]>,
     snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[]
+    dataItems: RealtimeDataItem[],
+    data?: InitializedData<T> | null,
   ) => {
     // Convert exchangeData and dexData to RealtimeData if needed
     const exchangeData: ExchangeData[] = []; // Your logic to convert or fetch exchange data
@@ -167,6 +164,7 @@ const RealtimeDataComponent: React.FC<RealtimeDataItem> = <
     </div>
   );
 };
+
 export { RealtimeDataComponent };
 export type { RealtimeData, RealtimeDataItem };
 

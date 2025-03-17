@@ -3,8 +3,6 @@ import { Content } from '@/app/components/models/content/AddContent';
 
 
 import { BaseData } from '@/app/components/models/data/Data';
-import { SimulatedDataSource } from "./createSnapshotOptions";
-import { K } from "@/app/components/models/data/dataStoreMethods";
 import { SnapshotStoreConfig } from '@/app/components/snapshots';
 import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
@@ -13,16 +11,17 @@ import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import { SimulatedDataSource } from "./createSnapshotOptions";
 import {
-  ConfigureSnapshotStorePayload, MultipleEventsCallbacks, Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotOperation, SnapshotOperationType, Snapshots,
-  SnapshotsArray, SnapshotStoreMethod, SnapshotStoreProps,
-  SnapshotWithCriteria
+    ConfigureSnapshotStorePayload, MultipleEventsCallbacks, Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotOperation, SnapshotOperationType, Snapshots,
+    SnapshotsArray, SnapshotStoreMethod, SnapshotStoreProps,
+    SnapshotWithCriteria
 } from './index';
 
 import { SchemaField } from '../database/SchemaField';
 
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
 import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import { DataStore, EventRecord, InitializedState } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
@@ -128,7 +127,7 @@ interface SnapshotStoreOptions<
   content?: string | Content<T, K> | undefined;
   snapshotId?: string | number | null;
   snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, ExcludedFields> | undefined;
-  metadata?: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields> | {}
+  metadata?: UnifiedMetadata<T, K, Meta, ExcludedFields> | {}
   criteria: CriteriaType;
   callbacks: MultipleEventsCallbacks<Snapshot<T, K>>;
   snapshotConfig?: SnapshotConfig<T, K>[] | undefined;
@@ -289,7 +288,7 @@ interface SnapshotStoreOptions<
       dataStore: DataStore<T, K>,
       dataStoreMethods: DataStoreMethods<T, K>,
       // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-      metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+      metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
       subscriberId: string, // Add subscriberId here
       endpointCategory: string | number,// Add endpointCategory here
       storeProps: SnapshotStoreProps<T, K>,
@@ -352,7 +351,7 @@ interface SnapshotStoreOptions<
 }
 
 export type {
-  InitializedData, InitializedDataStore, InitializedDelegate,
-  InitializedDelegateSearch, MetaDataOptions, SnapshotInstanceProps, SnapshotStoreOptions
+    InitializedData, InitializedDataStore, InitializedDelegate,
+    InitializedDelegateSearch, MetaDataOptions, SnapshotInstanceProps, SnapshotStoreOptions
 };
 

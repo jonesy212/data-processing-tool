@@ -19,11 +19,11 @@ import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { storeProps } from '@/app/components/snapshots/SnapshotStoreProps';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { Subscription } from '@/app/components/subscriptions/Subscription';
-import { NotificationTypeEnum } from '@/app/components/support/NotificationContext';
 import { Subscriber } from '@/app/components/users/Subscriber';
 import Version from '@/app/components/versions/Version';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 
@@ -63,7 +63,7 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K<T>
     SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>>,
     dataStoreMethods: DataStoreMethods<SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>,
     SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>>,
-    metadata: UnifiedMetaDataOptions<SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>, StructuredMetadata<T, T>, keyof T>,
+    metadata: UnifiedMetadata<SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>, StructuredMetadata<T, T>, keyof T>,
     subscriberId: string,
     endpointCategory: string | number,
     storeProps: SnapshotStoreProps<SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>,

@@ -1,6 +1,6 @@
 // LoginForm.tsx
 import authService from "@/app/components/auth/AuthService";
-import { NotificationContext, NotificationTypeEnum } from "@/app/components/support/NotificationContext";
+import { NotificationContext, NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { NOTIFICATION_TYPES } from "@/app/components/support/NotificationTypes";
 import React, { Dispatch, SetStateAction, useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";

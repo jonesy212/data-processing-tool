@@ -3,7 +3,7 @@ import { handleApiError } from "@/app/api/ApiLogs";
 import {
   NotificationTypeEnum,
   useNotification,
-} from "@/app/components/support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
 import { TeamActions } from "../components/actions/TeamActions";

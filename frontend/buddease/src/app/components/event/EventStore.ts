@@ -1,35 +1,24 @@
 // EventStore.ts
 import { BaseData } from '@/app/components/models/data/Data';
-import metadata from '@/app/layout';
-import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
+import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { ExcludedFields } from '@/app/components/routing/Fields';
+import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
+import { SnapshotEvents } from '@/app/components/snapshots/SnapshotEvents';
 import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
-import { EventManager, InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { DataStore } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
 import { fetchAndCreateSnapshot } from '@/app/components/snapshots/defaultSnapshotSubscribeFunctions';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { Subscriber } from "@/app/components/users/Subscriber";
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
+import { UpdateSnapshotPayload } from '../database/Payload';
 import { CombinedEvents } from '../hooks/useSnapshotManager';
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { Data } from "../models/data/Data";
-import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { DataStoreMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { EventRecord } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Snapshot, SnapshotConfig, SnapshotData, SnapshotDataType, SnapshotStoreProps, SnapshotWithCriteria, } from "../snapshots";
+import { Snapshot, SnapshotConfig, SnapshotData, SnapshotStoreProps, SnapshotWithCriteria } from "../snapshots";
 import SnapshotStore from "../snapshots/SnapshotStore";
-import { UpdateSnapshotPayload } from '../database/Payload';
-import * as snapshotApi from '@/app/api/SnapshotApi';
-import { Subscription } from '../subscriptions/Subscription';
-import { useSecureUserId } from '../utils/useSecureUserId';
-import { AllTypes } from '../typings/PropTypes';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
-import { ExcludedFields } from '@/app/components/routing/Fields';
-import { SnapshotEvents } from '@/app/components/snapshots/SnapshotEvents';
-import { Subscriber } from "@/app/components/users/Subscriber";
 
 
 export type EventStore<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = {

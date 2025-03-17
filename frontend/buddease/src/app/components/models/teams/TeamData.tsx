@@ -77,4 +77,5 @@ const teamData: TeamData<BaseData<Data<string>, Data<string>, any>, string> & Pa
 };
 
 
-export default TeamData; teamData
+export type { TeamData }
+export { teamData }

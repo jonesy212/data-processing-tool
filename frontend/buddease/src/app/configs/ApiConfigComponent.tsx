@@ -1,5 +1,4 @@
 // ApiConfigComponent.tsx
-import { NotificationTypeEnum } from '@/app/components/support/NotificationContext';
 import { User } from "@/app/components/users/User";
 import { backendConfig } from "@/app/configs/BackendConfig";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
@@ -11,6 +10,7 @@ import { UserPreferences, userPreferences } from "@/app/configs/UserPreferences"
 import UserSettings from "@/app/configs/UserSettings";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import ErrorBoundary from "@/app/shared/ErrorBoundary";
 import { Form, Input } from "antd";

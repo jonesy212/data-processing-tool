@@ -1,16 +1,16 @@
 import { AxiosError } from "axios";
 import { ExchangeData } from "../components/models/data/ExchangeData";
 import { YourResponseType } from "../components/typings/types";
+import useSecureExchangeId from "../components/utils/useSecureExchangeId";
 import {
   apiNotificationMessages,
   fetchData,
   handleApiErrorAndNotify,
 } from "./ApiData";
-import useSecureExchangeId from "../components/utils/useSecureExchangeId";
 
 // Define your notification messages interface
 interface DataNotificationMessages {
-  FetchExchangeDataErrorId: keyof typeof apiNotificationMessages; // Ensure it matches your actual notification message ID
+  FETCH_EXCHANGE_DATA_ERROR: keyof typeof apiNotificationMessages; // Ensure it matches your actual notification message ID
   // Add more notification IDs as needed
 }
 

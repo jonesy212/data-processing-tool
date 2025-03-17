@@ -1,13 +1,14 @@
 // SnapshotMethods.ts
 import { BaseData, Data } from '@/app/components/models/data/Data';
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { StatusType } from '@/app/components/models/data/StatusType';
 import { Tag } from '@/app/components/models/tracker/Tag';
 import { ConfigureSnapshotStorePayload, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotItem } from '@/app/components/snapshots';
 import { SnapshotStoreProps } from '@/app/components/snapshots//useSnapshotStore';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { SnapshotWithCriteria } from ".";
@@ -28,7 +29,6 @@ import { Snapshot, SnapshotUnion, Snapshots } from "./LocalStorageSnapshotStore"
 import { default as SnapshotStore, default as SnapshotStoreReference } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotSubscriberManagement } from './SnapshotSubscriberManagement';
-import { T, K } from "@/app/components/models/data/dataStoreMethods";
 
 
 
@@ -188,7 +188,7 @@ interface SnapshotMethods<
     dataStore: DataStore<T, K>,
     dataStoreMethods: DataStoreMethods<T, K>,
     // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-    metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+    metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
     subscriberId: string, // Add subscriberId here
     endpointCategory: string | number, // Add endpointCategory here
     storeProps: SnapshotStoreProps<T, K>,

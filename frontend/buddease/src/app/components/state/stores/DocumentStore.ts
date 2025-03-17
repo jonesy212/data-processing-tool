@@ -1,10 +1,10 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { BaseData } from '@/app/components/models/data/Data';
-import { useNotification } from '@/app/components/support/NotificationContext';
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useMeta } from "@/app/configs/useMeta";
 import { useMetadata } from "@/app/configs/useMetadata";
+import { useNotification } from "@/app/context/NotificationContext";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { AxiosError } from "axios";
 import { makeAutoObservable } from "mobx";
@@ -24,6 +24,7 @@ import { AllTypes } from "../../typings/PropTypes";
 import { userService } from "../../users/ApiUser";
 import { UserRoleEnum } from "../../users/UserRoles";
 import { CustomComment } from "../redux/slices/BlogSlice";
+;
 
 
 type PhaseTypeEnums = ProgressPhase | ProjectPhaseTypeEnum | DocumentPhaseTypeEnum | undefined;
@@ -37,7 +38,7 @@ interface DocumentContent<
   eventId: string;
   content: Content<T, K>,
   meta: Meta; 
-  metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>; 
+  metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>; 
   // Add more properties as needed
 }
 
@@ -265,7 +266,7 @@ const useDocumentStore = <
       // Fetch document content from the backend based on the event ID
       const response = await axiosInstance.get(`/api/calendar-events/${eventId}/document-content`);
       const meta: StructuredMetadata<T, K> = useMeta<T, K>(area)
-      const metadata: UnifiedMetaDataOptions<T, K> = useMetadata<T, K>(area)
+      const metadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
     // Extract the content from the response data
     const content = response.data.content;
     

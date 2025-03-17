@@ -1,22 +1,23 @@
 // EventService.ts
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { Attachment } from '@/app/components/documents/Attachment/attachment'
-import { useMeta } from "@/app/configs/useMeta";
-import { createMeta } from "@/app/configs/metadata/createMetadataState";
-import { VersionHistory } from "@/app/components/versions/VersionData";
-import Version from "../versions/Version";
-import { useMetadata } from "@/app/configs/useMetadata";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { BaseData } from '@/app/components/models/data/Data';
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
+import { Snapshot } from '@/app/components/snapshots';
+import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
+import { VersionHistory } from "@/app/components/versions/VersionData";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { createMetaState } from '@/app/configs/metadata/createMetadataState';
+import { useMeta } from "@/app/configs/useMeta";
+import { useMetadata } from "@/app/configs/useMetadata";
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import {
     BaseSyntheticEvent,
     ModifierKey,
     MouseEvent,
     SyntheticEvent,
 } from "react";
-import { BaseData } from '@/app/components/models/data/Data';
-import { T, K, Meta, UserConfigData } from '@/app/components/models/data/dataStoreMethods';
 import { useDispatch, useSelector } from "react-redux";
 import { EventActions } from "../actions/EventActions";
 import { UIActions } from "../actions/UIActions";
@@ -27,12 +28,9 @@ import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { RootState } from "../state/redux/slices/RootSlice";
 import { implementThen } from "../state/stores/CommonEvent";
+import Version from "../versions/Version";
 import { VideoData } from "../video/Video";
 import { CustomEventExtension } from "./BaseCustomEvent";
-import { createMetaState } from '@/app/configs/metadata/createMetadataState';
-import { UserData } from '@/app/components/users/User';
-import { Snapshot } from '@/app/components/snapshots';
-import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 
 
 interface CustomMouseEvent<T = Element>
@@ -364,7 +362,7 @@ class EventService {
   ): CalendarEvent {
 
     const area = fetchUserAreaDimensions().toString()
-    const metadata: UnifiedMetaDataOptions<T, K<T>> = useMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>(area);
+    const metadata: UnifiedMetadata<T, K<T>> = useMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>(area);
     const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
 
     // Create a new CalendarEvent object with the provided parameters

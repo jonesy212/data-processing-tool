@@ -14,7 +14,7 @@ import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreCon
 import { data, SnapshotWithCriteria } from '@/app/components/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { subscriptionLevels } from '@/app/components/subscriptions/SubscriptionLevel';
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { ProjectMetadata, StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -81,8 +81,6 @@ interface RetentionPolicy {
   retainUntil: Date;
 }
 
-type TagsRecord = Record<string, string>;
-
 interface ConfigureSnapshotStorePayload<
   T extends BaseData<any>, 
   K extends T = T
@@ -119,7 +117,7 @@ interface SnapshotConfig<
   id: string | number;
   description?: string;
   category: Category;
-  metadata?: UnifiedMetaDataOptions<T, K>;
+  metadata?: UnifiedMetadata<T, K>;
   meta?: StructuredMetadata<T, K>;
   mappedSnapshot: Map<string, Snapshot<T, K>> | {}
   mappedMeta: Map<string, StructuredMetadata<T, K>> | Map<string, Snapshot<T, K>> | undefined;
@@ -162,7 +160,7 @@ function createSnapshotConfig<T extends  BaseData<any> = BaseData<any, any>, K e
   storeProps?: SnapshotStoreProps<T, K>,
   storeOptions?: SnapshotStoreOptions<T, K>,
   description?: string | null | undefined,
-  metadata?: UnifiedMetaDataOptions<T, K>,
+  metadata?: UnifiedMetadata<T, K>,
   title?: string,
   chatThreadName?: string,
   chatMessageId?: string,
@@ -682,7 +680,7 @@ const updateSubscribersAndSnapshots = async <
                 callback: (snapshotStore: SnapshotStore<T, K>) => void,
                 dataStore: DataStore<T, K>,
                 dataStoreMethods: DataStoreMethods<T, K>,
-                metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+                metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
                 subscriberId: string, // Add subscriberId here
                 endpointCategory: string | number,// Add endpointCategory here
                 storeProps: SnapshotStoreProps<T, K>,

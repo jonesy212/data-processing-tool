@@ -9,72 +9,95 @@ if (typeof window === 'undefined') {
 
 import { BaseData, SharedBaseData } from '@/app/components/models/data/Data';
 import * as path from 'path';
+
+import { Permission } from "@/app/components/users/Permission";
 import { useState } from 'react';
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import { LanguageEnum } from '../components/communications/LanguageEnum';
 import { Comment } from '../components/models/data/Comments';
 import { Data } from '../components/models/data/Data';
 import { K, T } from '../components/models/data/dataStoreMethods';
 import { Task } from '../components/models/tasks/Task';
-import { TagsRecord } from '../components/snapshots';
+import { TagsRecord } from '@/app/components/snapshots/SnapshotWithCriteria';
 import { CustomComment } from '../components/state/redux/slices/BlogSlice';
 import { Video } from '../components/state/stores/VideoStore';
 import { VersionData, VersionHistory } from '../components/versions/VersionData';
-import { b } from './BaseConfig';
+import { BaseConfig } from './BaseConfig';
 import { MyDataType } from './database/MetaDataOptions';
+import { Taggable } from '@/app/components/models/CommonData';
+import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
+import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { EventManager } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { SharedVersionData } from "../versions/VersionData";
 import { SharedMetadata } from './metadata/createMetadataState';
+import { SharedTimestamps, SharedStatusFlags, SharedIdentifiers } from '@/app/components/documents/RelatedProps'
+
+interface SpecificMetadata<T extends BaseData<any>, K extends T = T> {
+  tags?: TagsRecord<T, K> | string[] | undefined;
+}
+
+
+type TagsType<T extends BaseData<any>, K extends T = T> = TagsRecord<T, K> | string[] | undefined;
+
+type MetadataEntriesType<T extends BaseData<any>, K extends T = T> = {
+  [fileOrFolderId: string]: {
+    originalPath: string;
+    alternatePaths: string[];
+    author: string;
+    timestamp: Date | undefined;
+    fileType: string;
+    title: string;
+    description: string;
+    keywords: string[];
+    authors: string[];
+    contributors: string[];
+    publisher: string;
+    copyright: string;
+    license: string;
+    links: string[];
+    tags?: TagsType<T, K>;
+  };
+};
+
 
 // Define interfaces for metadata structures
+
 interface StructuredMetadata<
   T extends BaseData<any>,
   K extends T = T
-> extends BaseConfig<T, K>, SharedMetadata<K>, SharedBaseData<K>{
-  description?: string | undefined; // Must match BaseMetaDataOptions
-  fileType?: string; // Add this property to the top level
-  alternatePaths?: string[]; // Add this property to the top level
-  originalPath?: string; // Add this property to the top level
-  createdBy?: string | undefined;
-  metadataEntries: {
-    [fileOrFolderId: string]: {
-      originalPath: string;
-      alternatePaths: string[];
-      author: string;
-      timestamp: Date | undefined;
-      fileType: string;
-      title: string;
-      description: string;
-      keywords: string[];
-      authors: string[];
-      contributors: string[];
-      publisher: string;
-      copyright: string;
-      license: string;
-      links: string[];
-      tags: string[];
-    };
-  };
-
+> extends SharedTimestamps, SharedStatusFlags, SharedIdentifiers {
+  baseConfig: BaseConfig<T, K>;
+  sharedMetadata: SharedMetadata<K>;
+  sharedBaseData: SharedBaseData<K>;
+  taggable: Taggable<T, K>;
+  description?: string | undefined;
+  fileType?: string;
+  alternatePaths?: string[];
+  originalPath?: string;
+  metadataEntries: MetadataEntriesType<T, K>;
   keywords: string[];
   childIds?: K[];
   relatedData?: K[] | undefined;
-  version: Version<T, K>;// Added
-  version?: string | number | Version<T, K>; 
-  lastUpdated?: Date | VersionHistory; // Added
-  isActive: boolean; // Added
-  config: Record<string, any>; // Added
-  permissions: string[]; // Added
-  customFields: Record<string, any>; // Added
-  baseUrl?: string; // Added
-  versionData: string | VersionData | null; // Include versionData explicitly
-  latestVersion: VersionData; // Include latestVersion explicitly
+  version?: string | number | VersionImpl<T, K>;
+  lastUpdated?: VersionHistory;
+  permissions: Permission[];
+  customFields: Record<string, any>;
+  config?: Record<string, any>;
+  baseUrl?: string;
+  versionData: string | VersionData | null;
+  latestVersion: VersionData;
+  author: string;
 }
+
 
 interface VideoMetadata<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = never
-> extends BaseData<T, K>
- {
+> {
+  baseData: Omit<BaseData<T, K>, ExcludedFields>; // Include BaseData with excluded fields
+  metadata: StructuredMetadata<T, K>; // Explicitly include metadata
   title: string;
   url: string;
   duration: number;
@@ -90,7 +113,7 @@ interface VideoMetadata<
   frameRate: number
   views: number;
   likes: number;
-  comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
+  comments?: number | (Comment<T, K, StructuredMetadata<T, K>> | CustomComment)[] | undefined;
   resolution: string;
   aspectRatio: string;
   subtitles: boolean | string[];
@@ -109,6 +132,9 @@ interface VideoMetadata<
   thumbnailUrl: string;
   metadataSource: string;
   data: Data<T>; // Assuming Data is a custom data type
+
+  childIds: K[]; // Add childIds
+  relatedData: K[]; // Add relatedData
 }
 
 interface ProjectMetadata<
@@ -123,7 +149,7 @@ interface ProjectMetadata<
   budget: number;
   status: string;
   description?: string | undefined;
-  versionData: string | VersionData | [];
+  versionData: string | VersionData | null;
   teamMembers: string[];
   tasks: Task<T, K, Meta>[];
   milestones: string[];
@@ -132,6 +158,11 @@ interface ProjectMetadata<
   contributors: string[]
   links: string[]
   tags?: TagsRecord<T, K> | string[] | undefined
+
+  isActive: boolean;
+  permissions: Permission[];
+  customFields: Record<string, any>;
+  latestVersion: VersionData;
 }
 
 
@@ -153,23 +184,23 @@ function isValidMetadata<K>(entry: any): entry is K {
 }
 
 
-interface MetadataEntry {
-  originalPath: string;
-  alternatePaths: string[];
-  author: string;
-  timestamp: Date | undefined;
-  fileType: string;
-  title: string;
-  description: string;
-  keywords: string[];
-  authors: string[];
-  contributors: string[];
-  publisher: string;
-  copyright: string;
-  license: string;
-  links: string[];
-  tags?: TagsRecord<T, K<T>> | string[] | undefined;
-}
+  interface MetadataEntry {
+    originalPath: string;
+    alternatePaths: string[];
+    author: string;
+    timestamp: Date | undefined;
+    fileType: string;
+    title: string;
+    description: string;
+    keywords: string[];
+    authors: string[];
+    contributors: string[];
+    publisher: string;
+    copyright: string;
+    license: string;
+    links: string[];
+    tags?: TagsRecord<T, K<T>> | string[] | undefined;
+  }
 
 
 
@@ -178,13 +209,11 @@ function transformProjectToStructured<
   K extends T = T
 >(projectMetadata: ProjectMetadata<T, K>): StructuredMetadata<T, K> {
   
-   
     // Generate a project ID if it is undefined
     if (!projectMetadata.projectId) {
       projectMetadata.projectId = UniqueIDGenerator.generateProjectID("defaultProjectName");
     }
 
- 
   // Create metadata entries based on project metadata
   const metadataEntries: Record<string, MetadataEntry> = {};
 
@@ -217,6 +246,47 @@ function transformProjectToStructured<
     author: projectMetadata.teamMembers.length > 0 ? projectMetadata.teamMembers[0] : "Unknown",
     timestamp: new Date(), // Or the appropriate timestamp from projectMetadata
     keywords: projectMetadata.tasks.map(task => task.taskName), // Use task names as keywords
+    isActive: projectMetadata.isActive,
+    permissions: projectMetadata.permissions,
+    customFields: projectMetadata.customFields,
+    latestVersion: projectMetadata.latestVersion || null, 
+    baseConfig: {
+      // Provide necessary BaseConfig properties
+      id: projectMetadata.projectId?.toString() || "default-id",
+      apiEndpoint: "",
+      apiKey: undefined,
+      timeout: 0,
+      retryAttempts: 0,
+      name: projectMetadata.projectName,
+      description: projectMetadata.description,
+      latestVersion: projectMetadata.latestVersion,
+      category: "",
+      timestamp: new Date(),
+      createdBy: projectMetadata.teamMembers[0] || "Unknown",
+      metadata: {} as UnifiedMetadata<T, K>,
+      initialState: {} as InitializedState<T, K>,
+      meta: {} as StructuredMetadata<T, K>,
+      mappedSnapshot: new Map<string, Snapshot<T, K>>(),
+      events: {} as EventManager<T, K>,
+    },
+    sharedMetadata: {
+      version: projectMetadata.latestVersion?.version || "1.0",
+      lastUpdated: projectMetadata.lastUpdated,
+      isActive: projectMetadata.isActive,
+      config: {},
+      permissions: projectMetadata.permissions,
+      customFields: projectMetadata.customFields,
+      baseUrl: "",
+    },
+    sharedBaseData: {
+      childIds: [],
+      relatedData: [],
+    },
+    taggable: {
+      tags: projectMetadata.tags,
+      categories: [],
+      keywords: projectMetadata.tasks.map(task => task.taskName),
+    },
   };
 
   return structuredMetadata;
@@ -234,9 +304,13 @@ const projectMetadata: ProjectMetadata<BaseData, BaseData> = {
   milestones: [],
   videos: [],
   projectId: 0,
-  versionData: [],
+  versionData: null,
   contributors: [],
-  links: []
+  links: [],
+  isActive: true,
+  permissions: [],
+  customFields: [],
+  latestVersion: createLatestVersion(),
 };
 
 
@@ -314,10 +388,13 @@ function validateVideoMetadata<T extends BaseData<any>>(metadata: VideoMetadata<
   };
 }
 
+
+
+
 const videoMetadata: VideoMetadata<
-  MyDataType, K<MyDataType>,
-  StructuredMetadata<MyDataType, MyDataType>,
-  keyof MyDataType
+  MyDataType,
+  MyDataType,
+  keyof MyDataType 
 > = {
   title: "Example Video",
   url: "https://example.com/video",
@@ -360,8 +437,12 @@ const videoMetadata: VideoMetadata<
   chapters: [],
   thumbnailUrl: '',
   metadataSource: '',
+
+  baseData: [],
+  metadata: {} as StructuredMetadata<MyDataType, MyDataType>,
   childIds: [],
-  relatedData: []
+  relatedData: [],
+ 
 };
 
 
@@ -369,5 +450,5 @@ const validatedVideoMetadata = validateVideoMetadata(videoMetadata);
 
 
 export { getStructureMetadataPath, projectMetadata, transformProjectToStructured, useUndoRedo, videoMetadata };
-export type { MetadataEntry, ProjectMetadata, StructuredMetadata, VideoMetadata };
+export type { MetadataEntry, MetadataEntriesType, ProjectMetadata, StructuredMetadata, VideoMetadata };
  

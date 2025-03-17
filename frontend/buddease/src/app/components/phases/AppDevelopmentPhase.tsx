@@ -1,4 +1,4 @@
-import { useNotification } from '@/app/components/support/NotificationContext';
+import { useNotification } from "@/app/context/NotificationContext";
 import React, { useState } from "react";
 import FeatureImplementationSubPhase from "../../pages/onboarding/FeatureImplementationSubPhase";
 import InitialSetupSubPhase from "../../pages/onboarding/InitialSetupSubPhase";

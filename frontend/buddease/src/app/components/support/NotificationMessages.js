@@ -22,6 +22,8 @@ var setDynamicNotificationMessageWrapper = function (message, errorType, details
     // Your implementation of setDynamicNotificationMessage
     console.log(dynamicMessage); // For demonstration purposes, replace with your implementation
 };
+
+
 const NOTIFICATION_MESSAGES = {
     Fetch_Notification_Defaults: {
         success: "Notifications fetched successfully",
@@ -79,6 +81,13 @@ const NOTIFICATION_MESSAGES = {
         FETCH_COMPONENTS_FAILURE: "Error fetching components. Please try again",
         ADD_COMPONENT_SUCCESS: "Component added successfully",
     },
+    Config: {
+        CONFIG_UPDATED: "API configuration updated successfully",
+        CONFIG_ROLLEDBACK: "API configuration rolled back to default.",
+    },
+    Cache: {
+        ERROR_WRITING_TO_CACHE: "Error writing to cache"
+    },
     Client: {
         FETCH_CLIENT_DETAILS_SUCCESS: "Client updated successfully",
         FETCH_CLIENT_DETAILS_ERROR: "Client failed to update client",
@@ -93,6 +102,18 @@ const NOTIFICATION_MESSAGES = {
         LIST_MESSAGES_ERROR: "List messages to tenant",
         LIST_REWARDS_ERROR: "List rewards not sent to tenant, review issue",
         PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR: "List components that are currently associated with a cluster",
+        LIST_FILES_ERROR: 'List files that are currently associated with a cluster.',
+        GET_FILE_CONTENT_: 'Get file content',
+        START_COLLABORATIVE_EDIT_ERROR: 'Start coll Anonymous editor',
+        CREATE_FILE_VERSION_ERROR: 'Create file version',
+        RECEIVE_FILE_UPDATE_ERROR: 'Receive file update',
+        FETCH_FILE_VERSIONS_ERROR: 'Fetch file versions',
+        SHARE_FILE_ERROR: 'Share file contents from another cluster',
+        REQUEST_ACCESS_TO_FILE_ERROR: 'Request access to file error',
+        EXPORT_FILE_ERROR: 'Exports file error from another cluster',
+        ARCHIVE_FILE_ERROR: 'Archive file error from another cluster',
+        DETERMINE_FILE_TYPE_ERROR: 'Determining file type is causing an error',
+        IMPORT_FILE_ERROR: 'Import file error'
     },
     Crypto: {
         DEFAULT: "Error reading crypto configuration file",
@@ -207,6 +228,10 @@ const NOTIFICATION_MESSAGES = {
         TAKEN: "Name is already taken",
         // other details messages
     },
+    DEX: {
+        FETCH_DEX_DATA_ERROR: "Error fetching dex data",
+        FETCH_EXCHANGE_DATA_ERROR: "Error fetching exchange data",
+    },
     Document: {
         UPDATE_DOCUMENT_ERROR: "Error updating document",
         SORT_DOCUMENT_SUCCESS: "Documents have been sorted",
@@ -247,6 +272,7 @@ const NOTIFICATION_MESSAGES = {
         ONBOARDING_ERROR: "Error in the onboarding process. Please try again",
         ERROR_FETCHING_TASK: "Error fetching task. Please try again",
         TASK_NOT_FOUND: "Task not found",
+        FETCH_HIGHLIGHTS_ERROR: "Error fetching highlighting"
     },
     // Event-related
     EventReminder: {
@@ -653,6 +679,9 @@ const NOTIFICATION_MESSAGES = {
         FORMAT_ERROR: "Format error. Please enter data in the correct format.",
         // Add more validation error messages as needed
     },
+    Version: {
+        GENERATE_VERSION_ERROR_ID: "Generate version error ID",
+    },
     Video: {
         DEFAULT: "Error in Videos",
         ADD_VIDEO_SUCCESS: "Video added successfully",
@@ -666,6 +695,7 @@ const NOTIFICATION_MESSAGES = {
         CREATE_VIDEO_ERROR: "Error creating video. Please try again",
         FETCH_VIDEO_SUCCESS: "Video fetched successfully",
         FETCH_VIDEO_ERROR: "Error fetching video. Please try again",
+        FETCH_VIDEOS_ERROR: "Error fetching video. Please try again",
         UPDATE_VIDEO_SUCCESS: "Video updated successfully",
         UPDATE_VIDEO_ERROR: "Error updating video. Please try again",
         ADD_VIDEO_ERROR: "Error adding video. Please try again",

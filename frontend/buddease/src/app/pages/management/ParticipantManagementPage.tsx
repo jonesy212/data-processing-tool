@@ -2,7 +2,7 @@ import RootLayout from "@/app/RootLayout";
 import { ParticipantActions } from "@/app/components/actions/ParticipantActions";
 import { ToolbarActions } from "@/app/components/actions/ToolbarActions";
 import { MobXRootState} from "@/app/components/state/stores/RootStores";
-import { NotificationTypeEnum } from "@/app/components/support/NotificationContext";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { User } from "@/app/components/users/User";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import React, { useEffect } from "react";

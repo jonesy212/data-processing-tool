@@ -1,7 +1,8 @@
 //CalendarEvent.ts
 import { Label } from '@/app/components/projects/branding/BrandingSettings';
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { NotificationType } from '@/app/context/NotificationContext';
 import { CalendarEventWithCriteria } from "@/app/pages/searchs/FilterCriteria";
 import { DocumentOptions } from "../documents/DocumentOptions";
 import { CommonData } from "../models/CommonDetails";
@@ -13,8 +14,8 @@ import { Snapshot, TagsRecord } from "../snapshots";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import CommonEvent from "../state/stores/CommonEvent";
 import { AllStatus } from "../state/stores/DetailsListStore";
-import { NotificationType } from "../support/NotificationContext";
 import { Attendee } from "./Attendee";
+;
 
 interface CalendarEvent<
   T extends  BaseData<any> = BaseData,
@@ -64,7 +65,7 @@ interface CalendarEvent<
   pinned?: boolean;
   archived?: boolean;
   documentReleased?: boolean;
-  metadata?: UnifiedMetaDataOptions<T, K>
+  metadata?: UnifiedMetadata<T, K>
   getSnapshotStoreData?: () => Promise<CalendarEventWithCriteria[]> ;
 
   
@@ -101,3 +102,4 @@ const calendarEvent: CalendarEvent = {
 
 export { calendarEvent };
 export type { CalendarEvent };
+

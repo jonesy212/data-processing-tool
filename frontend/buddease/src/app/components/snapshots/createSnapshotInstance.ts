@@ -1,8 +1,7 @@
 // createSnapshotInstance.ts
-import { SnapshotOperation } from '.';
 import * as snapshotApi from '@/app/api/SnapshotApi';
+import { SnapshotOperation } from '.';
 
-import { internalCache } from './../../utils/InternalCache';
 import { getSnapshotConfig, getSnapshotId } from '@/app/api/SnapshotApi';
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { InitializedState, useDataStore } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
@@ -12,7 +11,7 @@ import { ConfigureSnapshotStorePayload } from '@/app/components/snapshots/Snapsh
 import { getCategory } from '@/app/components/snapshots/snapshotContainerUtils';
 import { SnapshotStoreOptions } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { addToSnapshotList } from '@/app/components/utils/snapshotUtils';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { CombinedEvents, SnapshotManager } from '../hooks/useSnapshotManager';
@@ -22,6 +21,7 @@ import { StatusType } from "../models/data/StatusType";
 import { DataStore } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Subscriber } from "../users/Subscriber";
 import { isSnapshot } from "../utils/snapshotUtils";
+import { internalCache } from './../../utils/InternalCache';
 import { createBaseSnapshot } from "./createBaseSnapshot";
 import { SimulatedDataSource } from "./createSnapshotOptions";
 import { getCurrentSnapshotStoreOptions, isSnapshotsArray } from './createSnapshotStoreOptions';
@@ -30,6 +30,7 @@ import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarMan
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { SnapshotData, SnapshotOperationType } from '.';
 import { SnapshotWithData } from '../calendar/CalendarApp';
+import { Payload } from '../database/Payload';
 import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
 import { displayToast } from '../models/display/ShowToast';
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
@@ -38,14 +39,14 @@ import { Subscription } from '../subscriptions/Subscription';
 import { NotificationTypeEnum } from '../support/NotificationContext';
 import useSecureStoreId from '../utils/useSecureStoreId';
 import {
-    CoreSnapshot,
+  CoreSnapshot,
 
-    Result,
+  Result,
 
-    Snapshot,
-    Snapshots,
-    SnapshotsArray,
-    SnapshotUnion,
+  Snapshot,
+  Snapshots,
+  SnapshotsArray,
+  SnapshotUnion,
 } from "./LocalStorageSnapshotStore";
 import { SnapshotActionType } from './SnapshotActionType';
 import { SnapshotConfig } from './SnapshotConfig';
@@ -60,7 +61,6 @@ import { InitializedDataStore } from './SnapshotStoreOptions';
 import { data, SnapshotWithCriteria } from './SnapshotWithCriteria';
 import { Callback } from './subscribeToSnapshotsImplementation';
 import { SnapshotStoreProps } from './useSnapshotStore';
-import { Payload } from '../database/Payload';
 
 
 function flatMap<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
@@ -188,7 +188,7 @@ const createSnapshotInstance = <
         callback: (snapshotStore: SnapshotStore<T, K>) => void,
         dataStore: DataStore<T, K>,
         dataStoreMethods: DataStoreMethods<T, K>,
-        metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+        metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
         subscriberId: string, // Add subscriberId here
         endpointCategory: string | number,// Add endpointCategory here
         storeProps: SnapshotStoreProps<T, K>,

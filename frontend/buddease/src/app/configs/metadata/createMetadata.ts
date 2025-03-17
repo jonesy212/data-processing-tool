@@ -1,6 +1,6 @@
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { EventManager, InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { BaseData } from "../../components/models/data/Data";
 
 interface DashboardMeta<T extends BaseData<any>, K extends T = T>
@@ -22,7 +22,7 @@ K extends T = T,
 Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
 ExcludedFields extends keyof T = never
 >(
-options: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>
+options: UnifiedMetadata<T, K, Meta, ExcludedFields>
 ): Meta => {
   const defaultMeta: StructuredMetadata<T, K> = {
     id: "default-id",

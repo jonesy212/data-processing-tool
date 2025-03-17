@@ -1,6 +1,6 @@
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 import { AnimationLogger, FileLogger } from "@/app/components/logging/Logger";
-import { useNotification } from "@/app/components/support/NotificationContext";
+import { useNotification } from "@/app/context/NotificationContext";
 const { handleError } = useErrorHandling(); // Integrate error handling
 
 /**

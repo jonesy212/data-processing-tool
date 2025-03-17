@@ -27,7 +27,7 @@ import { UpdateSnapshotPayload } from "@/app/components/database/Payload";
 
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { storeProps } from "../snapshots/SnapshotStoreProps";
-import { default as CalendarEvent, default as CalendarManagerStoreClass, updateCallback } from "../state/stores/CalendarEvent";
+import { default as CalendarEvent, default as CalendarManagerStoreClass, updateCallback } from '@/app/components/calendar/CalendarEvent';
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { rootStores } from "../state/stores/RootStores";
 import useTrackerStore from "../state/stores/TrackerStore";
@@ -109,7 +109,7 @@ const categoryHooks: { [category: string]: string[] } = {
 export interface YourComponentProps {
   children: React.ReactNode;
   apiConfig: ApiConfig;
-  description: string
+  description?: string
   updateSnapshot: (
     snapshotId: string,
     data: any,
@@ -135,8 +135,6 @@ const updateSnapshotMethod = (
   // Implementation of the updateSnapshot logic
   return Promise.resolve();
 };
-
-
 
 // Assuming CalendarManagerStoreClass has a constructor that takes a snapshot as input
 const records: Record<string, CalendarManagerStoreClass<BaseData<any>, K<T>>[]> = 
@@ -292,7 +290,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
     };
 
     
-    const snapshotStore = new SnapshotStore<BaseData, K>({
+    const snapshotStore = new SnapshotStore<BaseData, K<T>>({
       storeId, name, version, schema, options, category, config, operation, expirationDate,
       payload: mappedPayload, callback, storeProps, endpointCategory, initialState
     });
@@ -485,8 +483,8 @@ export default YourComponent;
 
 const { callback, payload, endpointCategory} = storeProps as SnapshotStoreProps<T, K<T>>
 const events: Record<string, CalendarEvent<T, K<T>>[]> = {};
-const storeData = new SnapshotStore<T, K<T>>({ storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory, storeId });
-const data: Data= {
+const storeData = new SnapshotStore<T, K<T>>({ storeId, name, initialState, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory, storeId });
+const data: Data<T, K<T>, Meta>= {
   title: "",
   category: "",
   description: "",

@@ -1,4 +1,3 @@
-import { Attachment } from '@/app/components/documents/Attachment/attachment'
 import { handleApiError } from '@/app/api/ApiLogs';
 import { BaseData } from '@/app/components/models/data/Data';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
@@ -14,7 +13,6 @@ import axiosInstance from './axiosInstance';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.tasks.list;
-
 
 interface TaskNotificationMessages {
   FETCH_TASKS_SUCCESS: string;

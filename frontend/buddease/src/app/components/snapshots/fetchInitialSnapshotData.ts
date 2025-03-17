@@ -1,6 +1,6 @@
 // fetchInitialSnapshotData.ts
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Data } from "../models/data/Data";

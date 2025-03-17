@@ -1,7 +1,7 @@
 import { useAuth } from '@/app/components/auth/AuthContext';
 import { Data } from '@/app/components/models/data/Data';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
-import { useNotification } from '@/app/components/support/NotificationContext';
+import { useNotification } from "@/app/context/NotificationContext";
 import { fetchDataWithToken } from '@/app/components/users/ExternalApiAuth';
 import React, { useState } from 'react';
 import generateTimeBasedCode from '../../components/models/realtime/TimeBasedCodeGenerator';

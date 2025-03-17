@@ -1,10 +1,9 @@
 // convertSnapshot.ts
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { SnapshotDataType } from '@/app/components/snapshots';
-import { PriorityTypeEnum } from "../components/models/data/StatusType";
 import { SnapshotData } from '@/app/components/snapshots/SnapshotData';
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
-import { UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
 import { Category } from "../libraries/categories/generateCategoryProperties";
@@ -110,7 +109,7 @@ function convertSnapshot<
             callback: (snapshotStore: SnapshotStore<T, K>) => void,
             dataStore: DataStore<T, K>,
             dataStoreMethods: DataStoreMethods<T, K>,
-            metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+            metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
             subscriberId: string,
             endpointCategory: string | number,
             storeProps: SnapshotStoreProps<T, K>,
@@ -158,7 +157,7 @@ function convertSnapshot<
                   callback: (snapshotStore: SnapshotStore<T, K>) => void,
                   dataStore: DataStore<T, K>,
                   dataStoreMethods: DataStoreMethods<T, K>,
-                  metadata: UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>,
+                  metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
                   subscriberId: string,
                   endpointCategory: string | number,
                   storeProps: SnapshotStoreProps<T, K>,
@@ -210,7 +209,7 @@ function convertSnapshot<
       });
 
       
-      const defaultMetadata: UnifiedMetaDataOptions<T, K> = {
+      const defaultMetadata: UnifiedMetadata<T, K> = {
         // Assigning project-related properties to `projectMetadata`
         projectMetadata: {
           startDate: snapshot.store.startDate || undefined,
