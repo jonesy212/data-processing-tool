@@ -2,10 +2,30 @@
 import * as React from 'react';
 import { createContext, ReactNode, useContext } from 'react';
 import NotificationStore from '../components/state/stores/NotificationStore';
-import { NotificationContextProps } from "@/app/context/NotificationContext";
+import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
+import { PriorityTypeEnum, NotificationPosition } from "@/app/components/models/data/StatusType";
 
 interface NotificationProviderProps {
   children: ReactNode;
+}
+
+
+interface NotificationOptions {
+  dataId?: string;
+  error?: string;
+}
+
+interface NotificationContextProps {
+  notify: (
+    id: string,
+    message: string,
+    notificationOptions: NotificationOptions,
+    date: Date,
+    type: NotificationTypeEnum,
+    position: NotificationPosition
+  ) => void;
+  setDuration: (duration: number) => void;
+  setNotifications: (notifications: Notification[]) => void;
 }
  
 type CustomNotificationType = "RandomDismiss";
@@ -18,6 +38,7 @@ type NotificationType =
 
 enum NotificationTypeEnum {
   AccountCreated = "AccountCreated",
+  AppVersion = "AppVersion",
   AnalyticsID = "AnalyticsID",
   Announcement = "Announcement",
   AssignmentOperation = "AssignmentOperation",
@@ -120,16 +141,6 @@ const useNotification = () => {
   };
 };
 
-
-export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
-  const notificationStore = new NotificationStore();
-  return (
-    <NotificationContext.Provider value={notificationStore}>
-      {children}
-    </NotificationContext.Provider>
-  );
-};
-
 export const useNotificationStore = (): NotificationStore => {
   const context = useContext(NotificationContext);
   if (context === null) {
@@ -138,4 +149,5 @@ export const useNotificationStore = (): NotificationStore => {
   return context;
 };
  
-export { useNotification, NotificationTypeEnum, NotificationType }
+export { useNotification, NotificationTypeEnum }
+export type { NotificationType, NotificationContextProps }

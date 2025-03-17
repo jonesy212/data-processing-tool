@@ -50,6 +50,7 @@ class ConfigManager {
     this.currentConfig = { ...this.currentConfig, ...sanitizedConfig };
     // Notify about config update
     this.notificationContext.notify(
+      // "configId",
       "Config Updated",
       "API configuration updated successfully.",
       new Date,
@@ -62,6 +63,7 @@ class ConfigManager {
     this.currentConfig = { ...defaultConfig };
     // Notify about config rollback
     this.notificationContext.notify(
+      // "config rollback",
       "Config Rolled Back",
       "API configuration rolled back to default.",
       new Date,

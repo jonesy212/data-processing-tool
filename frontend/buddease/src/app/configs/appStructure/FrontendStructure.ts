@@ -1,4 +1,5 @@
 import { Permission } from '@/app/components/users/Permission';
+import UserRoles from '@/app/components/users/UserRoles';
 import axiosInstance from "@/app/api/axiosInstance";
 import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
 import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
@@ -30,6 +31,9 @@ type UserConfigDataWithArgs = UserConfigData<UserData, UserData, StructuredMetad
 
 
 const userConfigData: UserConfigData<MyData, MyExtendedData, MyMetadata> = {
+  username: 'username',
+  storeId: 0, 
+  role: UserRoles.Administrator,
   settings: { /* UserSettings object */ },
   enabledFeatures: ["feature1", "feature2"],
   userSpecificData: { customField: "value", additionalField: 123 },
@@ -353,7 +357,6 @@ export default class FrontendStructure<T extends BaseData<any>, K extends T = T>
       
     // Use currentVersion if needed
     const currentVersion = latestVersionData.version;
-
       return {
         id,
         name,

@@ -100,7 +100,7 @@ export function fetchDataAnalysis<
 
   return axiosInstance
     .get<YourResponseType<T, K, Meta> | Snapshot<T, K, Meta>>(fetchDataAnalysisEndpoint, config)
-    .then((response: AxiosResponse<YourResponseType<T, K, Meta,>> | Snapshot<T, K, Meta, , never>>) => {
+    .then((response: AxiosResponse<YourResponseType<T, K, Meta>| Snapshot<T, K, Meta, never>>) => {
       const data = response.data;
 
       if (isSnapshotStore<T, K, Meta>(data)) {
@@ -574,7 +574,7 @@ export const fetchAnalysisResults = <
   .catch((error) => {
     handleDataAnalysisApiErrorAndNotify(
       error as AxiosError<unknown>,
-      NOTIFICATION_MESSAGES.errorMessage.FETCH_ANALYSIS_RESULTS_ERROR,
+      NOTIFICATION_MESSAGES.DataAnalysis.FETCH_ANALYSIS_RESULTS_ERROR,
       "FETCH_ANALYSIS_RESULTS_ERROR"
     );
     return Promise.reject(error);

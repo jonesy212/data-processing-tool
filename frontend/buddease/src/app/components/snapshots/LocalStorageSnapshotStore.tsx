@@ -156,7 +156,7 @@ type SnapshotsObject<
 };
 
 type SnapshotsArray<
-  T extends BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>,
+  T extends BaseData<any, any, any, Attachment>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > = Array<SnapshotUnion<T, K, Meta>>;
@@ -381,14 +381,14 @@ interface Snapshot<
   snapshotContainer: SnapshotContainer<T, K> | undefined | null;
 
   getSnapshotItems: (
-    category: symbol | string | Category | undefined,
-    
-     SnapshotsArray<T, K>
+    category: symbol | string | Category | undefined, 
+    snapshots: SnapshotsArray<T, K>
   ) => (
-    | SnapshotItem<Data<T, K, Meta>, any>
+    | SnapshotItem<T, K>
     | SnapshotStoreConfig<T, K>
     | undefined
   )[];
+
 
   defaultSubscribeToSnapshots: (
     snapshotId: string,

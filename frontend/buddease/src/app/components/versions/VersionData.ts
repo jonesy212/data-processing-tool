@@ -75,7 +75,7 @@ interface ExtendedVersionData {
     // Add other metadata fields as needed
   };
   comments: (Comment<T, K<T>, StructuredMetadata<T, K<T>>> | CustomComment)[] | undefined;
-  releaseDate?: string;
+  releaseDate?: string | Date;
   lastUpdated: Date | VersionHistory;
   buildVersions?: BuildVersion | undefined;
   versionData?: string | VersionData<T, K<T>> | null;

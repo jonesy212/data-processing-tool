@@ -97,6 +97,7 @@ const NOTIFICATION_MESSAGES = {
         SUBMIT_PROJECT_PROPOSAL_ERROR: "Project requested to submit project proposal failed",
         UPDATE_CLIENT_DETAILS_SUCCESS: "Client updated successfully",
         UPDATE_CLIENT_DETAILS_ERROR: "Update client details failed",
+        REMOVE_CALENDAR_EVENT_ERROR: "Remove event failed",
         SEND_MESSAGE_TO_TENANT_ERROR: "Send message to tenant",
         LIST_CONNECTED_TENANTS_ERROR: "List available tenant",
         LIST_MESSAGES_ERROR: "List messages to tenant",
@@ -207,6 +208,9 @@ const NOTIFICATION_MESSAGES = {
         SET_DATA_ANALYSIS_PHASE_SUCCESS: "Data analysis phase set successfully",
         SET_DATA_ANALYSIS_PHASE_ERROR: "Error setting data analysis phase. Please try again",
         SET_DATA_ANALYSIS_PHASE_ERROR_INVALID_PHASE: "Invalid data analysis phase. Please try again",
+        ANALYZE_DATA_SUCCESS: "Success analyzing data",
+        ANALYZE_DATA_ERROR: "Error tryiing to analyze data",
+        FETCH_ANALYSIS_RESULTS_ERROR: "Error fetching data analysis results", 
         // Add more messages for the DataAnalysis type
         // You can customize the messages based on your application's needs
     },
@@ -275,9 +279,15 @@ const NOTIFICATION_MESSAGES = {
         FETCH_HIGHLIGHTS_ERROR: "Error fetching highlighting"
     },
     // Event-related
-    EventReminder: {
+    Event: {
         DEFAULT: "Event reminder",
         EVENT_OCCURRED: "An event has occurred",
+        FETCH_EVENT_DETAILS_SUCCESS: "Event details have been fetched successfully",
+        FETCH_EVENT_DETAILS_ERROR: "Error fetching vent details",
+        CREATE_EVENT_SUCCESS: "Event created successfully",
+        CREATE_EVENT_ERROR: "Error creating event",
+        FETCH_EVENT_DATA_ERROR_ID: "Event data error",
+        CREATE_EVENT_DATA_ERROR_ID: "Error creating event data"
         // Add more messages for the EventReminder type
     },
     FeatureToggle: {

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import Notification from '../notifications/Notification';
 import { useThemeConfig } from '../hooks/userInterface/ThemeConfigContext';
 import { selectNotifications } from '../support/NofiticationsSlice';
-import { NotificationType } from '../support/NotificationContext';
+import { NotificationType } from '@/app/context/NotificationContext';
 import NotificationComponent from '../notifications/NotificationComponent';
 import { NotificationProps } from '../typings/PropTypes';
 
@@ -12,7 +12,7 @@ const NotificationDisplay: React.FC = () => {
   // Get notifications from Redux state
   const notifications = useSelector(selectNotifications) as NotificationProps[];
   // Get theme configuration from the context
-  const { fontSize, fontColor, backgroundColor } = useThemeConfig();
+  const { fontSize, fontColor, backgroundColor, themeConfig } = useThemeConfig();
 
   return (
     <div className="notification-container">
@@ -27,6 +27,7 @@ const NotificationDisplay: React.FC = () => {
           fontSize={fontSize}
           notifications={notifications}
           type={notification.type}
+          themeConfig={themeConfig}
         />
       ))}
     </div>

@@ -132,7 +132,7 @@ class CalendarApiService {
       id: UniqueIDGenerator.generateID(
         "newCalendarEventSuccess",
         "calendar-event",
-        NotificationTypeEnum.Event,
+        NotificationTypeEnum.EventOccurred,
         "EventCreation" as NotificationType
       ),
       title: "", // Initialize title as an empty string or provide a default value

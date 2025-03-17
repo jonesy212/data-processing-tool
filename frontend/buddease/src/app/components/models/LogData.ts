@@ -29,7 +29,7 @@ interface LogData<
   delivered: Date | null,
   opened: Date | null,
   clicked: Date | null,
-  responded: boolean,
+  responded: boolean | null,
   responseTime: Date | null,
   eventData: DefaultCalendarEvent | null, // todo verify
   topics: string[] | undefined,

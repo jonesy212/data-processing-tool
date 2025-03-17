@@ -137,7 +137,7 @@ interface YourResponseType<
   DataWithComment<T>,
   SearchNotesResponse {
   id?: string;
-  forEach?: (arg0: (notification: import("../support/NofiticationsSlice").NotificationData) => void) => void;
+  forEach?: (arg0: (notification: import("../support/NofiticationsSlice").NotificationData<T, K, Meta>) => void) => void;
   length?: number;
   // pageNumber: number
   calendarEvents: CalendarEvent[]; // Assuming CalendarEvent is a type/interface for calendar events

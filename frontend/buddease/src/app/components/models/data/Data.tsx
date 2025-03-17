@@ -261,7 +261,6 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
 };
 
 
-
 const area = fetchUserAreaDimensions().toString()
 const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
 const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
@@ -452,7 +451,9 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
     },
     currentMetadata: currentMetadata,
     currentMeta: currentMeta, 
-  }, additionalData: {},  ideas: [],
+  }, 
+  additionalData: {},  
+  ideas: [],
   members: [],
   leader: {
     id: "leader1",
@@ -867,6 +868,7 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
     // enableGroupManagement: true,
     // enableTeamManagement: false,
     // idleTimeout: undefined,
+    
     bannerUrl: "",
     interests: [],
     privacySettings: {
@@ -1465,7 +1467,6 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
     BaseData<any, any, StructuredMetadata<any, any>>>>[]> {
     return Promise.resolve([]);
   },
-
   metadata: {
     version: "",
     permissions: [],
@@ -1494,4 +1495,4 @@ export type {
 // Clean the coreData to replace empty strings with null
 const cleanedCoreData = cleanEmptyStrings(coreData);
 
-  export { cleanedCoreData };
+export { cleanedCoreData, coreData };

@@ -1,7 +1,9 @@
 import { action, makeObservable, observable } from 'mobx';
 import { createContext } from 'react';
 import { NotificationData } from '../../support/NofiticationsSlice';
-import { NotificationContextProps, NotificationTypeEnum } from '@/app/context/support/NotificationContext';
+import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { NotificationContextProps, NotificationTypeEnum } from '@/app/context/NotificationContext';
+import { T, K } from '@/app/components/models/data/dataStoreMethods';
 
 // Define the type for notification messages
 interface NotificationMessages {
@@ -39,7 +41,7 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
 };
 
 class NotificationStore {
-  @observable notifications: NotificationData[] = [];
+  @observable notifications: NotificationData<T, K<T>>[] = [];
   @observable setNotifications: NotificationContextProps['setNotifications'] = () => {};
   constructor() {
     makeObservable(this);
@@ -51,7 +53,7 @@ class NotificationStore {
   };
 
   @action
-  addNotification = (notification: NotificationData) => {
+  addNotification = (notification: NotificationData<T, K<T>>) => {
     this.notifications.push(notification);
   };
 
@@ -103,11 +105,21 @@ class NotificationStore {
         clicked: null,
         responded: null,
         date: new Date(),
+        isSent: false,
+        isDelivered: false,
+        responseTime: new Date(),
+        eventData: {},
+       
+        topics: [],
+        highlights: [],
+        files: [],
+        meta: new Map(),
+       
       },
       topics: [],
       highlights: [],
       files: [],
-      meta: "",
+      meta: {},
     });
   };
 

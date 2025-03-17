@@ -975,8 +975,14 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
 generateComponent("MyDataVizComponent", "DataVisualization", { dataProperties: ["data"], chartType: "bar" }, dataVisualizationProperties);
 export {
     categorizeNews,
-    dataVisualizationProperties, generateComponent, generateFormsComponent, generateNewsCategories, generateNewsComponent, generateUserJourneyComponent, generateUserJourneyMapComponent, generateUserScenarioComponent, generateUserScenarioMapComponent
+    defaultCategoryProperties,
+    dataVisualizationProperties, generateComponent, 
+    generateFormsComponent, generateNewsCategories, 
+    generateNewsComponent, generateUserJourneyComponent, 
+    generateUserJourneyMapComponent, 
+    generateUserScenarioComponent, generateUserScenarioMapComponent
 };
+
 export type { CategoryProperties };
 
 // Example usage of categories

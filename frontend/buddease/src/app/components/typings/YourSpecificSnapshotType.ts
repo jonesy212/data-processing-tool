@@ -2,7 +2,7 @@ import { createSnapshot, getSnapshotContainer, getSnapshotId } from "@/app/api/S
 import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { Subscriber } from '@/app/components/users/Subscriber';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { categoryProperties, CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { defaultCategoryProperties, CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { useContext } from "react";
 import { CombinedEvents } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
@@ -48,11 +48,42 @@ class YourSpecificSnapshotType <
   meta: StructuredMetadata<T, K>
   events: CombinedEvents<T, K>
   
+
+
+  // Additional required properties from Snapshot<T, K>
+  dataObject: any = {};
+  deleted: boolean = false;
+  initialState: InitializedState<T, K> | {} = {};
+  isCore: boolean = false;
+  initialConfig: InitializedConfig | {} = {};
+  properties?: T | K;
+  snapshotsArray?: SnapshotsArray<T, K>;
+  snapshotsObject?: SnapshotsObject<T, K>;
+  recentActivity?: { action: string; timestamp: Date }[];
+  onInitialize: (callback: () => void) => void = () => {};
+  onError: any = null;
+  categories?: Category[];
+  taskIdToAssign: string | undefined;
+  schema: string | Record<string, SchemaField> = {};
+  currentCategory: Category = { id: "", name: "" };
+  mappedSnapshotData: Map<string, Snapshot<T, K>> | undefined;
+  storeId: number = 0;
+  versionInfo: ExtendedVersionData | null = null;
+  initializedState: InitializedState<T, K> | {} = {};
+  criteria: CriteriaType | undefined;
+  relationships?: Map<string, K>;
+  storeConfig?: SnapshotStoreConfig<T, K>;
+  additionalData?: CustomSnapshotData<T>;
+  dataStores?: DataStore<T, K, Meta>[];
+  snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null;
+  snapshotStoreConfigSearch?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, SnapshotWithCriteria<any, BaseData>> | null;
+  snapshotContainer: SnapshotContainer<T, K> | undefined | null;
+
   constructor(
     id: string,
     mappedData: Map<string, Snapshot<T, K>>,
     data: InitializedData<T> | undefined,
-    meta: Snapshot<T, K, StructuredMetadata<T, K>, ExcludedFields>,
+    meta: Meta,
     events?: CombinedEvents<T, K>) {
     this.id = id;
     this.data = data;
@@ -81,6 +112,56 @@ class YourSpecificSnapshotType <
     this.data = data;
     // Additional logic if necessary
   }
+
+  snapshot(
+    id: string | number | undefined,
+    snapshotData: SnapshotData<T, K>,
+    category: symbol | string | Category | undefined,
+    categoryProperties: CategoryProperties | undefined,
+    callback: (snapshotStore: SnapshotStore<T, K>) => void,
+    dataStore: DataStore<T, K>,
+    dataStoreMethods: DataStoreMethods<T, K>,
+    metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
+    subscriberId: string,
+    endpointCategory: string | number,
+    storeProps: SnapshotStoreProps<T, K>,
+    snapshotConfigData: SnapshotConfig<T, K>,
+    subscription: Subscription<T, K>,
+    snapshotId?: string | number | null,
+    snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
+    snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
+  ): Snapshot<T, K> | Promise<{ snapshot: Snapshot<T, K> }> {
+    // Placeholder implementation
+    return Promise.resolve({ snapshot: this });
+  }
+
+  setCategory(category: symbol | string | Category | undefined): void {
+    // Placeholder implementation
+  }
+
+  applyStoreConfig(
+    snapshotStoreConfig: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> | undefined
+  ): void {
+    // Placeholder implementation
+  }
+
+  generateId(
+    prefix: string,
+    name: string,
+    type: NotificationTypeEnum,
+    id?: string,
+    title?: string,
+    chatThreadName?: string,
+    chatMessageId?: string,
+    chatThreadId?: string,
+    dataDetails?: DataDetails<T, K>,
+    generatorType?: string
+  ): string {
+    // Placeholder implementation
+    return `${prefix}-${name}-${type}`;
+  }
+
+  
 }
 
 

@@ -10,9 +10,9 @@ import {
     ThunkAction,
     createSlice,
 } from "@reduxjs/toolkit";
-import { produce } from "immer";
 import { AllStatus } from "../../stores/DetailsListStore";
 import { MobXRootState } from "../../stores/RootStores";
+import { produce, Draft } from "immer";
 import { WritableDraft } from "../ReducerGenerator";
 import { updateTask } from "./CollaborationSlice";
 
@@ -79,24 +79,21 @@ export const updateTaskPositionAsync = (
       // await taskApi.updateTaskPosition(taskId, newPosition);
 
       // Simulating API call success
-      dispatch(
-        updateTaskPosition({
-          taskId,
-          newPosition, // Pass the correct object with `x` and `y` properties
-        })
+      await updateTaskPosition(
+        taskId, // Pass taskId as the first argument
+        newPosition, // Pass newPosition as the second argument
+        dispatch, // Pass dispatch as the third argument
+        () => notify( // Pass notify as the fourth argument
+          "taskPositionUpdated", // Notification ID
+          `Task position updated successfully for task ${taskId}`, // Notification message
+          new Date(), // Timestamp
+          NotificationTypeEnum.Success, // Notification type
+          { additionalOptions: JSON.stringify(newPosition) } // Additional options
+        )
       );
 
       // Dispatch an action indicating success or update
       dispatch({ type: 'TASK_POSITION_UPDATED', payload: { taskId, newPosition } });
-
-      // Notify about the success
-      notify(
-        "taskPositionUpdated", // Notification ID
-        "Task position updated successfully", // Notification message
-        { taskId, newPosition }, // Notification content
-        new Date(), // Timestamp
-        NotificationTypeEnum.Success // Notification type
-      );
     } catch (error) {
       // Handle error, if any
       console.error('Error updating task position:', error);
@@ -104,10 +101,10 @@ export const updateTaskPositionAsync = (
       // Notify about the error
       notify(
         "taskPositionUpdateError", // Notification ID
-        "Failed to update task position", // Notification message
-        { taskId, error }, // Notification content
+        `Failed to update task position for task ${taskId}`, // Notification message
         new Date(), // Timestamp
-        NotificationTypeEnum.Error // Notification type
+        NotificationTypeEnum.Error, // Notification type
+        { additionalOptions: JSON.stringify(error) } // Additional options
       );
     }
   };
@@ -176,9 +173,11 @@ export const useTaskManagerSlice = createSlice({
     
       state.tasks.forEach((task) => {
         if (task.tags) {
-          task.tags.forEach((tag: string | Tag<BaseData<any>>) => { // Handle both cases
+          const tagArray = Array.isArray(task.tags) ? task.tags : Object.values(task.tags);
+  
+          tagArray.forEach((tag: string | Tag<BaseData<any>>) => { // Handle both cases
             let writableTag: WritableDraft<Tag<BaseData<any>>>;
-    
+        
             if (typeof tag === "string") {
               // If `tag` is a string, create a `Tag` object
               writableTag = {
@@ -192,7 +191,7 @@ export const useTaskManagerSlice = createSlice({
               // If `tag` is a `Tag` object, create a draftable version
               writableTag = produce(tag, (draft) => draft);
             }
-    
+        
             // Check if the tag already exists in `state.tags`
             if (!state.tags.some((existingTag) => existingTag.id === writableTag.id)) {
               state.tags.push(writableTag);
@@ -296,41 +295,38 @@ export const useTaskManagerSlice = createSlice({
       }
     },
 
+    
     resizeTask(state, action: PayloadAction<{ task: Task; newSize: number }>) {
       const { task, newSize } = action.payload;
       const index = state.tasks.findIndex((t) => t.id === task.id);
-    
+
       if (index !== -1) {
-        state.tasks[index] = produce(task, (draft) => {
+        state.tasks[index] = produce(task, (draft: Draft<Task>) => {
           draft.size = newSize;
-    
-          // Handle `assignedTo`
+
+          // Ensure `assignedTo` is mutable
           if (task.assignedTo) {
-            if (Array.isArray(task.assignedTo)) {
-              draft.assignedTo = task.assignedTo.map((user) =>
-                produce(user, (userDraft) => userDraft)
-              );
-            } else {
-              draft.assignedTo = produce(task.assignedTo, (userDraft) => userDraft);
-            }
+            draft.assignedTo = Array.isArray(task.assignedTo)
+              ? task.assignedTo.map((user) => produce(user, (userDraft) => userDraft) as WritableDraft<User>)
+              : produce(task.assignedTo, (userDraft) => userDraft) as WritableDraft<User>;
           } else {
             draft.assignedTo = null;
           }
-    
+
           // Handle `scheduled`
           if (task.scheduled) {
             draft.scheduled = produce(task.scheduled, (scheduledDraft) => {
               if (scheduledDraft.subtasks) {
                 scheduledDraft.subtasks = scheduledDraft.subtasks.map((subtask) =>
-                  produce(subtask, (subtaskDraft) => subtaskDraft)
+                  produce(subtask, (subtaskDraft) => subtaskDraft) as WritableDraft<TodoImpl>
                 );
               }
               if (scheduledDraft.actions) {
                 scheduledDraft.actions = scheduledDraft.actions.map((action) =>
-                  produce(action, (actionDraft) => actionDraft)
+                  produce(action, (actionDraft) => actionDraft) as WritableDraft<Action>
                 );
               }
-            });
+            }) as WritableDraft<ScheduledData>;
           }
         });
       }

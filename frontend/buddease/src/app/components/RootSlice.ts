@@ -1,6 +1,6 @@
 // RootSlice.ts
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, createAction, PayloadAction } from "@reduxjs/toolkit";
 import { WritableDraft } from "immer";
 
 interface Task {
@@ -21,6 +21,10 @@ const initialState: TaskManagerState = {
   tasks: [],
 };
 
+const updateTaskTitle = createAction<{ id: string; title: string }>(
+  "useTaskManagerSlice/updateTaskTitle"
+);
+
 const taskManagerSlice = createSlice({
   name: "taskManager",
   initialState,
@@ -36,20 +40,19 @@ const taskManagerSlice = createSlice({
     // Add more reducers as needed
   },
   extraReducers: (builder) => {
-    builder.addCase(
-      "useTaskManagerSlice/updateTaskTitle",
-      (state, action: PayloadAction<{ id: string; title: string }>) => {
-        const taskToUpdate = state.tasks.find(
-          (task: WritableDraft<Task>) => task.id === action.payload.id
-        );
-        if (taskToUpdate) {
-          taskToUpdate.title = action.payload.title;
-        }
+    builder.addCase(updateTaskTitle, (state, action) => {
+      const taskToUpdate = state.tasks.find(
+        (task: WritableDraft<Task>) => task.id === action.payload.id
+      );
+      if (taskToUpdate) {
+        taskToUpdate.title = action.payload.title;
       }
-    );
+    });
   },
 });
 
-export const { updateTaskTitle } = taskManagerSlice.actions;
+// Export the action creator
+export { updateTaskTitle };
+
 
 export default taskManagerSlice.reducer;

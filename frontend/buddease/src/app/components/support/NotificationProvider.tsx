@@ -3,14 +3,16 @@ import React, { ReactNode, createContext, useState } from 'react';
 import { logData } from '../notifications/NotificationService';
 import { notificationStoreInstance } from '../state/stores/NotificationStore';
 import { NotificationData } from './NofiticationsSlice';
-import { NotificationContextProps, NotificationType, NotificationTypeEnum } from './NotificationContext';
+import { NotificationContextProps, NotificationType, NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { title } from 'process';
 import { BaseData } from '../models/data/Data';
 import { useMeta } from '@/app/configs/useMeta';
+import { T, K, Meta } from "@/app/components/models/data/dataStoreMethods";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 
 export const notificationStore = notificationStoreInstance
-export const notificationData: NotificationData[] = [];
+export const notificationData: NotificationData<T, K<T>, Meta<T, K<T>>>[] = [];
 
 export const NotificationContext = createContext<NotificationContextProps | undefined>(undefined);
 
@@ -40,7 +42,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
   children
 }: { children: React.ReactNode }) => {
   const area = 'notificationProvider'
-  const [notifications, setNotifications] = useState <NotificationData[]>([]);
+  const [notifications, setNotifications] = useState <NotificationData<T, K, Meta<T,K>>[]>([]);
   const [duration, setDuration] = useState<number>(3000);  // Default duration
 
   const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)?? {
@@ -55,6 +57,34 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
     customFields: {},
 
     // Add other required properties here
+  };
+
+  // Define a metadata object
+  const currentMetadata: UnifiedMetaDataOptions<MyBaseData, MyExtendedData, MyMeta> = {
+    author: "John Doe",
+    timestamp: new Date(),
+    revisionNotes: "Initial draft",
+    area: "dashboard",
+    currentMeta: {
+      // Core metadata properties
+      metadataEntries: [],
+      // Other required properties from Meta
+    },
+    tags: ["important", "urgent"],
+    childIds: [],
+    relatedData: [],
+    projectId: 123,
+    overrides: {},
+    relatedKeys: [],
+    metadataEntries: [],
+    videoMetadata: {},
+    mediaMetadata: {},
+    projectMetadata: {},
+    taskMetadata: {},
+    meetingMetadata: {},
+    customMediaSession: {},
+    phaseMetadata: {},
+    structuredMetadata: {},
   };
 
   const sendNotification = (
@@ -101,7 +131,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
     });
   };
 
-  const addNotification = (notification: NotificationData) => {
+  const addNotification = (notification: NotificationData<T, K, Meta<T, K>>) => {
     notificationStore.addNotification(notification);
   };
 
@@ -109,13 +139,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
     <NotificationContext.Provider
       value={{
         sendNotification,
-        addNotification: (notification: NotificationData) => {
+        addNotification: (notification: NotificationData<T, K, Meta<T, K>>) => {
           notificationStore.addNotification(notification);
           },
         notify: (
-          id,
-          message,
-          content,
+          id: string,
+          message: string,
+          content: string,
           date: Date = new Date(),
           type: NotificationType
         ): Promise<void> => {
@@ -135,8 +165,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
             host: undefined,
             participants: [],
             teamMemberId: '',
-            title, meta, major, minor,
-            patch, currentMeta, currentMetadata,
+            title, meta: 0,
+            major: 0,
+            minor: 0,
+           
+            patch: "",
+            currentMeta,
+            currentMetadata,
             
           });
           console.log(`Notification: ${message}`);
@@ -148,7 +183,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
           sendNotification("Custom", `${message.sender}: ${message.text}`);
           console.log(`Notification: ${message}`);
         },
-        setNotifications: (notifications: NotificationData[]) => {
+        setNotifications: (notifications: NotificationData<T, K, Meta<T, K>>[]) => {
           setNotifications(notifications);
         },
         showMessageWithType: (message: Message, type: NotificationType) => {
@@ -177,3 +212,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
     </NotificationContext.Provider>
   );
 };
+
+
+
+
+file:///Users/dixiejones/Downloads/Masterschool-certificate%20.pdf

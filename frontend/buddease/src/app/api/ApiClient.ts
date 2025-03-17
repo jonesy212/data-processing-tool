@@ -1,12 +1,11 @@
 // ApiClient.ts
 import  FileImportData  from '../components/documents/FileImportData';
 import axiosInstance from "@/app/api/axiosInstance";
-import {
-  
+import {  
   useNotification,
 } from "@/app/context/NotificationContext";
-import { NotificationType } from "../components/support/NotificationContext";
-import { NotificationTypeEnum } from "../context/NotificationContext";
+import { NotificationTypeEnum, NotificationType } from "../context/NotificationContext";
+import { T, K } from "@/app/components/models/data/dataStoreMethods";
 import { AxiosError, AxiosResponse } from "axios";
 import { headersConfig } from '../components/shared/SharedHeaders';
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
@@ -367,7 +366,7 @@ class ClientApiService {
 
   async createFileVersion(
     fileId: string,
-    versionData: VersionData
+    versionData: VersionData<T, K>
   ): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/versions`, versionData),

@@ -1,3 +1,4 @@
+import { useSecureStoreId } from '@/app/components/utils/useSecureStoreId';
 // snapshotHandlers.ts
 import { UpdateSnapshotPayload } from "@/app/components/database/Payload";
 import { allCategories } from '@/app/components/models/data/DataStructureCategories';
@@ -44,6 +45,8 @@ import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { createSnapshotItem, SnapshotItem } from "./SnapshotList";
 import SnapshotManagerOptions from './SnapshotManagerOptions';
 import { snapshotStoreConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { snapshotStoreConfigInstance } from './snapshotStoreConfigInstance';
+
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
 import { useSnapshotStore } from "./useSnapshotStore";
@@ -675,7 +678,12 @@ export const onSnapshot = async  <T extends  BaseData<any>, K extends T = T, Met
   event: Event,
   callback: (snapshot: Snapshot<T, K>) => void
 ): Promise<void> => {
-  const snapshotManager = await useSnapshotManager<T, K>();
+  const initialStoreId = useSecureStoreId()
+  if(!initialStoreId){
+    throw new Error("")
+  }  
+  
+  const snapshotManager = await useSnapshotManager<T, K>(initialStoreId);
   const snapshotStore = snapshotManager?.state;
 
   if (snapshotStore && snapshotStore.length > 0) {

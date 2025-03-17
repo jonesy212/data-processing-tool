@@ -19,7 +19,6 @@ interface BaseEntity {
 
 // Define a type for your entities
 interface Entity extends BaseEntity {
- 
   type?: AllTypes;  // Add more properties as needed
 }
 

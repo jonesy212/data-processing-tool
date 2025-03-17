@@ -41,6 +41,7 @@ import { SnapshotStoreMethod } from "./SnapshotStoreMethod";
 import { InitializedData, InitializedDataStore } from "./SnapshotStoreOptions";
 import { SnapshotSubscriberManagement } from "./SnapshotSubscriberManagement";
 import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
+import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 
 
 interface CoreSnapshot<
@@ -65,12 +66,12 @@ interface CoreSnapshot<
   currentCategory: Category;
   timestamp: string | number | Date | undefined;
   orders?: any;
-  createdBy: string;
+  createdBy: string | undefined;
   eventRecords?: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
   subscriberId?: string;
   snapshot?: Snapshot<T, K>
   length?: number;
-  task?: Task<T>;
+  task?: Task<T, K, Meta>;
   category?: symbol | string | Category | undefined;
   categoryProperties?: CategoryProperties | undefined;
   date?: string | number | string | number | Date | null;

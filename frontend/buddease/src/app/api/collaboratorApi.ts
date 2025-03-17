@@ -1,8 +1,8 @@
 
 import { AxiosError } from 'axios';
 import CalendarEventCollaborator from '../components/calendar/CalendarEventCollaborator';
+import { NotificationType, useNotification } from '../components/context/NotificationContext';
 import InvitationData from '../components/state/redux/slices/InvitationData';
-import { NotificationType, useNotification } from '../components/support/NotificationContext';
 import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
 

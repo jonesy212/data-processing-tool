@@ -2,6 +2,7 @@ import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
 import { Task } from "@/app/components/models/tasks/Task";
 import { TodoManagerStore } from "@/app/components/state/stores/TodoStore";
 import { Idea } from "@/app/components/users/Ideas";
+import { NotificationType } from "@/app/context/NotificationContext";
 import { AxiosResponse } from "axios";
 import { object } from "prop-types";
 import { NestedEndpoints } from "../api/ApiEndpoints";
@@ -139,7 +140,7 @@ export interface UserSettings extends Settings {
     | string[]
     | IdleTimeoutType
     | PrivacySettings
-    | NotificationData[]
+    | NotificationData<T, K, Meta>[]
     | BrowserCheckStore
     | VideoData<BaseData, BaseData>
     | UserAssignee
@@ -150,13 +151,13 @@ export interface UserSettings extends Settings {
     | CollaborationOptions[]
     | NestedEndpoints
     | (Comment | CustomComment)[]
-    | DetailsItem<Data>
+    | DetailsItem<Data<T, K, Meta>>
     | TrackerStore
     | IconStore
     | Phase<BaseData> 
     | HighlightEvent[]
     | Idea[]
-    | SnapshotStore<SnapshotStoreUnion<Data>, Data>[]
+    | SnapshotStore<SnapshotStoreUnion<Data<T, K, Meta>>, Data<T, K, Meta>>[]
     | InitializedState<BaseData, BaseData>
     | Member[]
     | NotificationSettings
@@ -165,8 +166,8 @@ export interface UserSettings extends Settings {
     | TodoManagerStore<Todo<any, any, any>, any, any> // Ensure BaseData is appropriately defined
     | TodoImpl<Todo<any, any, any>, any, any>[] // Use `any` or specify the types as needed
     | CalendarEvent<BaseData, BaseData>[]
-    | CalendarManagerStore<BaseData, Meta>
-    | SnapshotStoreConfig<Data, Data>[]
+    | CalendarManagerStore<BaseData, Meta<T, K>>
+    | SnapshotStoreConfig<Data<T, K, Meta>, Data<T, K, Meta>>[]
     | Record<string, string>
     | undefined
     | NodeJS.Timeout

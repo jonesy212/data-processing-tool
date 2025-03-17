@@ -1,13 +1,15 @@
+import { AxiosError, AxiosResponse } from 'axios';
+import { Dispatch } from '@reduxjs/toolkit';
 import { handleApiError } from '@/app/api/ApiLogs';
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { BaseData } from '@/app/components/models/data/Data';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { Dispatch } from '@reduxjs/toolkit';
-import { AxiosError, AxiosResponse } from 'axios';
+
+import { NotificationType, useNotification } from '@/app/components/context/NotificationContext';
 import { TaskHistoryEntry } from '../components/interfaces/history/TaskHistoryEntry';
 import { Task } from '../components/models/tasks/Task';
 import { historyManagerStore } from '../components/state/stores/HistoryStore';
 import { useTaskManagerStore } from '../components/state/stores/TaskStore ';
-import { NotificationType, useNotification } from '../components/support/NotificationContext';
 import { endpoints } from './ApiEndpoints';
 import axiosInstance from './axiosInstance';
 
@@ -125,10 +127,11 @@ const updateTaskPositionSuccess = <T extends  BaseData<any>, K extends T = T, Me
     },
   };
 };
+
 const updateTaskPosition = async <
-  T extends BaseData<any>,
+  T extends BaseData<any, any, any, Attachment>, // Simplified BaseData with all four type arguments
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends { childIds?: any; } & Partial<StructuredMetadata<T, K>> = { childIds?: any; } & Partial<StructuredMetadata<T, K>>
 >(
   taskId: string,
   newPosition: { x: number; y: number }, // Update to accept an object
@@ -140,10 +143,10 @@ const updateTaskPosition = async <
 
     // Define the Task type explicitly to match the expected type
     type ExpectedTask = Task<
-      BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>,
-      BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>,
-      StructuredMetadata<any, any>
-    >;
+    BaseData<T, K, Meta, Attachment>, // Provide all four type arguments for BaseData
+    BaseData<T, K, Meta, Attachment>, // Provide all four type arguments for BaseData
+    StructuredMetadata<BaseData<T, K, Meta, Attachment>, BaseData<T, K, Meta, Attachment>>
+  >;
 
     const response: AxiosResponse<ExpectedTask> = await axiosInstance.post(updateTaskEndpoint, {
       task: taskId,
@@ -501,8 +504,8 @@ const fetchUsersByTaskApi = async (taskId: string): Promise<string[]> => {
 };
 
 export {
-    addTask, assignTaskToTeam, bulkAssignTasks, bulkAssignTodos, bulkUnassignTasks, bulkUnassignTodos, completeAllTasks, createTask,
-    deleteTask, fetchTaskData, fetchTasks, fetchUsersByTaskApi, getTaskHistory, getTaskHistoryFromDatabase, getTasksByUserId, handleTaskApiErrorAndNotify, removeTask,
-    toggleTask, unassignTask, updateTask, updateTaskPosition, updateTaskPositionSuccess
+  addTask, assignTaskToTeam, bulkAssignTasks, bulkAssignTodos, bulkUnassignTasks, bulkUnassignTodos, completeAllTasks, createTask,
+  deleteTask, fetchTaskData, fetchTasks, fetchUsersByTaskApi, getTaskHistory, getTaskHistoryFromDatabase, getTasksByUserId, handleTaskApiErrorAndNotify, removeTask,
+  toggleTask, unassignTask, updateTask, updateTaskPosition, updateTaskPositionSuccess
 };
 
