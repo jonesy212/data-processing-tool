@@ -12,13 +12,13 @@ import { SnapshotConfig, SnapshotItem, SnapshotOperationType } from '../../snaps
 import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
 
 import { UserData } from "@/app/components/users/User";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { Category } from "../../libraries/categories/generateCategoryProperties";
 import { convertToArray } from '../../snapshots/createSnapshotStoreOptions';
 import { SnapshotContainer } from "../../snapshots/SnapshotContainer";
-import { UserConfig } from "../../snapshots/SnapshotStoreConfig";
 import SnapshotStore from "../../snapshots/SnapshotStore";
-import { SnapshotStoreConfig } from "../../snapshots/SnapshotStoreConfig";
+import { SnapshotStoreConfig, UserConfig } from "../../snapshots/SnapshotStoreConfig";
 import { InitializedData } from '../../snapshots/SnapshotStoreOptions';
 import { storeProps } from '../../snapshots/SnapshotStoreProps';
 import { SnapshotWithCriteria } from "../../snapshots/SnapshotWithCriteria";
@@ -27,8 +27,6 @@ import useSecureStoreId from "../../utils/useSecureStoreId";
 import Version from "../../versions/Version";
 import { BaseData, Data } from "./Data";
 import { StatusType } from "./StatusType";
-import { UserConfig as ViteUserConfig } from 'vite';
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 
 export type T = BaseData<any>;
 export type K<T extends BaseData<any>> = [T] extends [BaseData<any>] ? T : never;
@@ -1477,7 +1475,7 @@ const dataStoreMethods = <
 
           // Callback method for subscription
           subscribeToSnapshots: (callback: (snapshot: Snapshot<T, any>) => void
-          ): SnapshotsArray<T, K> | [] => {
+          ): SnapshotsArray<T> | [] => {
             callback({
               data: item,
               isCore: true, // Adjust according to your Snapshot<Data<T>, any> requirements
@@ -1539,7 +1537,7 @@ const dataStoreMethods = <
       };
     },
 
-    getSnapshotItems: async (category: Category, snapshots: SnapshotsArray<T, K>) => {
+    getSnapshotItems: async (category: Category, snapshots: SnapshotsArray<T>) => {
       const snapshotItems = snapshots.map((snapshot: Snapshot<T, K>) => ({
         snapshots: snapshot,
         ...snapshot.data
@@ -1757,7 +1755,7 @@ const dataStoreMethods = <
       snapshotStore: SnapshotStore<T, K>,
       snapshotData: SnapshotData<T, K>,
       data: InitializedData<T> | null | undefined,
-      snapshotsArray: SnapshotsArray<T, K>,
+      snapshotsArray: SnapshotsArray<T>,
       snapshotsObject: SnapshotsObject<T, K>
     ): Promise<SnapshotContainer<T, any> | undefined> => {
       return new Promise((resolve, reject) => {

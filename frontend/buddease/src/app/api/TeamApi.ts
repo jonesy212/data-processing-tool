@@ -3,13 +3,13 @@ import { NotificationType, useNotification } from "@/app/context/NotificationCon
 import { AxiosError, AxiosResponse } from "axios";
 import { useParams } from "react-router-dom";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import headersConfig from "./headers/HeadersConfig";
 import { endpoints } from "@/app/api/endpointConfigurations";
+import endpointConfigurations from "@/app/api/endpointConfigurations";
 
 // Define the API base URL
-const API_BASE_URL = endpointCs.teams;
+const API_BASE_URL = endpoints.teams;
 
 // Define API notification messages
 interface TeamNotificationMessages {

@@ -1242,7 +1242,7 @@ const defaultDataStoreMethods = <T extends  BaseData<any>, K extends T = T, Meta
             data: K,
             index: number
             ) => SnapshotsObject<T, K>
-        ): Promise<SnapshotsArray<T, K>> {
+        ): Promise<SnapshotsArray<T>> {
             throw new Error("Function not implemented.");
         },
         mapSnapshotStore: function (

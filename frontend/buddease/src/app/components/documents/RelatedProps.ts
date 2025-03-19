@@ -1,5 +1,9 @@
 // RelatedProps.ts
 import { Label } from '@/app/components/projects/branding/BrandingSettings';
+import { AllTypes } from '@/app/components/typings/PropTypes';
+import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { T, K, Meta } from "@/app/components/models/data/dataStoreMethods";
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 
 interface SharedTimestamps {
 	createdAt?: string | Date | undefined;
@@ -77,12 +81,13 @@ interface SharedStatusFlags {
 interface SharedIdentifiers {
 	_id?: string;
 	id?: string | number | undefined;
-	type?: string;
+	type?: string | AllTypes | null;
 	title?: string;
 	label?: Label | string | null;
 	key?: string;
-	value?: number | string | null;
+	value?: string | number | Snapshot<T, K<T>, Meta<T, K<T>>, ExcludedFields> | null | undefined
 	name?: string
+	category?: symbol | string | Category | undefined,
 }
 
 

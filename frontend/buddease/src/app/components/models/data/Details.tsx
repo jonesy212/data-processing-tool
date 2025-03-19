@@ -18,9 +18,7 @@ import ListGenerator from "./../../../../app/generators/ListGenerator";
 import { Comment } from "./Comments";
 import { BaseData, Data } from "./Data";
 
-
 export type DataAndEventDetails = Data<any, any, any> | CommonEvent;
-
 
 interface SharedDetails<
   T extends BaseData<any, any, any, Attachment>,
@@ -39,8 +37,6 @@ interface SharedDetails<
   currentMetadata: UnifiedMetadata<T, K>
   label: Label
 }
-
-
 
 interface DetailsProps<
   T extends BaseData<any> = BaseData<any, any>,

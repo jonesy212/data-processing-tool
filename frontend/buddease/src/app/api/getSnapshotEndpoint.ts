@@ -9,9 +9,8 @@ type SnapshotCategoryType = "User" | "Todo" | "Task" | "Delegate" | "Highlight" 
 
 interface SnapshotCategory<
   T extends  BaseData<any>, 
-//   ExcludedFields extends keyof T = never, // Declare ExcludedFields first
   K extends T = T,
-// K extends Exclude<keyof T, ExcludedFields> = Exclude<keyof T, ExcludedFields> // Then use it in K
+//   ExcludedFields extends keyof T = never, // Declare ExcludedFields first
 > {
     id: string;
     name: SnapshotCategoryType; // Use the string literal type here

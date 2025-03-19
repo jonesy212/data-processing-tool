@@ -129,4 +129,4 @@ type Subscription<
   };
   
 
-  export type { Subscription }
+  export type { Subscription, SubscriberCallbackType }

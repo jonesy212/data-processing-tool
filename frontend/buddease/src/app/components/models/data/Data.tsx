@@ -1,3 +1,6 @@
+import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
+import { AxiosResponse } from "axios";
+import React from "react";
 import { fetchUserAreaDimensions, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useMetadata } from "@/app/configs/useMetadata";
@@ -7,8 +10,6 @@ import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { AxiosResponse } from "axios";
-import React from "react";
 import { CustomTransaction } from "../../crypto/SmartContractInteraction";
 import { Attachment } from "../../documents/Attachment/attachment";
 import { createCustomTransaction } from "../../hooks/dynamicHooks/createCustomTransaction";
@@ -115,7 +116,7 @@ interface DataDetails<
 
   data?: DataWithOmittedFields<T, K, Meta, ExcludedFields>;
   snapshots?: Snapshots<T, K>;
-  snapshotArray?: SnapshotsArray<T, K, Meta>;
+  snapshotArray?: SnapshotsArray<T>;
   analysisType?: AnalysisTypeEnum | null;
   analysisResults?: string | DataAnalysisResult<T>[] | undefined;
   todo?: Todo<T, K>;
@@ -138,16 +139,17 @@ type TodoSubtasks = Array<
   | Task<any, any>
   >;
   
-  interface BaseData<
-  T extends BaseData<any, any, any, Attachment> = any,
+interface BaseData<
+  T extends BaseData<any> = any,
   K extends T = T,
-  Meta extends { childIds?: any } & Partial<StructuredMetadata<T, K>> = any,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, 
   AttachmentType extends Attachment = Attachment
 > extends SharedTimestamps, SharedStatusFlags, SharedIdentifiers {
   childIds?: Meta['childIds'];
   sharedData?: SharedBaseData<K>;
   data?: any;
-  size?: number;
+  size?: string | number;
+  userConfig?: UserConfigData<T, K>;
   description?: string | null;
   startDate?: Date;
   endDate?: Date;
@@ -180,7 +182,7 @@ type TodoSubtasks = Array<
   members?: number[] | string[] | Member[];
   leader?: User | null;
   snapshotStores?: SnapshotStoreReference<T, K>[];
-  snapshots?: Snapshots<BaseData<T, K, Meta, AttachmentType>> | undefined;
+  snapshots?: Snapshots<T, K> | undefined; // Simplify snapshots type
   text?: string;
   category?: symbol | string | Category | undefined;
   notificationTypes?: NotificationSettings;
@@ -249,7 +251,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
         isActive: data.isActive,
         tags: data.tags ? getTagNames(data.tags) : [], // Now tags is a string array
         status: data.status,
-        type: data.type,
+        type: data.type ?? 'DefaultType',
         analysisType: data.analysisType,
         analysisResults: data.analysisResults,
         updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
@@ -345,7 +347,7 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
 
 
 
-  collaborators: {["collab1", "collab2"]},
+  collaborators: [],
   comments: [],
   attachments: [],
   subtasks: [],
@@ -364,6 +366,9 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
       text: '',
       color: ''
     },
+    content: "",
+    watchLater: false,
+    isActive: true,
     date: new Date(),
     id: "video1",
     campaignId: 123,
@@ -384,21 +389,7 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
     commentsCount: 20,
     title: "Sample Video Title",
     description: "Sample video description",
-    tags: {
-      tag1: {
-        id: "tag1",
-        name: "Tag 1",
-        color: "#000000",
-        description: "Tag 1 description",
-        enabled: true,
-        type: "Category",
-        relatedTags: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        createdBy: "creator1",
-        timestamp: new Date().getTime(),
-      },
-    },
+    tags: [],
     createdBy: "uploader1",
     createdAt: new Date(),
     uploadedAt: new Date(),
@@ -496,7 +487,7 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
           id: file.id,
           title: file.title,
           description: file.description,
-          
+          type: file.type,
           fileName: file.fileName,
           fileSize: file.fileSize,
           fileType: file.fileType,
@@ -754,10 +745,9 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
           unassignNoteFromTeam: function (noteId: string, teamId: string): Promise<void> {
             throw new Error("Function not implemented.");
           },
-          setAssignedTaskStore: function (store: SnapshotStore<Snapshot<BaseData<any>, BaseData<any>>>
-          ): void {
+          setAssignedTaskStore: function (store: SnapshotStore<BaseData<any>>): void {
             throw new Error("Function not implemented.");
-          }
+          },  
         },
         updateTaskTitle: (title: string, taskId: string) => { },
         updateTaskDescription: (description: string, taskId: string) => { },

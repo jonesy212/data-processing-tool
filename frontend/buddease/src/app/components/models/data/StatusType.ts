@@ -100,8 +100,9 @@ enum MeetingStatus {
   Canceled = StatusType.Canceled,
   Scheduled = StatusType.Scheduled,
   Rescheduled = StatusType.Rescheduled
- }// General status for scheduling
-
+}
+ 
+// General status for scheduling
 enum TodoStatus {
   Pending = StatusType.Pending,
   InProgress = StatusType.InProgress,

@@ -12,6 +12,7 @@ import {
   PriorityTypeEnum,
   StatusType,
   TeamStatus,
+  CalendarStatus
 } from "../models/data/StatusType";
 import {
   ProgressBarAnimationType,
@@ -23,7 +24,7 @@ import { SendStatus } from "../support/NofiticationsSlice";
 import {
   NotificationType,
   NotificationTypeEnum,
-} from "../support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import { T, K, Meta } from "../models/data/dataStoreMethods";
 
 type AnimationType = "fade" | "slide" | "bounce" | "custom" | "show";
@@ -50,7 +51,8 @@ type AllTypes =
   | TextType
   | VisibilityType // Add TextType to AllTypes
   | TextType
-
+  | CalendarStatus
+  
 interface BaseProps {
   id: string;
   title?: string;

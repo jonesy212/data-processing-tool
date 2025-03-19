@@ -1760,7 +1760,7 @@ const snapshot: Snapshot<BaseData, BaseData> = {
   category: symbol | string | Category | undefined,
   categoryProperties: CategoryProperties | undefined,
   callback: (snapshot: Data<T>) => void,
-  snapshots: SnapshotsArray<T, K>,
+  snapshots: SnapshotsArray<T>,
   type: string,
   event: SnapshotEvents<T, K>,
   snapshotContainer?: Data<T>,

@@ -91,7 +91,7 @@ const isSnapshotWithCriteriaBaseData = (
 // Example conversion function
 function convertToSnapshotArray<T extends BaseData, K extends T = T>(
   data: Snapshots<T, K>
-): SnapshotsArray<T, K> {
+): SnapshotsArray<T> {
   // Implement conversion logic here
   return Array.isArray(data) ? data : Object.values(data);
 }
@@ -139,7 +139,7 @@ function convertToSnapshotWithCriteria <T extends  BaseData<any>, K extends T = 
         category: Category,
         categoryProperties: CategoryProperties | undefined,
         callback: (snapshotData: T) => void,
-        snapshots: SnapshotsArray<T, K>,
+        snapshots: SnapshotsArray<T>,
         type: string,
         event: SnapshotEvents<T, K>,
         snapshotContainer?: T,

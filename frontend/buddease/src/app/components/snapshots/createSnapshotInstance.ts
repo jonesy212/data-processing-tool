@@ -39,14 +39,14 @@ import { Subscription } from '../subscriptions/Subscription';
 import { NotificationTypeEnum } from '../support/NotificationContext';
 import useSecureStoreId from '../utils/useSecureStoreId';
 import {
-  CoreSnapshot,
+    CoreSnapshot,
 
-  Result,
+    Result,
 
-  Snapshot,
-  Snapshots,
-  SnapshotsArray,
-  SnapshotUnion,
+    Snapshot,
+    Snapshots,
+    SnapshotsArray,
+    SnapshotUnion,
 } from "./LocalStorageSnapshotStore";
 import { SnapshotActionType } from './SnapshotActionType';
 import { SnapshotConfig } from './SnapshotConfig';
@@ -341,7 +341,7 @@ const createSnapshotInstance = <
         snapshotStore: SnapshotStore<SnapshotUnion<BaseData, Meta<T, K>>, K>,
         data: T
       ): Promise<string[] | undefined> | undefined => { },
-      getAllValues: (): SnapshotsArray<T, K> => { },
+      getAllValues: (): SnapshotsArray<T> => { },
       getAllItems: (): Promise<Snapshot<T, K>[] | undefined> => { },
       getSnapshotEntries: (snapshotId: string): Map<string, T> | undefined => { },
 
@@ -748,7 +748,7 @@ const createSnapshotInstance = <
                       snapshotSubscriberId: null,
                       snapshotContent: undefined,
                       store: null,
-                      snapshots: [], // Provide an initial value of type SnapshotsArray<T, K>
+                      snapshots: [], // Provide an initial value of type SnapshotsArray<T>
                       delegate: null,
                       getParentId: (
                         id: string,
@@ -1638,7 +1638,7 @@ const createSnapshotInstance = <
                   onSnapshot: function (snapshotId: string, snapshot: Snapshot<BaseData, BaseData>, type: string, event: Event, callback: (snapshot: Snapshot<BaseData, BaseData>) => void): void {
                     throw new Error("Function not implemented.");
                   },
-                  onSnapshots: function (snapshotId: string, snapshots: SnapshotsArray<T, K>, type: string, event: Event, callback: (snapshots: Snapshots<T, K>) => void): void {
+                  onSnapshots: function (snapshotId: string, snapshots: SnapshotsArray<T>, type: string, event: Event, callback: (snapshots: Snapshots<T, K>) => void): void {
                     throw new Error("Function not implemented.");
                   },
                   label: undefined,
@@ -1945,10 +1945,10 @@ const createSnapshotInstance = <
         snapshotData: SnapshotData<T, K>,
         category: Category | undefined,
         snapshotConfig: SnapshotStoreConfig<T, K>,
-        callback: (snapshotStore: SnapshotStore<any, any>, snapshots: SnapshotsArray<T, K>) => Subscriber<T, K> | null,
-        snapshots: SnapshotsArray<T, K>,
+        callback: (snapshotStore: SnapshotStore<any, any>, snapshots: SnapshotsArray<T>) => Subscriber<T, K> | null,
+        snapshots: SnapshotsArray<T>,
         unsubscribe?: UnsubscribeDetails,
-      ): [] | SnapshotsArray<T, K> => { },
+      ): [] | SnapshotsArray<T> => { },
       executeSnapshotAction: (
         actionType: SnapshotActionType,
         actionData: any
@@ -2009,7 +2009,7 @@ const createSnapshotInstance = <
         savedData: SnapshotStore<T, K, UnifiedMetaDataOptions>,
         category: Category | undefined,
         callback: (snapshot: T) => void,
-        snapshots: SnapshotsArray<T, K>,
+        snapshots: SnapshotsArray<T>,
         type: string,
         event: string | SnapshotEvents<T, K>,
         subscribers: SubscriberCollection<T, K>,
@@ -2027,7 +2027,7 @@ const createSnapshotInstance = <
         category: symbol | string | Category | undefined,
         categoryProperties: CategoryProperties | undefined,
         callback: (snapshot: T) => void,
-        snapshots: SnapshotsArray<T, K>,
+        snapshots: SnapshotsArray<T>,
         type: string,
         event: Event,
         snapshotContainer?: T,
@@ -2111,7 +2111,7 @@ const createSnapshotInstance = <
         event: Event,
         callback: Callback<Snapshot<T, K>>,
         value: T,
-      ): [] | SnapshotsArray<T, K> => { },
+      ): [] | SnapshotsArray<T> => { },
       meta: {},
       snapshotMethods: [
         {
@@ -2733,7 +2733,7 @@ const createSnapshotInstance = <
           data // Pass the data again if needed
         )
         // Convert the array of Snapshot<T, K> to Snapshots<T, K>
-        const snapshotsArray: SnapshotsArray<T, K> = snapshots.map((snapshot: Snapshot<T, K>) => snapshot as SnapshotUnion<T, K, Meta>);
+        const snapshotsArray: SnapshotsArray<T> = snapshots.map((snapshot: Snapshot<T, K>) => snapshot as SnapshotUnion<T, K, Meta>);
 
         // Call getSubscribers with the converted snapshots
         const { subscribers } = await snapshotStore.getSubscribers(undefined, snapshotsArray);

@@ -52,7 +52,7 @@ interface Project extends BaseData<any> {
   phase: Phase | null;
   phases: Phase[];
   type: ProjectType;
-  status: AllStatus
+  status: AllStatus;
   currentPhase: Phase | null; // Provide a default value or mark as optional
   comments?: (Comment<any, any, any> | CustomComment)[] | undefined  // Add other project-related fields as needed
   commnetBy?: User | Member;
@@ -61,7 +61,6 @@ interface Project extends BaseData<any> {
   customProperty?: string;
   projectProgress?: Progress
   // tags?: string[] | Tag[];
-
 }
 
 type ReassignProject = (

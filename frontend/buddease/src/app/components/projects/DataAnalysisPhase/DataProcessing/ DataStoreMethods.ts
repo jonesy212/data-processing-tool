@@ -62,7 +62,7 @@ export interface DataStoreMethods <
       data: K,
       index: number
     ) => SnapshotsObject<T, K>
-  ) => Promise<SnapshotsArray<T, K>>
+  ) => Promise<SnapshotsArray<T>>
 
   addSnapshot: (snapshot: Snapshot<T, K>,
     snapshotId: string,

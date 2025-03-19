@@ -197,7 +197,7 @@ function createSnapshotConfig<T extends  BaseData<any> = BaseData<any, any>, K e
   ) => string,
   // Define types as needed
   snapshotContainer?: any, // Define types as needed
-  getSnapshotItems?: (category: symbol | string | Category | undefined, snapshots: SnapshotsArray<T, K>
+  getSnapshotItems?: (category: symbol | string | Category | undefined, snapshots: SnapshotsArray<T>
   ) => (SnapshotStoreConfig<T, K> | SnapshotItem<T, K> | undefined)[], // Define types as needed
   defaultSubscribeToSnapshots?: (
     snapshotId: string, 

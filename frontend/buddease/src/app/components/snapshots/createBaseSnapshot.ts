@@ -212,7 +212,7 @@ function createBaseSnapshot<
           id: number,
           snapshotStore: SnapshotStore<T, K>,
           data: T
-        ): Promise<SnapshotsArray<T, K>> {
+        ): Promise<SnapshotsArray<T>> {
           try {
             const snapshotMap = new Map<string, Snapshot<T, K>>();
             snapshotMap.set(snapshotId, snapshot);
@@ -226,7 +226,7 @@ function createBaseSnapshot<
               fetch: async () => ({}),
             };
 
-            // Use type guard to ensure it’s a `SnapshotsArray<T, K>`
+            // Use type guard to ensure it’s a `SnapshotsArray<T>`
             if (isSnapshotArrayState(
               snapshotArray[0], 
               (id, snapshotData, category, callback, 
@@ -242,7 +242,7 @@ function createBaseSnapshot<
             )) {
               return Promise.resolve(toSnapshotsArray(snapshotArray));
             } else {
-              throw new Error("The mapped snapshots are not of type SnapshotsArray<T, K>");
+              throw new Error("The mapped snapshots are not of type SnapshotsArray<T>");
             }
           } catch (error) {
             console.error("Error mapping snapshots:", error);
@@ -499,7 +499,7 @@ function createBaseSnapshot<
                   callback,
                   snapshot
 
-                ): [] | SnapshotsArray<T, K> => {
+                ): [] | SnapshotsArray<T> => {
                   // Implement the subscription logic
                   // todo udate impementation
                   return []
@@ -889,7 +889,7 @@ function createBaseSnapshot<
                       snapshotSubscriberId: null,
                       snapshotContent: undefined,
                       store: null,
-                      snapshots: [], // Provide an initial value of type SnapshotsArray<T, K>
+                      snapshots: [], // Provide an initial value of type SnapshotsArray<T>
                       delegate: null,
                       getParentId: (snapshot: Snapshot<T, K>) => null,
                       getChildIds: (id: string, childSnapshot: Snapshot<T, K>) => [],

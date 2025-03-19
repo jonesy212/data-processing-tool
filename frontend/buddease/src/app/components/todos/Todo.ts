@@ -25,8 +25,8 @@ import { LocalStorageSnapshotStore, Result, Snapshot, Snapshots, SnapshotsArray,
 import { ConfigureSnapshotStorePayload } from "../snapshots/SnapshotConfig";
 import SnapshotStore, { initialState } from "../snapshots/SnapshotStore";
 import { CustomComment } from "../state/redux/slices/BlogSlice";
-import { NotificationType } from 
- '@/app/context/support/NotificationContext';;
+import { NotificationType } from '@/app/context/support/NotificationContext';
+import { Task } from '@/app/components/models/tasks/Task';
 import { Idea } from "../users/Ideas";
 import { Subscriber } from "../users/Subscriber";
 import { User } from "../users/User";
@@ -38,6 +38,8 @@ import operation from "antd/es/transfer/operation";
 import { config } from "process";
 import { options } from "sanitize-html";
 import { FetchSnapshotPayload } from "../snapshots/FetchSnapshotPayload";
+import { ScheduledData } from "@/app/components/calendar/ScheduledData";
+import { Collaborator } from '@/app/components/models/teams/TeamMembers'
 
 export type UserAssignee = Pick<User, '_id' | 'id' | 'username' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'avatarUrl'>;
 
@@ -45,7 +47,7 @@ export interface Todo<
   T extends BaseData<any> = BaseData<any, any>, // Align `T` with `BaseData`
   K extends T = T, // Ensure `K` aligns with `T`
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Use `StructuredMetadata` for metadata
-  > {
+> {
   _id: string;
   id: string;
   content?:  BaseData<any> | string |  Content<T> | undefined; // Adjust the content property to accept Content type
@@ -706,14 +708,15 @@ class TodoImpl<
     },
     label: undefined,
     events: {},
-    handleSnapshot: function (id: string,
-      snapshotId: number, 
+    handleSnapshot: function (
+      id: string,
+      snapshotId: string | number | null, 
       snapshot: T | null, 
       snapshotData: T, 
       category: symbol | string | Category | undefined, 
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T, K>,
+      snapshots: SnapshotsArray<T>,
       type: string,
       event: Event,
       snapshotContainer?: T,
@@ -722,10 +725,18 @@ class TodoImpl<
       throw new Error("Function not implemented.");
     },
     subscribeToSnapshots: function (
-      snapshotId: number,
-      unsubscribe: UnsubscribeDetails, 
-      callback: (snapshots: Snapshots<T, K>) => Subscriber<T, K> | null
-    ) : SnapshotsArray<T, K> {
+      snapshotStore: SnapshotStore<T, K>,
+      snapshotId: string,
+      snapshotData: SnapshotData<T, K>,
+      category: symbol | string | Category | undefined,
+      snapshotConfig: SnapshotStoreConfig<T, K>,
+      callback: (
+        snapshotStore: SnapshotStore<any, any>,
+        snapshots: SnapshotsArray<T>
+      ) => Subscriber<T, K> | null,
+      snapshots: SnapshotsArray<T>,
+      unsubscribe?: UnsubscribeDetails
+    ) : SnapshotsArray<T> {
       throw new Error("Function not implemented.");
     },
 

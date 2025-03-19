@@ -10,6 +10,7 @@ import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarMan
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import isSnapshotsArray from '@/app/components/utils/snapshotUtils';
 import { AppConfig, getAppConfig } from "@/app/configs/AppConfig";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { SharedMetadata } from '@/app/configs/metadata/createMetadataState';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -57,7 +58,6 @@ import { InitializedData, SnapshotStoreOptions } from "./SnapshotStoreOptions";
 import { SnapshotSubscriberManagement } from './SnapshotSubscriberManagement';
 import { SnapshotWithCriteria, TagsRecord } from './SnapshotWithCriteria';
 import { SnapshotStoreProps } from './useSnapshotStore';
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 const API_BASE_URL = endpoints.snapshots
 
@@ -90,7 +90,7 @@ interface SnapshotBase<
   title?: string;
   tags?: TagsRecord<T, K> | string[] | undefined;
   key?: string;
-  state?: SnapshotsArray<T, K> | null;
+  state?: SnapshotsArray<T> | null;
   topic?: string;
   find: (id: string) => SnapshotStore<T, K> | undefined;
 
@@ -137,7 +137,7 @@ interface SnapshotContainer<
   removeSubscriber: any;
   onError: (error: any) => void;
   data: InitializedData<T> | null | undefined;
-  snapshotsArray?: SnapshotsArray<T, K>;
+  snapshotsArray?: SnapshotsArray<T>;
   snapshotsObject?: SnapshotsObject<T, K>;
   snapshots?: Snapshots<T, K>
   currentCategory: Category | undefined;
@@ -286,7 +286,7 @@ export const snapshotContainer = <
           dataCallback?: (
             subscribers: Subscriber<T, K>[],
             snapshots: Snapshots<T, K>
-          ) => Promise<SnapshotUnion<T, K, Meta>[]>
+          ) => Promise<SnapshotUnion<T, K, Meta<T, K>>[]>
         ): Promise<Snapshot<T, K>[]> =>{
           // Implement logic to get all snapshots
           const allSnapshots: Snapshot<T, K>[] = []; // Placeholder for collected snapshots
@@ -406,7 +406,7 @@ export const snapshotContainer = <
           let updatedSnapshots: Snapshots<T, K>;
           if (isSnapshotsArray(snapshots)) {
             updatedSnapshots = [
-              ...(snapshots as SnapshotsArray<T, K>),
+              ...(snapshots as SnapshotsArray<T>),
               await createSnapshotInstance(
                 baseData, // baseData
                 baseMeta, // baseMeta

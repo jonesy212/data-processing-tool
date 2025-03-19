@@ -5,12 +5,16 @@ import crypto from 'crypto';
 import { useState } from 'react';
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { BaseData, SharedBaseData } from "@/app/components/models/data/Data";
-import { T, UserConfigData } from "@/app/components/models/data/dataStoreMethods";
+import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
 import { EventManager, createEventManager } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import SecureFieldManager from "@/app/components/security/SecureFieldManager";
 import { Snapshot } from "@/app/components/snapshots";
+import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { T, K } from "@/app/components/models/data/dataStoreMethods";
+
 import { Permission } from "@/app/components/users/Permission";
 import { UserData } from "@/app/components/users/User";
 import { useSecureUserId } from '@/app/components/utils/useSecureUserId';
@@ -20,7 +24,8 @@ import { VersionHistory } from "@/app/components/versions/VersionData";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { VersionData } from "@/app/components/versions/VersionData";
 import { Taggable } from '@/app/components/models/CommonData';
-import { data } from './SnapshotWithCriteria';
+import { data } from '@/app/components/snapshots/SnapshotWithCriteria';
+import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 
 
 interface SharedMetadata<K extends T> extends SharedBaseData<K> {
@@ -32,6 +37,10 @@ interface SharedMetadata<K extends T> extends SharedBaseData<K> {
   customFields?: Record<string, any>; 
   baseUrl?: string; 
   latestVersion: VersionData<T, K>;
+  category?: string | symbol | Category,
+
+  currentMetadata: UnifiedMetadata<T, K>; // Add currentMetadata
+  currentMeta: StructuredMetadata<T, K> | undefined; // Add currentMeta
 }
 
 
@@ -52,7 +61,7 @@ const maskSensitiveData = (data: string): string => {
 
 function createMetaState<
   T extends BaseData<any, any, StructuredMetadata<any, any>>, 
-  K extends UserConfigData<T> = UserConfigData<T>,
+  K extends T & UserConfigData<T>, // Ensure K extends both T and UserConfigData<T>
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   AttachmentType extends Attachment = Attachment
 >(
@@ -121,6 +130,7 @@ function createMetaState<
       events, // Use the passed events parameter
       latestVersion: createLatestVersion(),
     },
+    timestamp: new Date(),
     sharedMetadata: {} as SharedMetadata<K>,
     sharedBaseData: {} as SharedBaseData<K>,
     taggable: {} as Taggable<T, K>,
@@ -130,14 +140,14 @@ function createMetaState<
     permissions,
     customFields: secureFields,
     versionData: "",
-    latestVersion: createLatestVersion(),
+    latestVersion: createLatestVersion<T, K>(),
     author: "Unknown",
     config: new SecureFieldManager(encryptedConfig, encryptionKey).setSensitive(true), // Use encrypted config
     baseUrl: new SecureFieldManager(encryptedBaseUrl, encryptionKey).setSensitive(true).toString(), // Use encrypted baseUrl
   };
 }
 
-const { latestVersion = createLatestVersion(), ...rest } = data;
+const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
 
 const metaState = createMetaState<
   BaseData<any, any, StructuredMetadata<any, any>>,
@@ -244,13 +254,13 @@ const metaState = createMetaState<
   // version (object representing version details)
   {
     versionData: {},
-    latestVersion: {},
+    latestVersion: {} as VersionData<T, K>,
     history: [],
     timestamp: new Date(),
   }, // lastUpdated (object with version history or timestamps)
   true, // isActive (boolean flag indicating if the state is active)
   { key: "value" }, // config (config object containing user-specific or system-wide settings)
-  ["read", "write"], // permissions (array of permission strings like 'read', 'write')
+  [], // permissions (array of permission strings like 'read', 'write')
   { customField1: "value1" }, // customFields (object for any custom user fields)
   "https://baseurl.example.com", // baseUrl (the base URL for API or resource access)
   [], // childIds (array of child IDs, could relate to `UserConfigData` or other entities)
@@ -307,10 +317,11 @@ export const createMeta = <T extends BaseData<any>, K extends T = T>(
     timestamp: new Date(), // Default current date
     createdBy: '', // Default empty string
     metadata: '{}', // Default empty JSON string
-    initialState: {}, // Default empty object
+    initialState: {} as InitializedState<T, K>, // Default empty object
     meta: {} as StructuredMetadata<T, K>, // Default empty object
     mappedSnapshot: new Map(), // Default empty Map
     events: {} as EventManager<T, K, StructuredMetadata<T, K>>, // Default empty object
+    latestVersion: {} as VersionData<T, K>
   };
 
   return {

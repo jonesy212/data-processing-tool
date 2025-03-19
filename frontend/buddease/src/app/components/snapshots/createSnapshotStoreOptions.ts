@@ -27,7 +27,6 @@ import { getCategoryProperties } from '../libraries/categories/CategoryManager';
 import { BaseData, Data } from "../models/data/Data";
 import { allCategories } from '../models/data/DataStructureCategories';
 import { StatusType } from '../models/data/StatusType';
-import { K } from '../models/data/dataStoreMethods';
 import { displayToast } from '../models/display/ShowToast';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { ExcludedFields } from '../routing/Fields';
@@ -1114,11 +1113,11 @@ const createSnapshotStoreOptions =  <T extends BaseData<any>, K extends T = T, M
         snapshotConfig: SnapshotStoreConfig<T, K>,
         callback: (
           snapshotStore: SnapshotStore<T, K>, 
-          snapshots: SnapshotsArray<T, K>
+          snapshots: SnapshotsArray<T>
         ) => Subscriber<T, K> | null,
-        snapshots: SnapshotsArray<T, K>,
+        snapshots: SnapshotsArray<T>,
         unsubscribe?: UnsubscribeDetails,
-      ): SnapshotsArray<T, K> => {
+      ): SnapshotsArray<T> => {
         const convertedSnapshots = convertToArray(snapshotStore, snapshots);
         subscribeToSnapshotsImpl(snapshotId, callback, snapshotStore, convertedSnapshots);
         return convertedSnapshots;
@@ -1191,9 +1190,9 @@ const convertToArray = <
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotStore: SnapshotStore<T, K>,
-  snapshot: Snapshot<T, K> | Snapshots<T, K> | SnapshotsArray<T, K>
-): SnapshotsArray<T, K> => {
-  return Array.isArray(snapshot) ? snapshot as SnapshotsArray<T, K> : [snapshot] as SnapshotsArray<T, K>;
+  snapshot: Snapshot<T, K> | Snapshots<T, K> | SnapshotsArray<T>
+): SnapshotsArray<T> => {
+  return Array.isArray(snapshot) ? snapshot as SnapshotsArray<T> : [snapshot] as SnapshotsArray<T>;
 };
 
 // const handleSingleSnapshot = <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
@@ -1227,7 +1226,7 @@ const convertToArray = <
 // };
 
 // const handleSnapshotsArray =  <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-//   snapshots: SnapshotsArray<T, K>,
+//   snapshots: SnapshotsArray<T>,
 //   callback: Callback<Snapshot<T, K>>
 // ) => {
 //   snapshots.forEach((snap) => {
@@ -1262,7 +1261,7 @@ const convertToArray = <
 
 function isSnapshotsArray<T extends BaseData>(
   obj: any
-): obj is SnapshotsArray<T, K> {
+): obj is SnapshotsArray<T> {
   return Array.isArray(obj) && obj.every(item => isSnapshot(item));
 }
 
@@ -1276,9 +1275,9 @@ const isSnapshotArrayState = <T extends BaseData<any>, K extends T = T, Meta ext
 };
 
 
-function toSnapshotsArray<T extends BaseData<any>, K extends T = T>(snapshots: Snapshot<T, K>[]): SnapshotsArray<T, K> {
+function toSnapshotsArray<T extends BaseData<any>, K extends T = T>(snapshots: Snapshot<T, K>[]): SnapshotsArray<T> {
   // Transform if needed, or validate each snapshot type
-  return snapshots as SnapshotsArray<T, K>;
+  return snapshots as SnapshotsArray<T>;
 }
 
 
@@ -1315,7 +1314,7 @@ function isSnapshotUnion<T extends BaseData<any>, K extends T>(
 
 function convertSnapshotsObjectToArray<T extends BaseData, K extends T = T>(
   snapshotsObject: SnapshotsObject<T, K>
-): SnapshotsArray<T, K> {
+): SnapshotsArray<T> {
   const snapshotsArray = Object.values(snapshotsObject).map((snapshot) => {
     // Use isCompatibleSnapshot to check compatibility
     if (isSnapshotUnion(snapshot)) {

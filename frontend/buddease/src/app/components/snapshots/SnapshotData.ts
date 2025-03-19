@@ -25,14 +25,15 @@ import SnapshotStore from "./SnapshotStore";
 import { InitializedData } from "./SnapshotStoreOptions";
 import { TagsRecord } from "./SnapshotWithCriteria";
 import { SnapshotStoreProps } from "./useSnapshotStore";
+import { ExcludedFields } from '@/app/components/routing/Fields';
+import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
 
 interface CustomSnapshotData<
   T extends BaseData<any>,
   K extends T = T, 
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
-> extends SharedBaseData<K> {
+> extends SharedBaseData<K>, SharedIdentifiers {
   timestamp?: string | number | Date | undefined
-  value?: string | number | undefined;
   orders?: Order[];
 }
 
@@ -83,7 +84,7 @@ interface SnapshotData<
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = never,
 > extends SnapshotBase<T, K>,
-  SnapshotMethods<T, K> {
+  SnapshotMethods<T, K>, SharedIdentifiers {
   _id?: string;
   storeId: number;
   snapshotIds?: string[];
@@ -91,7 +92,7 @@ interface SnapshotData<
   description?: string | null;
   tags?: TagsRecord<T, K> | string[] | undefined
   key?: string;
-  state?: SnapshotsArray<T, K> | null;
+  state?: SnapshotsArray<T> | null;
   topic?: string;
   meta?: StructuredMetadata<T, K>;
   configOption?:
@@ -115,7 +116,6 @@ interface SnapshotData<
   snapshots?: Snapshots<T, K>
   subscribers: SubscriberCollection<T, K>[];
   delegate?: SnapshotStoreConfig<T, K>[];
-  value?: string | number | Snapshot<T, K> |  null | undefined;
   todoSnapshotId?: string;
   dataStoreMethods?: DataStoreWithSnapshotMethods<T, K> | null;
   createdAt: string | Date | undefined;

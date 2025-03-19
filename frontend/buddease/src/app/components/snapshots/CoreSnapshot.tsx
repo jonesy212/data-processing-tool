@@ -1,8 +1,9 @@
 // CoreSnapshot.ts
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { Task } from '@/app/components/models/tasks/Task';
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { SnapshotData } from ".";
@@ -41,7 +42,6 @@ import { SnapshotStoreMethod } from "./SnapshotStoreMethod";
 import { InitializedData, InitializedDataStore } from "./SnapshotStoreOptions";
 import { SnapshotSubscriberManagement } from "./SnapshotSubscriberManagement";
 import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
-import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 
 
 interface CoreSnapshot<
@@ -94,7 +94,7 @@ interface CoreSnapshot<
   phase?: Phase<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>> | null;
   ownerId?: string;
   store?: SnapshotStore<T, K> | null;
-  state?: SnapshotsArray<T, K> | null; // Ensure state matches Snapshot<T> or null/undefined
+  state?: SnapshotsArray<T> | null; // Ensure state matches Snapshot<T> or null/undefined
   dataStore?: InitializedDataStore<T>;
   snapshotId?: string | number | null;
   configOption?:
@@ -137,7 +137,7 @@ interface CoreSnapshot<
     savedState: SnapshotStore<T, K>,
     category: symbol | string | Category | undefined,
     callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T, K>,
+    snapshots: SnapshotsArray<T>,
     type: string,
     event: string | SnapshotEvents<T, K>,
     subscribers: SubscriberCollection<T, K>,
@@ -152,7 +152,7 @@ interface CoreSnapshot<
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T, K>,
+    snapshots: SnapshotsArray<T>,
     type: string,
     event: SnapshotEvents<T, K>,
     snapshotContainer?: T | undefined,

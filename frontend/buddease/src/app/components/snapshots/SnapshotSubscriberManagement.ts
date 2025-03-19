@@ -60,7 +60,7 @@ interface SnapshotSubscriberManagement<
         event: Event,
         callback: Callback<Snapshot<T, K>>,
         value: T,
-    ) => [] | SnapshotsArray<T, K>;
+    ) => [] | SnapshotsArray<T>;
 
       manageSubscription: (
         snapshotId: string,
@@ -114,11 +114,11 @@ interface SnapshotSubscriberManagement<
         snapshotConfig: SnapshotStoreConfig<T, K>,
         callback: (
           snapshotStore: SnapshotStore<T, K>, 
-          snapshots: SnapshotsArray<T, K>
+          snapshots: SnapshotsArray<T>
         ) => Subscriber<T, K> | null,
-        snapshots: SnapshotsArray<T, K>,
+        snapshots: SnapshotsArray<T>,
         unsubscribe?: UnsubscribeDetails, 
-    ) => SnapshotsArray<T, K> | [];
+    ) => SnapshotsArray<T> | [];
 
 
 

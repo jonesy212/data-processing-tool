@@ -6,7 +6,7 @@ import { processTextWithSpaCy } from "../intelligence/AutoGPTSpaCyIntegration";
 import { AllTypes } from "../typings/PropTypes";
 
 interface BaseEntity {
-  id: string | number;
+  id: string | number | undefined;
   name?: string | undefined;
   description?: string | null | undefined;
   createdAt: string | Date | undefined;
@@ -19,7 +19,7 @@ interface BaseEntity {
 
 // Define a type for your entities
 interface Entity extends BaseEntity {
-  type?: AllTypes;  // Add more properties as needed
+  type?: string | AllTypes | null
 }
 
 // Function to perform fuzzy matching with spaCy processing

@@ -26,7 +26,7 @@ import AppVersionImpl, {
   selectAppVersion,
   selectDatabaseVersion,
 } from "../versions/AppVersion";
-import { Version } from "../versions/Version";
+import { VersionImpl } from "../versions/Version";
 import { ModifiedDate } from "./DocType";
 import DocumentBuilder, { DocumentData } from "./DocumentBuilder"; // Import the DocumentBuilder component
 import { DocumentTypeEnum } from "./DocumentGenerator";
@@ -457,7 +457,7 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
             },
           },
           zoom: 100,
-          version: Version.create({
+          version: VersionImpl.create({
             id: 0,
             name: 'Draft Version',
             content: "",

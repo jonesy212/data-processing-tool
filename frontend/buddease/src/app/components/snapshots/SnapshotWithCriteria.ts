@@ -53,10 +53,9 @@ type SnapshotWithCriteria<
   subscribers?: SubscriberCollection<T, K>[];  // Update as needed based on your schema
   tags?: TagsRecord<T, K> | string[] | undefined;   // Update as needed based on your schema
   timestamp: string | number | Date | undefined;
-  snapshots?: Snapshots<BaseData<any, any, StructuredMetadata<any, any>>>; // Ensure correct snapshot type
+  snapshots?: Snapshots<BaseData<any, any, StructuredMetadata<any, any>>>;
   delegate: InitializedDelegate<T, K>;
 }
-
 
 export class SnapshotStoreWithCriteria<
     T extends  BaseData<any>,  

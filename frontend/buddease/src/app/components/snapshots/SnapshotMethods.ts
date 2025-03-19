@@ -21,7 +21,7 @@ import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { DataStore } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Subscription } from '../subscriptions/Subscription';
-import { NotificationTypeEnum } from "../support/NotificationContext";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 import Version from '../versions/Version';
 import { FetchSnapshotPayload } from './FetchSnapshotPayload';
@@ -33,7 +33,7 @@ import { SnapshotSubscriberManagement } from './SnapshotSubscriberManagement';
 
 
 
-type SnapshotMap = Map<T, [K<T>, SnapshotStore<Data, any>]>;
+type SnapshotMap = Map<T, [K<T>, SnapshotStore<Data<T, K<T>, Meta>, any>]>;
 
 interface SnapshotMethods<
   T extends BaseData<any>,
@@ -210,7 +210,7 @@ interface SnapshotMethods<
   compareSnapshotState: (snapshot1: Snapshot<T, K> | null, snapshot2: Snapshot<T, K>) => boolean;
 
   payload: Payload | undefined;
-  dataItems: () =>  RealtimeDataItem[] | null;
+  dataItems: RealtimeDataItem[];
   newData: Snapshot<T, K> | null 
   getInitialState: () => Snapshot<T, K> | null;
   getConfigOption: (optionKey: string) => any;

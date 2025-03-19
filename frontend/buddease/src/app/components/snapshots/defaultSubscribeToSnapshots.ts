@@ -724,7 +724,7 @@ export const defaultSubscribeToSnapshots =  <T extends  BaseData<any>, K extends
             category: symbol | string | Category | undefined, 
             categoryProperties: CategoryProperties | undefined,
             callback: (snapshot: T) => void, 
-            snapshots: SnapshotsArray<T, K>,
+            snapshots: SnapshotsArray<T>,
             type: string, 
             event: Event, 
             snapshotContainer?: T | undefined, 

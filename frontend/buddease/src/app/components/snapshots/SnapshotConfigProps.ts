@@ -11,10 +11,6 @@ import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
 
-
-
-
-
 // SnapshotCommonProps for properties specific to snapshots, extending BaseEntity for common properties
 interface SnapshotCommonProps<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends BaseEntity {
   criteria?: any; // Define a more specific type if needed

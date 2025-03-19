@@ -28,8 +28,8 @@ function handleSubscription<T extends  BaseData<any>, K extends T = T, Meta exte
   snapshotData: SnapshotData<T, K>,
   category: symbol | string | Category | undefined,
   snapshotConfig: SnapshotStoreConfig<T, K>,
-  callback: (snapshots: SnapshotsArray<T, K>) => Subscriber<T, K> | null,
-  snapshots: SnapshotsArray<T, K>
+  callback: (snapshots: SnapshotsArray<T>) => Subscriber<T, K> | null,
+  snapshots: SnapshotsArray<T>
 ): void {
   if (isSnapshotSubscriberManagement(obj)) {
     // Handle SnapshotSubscriberManagement case

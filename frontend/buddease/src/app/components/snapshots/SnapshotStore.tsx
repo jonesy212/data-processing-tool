@@ -1,5 +1,7 @@
+import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import { Data } from '@/app/components/models/data/Data';
 import { ConvertMeta } from '@/app/components/models/data/dataStoreMethods';
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
 import { SnapshotData } from '@/app/components/snapshots';
 import { getAllSnapshotEntries } from '@/app/components/snapshots/getSnapshotEntries';
 import {
@@ -16,7 +18,7 @@ import { Subscriber } from '@/app/components/users/Subscriber';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { initialState } from "../state/redux/slices/FilteredEventsSlice";
 import { CoreSnapshot } from './CoreSnapshot';
-import { SharedTimestamps, SharedStatusFlags, SharedIdentifiers } from '@/app/components/documents/RelatedProps'
+import { ExcludedFields } from '@/app/components/routing/Fields';
 
 import { handleApiError } from "@/app/api/ApiLogs";
 import { getSnapshotStoreConfig } from "@/app/api/SnapshotApi";
@@ -74,7 +76,6 @@ import { SearchCriteria } from "../routing/SearchCriteria";
 import { SecurityFeatureEnum } from "../security/SecurityFeatureEnum";
 import CalendarManagerStoreClass from "../state/stores/CalendarManagerStore";
 import { convertEventsToRecord } from "../typings/convertSnapshotEvents";
-import { AllTypes } from "../typings/PropTypes";
 import { isDataStoreMethod } from "../typings/typeguards/dataStoreTypeGuards";
 import { convertSnapshotStoreToSnapshot, convertToDataStore, isSnapshotStore, snapshotType } from "../typings/YourSpecificSnapshotType";
 import { AuditRecord } from "../users/Subscriber";
@@ -667,9 +668,10 @@ class SnapshotStore<
   id?: string | number | undefined;
   type?: string;
   title?: string;
+  name: string;
   label?: Label | string | null;
   key?: string;
-  value?: string | number | Snapshot<T, K> | undefined | null = 0;
+  value?: string | number | Snapshot<T, K, Meta, ExcludedFields> | null = 0;
   configOption?:
     | string
     | SnapshotConfig<T, K>
@@ -769,12 +771,12 @@ class SnapshotStore<
   storeId: number = 0;
   videos?: Video[];
   maxAge: string | number | undefined = undefined;
-  state?: SnapshotsArray<T, K> | null = null;
-  states: SnapshotsArray<T, K> = []; // Array of snapshots representing historical states
+  state?: SnapshotsArray<T> | null = null;
+  states: SnapshotsArray<T> = []; // Array of snapshots representing historical states
   currentState: Snapshot<T, K> | null = null; // The current snapshot state
   store: SnapshotStore<T, K> | null = null;
   stores: (storeProps: SnapshotStoreProps<T, K>) => SnapshotStore<T, K>[] | null = () => null;
-  snapshots: SnapshotsArray<T, K> = [];
+  snapshots: SnapshotsArray<T> = [];
   snapshotConfig: SnapshotConfig<T, K>[] = [];
   snapshotStoreConfig: SnapshotStoreConfig<T, K>[] = [];
   expirationDate: Date;
@@ -815,7 +817,7 @@ class SnapshotStore<
   }
 
   // Example method to get all historical states
-  getStates(): SnapshotsArray<T, K> {
+  getStates(): SnapshotsArray<T> {
     return this.states;
   }
 
@@ -935,7 +937,7 @@ class SnapshotStore<
   handleSnapshotFailure: (
     error: Error,
     snapshotId: string,     
-    snapshots: Snapshots<BaseData, UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>>
+    snapshots: Snapshots<BaseData, UnifiedMetadata<T, K, Meta, ExcludedFields>>
   ) => void;
 
   getSnapshotsBySubscriberSuccess: any;
@@ -1186,7 +1188,7 @@ onSnapshot = (
   public mapDataStore: T | Map<string, DataStore<T, K>> | null | undefined;
   public initialState: InitializedState<T, K>;
 
-  private name: string;
+  
   private version: Version<T, K> | string;
   private schema: Record<string, SchemaField>;
   private dataStores: DataStore<T, K>[];
@@ -2374,13 +2376,13 @@ onSnapshot = (
         throw new Error("Function not implemented.");
       },
       updateSnapshot: function (
-        snapshotId: string,
+        snapshotId: string | number | null,
         data: Map<string, Snapshot<WrappedU, WrappedU>>,
         events: Record<string, CalendarManagerStoreClass<WrappedU, WrappedU>[]>,
         snapshotStore: SnapshotStore<WrappedU, WrappedU>,
         dataItems: RealtimeDataItem[],
         newData: Snapshot<WrappedU, WrappedU>,
-        payload: UpdateSnapshotPayload<U, Meta>,
+        payload: UpdateSnapshotPayload<U>,
         store: SnapshotStore<any, U>
       ): Promise<{ snapshot: Snapshot<T, K>; }> {
         throw new Error("Function not implemented.");
@@ -2490,7 +2492,7 @@ onSnapshot = (
         savedState: SnapshotStore<WrappedU, WrappedU>,
         category: symbol | string | Category | undefined,
         callback: (snapshot: WrappedU) => void,
-        snapshots: SnapshotsArray<WrappedU, K, Meta>,
+        snapshots: SnapshotsArray<WrappedU>,
         type: string,
         event: string | SnapshotEvents<WrappedU, WrappedU>,
         subscribers: SubscriberCollection<WrappedU, WrappedU>,
@@ -2509,7 +2511,7 @@ onSnapshot = (
         category: symbol | string | Category | undefined,
         categoryProperties: CategoryProperties | undefined,
         callback: (snapshot: U) => void,
-        snapshots: SnapshotsArray<U, Meta>,
+        snapshots: SnapshotsArray<U>,
         type: string,
         event: Event,
         snapshotContainer?: U | undefined,
@@ -2526,7 +2528,7 @@ onSnapshot = (
         event: Event,
         callback: Callback<Snapshot<WrappedU, WrappedU>>,
         value: U
-      ): [] | SnapshotsArray<U, Meta> {
+      ): [] | SnapshotsArray<U> {
         throw new Error("Function not implemented.");
       },
       meta: {},
@@ -3029,8 +3031,9 @@ onSnapshot = (
 
 
    // Transform a snapshot subscriber of type T to one of type U
- private transformSubscriber<U extends Data<U>, 
- T extends U = U>(
+ private transformSubscriber<
+  U extends Data<U>, 
+  T extends U = U>(
    subscriber: (
      event: string,
      snapshotId: string,
@@ -3103,7 +3106,7 @@ onSnapshot = (
     savedState: SnapshotStore<T, K>,
     category: symbol | string | Category | undefined,
     callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T, K>,
+    snapshots: SnapshotsArray<T>,
     type: string,
     event: string | SnapshotEvents<T, K>,
     subscribers: SubscriberCollection<T, K>,
@@ -3136,7 +3139,7 @@ onSnapshot = (
 
     switch (type) {
       case "restore":
-        // Ensure snapshotData is compatible with SnapshotsArray<T, K>
+        // Ensure snapshotData is compatible with SnapshotsArray<T>
         if (!snapshots.includes(snapshotData as unknown as SnapshotUnion<T, K, Meta>)) {
           snapshots.push(snapshotData as unknown as SnapshotUnion<T, K, Meta>);
         }
@@ -3699,7 +3702,7 @@ onSnapshot = (
           category: Category | undefined,
           categoryProperties: CategoryProperties | undefined,
           callback: (snapshot: T) => void,
-          snapshots: SnapshotsArray<T, K>,
+          snapshots: SnapshotsArray<T>,
           type: string,
           event: Event,
           snapshotContainer?: T,
@@ -3782,7 +3785,7 @@ onSnapshot = (
           category: Category | undefined,
           categoryProperties: CategoryProperties | undefined,
           callback: (snapshot: T) => void,
-          snapshots: SnapshotsArray<T, K>,
+          snapshots: SnapshotsArray<T>,
           type: string,
           event: Event,
           snapshotContainer?: T,
@@ -3890,7 +3893,7 @@ onSnapshot = (
     callback: (snapshots: Snapshots<T, K>) => Subscriber<T, K> | null,
     snapshot: Snapshot<T, K> | null,
     unsubscribe?: UnsubscribeDetails,
-  ): [] | SnapshotsArray<T, K> {
+  ): [] | SnapshotsArray<T> {
     if (this.subscribeToSnapshots) {
       this.subscribeToSnapshots(snapshotId, callback, snapshot);
     } else {
@@ -5440,7 +5443,7 @@ onSnapshot = (
           category: symbol | string | Category | undefined,
           categoryProperties: CategoryProperties | undefined,
           callback: (snapshot: T) => void,
-          snapshots: SnapshotsArray<T, K>,
+          snapshots: SnapshotsArray<T>,
           type: string,
           event: Event,
           snapshotContainer?: T,
@@ -5692,9 +5695,9 @@ onSnapshot = (
             category: Category | undefined,
             snapshotConfig: SnapshotStoreConfig<T, K>,
             callback: (snapshotStore: SnapshotStore<T, K>) => Subscriber<T, K> | null,
-            snapshots: SnapshotsArray<T, K>,
+            snapshots: SnapshotsArray<T>,
             unsubscribe?: UnsubscribeDetails, 
-          ): [] | SnapshotsArray<T, K> {
+          ): [] | SnapshotsArray<T> {
             if (this.subscription) {
               this.subscription.unsubscribe(
                 snapshotId,
@@ -6127,7 +6130,7 @@ onSnapshot = (
             category: symbol | string | Category | undefined,
             categoryProperties: CategoryProperties | undefined,
             callback: (snapshot: T) => void,
-            snapshots: SnapshotsArray<T, K>,
+            snapshots: SnapshotsArray<T>,
             type: string,
             event: Event,
             snapshotContainer?: T,
@@ -6253,7 +6256,7 @@ onSnapshot = (
             );
             return notifiedSubscribers as Subscriber<T, K>[];
           },
-          subscribe: function (): [] | SnapshotsArray<T, K> {
+          subscribe: function (): [] | SnapshotsArray<T> {
             defaultImplementation();
           },
           unsubscribe: function () {
@@ -6880,7 +6883,7 @@ onSnapshot = (
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T, K>,
+    snapshots: SnapshotsArray<T>,
     type: string,
     event: Event,
     snapshotContainer?: T,
@@ -6979,7 +6982,7 @@ onSnapshot = (
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T, K>,
+    snapshots: SnapshotsArray<T>,
     type: string,
     event: Event,
     snapshotStore: SnapshotStore<T, K>,
@@ -7111,7 +7114,7 @@ onSnapshot = (
       const snapshotMap = new Map<string, Snapshot<T, K>>();
       snapshotMap.set(snapshotId, snapshot);
 
-      const snapshotsArray: SnapshotsArray<T, K> = Array.from(
+      const snapshotsArray: SnapshotsArray<T> = Array.from(
         snapshotMap.values()
       );
       const snapshotsObject: SnapshotsObject<T, K> = Object.fromEntries(
@@ -7164,7 +7167,7 @@ onSnapshot = (
       data: K,
       index: number
     ) => SnapshotsObject<T, K>
-  ) => Promise<SnapshotsArray<T, K>> = (
+  ) => Promise<SnapshotsArray<T>> = (
     storeIds,
     snapshotId,
     category,
@@ -7259,7 +7262,7 @@ onSnapshot = (
     data: T,
     event: Event,
     callback: Callback<Snapshot<T, K>>
-  ): [] | SnapshotsArray<T, K> {
+  ): [] | SnapshotsArray<T> {
     const firstDelegate = this.getFirstDelegate();
 
     // Call the subscribe method and handle its result
@@ -7385,7 +7388,7 @@ onSnapshot = (
 
   getSnapshots(category: string, data: Snapshots<T, K>): void {
     const delegate = this.ensureDelegate();
-    const convertedData: SnapshotsArray<T, K> = convertToSnapshotArray(data);
+    const convertedData: SnapshotsArray<T> = convertToSnapshotArray(data);
     delegate.getSnapshots(category, convertedData);
   }
 

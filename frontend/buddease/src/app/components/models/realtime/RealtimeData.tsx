@@ -7,6 +7,7 @@ import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { EventData } from "@/app/components/state/stores/AssignEventStore";
 import { Attachment } from '@/app/components/documents/Attachment/attachment'
 import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
+import { RealtimeUpdateCallback } from '@/app/components/hooks/commHooks/useRealtimeData';
 
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
@@ -17,12 +18,15 @@ import { AllTypes } from "../../typings/PropTypes";
 import { BaseData } from "../data/Data";
 import { T, K, Meta } from "@/app/components/models/data/dataStoreMethods";
 import { ExcludedFields } from '@/app/components/routing/Fields';
+import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
 
-interface BaseRealtimeData {
-  id: string | number | undefined;
+
+
+interface BaseRealtimeData extends SharedIdentifiers {
+  id: string | number | undefined; // Override id to ensure it's required
   name: string;
   value: string;
-  type: string | AllTypes | null;
+  type: string | AllTypes | undefined; // Align with BaseData's expectation
   date: Date; // Standardize to Date
   // Add other common properties shared by RealtimeDataItem and RealtimeData here
 }
@@ -32,7 +36,7 @@ interface RealtimeDataItem extends BaseRealtimeData, EventData, SharedMetadata<K
   userId: string;
   dispatch: (action: any) => void;
   timestamp: Date; // Standardize to Date
-  data?: Snapshot<T, K<T>, Meta<T, K>, ExcludedFields>;
+  data?: InitializedData<RealtimeDataItem> | null,
   // Add other properties specific to RealtimeDataItem here
 }
 
@@ -62,10 +66,8 @@ const processSnapshotStore = <T extends BaseData<any, any>, K extends T = T>(
   });
 };
 
-const RealtimeDataComponent: React.FC<RealtimeDataItem> = <
-  T extends  BaseData<any>,
-  K extends  T = T
->({
+
+const RealtimeDataComponent: React.FC<RealtimeDataItem> = ({
   userId,
   date,
   dispatch,
@@ -74,63 +76,41 @@ const RealtimeDataComponent: React.FC<RealtimeDataItem> = <
   timestamp,
   title,
 }: RealtimeDataItem) => {
-  // Initial data can be an empty array or any initial state you want
   const initialData: RealtimeDataItem[] = [];
-  const { error, handleError, clearError } = useErrorHandling(); // Initialize error handling
+  const { error, handleError, clearError } = useErrorHandling();
 
-  // Custom update callback function
-  // Adjust the type of updateCallback to match the expected signature
-  const updateCallback: <
-  T extends BaseData<any> = BaseData<any, any, any, Attachment>,
-    K extends T = T>(
+  const updateCallback: RealtimeUpdateCallback<RealtimeDataItem, RealtimeDataItem> = (
     id: string,
     events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<T, K>,
+    snapshotStore: SnapshotStore<RealtimeDataItem, RealtimeDataItem>,
     dataItems: RealtimeDataItem[],
-    data?: InitializedData<T> | null,
-  ) => void = (
-    id: string,
-    events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
-    data?: InitializedData<T> | null,
+    data?: InitializedData<RealtimeDataItem> | null,
   ) => {
-    // Convert exchangeData and dexData to RealtimeData if needed
-    const exchangeData: ExchangeData[] = []; // Your logic to convert or fetch exchange data
-    const dexData: any[] = []; // Your logic to convert or fetch DEX data
+    const exchangeData: ExchangeData[] = [];
+    const dexData: any[] = [];
 
     try {
-      // Dispatch actions to store the fetched data in Redux store
       dispatch(ExchangeActions.fetchExchangeData(exchangeData));
-      // Dispatch actions to store the fetched DEX data in Redux store
       dispatch(fetchDEXData(dexData, dispatch));
-      // Log the contents of the 'data' parameter for debugging purposes
       console.log("Snapshot store data:", data);
 
-      // Iterate over RealtimeDataItems and CalendarEvents
       dataItems.forEach((dataItem: RealtimeDataItem) => {
         console.log(`Updated data item with ID ${dataItem.id}:`, dataItem);
       });
-      // Clear any previous errors if update was successful
       clearError();
     } catch (error: any) {
-      // Handle errors
       handleError(error.message);
     }
     processSnapshotStore(snapshotStore);
 
-    // For example, you can directly use the updated events data
     Object.keys(events).forEach((eventId: string) => {
       const calendarEvents = events[eventId];
-      // Perform actions based on each calendar event
       calendarEvents.forEach((event: CalendarEvent) => {
-        // Example: Update UI or trigger notifications based on the event
         console.log(`Updated event with ID ${eventId}:`, event);
       });
     });
   };
 
-  // Get realtime data and fetchData function from the hook
   const { realtimeData, fetchData } = useRealtimeData<RealtimeDataItem, RealtimeDataItem>(
     initialData,
     updateCallback
@@ -144,9 +124,7 @@ const RealtimeDataComponent: React.FC<RealtimeDataItem> = <
 
   return (
     <div>
-      // Display error message if error exists
       {error && <div>Error: {error}</div>}
-      {/* Display your realtime data in the component */}
       {realtimeData.map((dataItem: RealtimeDataItem, index: number) => (
         <div key={index}>
           <h3>{name}</h3>
@@ -155,8 +133,6 @@ const RealtimeDataComponent: React.FC<RealtimeDataItem> = <
           <p>Date: {date.toString()}</p>
           <p>Timestamp: {timestamp.toString()}</p>
           {title && <p>Title: {title}</p>}
-
-          {/* Display each data item */}
           <p>{dataItem.id}</p>
           <p>{dataItem.value}</p>
         </div>

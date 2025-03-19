@@ -194,7 +194,7 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T, K>,
+      snapshots: SnapshotsArray<T>,
       type: string,
       event: Event,
       snapshotContainer?: T,
@@ -219,7 +219,7 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
       event: Event,
       callback: Callback<Snapshot<T, K>>,
       value: T,
-    ): SnapshotsArray<T, K> {
+    ): SnapshotsArray<T> {
       const foundSubscriber = subscriber as Subscriber<T, K>;
       if (foundSubscriber) {
         foundSubscriber.getState(data);
@@ -236,7 +236,7 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
       // Type assertion when passing to callback
       callback(newSnapshot as unknown as Snapshot<T, K>);
     
-      // Return an appropriate SnapshotsArray<T, K> value.
+      // Return an appropriate SnapshotsArray<T> value.
       return [newSnapshot as unknown as SnapshotUnion<T, K>];
     }
   }

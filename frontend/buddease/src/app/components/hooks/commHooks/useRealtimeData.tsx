@@ -9,6 +9,7 @@ import { RealtimeData, RealtimeDataItem } from "../../models/realtime/RealtimeDa
 import axiosInstance from "../../security/csrfToken";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 
 export const ENDPOINT = endpoints.backend
 
@@ -17,7 +18,8 @@ export type RealtimeUpdateCallback<T extends RealtimeData, K extends T = T> = (
   events: Record<string, CalendarEvent[]>,
   snapshotStore: SnapshotStore<T, K>,
   dataItems: T[],
-  data?: SnapshotStore<T, K>,
+  data?: InitializedData<T> | null, 
+  
 ) => void;
 
 const useRealtimeData = <T extends RealtimeDataItem, K extends T = T>(
@@ -51,10 +53,10 @@ const useRealtimeData = <T extends RealtimeDataItem, K extends T = T>(
       "updateData",
       (
         id: string,
-        data: SnapshotStore<T, K>,
         events: Record<string, CalendarEvent[]>,
         snapshotStore: SnapshotStore<T, K>, // Also fix type here
-        dataItems: RealtimeDataItem[]
+        dataItems: RealtimeDataItem[],
+        data?: InitializedData<T> | null, 
       ) => {
 
         if (!data ||!snapshotStore ||!dataItems) {

@@ -18,16 +18,16 @@ import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { InitializedData } from './SnapshotStoreOptions';
 import { SnapshotStoreProps } from "./useSnapshotStore";
+import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
 
 
 interface SnapshotItem<
   T extends  BaseData<any>, 
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcExcludedFields extends keyof T = never
-> extends Snapshot<T, K, Meta, ExcExcludedFields> {
+  ExcludedFields extends keyof T = never
+> extends Snapshot<T, K, Meta, ExcludedFields>, SharedIdentifiers {
   id: string;
-  value: string | number | Snapshot<T, K, StructuredMetadata<T, K>, ExcExcludedFields> | null | undefined
   message?: (
     type: NotificationType, 
     content: string, 
@@ -41,6 +41,7 @@ interface SnapshotItem<
   user?: User;
   categories?: Category[];
   label: Label | undefined;
+  key: string 
 }
 
 

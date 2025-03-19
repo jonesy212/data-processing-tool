@@ -91,11 +91,11 @@ import {
     SnapshotUnion,
 } from "./LocalStorageSnapshotStore";
 
+import { Subscription } from '@/app/components/subscriptions/SubscriptionPlan';
 import { CreateSnapshotsPayload, Payload } from "../database/Payload";
 import { SchemaField } from "../database/SchemaField";
 import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { Subscription } from '@/app/components/subscriptions/SubscriptionPlan';
 import Version from "../versions/Version";
 import { createSnapshotInstance } from "./createSnapshotInstance";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
@@ -181,7 +181,8 @@ type SnapshotStoreProps<
   initialState: InitializedState<T, K>;
   operation: SnapshotOperation<T, K>;
   id?: string | number;
-  snapshots?: SnapshotsArray<T, K>;
+  snapshots?: Snapshots<T, K>;
+  snapshotsArray?: SnapshotsArray<T>;
   data?: InitializedData<T>| null | undefined
   message?: string;
   state?: Snapshot<T, K>[] | null;
@@ -211,10 +212,14 @@ const useSnapshotStore = async  <
     subscribers: Subscriber<T, K>[],
     storeProps?: SnapshotStoreProps<T, K>
   ) =>  Promise<Subscription<T, K> | null>,
-  storeProps: SnapshotStoreProps<T, K>
+  storeProps?: SnapshotStoreProps<T, K>
 ): Promise<SnapshotStore<any>> => {
   const [subscribers, setSubscribers] = useState<Subscriber<T, K>[]>([]);
   
+  if(!storeProps){
+    throw new Error("SnapshotStoreProps not provided");
+  }
+
   const {
     storeId,
     name,
@@ -2773,7 +2778,7 @@ const useSnapshotStore = async  <
             category: symbol | string | Category | undefined,
             categoryProperties: CategoryProperties | undefined,
             callback: (snapshot: T) => void,
-            snapshots: SnapshotsArray<T, K>,
+            snapshots: SnapshotsArray<T>,
             type: string,
             event: Event,
             snapshotContainer?: T | undefined,

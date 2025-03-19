@@ -140,11 +140,11 @@ interface SnapshotStoreOptions<
     snapshotConfig: SnapshotStoreConfig<T, K>,
     callback: (
       snapshotStore: SnapshotStore<T, K>,
-      snapshots: SnapshotsArray<T, K>
+      snapshots: SnapshotsArray<T>
     ) => Subscriber<T, K> | null,
-    snapshots: SnapshotsArray<T, K>,
+    snapshots: SnapshotsArray<T>,
     unsubscribe?: UnsubscribeDetails,
-  ) => SnapshotsArray<T, K> | [];
+  ) => SnapshotsArray<T> | [];
 
   subscribeToSnapshot: (
     snapshotId: string,
@@ -276,7 +276,7 @@ interface SnapshotStoreOptions<
     category: symbol | string | Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     subscriberId: string | undefined,
-    delegate: SnapshotWithCriteria<T, K>[],
+    delegate: SnapshotWithCriteria<T, K>[] | null,
     snapshotData: SnapshotData<T, K>,
     snapshot: (
       id: string | number | undefined,
@@ -352,6 +352,7 @@ interface SnapshotStoreOptions<
 
 export type {
     InitializedData, InitializedDataStore, InitializedDelegate,
-    InitializedDelegateSearch, MetaDataOptions, SnapshotInstanceProps, SnapshotStoreOptions
+    InitializedDelegateSearch, MetaDataOptions, SnapshotInstanceProps, SnapshotStoreOptions,
+    SnapshotConfigOption
 };
 

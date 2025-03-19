@@ -36,7 +36,7 @@ interface SnapshotHandling<T extends  BaseData<any>, K extends T = T, Meta exten
           data: T,
           index: number
         ) => SnapshotsObject<T, K>
-      ): Promise<SnapshotsArray<T, K>>    
+      ): Promise<SnapshotsArray<T>>    
 
       createSnapshotStore: (
         id: string,

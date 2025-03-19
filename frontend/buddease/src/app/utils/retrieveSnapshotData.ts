@@ -2,6 +2,7 @@ import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { SnapshotStoreProps } from '@/app/components/snapshots//useSnapshotStore';
 import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import axiosInstance from '../api/axiosInstance';
 import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '../components/database/Payload';
@@ -19,7 +20,6 @@ import { SnapshotOperation, SnapshotOperationType } from '../components/snapshot
 import { SnapshotItem } from '../components/snapshots/SnapshotList';
 import { SnapshotStoreConfig } from '../components/snapshots/SnapshotStoreConfig';
 import { InitializedData, InitializedDataStore } from '../components/snapshots/SnapshotStoreOptions';
-import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { convertSnapshotToMap } from '../components/typings/YourSpecificSnapshotType';
 import { Subscriber } from '../components/users/Subscriber';
 import { snapshotId } from "../components/utils/snapshotUtils";
@@ -1207,7 +1207,7 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
       category: symbol | string | Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T, K>,
+      snapshots: SnapshotsArray<T>,
       type: string,
       event: Event,
       snapshotStore: SnapshotStore<T, K>,

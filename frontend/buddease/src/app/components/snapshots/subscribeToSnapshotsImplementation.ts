@@ -77,10 +77,10 @@ const subscribeToSnapshotsImpl = <T extends  BaseData<any>, K extends T = T, Met
   snapshotId: string,
   snapshotCallback: (
     snapshotStore: SnapshotStore<T, K>, 
-    snapshots: SnapshotsArray<T, K>
+    snapshots: SnapshotsArray<T>
   ) => Subscriber<T, K> | null,
   snapshotStore: SnapshotStore<T, K>, 
-  snapshot: SnapshotsArray<T, K>
+  snapshot: SnapshotsArray<T>
 ) => {
   if (!snapshotSubscribers.has(snapshotId)) {
     snapshotSubscribers.set(snapshotId, []);
@@ -89,7 +89,7 @@ const subscribeToSnapshotsImpl = <T extends  BaseData<any>, K extends T = T, Met
   const typedCallback = addSubscriptionMethods<SnapshotUnion<T, K>>((snapshot) => {
     snapshotCallback(
       snapshot as unknown as SnapshotStore<T, K>,
-      snapshots as unknown as SnapshotsArray<T, K>
+      snapshots as unknown as SnapshotsArray<T>
     );
   }, snapshotId);
 
@@ -122,7 +122,7 @@ const subscribeToSnapshotsImpl = <T extends  BaseData<any>, K extends T = T, Met
 const subscribeToSnapshotImpl = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string,
   callback: (snapshot: Snapshot<T, K>) => Subscriber<T, K> | null,
-  snapshot: Snapshot<T, K> | Snapshots<T, K> | SnapshotsArray<T, K>
+  snapshot: Snapshot<T, K> | Snapshots<T, K> | SnapshotsArray<T>
 ): Subscriber<T, K> | null => {
   if (!snapshotSubscribers.has(snapshotId)) {
     snapshotSubscribers.set(snapshotId, []);

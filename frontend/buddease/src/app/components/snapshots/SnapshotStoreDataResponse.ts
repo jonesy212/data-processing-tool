@@ -168,7 +168,7 @@ type OptionalSnapshotProps<
   deleteSnapshot?: (id: string) => void;
   getSnapshotItems?: (
     category: symbol | string | Category | undefined, 
-    snapshots: SnapshotsArray<T, K>,
+    snapshots: SnapshotsArray<T>,
     snapshotId?: string,                     // Optional: If you need to fetch a specific snapshot by ID
     callback?: (snapshots: Snapshots<T, K>) => Subscriber<T, K> | null, // Optional: Callback to process snapshots
     snapshot?: Snapshot<T, K> | null        // Optional: Current snapshot to process or filter by

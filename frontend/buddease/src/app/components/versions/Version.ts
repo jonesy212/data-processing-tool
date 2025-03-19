@@ -1,6 +1,7 @@
 // Version.ts
 import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { useMeta } from '@/app/configs/useMeta';
+import { version } from "@/app/components/versions/Version";
 import UserRoles from '@/app/components/users/UserRoles';
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
@@ -119,9 +120,9 @@ interface Version<
 
 interface Versions {
   version?: Version<T, K<T>>[];
-  versionData?: string | VersionData | null;
+  versionData?: string | VersionData<T, K<T>> | null;
   backend: BackendStructure | undefined;
-  frontend: FrontendStructure | undefined;
+  frontend: FrontendStructure<T, K<T>> | undefined;
   history: HistoryEntry[] | undefined;
 }
 
@@ -221,7 +222,7 @@ function createVersion(overrides?: Partial<Version<T, K<T>>>): Version<T, K<T>> 
     workspaceViewers: [],
     workspaceAdmins: [],
     workspaceMembers: [],
-    data: {} as VersionData,
+    data: {} as VersionData<T, K<T>>,
     _structure: {},
 
     versionHistory: {
@@ -276,6 +277,7 @@ function createVersion(overrides?: Partial<Version<T, K<T>>>): Version<T, K<T>> 
       ...defaultVersion,
       metadata: {
         ...defaultVersion.metadata,
+        latestVersion: overrides?.metadata.latestVersion ?? defaultVersion.metadata.latestVersion ?? createLatestVersion(),
         currentMeta: overrides?.metadata?.currentMeta ?? defaultVersion.metadata?.currentMeta ?? createDefaultMeta<T, K<T>>(), 
         metadataEntries: overrides?.metadata?.metadataEntries ?? defaultVersion.metadata?.metadataEntries ?? {}, // Provide default value
         area: overrides?.metadata?.area ? defaultVersion.metadata?.area : undefined,
@@ -390,7 +392,7 @@ class VersionImpl<
   workspaceViewers: string[];
   workspaceAdmins: string[];
   workspaceMembers: string[];
-  versionData?: string | VersionData | null;
+  versionData?: string | VersionData<T, K> | null;
   buildVersions?: BuildVersion | undefined;
   published?: boolean;
   createdAt?: string | Date | undefined;
@@ -478,7 +480,7 @@ class VersionImpl<
     isLatest: boolean;
     isPublished: boolean;
     publishedAt: Date | null;
-    releaseDate: string | Date;
+    releaseDate: string | Date | undefined;
 
     isDeleted: boolean,
 
@@ -931,7 +933,7 @@ class VersionImpl<
     name: string;
     versions: Versions;
     metadata: {
-      author: string;
+      author: string | undefined;
       timestamp: string | Date | undefined
     };
     url: string;
@@ -994,7 +996,7 @@ class VersionImpl<
     return new VersionImpl(versionInfo);
   }
   // Method to get version data
-  getVersionData?(): VersionData | undefined {
+  getVersionData?(): VersionData<T, K> | undefined {
     const { content, name, url, versionNumber } = this;
     if (!content || !name || !versionNumber) {
       return undefined;
@@ -1011,7 +1013,7 @@ class VersionImpl<
       timestamp: new Date().toISOString(), // Assuming you want a string representation
       createdBy: "John Doe",
       
-      tags: ["sample", "metadata", "example"],
+      tags: {},
       metadata: {},
       initialState: {} as InitializedState<Data<BaseData<any, any, any, Attachment>, BaseData<any, any, any, Attachment>, StructuredMetadata<BaseData<any, any, any, Attachment>, BaseData<any>>>, any>,
       meta: {} as Map<string, Snapshot<Data<BaseData<any>, BaseData<any>>, any>>,
@@ -1184,7 +1186,7 @@ class VersionImpl<
 
   }
   // Method to update version history
-  updateVersionHistory?(newVersionData: VersionData): void {
+  updateVersionHistory?(newVersionData: VersionData<T, K>): void {
     if (Array.isArray(this.versionHistory.versionData)) {
       this.versionHistory.versionData.push(newVersionData);
     } else {
@@ -1192,9 +1194,6 @@ class VersionImpl<
       this.versionHistory.versionData = [newVersionData];
     }
   }
-
-
-  
 
   // Method to generate checksum
   generateChecksum?(content: string): string {
@@ -1306,7 +1305,9 @@ class VersionImpl<
   }
 }
 
-const versionData: VersionData<T, K> = {
+const version = createVersion();
+
+const versionData: VersionData<T, K<T>> = {
 id: "0",
 name: "",
   url: "",
@@ -1346,13 +1347,13 @@ name: "",
     timestamp: new Date(),
     revisionNotes: undefined, // Adjust as per your application logic
   },
-  versionData: {},
+  versionData: undefined,
   major: 0,
   minor: 0,
   patch: 0,
 
   data: [],
-  version: {},
+  version: version,
   timestamp: "",
   user: "",
   comments: [],
@@ -1476,7 +1477,6 @@ const devVersion: DevVersion<T, K<T>> = {
 };
 
 export default VersionImpl
-export { createVersion, versionData };
+export { createVersion, versionData, version, devVersion };
 export type { BuildVersion, Version, Versions };
 
-export const version = createVersion();

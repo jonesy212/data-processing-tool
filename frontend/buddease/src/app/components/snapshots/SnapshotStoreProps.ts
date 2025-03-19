@@ -214,11 +214,11 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
         snapshotConfig: SnapshotStoreConfig<T, K<T>>,
         callback: (
           snapshotStore: SnapshotStore<T, K<T>>, 
-          snapshots: SnapshotsArray<T, K<T>>
+          snapshots: SnapshotsArray<T>
         ) => Subscriber<T, K<T>> | null,
-        snapshots: SnapshotsArray<T, K<T>>,
+        snapshots: SnapshotsArray<T>,
         unsubscribe?: UnsubscribeDetails, 
-      ): SnapshotsArray<T, K<T>> | [] => {
+      ): SnapshotsArray<T> | [] => {
         // Implement your logic here
         return snapshots; // or modify the snapshots as needed
       },

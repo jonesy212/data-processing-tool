@@ -124,6 +124,17 @@ const unassignProject = (team: Team, project: Project) => {
   team.projects = team.projects.filter((proj) => proj.id !== project.id);
 };
 
+
+const handleMeetingStatusChange = (
+  meeting: CalendarDetails,
+  newStatus: MeetingStatus
+) => {
+  // Implement the logic to update the meeting's status
+  meeting.status = newStatus;
+};
+
+const getData
+
 const analysisType = (project: Project) => {
   if (project.type === "data") {
     return <AnalyzeData projectId={project.id} />;
@@ -149,8 +160,8 @@ export const addSnapshotHandler =  <T extends  BaseData<any>, K extends T = T, M
     delegate.forEach((config) => {
       if (typeof config.setSnapshots === "function") {
         // Ensure config.snapshots is treated as an array
-        const currentSnapshotsArray: SnapshotsArray<T, K> = Array.isArray(config.snapshots)
-          ? (config.snapshots as SnapshotsArray<T, K>)
+        const currentSnapshotsArray: SnapshotsArray<T> = Array.isArray(config.snapshots)
+          ? (config.snapshots as SnapshotsArray<T>)
           : [];
 
         // Use type guard to ensure compatibility
@@ -186,7 +197,7 @@ const CalendarApp = async <
   
   // Use `useMetadata` with appropriate type arguments for UnifiedMetaDataOptions
   const currentMetadata: UnifiedMetadata<T, K, StructuredMetadata<T, K>> = 
-    useMetadata<T, K, Meta>({ area: 'calendar-area' }); // Updated area for calendar
+    useMetadata<T, K, Meta>('calendar-area'); // Updated area for calendar
   
    // Destructure the required properties from props
    const {
@@ -490,9 +501,9 @@ const CalendarApp = async <
         data: K,
         index: number
       ) => SnapshotsObject<T, K>
-    ): Promise<SnapshotsArray<T, K>> {
+    ): Promise<SnapshotsArray<T>> {
       // Initialize an array to store results from callback executions
-      const result: SnapshotsArray<T, K> = [];
+      const result: SnapshotsArray<T> = [];
     
       // Loop through each storeId and execute the callback
       for (let i = 0; i < storeIds.length; i++) {
@@ -615,7 +626,7 @@ const CalendarApp = async <
       snapshotStore: SnapshotStore<T, K>,
       snapshotData: SnapshotData<T, K>,
       data: Data<T>,
-      snapshotsArray: SnapshotsArray<T, K>,
+      snapshotsArray: SnapshotsArray<T>,
       snapshotsObject: SnapshotsObject<T, K>
     ): Promise<SnapshotContainer<T, K> | undefined> {
       throw new Error("Function not implemented.");
@@ -966,7 +977,7 @@ const CalendarApp = async <
               },
               timestamp: undefined,
               category: "",
-              status: MeetingStatus
+              status: MeetingStatus.Pending, // Valid
             },
           ],
           reassignedProjects: [

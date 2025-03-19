@@ -95,7 +95,7 @@ function createSnapshotOptions<
   
 
     return {
-        data: dataMap ? ({} as InitializedData<T, K>),
+        data: dataMap ? ({} as InitializedData<T>),
         initialState: snapshotObj.initialState ? initializeState(snapshotObj.initialState) : {} as InitializedState<T, K>,
         snapshotId: snapshotObj.id ? snapshotObj.id.toString() : "",
         category: {

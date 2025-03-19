@@ -4,6 +4,8 @@ import React from "react";
 import { BaseData, Data } from "./components/models/data/Data";
 import { EventManager } from "./components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { UnifiedMetadata } from "./configs/database/MetaDataOptions";
+import useSecureStoreId from "@/app/components/utils/useSecureStoreId";
+import { Attachment } from '@/app/components/documents/Attachment/attachment'
 
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
@@ -13,6 +15,7 @@ import { createLastUpdatedWithVersion, createLatestVersion } from "./components/
 import { useMeta } from "./configs/useMeta";
 import { useMetadata } from "./configs/useMetadata";
 import { useSnapshot } from "./context/SnapshotContext";
+import { baseConfig } from './configs/BaseConfig';
 
 const area = fetchUserAreaDimensions().toString()
 const metadata: UnifiedMetadata<T, K<T>> = useMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>(area);
@@ -115,8 +118,6 @@ export const defaultMetadata = <
   // Duplicate fields removed
 });
 
-
-
 export default function RootLayout({ children,
 }: {
   children: React.ReactNode
@@ -127,11 +128,6 @@ export default function RootLayout({ children,
     </html>
   )
 }
-
-
-
-
-
 
 export const videoMetadataExample: UnifiedMetadata<
   BaseData<any>,
@@ -195,6 +191,8 @@ export const videoMetadataExample: UnifiedMetadata<
   },
   videoMetadata: {
 
+    createdAt: new Date(),
+    updatedAt: new Date(),
     location: "",
     closedCaptions: [],
     license: "",
@@ -202,7 +200,6 @@ export const videoMetadataExample: UnifiedMetadata<
     isFamilyFriendly: false,
     isEmbeddable: false,
     isDownloadable: false,
-    
     title: 'Sample Video',
     uploadDate: new Date(),
     url: 'https://example.com/video',
@@ -219,6 +216,10 @@ export const videoMetadataExample: UnifiedMetadata<
     bitrate: 5000000,
     frameRate: 30,
     aspectRatio: '16:9',
+    baseData: {},
+    metadata: {}, 
+    childIds: [], 
+    relatedData: [],
     data: {} as Data<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K<T>>>,
     colorSpace: 'sRGB',
     audioCodec: 'AAC',
@@ -229,7 +230,5 @@ export const videoMetadataExample: UnifiedMetadata<
     chapters: [],
     thumbnailUrl: 'https://example.com/thumbnail.jpg',
     metadataSource: 'manual',
-    createdAt: new Date(),
-    updatedAt: new Date(),
   },
 };

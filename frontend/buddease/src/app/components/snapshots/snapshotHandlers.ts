@@ -4,7 +4,6 @@ import { UpdateSnapshotPayload } from "@/app/components/database/Payload";
 import { allCategories } from '@/app/components/models/data/DataStructureCategories';
 import { SnapshotData } from '@/app/components/snapshots';
 import { SnapshotsArray } from '@/app/components/snapshots/LocalStorageSnapshotStore';
-import { useSecureStoreId } from './../utils/useSecureStoreId';
 
 
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
@@ -45,7 +44,6 @@ import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { createSnapshotItem, SnapshotItem } from "./SnapshotList";
 import SnapshotManagerOptions from './SnapshotManagerOptions';
 import { snapshotStoreConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { snapshotStoreConfigInstance } from './snapshotStoreConfigInstance';
 
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
@@ -89,11 +87,11 @@ export const subscribeToSnapshots =  <T extends  BaseData<any>, K extends T = T,
   snapshotConfig: SnapshotStoreConfig<T, K>,
   callback: (
     snapshotStore: SnapshotStore<T, K>, 
-    snapshots: SnapshotsArray<T, K>
+    snapshots: SnapshotsArray<T>
   ) => Subscriber<T, K> | null,
-  snapshots: SnapshotsArray<T, K>,
+  snapshots: SnapshotsArray<T>,
   unsubscribe?: UnsubscribeDetails, 
-): SnapshotsArray<T, K> => {
+): SnapshotsArray<T> => {
   if (!snapshotSubscribers.has(snapshotId)) {
     snapshotSubscribers.set(snapshotId, new Set<Subscriber<BaseData<any>, K>>());
   }
@@ -304,7 +302,7 @@ async function createSnapshotStore<
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T, K>,
+      snapshots: SnapshotsArray<T>,
       type: string,
       event: Event,
       snapshotContainer?: T,
@@ -1282,10 +1280,10 @@ export const getAllSnapshots = async  <T extends  BaseData<any>, K extends T = T
 
 export const batchTakeSnapshot = async  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: SnapshotStore<T, K>, // Use both type arguments for SnapshotStore
-  snapshots:  SnapshotsArray<T, K> // Use both type arguments for SnapshotStore
-): Promise<{ snapshots:  SnapshotsArray<T, K> }> => {
+  snapshots:  SnapshotsArray<T> // Use both type arguments for SnapshotStore
+): Promise<{ snapshots:  SnapshotsArray<T> }> => {
   try {
-    const result:  SnapshotsArray<T, K> = [...snapshots];
+    const result:  SnapshotsArray<T> = [...snapshots];
     return { snapshots: result };
   } catch (error) {
     throw error;
@@ -1296,8 +1294,8 @@ export const batchTakeSnapshot = async  <T extends  BaseData<any>, K extends T =
 // Handler for batch updating snapshots
 const batchUpdateSnapshots = async  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   subscribers: Subscriber<T, K>[],
-  snapshots: SnapshotsArray<T, K>
-): Promise<{ snapshots: SnapshotsArray<T, K> }[]> => {
+  snapshots: SnapshotsArray<T>
+): Promise<{ snapshots: SnapshotsArray<T> }[]> => {
   try {
     return [{ snapshots: [] }];
   } catch (error) {

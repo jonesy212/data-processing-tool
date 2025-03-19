@@ -351,7 +351,6 @@ class EventService {
     eventService.removeEventListener(type, listener, options, useCapture);
   }
 
-
   // Function to create a new event
   static createCustomEvent(
     id: string,

@@ -6,6 +6,7 @@ import { endpoints } from "@/app/api/endpointConfigurations";
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { Payload, UpdateSnapshotPayload } from "@/app/components/database/Payload";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CustomSnapshotData, SnapshotData, SnapshotStoreProps, SnapshotWithCriteria } from ".";
 import { CalendarEvent } from "../calendar/CalendarEvent";
@@ -29,7 +30,6 @@ import { generateSnapshotId } from "../utils/snapshotUtils";
 import { ExtendedVersionData } from "../versions/VersionData";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { Snapshot, Snapshots, SnapshotsArray, } from "./LocalStorageSnapshotStore";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
@@ -42,8 +42,8 @@ import { subscribeToSnapshotImpl } from "./subscribeToSnapshotsImplementation";
 
 
 function createSnapshotStoreConfig<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  options: Omit<SnapshotStoreConfig<T, K<T>>, 'tempData'>
-): SnapshotStoreConfig<T, K<T>> {
+  options: Omit<SnapshotStoreConfig<T, K>, 'tempData'>
+): SnapshotStoreConfig<T, K> {
   return {
     ...options,
     tempData: undefined, // Default value for tempData, which can be set dynamically
@@ -108,11 +108,11 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<T>({
         handleSnapshot: (
           id: string | number,
           snapshotId: string | null,
-          snapshot: T | null,
+          snapshot: Snapshot<T, K> | null,
           snapshotData: T,
           category: symbol | string | Category | undefined,
           callback: (snapshot: T) => void,
-          snapshots: SnapshotsArray<T, K>,
+          snapshots: SnapshotsArray<T>,
           type: string,
           event: Event,
           snapshotContainer?: T,
@@ -164,7 +164,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<T>({
                       defaultSubscribeToSnapshots: () => {
                         // Implement the logic for defaultSubscribeToSnapshots
                       },
-                    transformSubscriber: (sub: Subscriber<any, any>) => {
+                    transformSubscriber: (subscriberId: string, sub: Subscriber<T, K<T>>) => {
                         // Implement the logic for transformSubscriber
                         return sub
                       },
@@ -203,7 +203,6 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<T>({
   
         createSnapshot: (
           id: string,
-          snapshotData: SnapshotData<T, K<T>>, // Use Snapshot instead of Map
           category: symbol | string | Category | undefined,
           categoryProperties: CategoryProperties | undefined,
           callback?: (snapshot: Snapshot<T, K<T>>) => void,
@@ -230,11 +229,16 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<T>({
             configOption: snapshotStoreConfig?.configOption, // Ensure snapshotDataConfig is of type SnapshotStoreConfig<any, any>
             dataItems: [],
             newData: null,
-            stores: [],
+            stores: (
+              storeProps: SnapshotStoreProps<T, T>
+
+            ): SnapshotStore<T, T, StructuredMetadata<T, T>, never>[] => {
+
+            },
             timestamp: new Date(),
             handleSnapshot: (
                 id: string,
-                snapshotId: string,
+                snapshotId: string | number | null,
                 snapshot: T | null,
                 snapshotData: T,
                 category: symbol | string | Category | undefined,
@@ -302,7 +306,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<T>({
                 remove: [],
                 update: [],
               },
-              callbacks: [],
+              callbacks: {},
               subscribers: [],
               eventIds: [],
               on: (event: string, callback: (snapshot: Snapshot<T, K<T>>) => void) => {
@@ -722,7 +726,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<T>({
       },
     getSnapshots: async (
       category: symbol | string | Category | undefined, 
-      snapshots: SnapshotsArray<T, K>
+      snapshots: SnapshotsArray<T>
       ) => {
         console.log(`Getting snapshots in category: ${String(category)}`, snapshots);
         return { snapshots };

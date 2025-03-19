@@ -5,14 +5,15 @@ import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { v4 as uuidv4 } from "uuid"; // Ensure you have 'uuid' installed or use another method for unique IDs
 import { ChatRoom } from "../calendar/CalendarSlice";
 import { Sender } from "../communications/chat/Communication";
-
-
+import { Content } from '@/app/components/models/content/AddContent';
+import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
+import { T, K, Meta } from "@/app/components/models/data/dataStoreMethods";
 type MessageProps = {
   type: NotificationType; 
-  content: string | Content<T, K> | undefined;  // Align content type
-  additionalData?: CustomSnapshotData<T, K, Meta>,
+  content: string | Content<T, K<T>> | undefined;  // Align content type
+  additionalData?: CustomSnapshotData<T, K<T>, Meta<T, K<T>>>,
   sender: Sender; 
-  channel: string; 
+  channel: ChatRoom; 
 }
 
 // The corrected createMessage function
@@ -48,7 +49,6 @@ export const createMessage = (
     profilePicture: "",
     processingTasks: [],
     role: {
-      role: "",
       responsibilities: [],
       permissions: [],
       positions: [{ title: "", level: 0 }],

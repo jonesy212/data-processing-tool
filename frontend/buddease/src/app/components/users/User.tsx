@@ -59,9 +59,11 @@ export interface User<
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Update to match pattern
   ExcludedFields extends keyof UserData<T, K, Meta> = never
-> extends UserData<T, K, Meta, ExcludedFields> {
-  id?: string | number | undefined;
-  _id?: string;
+> extends UserData<T, K, Meta, ExcludedFields>,
+  SharedTimestamps,
+  SharedStatusFlags,
+  SharedIdentifiers
+{
   username: string;
   firstName: string;
   lastName: string;
@@ -144,8 +146,6 @@ export interface User<
   decentralizedAuthentication?: any;
   twitterData?: TwitterData;
   preferences: UserPreferences | undefined;
-  currentMetadata: UnifiedMetadata<T, K>;
-  currentMeta: StructuredMetadata<T, K> | undefined;
 }
 
 interface ExtendedUser extends User {
@@ -197,7 +197,7 @@ interface Employment {
 const timeBasedCode: string = generateTimeBasedCode();
 
 export interface UserData<
-  T extends BaseData<any, any, StructuredMetadata<any, any>, never, Attachment> = BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>,
+  T extends BaseData<any> = BaseData<any, any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof UserData<T, K, Meta> = never
@@ -227,11 +227,10 @@ export interface UserData<
   occupation?: string;
   incomeLevel?: string;
   unreadNotificationCount?: number;
-  snapshots?: Snapshots<BaseData<T, K, Meta, AttachmentType>>;
+  snapshots?: Snapshots<T, K>;
   snapshotConfiguration?: SnapshotStoreConfig<any, any>[];
   analysisResults?: DataAnalysisResult<T>[];
   role: UserRole | undefined;
-  category?: string;
   deletedAt?: Date | null;
   lastLogin?: Date;
   lastLogout?: Date;

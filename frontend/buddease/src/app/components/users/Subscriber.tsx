@@ -2,8 +2,8 @@ import apiNotificationsService from "@/app/api/NotificationsService";
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { addSnapshot } from "@/app/api/SnapshotApi";
 import { Payload, UpdateSnapshotPayload } from "@/app/components/database/Payload";
-import { TriggerIncentivesParams } from "@/app/components/utils/applicationUtils";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { TriggerIncentivesParams } from "@/app/components/utils/applicationUtils";
 import { BaseDatabaseService } from "@/app/configs/DatabaseConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -88,7 +88,7 @@ type Subscribers = Subscriber<CustomSnapshotData<T, K>, Data>[];
 
 type SubscribeResult<T, K> = {
   subscriber: Subscriber<T, K> | null;
-  snapshots: SnapshotsArray<T, K>;
+  snapshots: SnapshotsArray<T>;
 };
 
 
@@ -1944,7 +1944,7 @@ class Subscriber<
           snapshotData: T,
           category: Category | undefined,
           callback: (snapshot: T) => void,
-          snapshots: SnapshotsArray<T, K>,
+          snapshots: SnapshotsArray<T>,
           type: string,
           event: Event,
           snapshotContainer?: T,

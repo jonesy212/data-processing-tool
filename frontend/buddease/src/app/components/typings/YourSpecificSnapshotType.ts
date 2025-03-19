@@ -2,7 +2,8 @@ import { createSnapshot, getSnapshotContainer, getSnapshotId } from "@/app/api/S
 import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { Subscriber } from '@/app/components/users/Subscriber';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { defaultCategoryProperties, CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { useContext } from "react";
 import { CombinedEvents } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
@@ -15,7 +16,6 @@ import { CoreSnapshot, Snapshot, snapshots, Snapshots, SnapshotsArray, SnapshotU
 import { SnapshotConfig } from "../snapshots/SnapshotConfig";
 import { default as SnapshotStore } from "../snapshots/SnapshotStore";
 import { createSnapshotStoreOptions } from '../snapshots/createSnapshotStoreOptions';
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 import { SnapshotContext } from "@/app/context/SnapshotContext";
 import { CalendarEvent } from "../calendar/CalendarEvent";
@@ -57,7 +57,7 @@ class YourSpecificSnapshotType <
   isCore: boolean = false;
   initialConfig: InitializedConfig | {} = {};
   properties?: T | K;
-  snapshotsArray?: SnapshotsArray<T, K>;
+  snapshotsArray?: SnapshotsArray<T>;
   snapshotsObject?: SnapshotsObject<T, K>;
   recentActivity?: { action: string; timestamp: Date }[];
   onInitialize: (callback: () => void) => void = () => {};
@@ -1330,7 +1330,7 @@ function convertMapToSnapshot<T extends  BaseData<any>, K extends T = T, Meta ex
       snapshotData: T,
       category: Category | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T, K>,
+      snapshots: SnapshotsArray<T>,
       type: string,
       event: Event,
       snapshotContainer?: T,

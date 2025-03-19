@@ -366,7 +366,7 @@ class ClientApiService {
 
   async createFileVersion(
     fileId: string,
-    versionData: VersionData<T, K>
+    versionData: VersionData<T, K<T>>
   ): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/versions`, versionData),
