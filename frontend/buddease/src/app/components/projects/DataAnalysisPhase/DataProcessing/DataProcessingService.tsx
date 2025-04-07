@@ -1,13 +1,19 @@
 // DataProcessingService.ts
 import { endpoints } from '@/app/api/ApiEndpoints';
+import { TransactionData } from '@/app/components/payment/Transaction';
+import { Project } from '@/app/components/projects/Project';
+import { Team } from "@/app/components/models/teams/Team";
+import { MyDataType } from '@/app/configs/database/MetaDataOptions';
+import { UserData } from "@/app/components/users/User";
 
 import axiosInstance from '@/app/api/axiosInstance';
 import axios, { AxiosResponse } from 'axios';
-import { response } from 'express';
 import { observable, runInAction } from 'mobx';
 import { DataActions } from '../DataActions';
+import { CryptoPortfolio, ProjectActivity } from '@/app/components/crypto/CryptoPortfolio'
 
-const API_BASE_URL = endpoints.dataProcessing; // Use the data-processing endpoint from apiEndpoints.ts
+// Use the data-processing endpoint from apiEndpoints.ts
+const API_BASE_URL = endpoints.dataProcessing;
 
 interface DataProcessing {
   datasetPath: string;
@@ -15,20 +21,59 @@ interface DataProcessing {
 }
 
 interface DataProcessingResult {
-  
   // Define the structure of the result if needed
 }
 
-export const dataProcessingService = observable({
+
+interface TeamProject {
+  projectId: string;
+  role: 'admin' | 'member' | 'viewer';
+  joinedAt: Date;
+}
+
+
+type YourDataType = UserData<MyDataType> & {
+  cryptoData: {
+    portfolio: CryptoPortfolio[];
+    transactionHistory: TransactionData[];
+    watchlist: string[];
+  };
+  projectData: {
+    activeProjects: Project[];
+    recentActivity: ProjectActivity[];
+    teamCollaborations: TeamProject[];
+    archivedProjects?: Project[];
+    favoriteProjects?: string[];
+  };
+
+  teams: Team[];
+  notifications: {
+    unreadCount: number;
+    items: Array<{
+      id: string;
+      type: string;
+      timestamp: Date;
+      read: boolean;
+      content: string;
+    }>;
+  };
+};
+
+const AppDataActions = DataActions<YourDataType>();
+
+
+// Ensure correct types are used in the data processing
+const dataProcessingService = observable({
   loadDataAndProcess: async (data: DataProcessing): Promise<DataProcessingResult> => {
     try {
+      // Ensure DataProcessingResult is the correct type for the response data
       const response: AxiosResponse<DataProcessingResult> = await axios.post(
         `${API_BASE_URL}`,
         data
       );
 
       runInAction(() => {
-        DataActions.loadDataAndProcessSuccess({ result: response.data });
+        AppDataActions.loadDataAndProcessSuccess({ result: response.data });
       });
 
       return response.data;
@@ -37,7 +82,7 @@ export const dataProcessingService = observable({
       console.error(`Error processing data: ${errorMessage}`);
 
       runInAction(() => {
-        DataActions.loadDataAndProcessFailure({ error: errorMessage });
+        AppDataActions.loadDataAndProcessFailure({ error: errorMessage });
       });
 
       throw error;
@@ -47,29 +92,25 @@ export const dataProcessingService = observable({
   processDataForAnalysis: async (data: DataProcessing): Promise<DataProcessingResult> => {
     try {
       const response: AxiosResponse<DataProcessingResult> = await axiosInstance.post(
-        API_BASE_URL + '/process',
+        `${API_BASE_URL}/process`,
         data
       );
+
       runInAction(() => {
-        DataActions.processDataForAnalysisSuccess({
-          result: response.data
-        })
-        // Call success action with reponse data
-        DataActions.processDataForAnalysisSuccess({ result: response.data });
-      })
+        AppDataActions.processDataForAnalysisSuccess({ result: response.data });
+      });
     } catch (error) {
       const errorMessage = String(error);
       console.error(`Error processing data for analysis: ${errorMessage}`);
 
       runInAction(() => {
-        DataActions.processDataForAnalysisFailure({
-          error: errorMessage
-        })
-      })
-      throw error
+        AppDataActions.processDataForAnalysisFailure({ error: errorMessage });
+      });
+
+      throw error;
     }
-    return response
-  }
+    return response.data;
+  },
 });
 
 export default dataProcessingService;

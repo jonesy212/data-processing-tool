@@ -1,22 +1,13 @@
 // DocumentSlice.tsx
-import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
 import { fetchDocumentById, fetchDocumentByIdAPI } from "@/app/api/ApiDocument";
 import { ModifiedDate } from "@/app/components/documents/DocType";
 import DocumentBuilder, {
-    DocumentData, WritableTodoSubtasks
+  DocumentData, WritableTodoSubtasks
 } from "@/app/components/documents/DocumentBuilder";
-import {
-    DocumentStatusEnum,
-    DocumentTypeEnum,
-} from "@/app/components/documents/DocumentGenerator";
 import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import { DocumentStatus } from "@/app/components/documents/types";
 import useDataExport from "@/app/components/hooks/dataHooks/useDataExport";
 import { DocumentSize } from "@/app/components/models/data/StatusType";
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import Version, { version } from "@/app/components/versions/Version";
 import { VersionData } from "@/app/components/versions/VersionData";
@@ -25,20 +16,28 @@ import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure, { backend, backendStructure } from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure, { frontend, frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
 import { AppThunk } from "@/app/configs/appThunk";
+import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
+import {
+  NotificationTypeEnum,
+  useNotification,
+} from "@/app/context/NotificationContext";
 import { performSearch } from "@/app/pages/searchs/SearchComponent";
+import {
+  DocumentStatusEnum,
+  DocumentTypeEnum,
+} from "@/server/DocumentGenerator";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Document } from "../../stores/DocumentStore";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
 
 import DocumentPermissions from "@/app/components/documents/DocumentPermissions";
-import { BaseData, Data } from "@/app/components/models/data/Data";
-import TodoImpl, { Todo } from "@/app/components/todos/Todo";
-import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
-import getAppPath from "appPath";
-import { ClientInformation } from '@/app/components/database/ClientInformation';
+import { BaseData } from "@/app/components/models/data/Data";
 import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
+import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
+import { ClientInformation } from '@/server/database/ClientInformation';
 import { data } from '@tensorflow/tfjs';
+import getAppPath from "appPath";
 import { globalState } from 'mobx/dist/internal';
 
 
@@ -151,8 +150,8 @@ const initialState: DocumentObject<BaseData, BaseData> = {
   keywords: [],
   options: {} as DocumentOptions,
   folderPath: "",
-  previousMetadata: {} as StructuredMetadata<T, K<T>>,
-  currentMetadata: {} as StructuredMetadata<T, K<T>>,
+  previousMetadata: {} as UnifiedMetadata<T, K<T>>,
+  currentMetadata: {} as UnifiedMetadata<T, K<T>>,
   accessHistory: [],
   folders: [],
   lastModifiedDate: {} as WritableDraft<ModifiedDate>,
@@ -262,8 +261,11 @@ const initialState: DocumentObject<BaseData, BaseData> = {
     },
     _structure: {},
     metadata: {
+      area: 'document object',
       author: "Author Name",
       timestamp: new Date(),
+      metadataEntries: {},
+      schema: {}
     },
     getVersion: async () => "1.0",
     versionHistory: {
@@ -279,7 +281,7 @@ const initialState: DocumentObject<BaseData, BaseData> = {
     updateVersionNumber: (newVersionNumber: string) => {
       console.log(`Updating version number to ${newVersionNumber}`);
     },
-    getVersionData: (): VersionData => {
+    getVersionData: (): VersionData<BaseData, baseData> => {
       return {
         id: 0,
         name: "Initial Version",
@@ -432,16 +434,32 @@ const initialState: DocumentObject<BaseData, BaseData> = {
 };
 
 
-function createNewDocument(
+function createNewDocument<
+  T extends BaseData,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
   documentId: string
 ): DocumentObject<T, K, Meta> {
+  const now = new Date();
+
   const newDocument: DocumentObject<T, K, Meta> = {
     // _id: uuidv4(),
     id: documentId,
     title: "New Document",
     content: {
-      
-      "This is a new document"
+      id: "doc-123", // Required by Content interface
+      title: "New Document",
+      description: "This is a new document", // Moved here from root level
+      subscriberId: "user-123",
+      category: undefined,
+      categoryProperties: undefined,
+      timestamp: now,
+      length: 0,
+      items: [],
+      data: null,
+      // Optional properties:
+      contentItems: []
     },
     topics: [],
     highlights: [],
@@ -509,6 +527,9 @@ function createNewDocument(
         data: data,
         backend: backend,
         frontend: frontend,
+        history: [],
+        version: {},
+        versionData: {}
       },
       _structure: {
         // data: [],
@@ -531,7 +552,7 @@ function createNewDocument(
         return "merged_structure_hash";
       },
       getVersionNumber: () => "1.0",
-      updateVersionNumber: (newVersionNumber: number) => {
+      updateVersionNumber: (newVersionNumber: string) => {
         console.log(`Updating version number to ${newVersionNumber}`);
       },
       getVersionData: (): VersionData => {
@@ -4297,8 +4318,7 @@ export const useDocumentManagerSlice = createSlice({
         console.error("No documents matched the search criteria.");
       }
     },
-    ,
-
+  
     createDocumentVersion: (
       state,
       action: PayloadAction<{ documentId: number; version: string }>

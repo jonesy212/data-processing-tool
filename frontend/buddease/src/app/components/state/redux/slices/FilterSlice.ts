@@ -1,26 +1,26 @@
 import {
-    CodingLanguageEnum,
-    LanguageEnum,
+  CodingLanguageEnum,
+  LanguageEnum,
 } from "@/app/components/communications/LanguageEnum";
-import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import { FileTypeEnum } from "@/app/components/documents/FileType";
 import FormatEnum from "@/app/components/form/FormatEnum";
 import AnimationTypeEnum from "@/app/components/libraries/animations/AnimationLibrary";
+import { StatusTrackable, Timestamped } from "@/app/components/models/CommonData";
 import {
-    BookmarkStatus,
-    CalendarStatus,
-    DataStatus,
-    DevelopmentPhaseEnum,
-    NotificationStatus,
-    PriorityTypeEnum,
-    PrivacySettingEnum,
-    ProjectPhaseTypeEnum,
-    StatusType,
-    SubscriberTypeEnum,
-    SubscriptionTypeEnum,
-    TaskStatus,
-    TeamStatus,
-    TodoStatus,
+  BookmarkStatus,
+  CalendarStatus,
+  DataStatus,
+  DevelopmentPhaseEnum,
+  NotificationStatus,
+  PriorityTypeEnum,
+  PrivacySettingEnum,
+  ProjectPhaseTypeEnum,
+  StatusType,
+  SubscriberTypeEnum,
+  SubscriptionTypeEnum,
+  TaskStatus,
+  TeamStatus,
+  TodoStatus,
 } from "@/app/components/models/data/StatusType";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
@@ -31,6 +31,7 @@ import { SecurityFeatureEnum } from "@/app/components/security/SecurityFeatureEn
 import { IdeaCreationPhaseEnum } from "@/app/components/users/userJourney/IdeaCreationPhase";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { MessageType } from "@/app/generators/MessaageType";
+import { DocumentTypeEnum } from "@/server/DocumentGenerator";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface FilterState extends Timestamped, StatusTrackable {
@@ -69,7 +70,9 @@ interface FilterState extends Timestamped, StatusTrackable {
   messageType?: MessageType | null;
 }
 
-const initialState: FilterState = {};
+const initialState: FilterState = {
+  date: new Date()
+};
 
 const filterSlice = createSlice({
   name: "filter",

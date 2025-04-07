@@ -77,11 +77,11 @@ function createOptions<
     snapshotConfig: SnapshotStoreConfig<T, K>,
 	callback: (
 		snapshotStore: SnapshotStore<T, K>, 
-		snapshots: SnapshotsArray<T>
+		snapshots: SnapshotsArray<T, K, Meta>
 	) => Subscriber<T, K> | null,
-	snapshots: SnapshotsArray<T>,
+	snapshots: SnapshotsArray<T, K, Meta>,
     unsubscribe?: UnsubscribeDetails, 
-  ) => SnapshotsArray<T> | []
+  ) => SnapshotsArray<T, K, Meta> | []
   
 	subscribeToSnapshot: (
 		snapshotId: string,
@@ -178,7 +178,7 @@ function createOptions<
 	createSnapshot: (
 		id: string,
 		snapshotData: SnapshotData<T, K>,
-		category?: string | symbol | Category,
+		category?:  Category,
 		callback?: (snapshot: Snapshot<T, K>) => void,
 		snapshotData?: SnapshotStore<T, K>,
 		snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> 
@@ -188,17 +188,17 @@ function createOptions<
 		id: string,
 		snapshotId: number,
 		snapshotStoreData: Snapshots<T, K>,
-		category?: string | symbol | Category,
+		category?:  Category,
 		callback?: (snapshotStore: SnapshotStore<T, K>) => void,
 		snapshotDataConfig?: SnapshotStoreConfig<T, K>[]
 	) => SnapshotStore<T, K> | null,
 
 	configureSnapshot: (
 		id: string,
-		storeId: number
+		storeId: number,
 		snapshotId: string,
 		dataStoreMethods: DataStore<T, K>,
-		category?: string | symbol | Category,
+		category?:  Category,
 		categoryProperties?: CategoryProperties | undefined,
 		callback?: (snapshot: Snapshot<T, K>) => void,
 		snapshotData?: SnapshotStore<T, K>,
@@ -666,7 +666,7 @@ function createOptions<
 					data: K,
 					index: number
 				) => SnapshotsObject<T, K>
-			): Promise<SnapshotsArray<T>> => {
+			): Promise<SnapshotsArray<T, K, Meta>> => {
 				console.log("Mapping snapshots with category:", category, "timestamp:", timestamp, "ID:", id);
 
 				// Create a promise that will resolve with the mapped snapshots

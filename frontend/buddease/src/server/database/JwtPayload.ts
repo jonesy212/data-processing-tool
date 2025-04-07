@@ -1,6 +1,6 @@
 // JwtPayload.ts
 import * as jwt from 'jsonwebtoken';
-import { Scope } from '../state/stores/Scopes';
+import { Scope } from '../../app/components/state/stores/Scopes';
 
 
 interface JwtPayload extends jwt.JwtPayload {
@@ -19,4 +19,4 @@ const verifyTokenScopes = (decodedToken: JwtPayload, requiredScopes: Scope[]): b
 };
 
 
-export {verifyTokenScopes}
+export { verifyTokenScopes };

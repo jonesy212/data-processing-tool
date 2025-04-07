@@ -1,6 +1,6 @@
 // SearchBar.tsx
 import React, { useState } from 'react';
-import { userId } from '../users/ApiUser';
+import { userId } from '../../api/ApiUser';
 
 interface SearchBarProps {
   onSearch: (userId:  string, query:  string) => Promise<void>

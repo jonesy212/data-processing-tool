@@ -1,6 +1,6 @@
 //useSecureUserId.ts
 import { useEffect, useState } from 'react';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '../server/auth/AuthContext';
 import { sanitizeData } from '../security/SanitizationFunctions';
 import { useNavigate } from 'react-router-dom';
 import UserRoles, { UserRoleEnum } from '../users/UserRoles';

@@ -1,7 +1,7 @@
 import { ContentState } from "draft-js";
+import { DocumentTypeEnum } from "../../../../server/DocumentGenerator";
 import { DocumentBuilderConfig } from "../../../configs/DocumentBuilderConfig";
-import { LanguageEnum, CodingLanguageEnum } from "../../communications/LanguageEnum";
-import { DocumentTypeEnum } from "../../documents/DocumentGenerator";
+import { CodingLanguageEnum, LanguageEnum } from "../../communications/LanguageEnum";
 import { LinksType } from "../../documents/DocumentOptions";
 import { AlignmentOptions } from "../../state/redux/slices/toolbarSlice";
 import { VersionData } from "../../versions/VersionData";
@@ -278,4 +278,4 @@ const documentBuilderConfig: DocumentBuilderConfig = {
 };
 
 
-export { documentBuilderConfig }
+export { documentBuilderConfig };

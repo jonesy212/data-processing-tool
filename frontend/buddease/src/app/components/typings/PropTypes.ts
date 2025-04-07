@@ -1,19 +1,24 @@
 // PropTypes.tsx
+import {
+  NotificationType,
+  NotificationTypeEnum,
+} from "@/app/context/NotificationContext";
 import { MessageType } from "@/app/generators/MessaageType";
 import React from "react";
-import { DocumentTypeEnum } from "../documents/DocumentGenerator";
+import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
 import TextType from "../documents/TextType";
 import { DataType } from "../models/CommonData";
 import { LogData } from "../models/LogData";
 import {
+  CalendarStatus,
   ChatType,
   CustomNotificationType,
   MessageNotificationStatusType,
   PriorityTypeEnum,
   StatusType,
-  TeamStatus,
-  CalendarStatus
+  TeamStatus
 } from "../models/data/StatusType";
+import { K, Meta, T } from "../models/data/dataStoreMethods";
 import {
   ProgressBarAnimationType,
   ProgressBarProps,
@@ -21,11 +26,6 @@ import {
 } from "../models/tracker/ProgressBar";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { SendStatus } from "../support/NofiticationsSlice";
-import {
-  NotificationType,
-  NotificationTypeEnum,
-} from "@/app/context/NotificationContext";
-import { T, K, Meta } from "../models/data/dataStoreMethods";
 
 type AnimationType = "fade" | "slide" | "bounce" | "custom" | "show";
 type NotificationCategory = "general" | "urgent" | "important";

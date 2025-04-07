@@ -1,11 +1,10 @@
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import React from "react";
 import { BaseData, Data } from "./components/models/data/Data";
 import { EventManager } from "./components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { UnifiedMetadata } from "./configs/database/MetaDataOptions";
-import useSecureStoreId from "@/app/components/utils/useSecureStoreId";
-import { Attachment } from '@/app/components/documents/Attachment/attachment'
 
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
@@ -15,10 +14,10 @@ import { createLastUpdatedWithVersion, createLatestVersion } from "./components/
 import { useMeta } from "./configs/useMeta";
 import { useMetadata } from "./configs/useMetadata";
 import { useSnapshot } from "./context/SnapshotContext";
-import { baseConfig } from './configs/BaseConfig';
+
 
 const area = fetchUserAreaDimensions().toString()
-const metadata: UnifiedMetadata<T, K<T>> = useMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>(area);
+const metadata: UnifiedMetadata<T, K> = useMetadata<BaseData<any>>(area);
 const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
 
 const { snapshotMap } = useSnapshot<T, K<T>, StructuredMetadata<T, K<T>>, keyof T>();
@@ -38,7 +37,7 @@ export const defaultMetadata = <
   structuredMetadata: {
     version: version,
     lastUpdated: createLastUpdatedWithVersion(),
-    latestVersion: createLatestVersion(),
+    latestVersion: createLatestVersion<T, K>(),
     isActive: true,
     config: {},
    
@@ -68,7 +67,7 @@ export const defaultMetadata = <
         permissions: [],
         customFields: {},
         versionData: [],
-        latestVersion: createLatestVersion(),
+        latestVersion: createLatestVersion<T, K>(),
         id: "",
         apiEndpoint: "",
         apiKey: undefined,
@@ -154,13 +153,13 @@ export const videoMetadataExample: UnifiedMetadata<
     tags: [],
     initialState: undefined,
     lastUpdated: createLastUpdatedWithVersion(),
-    latestVersion: createLatestVersion(),
+    latestVersion: createLatestVersion<T, K>(),
     isActive: true, 
     config:  {},
     version: version, 
     permissions: [], 
     customFields: [], 
-    versionData: [], 
+    versionData: {}, 
     meta: {} as StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
     events: {} as EventManager<BaseData<any>, BaseData<any>>,
     metadata: {

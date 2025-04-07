@@ -34,6 +34,10 @@ function convertCoreToSnapshot<T extends  BaseData<any>, K extends T = T, Meta e
     initialConfig: {}, // Initialize as appropriate for your app
     onInitialize: () => {}, // Default callback or custom logic
     onError: (error: Error) => console.error(error), // Default error handler
+    dataObject: {},
+    taskIdToAssign: taskIdToAssign,
+    schema: {},
+    mappedSnapshotData: mappedSnapshotData,
     // Add any other required properties with defaults or computed values
   };
 }

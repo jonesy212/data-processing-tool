@@ -1,27 +1,29 @@
 // ButtonGenerator.tsx
+import { fetchEventData } from '@/app/api/ApiEvent';
+import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Router, useRouter } from "next/router";
-import React, { useState , useEffect} from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import userService from "../api/ApiUser";
 import { useDynamicComponents } from "../components/DynamicComponentsContext";
 import {
   startVoiceRecognition,
   stopVoiceRecognition,
 } from "../components/intelligence/VoiceControl";
 import ReusableButton from "../components/libraries/ui/buttons/ReusableButton";
-import { RealtimeData, RealtimeDataComponent } from "../components/models/realtime/RealtimeData";
+import { RealtimeDataComponent } from "../components/models/realtime/RealtimeData";
 import useNotificationManagerService from "../components/notifications/NotificationService";
 import { Phase } from "../components/phases/Phase";
 import {
   nextPhase,
   previousPhase,
 } from "../components/phases/PhaseTransitions";
-import { AllTypes } from "../components/typings/PropTypes";
-import userService from "../components/users/ApiUser";
 import { brandingSettings } from "../libraries/theme/BrandingService";
 import { ExtendedRouter } from "../pages/MyAppWrapper";
-import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
-import { fetchEventData } from '@/app/api/ApiEvent'
-import { Label } from '@/app/components/projects/branding/BrandingSettings';
+
+import { BaseData } from "./data/Data";
 
 startVoiceRecognition;
 /**
@@ -73,7 +75,12 @@ import { Router } from 'react-router-dom';
  * @returns {JSX.Element} - The rendered ButtonGenerator component.
  */
 
-interface ButtonGeneratorProps extends SharedIdentifiers {
+interface ButtonGeneratorProps<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+> extends SharedIdentifiers<T, K, Meta, ExcludedFields> {
   variant?: Record<string, string>; // Keep this as is for variant options
   date?: Date | string;
   value?: any;

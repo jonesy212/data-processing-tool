@@ -1,17 +1,10 @@
-import BackendStructure, {
-  backend,
-  backendStructure,
-} from "@/app/configs/appStructure/BackendStructure";
 import { getCurrentAppInfo } from '@/app/components/versions/VersionGenerator';
-import { API_VERSION_HEADER } from "@/app/configs/AppConfig";
-import { RootState } from "../state/redux/slices/RootSlice";
-import Version from "./Version";
-import { DocumentTypeEnum } from "../documents/DocumentGenerator";
-import FrontendStructure, { frontend } from "@/app/configs/appStructure/FrontendStructure";
-import { VersionData } from "./VersionData";
+import BackendStructure from "@/app/configs/appStructure/BackendStructure";
+import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import getAppPath from 'appPath';
-import { globalState } from 'mobx/dist/internal';
-import { useAuth } from "../../auth/AuthContext";
+import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
+import { RootState } from "../state/redux/slices/RootSlice";
+import { VersionData } from "./VersionData";
 
 
 interface Versionable {
@@ -265,6 +258,6 @@ const currentAppName = appVersion.getAppName();
 appVersion.updateAppName("NewApp");
 const updatedAppName = appVersion.getAppName();
 
-export { currentAppName, updatedAppName , appVersion};
+export { appVersion, currentAppName, updatedAppName };
 
 export default AppVersionImpl;

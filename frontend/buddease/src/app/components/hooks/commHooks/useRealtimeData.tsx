@@ -1,15 +1,14 @@
 // useRealtimeData.tsx
-import { isArrayOfTypeT } from '@/app/components/utils/snapshotUtils';
 import { endpoints } from "@/app/api/ApiEndpoints";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
+import { isArrayOfTypeT } from '@/app/components/utils/snapshotUtils';
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient, { Socket } from 'socket.io-client';
-import { Data } from "../../models/data/Data";
 import { RealtimeData, RealtimeDataItem } from "../../models/realtime/RealtimeData";
 import axiosInstance from "../../security/csrfToken";
 import SnapshotStore from "../../snapshots/SnapshotStore";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 
 export const ENDPOINT = endpoints.backend
 
@@ -18,7 +17,7 @@ export type RealtimeUpdateCallback<T extends RealtimeData, K extends T = T> = (
   events: Record<string, CalendarEvent[]>,
   snapshotStore: SnapshotStore<T, K>,
   dataItems: T[],
-  data?: InitializedData<T> | null, 
+  data?: InitializedData<T, K> | null, 
   
 ) => void;
 
@@ -56,7 +55,7 @@ const useRealtimeData = <T extends RealtimeDataItem, K extends T = T>(
         events: Record<string, CalendarEvent[]>,
         snapshotStore: SnapshotStore<T, K>, // Also fix type here
         dataItems: RealtimeDataItem[],
-        data?: InitializedData<T> | null, 
+        data?: InitializedData<T, K> | null, 
       ) => {
 
         if (!data ||!snapshotStore ||!dataItems) {

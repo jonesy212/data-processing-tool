@@ -1,5 +1,5 @@
 // getCurrentSnapshotConfigOptions.ts
-import { createSnapshotStoreConfig } from '@/app/components/snapshots/snapshotStorageOptionsInstance';
+import { createSnapshotStoreConfig } from '@/app/components/snapshots/snapshotStoreConfigInstance';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
@@ -18,16 +18,19 @@ export const getCurrentSnapshotConfigOptions = <
   T extends BaseData<any>, 
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
->(
+  >(
+  id: string | number,
   snapshotId: string | null,
   snapshotContainer: SnapshotContainer<T, K>,
   criteria: CriteriaType,
-  category: symbol | string | Category | undefined,
-  categoryProperties: CategoryProperties | undefined,
+  category: Category | undefined,  categoryProperties: CategoryProperties | undefined,
   delegate: any,
-  snapshotData: SnapshotData<T, K>
+  snapshotData: SnapshotData<T, K,Meta>
 ): SnapshotStoreConfig<T, K> => {
 
+  if (!snapshotId) {
+    throw new Error('Snapshot ID is required');
+  }
   // Use createSnapshotStoreConfig to initialize the base configuration
   const baseConfig = createSnapshotStoreConfig({
     snapshotId,
@@ -74,7 +77,7 @@ export const getCurrentSnapshotConfigOptions = <
       snapshotId: string,
       snapshotData: SnapshotData<T, K>,
       dataStoreMethods: DataStore<T, K>,
-      category?: string | symbol | Category,
+      category?:  Category,
       callback?: (snapshot: Snapshot<T, K>) => void,
       snapshotStore?: SnapshotStore<T, K>,
       snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> 

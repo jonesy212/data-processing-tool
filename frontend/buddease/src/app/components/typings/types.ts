@@ -1,13 +1,14 @@
-import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { NestedEndpoints } from "@/app/api/ApiEndpoints";
 import { SearchNotesResponse } from "@/app/api/ApiNote";
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { CalendarManagerStore } from "@/app/components/state/stores/CalendarManagerStore";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Exchange } from "../crypto/Exchange";
 import { DataWithComment } from "../crypto/SafeParseData";
 import HighlightEvent from "../documents/screenFunctionality/HighlightEvent";
 import { BaseData } from "../models/data/Data";
-import { K, T } from "../models/data/dataStoreMethods";
 import { ExchangeData } from "../models/data/ExchangeData";
 import { Task } from "../models/tasks/Task";
 import { Team } from "../models/teams/Team";
@@ -15,12 +16,11 @@ import { Phase } from "../phases/Phase";
 import { DataAnalysisResult } from '../projects/DataAnalysisPhase/DataAnalysisResult';
 import { Project } from "../projects/Project";
 import { ExcludedFields } from "../routing/Fields";
-import  { Snapshot, SnapshotStoreUnion } from "../snapshots";
+import { Snapshot, SnapshotStoreUnion } from "../snapshots";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import BrowserCheckStore from "../state/stores/BrowserCheckStore";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { CalendarManagerStore } from "@/app/components/state/stores/CalendarManagerStore";
 
+import { Attendee } from "../calendar/Attendee";
 import { IconStore } from "../state/stores/IconStore";
 import { Settings } from "../state/stores/SettingsStore";
 import { TaskManagerStore } from "../state/stores/TaskStore ";
@@ -28,7 +28,9 @@ import { TodoManagerStore } from "../state/stores/TodoStore";
 import { TrackerStore } from "../state/stores/TrackerStore";
 import { Todo } from "../todos/Todo";
 import { User } from "../users/User";
-import { Attendee } from "../calendar/Attendee";
+
+
+
 
 export interface TodoType {
   id: string;                  // Unique identifier for the todo
@@ -158,7 +160,7 @@ interface YourResponseType<
   browsers?: any;
   endpoints: NestedEndpoints;
   highlights: HighlightEvent[];
-  data: InitializedData<T>;
+  data: InitializedData<T, K>;
   projectInfo?: {
     id: number;
     projectName: Project["name"];

@@ -1,47 +1,42 @@
 // StructuredMetadata.ts
 import Version from '@/app/components/versions/Version';
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";import { TransactionData } from '@/app/components/payment/Transaction';
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 
 let fs: any;
 if (typeof window === 'undefined') {
   fs = require('fs');
 }
 
-import { BaseData, SharedBaseData } from '@/app/components/models/data/Data';
-import * as path from 'path';
-import {
-  category,
-  isSnapshot,
-  isSnapshotDataType,
-} from "../utils/snapshotUtils";
-import { Permission } from "@/app/components/users/Permission";
-import { useState } from 'react';
+import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
+import { Taggable } from '@/app/components/models/CommonData';
+import { BaseData, SharedRelationshipData } from '@/app/components/models/data/Data';
+import { EventManager, InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { TagsRecord } from '@/app/components/snapshots/SnapshotWithCriteria';
+import { Permission } from "@/app/components/users/Permission";
+import {
+    category
+} from "@/app/components/utils/snapshotUtils";
+import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/components/versions/createLatestVersion";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import * as path from 'path';
+import { useState } from 'react';
 import { LanguageEnum } from '../components/communications/LanguageEnum';
 import { Comment } from '../components/models/data/Comments';
 import { Data } from '../components/models/data/Data';
 import { K, T } from '../components/models/data/dataStoreMethods';
 import { Task } from '../components/models/tasks/Task';
-import { TagsRecord } from '@/app/components/snapshots/SnapshotWithCriteria';
+import { Contributor } from '../components/models/teams/TeamMembers';
 import { CustomComment } from '../components/state/redux/slices/BlogSlice';
 import { Video } from '../components/state/stores/VideoStore';
 import { VersionData, VersionHistory } from '../components/versions/VersionData';
-import { BaseConfig } from './BaseConfig';
+import { BaseConfig, mappedSnapshot } from './BaseConfig';
 import { MyDataType } from './database/MetaDataOptions';
-import { Taggable } from '@/app/components/models/CommonData';
-import { createLatestVersion, createLastUpdatedWithVersion } from "@/app/components/versions/createLatestVersion";
-import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
-import { EventManager } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SharedVersionData } from "@/app/components/versions/VersionData";
 import { SharedMetadata } from './metadata/createMetadataState';
-import { SharedTimestamps, SharedStatusFlags, SharedIdentifiers } from '@/app/components/documents/RelatedProps'
-import VersionImpl from "../components/versions/Version";
 
 interface SpecificMetadata<T extends BaseData<any>, K extends T = T> {
   tags?: TagsRecord<T, K> | string[] | undefined;
 }
-
 
 type TagsType<T extends BaseData<any>, K extends T = T> = TagsRecord<T, K> | string[] | undefined;
 
@@ -56,7 +51,7 @@ type MetadataEntriesType<T extends BaseData<any>, K extends T = T> = {
     description: string;
     keywords: string[];
     authors: string[];
-    contributors: string[];
+    contributors: Contributor[];
     publisher: string;
     copyright: string;
     license: string;
@@ -65,16 +60,14 @@ type MetadataEntriesType<T extends BaseData<any>, K extends T = T> = {
   };
 };
 
-
 // Define interfaces for metadata structures
-
 interface StructuredMetadata<
   T extends BaseData<any>,
   K extends T = T
-> extends SharedTimestamps, SharedStatusFlags, SharedIdentifiers {
+> extends SharedTimestamps, SharedStatusFlags, SharedIdentifiers<T, K> {
   baseConfig: BaseConfig<T, K, StructuredMetadata<T, K>>;
-  sharedMetadata: SharedMetadata<K>;
-  sharedBaseData: SharedBaseData<K>;
+  sharedMetadata: SharedMetadata<T, K>;
+  sharedBaseData: SharedRelationshipData<K>;
   taggable: Taggable<T, K>;
   description?: string | undefined;
   fileType?: string;
@@ -84,15 +77,15 @@ interface StructuredMetadata<
   keywords: string[];
   childIds?: K[];
   relatedData?: K[] | undefined;
-  version?: string | number | VersionImpl<T, K>;
-  lastUpdated?: VersionHistory;
+  version?: string | number | Version<T, K> | undefined; 
+  lastUpdated?: Date | VersionHistory; 
   permissions: Permission[];
   customFields: Record<string, any>;
   config?: Record<string, any>;
   baseUrl?: string;
   versionData: string | VersionData<T, K> | null;
   latestVersion: VersionData<T, K>;
-  author: string;
+  author?: string;
   timestamp: string | number | Date | undefined;
 }
 
@@ -101,9 +94,9 @@ interface VideoMetadata<
   T extends BaseData<any>,
   K extends T = T,
   ExcludedFields extends keyof T = never
-> extends SharedTimestamps, SharedIdentifiers {
+> extends SharedTimestamps, SharedIdentifiers<T, K, StructuredMetadata<T, K>> {
   baseData: Omit<BaseData<T, K>, ExcludedFields>; // Include BaseData with excluded fields
-  metadata: StructuredMetadata<T, K>; // Explicitly include metadata
+  meta: StructuredMetadata<T, K>; 
   title: string;
   url: string;
   duration: number;
@@ -138,7 +131,7 @@ interface VideoMetadata<
   thumbnailUrl: string;
   metadataSource: string;
   data: Data<T>; // Assuming Data is a custom data type
-
+  metadata?: UnifiedMetadata<T, K>;
   childIds: K[]; // Add childIds
   relatedData: K[]; // Add relatedData
 }
@@ -161,7 +154,7 @@ interface ProjectMetadata<
   milestones: string[];
   videos: Video[]; // Removed generic parameters
   projectId: number | string | undefined;
-  contributors: string[]
+  contributors: Contributor[]
   links: string[]
   tags?: TagsRecord<T, K> | string[] | undefined
 
@@ -169,7 +162,7 @@ interface ProjectMetadata<
   permissions: Permission[];
   customFields: Record<string, any>;
   latestVersion: VersionData<T, K>;
-  lastUpdated: Date; // Add this line
+  lastUpdated: Date |VersionHistory; // Add this line
 
 }
 
@@ -202,7 +195,7 @@ interface MetadataEntry {
   description: string;
   keywords: string[];
   authors: string[];
-  contributors: string[];
+  contributors: Contributor[];
   publisher: string;
   copyright: string;
   license: string;
@@ -249,6 +242,9 @@ function transformProjectToStructured<
   // Provide a default value for latestVersion if it is undefined or incompatible
   const latestVersion = projectMetadata.latestVersion || createLatestVersion<T, K>();
 
+   // Get author from first contributor or use default
+   const author = projectMetadata.contributors[0]?.memberName || 'default-author';
+
   // Populate the StructuredMetadata object with necessary details
   const structuredMetadata: StructuredMetadata<T, K> = {
     description: projectMetadata.description || "A project to manage structured metadata.",
@@ -264,21 +260,23 @@ function transformProjectToStructured<
     baseConfig: {
       // Provide necessary BaseConfig properties
       id: projectMetadata.projectId?.toString() || "default-id",
+      isActive: projectMetadata.isActive || false,
+      author,
       apiEndpoint: "",
       apiKey: undefined,
       timeout: 0,
       retryAttempts: 0,
       name: projectMetadata.projectName,
       description: projectMetadata.description,
-      latestVersion,
       category: category,
       timestamp: new Date(),
       createdBy: projectMetadata.teamMembers[0] || "Unknown",
       metadata: {} as UnifiedMetadata<T, K>,
       initialState: {} as InitializedState<T, K>,
       meta: {} as StructuredMetadata<T, K>,
-      mappedSnapshot: new Map<string, Snapshot<T, K>>(),
+      mappedSnapshot: mappedSnapshot,
       events: {} as EventManager<T, K>,
+      schema: {}
     },
     sharedMetadata: {
       version: projectMetadata.latestVersion?.version || "1.0",
@@ -289,6 +287,7 @@ function transformProjectToStructured<
       permissions: projectMetadata.permissions,
       customFields: projectMetadata.customFields,
       baseUrl: "",
+      schema: {}
     },
     sharedBaseData: {
       childIds: [],
@@ -322,7 +321,7 @@ const projectMetadata: ProjectMetadata<BaseData, BaseData> = {
   isActive: true,
   permissions: [],
   customFields: [],
-  latestVersion: createLatestVersion(),
+  latestVersion: createLatestVersion<T, K<T>>(),
   lastUpdated: createLastUpdatedWithVersion(),
 
 };
@@ -453,7 +452,8 @@ const videoMetadata: VideoMetadata<
   metadataSource: '',
 
   baseData: [],
-  metadata: {} as StructuredMetadata<MyDataType, MyDataType>,
+  metadata: {} as UnifiedMetadata<MyDataType, MyDataType>,
+  meta: {} as StructuredMetadata<MyDataType, MyDataType>,
   childIds: [],
   relatedData: [],
  
@@ -464,5 +464,5 @@ const validatedVideoMetadata = validateVideoMetadata(videoMetadata);
 
 
 export { getStructureMetadataPath, projectMetadata, transformProjectToStructured, useUndoRedo, videoMetadata };
-export type { MetadataEntry, MetadataEntriesType, ProjectMetadata, StructuredMetadata, VideoMetadata };
+export type { MetadataEntriesType, MetadataEntry, ProjectMetadata, StructuredMetadata, SpecificMetadata, VideoMetadata };
  

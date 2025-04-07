@@ -10,6 +10,7 @@ interface Target {
   toArray?: any;
   url?: string;
 }
+
 const constructTarget = (
   endpointCategory: keyof Endpoints,
   endpointKey: string,

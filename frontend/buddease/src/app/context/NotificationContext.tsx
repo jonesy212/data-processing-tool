@@ -1,9 +1,8 @@
 // NotificationContext.ts
-import * as React from 'react';
+import { NotificationPosition, PriorityTypeEnum } from "@/app/components/models/data/StatusType";
+import { DocumentTypeEnum } from "@/server/DocumentGenerator";
 import { createContext, ReactNode, useContext } from 'react';
 import NotificationStore from '../components/state/stores/NotificationStore';
-import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
-import { PriorityTypeEnum, NotificationPosition } from "@/app/components/models/data/StatusType";
 
 interface NotificationProviderProps {
   children: ReactNode;
@@ -41,6 +40,7 @@ enum NotificationTypeEnum {
   AppVersion = "AppVersion",
   AnalyticsID = "AnalyticsID",
   Announcement = "Announcement",
+  ApiClientError = "ApiClientError",
   AssignmentOperation = "AssignmentOperation",
   AssignmentOperationSuccess = "AssignmentOperationSuccess",
   BlogPostID = "BlogPostID",
@@ -73,6 +73,7 @@ enum NotificationTypeEnum {
   EventOccurred = "EventOccurred",
   EventReminder = "EventReminder",
   AppStructureID = "AppStructureID",
+  SnapshotID = "SnapshotID",
   FileID = "FileID",
   GeneratedID = "GeneratedID",
   GetStoreSuccess = "GetStoreSuccess",
@@ -93,9 +94,10 @@ enum NotificationTypeEnum {
   NewChatMessage = "NewChatMessage",
   NewFeatureAvailable = "NewFeatureAvailable",
   NewNotification = "NewNotification",
-  OperationStart = "OperationStart",
   OperationError = "OperationError",
+  OperationStart = "OperationStart",
   OperationSuccess = "OperationSuccess",
+  OperationUpdate = "OperationUpdate",
   APISuccess = "APISuccess",
   APIError ="APIError",
   PageLoading = "PageLoading",
@@ -110,6 +112,7 @@ enum NotificationTypeEnum {
   Success = "Success",
   DisplaySuccess ="DisplaySuccess",
   SurveyID = "SurveyID",
+  System = "System",
   SystemUpdateInProgress = "SystemUpdateInProgress",
   TaskLogged = "TaskLogged",
   TaskBoardID = "TaskBoardID",
@@ -119,6 +122,7 @@ enum NotificationTypeEnum {
   TeamLoading = "TeamLoading",
   Test = "Test",
   Unsubscribed = "Unsubscribed",
+  VersionID = "VersionID",
   UserID = "UserID",
   Warning = "Warning",
   Welcome = "Welcome",
@@ -149,5 +153,5 @@ export const useNotificationStore = (): NotificationStore => {
   return context;
 };
  
-export { useNotification, NotificationTypeEnum }
-export type { NotificationType, NotificationContextProps }
+export { NotificationTypeEnum, useNotification };
+export type { NotificationContextProps, NotificationContextType, NotificationType };

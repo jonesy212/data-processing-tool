@@ -1,26 +1,27 @@
 // Task.ts
-import { PhaseData } from "@/app/components/phases/Phase";
 import { ScheduledData } from "@/app/components/calendar/ScheduledData";
-import { Label } from "@/app/components/projects/branding/BrandingSettings";
+import { SharedDetails } from '@/app/components/models/data/Details';
+import { Progress } from "@/app/components/models/tracker/ProgressBar";
+import { PhaseData } from "@/app/components/phases/Phase";
 import { User } from "@/app/components/users/User";
+import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import React from 'react';
 import { Phase } from "../../phases/Phase";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
+import { EventManager } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot, TagsRecord } from "../../snapshots";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
 import { AllTypes } from "../../typings/PropTypes";
 import { Idea } from "../../users/Ideas";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { SupportedData } from "../CommonData";
-import { BaseData, Data } from "../data/Data";
-import { K, Meta, T } from "../data/dataStoreMethods";
+import { BaseData } from "../data/Data";
+import { K, T } from "../data/dataStoreMethods";
 import { PriorityTypeEnum, TaskStatus } from "../data/StatusType";
 import { TaskMetadata, UnifiedMetaDataOptions } from './../../../configs/database/MetaDataOptions';
-import { EventManager } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { FakeDataPartial, FakeData } from "../../intelligence/FakeDataGenerator";
-import { Participant } from "@/app/pages/management/ParticipantManagementPage";
-import { CustomComment } from "../../state/redux/slices/BlogSlice";
-import { Comment } from "../data/Comments";
+import TodoImpl from '@/app/components/todos/Todo';
+import { SharedIdentifiers } from '@/app/components/documents/RelatedProps'
 
 export type TaskData = SupportedData<T, K<T>, StructuredMetadata<T, any>>;
  
@@ -29,10 +30,13 @@ interface Task<
   T extends BaseData<any> = BaseData<any, any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  > extends Omit<TaskMetadata<T, K>, 'tags'>, SharedDetails<T, K, Meta> {
+  > extends Omit<TaskMetadata<T, K>, 'tags'>, SharedDetails<T, K, Meta>,
+  SharedMetadata<T, K> {
   id: string;
   title: string;
   description: string;
+  selectedTask: Task;
+  progress: Progress;
   position?: { x: number; y: number }; // Update `position` to be an object
   property?: string;
   projectName?: string;
@@ -60,7 +64,8 @@ interface Task<
     callbackfn: (value: Task<T, K>, index: number, array: Task<T, K>[]) => unknown,
     thisArg?: any
   ) => boolean;
-  details?: DetailsItem<Task<any>> | undefined;
+  subtasks?: TodoImpl<T, K, Meta>[] | undefined;
+  details?: DetailsItem<Task<T, K, Meta>> | undefined;
   startDate: Date | undefined;
   endDate: Date | undefined;
   isActive: boolean;
@@ -293,6 +298,8 @@ const tasksDataSource: Record<string, Task<T, K<T>>> = {
         updatedAt: new Date(),
         createdBy: "creator1",
         timestamp: new Date().getTime(),
+        nulltype: {} as AllTypes
+        
       },
       "tag2": {
         id: "tag2",
@@ -418,5 +425,5 @@ const createTask = <T extends BaseData<any>, K extends T = T>(
 };
 
 
-  export { tasksDataSource, createTask };
+  export { createTask, tasksDataSource };
 

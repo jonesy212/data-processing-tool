@@ -196,23 +196,3 @@ const UserJourneyManager: React.FC = () => {
 };
 
 export default TempUserData;
-UserJourneyManager;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -23,24 +23,24 @@ import { updateFileMetadata } from '../utils/fileUtils';
 import { isSnapshotStoreConfig } from '../utils/snapshotUtils';
 import { createBaseSnapshot } from "./createBaseSnapshot";
 import {
-    CoreSnapshot,
-    Result,
-    Snapshot,
-    Snapshots,
-    SnapshotsArray,
-    SnapshotUnion
+  CoreSnapshot,
+  Result,
+  Snapshot,
+  Snapshots,
+  SnapshotsArray,
+  SnapshotUnion
 } from "./LocalStorageSnapshotStore";
 import { refreshUI, refreshUIForFile } from './refreshUI';
 import { SnapshotConfigProps } from './SnapshotConfigProps';
 import {
-    defaultAddDataStatus,
-    defaultAddDataSuccess,
-    defaultRemoveData,
-    defaultTransformDelegate,
-    defaultUpdateData,
-    defaultUpdateDataDescription,
-    defaultUpdateDataStatus,
-    defaultUpdateDataTitle,
+  defaultAddDataStatus,
+  defaultAddDataSuccess,
+  defaultRemoveData,
+  defaultTransformDelegate,
+  defaultUpdateData,
+  defaultUpdateDataDescription,
+  defaultUpdateDataStatus,
+  defaultUpdateDataTitle,
 } from "./snapshotDefaults";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from './SnapshotStoreConfig';
@@ -58,10 +58,10 @@ import { action } from 'mobx';
 import { config } from 'process';
 import { options } from 'sanitize-html';
 import { SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotItem, SnapshotStoreProps } from '.';
+import baseMeta from '../../../server/database/baseMeta';
+import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '../../../server/database/Payload';
 import { SnapshotWithData } from "../calendar/CalendarApp";
 import { CalendarEvent } from '../calendar/CalendarEvent';
-import baseMeta from '../database/baseMeta';
-import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '../database/Payload';
 import useDocumentManagement from '../documents/useDocumentManagement';
 import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
 import exportTasksToCSV from '../hooks/dataHooks/exportTasksToCSV';
@@ -139,7 +139,7 @@ function processSnapshot<
       currentMeta: currentMeta, 
       metadataEntries: {}
     },
-    data: snapshot.data as InitializedData<T> | undefined,
+    data: snapshot.data as InitializedData<T, K> | undefined,
     // mappedData: snapshot.mappedData || new Map<string, Snapshot<T, K>>(),
     initialState: snapshot.initialState || null,
     events: snapshot.events && isCombinedEvents(snapshot.events) 
@@ -1424,7 +1424,7 @@ const getCurrentSnapshot = <T extends  BaseData<any>, K extends T = T, Meta exte
   storeId: number,
   additionalHeaders?: Record<string, string>,
   snapshotConfigProps?: SnapshotConfigProps<T, K>,
-  category?: string | symbol | Category, // Optional category
+  category?:  Category, // Optional category
   snapshotStore?: SnapshotStore<T, K> // Optional store to retrieve from
 ): Promise<Snapshot<T, K> | null> => {
   return new Promise((resolve, reject) => {
@@ -1743,7 +1743,7 @@ const snapshot: Snapshot<BaseData, BaseData> = {
     callback: (
       snapshotStore: SnapshotStore<BaseData, BaseData>[]
     ) => void | null,
-    snapshotStoreData?: SnapshotStore<BaseData, BaseData>[] | undefined, category?: string | symbol | Category, snapshotDataConfig?: SnapshotStoreConfig<BaseData, BaseData>[] | undefined): SnapshotStore<BaseData, BaseData>[] | null {
+    snapshotStoreData?: SnapshotStore<BaseData, BaseData>[] | undefined, category?:  Category, snapshotDataConfig?: SnapshotStoreConfig<BaseData, BaseData>[] | undefined): SnapshotStore<BaseData, BaseData>[] | null {
     throw new Error("Function not implemented.");
   },
 
@@ -1757,10 +1757,9 @@ const snapshot: Snapshot<BaseData, BaseData> = {
   snapshotId: string | number | null,
   snapshot: Data<T> | null,
   snapshotData: Data<T>,
-  category: symbol | string | Category | undefined,
-  categoryProperties: CategoryProperties | undefined,
+  category: Category | undefined,  categoryProperties: CategoryProperties | undefined,
   callback: (snapshot: Data<T>) => void,
-  snapshots: SnapshotsArray<T>,
+  snapshots: SnapshotsArray<T, K, Meta>,
   type: string,
   event: SnapshotEvents<T, K>,
   snapshotContainer?: Data<T>,
@@ -1997,7 +1996,7 @@ const snapshot: Snapshot<BaseData, BaseData> = {
           createSnapshot: function (
             id: string, 
             additionalData: any, 
-            category?: string | symbol | Category,
+            category?:  Category,
             callback?: ((snapshot: Snapshot<T, K, StructuredMetadata<T, K>, never>) => void) | undefined, 
             snapshotData?: SnapshotStore<T, K>,
             snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>  
@@ -2256,7 +2255,15 @@ const snapshot: Snapshot<BaseData, BaseData> = {
           getSnapshots: function (category: string, data: Snapshots<Data<T, K, StructuredMetadata<T, K>>>): void {
             throw new Error("Function not implemented.");
           },
-          compareSnapshots: function (snap1: Snapshot<T, K, StructuredMetadata<T, K>, never>, snap2: Snapshot<T, K, StructuredMetadata<T, K>, never>): { snapshot1: Snapshot<T, K, StructuredMetadata<T, K>, never>; snapshot2: Snapshot<T, K, StructuredMetadata<T, K>, never>; differences: Record<string, { snapshot1: any; snapshot2: any; }>; versionHistory: { snapshot1Version?: string | number | Version<T, K>;snapshot2Version?: string | number | Version<T, K>;}; } | null {
+            compareSnapshots: function (snap1: Snapshot<T, K, StructuredMetadata<T, K>, never>, snap2: Snapshot<T, K, StructuredMetadata<T, K>, never>): {
+              snapshot1: Snapshot<T, K, StructuredMetadata<T, K>, never>;
+              snapshot2: Snapshot<T, K, StructuredMetadata<T, K>, never>;
+              differences: Record<string, { snapshot1: any; snapshot2: any; }>;
+              versionHistory: {
+                snapshot1Version?: string | number | Version<T, K>;
+                snapshot2Version?: string | number | Version<T, K>;
+              };
+            } | null {
             throw new Error("Function not implemented.");
           },
           compareSnapshotItems: function (snap1: Snapshot<T, K, StructuredMetadata<T, K>, never>, snap2: Snapshot<T, K, StructuredMetadata<T, K>, never>, keys: (keyof Snapshot<T, K, StructuredMetadata<T, K>, never>)[]): { itemDifferences: Record<string, { snapshot1: any; snapshot2: any; differences: { [key: string]: { value1: any; value2: any; }; }; }>; } | null {

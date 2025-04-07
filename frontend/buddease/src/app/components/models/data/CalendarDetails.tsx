@@ -7,7 +7,6 @@ import { DetailsItem } from "../../state/stores/DetailsListStore";
 import { CommonData, Customizations } from "../CommonData";
 import { Data } from "./Data";
 import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
-
 type CalendarDataAndEventDetails = Data | CommonEvent;
 
 interface CalendarDetailsProps<T> {

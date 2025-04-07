@@ -1,26 +1,43 @@
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { BaseData } from '../data/Data';
 import { CombinedEvents } from "../hooks/useSnapshotManager";
+import { BaseData } from '@/app/data/Data';
 import { Snapshot } from "./LocalStorageSnapshotStore";
 
 // Define SampleSnapshot implementing Snapshot<T, K>
-class SampleSnapshot <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+class SampleSnapshot<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+>
   implements Snapshot<T, K> {
   id: string;
   data: Map<string, Snapshot<T, K>>;
-  meta: Map<string, Snapshot<T, K>>;
+  meta: StructuredMetadata<T, K>;
   events: CombinedEvents<T, K>;
-
+  mappedMeta?: Map<string, Snapshot<T, K>>;
+  mappedSnapshot?: Map<string, Snapshot<T, K, Meta>>;
+  
   constructor(
     id: string,
     data: Map<string, Snapshot<T, K>>,
-    meta: Map<string, Snapshot<T, K>>,
+    meta: StructuredMetadata<T, K>,
     events?: CombinedEvents<T, K>
   ) {
     this.id = id;
     this.data = data;
     this.meta = meta;
-    this.events = {
+    this.events = events ?? {
+      // Initialize other required properties of CombinedEvents
+      subscribers: new Map(),
+      trigger: () => {},
+      onSnapshotAdded: () => {},
+      onSnapshotRemoved: () => {},
+      onSnapshotUpdated: () => {},
+      removeSubscriber: () => {},
+      onError: () => {},
+      once: () => {},
+      addRecord: () => {},
+      unsubscribe: () => {},
       callbacks: events?.callbacks ?? ((snapshot: Snapshot<T, K>) => {
         console.log("callback called");
         return { snapshots: [snapshot] };
@@ -29,7 +46,8 @@ class SampleSnapshot <T extends  BaseData<any>, K extends T = T, Meta extends St
   }
 
   // Example implementation of setData
-  setData(newData: Map<string, Snapshot<T, K>>): void {
+  setData(id: string, newData: Map<string, Snapshot<T, K>>): void {
+    this.id = id;
     this.data = newData;
   }
 }

@@ -1,3 +1,4 @@
+import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
 import { BaseData } from '@/app/components/models/data/Data';
 import { Label } from "@/app/components/projects/branding/BrandingSettings";
 import { createSnapshotInstance } from '@/app/components/snapshots/createSnapshotInstance';
@@ -18,7 +19,6 @@ import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { InitializedData } from './SnapshotStoreOptions';
 import { SnapshotStoreProps } from "./useSnapshotStore";
-import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
 
 
 interface SnapshotItem<
@@ -26,7 +26,7 @@ interface SnapshotItem<
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = never
-> extends Snapshot<T, K, Meta, ExcludedFields>, SharedIdentifiers {
+> extends Snapshot<T, K, Meta, ExcludedFields>, SharedIdentifiers<T, K, Meta> {
   id: string;
   message?: (
     type: NotificationType, 
@@ -37,7 +37,7 @@ interface SnapshotItem<
     channel?: ChatRoom
   ) => Message
   itemContent?: ContentItem; 
-  data: InitializedData<T> | undefined;
+  data: InitializedData<T, K> | undefined;
   user?: User;
   categories?: Category[];
   label: Label | undefined;
@@ -205,8 +205,7 @@ class SnapshotList<
 const createSnapshotItem = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string | null,
   data: T,
-  category: symbol | string | Category | undefined,
-  snapshotStore: SnapshotStore<T, K> | null,
+  category: Category | undefined,  snapshotStore: SnapshotStore<T, K> | null,
   snapshotStoreConfig: SnapshotStoreConfig<T, K> | null,
   snapshotManager: SnapshotManager<T, K> | null,  // Add snapshotManager as a parameter
   storeProps?: SnapshotStoreProps<T, K> & MessageProps // Combine store and message props

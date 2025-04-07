@@ -20,7 +20,7 @@ import MainApplicationLogic from "@/app/components/projects/projectManagement/Ma
 import RemovingEventListeners from "@/app/components/projects/projectManagement/RemovingEventListeners";
 import InviteFriends from "@/app/components/referrals/InviteFriends";
 import ReferralSystem from "@/app/components/referrals/ReferralSystem";
-import SendEmail from "@/app/components/referrals/SendEmail";
+import SendEmail from "@/app/components/communications/email/SendEmail";
 import ProtectedRoute from "@/app/components/routing/ProtectedRoute";
 import { AnimationsAndTransitions } from "@/app/components/styling/AnimationsAndTansitions";
 import ColorPalette from "@/app/components/styling/ColorPalette";

@@ -1,4 +1,3 @@
-import { TeamData } from '@/app/components/models/teams/TeamData';
 // Logger.ts
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { BaseData } from '@/app/components/models/data/Data';
@@ -1076,7 +1075,7 @@ class TaskLogger<
     // Assuming you want to log the completion message
 
     // Define the completionMessageLog using LogData interface
-    const completionMessageLog: LogData<DataType, KeyType> & Partial<NotificationData> = {
+    const completionMessageLog: LogData<DataType, KeyType> & Partial<NotificationData<T, K, Meta>> = {
       timestamp: new Date(), // Set the current timestamp
       level: "INFO", // Specify the log level, e.g., INFO, WARNING, ERROR
       message: completionMessage, // Use the completionMessage provided as the log message
@@ -1896,4 +1895,3 @@ export {
     TenantLogger, ThemeLogger, UILogger, VideoLogger,
     WebLogger
 };
-

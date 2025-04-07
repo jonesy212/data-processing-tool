@@ -1,18 +1,18 @@
 // defaultSubscribeToSnapshots.ts
-import { SnapshotsArray } from '@/app/components/snapshots/LocalStorageSnapshotStore';
-import { CoreSnapshot } from "@/app/components/snapshots/CoreSnapshot";
-import { version } from '@/app/components/versions/Version';
-import { CreateSnapshotsPayload } from '@/app/components/database/Payload';
-import CalendarManagerStoreClass from '@/app/components/state/stores/CalendarManagerStore';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { StatusType } from '@/app/components/models/data/StatusType';
 import { DataStore } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SnapshotConfig, SnapshotContainer } from '@/app/components/snapshots';
+import { CoreSnapshot } from "@/app/components/snapshots/CoreSnapshot";
 import { FetchSnapshotPayload } from '@/app/components/snapshots/FetchSnapshotPayload';
-import { StatusType } from '@/app/components/models/data/StatusType';
-import { Payload, UpdateSnapshotPayload } from "@/app/components/database/Payload";
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { IHydrateResult } from "mobx-persist";
+import { SnapshotsArray } from '@/app/components/snapshots/LocalStorageSnapshotStore';
+import CalendarManagerStoreClass from '@/app/components/state/stores/CalendarManagerStore';
+import { version } from '@/app/components/versions/Version';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { NotificationType } from '@/app/context/support/NotificationContext';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { CreateSnapshotsPayload, Payload } from '@/server/database/Payload';
 import { Data } from "ws";
 import * as snapshotApi from '../../api/SnapshotApi';
 import { SnapshotManager } from "../hooks/useSnapshotManager";
@@ -20,27 +20,29 @@ import { BaseData } from "../models/data/Data";
 import { NotificationPosition } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { NotificationType } from 
- '@/app/context/support/NotificationContext';;
 import { Subscriber } from "../users/Subscriber";
+import { getSnapshotDifference } from './getSnapshotDifference';
 import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
 import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";
 import { SnapshotData } from "./SnapshotData";
 import { SnapshotItem } from "./SnapshotList";
-import { getSnapshotDifference } from './getSnapshotDifference'
 import SnapshotStore, { SnapshotStoreReference } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+;
 
-export const defaultSubscribeToSnapshots =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const defaultSubscribeToSnapshots = <
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
     snapshotId: string,
     callback: (snapshots: Snapshot<T, K>[]) => Subscriber<BaseData, T> | null,
     snapshot: Snapshot<T, K> | null = null
 ) => {
     return new Promise(async (resolve, reject) => { 
+      try {
 
     console.warn('Default subscription to snapshots is being used.');
   
@@ -49,7 +51,7 @@ export const defaultSubscribeToSnapshots =  <T extends  BaseData<any>, K extends
     const snapshotStoreData= await snapshotApi.fetchSnapshotStoreData(snapshotId)
     // Simulate receiving a snapshot update
     setTimeout(() => {
-      const snapshot: Snapshot<T, K> = {
+      const mockSnapshot: Snapshot<T, K> = {
         data: new Map<string, Snapshot<T, K, StructuredMetadata<T, K>, never>>().set("data1", {
           data: {
             id: "data1",
@@ -374,15 +376,14 @@ export const defaultSubscribeToSnapshots =  <T extends  BaseData<any>, K extends
             event: Event,
             id: number,
             snapshotStore: SnapshotStore<T, K>,
-            category: symbol | string | Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
+            category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
             dataStoreMethods: DataStore<T, K>,
             data: T,
             filter?: (snapshot: Snapshot<T, K>) => boolean,
             dataCallback?: (
                 subscribers: Subscriber<T, K>[],
                 snapshots: Snapshots<T, K>
-            ) => Promise<SnapshotUnion<T, K>[]>
+            ) => Promise<SnapshotUnion<T, K, Meta>[]>
           ): Promise<Snapshot<T, K>[]> {
             throw new Error("Function not implemented.");
           },
@@ -425,9 +426,9 @@ export const defaultSubscribeToSnapshots =  <T extends  BaseData<any>, K extends
               ): Promise<void> {
             throw new Error("Function not implemented.");
           },
-          filterSnapshotsByStatus: (status: StatusType): Snapshots<T, K> {},
-          filterSnapshotsByCategory: (category: Category): Snapshots<T, K> => {},
-          filterSnapshotsByTag: (tag: Tag<T, K>): Snapshots<T, K> => {},
+          filterSnapshotsByStatus: function (status: StatusType): Snapshots<T, K> {},
+          filterSnapshotsByCategory: function (category: Category): Snapshots<T, K>{},
+          filterSnapshotsByTag: function (tag: Tag<T, K>): Snapshots<T, K>{},
           batchFetchSnapshotsSuccess: function (
             subscribers: SubscriberCollection<T, K>[],
             snapshots: Snapshots<T, K>
@@ -540,7 +541,7 @@ export const defaultSubscribeToSnapshots =  <T extends  BaseData<any>, K extends
             storeId: number,
             snapshotId: string,
             snapshotStoreConfigs: SnapshotStoreConfig<T, K>[],
-            snapshotStores?: SnapshotStoreReference<T, K>[],
+            snapshotStores?: SnapshotStoreReference<T, K>[] | Map<number, SnapshotStore<T, K, Meta>>
           
           ): Map<T, K>[] {
             throw new Error("Function not implemented.");
@@ -587,8 +588,7 @@ export const defaultSubscribeToSnapshots =  <T extends  BaseData<any>, K extends
           mapSnapshots: function (
             storeIds: number[],
             snapshotId: string,
-            category: symbol | string | Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
+            category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
             snapshot: Snapshot<T, K>,
             timestamp: string | number | Date | undefined,
             type: string,
@@ -599,8 +599,7 @@ export const defaultSubscribeToSnapshots =  <T extends  BaseData<any>, K extends
             callback: (
               storeIds: number[],
               snapshotId: string,
-              category: symbol | string | Category | undefined,
-              categoryProperties: CategoryProperties | undefined,
+              category: Category | undefined,              categoryProperties: CategoryProperties | undefined,
               snapshot: Snapshot<T, K>,
               timestamp: string | number | Date | undefined,
               type: string,
@@ -626,8 +625,7 @@ export const defaultSubscribeToSnapshots =  <T extends  BaseData<any>, K extends
               payload: FetchSnapshotPayload<K> | undefined, 
               snapshotStore: SnapshotStore<T, K>, 
               payloadData: T | BaseData<any>, 
-              category: symbol | string | Category | undefined,
-              categoryProperties: CategoryProperties | undefined,
+              category: Category | undefined,              categoryProperties: CategoryProperties | undefined,
               timestamp: Date, 
               data: T, 
               delegate: SnapshotWithCriteria<T, K>[]
@@ -698,7 +696,7 @@ export const defaultSubscribeToSnapshots =  <T extends  BaseData<any>, K extends
             payload: CreateSnapshotsPayload<T, K>, 
             callback: (snapshots: Snapshot<T, K>[]) => void | null, 
             snapshotDataConfig?: SnapshotConfig<T, K>[] | undefined, 
-            category?: string | symbol | Category | undefined,
+            category?:  Category,
             categoryProperties?: string | CategoryProperties
           ): Snapshot<T, K>[] | null {
             throw new Error("Function not implemented.");
@@ -724,7 +722,7 @@ export const defaultSubscribeToSnapshots =  <T extends  BaseData<any>, K extends
             category: symbol | string | Category | undefined, 
             categoryProperties: CategoryProperties | undefined,
             callback: (snapshot: T) => void, 
-            snapshots: SnapshotsArray<T>,
+            snapshots: SnapshotsArray<T, K, Meta>,
             type: string, 
             event: Event, 
             snapshotContainer?: T | undefined, 
@@ -782,9 +780,13 @@ export const defaultSubscribeToSnapshots =  <T extends  BaseData<any>, K extends
         }
       };
     
-      const snapshots: Snapshot<T, K>[] = [snapshot];
-      callback(snapshots);
-    }, 1000)// Simulate a delay before receiving the update
-    })
-  };
+      const subscriber = callback([mockSnapshot]);
+        resolve(subscriber);
+      }, 100);
+    } catch (error) {
+      console.error('Error in defaultSubscribeToSnapshots:', error);
+      reject(error);
+    }
+  });
+};
   

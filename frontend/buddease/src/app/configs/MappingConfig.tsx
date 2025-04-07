@@ -1,21 +1,29 @@
 import { CryptoData, ParsedData } from "../components/crypto/parseData";
 import { SupportedData } from "../components/models/CommonData";
 import { CommonData } from "../components/models/CommonDetails";
+import { StatusType } from "@/app/components/models/data/StatusType";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseData } from '@/app/components/models/data/Data';
 
-const mapParsedDataToCommonData = <T extends SupportedData<T, K, Meta>>(
+
+
+const mapParsedDataToCommonData = <
+  T extends SupportedData<any, any, StructuredMetadata<any, any>>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
   parsedData: ParsedData<T>
-): CommonData<T> => {
+): CommonData<T, K, Meta> => {
   // Get the type name of the data
   const typeName = Object.getPrototypeOf(parsedData.data).constructor.name;
 
   // Initialize common data with common keys
-  const commonData: CommonData<T> = {
+  const commonData: CommonData<T, K, Meta> = {
     _id: "", // Assuming _id is required, add logic to assign it correctly
     title: parsedData.data["title"],
     description: parsedData.data["description"],
     startDate: parsedData.data["startDate"],
     endDate: parsedData.data["endDate"],
-    status: parsedData.data["status"],
     collaborationOptions: parsedData.data["collaborationOptions"],
     participants: parsedData.data["participants"],
     metadata: parsedData.data["metadata"],
@@ -35,6 +43,12 @@ const mapParsedDataToCommonData = <T extends SupportedData<T, K, Meta>>(
     documentIntegration: parsedData.data["documentIntegration"],
     documentReporting: parsedData.data["documentReporting"],
     documentBackup: parsedData.data["documentBackup"],
+    label: parsedData.data["label"],
+    currentMeta: parsedData.data["currentMeta"],
+    currentMetadata: parsedData.data["currentMetadata"],
+    date: parsedData.data["date"],
+    createdBy: parsedData.data["createdBy"],
+    status: parsedData.data["status"] as StatusType,
   };
 
   // Assign specific data properties based on the type

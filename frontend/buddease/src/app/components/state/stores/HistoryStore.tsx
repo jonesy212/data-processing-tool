@@ -1,14 +1,14 @@
-import {UndoRedoStore, useUndoRedoStore}  from './UndoRedoStore';
+import { useUndoRedoStore } from './UndoRedoStore';
 // HistoryStore.ts
 import { getUsersData, saveUserProfiles } from "@/app/api/UsersApi";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid"; // Import UUID library for generating unique IDs
+import UserService from "../../../api/ApiUser";
 import { authToken } from "../../auth/authToken";
 import useDataExport from "../../hooks/dataHooks/useDataExport";
-import UserService from "../../users/ApiUser";
-import { useSecureUserId } from "../../utils/useSecureUserId";
 import { TaskHistoryEntry } from "../../interfaces/history/TaskHistoryEntry";
+import { useSecureUserId } from "../../utils/useSecureUserId";
 
 interface BaseHistoryStore {
   clearHistory: () => void;
@@ -399,3 +399,4 @@ const historyManagerStore = (): HistoryStore => {
 
 export { historyManagerStore };
 export type { HistoryEntry, HistoryStore };
+

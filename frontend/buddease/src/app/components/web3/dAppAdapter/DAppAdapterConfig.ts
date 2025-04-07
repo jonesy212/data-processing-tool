@@ -1,13 +1,13 @@
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { BaseData } from '@/app/components/models/data/Data';
 import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { ClientConfig } from "../../../../server/database/Client";
 import { DocumentOptions } from "../../documents/DocumentOptions";
+import { DocumentSize } from "../../models/data/StatusType";
 import { Task } from "../../models/tasks/Task";
 import { Team } from "../../models/teams/Team";
 import { TeamMember } from "../../models/teams/TeamMembers";
 import { Project } from "../../projects/Project";
-import { ClientConfig } from "../../database/Client";
-import { DocumentSize } from "../../models/data/StatusType";
 
 // FLUENCE_API_KEY EXPORT
 export const fluenceApiKey = process.env.FLUENCE_API_KEY;

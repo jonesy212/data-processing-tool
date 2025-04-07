@@ -1,65 +1,118 @@
 // SnapshotStoreProps.ts
-import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
-import { convertSnapshotsToRecord } from '@/app/components/snapshots/convertSnapshotsToRecord';
-import { Meta } from '@/app/components/models/data/dataStoreMethods';
-import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
-import { useSecureUserId } from '@/app/components/utils/useSecureUserId';
-import { BaseData } from '@/app/components/models/data/Data';
-import { isSnapshot } from '@/app/components/utils/snapshotUtils';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
-import { SnapshotConfig } from '@/app/components/snapshots';
-import { SnapshotContainer, SnapshotData } from '@/app/components/snapshots';
-import { SnapshotStoreProps } from '@/app/components/snapshots';
-import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData"
-import SubscriberCollection from '@/app/components/snapshots/SnapshotStore';
-import { SnapshotWithCriteria } from '@/app/components/snapshots/SnapshotWithCriteria';
-import { getStoreId } from '@/app/api/ApiData';
-import * as snapshotApi from '@/app/api/SnapshotApi';
-import { fetchEventId } from '@/app/api/ApiEvent';
+import { BaseData } from '@/app/components/models/data/Data';
+import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
+import { SnapshotConfig, SnapshotData } from '@/app/components/snapshots';
+import { ConfigureSnapshotStorePayload } from "@/app/components/snapshots/SnapshotConfig";
+import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
+import { data } from '@/app/components/snapshots/SnapshotWithCriteria';
+import { convertSnapshotsToRecord } from '@/app/components/snapshots/convertSnapshotsToRecord';
 import { createSnapshotInstance } from '@/app/components/snapshots/createSnapshotInstance';
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import {
-    useNotification
-} from "@/app/context/NotificationContext";
-import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
+import { fetchSnapshotsForCategory } from '@/app/components/snapshots/fetchSnapshotsForCategory';
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { isSnapshot } from '@/app/components/utils/snapshotUtils';
+import { useSecureUserId } from '@/app/components/utils/useSecureUserId';
+import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import { useEffect, useState } from "react";
-import { Category, generateOrVerifySnapshotId } from '../libraries/categories/generateCategoryProperties';
-import { Content } from "../models/content/AddContent";
+import { version } from "react";
+import { Category } from '../libraries/categories/generateCategoryProperties';
 import { Data } from "../models/data/Data";
 import { displayToast } from '../models/display/ShowToast';
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { DataStore, useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import {  processSnapshot  } from '../snapshots/snapshot';
+import { DataStore, InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import {
-    Snapshot,
-    SnapshotsArray
+  Snapshot,
+  Snapshots,
+  SnapshotsArray,
+  SnapshotUnion
 } from "../snapshots/LocalStorageSnapshotStore";
-import { ConfigureSnapshotStorePayload } from "@/app/components/snapshots/SnapshotConfig";
 import { SnapshotOperation, SnapshotOperationType } from "../snapshots/SnapshotActions";
-import { BaseSnapshotEvents, SnapshotEvents } from '../snapshots/SnapshotEvents';
 import SnapshotStore from "../snapshots/SnapshotStore";
-import { snapshotStoreConfigInstance, SnapshotStoreConfig } from "../snapshots/SnapshotStoreConfig";
-import { handleSnapshotOperation } from '../snapshots/handleSnapshotOperation';
-import handleSnapshotStoreOperation from '../snapshots/handleSnapshotStoreOperation';
-import { subscribeToSnapshot, subscribeToSnapshots } from "../snapshots/snapshotHandlers";
-import { Subscription } from '../subscriptions/Subscription';
-import { addToSnapshotList, isSnapshotStoreConfig, isSnapshotWithCriteria } from '../utils/snapshotUtils';
-import { SnapshotStoreOptions } from '@/app/components/snapshots/SnapshotStoreOptions';
-import { LibraryAsyncHook } from "@/app/components/hooks/useAsyncHookLinker";
-import { T, K } from '../models/data/dataStoreMethods';
+import { SnapshotStoreConfig } from "../snapshots/SnapshotStoreConfig";
+
+import { InitializedData, SnapshotStoreOptions } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { Subscriber } from '@/app/components/users/Subscriber';
-import { getCategory } from './snapshotContainerUtils';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { Payload } from "../../../server/database/Payload";
+import { SchemaField } from "../../../server/database/SchemaField";
+import baseMeta from "../../../server/database/baseMeta";
 import { createBaseData } from "../hooks/useSnapshotManager";
+import { K, T } from '../models/data/dataStoreMethods';
+import { BrowserBehaviorConfig } from "../state/BrowserBehaviorManager";
+import { addToSnapshotList } from '../utils/snapshotUtils';
+import Version from "../versions/Version";
+
+
+type SnapshotStoreProps<
+  T extends  BaseData<any>,
+  K extends T = T,
+> = {
+  storeId: string | number;
+  category: Category | undefined;
+  name: string;
+  criteria?: CriteriaType;
+  timestamp?: string | number | Date | undefined;
+  eventRecords?: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
+  snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>;
+  schema: Record<string, SchemaField>;
+  options?: SnapshotStoreOptions<T, K>;
+  config: Promise<SnapshotStoreConfig<T, K> | null>;
+  createdAt?: string | Date | undefined;
+  initialState: InitializedState<T, K>;
+  operation: SnapshotOperation<T, K>;
+  id?: string | number | undefined;
+  snapshots?: Snapshots<T, K>;
+  snapshotsArray?: SnapshotsArray<T, K>;
+  data?: InitializedData<T, K>| null | undefined
+  message?: string;
+  state?: Snapshot<T, K>[] | null;
+  existingConfigs?: Map<string, SnapshotConfig<T, K>>;
+  description?: string | undefined; // Could be optional
+  priority?: string | undefined;
+  version?: string | number | Version<T, K>;
+  additionalData?: CustomSnapshotData<T> | undefined; // Custom additional data
+  expirationDate: Date;
+  localStorage?: Storage; 
+  payload: Payload | undefined;
+  callback: (snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>>) => void;
+  storeProps: Partial<SnapshotStoreProps<T, K>>;
+  endpointCategory: string | number;
+  browserBehaviorConfig?: BrowserBehaviorConfig;
+  findIndex?(predicate: (snapshot: SnapshotUnion<T, K, StructuredMetadata<T, K>>) => boolean): number;
+  }
+
+const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
+
 
 // Initialize storeProps with meaningful values
 const storeProps: SnapshotStoreProps<T, K<T>> = {
-    category: "",
-     expirationDate: "",
-     payload: "",
-     callback: "",
-
+    category: "storeProp-category",  // Assuming category can be a string
+    expirationDate: new Date(),
+    payload: { 
+        error: undefined,  // Provide a valid error value (e.g., `null` or an error object)
+        meta: {
+          name: "Sample Notification",
+          timestamp: new Date(),
+          type: NotificationTypeEnum.Info, // Replace with the appropriate enum value
+          startDate: new Date(),
+          endDate: new Date(),
+          status: AllStatus.ACTIVE, // Replace with the appropriate status
+          id: "unique-notification-id",
+          isSticky: false,
+          isDismissable: true,
+          isClickable: true,
+          isClosable: true,
+          isAutoDismiss: true,
+          isAutoDismissable: true,
+          isAutoDismissOnNavigation: false,
+          isAutoDismissOnAction: false,
+          isAutoDismissOnTimeout: true,
+          isAutoDismissOnTap: false,
+          optionalData: null, // Adjust if needed
+          data: {}
+      }
+    },
 
     storeId: "yourStoreId",
     name: "MySnapshotStore", // Provide a valid name
@@ -90,6 +143,9 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
       content: 'Version content',
       metadata: {
         author: 'Author Name',
+        area: 'snapshot store area',
+        metadataEntries: {}, 
+        schema: {},
         timestamp: new Date(),
       },
       versions: null,
@@ -108,11 +164,14 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
       workspaceMembers: ['member1', 'member2'],
       data: [],
       versionHistory: {
-        versionData: {}
+        versionData: {},
+        latestVersion: latestVersion,
+        history: [],
+        timestamp: new Date()
       },
       _structure: {}, // Structure of the version
       versionData: {
-        id: 1, // Required property
+        id: "1", // Required property
         name: "Version Name", // Add required property
         url: "/version-url", // Add required property
         versionNumber: "1.0.0", // Add required property
@@ -121,12 +180,7 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
         userId: "user1", // Add required property
         
         content: "Version content goes here.", // Add required property
-        metadata: {
-          author: "Author Name", // Provide a valid author name
-          timestamp: new Date(), // Provide a valid timestamp; can be Date, string, or number
-          revisionNotes: "Initial version created.", // Optional property
-        }, // Add required property
-        versionData: [], // Adjust as per actual type or requirement
+        
         major: 1, // Add required property
         minor: 0, // Add required property
         patch: 0, // Add required property
@@ -168,6 +222,17 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
         frontend: undefined, // Adjust as per actual usage
         isActive: true, // Optional property
         releaseDate: "2023-01-01", // Optional property
+        setServices: (services: Record<string, any>) => {
+            
+          },
+        notes: [],
+        latestVersion,
+        schema: {},
+        metadata: {
+          author: "Author Name", // Provide a valid author name
+          timestamp: new Date(), // Provide a valid timestamp; can be Date, string, or number
+          revisionNotes: "Initial version created.", // Optional property
+        }, // Add required property
       },
       description: "Version description", // Description of the version
       buildNumber: "1", // Build number
@@ -214,11 +279,11 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
         snapshotConfig: SnapshotStoreConfig<T, K<T>>,
         callback: (
           snapshotStore: SnapshotStore<T, K<T>>, 
-          snapshots: SnapshotsArray<T>
+          snapshots: SnapshotsArray<T, K<T>, StructuredMetadata<T, K<T>>>
         ) => Subscriber<T, K<T>> | null,
-        snapshots: SnapshotsArray<T>,
+        snapshots: SnapshotsArray<T, K<T>, StructuredMetadata<T, K<T>>>,
         unsubscribe?: UnsubscribeDetails, 
-      ): SnapshotsArray<T> | [] => {
+      ): SnapshotsArray<T, K<T>, StructuredMetadata<T, K<T>>> | [] => {
         // Implement your logic here
         return snapshots; // or modify the snapshots as needed
       },
@@ -252,34 +317,144 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
         // Implement your logic here
         return []; // or your logic to return an array of SnapshotStoreConfig<T, K<T>>
       },
-      getCategory: (
+
+      getCategory: async <T extends BaseData<any>, K extends T = T>(
         snapshotId: string,
-        snapshot: Snapshot<T, K<T>>,
+        snapshot: Snapshot<T, K>,
         type: string,
         event: Event,
-        snapshotConfig: SnapshotConfig<T, K<T>>,
+        snapshotConfig: SnapshotConfig<T, K>,
+        category?: Category,
         additionalHeaders?: Record<string, string>
-      ):  Promise<{ categoryProperties?: CategoryProperties; snapshots: Snapshot<T, K<T>>[] }> => {
-        // Logic to derive category properties based on the snapshot and category
-        const categoryProperties: CategoryProperties | undefined = getCategory(
-
-          snapshotId,
-          snapshot,
-          type,
-          event,
-          snapshotConfig,
-          additionalHeaders,
-        );
+      ): Promise<{ 
+        categoryProperties: CategoryProperties; 
+        snapshots: SnapshotsArray<T, K> 
+      }> => {
         
-        // Logic to fetch snapshots based on category and additional parameters
-        const snapshots: Snapshot<T, K<T>>[] = []; // Replace with your logic to fetch relevant snapshots
+        // Type guard with proper typing
+        const isCategoryProperties = (cat: unknown): cat is CategoryProperties => {
+          return typeof cat === 'object' && cat !== null && 'name' in cat;
+        };
       
-        return Promise.resolve({
+        // Default properties with complete typing
+        const defaultProperties: CategoryProperties = {
+          id: snapshotId,
+          type: type || 'default',
+          name: 'Unnamed Category',
+          description: '',
+          icon: 'default-icon',
+          color: '#000000',
+          iconColor: '#FFFFFF',
+          isActive: true,
+          isPublic: false,
+          isSystem: false,
+          isDefault: false,
+          isHidden: false,
+          isHiddenInList: false,
+          UserInterface: [],
+          DataVisualization: [],
+          Forms: undefined,
+          Analysis: [],
+          Communication: [],
+          TaskManagement: [],
+          Crypto: [],
+          brandName: '',
+          brandLogo: '',
+          brandColor: '',
+          brandMessage: '',
+          chartType: 'bar',
+          dataProperties: [],
+          formFields: [],
+          componentDescription: undefined
+        };
+      
+        // Fetch snapshots with proper error handling
+        let snapshots: SnapshotsArray<T, K> = [];
+        try {
+          snapshots = await fetchSnapshotsForCategory<T, K>(
+            snapshotId,
+            type,
+            category
+          );
+        } catch (error) {
+          console.error('Failed to fetch snapshots:', error);
+          // Return empty array but you could also throw or handle differently
+        }
+      
+        // Process category properties
+        const categoryProperties: CategoryProperties = (() => {
+          if (!category) return defaultProperties;
+          
+          if (isCategoryProperties(category)) {
+            return { ...defaultProperties, ...category };
+          }
+          
+          // Handle string/symbol case
+          return {
+            ...defaultProperties,
+            name: typeof category === 'symbol' ? 
+              category.description || 'Symbol Category' : 
+              category,
+            id: category.toString()
+          };
+        })();
+      
+        return {
           categoryProperties,
-          snapshots,
-        });
+          snapshots
+        };
       },
-      getSnapshotConfig, configureSnap: (),
+      configureSnap: (
+        id: string,
+        storeId: number,
+        snapshotId: string,
+        snapshotData: SnapshotData<T, K>,
+        dataStoreMethods: DataStore<T, K>,
+        category?:  Category,
+        categoryProperties?: CategoryProperties,
+        callback?: (snapshot: Snapshot<T, K>) => void,
+        snapshotStore?: SnapshotStore<T, K>,
+        snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>
+      ): SnapshotConfig<T, K> | undefined => {
+        // Implement your configuration logic here
+        const config: SnapshotConfig<T, K> = {
+          // Required properties from SnapshotConfig interface
+          id,
+          storeId,
+          snapshotId,
+          snapshotData,
+          dataStoreMethods,
+          category,
+          categoryProperties: categoryProperties || {
+            id: snapshotId,
+            type: 'default',
+            name: typeof category === 'object' ? category.name : String(category),
+            // Fill in other required CategoryProperties
+            description: '',
+            icon: 'default',
+            color: '#000000',
+            // ... all other required CategoryProperties fields
+          },
+          // Optional properties
+          callback,
+          snapshotStore,
+          metadata: snapshotStoreConfig?.metadata,
+          // Include any other required SnapshotConfig properties
+        };
+
+        // Execute callback if provided
+        if (callback) {
+          const createdSnapshot: Snapshot<T, K> = {
+            id: snapshotId,
+            data: snapshotData.data,
+            timestamp: new Date().toISOString(),
+            // ... other required Snapshot properties
+          };
+          callback(createdSnapshot);
+        }
+
+        return config;
+      },
       initSnapshot: (
         snapshot,
         snapshotId,
@@ -321,7 +496,7 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
         snapshotId: string,
         snapshotData: SnapshotData<T, Data<T>>,
         dataStoreMethods: DataStore<T, Data<T>>,
-        category?: string | symbol | Category,
+        category?:  Category,
         categoryProperties?: CategoryProperties,
         callback?: (snapshotStore: SnapshotStore<T, Data<T>>) => void,
         snapshotStoreConfig?: SnapshotStoreConfig<T, Data<T>>
@@ -411,7 +586,7 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
         snapshot: Snapshot<T, K<T>>,
         data: SnapshotStoreConfig<T, K<T>>,
         mappedData: Map<string, SnapshotStoreConfig<T, K<T>>>,
-        operation: SnapshotOperation<T, K>, // Ensure you use this in your logic
+        operation: SnapshotOperation<T, K<T>>, // Ensure you use this in your logic
         operationType: SnapshotOperationType
       ): Promise<Snapshot<T, K<T>> | null> => {
         return new Promise((resolve) => {

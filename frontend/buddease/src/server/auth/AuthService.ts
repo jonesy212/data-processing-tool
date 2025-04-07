@@ -1,11 +1,11 @@
 // AuthService.ts
 // import JWT_SECRET from "@/app/configs/JwtConfig";
 import { DatabaseConfig, DatabaseService } from "@/app/configs/DatabaseConfig";
-import { PostgresDatabaseService } from "../database/PostgresDatabaseService";
-import UserService from "../users/ApiUser";
 import { generateToken } from "@/app/generators/generateTokens";
- import * as jwt  from 'jsonwebtoken'
-import { JWT_SECRET } from "../snapshots/JwtConfig";
+import * as jwt from 'jsonwebtoken';
+import { PostgresDatabaseService } from "../database/PostgresDatabaseService";
+import { JWT_SECRET } from "@/server/JwtConfig";
+import UserService from "../../users/ApiUser";
 
 type AuthenticationProvider = 'Google' | 'Facebook' | 'Twitter' | 'LinkedIn' | 'GitHub';
 
@@ -17,7 +17,6 @@ class AuthService {
     this.databaseService = new PostgresDatabaseService(databaseConfig); // Assuming you're using PostgreSQL
   }
 
-  
 
     // Public wrapper method to save authentication providers
     public async saveAuthenticationProviders(providers: AuthenticationProvider[]): Promise<void> {
@@ -345,4 +344,4 @@ authService.getAuthenticationProviders()
 
 export default authService;
 
-export type {AuthenticationProvider}
+export type { AuthenticationProvider };

@@ -1,15 +1,15 @@
 import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 // BackendStructure.ts
-import { sanitizeDatabaseSchema } from '@/app/components/database/sanitizeDatabase';
 import Logger from "@/app/components/logging/Logger";
 import { SecureField, SecureMetadata } from '@/app/components/security/SecureField';
 import SecureFieldManager from '@/app/components/security/SecureFieldManager';
 import SecurityAudit from '@/app/components/security/SecurityAudit';
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { VersionHistory } from "@/app/components/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { hashString } from "@/app/generators/HashUtils";
+import { sanitizeDatabaseSchema } from '@/server/database/sanitizeDatabase';
 import * as fs from "fs/promises"; // Use promise-based fs module
 import * as path from "path";
 import getAppPath from "../../../../appPath";
@@ -188,6 +188,11 @@ export default class BackendStructure {
             draft: true,
             content: fileContent,
             permissions: {
+              userId: "",
+              permissions: {},
+              permissionType: "read",
+              canView: true,
+              canEdit: true,
               read: true,
               write: true,
               delete: true,
@@ -329,7 +334,7 @@ export default class BackendStructure {
         permissions,
         versions: [],
         versionData: [],
-        latestVersion: createLatestVersion(), 
+        latestVersion: createLatestVersion<T, K>(), 
         lastUpdated: new Date(),
         timestamp: new Date(),
         history: [],

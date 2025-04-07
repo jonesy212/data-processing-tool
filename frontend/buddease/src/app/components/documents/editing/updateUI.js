@@ -2,11 +2,14 @@
 // Import modules providing relevant information
 import useEditorState from "../../state/useEditorState";
 import autosave from "./autosave";
-import formattingChecks from "./formattingChecks";
+import performFormattingChecks from "./formattingChecks";
 import spellCheck from "./spellCheck";
 import triggerAutosave from "./triggerAutosave";
 import wordCount from "./wordCount";
 import wordCountAnalysis from "./wordCountAnalysis";
+
+
+
 
 const updateUIWithCopiedText = (editorState, store) => {
   // Get the content from the editorState
@@ -17,11 +20,11 @@ const updateUIWithCopiedText = (editorState, store) => {
   wordCountAnalysis(wordCountInfo);
 };
 
-const updateUIProgressBar = (progress) => {
-    // Update UI progress bar
-    formattingChecks(editorContent);
-    const progress = formattingChecks.getProgress();
-  console.log("Updating progress bar with:", progress);
+const updateUIProgressBar = (progressValue) => {
+  // Update UI progress bar
+  formattingChecks(editorContent);
+  const progress = performFormattingChecks.getProgress();
+  // Rest of your code
 };
 
 // Function to update the user interface with relevant information
@@ -38,7 +41,7 @@ const updateUI = (editorContent, store) => {
       const editorContent = useEditorState.getCurrentContent().getPlainText();
       // Perform formatting checks
       updateUIWithCopiedText(editorContent, store);
-      formattingChecks(editorContent);
+      performFormattingChecks(editorContent);
       // Perform spell check
       spellCheck(editorContent);
       // Count words and characters

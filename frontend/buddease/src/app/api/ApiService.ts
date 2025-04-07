@@ -10,7 +10,7 @@ import metadata from '@/app/layout';
 import { AxiosError, AxiosRequestConfig } from "axios";
 import { Style as DocxStyle } from 'docx';
 import { ContentState } from 'draft-js';
-import { getAuthToken } from '../components/auth/getAuthToken';
+import { getAuthToken } from '@/server/auth/getAuthToken';
 import { EventAttendance } from '../components/calendar/AttendancePrediction';
 import { CodingLanguageEnum, LanguageEnum } from '../components/communications/LanguageEnum';
 import { ModifiedDate } from "../components/documents/DocType";
@@ -31,7 +31,7 @@ import { SnapshotConfigProps } from '../components/snapshots/SnapshotConfigProps
 import { storeProps } from '../components/snapshots/SnapshotStoreProps';
 import { AlignmentOptions } from '../components/state/redux/slices/toolbarSlice';
 import { Settings } from "../components/state/stores/SettingsStore";
-import { useNotification } from '../components/support/NotificationContext';
+import { useNotification } from '@/app/context/NotificationContext';
 import UserRoles from '../components/users/UserRoles';
 import { generateSnapshotId } from '../components/utils/snapshotUtils';
 import useSecureStoreId from '../components/utils/useSecureStoreId';
@@ -138,7 +138,7 @@ const createDefaultVersionData = (overrides?: Partial<VersionData>): VersionData
   draft: false,
   userId: "",
   lastUpdated: createLastUpdatedWithVersion(),
-  latestVersion: createLatestVersion(),
+  latestVersion: createLatestVersion<T, K>(),
   content: "",
   metadata: {
     author: "",
@@ -211,7 +211,7 @@ const additionalHeaders: Record<string, string> = generateAllHeaders({ additiona
 
 
 // Usage example:
-const cacheData: SupportedData<Data<BaseData<any>>> = {
+const cacheData: Partial<SupportedData> = {
 
   options: {
     previousContent: {} as ContentState,
@@ -894,8 +894,6 @@ const readCache = async <T extends BaseData<any>>(
       snapshotStoreConfigData: snapshotStoreConfigData, // Snapshot store config data
       snapshotContainer: snapshotContainer, // Snapshot container
     };
-    
-    
     
     // Call getSnapshotConfig with the correct arguments
     const snapshotConfig =  getSnapshotConfig(

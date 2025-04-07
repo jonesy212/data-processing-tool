@@ -4,7 +4,7 @@ import { createLatestVersion } from '@/app/components/versions/createLatestVersi
 
 import { isSnapshot } from '@/app/components/utils/snapshotUtils';
 import apiNotificationsService from '@/app/api/NotificationsService';
-import { UpdateSnapshotPayload } from '@/app/components/database/Payload';
+import { UpdateSnapshotPayload } from '@/server/database/Payload';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { Meta } from '@/app/components/models/data/dataStoreMethods';
 import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
@@ -21,7 +21,7 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { IHydrateResult } from "mobx-persist";
 import { useParams } from "next/navigation";
-import { CreateSnapshotsPayload, Payload } from "../database/Payload";
+import { CreateSnapshotsPayload, Payload } from "../../../server/database/Payload";
 import { ModifiedDate } from "../documents/DocType";
 import { FileCategory } from "../documents/FileType";
 import {
@@ -45,7 +45,7 @@ import {
   NotificationType,
   NotificationTypeEnum,
 } from "../support/NotificationContext";
-import { userId } from "../users/ApiUser";
+import { userId } from "../../api/ApiUserr";
 import { Subscriber, SubscriberCallback } from "../users/Subscriber";
 import {
   triggerIncentives
@@ -125,7 +125,7 @@ interface SnapshotConfig<
   criteria: CriteriaType;
   priority?: string;
   version?: string | number| Version;
-  data: InitializedData<T> | null;
+  data: InitializedData<T, K> | null;
   subscribers: SubscriberCollection<T, K>[];
   storeConfig: SnapshotStoreConfig<T, K> | undefined;
   initialState: InitializedState<T, K>
@@ -197,7 +197,7 @@ function createSnapshotConfig<T extends  BaseData<any> = BaseData<any, any>, K e
   ) => string,
   // Define types as needed
   snapshotContainer?: any, // Define types as needed
-  getSnapshotItems?: (category: symbol | string | Category | undefined, snapshots: SnapshotsArray<T>
+  getSnapshotItems?: (category: symbol | string | Category | undefined, snapshots: SnapshotsArray<T, K, Meta>
   ) => (SnapshotStoreConfig<T, K> | SnapshotItem<T, K> | undefined)[], // Define types as needed
   defaultSubscribeToSnapshots?: (
     snapshotId: string, 
@@ -213,14 +213,13 @@ function createSnapshotConfig<T extends  BaseData<any> = BaseData<any, any>, K e
     event: Event,
     id: number,
     snapshotStore: SnapshotStore<T, K>,
-    category: symbol | string | Category | undefined,
-    categoryProperties: CategoryProperties | undefined,
+    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
     dataStoreMethods: DataStore<T, K>,
     data: T,
     dataCallback?: (
       subscribers: Subscriber<T, K>[],
       snapshots: Snapshots<T, K>
-    ) => Promise<SnapshotUnion<T, K>[]>
+    ) => Promise<SnapshotUnion<T, K, Meta>[]>
   ) => Promise<Snapshot<T, K>[]>, 
   getSubscribers?: (subscribers: SubscriberCollection<T, K>, snapshots: Snapshots<K>) => Promise<{ subscribers: SubscriberCollection<T, K>; snapshots: Snapshots<T, K>; }>, 
   transformDelegate?: (delegate: any) => any, 
@@ -311,7 +310,7 @@ function createSnapshotConfig<T extends  BaseData<any> = BaseData<any, any>, K e
         priority,
         version,
         
-        data: 'data' in snapshotData ? snapshotData.data : {} as InitializedData<T>,
+        data: 'data' in snapshotData ? snapshotData.data : {} as InitializedData<T, K>,
         subscribers: 'subscribers' in snapshotData ? snapshotData.subscribers : {} as SubscriberCollection<T, K>[],
         config: 'storeConfig' in snapshotData ? snapshotResolved.storeConfig as SnapshotStoreConfig<T, K> : null,
         
@@ -395,7 +394,7 @@ function createSnapshotConfig<T extends  BaseData<any> = BaseData<any, any>, K e
         criteria,
         priority,
         version,
-        data: (data ?? {}) as InitializedData<T>,
+        data: (data ?? {}) as InitializedData<T, K>,
         subscribers: 'subscribers' in snapshotData ? snapshotData.subscribers : {} as SubscriberCollection<T, K>[],
         storeConfig,
         initialState,
@@ -415,7 +414,8 @@ function createSnapshotConfig<T extends  BaseData<any> = BaseData<any, any>, K e
     }
 
 
-  })}
+  })
+}
 
 // Example of asynchronous function using async/await
 const updateSubscribersAndSnapshots = async <
@@ -535,7 +535,7 @@ const updateSubscribersAndSnapshots = async <
                 payload: CreateSnapshotsPayload<T, K>,
                 callback: (snapshots: Snapshot<T, K>[]) => void | null,
                 snapshotDataConfig?: SnapshotConfig<T, K>[],
-                category?: Category
+                category?: string | symbol | Category
               ) => snapshot.createSnapshots(id, snapshotId, snapshots, snapshotManager, payload, callback, snapshotDataConfig, category),
               events: {
                 eventRecords: null,
@@ -670,13 +670,12 @@ const updateSubscribersAndSnapshots = async <
                 customFields: {},
                 baseUrl: '',
                 versionData: [],
-                latestVersion: createLatestVersion(),
+                latestVersion: createLatestVersion<T, K>(),
               },
               snapshot: (
                 id: string | number | undefined,
                 snapshotData: SnapshotData<T, K>,
-                category: symbol | string | Category | undefined,
-                categoryProperties: CategoryProperties | undefined,
+                category: Category | undefined,                categoryProperties: CategoryProperties | undefined,
                 callback: (snapshotStore: SnapshotStore<T, K>) => void,
                 dataStore: DataStore<T, K>,
                 dataStoreMethods: DataStoreMethods<T, K>,
@@ -1120,7 +1119,7 @@ const updateSubscribersAndSnapshots = async <
               const defaultSnapshotStore: Partial<SnapshotStore<T, K, StructuredMetadata<T, K>>> = {
                 id: 'default-store-id',
                 name: 'Default Store',
-                data: {} as InitializedData<T> | undefined // Assume this data can be pre-filled
+                data: {} as InitializedData<T, K> | undefined // Assume this data can be pre-filled
               };
               return defaultSnapshotStore;
             } catch (error) {

@@ -1,15 +1,23 @@
 // FuzzyMatch.ts
+import { BaseData } from '@/app/components/models/data/Data';
+import { AppMetadata } from '@/app/configs/database/MetaDataOptions';
 import AppTreeService from "@/app/services/AppTreeService";
 import fuzzysort from "fuzzysort";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "@/server/auth/AuthContext";
 import { processTextWithSpaCy } from "../intelligence/AutoGPTSpaCyIntegration";
 import { AllTypes } from "../typings/PropTypes";
+import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
+import { T, K } from "@/app/components/models/data/dataStoreMethods";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
-interface BaseEntity {
-  id: string | number | undefined;
+interface BaseEntity<
+  T extends BaseData<any> = any,
+  K extends T = T
+> extends SharedIdentifiers<T, K> {
   name?: string | undefined;
   description?: string | null | undefined;
   createdAt: string | Date | undefined;
+  appMetadata?: AppMetadata<T, K>;
   createdBy: string | undefined;
   updatedBy?: string;
   filePathOrUrl?: string;
@@ -17,10 +25,14 @@ interface BaseEntity {
 }
 
 
+
+
+
 // Define a type for your entities
 interface Entity extends BaseEntity {
   type?: string | AllTypes | null
 }
+
 
 // Function to perform fuzzy matching with spaCy processing
 export const fuzzyMatchEntities = async (

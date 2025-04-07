@@ -6,14 +6,14 @@ import Logger from "@/app/components/logging/Logger";
 import dotProp from "dot-prop";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import { User } from "./User";
-import { UserActions } from "./UserActions";
-import { UserRole } from "./UserRole";
-import { UserRoleActions } from "./UserRoleActions";
-import { sendNotification } from "./UserSlice";
+import { User } from "../components/users/User";
+import { UserActions } from "../components/users/UserActions";
+import { UserRole } from "../components/users/UserRole";
+import { UserRoleActions } from "../components/users/UserRoleActions";
+import { sendNotification } from "../components/users/UserSlice";
 // Other imports remain unchanged
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
-import updateUI from '../documents/editing/updateUI';
+import updateUI from '../components/documents/editing/updateUI';
 
 const API_BASE_URL = endpoints.users;
 
@@ -580,4 +580,4 @@ updateUserRoles = async (users: {
 
 export const userService = new UserService();
 export default UserService;
-export type {UserProfile}
+export type { UserProfile };

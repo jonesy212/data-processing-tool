@@ -1,5 +1,5 @@
 // DetailsListStore.ts
-import { PhaseData } from "../components/phases/Phase";
+import { PhaseData } from "@/app/components/phases/Phase";
 import { BaseData } from '@/app/components/models/data/Data';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { makeAutoObservable } from "mobx";
@@ -12,7 +12,7 @@ import {
   NotificationType,
     NotificationTypeEnum,
     useNotification,
-} from "../../support/NotificationContext";
+} from "@/app/components/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
 import { Tag } from '@/app/components/models/tracker/Tag';
@@ -143,7 +143,10 @@ interface DetailsItemExtended<
   setCurrentTeam?: (team: Team) => void;
   clearCurrentProject?: () => void;
 
-}export interface DetailsListStore <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+}
+
+
+export interface DetailsListStore<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   details: Record<string, DetailsItemExtended<T, K>[]>;
   detailsTitle: string;
   detailsDescription: string;
@@ -187,9 +190,9 @@ class DetailsListStoreClass <
   T extends  BaseData<any>, 
   K extends T = T, 
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
->
-  implements DetailsListStore<T, K>
+> implements DetailsListStore<T, K>
 {
+
   details: Record<string, DetailsItemExtended<T, K>[]> = {
     pending: [],
     inProgress: [],
@@ -242,6 +245,7 @@ class DetailsListStoreClass <
       label: {},
       currentMeta: currentMeta,
       currentMetadata: currentMetadata,
+      latestVersion: latestVersion,
       date: new Date(),
       createdBy: ""
       // Initialize any other required properties of Phase here, based on Phase<T, K> structure

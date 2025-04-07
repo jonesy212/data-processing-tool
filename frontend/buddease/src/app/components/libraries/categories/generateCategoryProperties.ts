@@ -8,7 +8,7 @@ import { CategoryKeys } from "./CategoryManager";
 
 
 type CategoryIdentifier = string | symbol;
-type Category = CategoryIdentifier | CategoryProperties | undefined;
+type Category = CategoryKeys | CategoryIdentifier | CategoryProperties | undefined;
 
 
 // Type Guard to check if category is CategoryProperties
@@ -218,6 +218,24 @@ function getCategoryLabelForSnapshot(context: string): CategoryKeys | null {
       return "developerTasks"; // Example
     case "board":
       return "boardItems";
+    case "community":
+      return "communiity"
+    case "teams":
+      return "teams" 
+    case "todos":
+      return "todos"  
+    case "notes":
+      return "notes"  
+    case "goals":
+      return "goals"  
+    case "files":
+      return "files"  
+    case "events":
+      return "events"  
+    case "contacts":
+      return "contacts"  
+    case "bookmarks":
+      return "bookmarks" 
     // Add more mappings if necessary
     default:
       return null; // Or handle the default case however you need

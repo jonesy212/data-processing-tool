@@ -1,8 +1,8 @@
 // AnimatedComponent.tsx
+import React from "react";
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import createDynamicHook, { DynamicHookResult } from '../../hooks/dynamicHooks/dynamicHookGenerator';
 import { AnimatedComponentProps } from '../../styling/AnimationsAndTansitions';
-import React from "react";
 
 import authService from '../../auth/AuthService';
 import useIdleTimeout from '../../hooks/idleTimeoutHooks';
@@ -46,7 +46,10 @@ const AnimatedComponent = forwardRef<
     });
 
   // Now you can use toggleActivation, startAnimation, stopAnimation, and animateIn directly
+ // Initialize idle timeout once
+ const { idleTimeoutId, startIdleTimeout } = useIdleTimeout("animated-component", _props);
 
+  
   useImperativeHandle(
     ref,
     () => ({
@@ -63,8 +66,8 @@ const AnimatedComponent = forwardRef<
       animateIn: () => {
         startAnimation();
       },
-      idleTimeoutId: useIdleTimeout({}).idleTimeoutId,
-      startIdleTimeout: useIdleTimeout({}).startIdleTimeout,
+      idleTimeoutId,
+      startIdleTimeout,
       accessToken: accessToken,
       isActive: isVisible,
       loopDuration, // Pass loop duration to dynamic hook

@@ -1,11 +1,14 @@
 import { getConfigsData } from "@/app/api/getConfigsApi";
+import { data } from '@/app/components/snapshots/SnapshotWithCriteria';
 import { getSnapshotId } from "@/app/api/SnapshotApi";
 import { ModifiedDate } from "@/app/components/documents/DocType";
 import updateUI, { updateUIWithSearchResults } from "../documents/editing/updateUI";
 import { ConfigLogger } from "../logging/Logger";
 import { BaseData, Data } from "../models/data/Data";
 import { ExchangeData } from "../models/data/ExchangeData";
-import { CustomSnapshotData, Snapshot } from "../snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
+import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
+
 import { updateUIWithSnapshotStore } from "../snapshots/updateUIWithSnapshotStore";
 import { Subscription } from "../subscriptions/Subscription";
 import { getSubscriptionLevel } from "../subscriptions/SubscriptionLevel";
@@ -64,15 +67,15 @@ const integrateExchange = async (exchangeData: ExchangeData): Promise<void> => {
       switch (exchangeData.type) {
         case ExchangeDataTypeEnum.TRADES:
           // Example: If the exchange data type is trades, process and store the trade data
-          processTrades(exchangeData.data);
+          processTrades(exchangeData.data.getAll()); // or .items / .values / .data depending on your API
           break;
         case ExchangeDataTypeEnum.ORDER_BOOK:
           // If the exchange data type is order book, update the order book with new data
-          orderBookUpdater.updateOrderBook(exchangeData.data); // Use orderBookUpdater here
+          orderBookUpdater.updateOrderBook(exchangeData.data.getAll()); // ✅
           break;
         case ExchangeDataTypeEnum.TICKER:
           // Example: If the exchange data type is ticker, update the ticker information
-          updateTicker(exchangeData.data);
+          updateTicker(exchangeData.data.getAll()); // ✅
           break;
         default:
           console.error("Unsupported exchange data type:", exchangeData.type);
@@ -408,7 +411,7 @@ const newOrderBookData: OrderBookData[] = []; // Replace with actual new order b
 mergeOrderBookData(newOrderBookData, existingOrderBook);
 
 // Call the updateOrderBook function with the merged order book data
-const initialData: CustomSnapshotData = {
+const initialData: CustomSnapshotData<T, K, Meta> = {
   timestamp: new Date().toISOString(),
   value: 42,
   orders: [
@@ -430,7 +433,7 @@ const initialData: CustomSnapshotData = {
 }
 
 // Create an instance of the Subscriber class for order book updates
-const subscription: Subscription<Data, Data> = {
+const subscription: Subscription<Data<T, K, Meta>, Data<T, K, Meta>> = {
   unsubscribe: () => {},
   portfolioUpdates: () => {},
   tradeExecutions: () => {},
@@ -439,8 +442,9 @@ const subscription: Subscription<Data, Data> = {
   triggerIncentives: () => { },
   determineCategory: (data:any) => data,
   portfolioUpdatesLastUpdated: {} as ModifiedDate,
+  snapshot: {} as Snapshot<T, K>,
   subscribers: [],
-  data: {},
+  data: data,
   getSubscriptionLevel: getSubscriptionLevel
 };
 

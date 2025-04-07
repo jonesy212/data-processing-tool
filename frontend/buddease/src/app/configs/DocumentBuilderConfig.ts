@@ -1,11 +1,11 @@
 // DocumentBuilderConfig.ts
 import { IHydrateResult } from "mobx-persist";
+import { DocumentTypeEnum } from "../../server/DocumentGenerator";
 import {
   CodingLanguageEnum,
   LanguageEnum,
 } from "../components/communications/LanguageEnum";
 import { ModifiedDate } from "../components/documents/DocType";
-import { DocumentTypeEnum } from "../components/documents/DocumentGenerator";
 import { DocumentOptions } from "../components/documents/DocumentOptions";
 import { Section } from "../components/documents/Section";
 import {
@@ -19,9 +19,9 @@ import { UserIdea } from "../components/users/Ideas";
 import Version from "../components/versions/Version";
 import { VersionData } from "../components/versions/VersionData";
 import { StructuredMetadata } from "./StructuredMetadata";
+import { AppStructureItem } from "./appStructure/AppStructure";
 import BackendStructure from "./appStructure/BackendStructure";
 import FrontendStructure from "./appStructure/FrontendStructure";
-import { AppStructureItem } from "./appStructure/AppStructure";
 
 export interface DocumentBuilderConfig extends DocumentOptions {
   levels: any;
@@ -97,7 +97,7 @@ export interface CustomHydrateResult<T> extends IHydrateResult<T> {
   ): CustomHydrateResult<T | TResult>;
 }
 
-const versionInfo: Version = {
+const versionInfo: Version<T, K> = {
   id: 123456789,
   versionData: undefined,
   buildVersions: undefined,
@@ -178,7 +178,7 @@ const versionInfo: Version = {
   },
 }
 
-const versionData: VersionData = {
+const versionData: VersionData<T, K> = {
   id: versionInfo.id,
   name: versionInfo.name, 
   url: versionInfo.url,
@@ -237,8 +237,6 @@ const versionData: VersionData = {
   patch: versionInfo.patch,
   childIds: versionInfo.childIds,
   relatedData: versionInfo.relatedData
-
- 
 };
 
 
@@ -511,7 +509,7 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
       loggingAndNotificationsEnabled: false,
       securityFeaturesEnabled: false,
       theme: "",
-      language: CodingLanguageEnum.JavaScript,
+      language: CodingLanguageEnum.Javascript,
       fontSize: 0,
       darkMode: false,
       enableEmojis: false,
@@ -731,4 +729,4 @@ export const getDefaultDocumentBuilderConfig = (): DocumentBuilderConfig => {
 function callback() {
   throw new Error("Function not implemented.");
 }
-export {versionData}
+export { versionData };

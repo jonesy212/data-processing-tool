@@ -1,14 +1,10 @@
 import UserRoles from '@/app/components/users/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
 import { User } from "../../users/User";
-import { UserRole } from "../users/UserRole";
+import { UserRole } from "../../users/UserRole";
 import { Team } from './Team';
 import { Task } from '../tasks/Task';
 
-export interface Collaborator extends Member {
-  collaborations: number; // Number of collaborations
-  // Add any other properties specific to Collaborator
-}
 
 export interface Member extends User {
   teamId: string;
@@ -17,6 +13,11 @@ export interface Member extends User {
   teams?: Team[];
   host?: boolean;
   // Add other member-specific properties here
+}
+
+export interface Collaborator extends Member {
+  collaborations: number; // Number of collaborations
+  // Add any other properties specific to Collaborator
 }
 
 // Define the Contributor interface or type// Define the Contributor interface extending Member
@@ -44,11 +45,15 @@ interface TeamMember extends MemberData {
   }
   
 
+  const DEFAULT_REFRESH_UI = () => {};
+
   const memberData: MemberData = {
     bannerUrl: "", 
     roles: [], 
     followers: [], 
-    preferences: {}, 
+    preferences: {
+      refreshUI: DEFAULT_REFRESH_UI,
+    }, 
     storeId: 0,
     id: 1,
     username: 'member1',

@@ -1,17 +1,17 @@
-import { SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
-import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
-import { SubscriberCallback } from '@/app/components/users/Subscriber';
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
-import { TriggerIncentivesParams } from "@/app/components/utils/applicationUtils";
-import { SubscriptionLevel } from "@/app/components/subscriptions/SubscriptionLevel";
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { Attachment } from '@/app/components/documents/Attachment/attachment'
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { SubscriptionLevel } from "@/app/components/subscriptions/SubscriptionLevel";
+import { SubscriberCallback } from '@/app/components/users/Subscriber';
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
+import { TriggerIncentivesParams } from "@/app/components/utils/applicationUtils";
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
 
-import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
-import { Callback } from '@/app/components/snapshots/subscribeToSnapshotsImplementation';
-import { BaseData } from '@/app/components/models/data/Data';
 import { ModifiedDate } from '@/app/components/documents/DocType';
+import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
+import { BaseData } from '@/app/components/models/data/Data';
+import { Callback } from '@/app/components/snapshots/subscribeToSnapshotsImplementation';
 
 type FetchSnapshotByIdCallback<
   T extends BaseData<any, any, any, Attachment>,
@@ -86,7 +86,8 @@ type Subscription<
     subscriberType?: SubscriberTypeEnum;
     subscriptionType?: SubscriptionTypeEnum;
     subscribers: SubscriberCollection<T, K>;
-    data?: Snapshot<T, K>;
+    snapshot: Snapshot<T, K>,
+    data?: InitializedData<T, K> | null | undefined;
     triggerIncentives: ({ userId, incentiveType, params }: TriggerIncentivesParams) => void;
     getSubscriptionLevel: (price: number) => SubscriptionLevel | undefined;
     unsubscribe: (
@@ -117,7 +118,7 @@ type Subscription<
     portfolioUpdatesLastUpdated: number | ModifiedDate | null;
     getId?: () => string;
     determineCategory: (data: Snapshot<T, K>) => string | CategoryProperties | null;
-    category?: Category | null;
+    category?: string | symbol | Category | null;
     categoryProperties?: CategoryProperties | null;
     fetchSnapshotById?: (
       { userId, snapshotId }: { userId: string; snapshotId: string }
@@ -129,4 +130,4 @@ type Subscription<
   };
   
 
-  export type { Subscription, SubscriberCallbackType }
+  export type { SubscriberCallbackType, Subscription };

@@ -17,7 +17,7 @@
 //     payload: CreateSnapshotStoresPayload<T, K>,
 //     callback: (snapshots: Snapshot<T, K>[]) => void | null,
 //     snapshotConfig?: SnapshotConfig<T, K>[],
-//     category?: string | symbol | Category | undefined,
+//     category?:  Category,
 //   ): Snapshot<T, K>[] | null => {
 //     const { data, events, dataItems, newData } = payload;
     

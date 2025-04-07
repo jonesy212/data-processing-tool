@@ -1,4 +1,4 @@
-import SubscriberCollection from '@/app/components/snapshots/SnapshotStore';
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection'
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData } from "../models/data/Data";

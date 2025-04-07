@@ -4,12 +4,10 @@ import React, { useState } from "react";
 
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { ChatSettingsPanel } from "@/app/components/communications/chat/ChatSettingsPanel";
-import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import RichTextEditor from "@/app/components/documents/RichTextEditor";
 import {
-  ToolbarOptions,
   ToolbarOptionsComponent,
-  ToolbarOptionsProps,
+  ToolbarOptionsProps
 } from "@/app/components/documents/ToolbarOptions";
 import { getTextBetweenOffsets } from "@/app/components/documents/getTextBetweenOffsets";
 import ResizablePanels from "@/app/components/hooks/userInterface/ResizablePanels";
@@ -18,6 +16,7 @@ import { useMovementAnimations } from "@/app/components/libraries/animations/mov
 import axiosInstance from "@/app/components/security/csrfToken";
 import { usePanelContents } from "@/app/generators/usePanelContents";
 import Clipboard from "@/app/ts/clipboard";
+import { DocumentTypeEnum } from "@/server/DocumentGenerator";
 
 interface TemplateDataProps {
   id: number;

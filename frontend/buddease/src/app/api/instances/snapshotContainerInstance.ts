@@ -1,6 +1,6 @@
 import { getSnapshot, snapshotContainer } from '@/app/api/SnapshotApi';
 import { SnapshotWithData } from '@/app/components/calendar/CalendarApp';
-import { CreateSnapshotsPayload } from '@/app/components/database/Payload';
+import { CreateSnapshotsPayload } from '@/server/database/Payload';
 import { SnapshotManager } from '@/app/components/hooks/useSnapshotManager';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { BaseData, Data, DataDetails } from '@/app/components/models/data/Data';
@@ -30,7 +30,7 @@ import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 
 // snapshotContainerInstance.ts
 const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K<T>, Data<T, K<T>, StructuredMetadata<T, K<T>>>>
-  & BaseData<any, any, StructuredMetadata<any, any>>> = {
+  & BaseData<any, any, StructuredMetadata<any, any>>> extends Shared = {
   childIds: [],
   // ...other properties and methods
   snapshotContainer: snapshotContainer,
@@ -56,8 +56,7 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K<T>
     snapshotData: SnapshotData<SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>,
     SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>,
     never>,
-    category: symbol | string | Category | undefined,
-    categoryProperties: CategoryProperties | undefined,
+    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K<T>>) => void,
     dataStore: DataStore<SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>,
     SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>>,
@@ -148,8 +147,7 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K<T>
     type: string,
     event: Event, id: number,
     snapshotStore: SnapshotStore<T, K<T>>,
-    category: symbol | string | Category | undefined,
-
+    category: Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     dataStoreMethods: DataStore<SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>>,
     data: SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>,

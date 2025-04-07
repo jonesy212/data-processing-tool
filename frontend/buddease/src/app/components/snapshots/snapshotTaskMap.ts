@@ -1,18 +1,16 @@
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
- import { Subscriber } from "ethers";
-import { IHydrateResult } from "mobx-persist";
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { SnapshotDataResponse } from "@/app/utils/retrieveSnapshotData";
+import { Subscriber } from "ethers";
 import { Task } from "react-native";
-import { Data } from "../models/data/Data";
-import { Snapshot, SnapshotsArray, Snapshots, SubscriberCollection, SnapshotsObject } from ".";
+import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SubscriberCollection } from ".";
+import { CreateSnapshotsPayload } from "../../../server/database/Payload";
 import { CalendarEvent } from "../calendar/CalendarEvent";
-import { CreateSnapshotsPayload } from "../database/Payload";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
-import { BaseData } from "../models/data/Data";
+import { BaseData, Data } from "../models/data/Data";
 import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import FetchSnapshotPayload from "./FetchSnapshotPayload";
 import { UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
 import { SnapshotConfig } from "./snapshot";
@@ -20,7 +18,6 @@ import { K, T } from "./SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { SnapshotDataResponse } from "@/app/utils/retrieveSnapshotData";
 
 //snapshotTaskMap.ts
 const snapshotTasktMap = new Map<string, Snapshot<Task, Data>>([
@@ -210,8 +207,7 @@ const snapshotTasktMap = new Map<string, Snapshot<Task, Data>>([
         snapshotId: string,
         snapshot: K | null,
         snapshotData: K,
-        category: symbol | string | Category | undefined,
-        callback: (snapshot: K) => void,
+        category: Category | undefined,        callback: (snapshot: K) => void,
         snapshots: SnapshotsArray<K>,
         type: string,
         event: Event,
@@ -244,8 +240,7 @@ const snapshotTasktMap = new Map<string, Snapshot<Task, Data>>([
         payload: FetchSnapshotPayload<any>,
         snapshotStore: SnapshotStore<any, any>,
         payloadData: any,
-        category: symbol | string | Category | undefined,
-        timestamp: Date,
+        category: Category | undefined,        timestamp: Date,
         data: any,
         delegate: SnapshotWithCriteria<any, any>[]
       ): Snapshot<Task, K> => {
@@ -808,8 +803,7 @@ const snapshotTasktMap = new Map<string, Snapshot<Task, Data>>([
       mapSnapshots: (
         storeIds: number[],
         snapshotId: string,
-        category: symbol | string | Category | undefined,
-        snapshot: Snapshot<Task, K>,
+        category: Category | undefined,        snapshot: Snapshot<Task, K>,
         timestamp: string | number | Date | undefined,
         type: string,
         event: Event,
@@ -819,8 +813,7 @@ const snapshotTasktMap = new Map<string, Snapshot<Task, Data>>([
         callback: (
           storeIds: number[],
           snapshotId: string,
-          category: symbol | string | Category | undefined,
-          snapshot: Snapshot<Task, K>,
+          category: Category | undefined,          snapshot: Snapshot<Task, K>,
           timestamp: string | number | Date | undefined,
           type: string,
           event: Event,
@@ -843,8 +836,7 @@ const snapshotTasktMap = new Map<string, Snapshot<Task, Data>>([
           payload: FetchSnapshotPayload<K> | undefined,
           snapshotStore: SnapshotStore<Task, K>,
           payloadData: T | Data,
-          category: symbol | string | Category | undefined,
-          timestamp: Date,
+          category: Category | undefined,          timestamp: Date,
           data: T,
           delegate: SnapshotWithCriteria<Task, K>[]
        ) => Snapshot<Task, K>

@@ -1,9 +1,10 @@
+import { BaseData } from '@/app/components/models/data/Data';
 import { DocumentData } from "../../DocumentBuilder";
 import { DocumentOptions } from "../../DocumentOptions";
 
 const generateFinancialReportContent = (
   options: DocumentOptions,
-  documents: DocumentData[]
+  documents: DocumentData<BaseData<any>>[]
 ): string => {
   // Real-world logic to generate the financial report content
   let financialReportContent = "Financial Report Content:\n\n";
@@ -31,4 +32,4 @@ const generateFinancialReportContent = (
   return financialReportContent;
 };
 
-export  {generateFinancialReportContent};
+export { generateFinancialReportContent };

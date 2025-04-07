@@ -5,7 +5,6 @@ import { ExchangeData } from "@/app/components/models/data/ExchangeData";
 import { fetchDEXData } from "@/app/components/models/data/fetchExchangeData";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { EventData } from "@/app/components/state/stores/AssignEventStore";
-import { Attachment } from '@/app/components/documents/Attachment/attachment'
 import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { RealtimeUpdateCallback } from '@/app/components/hooks/commHooks/useRealtimeData';
 
@@ -17,16 +16,15 @@ import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { AllTypes } from "../../typings/PropTypes";
 import { BaseData } from "../data/Data";
 import { T, K, Meta } from "@/app/components/models/data/dataStoreMethods";
-import { ExcludedFields } from '@/app/components/routing/Fields';
 import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
 
 
-
-interface BaseRealtimeData extends SharedIdentifiers {
+interface BaseRealtimeData extends SharedIdentifiers<T, K<T>, Meta<T, K<T>>, keyof T> {
   id: string | number | undefined; // Override id to ensure it's required
   name: string;
-  value: string;
-  type: string | AllTypes | undefined; // Align with BaseData's expectation
+  value?: string | number | Snapshot<T, K, Meta, ExcludedFields> | null;
+  
+  type: string | AllTypes  | null; // Align with BaseData's expectation
   date: Date; // Standardize to Date
   // Add other common properties shared by RealtimeDataItem and RealtimeData here
 }
@@ -35,7 +33,7 @@ interface RealtimeDataItem extends BaseRealtimeData, EventData, SharedMetadata<K
   title?: string;
   userId: string;
   dispatch: (action: any) => void;
-  timestamp: Date; // Standardize to Date
+  timestamp: string | number | Date; // Standardize to Date
   data?: InitializedData<RealtimeDataItem> | null,
   // Add other properties specific to RealtimeDataItem here
 }
@@ -44,7 +42,6 @@ interface RealtimeData extends BaseRealtimeData {
   eventId: string;
   userId: string;
   dispatch: (action: any) => void;
-  timestamp: Date; // Standardize to Date
   // Define other properties specific to RealtimeData here
 } 
 

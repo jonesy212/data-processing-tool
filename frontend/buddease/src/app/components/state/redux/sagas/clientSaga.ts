@@ -1,8 +1,8 @@
+import clientApiService from "@/app/api/ApiClient"; // Import the clientApiService
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { ClientActions } from "@/app/pages/personas/ClientActions";
-import clientApiService from "@/app/api/ApiClient"; // Import the clientApiService
+import { ClientConfig } from "@/server/database/Client";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
-import { ClientConfig } from "@/app/components/database/Client";
 
 const clientConfig = {} as ClientConfig
 // Worker Saga: Fetch Client Details

@@ -92,8 +92,8 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       subtasks: [],
       snapshot: {} as Snapshot<Data, Data>,
       analysisType: AnalysisTypeEnum.DEFAULT,
-      analysisResults: {} as DataAnalysisResult[],
-      videoData: {} as VideoData,
+      analysisResults: {} as DataAnalysisResult<T, K>[],
+      videoData: {} as VideoData<T, K>,
       save: () => Promise.resolve(),
     },
   ]);
@@ -102,11 +102,11 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
     {
       _id: "taskData", // Example value
       id: "1",
-      name: "Task 1",
       title: "Task 1",
       description: "Description for Task 1",
       assignedTo: null,
       assigneeId: "",
+      name: "Task 1",
       dueDate: new Date(),
       payload: null,
       type: "addTask",
@@ -136,13 +136,13 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
               value: {
                 _id: "taskData", // Example value
                 phase: {} as Phase,
-                videoData: {} as VideoData,
+                videoData: {} as VideoData<T, K>,
               },
             };
           },
         };
       },
-      videoData: {} as VideoData,
+      videoData: {} as VideoData<T, K>,
     },
     {
       _id: "taskData", // Example value
@@ -181,18 +181,17 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
               value: {
                 _id: "taskData", // Example value
                 phase: {} as Phase,
-                videoData: {} as VideoData,
+                videoData: {} as VideoData<T, K>,
               },
             };
           },
         };
       },
-      videoData: {} as VideoData,
+      videoData: {} as VideoData<T, K>,
     },
     {
       _id: "taskData", // Example value
       id: "3",
-      name: "Task",
       title: "Task 3",
       description: "Description for Task 3",
       assignedTo: null,
@@ -212,7 +211,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       isActive: true,
       tags: [],
       analysisType: AnalysisTypeEnum.TREND,
-      analysisResults: {} as DataAnalysisResult[],
+      analysisResults: {} as DataAnalysisResult<T, K>[],
       videoThumbnail: "",
       videoDuration: 0,
       videoUrl: "",
@@ -226,13 +225,13 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
               value: {
                 _id: "taskData", // Example value
                 phase: {} as Phase,
-                videoData: {} as VideoData,
+                videoData: {} as VideoData<T, K>,
               },
             };
           },
         };
       },
-      videoData: {} as VideoData,
+      videoData: {} as VideoData<T, K>,
     },
   ]);
 
@@ -240,10 +239,18 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
   const { dispatch } = useTrackerStore(rootStores);
 
   // Function to update task progress
-  const updateTaskProgress = (taskId: string, newProgress: number) => {
+  const updateTaskProgress = (taskId: string, newProgress: Progress) => {
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
-        task._id === taskId ? { ...task, progress: newProgress } : task
+        task._id === taskId
+          ? {
+              ...task,
+              progress: {
+                ...task.progress,
+                percentage: newProgress,
+              },
+            }
+          : task
       )
     );
   };
@@ -541,9 +548,9 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
             <p>{task.description}</p>
             <TaskProgress
               selectedTask={task.selectedTask}
-              newProgress={task.progress}
+              newProgress={task.progress.percentage} // Fixed: extract number value
               onTaskClick={handleTaskClick}
-              taskProgress={task.progress}
+              taskProgress={[task as unknown as DetailsItem<Data>]} // Fixed: wrap in array and cast if needed
               onUpdateProgress={(newProgress) =>
                 updateTaskProgress(task.id, newProgress)
               }

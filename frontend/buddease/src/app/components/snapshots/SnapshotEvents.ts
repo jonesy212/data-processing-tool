@@ -1,34 +1,20 @@
+import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { BaseData } from '@/app/components/models/data/Data';
-import { Callback, Snapshot, SnapshotConfig, SnapshotData, SnapshotWithCriteria } from '@/app/components/snapshots';
+import { Snapshot, SnapshotData, SnapshotWithCriteria } from '@/app/components/snapshots';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
+import { SnapshotSubscriberManagement } from "@/app/components/snapshots/SnapshotSubscriberManagement";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { BaseEvent, SharedSnapshotEvent } from "@/app/typings/eventTypes";
-import { UpdateSnapshotPayload } from '../database/Payload';
+import { UpdateSnapshotPayload } from '../../../server/database/Payload';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import { EventRecord } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { SubscriberCallbackType } from "../subscriptions/Subscription";
 import { SubscriberCollection } from '../users/SubscriberCollection';
 
-// Step 1: Base Interface for Shared Properties
-interface BaseSnapshotEvents<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
-  initialConfig: SnapshotConfig<T, K>;
-  callbacks: Record<string, Array<(snapshot: Snapshot<T, K>) => void>>;
-  subscribers: SubscriberCollection<T, K>;
-  eventRecords: Record<string, EventRecord<T, K>[]> | null; // Store events and their callbacks
-  records: Record<string, CalendarManagerStoreClass<T, K>[]> | null; // Store calendar records
-  eventIds: string[];
-  onInitialize: () => void;
-  trigger: (
-    event: string | SnapshotEvents<T, K>,
-    snapshot: Snapshot<T, K>,
-    eventDate: Date,
-    snapshotId: string,
-    subscribers: SubscriberCollection<T, K>,
-    type: string,
-    snapshotData: SnapshotData<T, K>,
-  ) => void;
-  on: (
+interface BaseEventCallbacks<T extends BaseData<any>, K extends T = T> {
+  onInitialize?: () => void;
+  on?: (
     event: string,
     callback: (snapshot: Snapshot<T, K>) => void,
     snapshotId: string,
@@ -36,7 +22,7 @@ interface BaseSnapshotEvents<T extends  BaseData<any>, K extends T = T, Meta ext
     type: string,
     snapshotData: SnapshotData<T, K>
   ) => void;
-  off: (
+  off?: (
     event: string,
     callback: (snapshot: Snapshot<T, K>) => void,
     snapshotId: string,
@@ -52,6 +38,30 @@ interface BaseSnapshotEvents<T extends  BaseData<any>, K extends T = T, Meta ext
       unsubscribeData: any;
     },
   ) => void;
+  trigger?: (
+    event: string | SnapshotEvents<T, K>,
+    snapshot: Snapshot<T, K>,
+    eventDate: Date,
+    snapshotId: string,
+    subscribers: SubscriberCollection<T, K>,
+    type: string,
+    snapshotData: SnapshotData<T, K>,
+  ) => void;
+}
+
+interface EventManagement<T extends BaseData<any>, K extends T = T> {
+  // Global event subscription
+  subscribe: (
+    event: string,
+    callback: (snapshot: Snapshot<T, K>) => void
+  ) => void;
+  
+  unsubscribe: (
+    snapshotId: number,
+    unsubscribeDetails: UnsubscribeDetails,
+    callback: SubscriberCallbackType<T, K> | null
+  ) => void;
+
   emit: (
     event: string,
     snapshot: Snapshot<T, K>,
@@ -64,32 +74,11 @@ interface BaseSnapshotEvents<T extends  BaseData<any>, K extends T = T, Meta ext
     category: Category,
     snapshotData: SnapshotData<T, K>
   ) => void;
-
-  subscribe: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
-  
-  event: string,
-  unsubscribeDetails: {
-    userId: string;
-    snapshotId: string;
-    unsubscribeType: string;
-    unsubscribeDate: Date;
-    unsubscribeReason: string;
-    unsubscribeData: any;
-  },
-  callback: Callback<Snapshot<T, K>>
-  eventsDetails?: CalendarManagerStoreClass<T, K>[] | undefined;
+  once: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
+  removeAllListeners: (event?: string) => void,
 }
 
-
-// Step 2:  Define the common SnapshotEvents interface
-interface SnapshotEvents<
-  T extends BaseData<any>,
-  K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
-  extends BaseSnapshotEvents<T, K>, BaseEvent, SharedSnapshotEvent<T, K> {
-  key: string;
-  target?: EventTarget; // Event target
-
+interface SnapshotEventHandlers<T extends BaseData<any>, K extends T = T> {
   onSnapshotAdded: (
     event: string,
     snapshot: Snapshot<T, K>,
@@ -101,29 +90,18 @@ interface SnapshotEvents<
     criteria: SnapshotWithCriteria<T, K>,
     category: Category
   ) => void;
-
   onSnapshotRemoved: (
     event: string,
     snapshot: Snapshot<T, K>,
     snapshotId: string,
     subscribers: SubscriberCollection<T, K>,
+    type: string,
     snapshotStore: SnapshotStore<T, K>,
     dataItems: RealtimeDataItem[],
     criteria: SnapshotWithCriteria<T, K>,
-    category: Category
+    category: Category,
+    snapshotData: SnapshotData<T, K>
   ) => void;
-
-  onError: (
-    event: string,
-    error: Error,
-    snapshot: Snapshot<T, K>,
-    snapshotId: string,
-    snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
-    criteria: SnapshotWithCriteria<T, K>,
-    category: Category
-  ) => void;
-
   onSnapshotUpdated: (
     event: string,
     snapshotId: string,
@@ -136,28 +114,24 @@ interface SnapshotEvents<
     payload: UpdateSnapshotPayload<T>,
     store: SnapshotStore<any, K>
   ) => void;
-
-  emit: (
+  onError: (
     event: string,
+    error: Error,
     snapshot: Snapshot<T, K>,
     snapshotId: string,
-    subscribers: SubscriberCollection<T, K>,
-    type: string,
     snapshotStore: SnapshotStore<T, K>,
     dataItems: RealtimeDataItem[],
     criteria: SnapshotWithCriteria<T, K>,
-    category: Category,
-    snapshotData: SnapshotData<T, K>
+    category: Category
   ) => void;
+}
 
-  once: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
-
+interface RecordManagement<T extends BaseData<any>, K extends T = T> {
   addRecord: (
     event: string,
     record: CalendarManagerStoreClass<T, K>,
     callback: (snapshot: CalendarManagerStoreClass<T, K>) => void
   ) => void;
-
   removeSubscriber: (
     event: string,
     snapshotId: string,
@@ -167,28 +141,36 @@ interface SnapshotEvents<
     criteria: SnapshotWithCriteria<T, K>,
     category: Category
   ) => void;
+}
 
-  removeAllListeners: (event?: string) => void;
-
-  // Additional methods from SnapshotStoreMethod
-  subscribe: (
-    subscriber: Subscriber<T, K>,
-    callback: (snapshot: Snapshot<T, K>) => void
-  ) => void;
-
-  unsubscribe: (
-    subscriber: Subscriber<T, K>,
-    callback: (snapshot: Snapshot<T, K>) => void
-  ) => void;
-
-  // Additional properties
-  snapshotData?: SnapshotData<T, K>;
-  dataItems?: RealtimeDataItem[];
-  onInitialize?: () => void;
-  on?: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
-  off?: (event: string) => void;
-  trigger?: (event: string, snapshot: Snapshot<T, K>) => void;
+interface SharedProperties<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> {
+  eventRecords: Record<string, EventRecord<T, K, Meta>[]> | null;
+  records: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
+  eventIds: string[];
   eventsDetails?: Record<string, any>;
 }
 
-export type { BaseSnapshotEvents, SnapshotEvents };
+// Step 2:  Define the common SnapshotEvents interface
+interface SnapshotEvents<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+  extends BaseEventCallbacks<T, K>,
+          EventManagement<T, K>,
+          SnapshotEventHandlers<T, K>,
+          RecordManagement<T, K>,
+  SharedProperties<T, K>,
+  SnapshotSubscriberManagement<T, K, Meta>
+{
+  key?: string;
+  target?: EventTarget; // Event target
+  snapshotData?: SnapshotData<T, K>;
+  dataItems?: RealtimeDataItem[];
+}
+
+export type { SharedProperties, SnapshotEvents };
+

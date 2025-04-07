@@ -26,7 +26,7 @@ export interface ScheduledData<
 > extends Schedule, Data<T> {
   // Explicitly define the `createdBy` property to resolve the conflict
   createdBy: string | undefined;
-  // Additional scheduling-specific properties
+  scheduledDate: Date;
   priority?: "scheduled" | "completed" | "canceled" | "rescheduled"; // General status for scheduling
   assignee?: UserAssignee | null;
   subtasks?: TodoImpl<any, any, any>[];

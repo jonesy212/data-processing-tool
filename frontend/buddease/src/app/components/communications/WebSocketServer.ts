@@ -1,8 +1,8 @@
 // WebSocketServer.ts
 import Logger from '@/app/components/logging/Logger';
-import WebSocket from 'ws';
+import { WebSocketServer } from 'ws'; // Changed import
 
-const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocketServer({ port: 8080 }); // Using WebSocketServer class
 
 wss.on('connection', (ws) => {
   console.log('WebSocket connection established');

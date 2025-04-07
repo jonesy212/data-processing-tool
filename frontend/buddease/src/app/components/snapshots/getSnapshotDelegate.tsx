@@ -90,4 +90,4 @@ function createDelegateFromContainer<T extends  BaseData<any>, K extends T = T, 
 }
 
 
-xport { getSnapshotDelegate }
+export { getSnapshotDelegate }

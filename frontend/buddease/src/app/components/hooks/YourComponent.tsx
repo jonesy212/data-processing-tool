@@ -1,14 +1,13 @@
-import useDocumentManagement from '@/app/components/documents/useDocumentManagement';
 import appTreeApiService from "@/app/api/appTreeApi";
 import DataFrameAPI from "@/app/api/DataframeApi";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
-import { Payload } from '@/app/components/database/Payload';
+import useDocumentManagement from '@/app/components/documents/useDocumentManagement';
 import { ApiConfig } from "@/app/configs/ConfigurationService";
-import { duration } from "moment";
-import React, { useEffect, useState } from "react";
+import { Payload, UpdateSnapshotPayload } from '@/server/database/Payload';
+import React, { useEffect, useState, forwardRef, useImperativeHandle, useRef } from "react";
 import {
-    SimpleCalendarEvent,
-    useCalendarContext,
+  SimpleCalendarEvent,
+  useCalendarContext,
 } from "../calendar/CalendarContext";
 import DynamicContent from "../documents/DynamicContent";
 import { BaseData, Data } from "../models/data/Data";
@@ -23,11 +22,10 @@ import useNotificationManagerServiceProps from "../notifications/useNotification
 import { PromptPageProps } from "../prompts/PromptPage";
 import { headersConfig } from '../shared/SharedHeaders';
 import { SnapshotStoreProps } from '../snapshots';
-import { UpdateSnapshotPayload } from "@/app/components/database/Payload";
 
+import CalendarManagerStoreClass, { updateCallback, CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { storeProps } from "../snapshots/SnapshotStoreProps";
-import { default as CalendarEvent, default as CalendarManagerStoreClass, updateCallback } from '@/app/components/calendar/CalendarEvent';
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { rootStores } from "../state/stores/RootStores";
 import useTrackerStore from "../state/stores/TrackerStore";
@@ -136,30 +134,40 @@ const updateSnapshotMethod = (
   return Promise.resolve();
 };
 
+const data = new Map<string, Snapshot<T, K<T>>>(); // or whatever type fits
+
 // Assuming CalendarManagerStoreClass has a constructor that takes a snapshot as input
-const records: Record<string, CalendarManagerStoreClass<BaseData<any>, K<T>>[]> = 
-  Array.from(data.values()).reduce((acc, snapshot) => {
-    const id = snapshot.id; // Replace with a unique identifier property of your snapshots
+const records = Array.from(data.values()).reduce<Record<string, CalendarManagerStoreClass<BaseData<any>, K<T>>[]>>(
+  (acc, snapshot) => {
+    const id = snapshot.id; // Replace with a unique ID field
     if (!acc[id]) {
       acc[id] = [];
     }
 
-    const documentManager = useDocumentManagement()
+    const documentManager = useDocumentManagement();
 
-    // Convert the snapshot to an instance of CalendarManagerStoreClass
-    const calendarManagerInstance = new CalendarManagerStoreClass(category, documentManager, storeProps, snapshot);
+    const calendarManagerInstance = new CalendarManagerStoreClass(
+      category,
+      documentManager,
+      storeProps,
+      snapshot
+    );
+
     acc[id].push(calendarManagerInstance);
     return acc;
-  }, {} as Record<string, CalendarManagerStoreClass< BaseData<any>, K<T>>[]>);
+  },
+  {} // Initial value matches the reduce type
+);
+
 
   
 
-const {storeId, name, version, schema, options, category, config, operation, state, expirationDate } = storeProps
+const {storeId, name, version, schema, options, category, config, operation, state, expirationDate, initialState } = storeProps
 const snapshotId = storeProps.state?.[0]?.id 
   ? getSnapshotId(storeProps.state[0].id) 
   : null;
 
-  const mapToPayload = (updatePayload: UpdateSnapshotPayload<Data>): Payload => {
+  const mapToPayload = (updatePayload: UpdateSnapshotPayload<Data<BaseData<any>>>): Payload => {
     return {
       error: updatePayload.error || undefined,
       meta: updatePayload.meta
@@ -250,12 +258,12 @@ const YourComponent: React.FC<YourComponentProps> = ({
 
   const updateSnapshot = async (
     snapshotId: string,
-    data: Data,
+    data: Data<BaseData<any>>,
     events: Record<string, CalendarEvent<T, K<T>>[]>,
     snapshotStore: SnapshotStore<BaseData, K<T>>,
     dataItems: RealtimeDataItem[],
-    newData: Data,
-    payload: UpdateSnapshotPayload<Data>
+    newData: Data<BaseData<any>>,
+    payload: UpdateSnapshotPayload<Data<BaseData<any>>>
   ) => {
   
     try {
@@ -277,8 +285,8 @@ const YourComponent: React.FC<YourComponentProps> = ({
     const maxAge = 1000;
     const staleWhileRevalidate = 1000;
     const cacheKey = await appTreeApiService.cacheKey;
-    const newData: Data = { timestamp: undefined };
-    const payload: UpdateSnapshotPayload<Data> = {
+    const newData: Data<BasData<any>> = { timestamp: undefined };
+    const payload: UpdateSnapshotPayload<Data<BasData<any>>> = {
       snapshotId: snapshotId,
       newData: newData,
       title: "",
@@ -476,38 +484,15 @@ export default YourComponent;
 
 
 
-
-
-
 // Example:
-
-const { callback, payload, endpointCategory} = storeProps as SnapshotStoreProps<T, K<T>>
+const { callback, payload, endpointCategory } = storeProps as SnapshotStoreProps<T, K<T>>
 const events: Record<string, CalendarEvent<T, K<T>>[]> = {};
 const storeData = new SnapshotStore<T, K<T>>({ storeId, name, initialState, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory, storeId });
-const data: Data<T, K<T>, Meta>= {
-  title: "",
-  category: "",
-  description: "",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  status: "",
-  projects: "",
-  progress: "",
-  phase: {
-    type: "",
-    duration: "",
-    value: "",
-    id: "",
-    name: "",
-    description: "",
-    startDate: new Date(),
-    endDate: new Date(),
-   
-  },
-}
-const snapshotStore = new SnapshotStore<BaseData, K>({ storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory});
+
+
+const snapshotStore = new SnapshotStore<BaseData, K<T>>({ storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory});
 const dataItems: RealtimeDataItem[] = [];
-const newData: Data = {
+const newData: Data<BaseData<any>> = {
   timestamp: undefined
 };
 
@@ -519,7 +504,7 @@ const retryDelay = 1000;
 const maxAge = 1000;
 const staleWhileRevalidate = 1000;
 const cacheKey = await appTreeApiService.cacheKey
-const updatedPayload: UpdateSnapshotPayload<Data> = {
+const updatedPayload: UpdateSnapshotPayload<Data<BaseData<any>>> = {
   ...payload,
   snapshotId: snapshotId, // Assign snapshotId here
   newData: newData,
@@ -531,38 +516,20 @@ const updatedPayload: UpdateSnapshotPayload<Data> = {
   category: ""
 };
 
+
+export type UpdateSnapshotFn = (
+  snapshotId: string,
+  data: InitializedData<T, K>,
+  events: any,
+  snapshotStore: any,
+  dataItems: any[],
+  newData: any,
+  updatedPayload: any
+) => Promise<void>;
+
 // Example component update call
-const component = <YourComponent
-  apiConfig={{
-    name: "exampleName",
-    baseURL: baseURL,
-    timeout: 1000,
-    headers: headersConfig,
-    description: "Example API"
-    retry: {
-      enabled: enabled,
-      maxRetries: maxRetries,
-      retryDelay: retryDelay
-    },
-    cache: {
-      enabled: enabled,
-      maxAge: maxAge,
-      staleWhileRevalidate: staleWhileRevalidate,
-      cacheKey: cacheKey
-    },
-    responseType: "json",
-    withCredentials: false
-  }}
-  children={[]}
-  updateSnapshot={updateSnapshotMethod}
-
-/>;
-
-
-
-
-component
-  .updateSnapshot(
+const component = forwardRef((props: YourComponentProps, ref) => {
+  const updateSnapshot: UpdateSnapshotFn = (
     snapshotId,
     data,
     events,
@@ -570,11 +537,15 @@ component
     dataItems,
     newData,
     updatedPayload,
-  )
-  .then(() => {
-    console.log("Snapshot update completed.");
-  })
-  .catch((error: any) => {
-    console.error("Error during snapshot update:", error);
-  });
+  ) => {
+    // your snapshot update logic here
+    console.log("Updating snapshot...");
+    return Promise.resolve();
+  };
 
+  useImperativeHandle(ref, () => ({
+    updateSnapshot,
+  }));
+
+  return <div>{props.children}</div>;
+});

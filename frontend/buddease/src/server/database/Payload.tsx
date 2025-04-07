@@ -6,20 +6,20 @@ import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useNotification } from "@/app/context/NotificationContext";
 import { LiveEvent } from '@refinedev/core';
 import { useDispatch } from 'react-redux';
-import { SubscriptionPayload } from "../actions/SubscriptionActions";
-import useSubscription from '../hooks/useSubscription';
-import { Category } from "../libraries/categories/generateCategoryProperties";
-import { SnapshotLogger } from '../logging/Logger';
-import { BaseData, Data } from "../models/data/Data";
-import { K, T } from '../models/data/dataStoreMethods';
-import { StatusType } from "../models/data/StatusType";
-import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
-import { AllStatus } from "../state/stores/DetailsListStore";
+import * as subscriptionApi from "../../app/api/subscriberApi";
+import { SubscriptionPayload } from "../../app/components/actions/SubscriptionActions";
+import useSubscription from '../../app/components/hooks/useSubscription';
+import { Category } from "../../app/components/libraries/categories/generateCategoryProperties";
+import { SnapshotLogger } from '../../app/components/logging/Logger';
+import { BaseData, Data } from "../../app/components/models/data/Data";
+import { K, T } from '../../app/components/models/data/dataStoreMethods';
+import { StatusType } from "../../app/components/models/data/StatusType";
+import { RealtimeDataItem } from "../../app/components/models/realtime/RealtimeData";
+import { Snapshot } from "../../app/components/snapshots/LocalStorageSnapshotStore";
+import { AllStatus } from "../../app/components/state/stores/DetailsListStore";
+import { Subscriber } from "../../app/components/users/Subscriber";
+import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '../../app/components/utils/applicationUtils';
 import { NotificationTypeEnum } from "../support/NotificationContext";
-import { Subscriber } from "../users/Subscriber";
-import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '../utils/applicationUtils';
-import * as subscriptionApi from "./../../api/subscriberApi";
 
 
 interface ExtendedBaseDataPayload<T extends  BaseData<any>,  K extends T = T, Meta extends {} = StructuredMetadata<T, K>> extends BaseData<T, K, Meta> {
@@ -80,7 +80,7 @@ interface Payload {
     events: Record<string, CalendarEvent<T, K>[]>;
     dataItems: RealtimeDataItem[];
     newData: Snapshot<T, K>;
-    category?: string | symbol | Category;
+    category?:  Category;
   }
   
   

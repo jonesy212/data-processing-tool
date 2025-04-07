@@ -2,7 +2,7 @@
 interface Drawing {
     id: string;
   name: string;
-  artwork: 
+  artwork?: MediaImage[]; 
     // Define other properties of the drawing
 }
 

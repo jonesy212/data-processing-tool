@@ -3,16 +3,19 @@ import {
   DocumentSize,
   ProjectPhaseTypeEnum,
 } from "@/app/components/models/data/StatusType";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { ExcludedFields } from '@/app/components/routing/Fields';
 import { UserSettings } from "@/app/configs/UserSettings";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
 import { ContentState, Editor, EditorState } from "draft-js";
 import { IHydrateResult } from "mobx-persist";
 import React, { SetStateAction, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { options } from "sanitize-html";
+import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
 import { CodingLanguageEnum, LanguageEnum } from "../communications/LanguageEnum";
 import { setCurrentPhase } from "../hooks/phaseHooks/EnhancePhase";
 import useErrorHandling from "../hooks/useErrorHandling";
@@ -26,17 +29,16 @@ import AppVersionImpl, {
   selectAppVersion,
   selectDatabaseVersion,
 } from "../versions/AppVersion";
-import { VersionImpl } from "../versions/Version";
+import VersionImpl from "../versions/Version";
+import { VersionData } from "../versions/VersionData";
 import { ModifiedDate } from "./DocType";
 import DocumentBuilder, { DocumentData } from "./DocumentBuilder"; // Import the DocumentBuilder component
-import { DocumentTypeEnum } from "./DocumentGenerator";
 import { DocumentOptions, getDocumentPhase } from "./DocumentOptions";
-import { VersionData } from "../versions/VersionData";
 
-const DocumentEditor = ({ documentId }: { documentId: DocumentData["id"] }) => {
+const DocumentEditor = ({ documentId }: { documentId: DocumentData<T, K, Meta, ExcludedFields>["id"] }) => {
   const dispatch = useDispatch();
   const [componentName, setComponentName] = useState("");
-  const { editorState, handleEditorStateChange } = useEditorState(); // Use the useEditorState hook
+  const { editorState, handleEditorStateChange } = useEditorState(browserCheckStore, snapshotStore); // Use the useEditorState hook
   const { handleError } = useErrorHandling(); // Access handleError function from useErrorHandling
   const appVersion = useSelector(selectAppVersion);
   const databaseVersion = useSelector(selectDatabaseVersion);
@@ -169,8 +171,8 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
           customProp2: 0,
         }}
         buildDocument={async (
-          documentData: DocumentData,
-          document: DocumentObject,
+          documentData: DocumentData<T, K, Meta, ExcludedFields>,
+          document: DocumentObject<T, K, Meta, ExcludedFields>,
           documentType: DocumentTypeEnum
         ) => {
           try {
@@ -180,7 +182,7 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
                 id: "",
                 _id: "",
                 title: "",
-                content: "",
+                content: {},
                 documentData: documentData,
                 document: document,
                 documentType: documentType,
@@ -189,7 +191,7 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
                 options: undefined,
                 folderPath: "",
                 previousMetadata: undefined,
-                currentMetadata: undefined,
+                currentMetadata: {} as UnifiedMetadata<any, Meta<any, any>>,
                 accessHistory: [],
                 documentPhase: undefined,
                 version: undefined,
@@ -234,7 +236,7 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
                 _routing_values_as_array_of_objects_with_key_and_value: [],
                 _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
                 filePathOrUrl: "",
-                uploadedBy: 0,
+                uploadedBy: "0",
                 uploadedAt: "",
                 tagsOrCategories: "",
                 format: "",
@@ -510,7 +512,7 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
               timestamp: undefined
             }
           }),
-          metadata: {} as StructuredMetadata, // Pass metadata
+          metadata: {} as UnifiedMetadata<T, K, Meta, ExcludedFields>,
           userIdea: "",
           size: DocumentSize.Letter,
           animations: { type: "slide", duration: 500 },
@@ -555,7 +557,7 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
           html: "html",
           colorCoding: {} as Record<string, string>,
           customSettings: {},
-          documents: [] as DocumentData[],
+          documents: [] as DocumentData<T, K, Meta, ExcludedFields>[],
           includeType: "all",
           includeTitle: true,
           includeContent: true,
@@ -567,7 +569,7 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
             backend: {} as IHydrateResult<number> | Promise<string>,
             frontend: {} as IHydrateResult<number> | Promise<string>,
           },
-          layout: {} as BackendStructure | FrontendStructure,
+          layout: {} as BackendStructure | FrontendStructure<T, K>,
           panels: [],
           pageNumbers: true,
           footer: "footer",
@@ -580,7 +582,7 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
           embeddedCode: false || {
             enabled: true,
             allow: true,
-            language: CodingLanguageEnum.JavaScript,
+            language: CodingLanguageEnum.Javascript,
           },
           styles: {},
           tableCells: {
@@ -603,7 +605,7 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
           customProperties: {},
           value: 1,
           lastModifiedBy: "",
-          versionData: {} as VersionData,
+          versionData: {} as VersionData<T, K>,
           currentContent: {} as ContentState,
           previousContent: {} as ContentState,
         }}

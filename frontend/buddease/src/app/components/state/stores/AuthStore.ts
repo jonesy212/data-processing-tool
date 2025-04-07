@@ -1,15 +1,15 @@
 // AuthStore.ts
 import { UserPreferences } from "@/app/configs/UserPreferences";
+import * as jwt from 'jsonwebtoken'; // Assuming JWT is used for tokens
 import { makeAutoObservable } from "mobx";
+import { hasTokenExpired } from "../../../../server/database/hasTokenExpired";
+import { verifyTokenScopes } from "../../../../server/database/JwtPayload";
 import { NFT } from "../../nft/NFT";
+import { SubscriptionPlan } from "../../subscriptions/SubscriptionPlan";
 import { Permission } from "../../users/Permission";
-import  * as jwt from 'jsonwebtoken'; // Assuming JWT is used for tokens
 import { User } from "../../users/User";
 import { UserRoleEnum } from "../../users/UserRoles";
-import { verifyTokenScopes } from "../../database/JwtPayload";
 import { Scope } from "./Scopes";
-import { hasTokenExpired } from "../../database/hasTokenExpired";
-import { SubscriptionPlan } from "../../subscriptions/SubscriptionPlan";
 
 interface UserContactInfo {
   phone: string;

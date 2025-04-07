@@ -3,9 +3,9 @@
 // declare namespace DXT {import { fs } from 'fs';
 import calendarApiService from "@/app/api/ApiCalendar";
 import {
-    fetchDocumentByIdAPI,
-    getDocument,
-    loadPresentationFromDatabase,
+  fetchDocumentByIdAPI,
+  getDocument,
+  loadPresentationFromDatabase,
 } from "@/app/api/ApiDocument";
 import { BaseData } from '@/app/components/models/data/Data';
 import { DatabaseConfig } from "@/app/configs/DatabaseConfig";
@@ -16,18 +16,25 @@ import fs from "fs";
 import Papa from "papaparse";
 import { PDFDocument } from "pdf-lib";
 import { AppType } from "vite";
+import {
+  CustomDocxtemplater,
+  CustomPDFPage,
+  CustomPDFProxyPage,
+  DocumentPath,
+  DocumentTypeEnum,
+} from "../../../server/DocumentGenerator";
+import { fetchTextContentFromDatabase } from "../../../server/database/DataBaseMethods";
+import loadDraftFromDatabase from "../../../server/database/loadDraftFromDatabase";
 import { loadCryptoWatchlistFromDatabase } from "../crypto/CryptoWatchlist";
 import { generateCryptoWatchlistJSON } from "../crypto/generateCryptoWatchlistJSON";
-import { fetchTextContentFromDatabase } from "../database/DataBaseMethods";
-import loadDraftFromDatabase from "../database/loadDraftFromDatabase";
 import { allowedDiagramFormats } from "../form/FormatEnum";
 import {
-    Drawing,
-    generateDrawingJSON,
+  Drawing,
+  generateDrawingJSON,
 } from "../libraries/drawing/generateDrawingJSON";
 import { generatePresentationJSON } from "../libraries/presentations/generatePresentationJSON";
 import {
-    DocumentSize
+  DocumentSize
 } from "../models/data/StatusType";
 import { sanitizeInput } from "../security/SanitizationFunctions";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
@@ -35,13 +42,6 @@ import { DocumentObject } from "../state/redux/slices/DocumentSlice";
 import { extractTextFromPage } from "./CustomPDFPage";
 import { ModifiedDate, ParsedData, YourPDFType } from "./DocType";
 import { DocumentData } from "./DocumentBuilder";
-import {
-    CustomDocxtemplater,
-    CustomPDFPage,
-    CustomPDFProxyPage,
-    DocumentPath,
-    DocumentTypeEnum,
-} from "./DocumentGenerator";
 import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
 import { parseCSV } from "./parseCSV";
 import { parseDocx } from "./parseDocx";
@@ -932,7 +932,7 @@ function loadSpreadsheetDocumentContent(document: DocumentData<T, K>): string {
 //   ]; // Updated list of allowed diagram formats
 
 export {
-    extractTextFromPDF, loadCalendarEventsDocumentContent, loadClientPortfolioDocumentContent, loadCryptoWatchDocumentContent, loadDiagramDocumentContent, loadDocumentContent, loadDraftDocumentContent, loadDrawingDocumentContent, loadFinancialReportDocumentContent, loadGenericDocumentContent, loadMarkdownDocumentContent, loadMarketAnalysisDocumentContent, loadOtherDocumentContent, loadPDFDocumentContent, loadPresentationDocumentContent,
-    loadSpreadsheetDocumentContent, loadSQLDocumentContent, loadTextDocumentContent
+  extractTextFromPDF, loadCalendarEventsDocumentContent, loadClientPortfolioDocumentContent, loadCryptoWatchDocumentContent, loadDiagramDocumentContent, loadDocumentContent, loadDraftDocumentContent, loadDrawingDocumentContent, loadFinancialReportDocumentContent, loadGenericDocumentContent, loadMarkdownDocumentContent, loadMarketAnalysisDocumentContent, loadOtherDocumentContent, loadPDFDocumentContent, loadPresentationDocumentContent,
+  loadSpreadsheetDocumentContent, loadSQLDocumentContent, loadTextDocumentContent
 };
 

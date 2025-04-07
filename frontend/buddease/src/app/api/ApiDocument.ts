@@ -1,24 +1,21 @@
 // ApiDocument.ts
-import { current } from "immer";
 import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
-import { Tag } from '@/app/components/models/tracker/Tag';
-import { K, T } from './../components/models/data/dataStoreMethods';
 import {
-    NotificationTypeEnum,
-    useNotification,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/context/NotificationContext";
 import { AxiosError } from "axios";
+import { current } from "immer";
 import { DocumentOptions } from "../components/documents/DocumentOptions";
-import Collaborator from "../components/models/TeamMembers";
 import { Presentation } from "../components/documents/Presentation";
-
+import Collaborator from "@/app/components/models/TeamMembers";
+import { K, T } from './../components/models/data/dataStoreMethods';
+import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
-    createAsyncThunk
-} from "node_modules/@reduxjs/toolkit/dist/createAsyncThunk";
-import {
-    DocumentStatusEnum,
-    DocumentTypeEnum,
-} from "../components/documents/DocumentGenerator";
+  DocumentStatusEnum,
+  DocumentTypeEnum,
+} from "../../server/DocumentGenerator";
+import { BaseData } from '@/app/components/models/data/Data';
 import { DocumentObject } from "../components/state/redux/slices/DocumentSlice";
 import { DatabaseConfig } from "../configs/DatabaseConfig";
 import { DocumentActions } from "../tokens/DocumentActions";
@@ -28,17 +25,14 @@ import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
 
 
-import { ClientInformation, CustomMediaSession } from '../components/database/ClientInformation';
+import { ClientInformation, CustomMediaSession } from '../../server/database/ClientInformation';
 import { DocumentData } from '../components/documents/DocumentBuilder';
-import { BaseData } from '../components/models/data/Data';
+import { Content } from '../components/models/content/AddContent';
 import FileData from '../components/models/data/FileData';
 import { WritableDraft } from "../components/state/redux/ReducerGenerator";
 import { Document } from '../components/state/stores/DocumentStore';
-import { User } from '../components/users/User';
-import { endpoints } from './endpointConfigurations';
-import { Content } from '../components/models/content/AddContent';
 import { StructuredMetadata } from '../configs/StructuredMetadata';
-import { Task } from "../components/models/tasks/Task";
+import { endpoints } from './endpointConfigurations';
 // Define the API base URL
 const API_BASE_URL = endpoints.data.documents;
 
@@ -319,10 +313,32 @@ const createDraftDocument = <
   data: WritableDraft<DocumentObject<T, K>>,
 ): WritableDraft<DocumentObject<T, K>> => {
   
+  // Type guard for Comment object
+  const isCommentObject = (obj: unknown): obj is Comment => {
+    return typeof obj === 'object' && obj !== null && 'id' in obj;
+  }
   const languages: string[] = [...window.navigator.languages];
   const supportedLanguages = languages.filter(lang =>
     Object.values(LanguageEnum).includes(lang as LanguageEnum)
   );
+
+
+  const processedComments = (() => {
+    if (!data.comments) return undefined;
+    
+    if (isCommentArray(data.comments)) {
+      return data.comments.map(comment => 
+        isCommentObject(comment) ? { ...comment } : comment
+      );
+    }
+    
+    if (isCommentObject(data.comments)) {
+      return { ...data.comments };
+    }
+    
+    return undefined;
+  })();
+
 
   return {
     ...data,
@@ -359,7 +375,7 @@ const createDraftDocument = <
         tags: subtask.tags ? Object.values(subtask.tags).map((tag) => ({ ...tag })) : [],
       })) || undefined,
     } as WritableDraft<DocumentData<T, K>>,
-    comments: data.comments ? {...data.comments } as WritableDraft<Comment[]> : undefined,
+    comments: processedComments,
     content: data.content as WritableDraft<Content<T, K>>,
     selectedDocuments: data.selectedDocuments ? data.selectedDocuments.map(doc => ({ ...doc } as WritableDraft<DocumentData<T, K, StructuredMetadata<T, K>>>)) : undefined,
     defaultView: data.defaultView as Window | undefined,
@@ -418,6 +434,7 @@ const convertToDocumentObject = <
     selectedDocuments: draft.selectedDocuments
       ? draft.selectedDocuments.map(doc => ({ ...doc }))
       : undefined,
+      currentMeta: draft.currentMeta,
     defaultView: draft.defaultView as Window | undefined,
   } as DocumentObject<T, K, Meta>;
 };
@@ -2328,32 +2345,32 @@ const documentTemplates = async (templatesData: any): Promise<any> => {
 
 
 export {
-    addDocument, addDocumentAPI, approveDocument, archiveDocument, assignTaskInDocument, automateDocumentTasks, backupDocuments, categorizeDocuments, collaborativeEditing, commentOnDocument, compareDocuments, connectWithExternalSystem, createDocumentVersion, customizeDocumentView, customizeReportSettings, decryptDocument, deleteDocumentAPI, documentAccessControls, documentActivityLogging, documentAnnotation, documentApprovalWorkflow,
-    documentLifecycleManagement, documentRedaction,
-    documentTemplates, documentVersionComparison,
-    downloadDocument, encryptDocument, exportDocumentReport,
-    exportToExternalSystem, fakeApiCall,
-    fetchAllDocumentsAPI, fetchDocumentById, fetchDocumentByIdAPI, fetchJsonDocumentByIdAPI,
-    fetchXmlDocumentByIdAPI, filterDocuments,
-    filterDocumentsAPI, generateDocument,
-    generateDocumentReport, getDocument, getDocumentUrl,
-    getDocumentVersions, grantDocumentAccess,
-    importFromExternalSource, initiateDocumentWorkflow,
-    intelligentDocumentSearch, listDocuments,
-    loadPresentationFromDatabase, lockDocument,
-    manageDocumentPermissions, mentionUserInDocument,
-    mergeDocuments, moveDocument,
-    provideFeedbackOnDocument, rejectDocument,
-    removeDocument, requestFeedbackOnDocument,
-    requestReviewOfDocument, resolveFeedbackOnDocument,
-    restoreDocument, retrieveBackup, revertToDocumentVersion,
-    revokeDocumentAccess, scheduleReportGeneration,
-    searchDocumentAPI, searchDocuments, shareDocument,
-    smartTagging, splitDocument, synchronizeWithCloudStorage,
-    tagDocuments, trackDocumentChanges, triggerDocumentEvents,
-    unlockDocument, updateDocument, updateDocumentAPI,
-    updateDocumentNameAPI, updateSnapshotDetails,
-    uploadDocument, validateDocument,
-    viewDocumentHistory
+  addDocument, addDocumentAPI, approveDocument, archiveDocument, assignTaskInDocument, automateDocumentTasks, backupDocuments, categorizeDocuments, collaborativeEditing, commentOnDocument, compareDocuments, connectWithExternalSystem, createDocumentVersion, customizeDocumentView, customizeReportSettings, decryptDocument, deleteDocumentAPI, documentAccessControls, documentActivityLogging, documentAnnotation, documentApprovalWorkflow,
+  documentLifecycleManagement, documentRedaction,
+  documentTemplates, documentVersionComparison,
+  downloadDocument, encryptDocument, exportDocumentReport,
+  exportToExternalSystem, fakeApiCall,
+  fetchAllDocumentsAPI, fetchDocumentById, fetchDocumentByIdAPI, fetchJsonDocumentByIdAPI,
+  fetchXmlDocumentByIdAPI, filterDocuments,
+  filterDocumentsAPI, generateDocument,
+  generateDocumentReport, getDocument, getDocumentUrl,
+  getDocumentVersions, grantDocumentAccess,
+  importFromExternalSource, initiateDocumentWorkflow,
+  intelligentDocumentSearch, listDocuments,
+  loadPresentationFromDatabase, lockDocument,
+  manageDocumentPermissions, mentionUserInDocument,
+  mergeDocuments, moveDocument,
+  provideFeedbackOnDocument, rejectDocument,
+  removeDocument, requestFeedbackOnDocument,
+  requestReviewOfDocument, resolveFeedbackOnDocument,
+  restoreDocument, retrieveBackup, revertToDocumentVersion,
+  revokeDocumentAccess, scheduleReportGeneration,
+  searchDocumentAPI, searchDocuments, shareDocument,
+  smartTagging, splitDocument, synchronizeWithCloudStorage,
+  tagDocuments, trackDocumentChanges, triggerDocumentEvents,
+  unlockDocument, updateDocument, updateDocumentAPI,
+  updateDocumentNameAPI, updateSnapshotDetails,
+  uploadDocument, validateDocument,
+  viewDocumentHistory
 };
 

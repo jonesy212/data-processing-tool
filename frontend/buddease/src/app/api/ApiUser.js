@@ -56,11 +56,11 @@ var Logger_1 = require("@/app/components/logging/Logger");
 var dot_prop_1 = require("dot-prop");
 var react_redux_1 = require("react-redux");
 var react_router_dom_1 = require("react-router-dom");
-var UserActions_1 = require("./UserActions");
-var UserRoleActions_1 = require("./UserRoleActions");
-var UserSlice_1 = require("./UserSlice");
+var UserActions_1 = require("../components/users/UserActions");
+var UserRoleActions_1 = require("../components/users/UserRoleActions");
+var UserSlice_1 = require("../components/users/UserSlice");
 // Other imports remain unchanged
-var updateUI_1 = require("../documents/editing/updateUI");
+var updateUI_1 = require("../components/documents/editing/updateUI");
 var API_BASE_URL = dot_prop_1.default.getProperty(ApiEndpoints_1.endpoints, "users");
 var fetchUserRequest = function (userId) { return ({
     type: "FETCH_USER_REQUEST",

@@ -1,31 +1,37 @@
+import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
-import { AxiosResponse } from "axios";
-import React from "react";
-import { fetchUserAreaDimensions, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { Phase, PhaseData } from '@/app/components/phases/Phase';
+import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
+import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
+import { fetchUserAreaDimensions, UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { useMeta } from "@/app/configs/useMeta";
 import { useMetadata } from "@/app/configs/useMetadata";
 import userSettings from "@/app/configs/UserSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { AxiosResponse } from "axios";
+import React from "react";
+import { ScheduledData } from "../../calendar/ScheduledData";
 import { CustomTransaction } from "../../crypto/SmartContractInteraction";
 import { Attachment } from "../../documents/Attachment/attachment";
 import { createCustomTransaction } from "../../hooks/dynamicHooks/createCustomTransaction";
 import { FakeData } from "../../intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
 import { Category } from "../../libraries/categories/generateCategoryProperties";
-import { Label } from "../../projects/branding/BrandingSettings";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
-import { EventManager, InitializedState } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Snapshot, Snapshots, SnapshotsArray } from "../../snapshots/LocalStorageSnapshotStore";
-import SnapshotStore, {  SnapshotStoreReference} from "../../snapshots/SnapshotStore";
+import { InitializedState } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { Snapshots, SnapshotsArray } from "../../snapshots/LocalStorageSnapshotStore";
+import SnapshotStore, { SnapshotStoreReference } from "../../snapshots/SnapshotStore";
 import {
   SnapshotWithCriteria,
   TagsRecord,
 } from "../../snapshots/SnapshotWithCriteria";
+import { CoreSnapshot } from "@/app/components/snapshots/CoreSnapshot";
+
 import { ExtendedTodo } from "../../state/AssignBaseStore";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { Stroke } from "../../state/redux/slices/DrawingSlice";
@@ -42,17 +48,14 @@ import { Idea } from "../../users/Ideas";
 import { User } from "../../users/User";
 import UserRoles from "../../users/UserRoles";
 import { cleanEmptyStrings } from "../../utils/cleanEmptyStrings";
-import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
-import { version } from "../../versions/Version";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
-import { Phase, PhaseData } from '@/app/components/phases/Phase';
 import { Task } from "../tasks/Task";
 import { Team } from "../teams/Team";
 import { Collaborator, Member } from "../teams/TeamMembers";
 import { TrackerProps } from "../tracker/Tracker";
 import { Comment } from "./Comments";
-import { K, Meta, T } from "./dataStoreMethods";
+import { K, T } from "./dataStoreMethods";
 import FileData from "./FileData";
 import {
   PriorityTypeEnum,
@@ -60,15 +63,18 @@ import {
   StatusType,
   SubscriptionTypeEnum,
 } from "./StatusType";
-import { useMeta } from "@/app/configs/useMeta";
-import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
-import { ScheduledData } from "../../calendar/ScheduledData";
-import { SharedTimestamps, SharedStatusFlags, SharedIdentifiers } from '@/app/components/documents/RelatedProps'
 
 
-interface SharedBaseData<K> {
+interface SharedRelationshipData<K> {
   childIds?: K[] | undefined;
   relatedData?: K[] | undefined,
+}
+
+type CommonRelationship<
+  T extends BaseData<any, any> = any,
+  K extends T = T
+> = {
+  sharedRelationships: SharedRelationshipData<K>
 }
 
 interface SharedPhaseData {
@@ -90,7 +96,7 @@ interface DataDetails<
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = never
-> extends CommonData<T> {
+> extends CommonData<T, K, Meta> {
   _id?: string;
   title?: string;
   description?: string | null;
@@ -105,7 +111,7 @@ interface DataDetails<
   isActive?: boolean;
   status?: AllStatus | null;
   uploadedAt?: Date | undefined; //
-  phase?: Phase<PhaseData<BaseData<any>>, K> | null;
+  phase?: Phase<PhaseData<BaseData<any>>, PhaseData<BaseData<any>>> | null;
   fakeData?: FakeData;
   comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
   todos?: Todo<T, K>[];
@@ -116,7 +122,7 @@ interface DataDetails<
 
   data?: DataWithOmittedFields<T, K, Meta, ExcludedFields>;
   snapshots?: Snapshots<T, K>;
-  snapshotArray?: SnapshotsArray<T>;
+  snapshotArray?: SnapshotsArray<T, K, Meta>;
   analysisType?: AnalysisTypeEnum | null;
   analysisResults?: string | DataAnalysisResult<T>[] | undefined;
   todo?: Todo<T, K>;
@@ -128,37 +134,38 @@ interface DataDetailsProps<T> {
   data: T;
 }
 
-type CommonRelationship<T extends BaseData<any, any> = any,
-K extends T = T> = {
-  childIds?: K[] | undefined,
-  relatedData?: K[],
-}
-
 type TodoSubtasks = Array<
   | Todo<BaseData<any>, BaseData<any>, StructuredMetadata<BaseData<any>, BaseData<any>>>
   | Task<any, any>
   >;
+
+  type ChildRelationship<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> = 
+  | { type: 'metadata'; ids: Meta extends { childIds: infer C } ? C : never }
+  | { type: 'direct'; ids: K[] };
   
 interface BaseData<
   T extends BaseData<any> = any,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, 
   AttachmentType extends Attachment = Attachment
-> extends SharedTimestamps, SharedStatusFlags, SharedIdentifiers {
-  childIds?: Meta['childIds'];
-  sharedData?: SharedBaseData<K>;
+  > extends SharedTimestamps, SharedStatusFlags, SharedIdentifiers<T, K, Meta>
+{
+  sharedData?: SharedRelationshipData<K>;
+  children?: ChildRelationship<T, K, Meta> | CoreSnapshot<T, K, Meta>[];
   data?: any;
   size?: string | number;
-  userConfig?: UserConfigData<T, K>;
   description?: string | null;
   startDate?: Date;
   endDate?: Date;
-  scheduled?: ScheduledData<T>;
   isScheduled?: boolean;
   status?: AllStatus | null;
   timestamp?: string | number | Date | undefined;
   tags?: TagsRecord<T, K> | string[] | undefined;
-  phase?: Phase<PhaseData<BaseData<any>>, K> | null;
+  phase?: Phase<PhaseData<BaseData<any>>, PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>> | null;
   phaseType?: ProjectPhaseTypeEnum;
   initialState?: InitializedState<T, K>;
   dueDate?: Date | null;
@@ -182,11 +189,13 @@ interface BaseData<
   members?: number[] | string[] | Member[];
   leader?: User | null;
   snapshotStores?: SnapshotStoreReference<T, K>[];
-  snapshots?: Snapshots<T, K> | undefined; // Simplify snapshots type
+  snapshots?: Snapshots<T, K>; // Simplify snapshots type
   text?: string;
   category?: symbol | string | Category | undefined;
   notificationTypes?: NotificationSettings;
   categoryProperties?: CategoryProperties;
+  userConfig?: UserConfigData<T, K, Meta>; // Use UserConfigData<T, K, Meta>
+  scheduled?: ScheduledData<T>;
   [key: string]: any;
   // getData?: (id: number) => Promise<Snapshot<
   //   SnapshotWithCriteria<Data<T>>,
@@ -197,7 +206,7 @@ interface BaseData<
 }
 
 interface Data<
-  T extends BaseData<any, any, any, Attachment>,
+  T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
 > extends BaseData<any> {
@@ -221,11 +230,17 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
   
   const getTagNames = (tags: TagsRecord<T, K<T>> | string[]): string[] => {
     if (Array.isArray(tags)) {
-      return tags; // If it's an array, return it directly
+      return tags.filter((tag): tag is string => typeof tag === 'string'); // Ensure all elements are strings
     }
-    return Object.values(tags).map((tag) => tag.name); // If it's a TagsRecord
+  
+    return Object.values(tags)
+      .reduce<string[]>((acc, tag) => {
+        if (tag.name && typeof tag.name === 'string') {
+          acc.push(tag.name);
+        }
+        return acc;
+      }, []);
   };
-
   return (
     <CommonDetails
       data={{
@@ -239,7 +254,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
         date: data.date,
         createdBy: data.createdBy,
         currentMeta: data.currentMeta,
-    
+        latestVersion: data.latestVersion
       }}
       details={{
         _id: data._id,
@@ -257,6 +272,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
         updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
         currentMetadata: data.currentMetadata,
         currentMeta: data.currentMeta,
+        latestVersion: data.latestVersion
       }}
     />
   );
@@ -267,7 +283,7 @@ const area = fetchUserAreaDimensions().toString()
 const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
 const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
 
-const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
+const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
   _id: "1",
   id: "data1",
   title: "Sample Data",
@@ -284,7 +300,7 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
   status: StatusType.Pending,
   isActive: true,
   tags: {
-    tag1: {
+    "tag1": {
       id: "tag1",
       name: "Tag 1",
       color: "#000000",
@@ -297,7 +313,7 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
       createdBy: "creator1",
       timestamp: new Date().getTime(),
       nulltype: ""
-    },
+    }
   },
   phase: {
     label: {
@@ -332,6 +348,7 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
     }, // This should match the type defined in Tag
     subPhases: [],
     createdBy: "creator1",
+    latestVersion: createLatestVersion<T, K<T>>(),
   },
   phaseType: ProjectPhaseTypeEnum.Ideation,
   dueDate: new Date(),
@@ -343,7 +360,7 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
     lastName: "",
     email: "",
     tier: "",
-  } as unknown as User,
+  } as unknown as UserAssignee,
 
 
 
@@ -977,7 +994,7 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
       area: 'coreData', 
       currentMeta: currentMeta,
       metadataEntries: {},
-      latestVersion: createLatestVersion(),
+      latestVersion: createLatestVersion<T, K<T>>(),
 
     },
     currentMeta: currentMeta,
@@ -1285,6 +1302,7 @@ const coreData: Data<BaseData, K<BaseData>, StructuredMetadata<BaseData>> = {
         }
         return 0;
       },
+      
       inferTypes(): number[] {
         const types: number[] = [];
         if (this.type !== null && this.type !== undefined) {
@@ -1477,8 +1495,8 @@ export type {
   BaseData, CommonRelationship, Data,
   DataDetails,
   DataDetailsComponent,
-  DataDetailsProps, SharedBaseData, TodoSubtasks,
-  DataWithOmittedFields
+  DataDetailsProps, DataWithOmittedFields, SharedRelationshipData, TodoSubtasks,
+  ChildRelationship
 };
 
 

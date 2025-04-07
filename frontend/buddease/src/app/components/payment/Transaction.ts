@@ -23,7 +23,19 @@ interface BaseTransaction {
 // `Transaction` extends `BaseTransaction` with specific fields
 interface Transaction extends BaseTransaction {
   amount?: number | null;
+  id: string | null;
+  type: 'buy' | 'sell' | 'transfer' | 'exchange' | null;
+  currency: string;
+  timestamp: Date;
+  status: 'pending' | 'completed' | 'failed';
+  fee?: number;
+  exchangeRate?: number;
+  notes?: string;
 }
+
+
+
+
 
 
 // Additional type for `TransactionData` to unify both types
@@ -32,7 +44,7 @@ type TransactionData = Transaction & CustomTransactionProps;
 
 class TransactionProcessor implements Transaction {
   _id: string | undefined = undefined;
-  id: string| null = null;
+  id: string | null = null;
   amount: number | null = null;
   description: string | null = null;
   date: Date | undefined = undefined

@@ -2,9 +2,9 @@
 import { Pool, QueryResult } from 'pg';
 
 import clientApiService from "@/app/api/ApiClient";
-import { DatabasePool } from './DatabasePool';
+import { mapLanguageToEnum } from '../../app/components/communications/Language';
 import { ClientInformation } from './ClientInformation';
-import { mapLanguageToEnum } from '../communications/Language';
+import { DatabasePool } from '@/server/database/DatabasePool'
 
 // Define the structure for ClientConfig
 export interface ClientConfig {
@@ -18,8 +18,6 @@ export interface ClientConfig {
 }
 
 // Define the Client class
-
-// Define the Client class
 export class Client {
   private config: ClientConfig;
   private pool: Pool; // Change from 'private client: any;' to 'private pool: Pool;'
@@ -29,7 +27,6 @@ export class Client {
     this.config = config;
     this.pool = new DatabasePool(config).getPool();
   }
-
 
   // Method to get client ID
   getClientId(): string {

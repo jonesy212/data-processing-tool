@@ -242,7 +242,8 @@ const updateData = async (dataId: number, newData: any): Promise<any> => {
       successMessage,
       { dataId },
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.Success,
+      {}
     );
 
     addLog(`Data updated: ${JSON.stringify(response.data)}`);

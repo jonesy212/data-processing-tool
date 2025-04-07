@@ -1,9 +1,9 @@
 import React, { ReactNode, useState } from "react";
 
+import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
 import { Prompt } from "../prompts/PromptPage";
 import PromptSystem from "../prompts/PromptSystem";
 import { generatePrompt } from "../prompts/promptGenerator";
-import { DocumentTypeEnum } from "./DocumentGenerator";
 import TextEditor from "./TextEditor"; // Assuming the correct path
 import { ToolbarOptionsProps } from "./ToolbarOptions";
 

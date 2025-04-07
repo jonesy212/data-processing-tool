@@ -1,23 +1,23 @@
 
-import * as crypto from 'crypto';  // Correct crypto module for Node.js
+import { NotificationTypeEnum } from '@/app/components/context/NotificationContext';
+import { AppStructureItem } from '@/app/configs/appStructure/AppStructure';
+import { UserSettings } from '@/app/configs/UserSettings';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import * as crypto from 'crypto'; // Correct crypto module for Node.js
+import * as docx from 'docx';
+import { Style as DocxStyle, IContext, IXmlableObject, XmlComponent } from 'docx';
 import { action, makeAutoObservable } from 'mobx';
 import { useDispatch } from 'react-redux';
+import { DocumentTypeEnum } from '../../../../server/DocumentGenerator';
 import { GlobalStateActions } from '../../actions/GlobalStateActions';
-import { DocumentData } from '../../documents/DocumentBuilder';
-import { DocumentOptions, Style } from '../../documents/DocumentOptions';
+import { DocumentOptions } from '../../documents/DocumentOptions';
 import { DocumentAnimationOptions } from '../../documents/SharedDocumentProps';
 import { DesignSystemConfig } from '../../libraries/ui/theme/MapProperties';
-import { NotificationTypeEnum } from '../../support/NotificationContext';
-import { DocumentTypeEnum } from '../../documents/DocumentGenerator';
-import { UserSettings } from '@/app/configs/UserSettings';
-import Version from '../../versions/Version';
-import { docx, IContext, IXmlableObject, XmlComponent } from 'docx';
-import { frontendStructure } from '@/app/configs/appStructure/FrontendStructure';
-import { AppStructureItem } from '@/app/configs/appStructure/AppStructure';
+import { BaseData } from '../../models/data/Data';
+import { K, T } from '../../models/data/dataStoreMethods';
 import { DocumentSize } from '../../models/data/StatusType';
+import Version from '../../versions/Version';
 import { AlignmentOptions } from '../redux/slices/toolbarSlice';
-import { Style as DocxStyle } from 'docx';
 
 
 
@@ -33,7 +33,7 @@ interface ExtendedStyle extends DocxStyle {
 interface TableStyle {
   fontWeight?: string;
   root?: CustomXmlComponent; // Ensure root is of type CustomXmlComponent
-  prepForXml?: () => void;
+  prepForXml: () => Record<string, unknown>;
   addChildElement?: () => void;
   rootKey?: string;
 }
@@ -110,8 +110,9 @@ export default class MobXEntityStore {
       NotificationTypeEnum.GeneratedID
     ),
     includeType: { 
-      enabled: 
-      format:"all"},
+      enabled: false,
+      format: "all"
+    },
     includeTitle: true,
     includeContent: true,
     animations: {} as DocumentAnimationOptions,
@@ -160,10 +161,12 @@ export default class MobXEntityStore {
       getVersionNumber: function (): string {
         return this.versionNumber;
       },
+
       updateVersionNumber: function (newVersionNumber: string): void {
         this.versionNumber = newVersionNumber;
       },
-      compare: function (otherVersion: Version): number {
+
+      compare: function (otherVersion: Version<BaseData<any>, BaseData<any>>): number {
         if (this.versionNumber > otherVersion.versionNumber) {
           return 1;
         } else if (this.versionNumber < otherVersion.versionNumber) {
@@ -184,7 +187,7 @@ export default class MobXEntityStore {
       generateHash: function (appVersion: string): string {
         return crypto.createHash("sha256").update(appVersion).digest("hex");
       },
-      isNewer: function (otherVersion: Version): boolean {
+      isNewer: function (otherVersion: Version<T, K>): boolean {
         return this.compare?.(otherVersion) === 1;
       },
       hashStructure: function(structure: AppStructureItem[]): string {
@@ -227,10 +230,8 @@ export default class MobXEntityStore {
     tableStyles: {
       header: {
         fontWeight: "bold",
-        root: new CustomXmlComponent(rootKey), // Create an instance of CustomXmlComponent
-        prepForXml: () => {
-          // Provide a valid implementation if needed
-        },
+        root: new CustomXmlComponent(this.rootKey), // Create an instance of CustomXmlComponent
+        prepForXml: () => ({}),
         addChildElement: () => {},
         rootKey: this.rootKey,
       } as TableStyle,
@@ -242,9 +243,6 @@ export default class MobXEntityStore {
     const uniqueIdentifier = UniqueIDGenerator.generateID('UUID', 'UniqueIdentifier', NotificationTypeEnum.GeneratedID, undefined, generatorType);
     return uniqueIdentifier;
   }
-
-
-
 
   // Method to securely set rootKey
   private setRootKey(): string {

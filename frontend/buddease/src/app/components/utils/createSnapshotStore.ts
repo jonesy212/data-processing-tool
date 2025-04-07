@@ -21,7 +21,7 @@ function createSnapshotStore <
 >(
   id: string,
   snapshotData: SnapshotData<T, K>,
-  category?: string | symbol | Category,
+  category?:  Category,
   callback?: (snapshotStore: SnapshotStore<T, K>) => void,
   snapshotDataConfig?: SnapshotStoreConfig<T, K> 
 ): Snapshot<T, K> | null {
@@ -67,7 +67,7 @@ function createSnapshotStore <
       snapshotData: SnapshotData<T, K, Meta>,
       category: Category | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T>,
+      snapshots: SnapshotsArray<T, K, Meta>,
       type: string,
       event: string | SnapshotEvents<T, K>,
       subscribers: SubscriberCollection<T, K>,

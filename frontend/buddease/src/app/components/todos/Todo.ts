@@ -6,7 +6,7 @@ import { FC } from "react";
 import { DayOfWeekProps } from "../calendar/DayOfWeek";
 import { Month } from "../calendar/Month";
 import { DataAnalysisResult } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisResult";
-import { CreateSnapshotsPayload, Payload } from "../database/Payload";
+import { CreateSnapshotsPayload, Payload } from "../../../server/database/Payload";
 import { Attachment } from "../documents/Attachment/attachment";
 import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
@@ -258,7 +258,7 @@ class TodoImpl<
     });
   };
   snapshot: Snapshot<T, K> = {
-    data: {} as InitializedData<T> | undefined,
+    data: {} as InitializedData<T, K> | undefined,
     store: new LocalStorageSnapshotStore<T, K>({
       window.localStorage,
       this.category,
@@ -408,8 +408,7 @@ class TodoImpl<
       initialData: T,
       snapshotData: SnapshotData<any, K>,
       snapshotStoreConfig: SnapshotStoreConfig<T, K>,
-      category: symbol | string | Category | undefined,
-      additionalData: any
+      category: Category | undefined,      additionalData: any
     ):Promise<Result<Snapshot<T, K, never>>> {
       throw new Error("Function not implemented.");
     },
@@ -716,7 +715,7 @@ class TodoImpl<
       category: symbol | string | Category | undefined, 
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T>,
+      snapshots: SnapshotsArray<T, K, Meta>,
       type: string,
       event: Event,
       snapshotContainer?: T,
@@ -728,15 +727,14 @@ class TodoImpl<
       snapshotStore: SnapshotStore<T, K>,
       snapshotId: string,
       snapshotData: SnapshotData<T, K>,
-      category: symbol | string | Category | undefined,
-      snapshotConfig: SnapshotStoreConfig<T, K>,
+      category: Category | undefined,      snapshotConfig: SnapshotStoreConfig<T, K>,
       callback: (
         snapshotStore: SnapshotStore<any, any>,
-        snapshots: SnapshotsArray<T>
+        snapshots: SnapshotsArray<T, K, Meta>
       ) => Subscriber<T, K> | null,
-      snapshots: SnapshotsArray<T>,
+      snapshots: SnapshotsArray<T, K, Meta>,
       unsubscribe?: UnsubscribeDetails
-    ) : SnapshotsArray<T> {
+    ) : SnapshotsArray<T, K, Meta> {
       throw new Error("Function not implemented.");
     },
 

@@ -1,12 +1,13 @@
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { ConfigureSnapshotStorePayload, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreProps } from '@/app/components/snapshots';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { Subscription } from 'react-redux';
 import { K, Snapshot, snapshot, snapshotContainer, SnapshotOperation, SnapshotOperationType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotWithCriteria, subscribeToSnapshot, subscribeToSnapshots, T } from ".";
-import { CreateSnapshotStoresPayload } from "../database/Payload";
+import { CreateSnapshotStoresPayload } from "../../../server/database/Payload";
 import { SnapshotManager, useSnapshotManager } from "../hooks/useSnapshotManager";
 import { BaseData, Data } from "../models/data/Data";
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
@@ -16,7 +17,6 @@ import { ExcludedFields } from '../routing/Fields';
 import CalendarManagerStoreClass from '../state/stores/CalendarManagerStore';
 import SnapshotManagerOptions from "./SnapshotManagerOptions";
 import SnapshotStore from "./SnapshotStore";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 const snapConfig: SnapshotConfig<T, K> | undefined = {/* your snapshot configuration logic here */}
 
@@ -28,7 +28,7 @@ export const createSnapshotStores = async <T extends  BaseData<any>, K extends T
   payload: CreateSnapshotStoresPayload<T, K>,
   callback: (snapshotStore: SnapshotStore<T, K>[]) => void | null,
   snapshotStoreData?: SnapshotStore<T, K>[],
-  category?: string | symbol | Category,
+  category?:  Category,
   snapshotStoreDataConfig?: SnapshotStoreConfig<T, K> | undefined,
 ) => {
   const snapshotStoreConfigData = snapshotStoreDataConfig || undefined;
@@ -52,8 +52,7 @@ export const createSnapshotStores = async <T extends  BaseData<any>, K extends T
         getSnapshotConfig: (id: string | number,
           snapshotId: string | null,
           criteria: CriteriaType,
-          category: symbol | string | Category | undefined,
-          categoryProperties: CategoryProperties | undefined,
+          category: Category | undefined,          categoryProperties: CategoryProperties | undefined,
           subscriberId: string | undefined,
           delegate: SnapshotWithCriteria<T, K>[],
           snapshotData: SnapshotData<T, K>,
@@ -61,8 +60,7 @@ export const createSnapshotStores = async <T extends  BaseData<any>, K extends T
             id: string | number | undefined,
             snapshotId: string | null,
             snapshotData: SnapshotData<T, K>,
-            category: symbol | string | Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
+            category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
             callback: (snapshotStore: SnapshotStore<T, K> | null) => void,
             dataStore: DataStore<T, K>,
             dataStoreMethods: DataStoreMethods<T, K>,

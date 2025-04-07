@@ -1,5 +1,4 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
-import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import {
   ToolbarOptionsComponent,
   ToolbarOptionsProps,
@@ -12,6 +11,7 @@ import { useMovementAnimations } from "@/app/components/libraries/animations/mov
 import { WebLogger } from "@/app/components/logging/Logger";
 import axiosInstance from "@/app/components/security/csrfToken";
 import Clipboard from "@/app/ts/clipboard";
+import { DocumentTypeEnum } from "@/server/DocumentGenerator";
 import { ContentState, Editor, EditorState, Modifier, RichUtils } from "draft-js";
 import React, { useState } from "react";
 

@@ -2,10 +2,10 @@ import { handleApiError } from "@/app/api/ApiLogs";
 import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import { sanitizeInput } from "../components/security/SanitizationFunctions";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-
+import { SharedConfig } from '@/app/configs/BaseConfig'
 // Import any other necessary dependencies
 
-export interface Config {
+export interface Config extends SharedConfig {
   apiUrl: string;
   apiKey: string;
   maxConnections: number;
@@ -15,8 +15,9 @@ export interface Config {
 const defaultConfig: Config = {
   apiUrl: "",
   apiKey: "",
-  maxConnections: 0
-
+  maxConnections: 0,
+  apiEndpoint: "",
+  id: ""
 };
 
 const defaultNotificationContext = {

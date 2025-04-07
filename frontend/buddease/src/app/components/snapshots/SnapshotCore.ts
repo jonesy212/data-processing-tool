@@ -1,18 +1,19 @@
 // SnapshotCore.ts
 import { BaseData } from '@/app/components/models/data/Data';
 import { InitializedState } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { SnapshotStore } from '@/app/components/snapshots/SnapshotStore';
+import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { SchemaField } from '../../../server/database/SchemaField';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import CalendarManagerStoreClass from '../state/stores/CalendarManagerStore';
 import { Subscriber, SubscribeResult } from '../users/Subscriber';
 import { ExtendedVersionData } from '../versions/VersionData';
-import { SchemaField } from './../database/SchemaField';
 import { Snapshots, SnapshotsArray, SnapshotUnion } from './LocalStorageSnapshotStore';
 import { SnapshotConfig } from './SnapshotConfig';
 import { SnapshotData } from './SnapshotData';
+import { InitializedData } from './SnapshotStoreOptions';
 
 
 interface SnapshotCore<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
@@ -31,7 +32,7 @@ interface SnapshotStoreCore<
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > {
   id?: string | number | undefined;             
-  data: InitializedData<T> | undefined;
+  data: InitializedData<T, K> | undefined;
   createdAt: Date;
   updatedAt: Date;
   
@@ -49,15 +50,14 @@ interface SnapshotStoreCore<
     snapshoStore: SnapshotStore<T, K>,
     snapshotId: string,
     snapshotData: SnapshotData<T, K>,
-    category: symbol | string | Category | undefined,
-    snapshotConfig: SnapshotStoreConfig<T, K>,
-    snapshots: SnapshotsArray<T>,
+    category: Category | undefined,    snapshotConfig: SnapshotStoreConfig<T, K>,
+    snapshots: SnapshotsArray<T, K, Meta>,
     callback: (
       snapshotStore: SnapshotStore<T, K>, 
-      snapshots: SnapshotsArray<T>
+      snapshots: SnapshotsArray<T, K, Meta>
     ) => Subscriber<T, K> | null,
    ) => SubscribeResult<T, K> | null;
-  findIndex?(predicate: (snapshot: SnapshotUnion<T, K>) => boolean): number;
+  findIndex?(predicate: (snapshot: SnapshotUnion<T, K, Meta>) => boolean): number;
 }
 
 

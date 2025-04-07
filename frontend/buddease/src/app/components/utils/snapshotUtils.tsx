@@ -91,39 +91,63 @@ const isSnapshotWithCriteriaBaseData = (
 // Example conversion function
 function convertToSnapshotArray<T extends BaseData, K extends T = T>(
   data: Snapshots<T, K>
-): SnapshotsArray<T> {
+): SnapshotsArray<T, K, Meta> {
   // Implement conversion logic here
   return Array.isArray(data) ? data : Object.values(data);
 }
 
-function convertToSnapshotWithCriteria <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  snapshot: Snapshot<T, K>
+function convertToSnapshotWithCriteria<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
+  snapshot: Snapshot<T, K, Meta>,
+  snapshotStore?: SnapshotStore<T, K, Meta>
 ): SnapshotWithCriteria<T, K> | null {
-  const { id, snapshotData, category, description, categoryProperties, dataStoreMethods } = snapshot;
- 
+  const { id, snapshotData, category, description, categoryProperties } = snapshot;
 
   function isOfType<T>(obj: any): obj is T {
-    // Custom logic to check if `obj` fits type `T`
     return obj && typeof obj.id === 'string' && typeof obj.type === 'string';
   }
 
   if (category) {
     const criteriaSnapshot: SnapshotWithCriteria<T, K> = {
       ...snapshot,
-      get, #snapshotStores, initializeOptions, setConfig,
-      autoSyncData, ensureDelegate, getConfig,
-      getSnapshotStores, getItems, initializeStores, 
-      initializeDefaultConfigs, handleDelegate, notifySuccess,
-      notifyFailure, findSnapshotStoreById, defaultSaveSnapshotStore, 
-      saveSnapshotStore, _saveSnapshotStores, consolidateMetadata,
-      _saveSnapshotStore, defaultSaveSnapshotStores, safeCastSnapshotStore,
-      getFirstDelegate, getInitialDelegate, transformInitialState, 
-      transformSnapshot, transformMappedSnapshotData, transformSnapshotStore,
-      transformSnapshotMethod, getName, getVersion, 
-      updateVersion, getSchema, getSnapshotStoreConfig, 
-      defaultConfigs, callback, storeProps, endpointCategory, findIndex, splice,
-      
-
+      // Public methods from SnapshotStore
+      get: snapshotStore?.get.bind(snapshotStore),
+      initializeOptions: snapshotStore?.initializeOptions.bind(snapshotStore),
+      setConfig: snapshotStore?.setConfig.bind(snapshotStore),
+      autoSyncData: snapshotStore?.autoSyncData.bind(snapshotStore),
+      ensureDelegate: snapshotStore?.ensureDelegate.bind(snapshotStore),
+      getConfig: snapshotStore?.getConfig.bind(snapshotStore),
+      getSnapshotStores: () => snapshotStore?.snapshotStores || new Map(),
+      getItems: snapshotStore?.getItems.bind(snapshotStore),
+      initializeDefaultConfigs: snapshotStore?.initializeDefaultConfigs.bind(snapshotStore),
+      handleDelegate: snapshotStore?.handleDelegate.bind(snapshotStore),
+      notifySuccess: snapshotStore?.notifySuccess.bind(snapshotStore),
+      notifyFailure: snapshotStore?.notifyFailure.bind(snapshotStore),
+      findSnapshotStoreById: snapshotStore?.findSnapshotStoreById.bind(snapshotStore),
+      defaultSaveSnapshotStore: snapshotStore?.defaultSaveSnapshotStore.bind(snapshotStore),
+      saveSnapshotStore: snapshotStore?.saveSnapshotStore.bind(snapshotStore),
+      consolidateMetadata: snapshotStore?.consolidateMetadata.bind(snapshotStore),
+      getFirstDelegate: snapshotStore?.getFirstDelegate.bind(snapshotStore),
+      getInitialDelegate: snapshotStore?.getInitialDelegate.bind(snapshotStore),
+      transformInitialState: snapshotStore?.transformInitialState.bind(snapshotStore),
+      transformSnapshot: snapshotStore?.transformSnapshot.bind(snapshotStore),
+      transformSnapshotStore: snapshotStore?.transformSnapshotStore.bind(snapshotStore),
+      transformSnapshotMethod: snapshotStore?.transformSnapshotMethod.bind(snapshotStore),
+      getName: snapshotStore?.getName.bind(snapshotStore),
+      getVersion: snapshotStore?.getVersion.bind(snapshotStore),
+      updateVersion: snapshotStore?.updateVersion.bind(snapshotStore),
+      getSchema: snapshotStore?.getSchema.bind(snapshotStore),
+      getSnapshotStoreConfig: snapshotStore?.getSnapshotStoreConfig.bind(snapshotStore),
+      // Other properties
+      defaultConfigs: snapshotStore?.defaultConfigs || {},
+      callback: snapshotStore?.callback || (() => {}),
+      storeProps: snapshotStore?.storeProps || {},
+      endpointCategory: snapshotStore?.endpointCategory || 'default',
+      findIndex: snapshotStore?.findIndex.bind(snapshotStore),
+      splice: snapshotStore?.splice.bind(snapshotStore),
 
       criteria: {
         categoryCriteria: category,
@@ -131,96 +155,184 @@ function convertToSnapshotWithCriteria <T extends  BaseData<any>, K extends T = 
         date: new Date()
       },
 
-      handleSnapshot: (
+      handleSnapshot: async (
         id: string,
         snapshotId: string | number | null,
-        snapshot: Snapshot<T, K> | null,
+        snapshot: Snapshot<T, K, Meta> | null,
         snapshotData: T,
         category: Category,
         categoryProperties: CategoryProperties | undefined,
         callback: (snapshotData: T) => void,
-        snapshots: SnapshotsArray<T>,
+        snapshots: SnapshotsArray<T, K, Meta>,
         type: string,
         event: SnapshotEvents<T, K>,
         snapshotContainer?: T,
-        snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null
-      ): Promise<Snapshot<T, K> | null> => {
-        // Step 1: Check if snapshot already exists
-        if (!snapshot) {
-          // If there's no snapshot, create one if the type suggests a creation action
-          if (type === 'create') {
-            const newSnapshot: Snapshot<T, K> = {
-              id: snapshotId,
-              data: snapshotData,
-              category: category,
-              properties: categoryProperties || {},
-              storeConfig: undefined 
-              // Add other necessary properties/methods for the snapshot
-            } as Snapshot<T, K>;
-      
-            // Call the callback with the new snapshot data
-            callback(snapshotData);
-      
-            // Add the new snapshot to the snapshots array
-            snapshots.push(newSnapshot);  
-           
-            return new Promise((resolve) => resolve(newSnapshot));
-          } else {
-            // If no snapshot exists and the type is not 'create', return null
-            return new Promise((resolve) => resolve(null));
+        snapshotStoreConfig?: SnapshotStoreConfig<T, K> | null
+      ): Promise<Snapshot<T, K, Meta> | null> => {
+        try {
+          // Validate required parameters
+          if (!snapshotId) {
+            throw new Error('Snapshot ID is required');
           }
-        } else {
-          // Step 2: Update or handle the snapshot if it exists
       
-          // Handle updates based on the type of event or action
+          // Handle different operation types
           switch (type) {
-            case 'update':
-              // Update snapshot data if needed
-              snapshot.data = { ...snapshot.data, ...snapshotData };
-      
-              // Update category properties if provided
-              if (categoryProperties) {
-                const merged = { ...snapshot.properties, ...categoryProperties };
-                if (isOfType<T>(merged)) {
-                  snapshot.properties = merged;
-                }
+            case 'create': {
+              if (snapshot) {
+                console.warn('Snapshot already exists, returning existing');
+                return snapshot;
               }
       
-              // Call the callback with updated snapshot data
-              callback(snapshot.data as T);
+              // Create new snapshot with metadata
+              const newSnapshot: Snapshot<T, K, Meta> = {
+                id: String(snapshotId),
+                data: snapshotData,
+                category,
+                properties: categoryProperties || {},
+                metadata: {} as Meta,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                version: '1.0.0',
+                // Include any other required snapshot properties
+                getSnapshotItems: () => [],
+                validate: () => true,
+                // ... other snapshot methods
+              };
       
-              // If a snapshot container is provided, update or associate the snapshot with it
+              // Add to snapshots collection
+              snapshots.push(newSnapshot);
+              
+              // Execute callback with new data
+              callback(snapshotData);
+              
+              // Handle snapshot container if provided
               if (snapshotContainer) {
-                // Handle the snapshot container logic (e.g., associating snapshots)
-                // For example, add the snapshot to the container's list of snapshots
+                await this.handleSnapshotContainer(
+                  newSnapshot,
+                  snapshotContainer,
+                  snapshotStoreConfig
+                );
               }
       
-              return new Promise((resolve) => resolve(snapshot));
+              return newSnapshot;
+            }
       
-            case 'delete':
-              // Find the snapshot in the snapshots array and remove it
-              const snapshotIndex = snapshots.findIndex(s => s.id === snapshotId);
-              if (snapshotIndex > -1) {
-                snapshots.splice(snapshotIndex, 1);
+            case 'update': {
+              if (!snapshot) {
+                throw new Error('Cannot update non-existent snapshot');
               }
       
-              // Optionally trigger other delete actions here
-              return new Promise((resolve) => resolve(null));
+              // Merge existing data with updates
+              const updatedData = {
+                ...snapshot.data,
+                ...snapshotData
+              };
       
-            case 'event':
-              // If an event is provided, handle it (e.g., triggering custom snapshot logic)
-              if (event) {
-                // Implement event-based logic for snapshots (if necessary)
-                // For example, categorize the snapshot or trigger a custom action
+              // Update snapshot properties
+              const updatedSnapshot: Snapshot<T, K, Meta> = {
+                ...snapshot,
+                data: updatedData,
+                properties: {
+                  ...snapshot.properties,
+                  ...categoryProperties
+                },
+                updatedAt: new Date()
+              };
+      
+              // Update in snapshots array
+              const index = snapshots.findIndex(s => s.id === snapshotId);
+              if (index > -1) {
+                snapshots[index] = updatedSnapshot;
               }
       
-              return new Promise((resolve) => resolve(snapshot));
+              callback(updatedData);
+      
+              // Handle container update if needed
+              if (snapshotContainer) {
+                await this.handleSnapshotContainer(
+                  updatedSnapshot,
+                  snapshotContainer,
+                  snapshotStoreConfig
+                );
+              }
+      
+              return updatedSnapshot;
+            }
+      
+            case 'delete': {
+              if (!snapshot) {
+                console.warn('Snapshot not found for deletion');
+                return null;
+              }
+      
+              // Remove from snapshots array
+              const index = snapshots.findIndex(s => s.id === snapshotId);
+              if (index > -1) {
+                snapshots.splice(index, 1);
+              }
+      
+              // Execute any cleanup in container
+              if (snapshotContainer) {
+                await this.cleanupSnapshotContainer(
+                  snapshotId,
+                  snapshotContainer,
+                  snapshotStoreConfig
+                );
+              }
+      
+              callback(snapshotData);
+              return null;
+            }
+      
+            case 'event': {
+              if (!snapshot) {
+                throw new Error('Cannot process event for non-existent snapshot');
+              }
+      
+              // Handle specific event types
+              switch (event?.type) {
+                case 'snapshotUpdated':
+                  // Custom update logic for event
+                  return this.handleEventUpdate(
+                    snapshot,
+                    event,
+                    snapshots,
+                    callback
+                  );
+      
+                case 'metadataChanged':
+                  return this.handleMetadataChange(
+                    snapshot,
+                    event.metadata,
+                    callback
+                  );
+      
+                default:
+                  // Default event handling
+                  return snapshot;
+              }
+            }
       
             default:
-              return new Promise((resolve) => resolve(snapshot));
+              throw new Error(`Unsupported operation type: ${type}`);
           }
+        } catch (error) {
+          console.error('Error handling snapshot:', error);
+          
+          // Execute error callback if available
+          if (typeof callback === 'function') {
+            try {
+              callback(snapshotData);
+            } catch (callbackError) {
+              console.error('Error in snapshot callback:', callbackError);
+            }
+          }
+          
+          throw error; // Re-throw for upstream handling
         }
-      }      
+      },
+      
+      
     };
 
     return criteriaSnapshot;
@@ -324,9 +436,9 @@ export const getSnapshotsBySubscriber = async <
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = never
 >(
-  subscriber: Snapshot<T, K, Meta, ExcludedFields>,
+  subscriber: Subscriber<T, K, Meta, ExcludedFields>,
   storeProps?: SnapshotStoreProps<T, K>
-): Promise<BaseData[]> => {
+): Promise<T[]> => {
   if (!storeProps) {
     throw new Error("Snapshot properties not available");
   }
@@ -337,19 +449,20 @@ export const getSnapshotsBySubscriber = async <
     throw new Error("Failed to retrieve the snapshot store");
   }
 
-
-  const {     storeId,
+  const { 
+    storeId,
     snapshotId,
     snapshotData,
     timestamp,
     type,
     event,
     id,
-    snapshotStore,
     category,
     categoryProperties,
     dataStoreMethods,
-    data,} = storeProps
+    data
+  } = storeProps;
+
   // Filter snapshots in the store by the given subscriber
   const snapshots = snapshotStore.getAllSnapshots(
     storeId,
@@ -363,15 +476,21 @@ export const getSnapshotsBySubscriber = async <
     category,
     categoryProperties,
     dataStoreMethods,
-    data,
+    data
   ).filter(snapshot => {
-    if (snapshot && snapshot.subscribers && Array.isArray(snapshot.subscribers)) {
-      return snapshot.subscribers.includes(subscriber);
+    if (!snapshot?.subscribers) return false;
+    
+    // Handle both array and Set subscribers
+    if (Array.isArray(snapshot.subscribers)) {
+      return snapshot.subscribers.some(sub => sub.id === subscriber.id);
+    }
+    if (snapshot.subscribers instanceof Set) {
+      return Array.from(snapshot.subscribers).some(sub => sub.id === subscriber.id);
     }
     return false;
   });
 
-  return snapshots.map(snapshot => snapshot.data);
+  return snapshots.map(snapshot => snapshot.data as T);
 };
 
 
@@ -481,7 +600,7 @@ type BaseType<T> = T extends BaseData<infer U> ? U : never;
 
 
 function castToSnapshot<T extends BaseData<any>, K extends BaseType<T> = BaseType<T>>(
-  snapshot: SnapshotUnion<T, K> | null
+  snapshot: SnapshotUnion<T, K, Meta> | null
 ): Snapshot<T, K> | null {
   return snapshot as Snapshot<T, K> | null;
 }

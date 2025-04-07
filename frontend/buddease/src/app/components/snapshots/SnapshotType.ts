@@ -19,8 +19,7 @@ const snapshotType = <
   snapshot: (
     id: string | number | undefined,
     snapshotData: SnapshotData<T, K>,
-    category: symbol | string | Category | undefined,
-    callback: (snapshot: Snapshot<T, K>) => void,
+    category: Category | undefined,    callback: (snapshot: Snapshot<T, K>) => void,
     criteria: CriteriaType,
     snapshotId?: string | number | null,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
@@ -49,8 +48,7 @@ const snapshotType = <
       id: string | number | null | undefined,
       snapshotId: string | null,
       snapshotData: SnapshotData<T, K>,
-      category: symbol | string | Category | undefined,
-      callback: (snapshot: Snapshot<T, K>) => void,
+      category: Category | undefined,      callback: (snapshot: Snapshot<T, K>) => void,
       criteria: CriteriaType,
       snapshotStoreConfigData?: SnapshotStoreConfig<
         SnapshotWithCriteria<any, BaseData>,

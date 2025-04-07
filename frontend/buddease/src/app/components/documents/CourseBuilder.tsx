@@ -39,7 +39,7 @@ class CourseBuilder {
   
 
     addCoursePhase(phaseTitle: string): void {
-      this.addPhase<AdaptedPhaseData>(phaseTitle);
+      this.addPhase<AdaptedPhaseData<T, K>>(phaseTitle);
     }
   
   addPhase<

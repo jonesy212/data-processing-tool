@@ -1,5 +1,6 @@
 // // SnapshotStoreMethod.tsx
 import { BaseData } from '@/app/components/models/data/Data';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "../libraries/categories/generateCategoryProperties";
@@ -12,7 +13,6 @@ import { SnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 
 // Define the necessary types
@@ -26,8 +26,7 @@ interface SnapshotStoreMethod<
     id: string | number | undefined,
     snapshotId: string | null,
     snapshotData: SnapshotData<T, K>,
-    category: symbol | string | Category | undefined,
-    categoryProperties: CategoryProperties | undefined,
+    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K>) => void,
     dataStore: DataStore<T, K>,
     dataStoreMethods: DataStoreMethods<T, K>,

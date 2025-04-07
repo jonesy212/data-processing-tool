@@ -1,4 +1,6 @@
 import { categorizeNews } from "@/app/components/community/articleKeywords";
+import { PhaseTypeEnums } from "@/app/components/state/stores/DocumentStore";
+import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 import { ModifiedDate } from "@/app/components/documents/DocType";
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { buildDocument } from '@/app/components/documents/DocumentBuilderComponent';
@@ -48,6 +50,7 @@ interface CategoryProperties {
   isSystem: boolean;
   isDefault: boolean;
   isHidden: boolean;
+  componentDescription?: string;
   isHiddenInList: boolean;
   UserInterface: string[];
   DataVisualization: string[];
@@ -63,12 +66,11 @@ interface CategoryProperties {
   chartType: string;
   dataProperties: string[];
   formFields: string[];
-  componentDescription?: string;  // Add this if it's a direct property
 }
 
 
 
-export const defaultCategoryProperties: CategoryProperties = {
+const defaultCategoryProperties: CategoryProperties = {
   id: "default",
   type: "Category",
   name: "DefaultCategory",
@@ -127,7 +129,7 @@ const dataVisualizationProperties = mergeCategoryProperties({
 
 
 export function convertToCategoryProperties(
-  category: string | symbol | CategoryKeys | CategoryProperties | undefined
+  category: Category
 ): CategoryProperties {
   if (typeof category === 'string' || typeof category === 'symbol') {
     return mergeCategoryProperties({
@@ -688,7 +690,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
       bgColor: '',
       documentURI: '',
       phaseType: ProgressPhase.Ideation,
-      DocumentData: '',
+      DocumentData: {},
       currentScript: null,
       defaultView: undefined,
       doctype: null,
@@ -771,8 +773,8 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
       {
         id: "1",
         documentSize: DocumentSize.A4,
-        versionData: {} as VersionData,
-        version: {} as Version,
+        versionData: {} as VersionData<T, K>,
+        version: {} as Version<T, K>,
         visibility: "public",
         _id: "1",
         permissions: docPermissions,
@@ -805,7 +807,8 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
          
           items: [],
           data: {},
-         
+          latestVersion: createLatestVersion<BaseData<any>, BaseData<any>>(),
+          schema: {}
          } as Content<UserData, K<UserData>, StructuredMetadata<UserData, K<UserData>>>,
         highlights: ["highlighted phrase 1", "tagged item 2"],
         topics: ["topic 1", "topic 2"],
@@ -882,11 +885,11 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
           "", // timestamp: timestamp when the metadata was last modified
           "", // createdBy: user who created the metadata
           [], // tags: tags associated with the metadata
-          undefined, // metadata: metadata object, can be undefined initially
+          {}, // metadata: metadata object, can be undefined initially
           undefined, // initialState: initial state of the metadata, can be undefined
           {} as Map<string, Snapshot<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never, StructuredMetadata<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never>, never>>, // meta: additional metadata, can be an empty array if not needed
           { eventRecords: {} }, // events: event manager data, initializing with an empty event record
-          {} as Version, // version: version information, can be undefined if not applicable
+          {} as Version<T, K>, // version: version information, can be undefined if not applicable
           {} as VersionHistory, // lastUpdated: last updated version history, it should be provided
           true, // isActive: boolean flag indicating whether metadata is active or not
           {}, // config: configuration settings for the metadata, using an empty object
@@ -940,7 +943,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
         createdAt: new Date(),
         updatedBy: "user1",
         currentMeta: "",
-        phaseType: "",
+        phaseType: PhaseTypeEnums,
         label: "",
         date: new Date()
         

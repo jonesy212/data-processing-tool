@@ -1,4 +1,5 @@
 // snapshots/SnapshotActions.ts
+import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
@@ -103,20 +104,26 @@ interface SnapshotActionsTypes<T extends  BaseData<any>, K extends T = T, Meta e
 
 
 // // Define action types with generics
-// interface SnapshotStoreActionsTypes<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
-//   addSnapshotToStore: ActionCreatorWithPayload<Snapshot<T, K>>;
-//   removeSnapshotFromStore: ActionCreatorWithPayload<string>; // Snapshot ID
-//   updateSnapshotInStore: ActionCreatorWithPayload<{ snapshotId: string; newData: any }>;
-//   fetchSnapshotStoreData: ActionCreatorWithPayload<string>; // Store ID
-//   handleSnapshotStoreSuccess: ActionCreatorWithPayload<{
-//     snapshotStore: SnapshotStore<T, K>;
-//     snapshot: Snapshot<T, K>;
-//     snapshotId: string;
-//     operation: SnapshotOperation<T, K>,
-//     operationType: SnapshotOperationType,
-//   }>;
-//   handleSnapshotStoreFailure: ActionCreatorWithPayload<string>;
-// }
+export type SnapshotStoreActionsTypes<
+  T extends BaseData<any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> = {
+  addSnapshotToStore: ActionCreatorWithPayload<Snapshot<T, K, Meta>>;
+  removeSnapshotFromStore: ActionCreatorWithPayload<string>;
+  updateSnapshotInStore: ActionCreatorWithPayload<{ snapshotId: string; newData: Partial<Snapshot<T, K, Meta>> }>;
+  fetchSnapshotStoreData: ActionCreatorWithPayload<string>;
+  handleSnapshotStoreSuccess: ActionCreatorWithPayload<{
+    snapshotStore: SnapshotStore<T, K, Meta>;
+    snapshot: Snapshot<T, K, Meta>;
+    snapshotId: string;
+    operation: SnapshotOperation<T, K, Meta>;
+    operationType: SnapshotOperationType;
+  }>;
+  handleSnapshotStoreFailure: ActionCreatorWithPayload<string>;
+};
+
+
 
 
 // interface TaskWithSubtasksSnapshotActionsTypes<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>  {
@@ -149,22 +156,31 @@ export const SnapshotActions = <T extends  BaseData<any>, K extends T = T, Meta 
 });
 
 
+// export type SnapshotStoreActionsTypes<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = ReturnType<typeof SnapshotStoreActions<T, K>>;
 
-export const SnapshotStoreActions = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): SnapshotStoreActionsTypes<T, K> => ({
-  addSnapshotToStore: createAction<Snapshot<T, K>>('addSnapshotToStore'),
+export const SnapshotStoreActions = <
+  T extends BaseData<any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(): SnapshotStoreActionsTypes<T, K, Meta> => ({
+  addSnapshotToStore: createAction<Snapshot<T, K, Meta>>('addSnapshotToStore'),
   removeSnapshotFromStore: createAction<string>('removeSnapshotFromStore'),
-  updateSnapshotInStore: createAction<{ snapshotId: string; newData: any }>('updateSnapshotInStore'),
+  updateSnapshotInStore: createAction<{ 
+    snapshotId: string; 
+    newData: Partial<Snapshot<T, K, Meta>> 
+  }>('updateSnapshotInStore'),
   fetchSnapshotStoreData: createAction<string>('fetchSnapshotStoreData'),
   handleSnapshotStoreSuccess: createAction<{
-    snapshotStore: SnapshotStore<T, K>;
-    snapshot: Snapshot<T, K>;
+    snapshotStore: SnapshotStore<T, K, Meta>;
+    snapshot: Snapshot<T, K, Meta>;
     snapshotId: string;
+    operation: SnapshotOperation<T, K>;
+    operationType: SnapshotOperationType;
   }>('handleSnapshotStoreSuccess'),
   handleSnapshotStoreFailure: createAction<string>('handleSnapshotStoreFailure'),
 });
 
 
-// export type SnapshotStoreActionsTypes<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = ReturnType<typeof SnapshotStoreActions<T, K>>;
 
 
 // Actions for managing task snapshots with subtasks
@@ -311,8 +327,7 @@ export const TaskWithSubtasksSnapshotActions = <T extends  BaseData<any>, K exte
 //     snapshotId: string,
 //     snapshot:Task | null,
 //     snapshotData:Task,
-//     category: symbol | string | Category | undefined,
-//     callback: (snapshot: Task) => void,
+//     category: Category | undefined,//     callback: (snapshot: Task) => void,
 //     snapshots: SnapshotsArray<Task>,
 //     type: string,
 //     event: Event,
@@ -730,8 +745,7 @@ export const TaskWithSubtasksSnapshotActions = <T extends  BaseData<any>, K exte
 //   mapSnapshots: function (
 //       storeIds: number[],
 //       snapshotId: string,
-//       category: symbol | string | Category | undefined,
-//       snapshot: Snapshot<Task, K>,
+//       category: Category | undefined,//       snapshot: Snapshot<Task, K>,
 //       timestamp: string | number | Date | undefined,
 //       type: string,
 //       event: Event,
@@ -741,8 +755,7 @@ export const TaskWithSubtasksSnapshotActions = <T extends  BaseData<any>, K exte
 //       callback: (
 //         storeIds: number[],
 //         snapshotId: string,
-//         category: symbol | string | Category | undefined,
-//         snapshot: Snapshot<Task, K>,
+//         category: Category | undefined,//         snapshot: Snapshot<Task, K>,
 //         timestamp: string | number | Date | undefined,
 //         type: string,
 //         event: Event,
@@ -758,8 +771,7 @@ export const TaskWithSubtasksSnapshotActions = <T extends  BaseData<any>, K exte
 //       payload: FetchSnapshotPayload<any>, 
 //       snapshotStore: SnapshotStore<Task, any>,
 //       payloadData: Task,
-//       category: symbol | string | Category | undefined,
-//       timestamp: Date,
+//       category: Category | undefined,//       timestamp: Date,
 //       data: Data,
 //       delegate: SnapshotWithCriteria<Task, any>[]
 //     ) => Snapshot<Task, any>): Snapshot<Task, any> {
@@ -1175,7 +1187,6 @@ export const TaskWithSubtasksSnapshotActions = <T extends  BaseData<any>, K exte
 
 // dispatch(SnapshotActions().addTaskSnapshot(newTaskSnapshot));
 // dispatch(TaskWithSubtasksSnapshotActions().addTaskWithSubtasksSnapshot(newTaskWithSubtasksSnapshot));
-export type { SnapshotOperation };
-export { SnapshotStoreActions }
+export type { SnapshotOperation, SnapshotStoreActions };
 
 

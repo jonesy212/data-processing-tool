@@ -1,26 +1,30 @@
 // createSnapshotOptions.ts
-
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
-import { snapshotStoreConfigInstance } from './snapshotStoreConfigInstance';
+import { getSubscribersAPI } from "@/app/api/subscriberApi";
+import { configureSnapshot } from '@/app/components/snapshots/snapshotOperations';
+import { InitializedData, SnapshotInstanceProps } from '@/app/components/snapshots/SnapshotStoreOptions';
+import { SubscriberCollection } from "@/app/components/user/SubscriberCollection";
+import { Subscriber } from '@/app/components/users/Subscriber';
+import { category } from '@/app/components/utils/snapshotUtils';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { SnapshotData, SnapshotWithCriteria } from ".";
 import { SnapshotStoreOptions } from "../hooks/useSnapshotManager";
 import { Category, getOrSetCategoryForSnapshot } from "../libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from "../models/data/Data";
+import { BaseData } from "../models/data/Data";
 import { displayToast } from "../models/display/ShowToast";
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { InitializedState, initializeState, useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { storeProps } from "../snapshots/SnapshotStoreProps";
 import { addToSnapshotList } from "../utils/snapshotUtils";
 import { getCurrentSnapshotConfigOptions } from "./getCurrentSnapshotConfigOptions";
 import { handleSnapshotOperation } from "./handleSnapshotOperation";
 import handleSnapshotStoreOperation from "./handleSnapshotStoreOperation";
 import { Snapshot } from "./LocalStorageSnapshotStore";
+import { SnapshotOperation } from "./SnapshotActions";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { snapshotStoreConfigInstance } from './snapshotStoreConfigInstance';
 import { subscribeToSnapshotImpl } from "./subscribeToSnapshotsImplementation";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { SnapshotInstanceProps } from '@/app/components/snapshots/SnapshotStoreOptions'
 
 interface SimulatedDataSource<
     T extends BaseData<any>,
@@ -28,20 +32,32 @@ interface SimulatedDataSource<
     Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > extends SnapshotInstanceProps<T, K, Meta>{
     // Define the properties of the simulated data source
-    data: SnapshotStoreConfig<T, K>;
-    fetchData: () => Promise<SnapshotStoreConfig<T, K>>;
+    data: InitializedData<T, K>
+    fetchData: () => Promise<SnapshotStoreConfig<T, K, Meta>>;
     // You can add more properties if needed
 }
 
-function getDefaultInitializedState <
-    T extends  BaseData<any>, 
+function getDefaultInitializedState<
+  T extends BaseData<any>, 
+  K extends T = T, 
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(): InitializedState<T, K> {
+  // Return a sensible default for the app's state.
+  // Possible defaults could be an empty snapshot store, an empty array, or null.
+  const defaultState: InitializedState<T, K> = new Map<string, Snapshot<T, K>>();
+  return defaultState;
+}
+
+
+  // Example getDefaultSnapshotStoreConfig function if missing
+function getDefaultSnapshotStoreConfig<
+    T extends BaseData<any>, 
     K extends T = T, 
     Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
->(): InitializedState<T, K> {
-    // Create a valid default state that fits InitializedState<T, K>
-    // This can be an empty snapshot store, map, or another valid state based on your app's requirements.
-    return {} as InitializedState<T, K>; // Adjust this to match your app's logic for default state
-  }
+>(): SnapshotStoreConfig<T, K, Meta> {
+    return {} as SnapshotStoreConfig<T, K, Meta>; // Provide a proper default value
+}
+
 
 function createSnapshotOptions<
     T extends BaseData<any>,
@@ -53,8 +69,7 @@ function createSnapshotOptions<
     snapshot: (
         id: string | number | undefined,
         snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
-        category: symbol | string | Category | undefined,
-        callback: (snapshot: SnapshotStore<T, K>) => void,
+        category: Category | undefined,        callback: (snapshot: SnapshotStore<T, K>) => void,
         criteria: CriteriaType,
         //   snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
         snapshotId: string | null,
@@ -62,7 +77,6 @@ function createSnapshotOptions<
         snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
     ) => Promise<SnapshotData<T, K>>,
     simulatedDataSource?: SimulatedDataSource<T, K, Meta> // Optional parameter for SimulatedDataSource
-
 ): SnapshotStoreOptions<T, K> {
     const dataMap = new Map<string, Snapshot<T, K>>();
     // Assuming `snapshot` has a unique identifier or key to be added to the Map
@@ -76,11 +90,36 @@ function createSnapshotOptions<
     throw new Error('snapshotStoreConfig and getDefaultSnapshotStoreConfig() cannot both be undefined');
     }
 
+    const { callback, payload, endpointCategory} = storeProps
+    const subscribers = getSubscribersAPI<T, K>(); // Await to get the actual data
+    
     const defaultSimulatedDataSource: SimulatedDataSource<T, K, Meta> = {
-        data: config,
-        fetchData: async (): Promise<SnapshotStoreConfig<T, K>> => {
-            return snapshotStoreConfig;
+        name: "DefaultSimulatedDataSource",
+        schema: {}, // Add appropriate schema
+        expirationDate: new Date(), // Provide valid expiration
+        operation: {} as SnapshotOperation<T, K>, // Example operation
+        operation: {} as SnapshotOperation<T, K>, // Example operation
+        data: snapshotStoreConfig ?? {} as SnapshotStoreConfig<T, K, Meta>, // Ensure it's always defined
+        fetchData: async (): Promise<SnapshotStoreConfig<T, K, Meta>> => {
+            return snapshotStoreConfig ?? {} as SnapshotStoreConfig<T, K, Meta>;
         },
+
+        configureSnapshot: (
+            id: string,
+            category?:  Category,
+            callback?: ((snapshot: Snapshot<T, K>) => void),
+            snapshotData?: SnapshotStore<T, K>,
+            snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta>,
+            subscribers?: SubscriberCollection<T, K>
+        ): Snapshot<T, K> | null => {
+            return configureSnapshot(id, category, callback, snapshotData, snapshotStoreConfig, subscribers);
+        },
+        createdAt: new Date(), // Ensure proper timestamp initialization
+        updatedAt: new Date(), // Ensure proper timestamp initialization
+        storeId: `store_${Date.now()}`, // Generate a unique store ID
+        category: category ?? "default", // Default category if not provided
+        callback: callback ?? (() => {}), // Default empty function to avoid undefined errors
+        subscribeToSnapshots: subscribers ?? new Set<Subscriber<T, K>>() // Default to an empty set if undefined
     };
 
     let initialState: InitializedState<T, K, Meta>;
@@ -95,7 +134,7 @@ function createSnapshotOptions<
   
 
     return {
-        data: dataMap ? ({} as InitializedData<T>),
+        data: dataMap ? ({} as InitializedData<T, K>) : undefined,
         initialState: snapshotObj.initialState ? initializeState(snapshotObj.initialState) : {} as InitializedState<T, K>,
         snapshotId: snapshotObj.id ? snapshotObj.id.toString() : "",
         category: {

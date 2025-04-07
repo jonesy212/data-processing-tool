@@ -150,8 +150,7 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
         payload: FetchSnapshotPayload<K> | undefined,
         snapshotStore: SnapshotStore<T, K>,
         payloadData: T | Data,
-        category: symbol | string | Category | undefined,
-        categoryProperties: CategoryProperties | undefined,
+        category: Category | undefined,        categoryProperties: CategoryProperties | undefined,
         timestamp: Date,
         data: T,
         delegate: SnapshotWithCriteria<T, K>[]
@@ -194,7 +193,7 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T>,
+      snapshots: SnapshotsArray<T, K, Meta>,
       type: string,
       event: Event,
       snapshotContainer?: T,
@@ -219,7 +218,7 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
       event: Event,
       callback: Callback<Snapshot<T, K>>,
       value: T,
-    ): SnapshotsArray<T> {
+    ): SnapshotsArray<T, K, Meta> {
       const foundSubscriber = subscriber as Subscriber<T, K>;
       if (foundSubscriber) {
         foundSubscriber.getState(data);
@@ -236,8 +235,8 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
       // Type assertion when passing to callback
       callback(newSnapshot as unknown as Snapshot<T, K>);
     
-      // Return an appropriate SnapshotsArray<T> value.
-      return [newSnapshot as unknown as SnapshotUnion<T, K>];
+      // Return an appropriate SnapshotsArray<T, K, Meta> value.
+      return [newSnapshot as unknown as SnapshotUnion<T, K, Meta>];
     }
   }
   callback(snapshot);

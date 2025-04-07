@@ -1,5 +1,5 @@
 import { MediaMetadata } from "@/app/configs/database/MetaDataOptions";
-import { LanguageEnum } from "../communications/LanguageEnum";
+import { LanguageEnum } from "../../app/components/communications/LanguageEnum";
 
 interface MediaSession {
   metadata: MediaMetadata | null;
@@ -26,4 +26,4 @@ interface ClientInformation {
   // Add other properties as needed
 }
 
-export type { ClientInformation, CustomMediaSession }
+export type { ClientInformation, CustomMediaSession };

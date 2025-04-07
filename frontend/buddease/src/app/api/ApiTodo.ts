@@ -1,8 +1,8 @@
 // TodoApi.ts
 import { BaseData } from '@/app/components/models/data/Data';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import { AxiosError } from 'axios';
-import { NotificationTypeEnum, useNotification } from '../components/support/NotificationContext';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
 import { Todo } from '../components/todos/Todo';
 import { endpoints } from './ApiEndpoints';

@@ -5,13 +5,13 @@ import {
   fetchXmlDocumentByIdAPI,
 } from "@/app/api/ApiDocument";
 import { DatabaseConfig } from "@/app/configs/DatabaseConfig";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import {
   CustomDocxtemplater,
   DocumentPath,
-} from "../documents/DocumentGenerator";
-import { WritableDraft } from "../state/redux/ReducerGenerator";
+} from "../../../server/DocumentGenerator";
 import { BaseData } from "../models/data/Data";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { WritableDraft } from "../state/redux/ReducerGenerator";
 
 enum FormatEnum {
   JSON = "json",
@@ -142,4 +142,4 @@ async function loadDocumentContentByFormat(
 }
 
 
-export {allowedDiagramFormats}
+export { allowedDiagramFormats };

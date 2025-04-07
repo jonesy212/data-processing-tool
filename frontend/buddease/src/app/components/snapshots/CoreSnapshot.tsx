@@ -1,10 +1,11 @@
 // CoreSnapshot.ts
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { Task } from '@/app/components/models/tasks/Task';
-import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { UserData } from "@/app/components/users/User";
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { NotificationType } from '@/app/context/NotificationContext';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { SnapshotData } from ".";
 import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
@@ -16,25 +17,24 @@ import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Content } from "../models/content/AddContent";
 import { BaseData } from "../models/data/Data";
 import { ProjectPhaseTypeEnum, StatusType } from "../models/data/StatusType";
-import { Phase } from "../phases/Phase";
+import { Phase, PhaseData } from "../phases/Phase";
 import { Label } from "../projects/branding/BrandingSettings";
 import { InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { NotificationType } from '../support/NotificationContext';
 import { AllTypes } from "../typings/PropTypes";
 import { Subscriber } from "../users/Subscriber";
 import { SubscriberCollection } from '../users/SubscriberCollection';
 import { User } from "../users/User";
 import {
-    Snapshot,
-    Snapshots,
-    SnapshotsArray
+  Snapshot,
+  Snapshots,
+  SnapshotsArray
 } from "./LocalStorageSnapshotStore";
 import { SnapshotOperation } from "./SnapshotActions";
 import { SnapshotConfig } from "./SnapshotConfig";
 import {
-    SnapshotRelationships,
+  SnapshotRelationships,
 } from "./SnapshotData";
-import { SnapshotEvents } from "./SnapshotEvents";
+import { SharedProperties, SnapshotEvents } from "./SnapshotEvents";
 import { SnapshotItem } from "./SnapshotList";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
@@ -49,15 +49,17 @@ interface CoreSnapshot<
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = never
-> extends SnapshotSubscriberManagement<T, K>,
-    SnapshotRelationships<T, K>,
-    SnapshotEvents<T, K> // Extend SnapshotEvents to include event-related methods
+> extends SnapshotSubscriberManagement<T, K, Meta>,
+  SnapshotRelationships<T, K, Meta>,
+  SnapshotEvents<T, K, Meta>,
+  SharedProperties<T, K, Meta>,
+  SharedIdentifiers<T, K, Meta>
+  // Extend SnapshotEvents to include event-related methods
 {
   metadata?: UnifiedMetadata<T, K>;
-  id: string | number | undefined;
   config: Promise<SnapshotStoreConfig<T, K> | null>;
   configs?: SnapshotStoreConfig<T, K>[] | null;
-  data: InitializedData<T> | null | undefined;
+  data: InitializedData<T, K> | null | undefined;
   parentId?: string | null;
   operation?: SnapshotOperation<T, K>;
   description?: string | null;
@@ -67,7 +69,6 @@ interface CoreSnapshot<
   timestamp: string | number | Date | undefined;
   orders?: any;
   createdBy: string | undefined;
-  eventRecords?: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
   subscriberId?: string;
   snapshot?: Snapshot<T, K>
   length?: number;
@@ -78,7 +79,7 @@ interface CoreSnapshot<
   status?: StatusType | undefined;
   content?: string | Content<T, K>;
   contentItem?: string | ContentItem;
-  label: Label | undefined;
+  label: Label | string | null | undefined;
   excludedFields?: ExcludedFields;
   message?: (
     type: NotificationType,
@@ -89,12 +90,12 @@ interface CoreSnapshot<
     channel?: ChatRoom
   ) => Message;
   user?: User;
-  type?: AllTypes;
+  type?: string | AllTypes;
   phases?: ProjectPhaseTypeEnum;
-  phase?: Phase<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>> | null;
+  phase?: Phase<PhaseData<BaseData<T, K>>, PhaseData<BaseData<T, K>>> | null; // Use T and K instead of BaseData<any, any, ...>
   ownerId?: string;
   store?: SnapshotStore<T, K> | null;
-  state?: SnapshotsArray<T> | null; // Ensure state matches Snapshot<T> or null/undefined
+  state?: SnapshotsArray<T, K, Meta> | null; // Ensure state matches Snapshot<T> or null/undefined
   dataStore?: InitializedDataStore<T>;
   snapshotId?: string | number | null;
   configOption?:
@@ -118,7 +119,10 @@ interface CoreSnapshot<
   event?: Event;
   snapshotConfig?: SnapshotConfig<T, K>[] | undefined;
   snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null;
-  snapshotStoreConfigSearch?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, SnapshotWithCriteria<any, BaseData>> | null;
+  snapshotStoreConfigSearch?: SnapshotStoreConfig<
+    SnapshotWithCriteria<T, K, Meta>,
+    SnapshotWithCriteria<T, K, Meta>
+  >
   set?: (
     data: T | Map<string, Snapshot<T, K>>,
     type: string,
@@ -135,9 +139,9 @@ interface CoreSnapshot<
     snapshotId: string,
     snapshotData: SnapshotData<T, K>,
     savedState: SnapshotStore<T, K>,
-    category: symbol | string | Category | undefined,
+    category: Category | undefined,
     callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T>,
+    snapshots: SnapshotsArray<T, K, Meta>,
     type: string,
     event: string | SnapshotEvents<T, K>,
     subscribers: SubscriberCollection<T, K>,
@@ -149,10 +153,9 @@ interface CoreSnapshot<
     snapshotId: string | number | null,
     snapshot: T extends SnapshotData<T, K> ? Snapshot<T, K, Meta> : null,
     snapshotData: T,
-    category: symbol | string | Category | undefined,
-    categoryProperties: CategoryProperties | undefined,
+    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
     callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T>,
+    snapshots: SnapshotsArray<T, K, Meta>,
     type: string,
     event: SnapshotEvents<T, K>,
     snapshotContainer?: T | undefined,
@@ -171,7 +174,6 @@ interface CoreSnapshot<
   onInitialize?: () => void;
   on?: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
   off?: (event: string) => void;
-  trigger?: (event: string, snapshot: Snapshot<T, K>) => void;
   eventsDetails?: Record<string, any>;
 }
 

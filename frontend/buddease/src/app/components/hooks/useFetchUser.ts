@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { UserActions } from '../users/UserActions';
+import { userService } from '../../api/ApiUser';
 import isValidAuthToken from '../security/AuthValidation';
-import { userService } from '../users/ApiUser';
+import { UserActions } from '../users/UserActions';
 import { sendNotification } from '../users/UserSlice';
 
 const useFetchUser = (userId: string, authToken: string) => { // Add authToken parameter

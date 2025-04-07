@@ -1,9 +1,25 @@
+// handleSnapshotOperation.ts
 import { BaseData } from '@/app/components/models/data/Data';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
+import { SnapshotStoreActions } from "@/app/components/snapshots/SnapshotActions";
+
+
+// First, extract the sorting logic to a shared utility function
+const sortByTimestamp = <T extends { timestamp?: string | Date }>(
+  items: T[],
+  direction: 'asc' | 'desc' = 'asc'
+): T[] => {
+  return [...items].sort((a, b) => {
+    const aTimestamp = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+    const bTimestamp = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+    return direction === 'asc' ? aTimestamp - bTimestamp : bTimestamp - aTimestamp;
+  });
+};
 
 function handleMapOperation<
   T extends BaseData<any>, 
@@ -12,11 +28,12 @@ function handleMapOperation<
   ExcludedFields extends keyof T = never
   >(
   snapshot: Snapshot<T, K, Meta, ExcludedFields>,
-  data: Map<string, Snapshot<T, K, Meta, ExcludedFields>>,
+  data: InitializedData<T, K> | undefined,
   operationType: SnapshotOperationType
 ): Snapshot<T, K, Meta, ExcludedFields> {
-  let result: Snapshot<T, K, Meta, ExcludedFields> = { ...snapshot };
-
+  // Create a new instance preserving the prototype chain
+  const result = Object.assign(Object.create(Object.getPrototypeOf(snapshot)), snapshot);
+  
   switch (operationType) {
     case SnapshotOperationType.CreateSnapshot:
       console.log('Creating snapshot');
@@ -40,19 +57,24 @@ function handleMapOperation<
 
     case SnapshotOperationType.MapSnapshot:
       console.log('Mapping snapshot');
-      result = { ...snapshot, data: new Map(data) };
+      result.data = new Map(data);
       break;
 
     case SnapshotOperationType.SortSnapshot:
       console.log('Sorting snapshot');
       if (data instanceof Map) {
-        // Narrowing the type to Map
-        const sortedEntries = Array.from(data.entries()).sort(/* sorting logic */);
-        const sortedData = new Map(sortedEntries);
-        result = { ...snapshot, data: sortedData };
+        // Convert Map entries to array, sort them, then convert back to Map
+        const entriesArray = Array.from(data.entries());
+        const sortedEntries = sortByTimestamp(
+          entriesArray.map(([key, value]) => ({ key, value, timestamp: value.timestamp })),
+          'asc'
+        ).map(item => [item.key, item.value]);
+        
+        result.data = new Map(sortedEntries);
       } else {
         console.warn('Data is not a Map, sorting cannot be performed.');
       }
+        
       break;
 
     case SnapshotOperationType.FilterSnapshot:
@@ -67,65 +89,61 @@ function handleMapOperation<
   return result;
 }
 
-// handleSnapshotOperation.ts
 // Define handleSnapshotOperation
-const handleSnapshotOperation = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const handleSnapshotOperation = <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: Snapshot<T, K>,
   config: SnapshotStoreConfig<T, K>,
   mappedData: Map<string, SnapshotStoreConfig<T, K>>,
   operation: SnapshotOperation<T, K>,
   operationType: SnapshotOperationType
 ): Promise<Snapshot<T, K> | null> => {
-  try {
-    const snapshotId = snapshot.id;
+  const snapshotId = snapshot.id;
 
-    if (!snapshotId) throw new Error("Snapshot ID must be a defined string.");
+  if (!snapshotId) {
+    return Promise.reject(new Error("Snapshot ID must be a defined string."));
+  }
 
-    switch (operationType) {
-      case SnapshotOperationType.CreateSnapshot:
-        const newSnapshot = await snapshotApi.createSnapshot<T, K>(config);
-        if (newSnapshot?.id) {
-          mappedData.set(newSnapshot.id, config); // Add to mappedData
-        } else {
+  switch (operationType) {
+    case SnapshotOperationType.CreateSnapshot:
+      return snapshotApi.createSnapshot<T, K>(config)
+        .then(newSnapshot => {
+          if (newSnapshot?.id) {
+            mappedData.set(newSnapshot.id, config);
+            return newSnapshot;
+          }
           throw new Error("Failed to retrieve a valid ID for the new snapshot.");
-        }
-        return newSnapshot;
+        });
 
-      case SnapshotOperationType.UpdateSnapshot:
-        if (mappedData.has(snapshotId)) {
-          const updatedSnapshot = await snapshotApi.updateSnapshot<T, K>(snapshot, config);
-          mappedData.set(updatedSnapshot.id, config); // Update mappedData
+    case SnapshotOperationType.UpdateSnapshot:
+      if (!mappedData.has(snapshotId)) {
+        return Promise.reject(new Error(`Snapshot with ID ${snapshotId} does not exist for update.`));
+      }
+      return snapshotApi.updateSnapshot<T, K>(snapshot, config)
+        .then(updatedSnapshot => {
+          mappedData.set(updatedSnapshot.id, config);
           return updatedSnapshot;
-        } else {
-          throw new Error(`Snapshot with ID ${snapshotId} does not exist for update.`);
-        }
+        });
 
-      case SnapshotOperationType.DeleteSnapshot:
-        if (mappedData.has(snapshotId)) {
-          await snapshotApi.deleteSnapshot(snapshotId);
-          mappedData.delete(snapshotId); // Remove from mappedData
+    case SnapshotOperationType.DeleteSnapshot:
+      if (!mappedData.has(snapshotId)) {
+        return Promise.reject(new Error(`Snapshot with ID ${snapshotId} does not exist for deletion.`));
+      }
+      return snapshotApi.deleteSnapshot(snapshotId)
+        .then(() => {
+          mappedData.delete(snapshotId);
           return null;
-        } else {
-          throw new Error(`Snapshot with ID ${snapshotId} does not exist for deletion.`);
-        }
+        });
 
-      case SnapshotOperationType.FindSnapshot:
-        if (mappedData.has(snapshotId)) {
-          return snapshot;
-        } else {
-          throw new Error(`Snapshot with ID ${snapshotId} not found.`);
-        }
+    case SnapshotOperationType.FindSnapshot:
+      if (mappedData.has(snapshotId)) {
+        return Promise.resolve(snapshot);
+      }
+      return Promise.reject(new Error(`Snapshot with ID ${snapshotId} not found.`));
 
-      // Additional cases like Map, Sort, Categorize, Search can be handled here...
-      default:
-        throw new Error(`Unhandled operation type: ${operationType}`);
-    }
-  } catch (error) {
-    console.error(`Error in handleSnapshotOperation: ${error.message}`);
-    return null;
+    default:
+      return Promise.reject(new Error(`Unhandled operation type: ${operationType}`));
   }
 };
-
 
 
 function handleSnapshotStoreConfigOperation<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
@@ -133,8 +151,9 @@ function handleSnapshotStoreConfigOperation<T extends  BaseData<any>, K extends 
   data: SnapshotStoreConfig<T, K>,
   operationType: SnapshotOperationType
 ): Snapshot<T, K> {
-  let result: Snapshot<T, K> = { ...snapshot };
-
+ // Create a new instance preserving the prototype chain
+ const result = Object.assign(Object.create(Object.getPrototypeOf(snapshot)), snapshot);
+ 
   switch (operationType) {
     case SnapshotOperationType.CreateSnapshot:
       console.log('Creating snapshot in store config');
@@ -216,5 +235,5 @@ const handleSnapshotStoreOperation = async <T extends  BaseData<any>, K extends 
   return config; // Return the updated configuration for further use if needed
 };
 
-  export { handleMapOperation, handleSnapshotOperation, handleSnapshotStoreConfigOperation };
+  export { handleMapOperation, handleSnapshotOperation, handleSnapshotStoreConfigOperation, sortByTimestamp };
 

@@ -2,17 +2,18 @@ import { Data } from '@/app/components/models/data/Data';
 import { Result } from '@/app/components/snapshots';
 // snapshotStorageOptionsInstance.ts
 
-import { Payload } from '@/app/components/database/Payload';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { Payload } from '@/server/database/Payload';
 
 import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { CustomSnapshotData, SnapshotContainer, SnapshotData, SnapshotStoreProps, SnapshotWithCriteria } from ".";
+import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload } from "../../../server/database/Payload";
 import { SnapshotWithData } from "../calendar/CalendarApp";
-import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload } from "../database/Payload";
 import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
@@ -33,7 +34,6 @@ import { SnapshotItem } from "./SnapshotList";
 import SnapshotStore from "./SnapshotStore";
 import { InitializedConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { Callback, MultipleEventsCallbacks } from "./subscribeToSnapshotsImplementation";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 // Define a specific set of options for snapshot storage
 interface SnapshotStorageOptions<
@@ -965,15 +965,14 @@ const snapshotConfigOptions: SnapshotConfigOptions<Data, BaseData> = {
 		): Promise<SnapshotStore<Data, BaseData> | null> {
 			throw new Error("Function not implemented.");
 		},
-		updateSnapshotStore: function (id: string, snapshotId: number, snapshotStoreData: Snapshots<Data>, category?: string | symbol | Category, callback?: ((snapshotStore: SnapshotStore<Data, BaseData>) => void) | undefined, snapshotDataConfig?: SnapshotStoreConfig<Data, BaseData>[] | undefined): Promise<SnapshotStore<Data, BaseData> | null> {
+		updateSnapshotStore: function (id: string, snapshotId: number, snapshotStoreData: Snapshots<Data>, category?:  Category, callback?: ((snapshotStore: SnapshotStore<Data, BaseData>) => void) | undefined, snapshotDataConfig?: SnapshotStoreConfig<Data, BaseData>[] | undefined): Promise<SnapshotStore<Data, BaseData> | null> {
 			throw new Error("Function not implemented.");
 		},
 		configureSnapshot: function (
 			id: string,
 			storeId: number,
 			snapshotId: string,
-			snapshotData: SnapshotData<Data, BaseData>,
-			category?: string | symbol | Category,
+			category?:  Category,
 			callback?: ((snapshot: Snapshot<Data, BaseData>) => void) | undefined,
 			snapshotData?: SnapshotStore<Data, BaseData> | undefined, 
 			snapshotStoreConfig?: SnapshotStoreConfig<Data, BaseData> | undefined
@@ -1020,7 +1019,7 @@ const snapshotConfigOptions: SnapshotConfigOptions<Data, BaseData> = {
 		mapSnapshot: function (snapshotId: string, snapshot: Snapshot<Data, BaseData>, type: string, event: Event): SnapshotStore<Data, BaseData> | undefined {
 			throw new Error("Function not implemented.");
 		},
-		createSnapshotStores: function (id: string, snapshotId: string, snapshot: Snapshot<Data, BaseData>, snapshotStore: SnapshotStore<Data, BaseData>, snapshotManager: SnapshotManager<Data, BaseData>, payload: CreateSnapshotStoresPayload<Data, BaseData>, callback: (snapshotStore: SnapshotStore<Data, BaseData>[]) => void | null, snapshotStoreData?: SnapshotStore<Data, BaseData>[] | undefined, category?: string | symbol | Category, snapshotDataConfig?: SnapshotStoreConfig<Data, BaseData>[] | undefined): SnapshotStore<Data, BaseData>[] | null {
+		createSnapshotStores: function (id: string, snapshotId: string, snapshot: Snapshot<Data, BaseData>, snapshotStore: SnapshotStore<Data, BaseData>, snapshotManager: SnapshotManager<Data, BaseData>, payload: CreateSnapshotStoresPayload<Data, BaseData>, callback: (snapshotStore: SnapshotStore<Data, BaseData>[]) => void | null, snapshotStoreData?: SnapshotStore<Data, BaseData>[] | undefined, category?:  Category, snapshotDataConfig?: SnapshotStoreConfig<Data, BaseData>[] | undefined): SnapshotStore<Data, BaseData>[] | null {
 			throw new Error("Function not implemented.");
 		},
 		initSnapshot: function (snapshot: SnapshotStore<Data, BaseData> | Snapshot<Data, BaseData> | null, snapshotId: string | null, snapshotData: SnapshotData<Data, BaseData>, category: symbol | string | Category | undefined, snapshotConfig: SnapshotStoreConfig<Data, BaseData>, callback: (snapshotStore: SnapshotStore<any, any>) => void): void {
@@ -1381,6 +1380,6 @@ const snapshotConfigOptions: SnapshotConfigOptions<Data, BaseData> = {
 
 
 export {
-    snapshotConfigOptions
+  snapshotConfigOptions
 };
 

@@ -1,14 +1,19 @@
 // snapshotContainerUtils.ts
 import { snapshot } from '.';
+import { getSnapshotConfig } from "@/app/api/SnapshotApi";
+import { handleSnapshotOperation } from "./handleSnapshotOperation";
+import { DataStore } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { createSnapshot, getSnapshotContainer, getSnapshotId } from "@/app/api/SnapshotApi";
+import { SnapshotData } from '@/app/components/snapshots';
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
 import { snapshotId } from './../utils/snapshotUtils';
 import { category } from '@/app/components/utils/snapshotUtils';
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { generateCategoryProperties, isCategoryProperties } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { createSnapshotStoreConfig } from '@/app/components/snapshots/snapshotStorageOptionsInstance';
+import { createSnapshotStoreConfig } from '@/app/components/snapshots/snapshotStoreConfigInstance';
 import { SnapshotConfig } from '@/app/components/snapshots';
-import { snapshotConfigOptions } from '@/app/components/snapshots/snapshotConfigOptions';
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { snapshotConfigOptions } from '@/app/components/snapshots/snapshotStorageOptionsInstance';
 import { CategoryProperties, convertToCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { BaseData } from '../models/data/Data';
 import { dataStoreMethods } from "../models/data/dataStoreMethods";
@@ -49,9 +54,57 @@ const snapshotIdObject = {
   }
 };
 
+// Then use it like this:
+const initializeSnapshotConfig = async <T extends BaseData<any>, K extends T = T>(
+  id: string | number,
+  snapshotId: string,
+  snapshotData: SnapshotData<T, K>,
+  criteria: CriteriaType,
+  category: Category | undefined,
+  categoryProperties: CategoryProperties | undefined,
+  subscriberId: string | undefined,
+  delegate: Promise<DataStore<T, K, StructuredMetadata<T, K>>[]>,
+  snapshot: (
+    // ... snapshot parameters
+  ) => Promise<{ snapshot: Snapshot<T, K> }>,
+  data: Map<string, Snapshot<T, K>>,
+  events: Record<string, CalendarManagerStoreClass<T, K>[]>,
+  dataItems: RealtimeDataItem[],
+  newData: Snapshot<T, K>,
+  payload: ConfigureSnapshotStorePayload<T, K>,
+  store: SnapshotStore<T, K>,
+  callback: (snapshot: SnapshotStore<T, K>) => void,
+  storeProps: SnapshotStoreProps<T, K>,
+  endpointCategory: string | number,
+  snapshotContainer: SnapshotContainer<T, K>
+) => {
+  const config = await snapshotApi.getSnapshotConfig<T, K, StructuredMetadata<T, K>>(
+    id,
+    snapshotId,
+    snapshotData,
+    criteria,
+    category,
+    categoryProperties,
+    subscriberId,
+    delegate,
+    snapshot,
+    data,
+    events,
+    dataItems,
+    newData,
+    payload,
+    store,
+    callback,
+    storeProps,
+    endpointCategory,
+    snapshotContainer
+  );
+
+  return config;
+};
 
 
-const snapshotConfig = getSnapshotConfig(
+const snapshotConfig = await initializeSnapshotConfig(
   id,
   String(snapshotId),
   snapshotData,
@@ -70,8 +123,8 @@ const snapshotConfig = getSnapshotConfig(
   callback,
   storeProps,
   endpointCategory,
-  snapshotContainer as unknown as SnapshotContainer<Data, Data>, 
-)
+  snapshotContainer
+);
 
 const currentCategory = (type: string, event: SnapshotEvent<T, K>,
 ) => snapshotApi.getSnapshotsAndCategory(
@@ -88,68 +141,73 @@ const snapshotManager = snapshotStoreConfigInstance.getSnapshotManager()
 const snapshotStore = snapshotManager?.state
 const createdSnapshotConfig = createSnapshotStoreConfig(snapshotStore)
 const getDelegate = () => delegate;
-
-  const getCategory = <
-  T extends  BaseData<any>,
+const getCategory = async <
+  T extends BaseData<any>,
   K extends T = T,
 >(
   snapshotId: string,
   storeId: number,
-  snapshot: Snapshot<any>, // Use the appropriate type for T
+  snapshot: Snapshot<T, K>,
   type: string,
   event: SnapshotEvent<T, K>,
-  snapshotConfig: SnapshotConfig<any>, // Use the appropriate type for K
+  snapshotConfig: SnapshotConfig<T, K>,
   additionalHeaders?: Record<string, string>
-): Promise<{ categoryProperties?: CategoryProperties; snapshots: Snapshot<BaseData, BaseData>[] }> => {
-  let categoryProps: CategoryProperties | undefined = undefined;
-  let snapshots: Snapshot<T, K>[] = [];
+): Promise<{ categoryProperties?: CategoryProperties; snapshots: Snapshot<T, K>[] }> => {
+  try {
+    let categoryProps: CategoryProperties | undefined = undefined;
+    let snapshots: Snapshot<T, K>[] = [];
 
-  // Check if the category is already a CategoryProperties object
-  if (isCategoryProperties(snapshot.category)) {
-    categoryProps = snapshot.category; // Return the category properties directly
-  } else {
-    // If category is a string or symbol, convert it to CategoryProperties
-    categoryProps = convertToCategoryProperties(snapshot.category);
-    
-    // If there is specific category logic based on the snapshot or type, implement it here
-    if (snapshot.category) {
-      // Assuming snapshot.category could be a string or symbol, we fetch its properties
-      const generatedProps = generateCategoryProperties(snapshot.category.toString());
-      categoryProps = {
-        ...categoryProps,
-        ...generatedProps, // Combine the properties from conversion and generation
-      };
+    // Check if the category is already a CategoryProperties object
+    if (isCategoryProperties(snapshot.category)) {
+      categoryProps = snapshot.category;
+    } else {
+      // Convert string/symbol to CategoryProperties
+      categoryProps = convertToCategoryProperties(snapshot.category);
+      
+      if (snapshot.category) {
+        const generatedProps = generateCategoryProperties(snapshot.category.toString());
+        categoryProps = {
+          ...categoryProps,
+          ...generatedProps,
+        };
+      }
     }
-  }
 
-  // Fallback: generate default category properties based on the provided type
-  if (!categoryProps) {
+    // Fallback to default properties
     const defaultCategoryProps = generateCategoryProperties(type);
-    categoryProps = { ...defaultCategoryProps }; // Initialize with default properties if categoryProps is undefined
-  } else {
-    const defaultCategoryProps = generateCategoryProperties(type);
-    categoryProps = { ...categoryProps, ...defaultCategoryProps };
-  }
+    categoryProps = categoryProps 
+      ? { ...defaultCategoryProps, ...categoryProps }
+      : { ...defaultCategoryProps };
 
-
-    // Step 3️⃣: Handle event logic
+    // Handle event logic
     if (event) {
       if (event.operationType) {
-        handleSnapshotOperation(event.operationType); // Call the operation
+        handleSnapshotOperation(event.operationType);
       }
       if (event.categoryId) {
         console.log(`Using category ID from event: ${event.categoryId}`);
         categoryProps = generateCategoryProperties(event.categoryId);
       }
     }
-    // Step 4️⃣: Retrieve snapshots
-    snapshots = await snapshotApi.retrieveSnapshots(snapshotId, event, snapshotConfig, additionalHeaders);
-  
+
+    // Retrieve snapshots with all required arguments
+    snapshots = await snapshotApi.retrieveSnapshots(
+      snapshotId,
+      storeId,
+      snapshot,
+      type,
+      event,
+      snapshotConfig,
+      additionalHeaders
+    );
+
     return { categoryProperties: categoryProps, snapshots };
+  } catch (error) {
+    console.error('Error in getCategory:', error);
+    throw error;
+  }
 };
 
-
-const getSnapshotConfig = () => snapshotConfigOptions.getSnapshotConfig;
 
 const getDataStoreMethods = () => dataStoreMethods;
 
@@ -217,6 +275,6 @@ const snapshotMethods = <T, K>() => ({
 });
 
 
-export { getCategory };
+export { getCategory, snapshotConfig };
                                                                                                                                                                        
 

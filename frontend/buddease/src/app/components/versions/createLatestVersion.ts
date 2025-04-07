@@ -10,6 +10,80 @@ export function createLatestVersion<T extends BaseData<any>, K extends T = T>(
 ): VersionData<T, K> {
   const now = new Date();
 
+  const defaultVersionImpl: VersionImpl<T, K> = {
+    major: 1,
+    minor: 0,
+    patch: 0,
+    appVersion: "1.0.0",
+    checksum: '',
+    releaseDate: undefined,
+    description: '',
+    content: '',
+    name: '',
+    url: '',
+    versionNumber: '',
+    documentId: '',
+    draft: false,
+    userId: '',
+    buildNumber: '',
+    versions: null,
+    id: 0,
+    parentId: null,
+    parentType: '',
+    parentVersion: '',
+    parentTitle: '',
+    parentContent: '',
+    parentName: '',
+    parentUrl: '',
+    parentChecksum: '',
+    parentAppVersion: '',
+    parentVersionNumber: '',
+    isLatest: false,
+    isActive: false,
+    isPublished: false,
+    publishedAt: null,
+    source: '',
+    status: '',
+    workspaceId: '',
+    workspaceName: '',
+    workspaceType: '',
+    workspaceUrl: '',
+    workspaceViewers: [],
+    workspaceAdmins: [],
+    workspaceMembers: [],
+    data: undefined,
+    _structure: {},
+    versionHistory: {} as VersionHistory,
+    currentHash: '',
+    structureData: '',
+    transformToStructureItems: function (data: any): AppStructureItem[] {
+      return data.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        children: item.children ? this.transformToStructureItems(item.children) : undefined,
+      }));
+    },
+    getStructure: function (): Promise<Record<string, AppStructureItem> | undefined> {
+      return Promise.resolve({});
+    },
+    
+    getVersionNumber: function (): string {
+      throw new Error('Function not implemented.');
+    },
+    calculateHash: function (): string {
+      throw new Error('Function not implemented.');
+    },
+    updateStructureHash: function (): Promise<void> {
+      throw new Error('Function not implemented.');
+    },
+    setStructureData: function (newData: string): void {
+      throw new Error('Function not implemented.');
+    },
+    hash: function (value: string): string {
+      throw new Error('Function not implemented.');
+    }
+  };
+
   const defaultVersion: VersionData<T, K> = {
     id: '0',
     name: "Default Version",
@@ -46,18 +120,9 @@ export function createLatestVersion<T extends BaseData<any>, K extends T = T>(
     publishedAt: null,
     source: "System Generated",
     status: "Draft",
-    version: {
-      transformToStructureItems: function (data: any): AppStructureItem[] {
-        return data.map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          children: item.children ? this.transformToStructureItems(item.children) : undefined,
-        }));
-      },
-      getStructure: function (): Promise<Record<string, AppStructureItem> | undefined> {
-        return Promise.resolve({});
-      },
-    } as VersionImpl<T, K>, // Cast to VersionImpl to ensure type safety
+    version: defaultVersionImpl, // Use the valid VersionImpl object
+
+    // Cast to VersionImpl to ensure type safety
     timestamp: new Date(),
     user: "System",
     changes: [],
@@ -86,35 +151,35 @@ export function createLatestVersion<T extends BaseData<any>, K extends T = T>(
 
 
 export function createLastUpdatedWithVersion<T extends BaseData<any>, K extends T = T>(
-    summary?: string
-  ): VersionHistory {
-    const now = new Date();
-    return {
-      lastUpdated: now,
-      timestamp: now,
-      changeLogSummary: summary || "No changes recorded.",
-      versionData: [], // Initialize as empty array or appropriate value
-      latestVersion: createLatestVersion<T, K>({
-        version: {
-          transformToStructureItems: function (data: any): AppStructureItem[] {
-            return data.map((item: any) => ({
-              id: item.id,
-              name: item.name,
-              children: item.children ? this.transformToStructureItems(item.children) : undefined,
-            }));
-          },
-          getStructure: function (): Promise<Record<string, AppStructureItem> | undefined> {
-            return Promise.resolve({});
-          },
-        } as VersionImpl<T, K>,
-        description: "Initial version", // Example description
-        createdAt: now,
-        createdBy: "system", // Example author
-      }),
-      history: []
-    }
+  summary?: string
+): VersionHistory {
+  const now = new Date();
+  return {
+    lastUpdated: now,
+    timestamp: now,
+    changeLogSummary: summary || "No changes recorded.",
+    versionData: [], // Initialize as empty array or appropriate value
+    latestVersion: createLatestVersion({
+      version: {
+        transformToStructureItems: function (data: any): AppStructureItem[] {
+          return data.map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            children: item.children ? this.transformToStructureItems(item.children) : undefined,
+          }));
+        },
+        getStructure: function (): Promise<Record<string, AppStructureItem> | undefined> {
+          return Promise.resolve({});
+        },
+      } as VersionImpl<T, K>,
+      description: "Initial version", // Example description
+      createdAt: now,
+      createdBy: "system", // Example author
+    }),
+    history: []
   }
-  
+}
+
 const versionHistory: VersionHistory = {
   versionData: [],
   history: [],

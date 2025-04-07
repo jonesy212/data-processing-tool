@@ -1,6 +1,6 @@
 // RootSlice.ts
 
-import { createSlice, createAction, PayloadAction } from "@reduxjs/toolkit";
+import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { WritableDraft } from "immer";
 
 interface Task {
@@ -54,5 +54,5 @@ const taskManagerSlice = createSlice({
 // Export the action creator
 export { updateTaskTitle };
 
-
+  export type { RootState };
 export default taskManagerSlice.reducer;

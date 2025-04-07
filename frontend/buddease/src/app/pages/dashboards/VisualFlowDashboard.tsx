@@ -1,9 +1,9 @@
 // VisualFlowDashboard.tsx
 
-import DocumentGenerator from "@/app/components/documents/DocumentGenerator";
 import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import Visualization from "@/app/components/hooks/userInterface/Visualization";
 import { DocumentTree, User, UserData } from "@/app/components/users/User";
+import DocumentGenerator from "@/server/DocumentGenerator";
 import React from "react";
 import TreeView from "./TreeView"; // Import or create your tree view component
 

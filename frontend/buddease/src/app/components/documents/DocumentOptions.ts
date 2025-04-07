@@ -11,17 +11,18 @@ import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import * as docx from "docx";
 import { ContentState } from "draft-js";
+import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
 import {
-    CodingLanguageEnum,
-    LanguageEnum,
+  CodingLanguageEnum,
+  LanguageEnum,
 } from "../communications/LanguageEnum";
 import { BaseData } from "../models/data/Data";
 import {
-    BorderStyle,
-    DocumentSize,
-    Layout,
-    PrivacySettingEnum,
-    ProjectPhaseTypeEnum,
+  BorderStyle,
+  DocumentSize,
+  Layout,
+  PrivacySettingEnum,
+  ProjectPhaseTypeEnum,
 } from "../models/data/StatusType";
 import { Phase, PhaseData, PhaseMeta } from "../phases/Phase";
 import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
@@ -33,7 +34,6 @@ import { VersionData } from "../versions/VersionData";
 import { createLastUpdatedWithVersion } from '../versions/createLatestVersion';
 import { ModifiedDate } from "./DocType";
 import { computeChecksum, DocumentData, RevisionOptions } from "./DocumentBuilder";
-import { DocumentTypeEnum } from "./DocumentGenerator";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 import { NoteAnimationOptions, NoteOptions } from "./NoteData";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
@@ -235,12 +235,12 @@ T extends BaseData<any> = BaseData<any, any>,
     customProp2: number;
     onChange: (phase: ProjectPhaseTypeEnum) => void;
   };
-  versionData: string | VersionData | undefined;
+  versionData: string | VersionData<T, K> | undefined;
   version?: Version<T, K> | undefined;
   isDynamic: boolean | undefined;
   size: DocumentSize;
   animations: DocumentAnimationOptions | undefined;
-  layout: Layout | BackendStructure | FrontendStructure | undefined;
+  layout: Layout | BackendStructure | FrontendStructure<T, K> | undefined;
   panels: { [key: string]: any } | undefined;
   pageNumbers:
   | boolean
@@ -608,7 +608,7 @@ T extends BaseData<any> = BaseData<any, any>,
   enableFuzzy?: boolean;
   dataVersions: DataVersions | undefined;
   backendStructure?: BackendStructure;
-  frontendStructure?: FrontendStructure;
+  frontendStructure?: FrontendStructure<T, K>;
   revisionOptions?: RevisionOptions;
 }
 
@@ -886,7 +886,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   documentPhase: "Draft",
   additionalOptions: undefined,
   language: LanguageEnum.English,
-  setDocumentPhase: (phase: string | Phase<PhaseData, PhaseMeta> | undefined, phaseType: DocumentPhaseTypeEnum) => ({ phase, phaseType }),
+  setDocumentPhase: (phase: string | Phase<PhaseData<T, K>, PhaseMeta> | undefined, phaseType: DocumentPhaseTypeEnum) => ({ phase, phaseType }),
   version: undefined,
   size: "0" as DocumentSize,
   animations: undefined,

@@ -1,22 +1,25 @@
-// DataBaseMethods.ts
-
-import express from 'express';
-import authService from '../auth/AuthService';
-import { DatabasePool } from './DatabasePool';
+import express, { Request, Response } from 'express';
+import { createServer } from 'http';
+import { WebSocketServer } from 'ws';
+import authService from './auth/AuthService';
+import { DatabasePool } from './database/DatabasePool';
 
 const app = express();
-const port = 3000;
+const server = createServer(app);
+const port = 3001;
 
-// Database configuration
+// WebSocket server
+const wss = new WebSocketServer({ server });
+
+// Database setup
 const dbConfig = {
   host: 'your-database-host',
   user: 'your-database-user',
   password: 'your-database-password',
   database: 'your-database-name',
-  port: 5432, // Default port for PostgreSQL
+  port: 5432,
 };
 
-// Create an instance of DatabasePool
 const databasePool = new DatabasePool(dbConfig);
 
 // Middleware for checking authentication
@@ -34,11 +37,10 @@ async function fetchTextContentFromDatabase(documentId: number): Promise<string>
   try {
     await databasePool.connect();
     const result = await databasePool.query('SELECT content FROM documents WHERE id = $1', [documentId]);
-    if (result.length > 0) {
-      return result[0].content;
-    } else {
-      throw new Error('Document not found');
+    if (result.rows && result.rows.length > 0) {
+      return result.rows[0].content;
     }
+    throw new Error('Document not found');
   } catch (error: any) {
     console.error('Error fetching text content:', error.message);
     throw error;
@@ -47,12 +49,10 @@ async function fetchTextContentFromDatabase(documentId: number): Promise<string>
   }
 }
 
-app.get('/document/:id', async (req, res) => {
+// REST route
+app.get('/document/:id', async (req: Request, res: Response) => {
   const documentId = parseInt(req.params.id, 10);
-
-  if (isNaN(documentId)) {
-    return res.status(400).send('Invalid document ID');
-  }
+  if (isNaN(documentId)) return res.status(400).send('Invalid document ID');
 
   try {
     const content = await fetchTextContentFromDatabase(documentId);
@@ -62,9 +62,13 @@ app.get('/document/:id', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+
+app.post('/process',(req: Request, res: Response) => {
+  // Handle your response here
+  const data = req.body; // Assuming you're sending data in the body
+  res.status(200).send({ result: data }); // Sending response with status code
 });
 
-
-export {fetchTextContentFromDatabase}
+server.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});

@@ -213,7 +213,3 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
   );
 };
 
-
-
-
-file:///Users/dixiejones/Downloads/Masterschool-certificate%20.pdf

@@ -4,6 +4,7 @@ import { NotificationData } from '../../support/NofiticationsSlice';
 import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
 import Version from "@/app/components/versions/Version";
+import { NotificationType } from "@/app/context/NotificationContext";
 import { createMetaState } from '@/app/configs/metadata/createMetadataState';
 import { NotificationContextProps, NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { T, K } from '@/app/components/models/data/dataStoreMethods';
@@ -15,7 +16,9 @@ import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { BaseData } from '@/app/components/models/data/Data';
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import { VersionHistory } from "@/app/components/versions/VersionData";
+import { SchemaField } from './../database/SchemaField';
 
 // Define the type for notification messages
 interface NotificationMessages {
@@ -89,9 +92,10 @@ class NotificationStore {
   notify = (
     id: string,
     content: string,
+    notificationMessage: typeof NOTIFICATION_MESSAGES | null,
     date: Date,
-    notificationMessage: typeof NOTIFICATION_MESSAGES,
-    notificationType: NotificationTypeEnum,
+    type: NotificationTypeEnum,
+    notificationType?: NotificationType,
     options?: {
       additionalOptions?: readonly string[] | string | number | any[] | undefined;
       additionalDocumentOptions?: DocumentOptions;
@@ -99,16 +103,19 @@ class NotificationStore {
     },
     userName?: string
   ) => {
+    const actualNotificationType = notificationType ?? type;
+    
     const message = this.generateNotificationMessage(
-      notificationType,
+      type,
       userName
     );
-
+    const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
+  
     this.addNotification({
       id,
       content: message,
       date,
-      notificationType,
+      notificationType: actualNotificationType,
       message: "",
       createdAt: new Date(),
       type: NotificationTypeEnum.AccountCreated,
@@ -149,9 +156,9 @@ class NotificationStore {
         "", // timestamp: timestamp when the metadata was last modified
         "", // createdBy: user who created the metadata
         [], // tags: tags associated with the metadata
-        {} as UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, never, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, never>, never>, // metadata: metadata object, can be undefined initially
+        {} as UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, StructuredMetadata<T, K>, never>, // metadata: metadata object, can be undefined initially
         undefined, // initialState: initial state of the metadata, can be undefined
-        {} as Map<string, Snapshot<BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>>>, // meta: additional metadata, can be an empty array if not needed
+        {} as Map<string, Snapshot<BaseData<any, any, StructuredMetadata<any, any>, Attachment>>>, // meta: additional metadata, can be an empty array if not needed
         { eventRecords: {} }, // events: event manager data, initializing with an empty event record
         {} as Version<T, K<T>>, // version: version information, can be undefined if not applicable
         {} as VersionHistory, // lastUpdated: last updated version history, it should be provided
@@ -162,6 +169,7 @@ class NotificationStore {
         "", // baseUrl: the base URL for API requests, can be an empty string if not used
         [], // relatedData: related data associated with metadata, empty array for now
         [], 
+
       ),
       topics: [],
       highlights: [],

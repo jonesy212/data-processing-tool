@@ -1,14 +1,14 @@
 // VersionGenerator.tsx
 
-import { handleApiErrorAndNotify, apiNotificationMessages } from "@/app/api/ApiData";
-import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { apiNotificationMessages, handleApiErrorAndNotify } from "@/app/api/ApiData";
 import DocumentPermissions from '@/app/components/documents/DocumentPermissions';
 import { TaskLogger } from "@/app/components/logging/Logger";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { BaseData } from "@/app/components/models/data/Data";
+import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import Version from "@/app/components/versions/Version";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { AxiosError } from "axios";
@@ -197,7 +197,7 @@ class VersionGenerator {
         _structure: {},
         versionHistory: {
           versionData: {},
-          latestVersion: createLatestVersion(),
+          latestVersion: createLatestVersion<T, K>(),
           history: [],
           timestamp: new Date()
         },

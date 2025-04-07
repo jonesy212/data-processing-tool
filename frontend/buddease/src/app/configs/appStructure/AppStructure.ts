@@ -10,6 +10,7 @@ import * as fs from "fs";
 import * as path from "path";
 import getAppPath from "../../../../appPath";
 import { DataVersions } from '../DataVersionsConfig';
+import { T, K } from "@/app/components/models/data/dataStoreMethods";
 
 // Define the interface for AppStructureItem
 interface AppStructureItem {
@@ -19,9 +20,9 @@ interface AppStructureItem {
   path: string;
   content: string;
   draft: boolean;
-  permissions: AppStructurePermissions | undefined; 
+  permissions?: AppStructurePermissions;
   versions: DataVersions | undefined,
-  versionData: string | VersionData | null,
+  versionData: string | VersionData<T, K<T>> | null,
   items?: {
     [key: string]: AppStructureItem 
   }

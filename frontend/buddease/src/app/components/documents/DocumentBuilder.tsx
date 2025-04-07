@@ -1,10 +1,12 @@
 // DocumentBuilder.tsx
 
 import {
-    createContentStateFromText,
-    fetchContentIdFromAPI
+  createContentStateFromText,
+  fetchContentIdFromAPI
 } from "@/app/api/ApiContent";
+import { ExcludedFields } from '@/app/components/routing/Fields';
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { createLatestVersion } from "./components/versions/createLatestVersion";
 
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { BaseData } from '@/app/components/models/data/Data';
@@ -22,15 +24,16 @@ import Clipboard from "@/app/ts/clipboard";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import crypto from "crypto";
 import {
-    ContentState,
-    Editor,
-    EditorState,
-    Modifier,
-    RichUtils,
+  ContentState,
+  Editor,
+  EditorState,
+  Modifier,
+  RichUtils,
 } from "draft-js";
 import "draft-js/dist/Draft.css";
 import React, { useState } from "react";
 import getAppPath from "../../../../appPath";
+import { DocumentPath, DocumentTypeEnum, FinancialReport } from "../../../server/DocumentGenerator";
 import { LanguageEnum } from "../communications/LanguageEnum";
 import useErrorHandling from "../hooks/useErrorHandling";
 import ResizablePanels from "../hooks/userInterface/ResizablePanels";
@@ -44,7 +47,7 @@ import { Data, TodoSubtasks } from "../models/data/Data";
 import FileData from "../models/data/FileData";
 import FolderData from "../models/data/FolderData";
 import { DocumentSize, ProjectPhaseTypeEnum } from "../models/data/StatusType";
-import { T } from "../models/data/dataStoreMethods";
+import { K, Meta, T, } from "../models/data/dataStoreMethods";
 import { Team } from "../models/teams/Team";
 import { Phase } from "../phases/Phase";
 import PromptViewer from "../prompts/PromptViewer";
@@ -54,8 +57,8 @@ import SharingOptions from "../shared/SharingOptions";
 import { TagsRecord } from "../snapshots";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 import {
-    DocumentObject,
-    addDocumentSuccess
+  addDocumentSuccess,
+  DocumentObject
 } from "../state/redux/slices/DocumentSlice";
 import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
 import { AllStatus } from "../state/stores/DetailsListStore";
@@ -65,7 +68,7 @@ import { DatasetModel } from "../todos/tasks/DataSetModel";
 import { AllTypes } from "../typings/PropTypes";
 import { getMetadataFromPlainText } from "../utils/metadataUtils";
 import AccessHistory, {
-    convertAccessRecordToHistory,
+  convertAccessRecordToHistory,
 } from "../versions/AccessHistory";
 import AppVersionImpl from "../versions/AppVersion";
 import Version from "../versions/Version";
@@ -73,15 +76,14 @@ import { VersionData } from "../versions/VersionData";
 import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
 import { ModifiedDate } from "./DocType";
 import {
-    getFormattedOptions
+  getFormattedOptions
 } from "./DocumentCreationUtils";
-import { DocumentPath, DocumentTypeEnum, FinancialReport } from "./DocumentGenerator";
 import { DocumentOptions } from "./DocumentOptions";
 import DocumentPermissions from "./DocumentPermissions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 import {
-    DocumentAnimationOptions,
-    DocumentBuilderProps,
+  DocumentAnimationOptions,
+  DocumentBuilderProps,
 } from "./SharedDocumentProps";
 import { ToolbarOptionsComponent, ToolbarOptionsProps } from "./ToolbarOptions";
 import { ResearchReport, TechnicalReport } from "./documentation/report/Report";
@@ -110,7 +112,7 @@ interface DocumentData<
   ExcludedFields extends keyof T = never
 >
   extends DocumentBase<T, K>, CommonData<T, K, Meta, ExcludedFields>, 
-DatasetModel<T, K> {
+DatasetModel<T, K, Meta> {
   id: string | number;
   _id: string;
   title: string;
@@ -896,8 +898,8 @@ const documentBuilderProps: DocumentBuilderProps = {
             enabled: true,
             author: "default-author",
             dataFormat: "DD-MM-YYYY",
+            allow: true
           },
-          allow: ""
         }));
 
         // Dispatch the saveDocument thunk with proper arguments
@@ -1272,6 +1274,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
     const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
     const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
 
+    const documentData: DocumentData<T, K<T>, Meta<T, K>, ExcludedFields<T, K<T>>> = {}
     // Create a document object
     const documentObject: DocumentObject<BaseData<string, string, StructuredMetadata<any, any>>> = {
       // Document Identification & Versioning
@@ -1298,7 +1301,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
       lastModifiedBy: "", // Last person who modified the document
       ownerDocument: null, // Owning document for nested structures (if any)
       previousMetadata: undefined, // Metadata from previous versions
-      currentMetadata: undefined, // Current metadata information
+      currentMetadata: currentMetadata, // Current metadata information
       tagsOrCategories: "", // Tags or categories associated with the document
       accessHistory: [], // Access history logs
       visibility: undefined, // Document visibility settings (public/private)
@@ -1306,7 +1309,19 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 
       // Content & Structure
       content: {
-        id, title, description, subscriberId,
+        id: "",
+        title: "",
+        items: [],
+        data: {},
+        latestVersion: createLatestVersion<T, K>(),
+        description: "",
+        subscriberId: "",
+       
+        category: "",
+        categoryProperties: "",
+        timestamp: "",
+        length: 0,
+       
 
       }, // Main content of the document
       documents: [], // Array of sub-documents or sections
@@ -1676,3 +1691,4 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 export default DocumentBuilder;
 export { computeChecksum };
 export type { DocumentData, RevisionOptions, WritableTodoSubtasks };
+

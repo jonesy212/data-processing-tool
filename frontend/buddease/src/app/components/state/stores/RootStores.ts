@@ -1,7 +1,7 @@
 // RootStores.ts
 import { action, makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
-import { CalendarActionPayload, CalendarActionType } from '../../database/CalendarActionPayload';
+import { CalendarActionPayload, CalendarActionType } from '../../../../server/database/CalendarActionPayload';
 import { EventStore } from '../../event/EventStore';
 import useUIStore from '../../libraries/ui/useUIStore';
 import { RealTimeDataStore } from '../../models/realtime/RealTimeDataStore';
@@ -10,6 +10,7 @@ import { ApiManagerStore, useApiManagerStore } from './ApiStore';
 import { AppStore } from './AppStore';
 import { AuthorizationStore, useAuthorizationStore } from './AuthorizationStore';
 import { AuthStore, useAuthStore } from './AuthStore';
+import BrowserCheckStore from './BrowserCheckStore';
 import { CalendarManagerStore, useCalendarManagerStore } from './CalendarEvent';
 import { CollaborationStore, useCollaborationStore } from './CollaborationStore';
 import useDocumentStore, { DocumentStore } from './DocumentStore';
@@ -25,12 +26,13 @@ import useTrackerStore, { TrackerStore } from './TrackerStore';
 import UIStore from './UIStore';
 import { UserStore, userManagerStore } from './UserStore';
 import useVideoStore, { VideoStore } from './VideoStore';
-import BrowserCheckStore from './BrowserCheckStore';
  
 export interface Dispatchable {
   dispatch(action: any): void;
 }
 
+
+export type RootState = MobXRootState;
 
 export interface MobXRootState {
   appManager: AppStore;
@@ -42,6 +44,7 @@ export interface MobXRootState {
   authorizationManager: AuthorizationStore;
   projectManager: ProjectManagerStore;
   taskManager: TaskManagerStore;
+  
   trackerManager: TrackerStore;
   userManager: UserStore;
   teamManager: TeamManagerStore<T, K, Meta>;

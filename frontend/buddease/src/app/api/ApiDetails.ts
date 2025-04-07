@@ -2,6 +2,8 @@ import { NotificationTypeEnum, useNotification } from "@/app/context/Notificatio
 import { AxiosError } from 'axios';
 import { Data } from '../components/models/data/Data';
 import { useDetailsContext } from '../components/models/data/DetailsContext';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData } from '@/app/components/models/data/Data';
 import { DetailsItem } from '../components/state/stores/DetailsListStore';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
 import { endpoints } from './ApiEndpoints';
@@ -50,7 +52,7 @@ const handleDetailsApiErrorAndNotify = (
   useNotification().notify(
     errorMessageId,
     errorMessage,
-    NOTIFICATION_MESSAGES.Details.Error,
+    NOTIFICATION_MESSAGES.Details.ERROR,
     new Date(),
     NotificationTypeEnum.Error
   );
@@ -58,7 +60,11 @@ const handleDetailsApiErrorAndNotify = (
 };
 
 
-export const fetchDetails = async <T extends, K extends, Meta extends StructurredMetadata<T, K> = StructurredMetadata<T, K>>(): Promise<DetailsItem<T, K, Meta>[]> => {
+export const fetchDetails = async <
+  T extends BaseData<any> = BaseData<any, any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(): Promise<DetailsItem<T, K, Meta>[]> => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}`);
     const details = response.data;

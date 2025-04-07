@@ -7,7 +7,6 @@ import { Data } from '../models/data/Data';
 import { useNotification } from '../support/NotificationContext';
 import SnapshotList from './SnapshotList'; // Use the existing SnapshotList class
 import { Snapshot } from './LocalStorageSnapshotStore';
-import { T, K } from './SnapshotConfig';
 
 interface SnapshotContainerProps {
   target: Target;

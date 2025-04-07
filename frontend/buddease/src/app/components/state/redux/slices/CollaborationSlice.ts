@@ -1,4 +1,8 @@
 // CollaborationSlice.ts
+import UserService, {
+  userId,
+  userService,
+} from "@/app/api/ApiUser";
 import Milestone from "@/app/components/calendar/CalendarSlice";
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import { CryptoHolding } from "@/app/components/crypto/CryptoHolding";
@@ -19,10 +23,6 @@ import { Project } from "@/app/components/projects/Project";
 import { SecurityMeasure } from "@/app/components/security/SecurityMeasures";
 import { Feedback } from "@/app/components/support/Feedback";
 import { Todo } from "@/app/components/todos/Todo";
-import UserService, {
-    userId,
-    userService,
-} from "@/app/components/users/ApiUser";
 import { Idea } from "@/app/components/users/Ideas";
 import { VersionData } from "@/app/components/versions/VersionData";
 import { MentorshipRequest } from "@/app/pages/community/MentorshipRequest";

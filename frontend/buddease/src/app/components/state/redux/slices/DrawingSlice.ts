@@ -1,10 +1,9 @@
 // DrawingSlice.ts
-import FolderData from '@/app/components/models/data/FolderData';
-import TrackerClass from '@/app/components/models/tracker/Tracker';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { autosaveDrawing } from "@/app/components/documents/editing/autosaveDrawing";
 import { useMovementAnimations } from "@/app/components/libraries/animations/movementAnimations/MovementAnimationActions";
-import { TrackerProps } from "@/app/components/models/tracker/Tracker";
+import FolderData from '@/app/components/models/data/FolderData';
+import TrackerClass, { TrackerProps } from '@/app/components/models/tracker/Tracker';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RefObject, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
@@ -23,11 +22,11 @@ import {
     saveToLocalStorage
 } from "@/app/components/hooks/useLocalStorage";
 import { Content } from "@/app/components/models/content/AddContent";
+import { BaseData, SharedRelationshipData } from '@/app/components/models/data/Data';
 import FileData from "@/app/components/models/data/FileData";
 import { useDrag } from "@/app/libraries/animations/DraggableAnimation/useDrag";
 import useText from "@/app/libraries/animations/DraggableAnimation/useText";
 import { ContentItem } from "../../stores/ContentStore";
-import { BaseData, SharedBaseData } from '@/app/components/models/data/Data';
   
 interface Guide {
   id: string;               // Unique identifier for the guide
@@ -58,7 +57,7 @@ interface AppearanceUpdate {
   height?: string; // Optional width and height update
 }
 
-interface LayerEffectGuide extends Guide, SharedBaseData, AppearanceUpdate {}
+interface LayerEffectGuide extends Guide, SharedRelationshipData, AppearanceUpdate {}
 interface LayerEffect extends LayerEffectGuide {
   effectType: string;        // Type of the effect (e.g., 'blur', 'shadow')
   options: object;           // Options specific to the effect (e.g., intensity, color)
@@ -75,7 +74,7 @@ interface Layer extends DrawingOptions {
   blendMode: BlendMode // Blend mode
 }
 
-interface SharedDrawingProps extends SharedBaseData {}
+interface SharedDrawingProps extends SharedRelationshipData {}
 
 interface Shape extends SharedDrawingProps {
   id: string;                      // Unique identifier for the shape
@@ -1823,7 +1822,7 @@ export const {
 } = useDrawingManagerSlice.actions;
 
 export default useDrawingManagerSlice.reducer;
-export type { DrawingState, Stroke, TrackerDrawingElement, AppearanceUpdate };
+export type { AppearanceUpdate, DrawingState, Stroke, TrackerDrawingElement };
 
 // Selectors
 export const selectDrawing = (state: RootState) => state.drawingManager;

@@ -13,12 +13,12 @@ import { Category } from '../libraries/categories/generateCategoryProperties';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { SimulatedDataSource } from "./createSnapshotOptions";
 import {
-    ConfigureSnapshotStorePayload, MultipleEventsCallbacks, Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotOperation, SnapshotOperationType, Snapshots,
-    SnapshotsArray, SnapshotStoreMethod, SnapshotStoreProps,
-    SnapshotWithCriteria
+  ConfigureSnapshotStorePayload, MultipleEventsCallbacks, Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotOperation, SnapshotOperationType, Snapshots,
+  SnapshotsArray, SnapshotStoreMethod, SnapshotStoreProps,
+  SnapshotWithCriteria
 } from './index';
 
-import { SchemaField } from '../database/SchemaField';
+import { SchemaField } from '../../../server/database/SchemaField';
 
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
@@ -50,7 +50,50 @@ type InitializedDelegate<T extends BaseData<any>, K extends T = T, Meta extends 
 type InitializedDelegateSearch<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
   () => Promise<SnapshotWithCriteria<T, K>[] | null>;
 
+type ConvertSnapshotWithCriteria<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+> = SnapshotStoreConfig<
+  SnapshotWithCriteria<T, K>,
+  SnapshotWithCriteria<T, K>,
+  Meta,
+  ExcludedFields
+>;
 
+
+
+  type InitializedSnapshot<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> = Snapshot<T, K, Meta> & {
+    /** 
+     Flag indicating this snapshot has been properly initialized
+    */
+    isInitialized: true;
+    
+    /**
+    * Timestamp when the snapshot was initialized
+    */
+    initializedAt: Date;
+    
+    /**
+    * Optional version identifier
+    */
+    version?: string;
+    
+    /**
+    * Optional initialization source
+    */
+    initializedFrom?: 'api' | 'cache' | 'local';
+    
+    /**
+    * Additional initialization context
+    */
+    initializationContext?: Record<string, unknown>;
+};
 
 interface SnapshotInstanceProps<
   T extends BaseData<any>,
@@ -59,7 +102,7 @@ interface SnapshotInstanceProps<
 > extends SnapshotStoreCore<T, K> {
   name: string;
   schema: Record<string, SchemaField>;
-  options?: Record<string, any>; // General options
+  options?: Record<string, any>; 
   expirationDate: Date;
   additionalData?: CustomSnapshotData<T>
   description?: string;
@@ -74,7 +117,7 @@ interface SnapshotInstanceProps<
     storeId: number,
     snapshotId: string,
     dataStoreMethods: DataStore<T, K>,
-    category?: string | symbol | Category,
+    category?:  Category,
     categoryProperties?: CategoryProperties | undefined,
     callback?: (snapshot: Snapshot<T, K>) => void,
     snapshotData?: SnapshotStore<T, K>,
@@ -104,7 +147,7 @@ interface SnapshotStoreOptions<
 > {
   id: string | number | null;
   storeId: number;
-  data?: InitializedData<T> | null;
+  data?: InitializedData<T, K> | null;
   baseURL: string;
   enabled: boolean;
   maxRetries: number;
@@ -112,11 +155,13 @@ interface SnapshotStoreOptions<
   maxAge: string | number | undefined;
   staleWhileRevalidate: number;
   cacheKey: string;
-  initialState: InitializedState<T, K> | {};
+  initialState: InitializedState<T, K, Meta> | {};
+  initialConfig: SnapshotConfig<T, K>;
+  
   key?: string;
   keys?: string[];
-  snapshotObj?: Snapshot<T, K> | null;
-  snapshots?: Snapshots<T, K>;
+  snapshotObj?: Snapshot<T, K, Meta> | null;
+  snapshots?: Snapshots<T, K, Meta>;
   eventRecords: Record<string, EventRecord<T, K>[]> | null;
   records: Record<string, CalendarManagerStoreClass<T, K>[]> | []; // Store calendar records
   snapshotRecords?: Record<string, Snapshot<T, K>[]>; // Add snapshotRecords to store snapshots
@@ -136,15 +181,14 @@ interface SnapshotStoreOptions<
     snapshotStore: SnapshotStore<T, K>,
     snapshotId: string,
     snapshotData: SnapshotData<T, K>,
-    category: symbol | string | Category | undefined,
-    snapshotConfig: SnapshotStoreConfig<T, K>,
+    category: Category | undefined,    snapshotConfig: SnapshotStoreConfig<T, K>,
     callback: (
       snapshotStore: SnapshotStore<T, K>,
-      snapshots: SnapshotsArray<T>
+      snapshots: SnapshotsArray<T, K, Meta>
     ) => Subscriber<T, K> | null,
-    snapshots: SnapshotsArray<T>,
+    snapshots: SnapshotsArray<T, K, Meta>,
     unsubscribe?: UnsubscribeDetails,
-  ) => SnapshotsArray<T> | [];
+  ) => SnapshotsArray<T, K, Meta> | [];
 
   subscribeToSnapshot: (
     snapshotId: string,
@@ -179,7 +223,7 @@ interface SnapshotStoreOptions<
     type: string,
     event: Event,
     snapshotConfig: SnapshotConfig<T, K>,
-    categoryProps?: Category,
+    category?:  Category,
     additionalHeaders?: Record<string, string>
   ) => Promise<{ categoryProperties?: CategoryProperties; snapshots: Snapshot<T, K>[] }>;
 
@@ -188,8 +232,7 @@ interface SnapshotStoreOptions<
     snapshot: SnapshotStore<T, K> | Snapshot<T, K> | null,
     snapshotId: string | null,
     snapshotData: SnapshotData<T, K>,
-    category: symbol | string | Category | undefined,
-    snapshotConfig: SnapshotStoreConfig<T, K>,
+    category: Category | undefined,    snapshotConfig: SnapshotStoreConfig<T, K>,
     callback: (snapshotStore: SnapshotStore<T, K>) => void
   ) => void,
 
@@ -210,7 +253,7 @@ interface SnapshotStoreOptions<
     snapshotId: string,
     snapshotData: SnapshotData<T, K>,
     dataStoreMethods: DataStore<T, K>,
-    category?: string | symbol | Category,
+    category?:  Category,
     categoryProperties?: CategoryProperties | undefined,
     callback?: (snapshot: Snapshot<T, K>) => void,
     snapshotStore?: SnapshotStore<T, K>,
@@ -273,16 +316,16 @@ interface SnapshotStoreOptions<
     id: string | number,
     snapshotId: string | null,
     criteria: CriteriaType,
-    category: symbol | string | Category | undefined,
+    category: Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     subscriberId: string | undefined,
-    delegate: SnapshotWithCriteria<T, K>[] | null,
+    delegate: SnapshotWithCriteria<T, K, Meta>[] | null,
     snapshotData: SnapshotData<T, K>,
     snapshot: (
       id: string | number | undefined,
       snapshotId: string | null,
       snapshotData: SnapshotData<T, K>,
-      category: symbol | string | Category | undefined,
+      category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshotStore: SnapshotStore<T, K> | null) => void,
       dataStore: DataStore<T, K>,
@@ -312,12 +355,14 @@ interface SnapshotStoreOptions<
   createSnapshot: (
     id: string,
     snapshotData: SnapshotData<T, K>,
-    category: symbol | string | Category | undefined,
-    categoryProperties: CategoryProperties | undefined,
+    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
     callback?: (snapshot: Snapshot<T, K>) => void,
     snapshotStore?: SnapshotStore<T, K>,
     snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> | null,
-    snapshotStoreConfigSearch?: SnapshotStoreConfig<T, T>
+    snapshotStoreConfigSearch?: SnapshotStoreConfig<
+      SnapshotWithCriteria<any, BaseData<T, K>>,
+      SnapshotWithCriteria<any, BaseData<T, K, StructuredMetadata<T, K>>>
+      >
   ) => Snapshot<T, K> | null,
 
   configureSnap: (
@@ -326,7 +371,7 @@ interface SnapshotStoreOptions<
     snapshotId: string,
     snapshotData: SnapshotData<T, K>,
     dataStoreMethods: DataStore<T, K>,
-    category?: string | symbol | Category,
+    category?:  Category,
     categoryProperties?: CategoryProperties | undefined,
     callback?: (snapshot: Snapshot<T, K>) => void,
     snapshotStore?: SnapshotStore<T, K>,
@@ -351,8 +396,6 @@ interface SnapshotStoreOptions<
 }
 
 export type {
-    InitializedData, InitializedDataStore, InitializedDelegate,
-    InitializedDelegateSearch, MetaDataOptions, SnapshotInstanceProps, SnapshotStoreOptions,
-    SnapshotConfigOption
+  InitializedData, InitializedDataStore, InitializedDelegate, InitializedDelegateSearch, InitializedSnapshot, MetaDataOptions, SnapshotConfigOption, SnapshotInstanceProps, SnapshotStoreOptions
 };
 

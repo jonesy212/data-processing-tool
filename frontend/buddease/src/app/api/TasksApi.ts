@@ -5,7 +5,7 @@ import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { BaseData } from '@/app/components/models/data/Data';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
-import { NotificationType, useNotification } from '@/app/components/context/NotificationContext';
+import { NotificationType, useNotification } from '@/app/context/NotificationContext';
 import { TaskHistoryEntry } from '../components/interfaces/history/TaskHistoryEntry';
 import { Task } from '../components/models/tasks/Task';
 import { historyManagerStore } from '../components/state/stores/HistoryStore';

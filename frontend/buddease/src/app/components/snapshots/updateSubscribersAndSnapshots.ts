@@ -104,7 +104,7 @@
 //                 return null;
 //               },
 //               events: {
-//                   callbacks: (snapshots:SnapshotsArray<T>) => {
+//                   callbacks: (snapshots:SnapshotsArray<T, K, Meta>) => {
 //                       return snapshots.map(snapshot => snapshot.eventRecords?.callbacks).flat();
 //                 },
 //                 eventRecords: undefined,

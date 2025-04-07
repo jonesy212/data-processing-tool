@@ -2,16 +2,16 @@
 import { extractCriteria } from '@/app/api/SnapshotApi';
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import {
-    CodingLanguageEnum,
-    LanguageEnum,
+  CodingLanguageEnum,
+  LanguageEnum,
 } from "@/app/components/communications/LanguageEnum";
-import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import { FileTypeEnum } from "@/app/components/documents/FileType";
 import FormatEnum from "@/app/components/form/FormatEnum";
 import AnimationTypeEnum from "@/app/components/libraries/animations/AnimationLibrary";
 import { Category, CategoryIdentifier } from "@/app/components/libraries/categories/generateCategoryProperties";
 import { StatusTrackable, Timestamped } from "@/app/components/models/CommonData";
 import { BaseData, Data } from "@/app/components/models/data/Data";
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
 import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
@@ -22,29 +22,33 @@ import { SnapshotData, SnapshotStoreConfig, SnapshotWithCriteria } from '@/app/c
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { FilterState } from "@/app/components/state/redux/slices/FilterSlice";
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import UserRoles from "@/app/components/users/UserRoles";
 import { IdeaCreationPhaseEnum } from "@/app/components/users/userJourney/IdeaCreationPhase";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { useMetadata } from '@/app/configs/useMetadata';
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { MessageType } from "@/app/generators/MessaageType";
+import { Filter } from "@/app/pages/searches/Filter";
+import { DocumentTypeEnum } from "@/server/DocumentGenerator";
+import { Pagination } from '@refinedev/core';
+import { FetchOptions, fetchUserAreaDimensions } from '../layouts/fetchUserAreaDimensions';
 import { CategoryProperties } from "../personas/ScenarioBuilder";
 import {
-    BookmarkStatus,
-    CalendarStatus,
-    DataStatus,
-    DevelopmentPhaseEnum,
-    NotificationStatus,
-    PriorityTypeEnum,
-    PrivacySettingEnum,
-    ProjectPhaseTypeEnum,
-    StatusType,
-    SubscriberTypeEnum,
-    SubscriptionTypeEnum,
-    TaskStatus,
-    TeamStatus,
-    TodoStatus,
+  BookmarkStatus,
+  CalendarStatus,
+  DataStatus,
+  DevelopmentPhaseEnum,
+  NotificationStatus,
+  PriorityTypeEnum,
+  PrivacySettingEnum,
+  ProjectPhaseTypeEnum,
+  StatusType,
+  SubscriberTypeEnum,
+  SubscriptionTypeEnum,
+  TaskStatus,
+  TeamStatus,
+  TodoStatus,
 } from "./../../components/models/data/StatusType";
-import { CriteriaType } from "./CriteriaType";
 
 
 
@@ -52,6 +56,9 @@ interface FilterCriteria extends Timestamped, StatusTrackable {
   description?: string | null | undefined;
   startDate?: Date;
   endDate?: Date;
+  filters: Filter[];
+  sort: Sort[];
+  pagination?: Pagination;
   status?: StatusType | null | null;
   priority?: string | PriorityTypeEnum | null;
   assignedUser?: string | null;
@@ -85,8 +92,6 @@ interface FilterCriteria extends Timestamped, StatusTrackable {
   messageType?: MessageType | null; // Filter by message type
   categoryCriteria?: CategoryIdentifier | CategoryProperties; // Add categoryCriteria here
 }
-
-type CalendarEventWithCriteria = SnapshotWithCriteria<CalendarEvent, CalendarEvent> & CriteriaType;
 
 const applyFilters = (
   events: CalendarEvent[],
@@ -311,6 +316,9 @@ const criteria: FilterCriteria = {
   status: StatusType.Scheduled,
   priority: PriorityTypeEnum.High,
   assignedUser: "John Doe",
+  filters: [],
+  sort: [],
+  date: new Date(),
   todoStatus: TodoStatus.Completed,
   taskStatus: TaskStatus.InProgress,
   teamStatus: TeamStatus.Active,
@@ -337,6 +345,69 @@ const criteria: FilterCriteria = {
 
 
 
+
+  // Dynamically set the FetchOptions using properties from the `area` object
+  const options: FetchOptions = {
+    elementId: area.id, // Use `area.id` as the `elementId`
+    listenForResize: true, // Set to true to listen for resize
+    onChange: (dimensions) => {
+      console.log(`Updated dimensions for area "${area.name}":`, dimensions);
+    }
+  };
+  // Call the fetchUserAreaDimensions function using the dynamically created options
+  const areaDimensions = fetchUserAreaDimensions(options);
+
+  // Use `useMetadata` with appropriate type arguments for UnifiedMetaDataOptions
+  const currentMetadata = useMetadata<
+    T, 
+    K<T>, 
+    StructuredMetadata<T, K<T>>, 
+    never, 
+    Attachment
+  >({
+    area: 'calendar-area',
+    relatedKeys: ['key1', 'key2'], // optional array of keys
+    overrides: {
+      versionData: { /* your version data */ },
+      latestVersion: '1.0.0'
+    },
+    projectId: 123 // optional project ID
+  });
+
+
+
+// 1. First define your base CalendarEvent type
+interface BaseCalendarEvent {
+  description: string;
+  startDate: Date;
+  endDate: Date;
+  status: StatusType;
+  priority: PriorityTypeEnum;
+  assignedUser: string;
+  todoStatus: TodoStatus;
+  taskStatus: TaskStatus;
+  teamStatus: TeamStatus;
+  dataStatus: DataStatus;
+  calendarStatus: CalendarStatus;
+}
+
+// 2. Create a type that combines with Snapshot requirements
+type CalendarEventWithCriteria = BaseCalendarEvent & 
+  Pick<SnapshotWithCriteria<BaseData>, 
+    'initialState' | 
+    'isCore' | 
+    'initialConfig' | 
+    'onInitialize'
+  > & {
+    criteria: FilterCriteria;
+    analysisType?: AnalysisTypeEnum;
+  };
+
+
+
+
+
+
 // Sample CalendarEvent data
 const events: CalendarEvent[] = [
   {
@@ -358,6 +429,7 @@ const events: CalendarEvent[] = [
     developmentPhase: "coding",
     subscriberType: "premium",
     subscriptionType: "monthly",
+    latestVersion, currentMeta, currentMetadata: currentMetadata, 
     analysisType: AnalysisTypeEnum.STATISTICAL,
     documentType: "pdf",
     fileType: "document",
@@ -454,34 +526,42 @@ const events: CalendarEvent[] = [
     teamMemberId: "",
     date: new Date(),
     getSnapshotStoreData(): Promise<CalendarEventWithCriteria[]> {
-      return new Promise((resolve, reject) => {
-        try {
-          // Your logic to retrieve data goes here
-          const data: CalendarEventWithCriteria[] = [
-            {
-              description: "This is a sample event",
-              startDate: new Date("2024-06-01"),
-              endDate: new Date("2024-06-05"),
-              status: StatusType.Scheduled,
-              priority: PriorityTypeEnum.High,
-              assignedUser: "<NAME>",
-              todoStatus: TodoStatus.Completed,
-              taskStatus: TaskStatus.InProgress,
-              teamStatus: TeamStatus.Active,
-              dataStatus: DataStatus.Processed,
-              calendarStatus: CalendarStatus.IDLE,
-
-
-
-              initialState, isCore, initialConfig, onInitialize,
-              
-            }
-            ]
-          resolve(data);
-          } catch(error) {
-            reject(error);
+      return new Promise((resolve) => {
+        const data: CalendarEventWithCriteria[] = [
+          {
+            // Base event properties
+            description: "This is a sample event",
+            startDate: new Date("2024-06-01"),
+            endDate: new Date("2024-06-05"),
+            status: StatusType.Scheduled,
+            priority: PriorityTypeEnum.High,
+            assignedUser: "<NAME>",
+            todoStatus: TodoStatus.Completed,
+            taskStatus: TaskStatus.InProgress,
+            teamStatus: TeamStatus.Active,
+            dataStatus: DataStatus.Processed,
+            calendarStatus: CalendarStatus.IDLE,
+            
+            // Required Snapshot properties
+            initialState: {},
+            isCore: true,
+            initialConfig: {},
+            onInitialize: () => {},
+            
+            // Criteria properties
+            criteria: {
+              // Your filter criteria implementation
+              dateRange: {
+                from: new Date("2024-06-01"),
+                to: new Date("2024-06-05")
+              },
+              // other criteria fields
+            },
+            analysisType: AnalysisTypeEnum.EventAnalysis
           }
-        })
+        ];
+        resolve(data);
+      });
       },
     meta:{} as Data<T>,
       getData(): Promise<SnapshotWithCriteria<BaseData, BaseData>> {
@@ -490,49 +570,60 @@ const events: CalendarEvent[] = [
           // Sample data implementing SnapshotWithCriteria
           const data: SnapshotWithCriteria<BaseData, BaseData>[] = [
           {
-              description: "This is a sample event",
-              startDate: new Date("2024-06-01"),
-              endDate: new Date("2024-06-05"),
-              status: StatusType.Scheduled,
-              priority: PriorityTypeEnum.High,
-              assignedUser: "John Doe",
-              todoStatus: TodoStatus.Completed,
-              taskStatus: TaskStatus.InProgress,
-              teamStatus: TeamStatus.Active,
-              dataStatus: DataStatus.Processed,
-              calendarStatus: CalendarStatus.Approved,
-              notificationStatus: NotificationStatus.READ,
-              bookmarkStatus: BookmarkStatus.Saved,
-              priorityType: PriorityTypeEnum.Urgent,
-              projectPhase: ProjectPhaseTypeEnum.Planning,
-              developmentPhase: DevelopmentPhaseEnum.CODING,
-              subscriberType: SubscriberTypeEnum.PREMIUM,
-              subscriptionType: SubscriptionTypeEnum.Monthly,
-              analysisType: AnalysisTypeEnum.STATISTICAL,
-              documentType: DocumentTypeEnum .PDF,
-              fileType: FileTypeEnum.Document,
-              tenantType: TenantManagementPhaseEnum.TenantA,
-              ideaCreationPhaseType: IdeaCreationPhaseEnum.IDEATION,
-              securityFeatureType: SecurityFeatureEnum.Encryption,
-              feedbackPhaseType: FeedbackPhaseEnum.FEEDBACK_REVIEW,
-              contentManagementType: ContentManagementPhaseEnum.CONTENT_EDITING,
-              taskPhaseType: TaskPhaseEnum.EXECUTION,
-              animationType: AnimationTypeEnum.TwoD,
-              languageType: LanguageEnum.English,
-              codingLanguageType: CodingLanguageEnum.Javascript,
-              formatType: FormatEnum.DOC,
-              privacySettingsType: PrivacySettingEnum.Public,
-              messageType: MessageType.Email,
-              id: "event1",
-              title: "Sample Event",
-              content: "This is a sample event content",
-              topics: [],
-              highlights: [],
-              files: [],
-              rsvpStatus: "yes"
-            }
-          ]; // Example data, replace with actual logic
+            description: "This is a sample event",
+            id: "event1",
+            title: "Sample Event",
+            content: "This is a sample event content",
+            topics: [],
+            highlights: [],
+            files: [],
+            rsvpStatus: "yes",
+            startDate: new Date("2024-06-01"),
+            endDate: new Date("2024-06-05"),
+
+            dataObject: {}, // Must satisfy BaseData type
+            deleted: false,
+            initialState: {},
+            isCore: true,
+            initialConfig: {},
+            metadata: {} as StructuredMetadata<BaseData, BaseData>,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            version: "1.0.0",
     
+            status: StatusType.Scheduled,
+            priority: PriorityTypeEnum.High,
+            assignedUser: "John Doe",
+            todoStatus: TodoStatus.Completed,
+            taskStatus: TaskStatus.InProgress,
+            teamStatus: TeamStatus.Active,
+            dataStatus: DataStatus.Processed,
+            calendarStatus: CalendarStatus.Approved,
+            notificationStatus: NotificationStatus.READ,
+            bookmarkStatus: BookmarkStatus.Saved,
+            priorityType: PriorityTypeEnum.Urgent,
+            projectPhase: ProjectPhaseTypeEnum.Planning,
+            developmentPhase: DevelopmentPhaseEnum.CODING,
+            subscriberType: SubscriberTypeEnum.PREMIUM,
+            subscriptionType: SubscriptionTypeEnum.Monthly,
+            analysisType: AnalysisTypeEnum.STATISTICAL,
+            documentType: DocumentTypeEnum .PDF,
+            fileType: FileTypeEnum.Document,
+            tenantType: TenantManagementPhaseEnum.TenantA,
+            ideaCreationPhaseType: IdeaCreationPhaseEnum.IDEATION,
+            securityFeatureType: SecurityFeatureEnum.Encryption,
+            feedbackPhaseType: FeedbackPhaseEnum.FEEDBACK_REVIEW,
+            contentManagementType: ContentManagementPhaseEnum.CONTENT_EDITING,
+            taskPhaseType: TaskPhaseEnum.EXECUTION,
+            animationType: AnimationTypeEnum.TwoD,
+            languageType: LanguageEnum.English,
+            codingLanguageType: CodingLanguageEnum.Javascript,
+            formatType: FormatEnum.DOC,
+            privacySettingsType: PrivacySettingEnum.Public,
+            messageType: MessageType.Email,
+          }
+        ]; // Example data, replace with actual logic
+  
           // Resolve the promise with the data
           resolve(data);
         } catch (error) {
@@ -652,7 +743,7 @@ const events: CalendarEvent[] = [
           id: string,
           snapshotData: SnapshotData<T, K>,
           additionalData: any,
-          category?: string | symbol | Category,
+          category?:  Category,
           callback?: (snapshot: Snapshot<T, K>) => void,
           snapshotStore?: SnapshotStore<T, K>,
           snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> ,

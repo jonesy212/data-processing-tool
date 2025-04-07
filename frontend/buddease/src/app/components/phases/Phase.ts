@@ -1,13 +1,16 @@
 import { addPhase } from "@/app/api/ApiPhases";
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { BaseData } from '@/app/components/models/data/Data';
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { Label } from '@/app/components/projects/branding/BrandingSettings';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { NotificationType } from "@/app/context/NotificationContext";
+import { SharedProperties } from "@/app/components/snapshots/SnapshotEvents";
+import { BaseConfig } from '@/app/configs/BaseConfig';
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import { FC } from "react";
+import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
 import { Lesson } from "../documents/CourseBuilder";
-import { DocumentTypeEnum } from "../documents/DocumentGenerator";
 import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 import { CommonData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
@@ -16,12 +19,11 @@ import { Member } from "../models/teams/TeamMembers";
 import { Progress } from "../models/tracker/ProgressBar";
 import { TagsRecord } from "../snapshots";
 import { DetailsItem } from "../state/stores/DetailsListStore";
-import { useNotification } from "../support/NotificationContext";
 
 interface PhaseData<
-  T extends BaseData<any, any, any, Attachment> = BaseData<any, any, any, Attachment>,
-  K extends T = T
-> extends BaseData<T, K> {
+  T extends BaseData<any, any, StructuredMetadata<any, any>, Attachment>,
+  K extends T = T,
+> extends BaseData<T, K, StructuredMetadata<T, K>>, SharedProperties<T, K, StructuredMetadata<T, K>> {
   // Define any properties specific to phase-related data
   phaseName?: string;
   startDate?: Date;
@@ -29,9 +31,10 @@ interface PhaseData<
 }
 
 interface PhaseMeta<
- T extends PhaseData<any, any, any, Attachment> = PhaseData<any, any, any, Attachment>, // Con
- K extends T = T
-> extends StructuredMetadata<T, K> {
+  T extends BaseData<any, any, any, Attachment> = BaseData<any, any, any, Attachment>,
+  K extends T = T
+  > extends StructuredMetadata<T, K> {
+  baseConfig: BaseConfig<T, K, StructuredMetadata<T, K>>;
   createdBy?: string;
   updatedBy?: string;
   archived?: boolean;
@@ -82,7 +85,7 @@ export interface Phase<
 }
 
 export class PhaseImpl<
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>> = PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > implements Phase<PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, 
@@ -95,6 +98,7 @@ export class PhaseImpl<
   endDate: Date | undefined = undefined; 
   subPhases: string[] | Phase<PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, PhaseMeta>[] = [];
   createdBy: string = ""; // Moved to common data
+  latestVersion: VersionData<T, K>;
   // component: React.FC = () => <div>Phase Component</div>,
   hooks: CustomPhaseHooks<T> = {
     // Initialize hooks object
@@ -112,9 +116,10 @@ export class PhaseImpl<
   // New properties added to fix the error
   label: Label = { text: "",
     color: "#000000" };
-  currentMeta: PhaseMeta<PhaseData<any, any>, PhaseData<any, any>> = {} as PhaseMeta<PhaseData<any, any>, PhaseData<any, any>>;
-  currentMetadata: UnifiedMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, PhaseMeta<PhaseData<any, any>, PhaseData<any, any>>, never> = 
-  {} as UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, PhaseMeta<PhaseData<any, any>, PhaseData<any, any>>, never>;
+  // Use BaseData instead of PhaseData for currentMeta
+  currentMeta: PhaseMeta<BaseData<any, any, any, Attachment>> = {} as PhaseMeta<BaseData<any, any, any, Attachment>>;
+  currentMetadata: UnifiedMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, never> = 
+  {} as UnifiedMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, never>;
   date: Date = new Date(); 
   
   // Default to the current date
@@ -129,8 +134,8 @@ export class PhaseImpl<
     description: string,
     title: string,
     label?: Label,  // Added to constructor parameters
-    currentMeta?: PhaseMeta<PhaseData<any, any>, PhaseData<any, any>>, // Added to constructor parameters
-    currentMetadata?: UnifiedMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, PhaseMeta<PhaseData<any, any>, PhaseData<any, any>>, never>, // Added to constructor parameters
+    currentMeta?: PhaseMeta<BaseData<any, any, any, Attachment>>,
+    currentMetadata?: UnifiedMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, never>, // Added to constructor parameters
     date?: Date // Added to constructor parameters
   ) {
     this.name = name;
@@ -152,12 +157,7 @@ export class PhaseImpl<
   // tasks?: Task[] | undefined;
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[] | undefined;
-  metadata?: UnifiedMetadata<
-    PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, 
-    PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, 
-    StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, 
-    never
-  >;
+  metadata?: UnifiedMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>
   details?: DetailsItem<any> | undefined; 
   tags?: TagsRecord<T, K> | string[] | undefined;
   categories?: string[] | undefined;
@@ -179,7 +179,7 @@ export class PhaseImpl<
 
 
 export interface CustomPhaseHooks<
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>> = PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>>,
   K extends T = T
 > {
   [x: string]: any;
@@ -193,13 +193,13 @@ export interface CustomPhaseHooks<
 }
 
 export const customPhaseHooks = {
-  canTransitionTo: (currentPhase: Phase<PhaseData>, nextPhase: Phase<PhaseData>) => {
+  canTransitionTo: (currentPhase: Phase<PhaseData<T, K<T>>>, nextPhase: Phase<PhaseData<T, K<T>>>) => {
     // Ensure the next phase's start date is after the current phase's end date
   const isValidTransition = currentPhase.endDate! < nextPhase.startDate!;
   return isValidTransition;
   },
 
-  handleTransitionTo: async (currentPhase: Phase<PhaseData>, nextPhase: Phase<PhaseData>) => {
+  handleTransitionTo: async (currentPhase: Phase<PhaseData<T, K<T>>>, nextPhase: Phase<PhaseData<T, K<T>>>) => {
    // Log the transition
   console.log(`Transitioning from ${currentPhase.name} to ${nextPhase.name}`);
 
@@ -245,7 +245,7 @@ const saveCurrentPhaseData = async (phaseData: Phase): Promise<void> => {
 };
 
 // Example function to notify of the phase transition
-const notifyTransition = (nextPhase: Phase<PhaseData>): void => {
+const notifyTransition = (nextPhase: Phase<PhaseData<T, K<T>>>): void => {
   console.log(`Now in phase: ${nextPhase.name}`);
 };
 

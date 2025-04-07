@@ -2,6 +2,7 @@
 import { updateTaskPosition } from "@/app/api/TasksApi";
 import { BaseData } from '@/app/components/models/data/Data';
 import { PriorityTypeEnum } from "@/app/components/models/data/StatusType";
+import { ScheduledData } from "@/app/components/calendar/ScheduledData";
 import { Task } from "@/app/components/models/tasks/Task";
 import { Tag } from "@/app/components/models/tracker/Tag";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
@@ -147,6 +148,12 @@ export const filterTasks = async (
   return Promise.resolve({ userId, query });
 };
 
+type DraftableTask = WritableDraft<Omit<Task, 'assignedTo' | 'scheduled'>> & {
+  assignedTo: User[] | User | null;
+  scheduled?: WritableDraft<ScheduledData>;
+};
+
+
 export const useTaskManagerSlice = createSlice({
   name: "tasks",
   initialState,
@@ -167,19 +174,22 @@ export const useTaskManagerSlice = createSlice({
       state.loading = false;
       state.tasks = action.payload.tasks;
       state.entitiesLoaded = {};
+    
       state.tasks.forEach((task) => {
         state.entitiesLoaded[task.id] = task;
       });
     
       state.tasks.forEach((task) => {
         if (task.tags) {
-          const tagArray = Array.isArray(task.tags) ? task.tags : Object.values(task.tags);
-  
-          tagArray.forEach((tag: string | Tag<BaseData<any>>) => { // Handle both cases
+          const tagArray = Array.isArray(task.tags)
+            ? task.tags
+            : Object.values(task.tags);
+    
+          tagArray.forEach((tag) => {
             let writableTag: WritableDraft<Tag<BaseData<any>>>;
-        
+    
             if (typeof tag === "string") {
-              // If `tag` is a string, create a `Tag` object
+              // Create a mock Tag object from string
               writableTag = {
                 id: tag,
                 display: "",
@@ -188,11 +198,11 @@ export const useTaskManagerSlice = createSlice({
                 localeCompare: () => 0,
               } as unknown as WritableDraft<Tag<BaseData<any>>>;
             } else {
-              // If `tag` is a `Tag` object, create a draftable version
-              writableTag = produce(tag, (draft) => draft);
+              // Use immer `produce` to create a writable draft
+              writableTag = produce(tag, () => {}) as WritableDraft<Tag<BaseData<any>>>;
             }
-        
-            // Check if the tag already exists in `state.tags`
+    
+            // Add if not already in tags
             if (!state.tags.some((existingTag) => existingTag.id === writableTag.id)) {
               state.tags.push(writableTag);
             }
@@ -301,19 +311,21 @@ export const useTaskManagerSlice = createSlice({
       const index = state.tasks.findIndex((t) => t.id === task.id);
 
       if (index !== -1) {
-        state.tasks[index] = produce(task, (draft: Draft<Task>) => {
+        state.tasks[index] = produce(task, (draft: DraftableTask) => {
           draft.size = newSize;
-
-          // Ensure `assignedTo` is mutable
+        
+          // Handle assignedTo
           if (task.assignedTo) {
             draft.assignedTo = Array.isArray(task.assignedTo)
-              ? task.assignedTo.map((user) => produce(user, (userDraft) => userDraft) as WritableDraft<User>)
+              ? task.assignedTo.map((user) =>
+                  produce(user, (userDraft) => userDraft) as WritableDraft<User>
+                )
               : produce(task.assignedTo, (userDraft) => userDraft) as WritableDraft<User>;
           } else {
             draft.assignedTo = null;
           }
-
-          // Handle `scheduled`
+        
+          // Handle scheduled
           if (task.scheduled) {
             draft.scheduled = produce(task.scheduled, (scheduledDraft) => {
               if (scheduledDraft.subtasks) {
@@ -321,6 +333,7 @@ export const useTaskManagerSlice = createSlice({
                   produce(subtask, (subtaskDraft) => subtaskDraft) as WritableDraft<TodoImpl>
                 );
               }
+        
               if (scheduledDraft.actions) {
                 scheduledDraft.actions = scheduledDraft.actions.map((action) =>
                   produce(action, (actionDraft) => actionDraft) as WritableDraft<Action>
@@ -328,7 +341,7 @@ export const useTaskManagerSlice = createSlice({
               }
             }) as WritableDraft<ScheduledData>;
           }
-        });
+        });        
       }
     },
     

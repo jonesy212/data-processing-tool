@@ -1,4 +1,4 @@
-import { NotificationType } from '../components/support/NotificationContext';
+import { NotificationType } from '@/app/context/NotificationContext';
 import AppCacheManagerBase, { ExtendedData } from './AppCacheManager';
 
 class AppCacheManagerExtended extends AppCacheManagerBase<ExtendedData> {

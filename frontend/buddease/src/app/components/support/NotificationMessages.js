@@ -89,6 +89,7 @@ const NOTIFICATION_MESSAGES = {
         ERROR_WRITING_TO_CACHE: "Error writing to cache"
     },
     Client: {
+        GENERIC_GET_ERROR: "Failed to complete GET request",
         FETCH_CLIENT_DETAILS_SUCCESS: "Client updated successfully",
         FETCH_CLIENT_DETAILS_ERROR: "Client failed to update client",
         CONNECT_WITH_TENANT_ERROR: "Client failed to connect",
@@ -461,6 +462,7 @@ const NOTIFICATION_MESSAGES = {
     Phase: {
         FETCH_PHASE_ERROR: "Error fetching phases. Please try again",
         UPDATE_PHASE_ERROR: "Error updating phase. Please try again",
+        SAVE_PHASE_ERROR: "Error saving phase. Please try again",
     },
     Preferences: {
         DEFAULT: "Preferences updated successfully",

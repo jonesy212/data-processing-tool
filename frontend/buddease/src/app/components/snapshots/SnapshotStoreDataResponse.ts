@@ -2,7 +2,7 @@ import { BaseData } from '@/app/components/models/data/Data';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { SnapshotDataResponse } from "../../../app/utils/retrieveSnapshotData";
-import { UpdateSnapshotPayload } from '../database/Payload';
+import { UpdateSnapshotPayload } from '../../../server/database/Payload';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { Data } from "../models/data/Data";
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
@@ -10,7 +10,6 @@ import { InitializedState } from '../projects/DataAnalysisPhase/DataProcessing/D
 import CalendarManagerStoreClass from '../state/stores/CalendarManagerStore';
 import { Subscriber } from "../users/Subscriber";
 import { Snapshot, Snapshots, SnapshotsArray } from "./LocalStorageSnapshotStore";
-import { SnapshotData } from './SnapshotData';
 import { SnapshotItem } from "./SnapshotList";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
@@ -20,7 +19,7 @@ type OptionalSnapshotProps<
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >  = Omit<
-  SnapshotDataResponse<T, K>,
+  SnapshotDataResponse<T, K, Meta>,
   'transformDelegate'
   | 'getSnapshotsBySubscriber'
   | 'getSnapshotsBySubscriberSuccess'
@@ -147,10 +146,10 @@ type OptionalSnapshotProps<
   updateDelegate?: () => void;
   getSnapshotContainer?: () => any; // Adjust to specific type if known
   getSnapshotVersions?: () => any; // Adjust to specific type if known
-  createSnapshot?: (id: string,
-    snapshotData: SnapshotData<T, K>,
+  createSnapshot?: (
+      id: string,
     additionalData: any,
-    category?: string | symbol | Category,
+    category?:  Category,
     callback?: (snapshot: Snapshot<T, K>) => void,
     snapshotData?: SnapshotStore<T, K>,
     snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> 
@@ -168,7 +167,7 @@ type OptionalSnapshotProps<
   deleteSnapshot?: (id: string) => void;
   getSnapshotItems?: (
     category: symbol | string | Category | undefined, 
-    snapshots: SnapshotsArray<T>,
+    snapshots: SnapshotsArray<T, K, Meta>,
     snapshotId?: string,                     // Optional: If you need to fetch a specific snapshot by ID
     callback?: (snapshots: Snapshots<T, K>) => Subscriber<T, K> | null, // Optional: Callback to process snapshots
     snapshot?: Snapshot<T, K> | null        // Optional: Current snapshot to process or filter by

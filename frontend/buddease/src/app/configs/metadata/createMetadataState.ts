@@ -1,35 +1,37 @@
 // createMetadataState.ts
-import { version } from "@/app/components/versions/Version";
-import crypto from 'crypto';
-
-import { useState } from 'react';
-import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
-import { BaseData, SharedBaseData } from "@/app/components/models/data/Data";
-import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
-import { EventManager, createEventManager } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import SecureFieldManager from "@/app/components/security/SecureFieldManager";
+import { BaseData, SharedRelationshipData } from "@/app/components/models/data/Data";
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { createEventManager, EventManager, InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from "@/app/components/snapshots";
-import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { T, K } from "@/app/components/models/data/dataStoreMethods";
+import { UserConfig } from "@/app/components/snapshots/SnapshotStoreConfig";
+import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
+import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { SchemaField } from '@/server/database/SchemaField';
+import { useState } from 'react';
 
-import { Permission } from "@/app/components/users/Permission";
-import { UserData } from "@/app/components/users/User";
-import { useSecureUserId } from '@/app/components/utils/useSecureUserId';
-import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
-import Version from "@/app/components/versions/Version";
-import { VersionHistory } from "@/app/components/versions/VersionData";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { VersionData } from "@/app/components/versions/VersionData";
+import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { Taggable } from '@/app/components/models/CommonData';
 import { data } from '@/app/components/snapshots/SnapshotWithCriteria';
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { HistoryEntry } from '@/app/components/state/stores/HistoryStore';
+import { Permission } from "@/app/components/users/Permission";
+import { UserData } from "@/app/components/users/User";
+import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
+import Version from "@/app/components/versions/Version";
+import { VersionData, VersionHistory } from "@/app/components/versions/VersionData";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+
+// 1. First, define a core metadata interface that all others will extend
+interface CoreMetadata<T extends BaseData, K extends T> {
+  id?: string | number;
+  timestamp?: string | number | Date | undefined;
+  schema: Record<string, SchemaField>;
+}
 
 
-interface SharedMetadata<K extends T> extends SharedBaseData<K> {
-  version?: string | number | Version<T, K>; 
+interface SharedMetadata<T extends BaseData<any>, K extends T = T> 
+  extends SharedRelationshipData<K> {
+  version?: string | number | Version<T, K> | null;  
   lastUpdated?: Date | VersionHistory; 
   isActive?: boolean; 
   config?: Record<string, any>; 
@@ -37,121 +39,134 @@ interface SharedMetadata<K extends T> extends SharedBaseData<K> {
   customFields?: Record<string, any>; 
   baseUrl?: string; 
   latestVersion: VersionData<T, K>;
-  category?: string | symbol | Category,
-
-  currentMetadata: UnifiedMetadata<T, K>; // Add currentMetadata
-  currentMeta: StructuredMetadata<T, K> | undefined; // Add currentMeta
+  category?:  Category,
+  currentMetadata?: UnifiedMetadata<T, K, StructuredMetadata<T, K>, keyof T>;
+  previousMetadata?: UnifiedMetadata<T, K, StructuredMetadata<T, K>, keyof T>;  
+  currentMeta?: StructuredMetadata<T, K>;
+  previousMeta?: StructuredMetadata<T, K>;
+  schema: Record<string, SchemaField>
 }
 
 
 
-// Helper function to encrypt data
-const encrypt = (data: string, key: string): string => {
-  const cipher = crypto.createCipher('aes-256-cbc', key);
-  let encrypted = cipher.update(data, 'utf8', 'hex');
-  encrypted += cipher.final('hex');
-  return encrypted;
-};
-
-// Helper function to mask sensitive data
-const maskSensitiveData = (data: string): string => {
-  return data.replace(/./g, '*');
-};
-
 
 function createMetaState<
-  T extends BaseData<any, any, StructuredMetadata<any, any>>, 
-  K extends T & UserConfigData<T>, // Ensure K extends both T and UserConfigData<T>
+  T extends BaseData<any>,
+  K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  AttachmentType extends Attachment = Attachment
+  ExcludedFields extends keyof T = never
 >(
-  id: string, 
-  apiEndpoint: string, 
-  apiKey: string, 
-  timeout: number, 
-  retryAttempts: number, 
-  name: string, 
-  category: string, 
-  timestamp: string | Date, 
-  createdBy: string, 
-  tags: string[], 
-  metadata: UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, never>, 
-  initialState: any, 
+  id: string,
+  apiEndpoint: string,
+  apiKey: string,
+  timeout: number,
+  retryAttempts: number,
+  name: string,
+  category: string,
+  timestamp: string | Date,
+  createdBy: string,
+  tags: string[],
+  metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
+  initialState: any,
   mappedMeta: Map<string, Snapshot<T, K, Meta>>,
-  meta: StructuredMetadata<T, K>,
-  events: EventManager<T, K, Meta>, // Use T and K directly instead of UserData
-  version: Version<T, K>,
+  events: EventManager<T, K, Meta>,
   lastUpdated: VersionHistory,
   isActive: boolean,
   config: Record<string, any>,
   permissions: Permission[],
   customFields: Record<string, any>,
   baseUrl: string,
+  version?: string | number | Version<T, K>, // Ensure version matches the expected type
   relatedData?: K[],
-  childIds?: K[],
-): StructuredMetadata<T, K> { // Fix the return type
+  childIds?: K[]
+): StructuredMetadata<T, K> {
 
-  // Fetch encryption key from environment variables
-  const encryptionKey = process.env.ENCRYPTION_KEY;
-  if (!encryptionKey) {
-    throw new Error('Encryption key is missing in environment variables.');
-  }
-
-  // Encrypt sensitive fields
-  const encryptedApiKey = encrypt(apiKey, encryptionKey);
-  const encryptedCreatedBy = encrypt(createdBy, encryptionKey);
-  const encryptedMetadata = encrypt(JSON.stringify(metadata), encryptionKey);
-  const encryptedConfig = encrypt(JSON.stringify(config), encryptionKey);
-  const encryptedBaseUrl = encrypt(baseUrl, encryptionKey);
-
-  // Initialize SecureFieldManager with encrypted API key
-  const secureFields = new SecureFieldManager(encryptedApiKey, encryptionKey);
-
-  // Mark custom fields as sensitive and restrict user access
-  Object.entries(customFields).forEach(([key, value]) => {
-    secureFields.setSensitive(true).setUserAccess(false); 
+  // Construct base config separately
+  const baseConfig: BaseConfig<T, K, Meta> = {
+    id,
+    apiEndpoint,
+    apiKey,
+    timeout,
+    retryAttempts,
+    name,
+    description: '',
+    category,
+    timestamp,
+    createdBy,
+    tags,
+    isActive,
+    metadata,
+    initialState,
+    mappedSnapshot: mappedMeta,
+    events,
+    meta: metadata.structuredMetadata!,
+    schema: metadata.schema,
+    latestVersion: metadata.latestVersion,
+  };
+  // Create UnifiedMetadata using createMetadata
+  const unifiedMetadata = createMetadata({
+    id,
+    timeout,
+    category,
+    timestamp,
+    createdBy,
+    tags,
+    metadata,
+    initialState,
+    mappedSnapshot: mappedMeta,
+    events,
+    version,
+    lastUpdated,
+    isActive,
+    config,
+    permissions,
+    customFields,
+    baseUrl,
+    relatedData,
+    childIds,
+    area: "default", // Default area, can be overridden
+    overrides: {}, // No overrides by default
   });
 
-  return {  
-    baseConfig: {
-      id: new SecureFieldManager(id, encryptionKey).setSensitive(true).toString(), // Ensure it returns a string
-      apiEndpoint,
-      apiKey: new SecureFieldManager(encryptedApiKey, encryptionKey).setSensitive(true).setUserAccess(false).toString(), // Use encrypted API key
-      timeout,
-      retryAttempts,
-      name,
-      category,
-      timestamp,
-      createdBy: new SecureFieldManager(encryptedCreatedBy, encryptionKey).setSensitive(true).toString(), // Use encrypted createdBy
-      metadata: new SecureFieldManager(encryptedMetadata, encryptionKey).setSensitive(true).setUserAccess(true), // Use encrypted metadata
-      initialState,
-      meta,
-      mappedSnapshot: new Map<string, Snapshot<T, K, StructuredMetadata<T, K>, never>>(),
-      events, // Use the passed events parameter
-      latestVersion: createLatestVersion(),
-    },
+  // Create StructuredMetadata from UnifiedMetadata
+  return {
+    ...unifiedMetadata,
+    baseConfig,
     timestamp: new Date(),
-    sharedMetadata: {} as SharedMetadata<K>,
-    sharedBaseData: {} as SharedBaseData<K>,
+    sharedMetadata: {} as SharedMetadata<T, K>,
+    sharedBaseData: {} as SharedRelationshipData<K>,
     taggable: {} as Taggable<T, K>,
     metadataEntries: {},
     keywords: [],
     isActive,
     permissions,
-    customFields: secureFields,
+    customFields: unifiedMetadata.customFields || {}, // Ensure customFields is always defined
     versionData: "",
     latestVersion: createLatestVersion<T, K>(),
     author: "Unknown",
-    config: new SecureFieldManager(encryptedConfig, encryptionKey).setSensitive(true), // Use encrypted config
-    baseUrl: new SecureFieldManager(encryptedBaseUrl, encryptionKey).setSensitive(true).toString(), // Use encrypted baseUrl
+    config: unifiedMetadata.config,
+    baseUrl: unifiedMetadata.baseUrl,
   };
 }
-
 const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
+
+
+interface MetaState<T extends BaseData, K extends T> {
+  _structure: Record<string, AppStructureItem[]>;
+  transformToStructureItems: (data: any) => AppStructureItem[];
+  getStructure: () => Promise<Record<string, AppStructureItem> | undefined>;
+  // Include other VersionHistory properties if needed
+  versionData?: string | VersionData<T, K> | null;
+  latestVersion?: VersionData<T, K>;
+  history?: HistoryEntry[];
+}
+
 
 const metaState = createMetaState<
   BaseData<any, any, StructuredMetadata<any, any>>,
-  UserConfigData<BaseData<any, any, StructuredMetadata<any, any>>>
+  BaseData<any, any, StructuredMetadata<any, any>, Attachment>
+  & BaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<T, K<T>>, StructuredMetadata<T, K<T>>, Attachment>
+  & UserConfig<T, K> & UserData<T, K>
 >(
   "id123", // id
   "https://api.example.com", // apiEndpoint
@@ -235,11 +250,14 @@ const metaState = createMetaState<
       throw new Error("Function not implemented.");
     },
     transformToStructureItems: function (data: any): AppStructureItem[] {
-      return data.map((item: any) => ({
-        id: item.id,
-        name: item.name,
-        children: item.children ? this.transformToStructureItems(item.children) : undefined,
-      }));
+      const transform = (items: any[]): AppStructureItem[] => 
+        items.map((item) => ({
+          id: item.id,
+          name: item.name,
+          children: item.children ? transform(item.children) : undefined,
+        }));
+      
+      return transform(data);
     },
     getStructure: function (): Promise<Record<string, AppStructureItem> | undefined> {
       return Promise.resolve(
@@ -254,7 +272,7 @@ const metaState = createMetaState<
   // version (object representing version details)
   {
     versionData: {},
-    latestVersion: {} as VersionData<T, K>,
+    latestVersion: {} as VersionData<T, K<T>>,
     history: [],
     timestamp: new Date(),
   }, // lastUpdated (object with version history or timestamps)
@@ -304,6 +322,7 @@ export const createMeta = <T extends BaseData<any>, K extends T = T>(
 ): StructuredMetadata<T, K> => {
   // const id = useSecureUserId()
   // const apiEndpoint = ""
+  const version = createLatestVersion<T, K>(); // Create a version of type Version<T, K>
 
   // Ensure `baseConfig` is defined, even if not provided in `data`
   const baseConfig = data.baseConfig || {
@@ -316,12 +335,14 @@ export const createMeta = <T extends BaseData<any>, K extends T = T>(
     category: '', // Default empty string
     timestamp: new Date(), // Default current date
     createdBy: '', // Default empty string
-    metadata: '{}', // Default empty JSON string
+    metadata: {} as UnifiedMetadata<T, K>, // Default empty JSON string
     initialState: {} as InitializedState<T, K>, // Default empty object
     meta: {} as StructuredMetadata<T, K>, // Default empty object
     mappedSnapshot: new Map(), // Default empty Map
     events: {} as EventManager<T, K, StructuredMetadata<T, K>>, // Default empty object
-    latestVersion: {} as VersionData<T, K>
+    latestVersion: {} as VersionData<T, K>,
+    schema: {},
+    isActive: true
   };
 
   return {
@@ -333,7 +354,7 @@ export const createMeta = <T extends BaseData<any>, K extends T = T>(
     version: version,
     lastUpdated: { 
       versionData: {},
-      latestVersion: createLatestVersion(),
+      latestVersion: createLatestVersion<T, K>(),
       history: [], 
       timestamp: new Date(),
     }, // Adjust `VersionHistory` fields
@@ -351,29 +372,30 @@ export const createMetadata = <T extends BaseData<any>, K extends T = T>(
 ): UnifiedMetadata<T, K> => {
 
   // Destructure `latestVersion` with a default value
-  const { latestVersion = createLatestVersion(), ...rest } = data;
+  const { latestVersion = createLatestVersion<T, K>(), ...rest } = data;
 
   return {
     area: '',
     tags: [],
+    id: '',
+    schema: {},
+    isActive: true,
     projectMetadata: undefined,
     videoMetadata: undefined,
     mediaMetadata: undefined,
     taskMetadata: undefined,
     meetingMetadata: undefined,
-    structuredMetadata: {} as StructuredMetadata<T, K>, 
     metadataEntries: {},
     childIds: [],
     relatedData: [],
     currentMeta: {} as StructuredMetadata<T, K>, 
+    structuredMetadata: {} as StructuredMetadata<T, K>, 
     latestVersion, 
     ...rest, 
   };
 };
 
 
-
-
 export { createMetaState };
-export type { SharedMetadata };
+export type { CoreMetadata, SharedMetadata };
 

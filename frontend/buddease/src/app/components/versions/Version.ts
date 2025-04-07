@@ -1,39 +1,37 @@
 // Version.ts
-import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
-import { useMeta } from '@/app/configs/useMeta';
-import { version } from "@/app/components/versions/Version";
-import UserRoles from '@/app/components/users/UserRoles';
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
-import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { UserData } from "@/app/components/users/User";
-import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import { useAuth } from "@/app/components/auth/AuthContext";
+import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
+import { UserData } from "@/app/components/users/User";
+import UserRoles from '@/app/components/users/UserRoles';
+import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
+import { SharedRelationshipData } from "@/app/components/models/data/Data";
+import { EventManager } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure, { backendStructure } from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure, { frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
 import { fetchUserAreaDimensions } from '@/app/configs/database/MetaDataOptions';
+import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
 import crypto from "crypto";
 import getAppPath from "../../../../appPath";
 import { BaseData, Data } from "../models/data/Data";
 import { VersionData, VersionHistory } from "./VersionData";
-import { EventManager } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
-import { SharedBaseData } from "@/app/components/models/data/Data";
 
+import { Taggable } from '@/app/components/models/CommonData';
 import { dataVersions } from "@/app/configs/DocumentBuilderConfig";
-import { StructuredMetadata, MetadataEntriesType } from "@/app/configs/StructuredMetadata";
+import { MetadataEntriesType, StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Attachment } from "../documents/Attachment/attachment";
 import DocumentPermissions from "../documents/DocumentPermissions";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { K, Meta, T } from "../models/data/dataStoreMethods";
+import { K, T } from "../models/data/dataStoreMethods";
 import { Member } from "../models/teams/TeamMembers";
 import { TagsRecord } from "../snapshots/SnapshotWithCriteria";
 import { HistoryEntry } from '../state/stores/HistoryStore';
 import { User } from "../users/User";
 import { fluenceApiKey } from "../web3/dAppAdapter/DAppAdapterConfig";
-import { Taggable } from '@/app/components/models/CommonData';
 
 
 interface ExtendedVersion extends Version<T, K<T>> {
@@ -47,8 +45,9 @@ interface ExtendedVersion extends Version<T, K<T>> {
 
 interface BuildVersion {
   data: BaseData<T> | undefined,
+  baseData: BaseData<T> | undefined,
   backend: BackendStructure | undefined,
-  frontend: FrontendStructure | undefined
+  frontend: FrontendStructure<T, K<T>> | undefined
 }
 
 interface Version<
@@ -56,11 +55,11 @@ interface Version<
   K extends T = T
 > {
   id: number;
-  versionData?: string | VersionData | null; // Adjust based on actual type
+  versionData?: string | VersionData<T, K> | null; // Adjust based on actual type
   buildVersions?: BuildVersion | undefined; // Adjust based on actual type
   isActive: boolean;
   releaseDate: string | Date | undefined;
-  transformToStructureItems?(data: any): AppStructureItem[]; // Correct type
+  transformToStructureItems(data: any): AppStructureItem[]; // Required
   getStructure?: () => Promise<Record<string, AppStructureItem> | undefined>; // Mark as optional
 
   major: number;
@@ -105,7 +104,7 @@ interface Version<
   workspaceViewers: any[]; // Adjust based on actual type
   workspaceAdmins: any[]; // Adjust based on actual type
   workspaceMembers: any[];
-  data: InitializedData<T> | null | undefined,
+  data: InitializedData<T, K> | null | undefined,
   _structure: Record<string, AppStructureItem[]>;
   versionHistory: VersionHistory;
   getVersionNumber: (() => string) | undefined;
@@ -134,6 +133,7 @@ function createDefaultMeta<T extends BaseData<any>, K extends T = T>(): Structur
   
   return {
     author: "",
+    timestamp: 0,
     baseConfig: {
       id: "default-id",
       apiEndpoint: "",
@@ -151,25 +151,29 @@ function createDefaultMeta<T extends BaseData<any>, K extends T = T>(): Structur
       mappedSnapshot: new Map<string, Snapshot<T, K, StructuredMetadata<T, K>, never>>(), 
       events: {} as EventManager<T, K, StructuredMetadata<T, K>>,
       latestVersion,
+      schema: {}
     },
     keywords: [],
     isActive: true,
     permissions: [],
     customFields: {},
-    latestVersion: createLatestVersion(),
+    latestVersion: createLatestVersion<T, K>(),
     versionData: "",
     sharedMetadata: {} as SharedMetadata<any>,
-    sharedBaseData: {} as SharedBaseData<any>,
+    sharedBaseData: {} as SharedRelationshipData<any>,
     taggable: {} as Taggable<UserData<any, any, StructuredMetadata<any, any>, never>, any>,
     metadataEntries: {} as MetadataEntriesType<UserData<any, any, StructuredMetadata<any, any>, never>, any>,
   };
 }
 
-function createVersion(overrides?: Partial<Version<T, K<T>>>): Version<T, K<T>> {
+function createVersion<
+  T extends BaseData<any, any, StructuredMetadata<any, any>>,
+  K extends T = T
+>(overrides?: Partial<Version<T, K>>): Version<T, K> {
   const now = new Date();
 
   // Default structure
-  const defaultVersion: Version<T, K<T>> = {
+  const defaultVersion: Version<T, K> = {
     id: 1,
     versionData: null,
     buildVersions: undefined,
@@ -189,9 +193,9 @@ function createVersion(overrides?: Partial<Version<T, K<T>>>): Version<T, K<T>> 
     buildNumber: "build_001",
     metadata: {
       area: area,
-      currentMeta: createDefaultMeta<T, K<T>>(), // Use the factory function
+      currentMeta: createDefaultMeta<T, K>(), // Use the factory function
       metadataEntries: {},
-      latestVersion: createLatestVersion(),
+      latestVersion: createLatestVersion<T, K>(),
     },
     versions: null,
     appVersion: "1.0.0",
@@ -222,12 +226,12 @@ function createVersion(overrides?: Partial<Version<T, K<T>>>): Version<T, K<T>> 
     workspaceViewers: [],
     workspaceAdmins: [],
     workspaceMembers: [],
-    data: {} as VersionData<T, K<T>>,
+    data: {} as InitializedData<T, K>,
     _structure: {},
 
     versionHistory: {
       versionData: {},
-      latestVersion: createLatestVersion(), 
+      latestVersion: createLatestVersion<T, K>(), 
       lastUpdated: new Date(),
       history: [], 
       timestamp: new Date(),
@@ -277,8 +281,8 @@ function createVersion(overrides?: Partial<Version<T, K<T>>>): Version<T, K<T>> 
       ...defaultVersion,
       metadata: {
         ...defaultVersion.metadata,
-        latestVersion: overrides?.metadata.latestVersion ?? defaultVersion.metadata.latestVersion ?? createLatestVersion(),
-        currentMeta: overrides?.metadata?.currentMeta ?? defaultVersion.metadata?.currentMeta ?? createDefaultMeta<T, K<T>>(), 
+        latestVersion: overrides?.metadata?.latestVersion ?? defaultVersion.metadata?.latestVersion ?? createLatestVersion(),
+        currentMeta: overrides?.metadata?.currentMeta ?? defaultVersion.metadata?.currentMeta ?? createDefaultMeta<T, K>(), 
         metadataEntries: overrides?.metadata?.metadataEntries ?? defaultVersion.metadata?.metadataEntries ?? {}, // Provide default value
         area: overrides?.metadata?.area ? defaultVersion.metadata?.area : undefined,
         tags: overrides?.metadata?.tags ?? defaultVersion.metadata?.tags,
@@ -346,7 +350,7 @@ function createVersion(overrides?: Partial<Version<T, K<T>>>): Version<T, K<T>> 
 class VersionImpl<
   T extends BaseData<any>, 
   K extends T = T
-> implements Version<T, K> {
+> implements Version<T, K>, VersionData<T, K> {
   major: number = 0;
   minor: number = 0;
   patch: number = 0;
@@ -355,6 +359,7 @@ class VersionImpl<
   releaseDate: string | Date | undefined = undefined;
   description: string = "";
   content: string = "";
+  id: number = 0;
 
   name: string;
   url: string;
@@ -367,7 +372,6 @@ class VersionImpl<
   versions: Versions | null
   
   // Add other properties as needed
-  id: number;
   parentId: string | null;
   parentType: string;
   parentVersion: string;
@@ -392,7 +396,7 @@ class VersionImpl<
   workspaceViewers: string[];
   workspaceAdmins: string[];
   workspaceMembers: string[];
-  versionData?: string | VersionData<T, K> | null;
+  versionData?: string | number | VersionData<T, K>;
   buildVersions?: BuildVersion | undefined;
   published?: boolean;
   createdAt?: string | Date | undefined;
@@ -400,7 +404,7 @@ class VersionImpl<
   deletedAt?: string | Date | undefined;
   frontendStructure?: Promise<AppStructureItem[]>;
   backendStructure?: Promise<AppStructureItem[]>;
-  data: InitializedData<T> | null | undefined;
+  data: InitializedData<T, K> | null | undefined;
   getVersion?: () => Promise<string | null>;
 
   _structure: Record<string, AppStructureItem[]> = {}; // Define private property _structure
@@ -452,8 +456,8 @@ class VersionImpl<
     description: string;
     content: string;
     checksum: string;
-    versionData: string | VersionData | null;
-    data: InitializedData<T> | undefined
+    versionData?: string | VersionData<T, K> | null;
+    data: InitializedData<T, K> | undefined
     name: string;
     url: string;
     metadata?: UnifiedMetadata<T, K, StructuredMetadata<T, K>> | undefined;
@@ -462,7 +466,7 @@ class VersionImpl<
     userId: string;
     documentId: string;
     parentId: string | null;
-    parentType: string;
+    parentType: string | null;
     parentVersion: string;
     parentTitle: string;
     parentContent: string;
@@ -544,7 +548,7 @@ class VersionImpl<
     this.userId = versionInfo.userId;
     this.documentId = versionInfo.documentId;
     this.parentId = versionInfo.parentId ? versionInfo.parentId : null;
-    this.parentType = versionInfo.parentType;
+    this.parentType = versionInfo.parentType ? versionInfo.parentType : null;
     this.parentVersion = versionInfo.parentVersion;
     this.parentTitle = versionInfo.parentTitle;
     this.parentContent = versionInfo.parentContent;
@@ -571,9 +575,12 @@ class VersionImpl<
     this.workspaceViewers = versionInfo.workspaceViewers;
     this.workspaceAdmins = versionInfo.workspaceAdmins;
     this.workspaceMembers = versionInfo.workspaceMembers;
-
+    const defaultMetadata = { author: "", timestamp: undefined, revisionNotes: undefined, area: "defaultMetadata", metadataEntries: {}, latestVersion: createLatestVersion<T, K>(), schema: {} };
+    this.metadata = versionInfo.metadata
+      ? { ...defaultMetadata, ...versionInfo.metadata }
+      : defaultMetadata;
     this.versionData = {
-      id: versionInfo.id ?? versionInfo.id,
+      id: versionInfo.id,
       parentId: versionInfo.parentId ?? null, // Handle null parentId
       name: versionInfo.name ?? '',
       url: versionInfo.url ?? '',
@@ -692,8 +699,8 @@ class VersionImpl<
       description: string;
       content: string;
       checksum: string;
-      versionData: string | VersionData | null;
-      data: InitializedData<T> | undefined;
+      versionData: string | VersionData<T, K> | null;
+      data: InitializedData<T, K> | undefined;
       name: string;
       url: string;
       metadata?: UnifiedMetadata<T, K, StructuredMetadata<T, K>> | undefined;
@@ -797,17 +804,13 @@ class VersionImpl<
       _structure: {},
       frontendStructure: undefined,
       backendStructure: undefined,
-      version: {} as VersionImpl<T, K>, // Placeholder for the version object
+      version:versionInfo.version,
   
       // Add the missing properties
       draft: versionInfo.draft ?? false,
       userId: versionInfo.userId ?? "unknown",
       content: versionInfo.content ?? "",
-      metadata: versionInfo.metadata ?? {
-        author: "",
-        timestamp: new Date(),
-        revisionNotes: "Initial release",
-      },
+
       documentId: versionInfo.documentId ?? "",
       isDeleted: versionInfo.isDeleted ?? false,
       publishedBy: versionInfo.publishedBy ?? null,
@@ -843,9 +846,6 @@ class VersionImpl<
     if (user.role !== UserRoles.Administrator) {
       throw new Error('You do not have permission to access this data.');
     }
-
-   
-
     // Transform the data
     return data.map((item: any) => ({
       id: item.id,
@@ -1422,7 +1422,7 @@ const devVersion: DevVersion<T, K<T>> = {
   _structure: {},
   versionHistory: {
     versionData: {},
-    latestVersion: createLatestVersion(),
+    latestVersion: createLatestVersion<T, K>(),
     history: [],
     timestamp: new Date()
   },
@@ -1477,6 +1477,6 @@ const devVersion: DevVersion<T, K<T>> = {
 };
 
 export default VersionImpl
-export { createVersion, versionData, version, devVersion };
+export { createVersion, devVersion, version, versionData };
 export type { BuildVersion, Version, Versions };
 

@@ -1,6 +1,7 @@
 //CalendarEvent.ts
 import { Label } from '@/app/components/projects/branding/BrandingSettings';
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { NotificationType } from '@/app/context/NotificationContext';
 import { CalendarEventWithCriteria } from "@/app/pages/searchs/FilterCriteria";
@@ -35,7 +36,7 @@ interface CalendarEvent<
   changes?: string[];
   date: string | Date | undefined;
   tags?: TagsRecord<T, K> | string[] | undefined; 
-  meta: T | undefined;
+  meta: UnifiedMetadata<T, K> | undefined;
 
   options?: {
     // ...
@@ -81,6 +82,11 @@ interface CalendarEvent<
   ) => Snapshot<T, K> | undefined;
 }
 
+// Destructure `latestVersion` with a default value
+const { latestVersion = createLatestVersion<T, K>(), ...rest } = data;
+const area = fetchUserAreaDimensions().toString()
+const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
+const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
 
 const calendarEvent: CalendarEvent = {
   date: undefined,
@@ -97,7 +103,8 @@ const calendarEvent: CalendarEvent = {
   label: {} as Label,
   createdBy: undefined,
   currentMeta: currentMeta, 
-  currentMetadata: currentMetadata
+  currentMetadata: currentMetadata,
+  latestVersion
 }
 
 export { calendarEvent };

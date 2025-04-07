@@ -1,6 +1,6 @@
-// authSlice.ts
+// AuthSlice.ts
 import { createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from './RootSlice';
+import { RootState } from '@/app/components/RootSlice';
 
 interface AuthState {
   isAuthenticated: boolean;

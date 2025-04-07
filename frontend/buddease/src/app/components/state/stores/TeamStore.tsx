@@ -3,29 +3,32 @@ import { videoService } from "@/app/api/ApiVideo";
 import teamManagementService from "@/app/api/TeamManagementApi";
 import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import { ConfigureSnapshotStorePayload, SnapshotOperation, SnapshotOperationType, SnapshotStoreProps } from '@/app/components/snapshots';
-import { createSnapshotInstance } from '@/app/components/snapshots/snapshot';
+import { createSnapshotInstance } from '@/app/components/snapshots/createSnapshotInstance';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { useNotification } from "@/app/context/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import { SnapshotStoreOptions, useSnapshotManager } from "../../hooks/useSnapshotManager";
+import userService from "../../../api/ApiUser";
+import { useSnapshotManager } from "../../hooks/useSnapshotManager";
 import { BaseData, Data } from "../../models/data/Data";
 import { RealtimeDataItem } from '../../models/realtime/RealtimeData';
 import { Team } from "../../models/teams/Team";
-import TeamData from "../../models/teams/TeamData";
+import { TeamData } from "../../models/teams/TeamData";
 import { Phase } from "../../phases/Phase";
 import { Project } from "../../projects/Project";
 import { Snapshot, SnapshotStoreConfig, TagsRecord } from "../../snapshots";
 import SnapshotStore from "../../snapshots/SnapshotStore";
+import SnapshotStoreConfigComponent from "../../snapshots/SnapshotStoreConfigComponent";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
-import userService from "../../users/ApiUser";
 import { VideoData } from "../../video/Video";
 import { useAssignBaseStore } from "../AssignBaseStore";
 import {
-    AssignTeamMemberStore,
-    useAssignTeamMemberStore,
+  AssignTeamMemberStore,
+  useAssignTeamMemberStore,
 } from "./AssignTeamMemberStore";
 import useVideoStore from "./VideoStore";
+
+type CustomPhase<T extends BaseData<any>, K extends T> = Phase<CustomData<T, K>, BaseData<any>>;
 
 interface CustomData<T extends  BaseData<any>, K extends T> extends Data<T> {
   _id: string;
@@ -34,10 +37,16 @@ interface CustomData<T extends  BaseData<any>, K extends T> extends Data<T> {
   status: "pending" | "inProgress" | "completed";
   isActive: boolean;
   tags: TagsRecord<T, K>;
-  phase: Phase<CustomData<T, K>, BaseData> | null;
+  phase: CustomPhasea<T, K> | null;
   // Add other properties as needed to match the structure of Data
 }
-export interface TeamManagerStore <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+
+
+export interface TeamManagerStore<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> {
   teams: Record<string, Team[]>;
   teamName: string;
   teamDescription: string;
@@ -78,7 +87,10 @@ export interface TeamManagerStore <T extends  BaseData<any>, K extends T = T, Me
 }
 const config = {} as typeof SnapshotStoreConfigComponent<SnapshotStore<T, K>>;
 
-const useTeamManagerStore = async <T extends  BaseData<any>, K = T>(initialStoreId: number): Promise<TeamManagerStore<T, K>> => {
+const useTeamManagerStore = (
+  initialStoreId: number
+  ): Promise<TeamManagerStore<T extends BaseData<any, any> ? T : BaseData<any, any>, K extends T ? K : T>> => {
+
   const { notify } = useNotification();
 
 
@@ -104,15 +116,15 @@ const useTeamManagerStore = async <T extends  BaseData<any>, K = T>(initialStore
   const storeProps: SnapshotStoreProps<T, K> = {
     storeId: "yourStoreId",
     configureSnapshotStore: async (
-      snapshotStore: SnapshotStore<T, T>,
+      snapshotStore: SnapshotStore<T, K>,
       snapshotId: string,
-      data: Map<string, Snapshot<T, T>>,
+      data: Map<string, Snapshot<T, K>>,
       events: Record<string, any>,
       dataItems: RealtimeDataItem[],
-      newData: Snapshot<T, T>,
+      newData: Snapshot<T, K>,
       payload: ConfigureSnapshotStorePayload<T, Meta<T, K>>,
-      store: SnapshotStore<T, T>,
-      callback?: (snapshotStore: SnapshotStore<T, T>) => void
+      store: SnapshotStore<T, K>,
+      callback?: (snapshotStore: SnapshotStore<T, K>) => void
     ) => {
       // Example configuration logic
       return {
@@ -128,17 +140,8 @@ const useTeamManagerStore = async <T extends  BaseData<any>, K = T>(initialStore
     }
   };
 
-  const {name, version, schema, options, category, config, expirationDate, payload, callback, endpointCategory} = storeProps
+  const { name, version, schema, options, category, config, expirationDate, payload, callback, endpointCategory, initialConfig } = storeProps
 
-
-  // Define the snapshot store options with storeProps
-  const options: SnapshotStoreOptions<T, K> = {
-    initialConfig: {
-      category: "TeamManager",
-      expirationDate: new Date(),
-      storeId,
-    },
-  };
   // Initialize SnapshotStore
   const initSnapshot = {} as SnapshotStoreConfig<T, K>;
   let operation: SnapshotOperation<T, K>= {
@@ -254,30 +257,30 @@ const useTeamManagerStore = async <T extends  BaseData<any>, K = T>(initialStore
     return filteredTeamsData as Team[];
   };
   
-
   const takeTeamSnapshot = async (teamId: string, userIds?: string[]) => {
     // Ensure the teamId exists in the teams
     if (!teams[teamId]) {
       console.error(`Team with ID ${teamId} does not exist.`);
       return;
     }
-    const snapshotConfig: SnapshotStoreConfig<T, Data<BaseData<any>>> = {} as SnapshotStoreConfig<T, Data<BaseData<any>>>;
+    const snapshotConfig: SnapshotStoreConfig<T, K> = {} as SnapshotStoreConfig<T, K>;
 
     // Create a snapshot of the current teams for the specified teamId
     const teamSnapshotStore = new SnapshotStore<T, K>(storeId, options, category, config, operation);
 
+    const teamData = getTeamData(teamId, team, team.color);
     const teamSnapshot = createSnapshotInstance(teamData);
 
     // Store the snapshot in the SnapshotStore
     snapshotStore.takeSnapshot(teamSnapshot);
 
     if (userIds) {
-      const videos: VideoData[] = [];
-      let videoData: Record<string, VideoData> = {};
-      const videosDataPromise: Promise<Record<string, VideoData>> =
+      const videos: VideoData<T, K>[] = [];
+      let videoData: Record<string, VideoData<T, K>> = {};
+      const videosDataPromise: Promise<Record<string, VideoData<T, K>>> =
         useVideoStore().getVideosData(userIds, videos);
       userIds.forEach(async (userId) => {
-        const videoPromise = new Promise<VideoData>(async (resolve, reject) => {
+        const videoPromise = new Promise<VideoData<T, K>>(async (resolve, reject) => {
           const videoStore = useVideoStore();
           const user = await userService.fetchUserById(userId);
           const video = await videoService.fetchVideoByUserId(userId);
@@ -296,8 +299,8 @@ const useTeamManagerStore = async <T extends  BaseData<any>, K = T>(initialStore
       });
 
       videoData = await videosDataPromise;
-      const teamAssignmentsSnapshot: SnapshotStore<Snapshot<Data, Data>> =
-        new SnapshotStore<Snapshot<Data, Data>>(snapshotConfig, null, undefined, []);
+      const teamAssignmentsSnapshot: SnapshotStore<Snapshot<T, K>> =
+        new SnapshotStore<Snapshot<T, K>>(snapshotConfig, null, undefined, []);
       snapshotStore.takeSnapshot(teamAssignmentsSnapshot);
     }
   };

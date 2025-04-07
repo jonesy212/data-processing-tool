@@ -58,7 +58,7 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.snapshotStore = void 0;
-var NotificationContext_1 = require("@/app/context/NotificationContext";);
+var NotificationContext_1 = require("@/app/context/NotificationContext");
 var retrieveSnapshotData_1 = require("@/app/utils/retrieveSnapshotData");
 var mobx_1 = require("mobx");
 var react_1 = require("react");

@@ -7,12 +7,12 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { useContext } from "react";
 import { CombinedEvents } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from "../models/data/Data";
+import { BaseData, Data, DataDetails } from "../models/data/Data";
 import { StatusType } from "../models/data/StatusType";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SnapshotContainer, SnapshotData, SnapshotDataType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotStoreProps } from '../snapshots';
-import { CoreSnapshot, Snapshot, snapshots, Snapshots, SnapshotsArray, SnapshotUnion } from "../snapshots/LocalStorageSnapshotStore";
+import { DataStore, InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { CustomSnapshotData, getAllSnapshots, InitializedConfig, snapshot, snapshotConfig, SnapshotContainer, SnapshotData, SnapshotDataType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteria } from '../snapshots';
+import { CoreSnapshot, Snapshot, snapshots, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "../snapshots/LocalStorageSnapshotStore";
 import { SnapshotConfig } from "../snapshots/SnapshotConfig";
 import { default as SnapshotStore } from "../snapshots/SnapshotStore";
 import { createSnapshotStoreOptions } from '../snapshots/createSnapshotStoreOptions';
@@ -22,15 +22,33 @@ import { CalendarEvent } from "../calendar/CalendarEvent";
 import { SnapshotContent } from "../snapshots/SnapshotContent";
 import { convertBaseDataToK } from "../snapshots/convertSnapshot";
 import {
-    Callback
+  Callback
 } from "../snapshots/subscribeToSnapshotsImplementation";
-import { generateSnapshotId } from "../utils/snapshotUtils";
+import { addToSnapshotList, generateSnapshotId, getSnapshotsBySubscriber, isSnapshot } from "../utils/snapshotUtils";
 
 import { store } from "../state/stores/useAppDispatch";
 
 import { T } from "../models/data/dataStoreMethods";
 
+import { additionalHeaders } from "@/app/api/headers/generateAllHeaders";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { criteria } from "@/app/pages/searchs/FilterCriteria";
+import { message } from "antd";
+import { id } from "ethers";
+import { get } from "http";
+import { keys } from "mobx";
+import { type } from "os";
+import { emit, title } from "process";
 import { Subscription } from "react-redux";
+import { SchemaField } from "../../../server/database/SchemaField";
+import { ExcludedFields } from "../routing/Fields";
+import { createSnapshotInstance } from "../snapshots/createSnapshotInstance";
+import { createSnapshotStoreConfig } from "../snapshots/snapshotStoreConfigInstance";
+import { eventRecords } from "../state/stores/CalendarManagerStore";
+import Version from "../versions/Version";
+import { ExtendedVersionData } from "../versions/VersionData";
+import { YourResponseType } from "./types";
 
 
 
@@ -44,12 +62,10 @@ class YourSpecificSnapshotType <
   implements Snapshot<T, K> {
   id: string;
   mappedData: Map<string, Snapshot<T, K>>;
-  data: InitializedData<T> | undefined;
+  data: InitializedData<T, K> | undefined;
   meta: StructuredMetadata<T, K>
   events: CombinedEvents<T, K>
   
-
-
   // Additional required properties from Snapshot<T, K>
   dataObject: any = {};
   deleted: boolean = false;
@@ -57,7 +73,7 @@ class YourSpecificSnapshotType <
   isCore: boolean = false;
   initialConfig: InitializedConfig | {} = {};
   properties?: T | K;
-  snapshotsArray?: SnapshotsArray<T>;
+  snapshotsArray?: SnapshotsArray<T, K, StructuredMetadata<T, K>>;
   snapshotsObject?: SnapshotsObject<T, K>;
   recentActivity?: { action: string; timestamp: Date }[];
   onInitialize: (callback: () => void) => void = () => {};
@@ -65,7 +81,21 @@ class YourSpecificSnapshotType <
   categories?: Category[];
   taskIdToAssign: string | undefined;
   schema: string | Record<string, SchemaField> = {};
-  currentCategory: Category = { id: "", name: "" };
+  currentCategory: Category = {
+    id: "", name: "", 
+    description: "",
+    properties: {} as CategoryProperties,
+    relationships: {},
+    icon: "",
+    color: "",
+    type: "category",
+
+    // iconColor: "",
+    // isActive: false,
+    // isPublic: false,
+    // isSystem: false,
+    // isDefault: false,
+   };
   mappedSnapshotData: Map<string, Snapshot<T, K>> | undefined;
   storeId: number = 0;
   versionInfo: ExtendedVersionData | null = null;
@@ -74,7 +104,7 @@ class YourSpecificSnapshotType <
   relationships?: Map<string, K>;
   storeConfig?: SnapshotStoreConfig<T, K>;
   additionalData?: CustomSnapshotData<T>;
-  dataStores?: DataStore<T, K, Meta>[];
+  dataStores?: DataStore<T, K, StructuredMetadata<T, K>>[];
   snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null;
   snapshotStoreConfigSearch?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, SnapshotWithCriteria<any, BaseData>> | null;
   snapshotContainer: SnapshotContainer<T, K> | undefined | null;
@@ -82,7 +112,7 @@ class YourSpecificSnapshotType <
   constructor(
     id: string,
     mappedData: Map<string, Snapshot<T, K>>,
-    data: InitializedData<T> | undefined,
+    data: InitializedData<T, K> | undefined,
     meta: Meta,
     events?: CombinedEvents<T, K>) {
     this.id = id;
@@ -116,8 +146,7 @@ class YourSpecificSnapshotType <
   snapshot(
     id: string | number | undefined,
     snapshotData: SnapshotData<T, K>,
-    category: symbol | string | Category | undefined,
-    categoryProperties: CategoryProperties | undefined,
+    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K>) => void,
     dataStore: DataStore<T, K>,
     dataStoreMethods: DataStoreMethods<T, K>,
@@ -362,7 +391,7 @@ function convertToSnapshotStoreConfig <T extends  BaseData<any>, K extends T = T
 
   const mappedState: Snapshot<T, K>[] | null = snapshotStore.state
     ? snapshotStore.state.map((
-      snapshot: SnapshotUnion<T, K>
+      snapshot: SnapshotUnion<T, K, Meta>
     ) => ({
       ...snapshot,
       store: snapshot.store
@@ -827,36 +856,34 @@ const convertSnapshotData =  <T extends  BaseData<any>, K extends T = T, Meta ex
 
 function convertToDataSnapshot <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: Snapshot<T, K>
-): Snapshot<Data, Data> {
+): Snapshot<T, K> {
   return {
     ...snapshot,
-    data: snapshot.data as unknown as Map<string, Snapshot<Data, Data>>,
-    content: snapshot.content as unknown as SnapshotContent<T, Data>,
-    mappedSnapshotData: new Map(Object.entries(snapshot.mappedSnapshotData).map(([key, value]) => [key, value as Snapshot<Data, Data>])),
+    data: snapshot.data as unknown as Map<string, Snapshot<T, K>>,
+    content: snapshot.content as unknown as SnapshotContent<T, K>,
+    mappedSnapshotData: new Map(Object.entries(snapshot.mappedSnapshotData).map(([key, value]) => [key, value as Snapshot<T, K>])),
     snapshot: (
       id: string | number | undefined,
       snapshotId: number,
       snapshotData: SnapshotData<T, K>,
-      category: symbol | string | Category | undefined,
-      categoryProperties: CategoryProperties | undefined,
+      category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
       callback: (snapshotStore: SnapshotStore<T, K>) => void,
       dataStore: DataStore<T, K>,
       dataStoreMethods: DataStoreMethods<T, K>,
-      metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
+      metadata: UnifiedMetadata<T, K>,
       subscriberId: string, // Add subscriberId here
       endpointCategory: string | number, // Add endpointCategory here
       storeProps: SnapshotStoreProps<T, K>,
       snapshotConfigData: SnapshotConfig<T, K>,
-      subscription: Subscription<T, K>,
+      subscription: Subscription,
   
       snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
       snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
     ) => {
-      return new Promise<Snapshot<Data, Data>>(async (resolve, reject) => {
+      return new Promise<Snapshot<T, K>>(async (resolve, reject) => {
         try {
           const result = await snapshot.snapshot(
             id,
-            snapshotId,
             snapshotData,
             category,
             categoryProperties,
@@ -872,13 +899,13 @@ function convertToDataSnapshot <T extends  BaseData<any>, K extends T = T, Meta 
             snapshotStoreConfigData,
             snapshotContainer,
           );
-          resolve(result as unknown as Snapshot<Data, Data>);
+          resolve(result as unknown as Snapshot<T, K>);
         } catch (error) {
           reject(error);
         }
       });
     }
-  } as unknown as Snapshot<Data, Data>;
+  } as unknown as Snapshot<T, K, Meta>;
 }
 
 
@@ -1001,11 +1028,197 @@ function isSnapshotStore<T extends BaseData, K extends T, Meta extends Structure
 }
 
 
-
-function isYourResponseType<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
-  data: any
+/**
+ * Comprehensive type guard for YourResponseType with debugging support
+ * @template T - Base data type
+ * @template K - Extended data type (defaults to T)
+ * @template Meta - Metadata type (defaults to StructuredMetadata<T, K>)
+ * @param data - Unknown data to check
+ * @param debug - Enable debug logging (default: false)
+ * @returns Type predicate indicating if data is YourResponseType<T, K, Meta>
+ */
+function isYourResponseType<
+  T extends BaseData,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
+  data: unknown,
+  debug: boolean = false
 ): data is YourResponseType<T, K, Meta> {
-  return !isSnapshotStore(data) && !isSnapshot(data);
+  // Debug initialization
+  if (debug) {
+    console.groupCollapsed('[isYourResponseType] Type checking');
+    console.log('Input data:', data);
+  }
+
+  // 1. Primitive type check
+  if (typeof data !== 'object' || data === null) {
+    if (debug) {
+      console.log('❌ Failed: Not an object');
+      console.groupEnd();
+    }
+    return false;
+  }
+
+  // 2. Exclusion of other known types
+  if (isSnapshotStore<T, K, Meta>(data) || isSnapshot<T, K, Meta>(data)) {
+    if (debug) {
+      console.log('❌ Failed: Is Snapshot/SnapshotStore');
+      console.groupEnd();
+    }
+    return false;
+  }
+
+  // 3. Core array structure validation
+  const dataObj = data as Record<string, unknown>;
+  const hasValidArrays = (
+    ('calendarEvents' in dataObj && Array.isArray(dataObj.calendarEvents)) ||
+    ('todos' in dataObj && Array.isArray(dataObj.todos)) ||
+    ('tasks' in dataObj && Array.isArray(dataObj.tasks)) ||
+    ('snapshotStores' in dataObj && Array.isArray(dataObj.snapshotStores))
+  );
+
+  if (!hasValidArrays) {
+    if (debug) {
+      console.log('❌ Failed: Missing required array fields');
+      console.groupEnd();
+    }
+    return false;
+  }
+
+  // 4. Required identifier fields
+  const hasIdentifier = (
+    ('id' in dataObj && typeof dataObj.id === 'string') ||
+    ('comment' in dataObj && typeof dataObj.comment === 'string')
+  );
+
+  if (!hasIdentifier) {
+    if (debug) {
+      console.log('❌ Failed: Missing id or comment field');
+      console.groupEnd();
+    }
+    return false;
+  }
+
+  // 5. Nested structure validation
+  if ('projectInfo' in dataObj) {
+    const projectInfo = dataObj.projectInfo;
+    if (projectInfo && (typeof projectInfo !== 'object' || Array.isArray(projectInfo))) {
+      if (debug) {
+        console.log('❌ Failed: Invalid projectInfo structure');
+        console.groupEnd();
+      }
+      return false;
+    }
+  }
+
+  // 6. Metadata validation if present
+  if ('metadata' in dataObj) {
+    const metadata = dataObj.metadata;
+    if (metadata && (typeof metadata !== 'object' || metadata === null)) {
+      if (debug) {
+        console.log('❌ Failed: Invalid metadata structure');
+        console.groupEnd();
+      }
+      return false;
+    }
+  }
+
+  if (debug) {
+    console.log('✅ Passed all checks');
+    console.groupEnd();
+  }
+  return true;
+}
+
+// Enrich SnapshotStore with additional metadata
+function enrichSnapshotStore<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
+  store: SnapshotStore<T, K, Meta>
+): SnapshotStore<T, K, Meta> {
+  return {
+    ...store,
+    metadata: {
+      ...store.metadata,
+      enrichedAt: new Date().toISOString(),
+      version: '1.0',
+      source: 'api-response'
+    },
+    // Add any additional store-specific transformations
+    snapshots: store.snapshots?.map(s => normalizeSnapshot(s))
+  };
+}
+
+// Normalize snapshot data structure
+function normalizeSnapshot<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
+  snapshot: Snapshot<T, K, Meta>
+): Snapshot<T, K, Meta> {
+  return {
+    ...snapshot,
+    // Ensure all dates are properly formatted
+    createdAt: snapshot.createdAt ? new Date(snapshot.createdAt).toISOString() : new Date().toISOString(),
+    updatedAt: snapshot.updatedAt ? new Date(snapshot.updatedAt).toISOString() : new Date().toISOString(),
+    // Normalize nested structures
+    data: normalizeSnapshotData(snapshot.data),
+    // Add validation flags
+    isValid: validateSnapshot(snapshot)
+  };
+}
+
+// Transform API response to standardized format
+function transformResponse<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
+  response: YourResponseType<T, K, Meta>
+): YourResponseType<T, K, Meta> {
+  return {
+    ...response,
+    // Normalize all dates in the response
+    ...(response.projectInfo?.metadata && {
+      projectInfo: {
+        ...response.projectInfo,
+        metadata: {
+          ...response.projectInfo.metadata,
+          createdAt: new Date(response.projectInfo.metadata.createdAt),
+          updatedAt: new Date(response.projectInfo.metadata.updatedAt)
+        }
+      }
+    }),
+    // Normalize nested arrays
+    calendarEvents: response.calendarEvents?.map(event => ({
+      ...event,
+      start: new Date(event.start),
+      end: new Date(event.end)
+    })),
+    todos: response.todos?.map(todo => ({
+      ...todo,
+      dueDate: todo.dueDate ? new Date(todo.dueDate) : undefined
+    })),
+    tasks: response.tasks?.map(task => ({
+      ...task,
+      createdAt: new Date(task.createdAt),
+      updatedAt: new Date(task.updatedAt)
+    })),
+    // Add computed fields
+    totalItems: [response.todos, response.tasks].flat().length
+  };
+}
+
+// Helper functions used by the main converters
+function normalizeSnapshotData<T extends BaseData>(data: T): T {
+  return {
+    ...data,
+    // Normalize any BaseData fields
+    createdAt: data.createdAt ? new Date(data.createdAt) : new Date(),
+    updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date()
+  };
+}
+
+function validateSnapshot<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
+  snapshot: Snapshot<T, K, Meta>
+): boolean {
+  return !!(
+    snapshot.id &&
+    snapshot.data &&
+    (!snapshot.expiresAt || new Date(snapshot.expiresAt) > new Date())
+  );
 }
 
 
@@ -1054,8 +1267,8 @@ function convertMapToSnapshotStore<T extends  BaseData<any>, K extends T>(
 ): SnapshotStore<T, K> {
 
 
-const { storeId, name, version, schema, options, category, config, operation, snapshots, expirationDate, payload, callback,  endpointCategory} = storeProps
-const snapshotStore = new SnapshotStore<T, K>({ storeId, name, version, schema, options, category, config, operation, snapshots, expirationDate, payload, callback, storeProps, endpointCategory });
+const { storeId, name, version, schema, options, category, config, operation, snapshots, expirationDate, payload, callback,  endpointCategory, initialState} = storeProps
+const snapshotStore = new SnapshotStore<T, K>({ storeId, initialState, name, version, schema, options, category, config, operation, snapshots, expirationDate, payload, callback, storeProps, endpointCategory });
 // Populate snapshotStore with map data
 
   map.forEach(async (value, key) => {
@@ -1330,7 +1543,7 @@ function convertMapToSnapshot<T extends  BaseData<any>, K extends T = T, Meta ex
       snapshotData: T,
       category: Category | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T>,
+      snapshots: SnapshotsArray<T, K, Meta>,
       type: string,
       event: Event,
       snapshotContainer?: T,
@@ -1732,8 +1945,7 @@ const convertToSnapshot = <T extends  BaseData<any>, K extends T = T, Meta exten
   id: string | number | undefined,
   snapshotId: string | null,
   snapshotData: SnapshotData<T, K>,
-  category: symbol | string | Category | undefined,
-  categoryProperties: CategoryProperties | undefined,
+  category: Category | undefined,  categoryProperties: CategoryProperties | undefined,
   metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
   subscriberId: string,
   endpointCategory: string | number,
@@ -1766,7 +1978,7 @@ const convertToSnapshot = <T extends  BaseData<any>, K extends T = T, Meta exten
 
 
 function convertSnapshotMap <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  dataMap: Map<string, Snapshot<Data, Data>>
+  dataMap: Map<string, Snapshot<T, K>>
 ): Map<string, Snapshot<T, K>> {
   const convertedMap = new Map<string, Snapshot<T, K>>();
 
@@ -1786,11 +1998,10 @@ function isCoreSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends 
 
 
 export {
-    convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
-    convertSnapshotData, convertSnapshotMap, convertSnapshotStoreConfig,
-    convertSnapshotStoreItemToT,
-    convertSnapshotStoreToMap,
-    convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
-    createSnapshotStoreConfig, createSnapshotStoreOptions, isCoreSnapshot, isSnapshotStore, isYourResponseType, snapshotType
+  convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
+  convertSnapshotData, convertSnapshotMap, convertSnapshotStoreConfig,
+  convertSnapshotStoreItemToT,
+  convertSnapshotStoreToMap, convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
+  createSnapshotStoreConfig, createSnapshotStoreOptions, enrichSnapshotStore, isCoreSnapshot, isSnapshotStore, isYourResponseType, normalizeSnapshot, snapshotType, transformResponse
 };
 

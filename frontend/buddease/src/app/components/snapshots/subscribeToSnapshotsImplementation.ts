@@ -23,7 +23,7 @@ type MultipleEventsCallbacks<T> = {
 type SimplifiedSnapshot<T extends BaseData<any, any>> = Snapshot<T, T, StructuredMetadata<T, T>, never>;
 
 const handleSnapshot = <T extends BaseData<any, any>>(
-  snap: SnapshotUnion<T, K>, 
+  snap: SnapshotUnion<T, K, Meta>, 
   callback: (snapshot: SimplifiedSnapshot<T>) => void
 ) => {
   if (isSnapshotWithMetadata(snap)) {
@@ -34,7 +34,7 @@ const handleSnapshot = <T extends BaseData<any, any>>(
 };
 
 function isSnapshotWithMetadata<T extends BaseData<any, any>>(
-  snap: SnapshotUnion<T, K>
+  snap: SnapshotUnion<T, K, Meta>
 ): snap is Snapshot<T, T, StructuredMetadata<T, T>, never> {
   return 'metadata' in snap; // Assuming metadata field is a discriminant
 }
@@ -77,19 +77,19 @@ const subscribeToSnapshotsImpl = <T extends  BaseData<any>, K extends T = T, Met
   snapshotId: string,
   snapshotCallback: (
     snapshotStore: SnapshotStore<T, K>, 
-    snapshots: SnapshotsArray<T>
+    snapshots: SnapshotsArray<T, K, Meta>
   ) => Subscriber<T, K> | null,
   snapshotStore: SnapshotStore<T, K>, 
-  snapshot: SnapshotsArray<T>
+  snapshot: SnapshotsArray<T, K, Meta>
 ) => {
   if (!snapshotSubscribers.has(snapshotId)) {
     snapshotSubscribers.set(snapshotId, []);
   }
   
-  const typedCallback = addSubscriptionMethods<SnapshotUnion<T, K>>((snapshot) => {
+  const typedCallback = addSubscriptionMethods<SnapshotUnion<T, K, Meta>>((snapshot) => {
     snapshotCallback(
       snapshot as unknown as SnapshotStore<T, K>,
-      snapshots as unknown as SnapshotsArray<T>
+      snapshots as unknown as SnapshotsArray<T, K, Meta>
     );
   }, snapshotId);
 
@@ -113,7 +113,7 @@ const subscribeToSnapshotsImpl = <T extends  BaseData<any>, K extends T = T, Met
         events: snap.events ?? [],
         meta: snap.meta,
         data: snap.data ?? ({} as T)
-      } as SnapshotUnion<T, K>);
+      } as SnapshotUnion<T, K, Meta>);
     }
   });
 };
@@ -122,7 +122,7 @@ const subscribeToSnapshotsImpl = <T extends  BaseData<any>, K extends T = T, Met
 const subscribeToSnapshotImpl = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string,
   callback: (snapshot: Snapshot<T, K>) => Subscriber<T, K> | null,
-  snapshot: Snapshot<T, K> | Snapshots<T, K> | SnapshotsArray<T>
+  snapshot: Snapshot<T, K> | Snapshots<T, K> | SnapshotsArray<T, K, Meta>
 ): Subscriber<T, K> | null => {
   if (!snapshotSubscribers.has(snapshotId)) {
     snapshotSubscribers.set(snapshotId, []);

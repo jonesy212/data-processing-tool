@@ -56,6 +56,7 @@ export const handleDrawingApiErrorAndNotify = (
       errorMessageText,
       null,
       new Date(),
+      NotificationTypeEnum.ApiClientError,
       "ApiClientError" as NotificationType
     );
   }

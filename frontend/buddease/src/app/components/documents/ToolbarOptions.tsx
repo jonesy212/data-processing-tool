@@ -1,10 +1,10 @@
 import { DraftInlineStyle, EditorState, RichUtils } from "draft-js";
 import React, { useState } from "react";
+import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
 import { ThemeConfigProps } from "../hooks/userInterface/ThemeConfigContext";
 import CustomModifier from "./CustomModifier";
-import { DocumentTypeEnum } from "./DocumentGenerator";
-import ToolbarItem from "./ToolbarItem";
 import { toolbarOptions } from "./Toolbar";
+import ToolbarItem from "./ToolbarItem";
 
 
 // Define a new type for the toolbar options
@@ -239,5 +239,6 @@ const ToolbarOptionsComponent: React.FC<ToolbarOptionsProps> = ({
   );
 }; 
 
-export { ToolbarOptionsComponent }
+export { ToolbarOptionsComponent };
 export type { BaseFormattingOptions, ToolbarOptions, ToolbarOptionsProps };
+

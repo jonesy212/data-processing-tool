@@ -1,14 +1,14 @@
+import { userService } from '@/app/api/ApiUser';
+import { SearchActions } from '@/app/components/actions/SearchActions';
 import { DocumentData } from '@/app/components/documents/DocumentBuilder';
 import useErrorHandling from '@/app/components/hooks/useErrorHandling';
 import SearchBar from '@/app/components/routing/SearchBar';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { SearchLogger } from '../../components/logging/Logger';
 import SearchComponent from './SearchComponent';
 import { SearchProvider } from './SearchContext';
-import SearchItems, { SearchItemProps } from './SearchItems';
-import { SearchActions } from '@/app/components/actions/SearchActions';
-import { userService } from '@/app/components/users/ApiUser';
+import SearchItems from './SearchItems';
 
 type Search = string;
 

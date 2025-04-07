@@ -46,8 +46,7 @@ export interface SnapshotManagement<T extends  BaseData<any>, K extends T = T, M
   createSnapshot: (
     id: string,
     snapshotData: SnapshotData<T, K>,
-    category: symbol | string | Category | undefined,
-    categoryProperties: CategoryProperties | undefined,
+    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
     callback?: (snapshot: Snapshot<T, K>) => void,
     snapshotData?: SnapshotStore<T, K>,
     snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>  | null,

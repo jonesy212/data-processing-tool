@@ -3,13 +3,13 @@
 import DocumentBuilder from "@/app/components/documents/DocumentBuilder";
 import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import { DocumentBuilderProps } from "@/app/components/documents/SharedDocumentProps";
-import React, { useState } from "react";
-import DynamicForm from "./DynamicForm";
+import useFilePath from "@/app/components/hooks/useFilePath";
 import { DocumentSize, ProjectPhaseTypeEnum } from "@/app/components/models/data/StatusType";
-import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 import { AlignmentOptions } from "@/app/components/state/redux/slices/toolbarSlice";
 import AppVersionImpl from "@/app/components/versions/AppVersion";
-import useFilePath from "@/app/components/hooks/useFilePath";
+import { DocumentTypeEnum } from "@/server/DocumentGenerator";
+import React, { useState } from "react";
+import DynamicForm from "./DynamicForm";
 
 // Assuming AppVersionImpl has methods getAppName and getVersion
 const versionInfo = useFilePath()

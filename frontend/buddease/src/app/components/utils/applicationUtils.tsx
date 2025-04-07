@@ -9,6 +9,7 @@ import { AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 import * as articleApi from '../../../app/api/articleApi';
 import { sendEmail } from "../communications/email/SendEmail";
+import { T, K } from "@/app/components/models/data/dataStoreMethods";
 import { sendSMS } from "../communications/sendSMS";
 import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
 import { Content } from "../models/content/AddContent";
@@ -24,7 +25,7 @@ import { NotificationData } from "../support/NofiticationsSlice";
 import {
     NotificationTypeEnum,
     useNotification,
-} from "../support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 import NotificationManager from "../support/NotificationManager";
@@ -101,7 +102,7 @@ function isSnapshotStoreProps<
 }
 
 const notifyEventSystem = <
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
 >(
@@ -141,7 +142,11 @@ const {
 
 
 // Create a NotificationData object based on the eventType and eventData
-  const notificationData: NotificationData = {
+  const notificationData: NotificationData<
+    T,
+    K,
+    StructuredMetadata<T, K>
+  > = {
     topics: [],
     highlights: [],
     files: [],
@@ -150,8 +155,8 @@ const {
     participants: [],
     teamMemberId: "",
    
-    currentMeta: currentMeta 
-    currentMetadata: currentMetadata as unknown as UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
+    currentMeta: currentMeta,
+    currentMetadata: currentMetadata,
    
     id: UniqueIDGenerator.generateNotificationID(
       {
@@ -182,7 +187,7 @@ const {
         rsvpStatus: "yes",
         participants: [],
         teamMemberId: "",
-        currentMeta: currentMeta 
+        currentMeta: currentMeta,
         currentMetadata: currentMetadata as unknown as UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
    
         getCalendarSnapshotStoreData: function (): Promise<CalendarEventWithCriteria[]> {
@@ -249,10 +254,7 @@ const {
 
           return newSnapshot; // Return the snapshot directly (not an array)
         }
-
       },
-
-
       new Date(),
       NotificationTypeEnum.Info,
       {
@@ -618,7 +620,7 @@ const userId = useSecureUserId()
 const unsubscribe = (
   snapshotId: number,
   unsubscribeDetails: UnsubscribeDetails,
-  callback: SubscriberCallbackType<T, K<T>> | null
+  callback: SubscriberCallbackType<T, K> | null
 ) => {
   // Log the snapshot unsubscribe action
   console.log(`Unsubscribing user ${unsubscribeDetails.userId} from snapshot ${unsubscribeDetails.snapshotId}`);

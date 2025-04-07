@@ -2,6 +2,7 @@
 import { ChatApi } from "@/app/api/ChatApi";
 import { AquaConfig } from "@/app/components/web3/web_configs/AquaConfig";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { refreshUI } from '@/app/components/snapshots/refreshUI'
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import GeolocationService from "@/app/services/GeolocationService";
 import { openChatSettingsPanel } from "@/app/utils/ChatSettingsPanelUtils";
@@ -156,6 +157,12 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
       lastSeen: new Date(),
       deletedAt: null,
       imageUrl: "",
+      bannerUrl: "",
+      roles: [],
+      preferences: {
+        refreshUI
+      }, 
+      storeId: 0,
       timestamp: new Date(),
       website: "",
       location: "",
@@ -292,7 +299,9 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
         return [newMessage, ...prevMessages];
       });
       return newMessage;
-    });
+    },
+    "chat_message_realtime_updates" // Usage description
+    );
 
     const sampleMessage: ChatMessageProps = {
       id: "some-id",
@@ -352,7 +361,10 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ roomId }) => {
     initialize();
 
     return () => {
-      subscriptionServiceInstance.unsubscribe("chat_updates_" + roomId, "");
+      subscriptionServiceInstance.unsubscribe("chat_updates_" + roomId,
+        "chat_component",
+        () => { }
+      );
       socket?.close();
       resetUnreadMessageCount(String(roomId));
 

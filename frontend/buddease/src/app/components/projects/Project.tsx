@@ -3,8 +3,10 @@ import { BaseData } from '@/app/components/models/data/Data';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { AllStatus } from '@/app/components/state/stores/DetailsListStore';
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
+import { Collaborator }  from '@/app/components/models/teams/TeamMembers'
 import React, { ReactNode, useEffect, useState } from "react";
 import { Exchange } from "../crypto/Exchange";
+import { ScheduledData } from "@/app/components/calendar/ScheduledData";
 import { Attachment } from "../documents/Attachment/attachment";
 import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 import CommonDetails, { CommonData, SupportedData } from "../models/CommonData";
@@ -149,14 +151,14 @@ export function isProjectInSpecialPhase(project: Project): boolean {
 
 class ProjectImpl implements Project {
   [key: string]: any;
-  scheduled?: ScheduledData<any> | undefined;
+  scheduled?: ScheduledData<any>;
   isScheduled?: boolean;
   ideas: Idea[] = [];
   dueDate?: Date | null | undefined;
   priority?: "low" | "medium" | "high" | undefined;
   assignee?: User | undefined;
   collaborators?: Collaborator[] | undefined;
-  comments?: (Comment | CustomComment)[] | undefined
+  comments?: (Comment<T, K, Meta, ExcludedFields> | CustomComment)[] | undefined
   attachments?: Attachment[] | undefined;
   customProperty?: string;
   subtasks?: TodoImpl<any, any, any, any>[] | undefined;
@@ -237,11 +239,17 @@ const currentPhase: Phase = {
   startDate: new Date(),
   endDate: new Date(),
   subPhases: [],
-  data: {} as Data,
+  data: {} as Data<T, K, Meta>,
   hooks: {} as CustomPhaseHooks,
-  description, label: {},
-  currentMeta: {}, 
-  currentMetadata: {},
+  description: "", 
+  label: {
+    text: "",
+    color: "",
+  },
+  currentMeta: {} as PhaseMeta<any, any>, 
+  currentMetadata: {
+    baseConfig, sharedMetadata, sharedBaseData, taggable,
+  },
 
   component: (props: {}, context?: any): ReactNode => {
     return (
@@ -304,7 +312,7 @@ currentProject.phases = [
     currentMeta: (currentPhase.currentMeta), 
     currentMetadata: (currentPhase.currentMetadata),
     subPhases: [],
-    data: {} as Data,
+    data: {} as Data<T, K, Meta>,
     component: () => {
       return null;
     },
@@ -372,7 +380,7 @@ const ProjectDetailsComponents: React.FC<UpdatedProjectDetailsProps> = ({
   return details ? (
     <>
       <CommonDetails
-        data={{} as CommonData<T, K, Meta, ExcludedFields>}
+        data={{} as CommonData<BaseData<any>>}
         details={{
           _id: details.project._id || "",
           id: details.project.id || "",

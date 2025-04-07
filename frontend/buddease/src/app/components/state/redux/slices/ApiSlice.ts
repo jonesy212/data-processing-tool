@@ -5,7 +5,6 @@ import { CloudStorageProvider } from "@/app/components/interfaces/provider/Cloud
 import { BaseData, Data } from "@/app/components/models/data/Data";
 import { PriorityTypeEnum } from "@/app/components/models/data/StatusType";
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { Task } from "@/app/components/models/tasks/Task";
 import { Phase } from "@/app/components/phases/Phase";
 import { AnalyticsTool } from "@/app/components/projects/DataAnalysisPhase/AnalyticsTool";
@@ -17,7 +16,7 @@ import { VersionHistory } from "@/app/components/versions/VersionData";
 import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { fetchUserAreaDimensions, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { useMetadata } from "@/app/configs/useMetadata";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Draft } from "immer";
@@ -257,7 +256,7 @@ export const useApiManagerSlice = createSlice({
         metadataEntries: {},
         customFields: {},
         versionData: [],
-        latestVersion: createLatestVersion(),
+        latestVersion: createLatestVersion<T, K>(),
         apiEndpoint: "",
         apiKey: undefined,
         timeout: 0,

@@ -1,21 +1,21 @@
 // UIPhase.tsx
 // UIPhase.ts
 import { fetchData } from "@/app/api/ApiData";
+import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import UserService, * as userApi from '../../../app/components/users/ApiUser';
+import UserService from '../../api/ApiUser';
+import { UIActions } from "../actions/UIActions";
+import useNotificationBar from "../hooks/commHooks/useNotificationBar";
 import useUIRealtimeData from "../hooks/commHooks/useUIRealtimeData";
-import { NotificationData } from "../support/NofiticationsSlice";
+import { createPhaseHook } from "../hooks/phaseHooks/PhaseHooks";
+import useDarkModeToggle from "../hooks/userInterface/useDarkModeToggle";
 import { logData } from "../notifications/NotificationService";
+import { updateCallback } from "../state/stores/CalendarEvent";
+import { NotificationData } from "../support/NofiticationsSlice";
 import { NotificationType, NotificationTypeEnum } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import NotificationMessagesFactory from "../support/NotificationMessagesFactory";
-import { updateCallback } from "../state/stores/CalendarEvent";
-import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
-import { UIActions } from "../actions/UIActions";
-import useNotificationBar from "../hooks/commHooks/useNotificationBar";
-import { createPhaseHook } from "../hooks/phaseHooks/PhaseHooks";
-import useDarkModeToggle from "../hooks/userInterface/useDarkModeToggle";
 
 const createDarkModeTogglePhaseHook = () => {
   return createPhaseHook(

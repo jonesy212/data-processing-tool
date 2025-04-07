@@ -25,8 +25,7 @@ interface SnapshotHandling<T extends  BaseData<any>, K extends T = T, Meta exten
         callback: (
           storeIds: number[],
           snapshotId: string,
-          category: symbol | string | Category | undefined,
-          categoryProperties: CategoryProperties | undefined,
+          category: Category | undefined,          categoryProperties: CategoryProperties | undefined,
           snapshot: Snapshot<T, K>,
           timestamp: string | number | Date | undefined,
           type: string,
@@ -36,7 +35,7 @@ interface SnapshotHandling<T extends  BaseData<any>, K extends T = T, Meta exten
           data: T,
           index: number
         ) => SnapshotsObject<T, K>
-      ): Promise<SnapshotsArray<T>>    
+      ): Promise<SnapshotsArray<T, K, Meta>>    
 
       createSnapshotStore: (
         id: string,
@@ -53,7 +52,7 @@ interface SnapshotHandling<T extends  BaseData<any>, K extends T = T, Meta exten
         id: string,
         snapshotId: number,
         snapshotStoreData: Snapshots<T, K>,
-        category?: string | symbol | Category,
+        category?:  Category,
         callback?: (snapshotStore: SnapshotStore<T, K>) => void,
         snapshotDataConfig?: SnapshotStoreConfig<T, K>[]
       ) => Promise<SnapshotStore<T, K> | null>;
@@ -63,8 +62,7 @@ interface SnapshotHandling<T extends  BaseData<any>, K extends T = T, Meta exten
     snapshot: SnapshotStore<T, K> | Snapshot<T, K> | null,
     snapshotId: string | null,
     snapshotData: SnapshotData<T, K>, // Ensure snapshotData matches SnapshotStore<T, K>
-    category: symbol | string | Category | undefined,
-    snapshotConfig: SnapshotStoreConfig<T, K>, // Use K instead of T for snapshotConfig
+    category: Category | undefined,    snapshotConfig: SnapshotStoreConfig<T, K>, // Use K instead of T for snapshotConfig
     callback: (snapshotStore: SnapshotStore<any, any>) => void
   ) => void;
 

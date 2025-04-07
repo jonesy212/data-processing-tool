@@ -1,9 +1,9 @@
 import { ProgressPhase } from '@/app/components/models/tracker/ProgressBar';
 // Assuming you have an interface for the User and Team models as well
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { DocumentPath } from "../../../../server/DocumentGenerator";
 import { ModifiedDate } from "../../documents/DocType";
 import { DocumentData } from "../../documents/DocumentBuilder";
-import { DocumentPath } from "../../documents/DocumentGenerator";
 import { Content } from "../../models/content/AddContent";
 import { BaseData, Data } from "../../models/data/Data";
 import { Team } from "../../models/teams/Team";

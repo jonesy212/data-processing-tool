@@ -4,8 +4,8 @@ import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } f
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '../../server/database/Payload';
 import axiosInstance from '../api/axiosInstance';
-import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '../components/database/Payload';
 import { CombinedEvents, SnapshotManager } from '../components/hooks/useSnapshotManager';
 import { Category } from "../components/libraries/categories/generateCategoryProperties";
 import { BaseData } from "../components/models/data/Data";
@@ -56,8 +56,8 @@ interface RetrievedSnapshot<
   id: string;
   responseData: T; // This property should extend `Data`
   timestamp: string | Date;
-  data: InitializedData<T> | undefined;
-  category?: Category;
+  data: InitializedData<T, K> | undefined;
+  category?:  Category;
   categoryProperties?: CategoryProperties;
   callbacks: Record<string, Array<(snapshot: Snapshot<T, K>) => void>>;
 }
@@ -637,7 +637,7 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
         payload: CreateSnapshotsPayload<T, K>,
         callback: (snapshots: Snapshot<T, K>[]) => void | null,
         snapshotDataConfig?: SnapshotConfig<T, K>[] | undefined,
-        category?: Category,
+        category?:  Category,
         categoryProperties?: string | CategoryProperties,
       ) => Snapshot<T, K>[] | null;
       batchTakeSnapshot: (snapshotId: string, snapshot: Snapshot<T, K>) => Promise<Snapshot<T, K>>;
@@ -686,14 +686,13 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
         event: Event,
         id: number,
         snapshotStore: SnapshotStore<T, K>,
-        category: symbol | string | Category | undefined,
-        categoryProperties: CategoryProperties | undefined,
+        category: Category | undefined,        categoryProperties: CategoryProperties | undefined,
         dataStoreMethods: DataStore<T, K>,
         data: T,
         dataCallback?: (
           subscribers: Subscriber<T, K>[],
           snapshots: Snapshots<T, K>
-        ) => Promise<SnapshotUnion<T, K>[]>
+        ) => Promise<SnapshotUnion<T, K, Meta>[]>
       ) => Promise<Snapshot<T, K>[]>;
       addData: (id: string, data: Partial<Snapshot<T, K>>) => void;
       setData: (id: string, data: Partial<Snapshot<T, K>>) => void;
@@ -976,7 +975,7 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
       payload: CreateSnapshotStoresPayload<T, K>,
       callback: (snapshotStores?: SnapshotStoreReference<T, K>[]) => void | null,
       snapshotStoreData?: SnapshotStore<T, K>[],
-      category?: string | symbol | Category,
+      category?:  Category,
       snapshotDataConfig?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K, Meta>[]
     ): SnapshotStore<T, K>[] | null => {
       try {
@@ -1057,7 +1056,7 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
     
         // Step 2: Process snapshots if necessary (e.g., filtering, transformation)
         const processedSnapshots = Array.isArray(snapshots)
-        ? snapshots.map((snapshot: SnapshotUnion<T, K>) => ({
+        ? snapshots.map((snapshot: SnapshotUnion<T, K, Meta>) => ({
             ...snapshot,
             updatedAt: new Date() // Example transformation: adding a timestamp
           }))
@@ -1204,10 +1203,9 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
       snapshotId: string,
       snapshot: T | null,
       snapshotData: T,
-      category: symbol | string | Category | undefined,
-      categoryProperties: CategoryProperties | undefined,
+      category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T>,
+      snapshots: SnapshotsArray<T, K, Meta>,
       type: string,
       event: Event,
       snapshotStore: SnapshotStore<T, K>,

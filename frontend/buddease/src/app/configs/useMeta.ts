@@ -3,8 +3,11 @@ import { BaseData } from "../components/models/data/Data";
 import { PhaseData } from "../components/phases/Phase";
 import { EventManager } from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from "../components/snapshots";
-import Version, { VersionImpl } from "../components/versions/Version";
+import Version from "../components/versions/Version";
+import VersionImpl from "../components/versions/Version";
 import { StructuredMetadata } from "./StructuredMetadata";
+import { frontendStructure } from "./appStructure/FrontendStructure";
+import { backendStructure } from "./appStructure/BackendStructure";
 
 function useMeta<
     T extends BaseData<any>,
@@ -21,7 +24,12 @@ function useMeta<
       id: 1, // Dynamically assign ID based on your logic
       major: 1,
       versionNumber: "1.0.0",
-      versions: {},
+      versions: {
+        backend: backendStructure,
+        frontend: frontendStructure,
+        history: []
+        
+      },
       
       buildVersions: undefined, // You can populate this based on your logic
       keywords: [], 
@@ -96,13 +104,13 @@ function useMeta<
 }
 
 
-function usePhaseMeta(
+function usePhaseMeta<T extends BaseData<any>, K extends T = T>(
   area: string | undefined,
-  relatedPhases?: PhaseData[],
-  childIds?: PhaseData[] | undefined,
+  relatedPhases?: PhaseData<T, K>[],
+  childIds?: PhaseData<T, K>[] | undefined,
   description?: string
-): StructuredMetadata<PhaseData, PhaseData> {
-  return useMeta<PhaseData>(area, relatedPhases, childIds, description);
+): StructuredMetadata<PhaseData<T, K>, PhaseData<T, K>> {
+  return useMeta<PhaseData<T, K>>(area, relatedPhases, childIds, description);
 }
 
 export { useMeta, usePhaseMeta };

@@ -6,7 +6,8 @@ import { AuthStore, UserContactInfo, UserNotificationPreferences, UserSession, u
 import { User } from "../users/User";
 import { LanguageEnum } from "../communications/LanguageEnum";
 import { SubscriptionPlan } from "../subscriptions/SubscriptionPlan";
-//todo update roles to use UserRole type
+
+
 // Define the types for the context and state
 interface AuthState {
   id: string;
@@ -307,4 +308,4 @@ const useAuth = (): AuthContextProps => {
   return context;
 };
 
-export { AuthProvider, fetchDataWithToken, useAuth };
+export { AuthProvider, AuthContext, fetchDataWithToken, useAuth };

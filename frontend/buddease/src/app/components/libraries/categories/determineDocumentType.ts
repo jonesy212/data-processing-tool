@@ -1,4 +1,4 @@
-import { DocumentTypeEnum } from "../../documents/DocumentGenerator";
+import { DocumentTypeEnum } from "../../../../server/DocumentGenerator";
 
 // determineDocumentType.ts
 function determineDocumentType(options: {
@@ -35,4 +35,4 @@ function determineDocumentType(options: {
 }
 
   
-  export {determineDocumentType}
+  export { determineDocumentType };

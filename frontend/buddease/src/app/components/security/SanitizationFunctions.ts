@@ -1,15 +1,10 @@
 // SanitizationFunctions.ts
-import { databaseConfig } from "@/app/configs/DatabaseConfig";
-import express from 'express';
-import performDatabaseOperation from "../database/DatabaseOperations";
-import { User } from "../users/User";
+import DOMPurify from "dompurify";
+import { BaseData } from '@/app/components/models/data/Data';
 import { SnapshotDataType } from '@/app/components/snapshots';
-import isValidAuthToken from "./AuthValidation";
+import { User } from "../users/User";
 import { decryptedData } from "./decryptedData";
 import { Encryption } from "./Encryption";
-import { isSnapshotData } from '@/app/components/utils/snapshotUtils'
-
-const app = express();
 
 export const validatePassword = (password: string): string[] => {
   const errors: string[] = [];
@@ -162,60 +157,105 @@ const isValidEmail = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
-// Function to validate and sanitize user input (e.g., username, password)
+
+// ✅ Replace manual sanitizeInput() with DOMPurify
 export const sanitizeInput = (input: string): string => {
-  // Remove leading and trailing spaces
-  let sanitizedInput = input.trim();
-
-  // Remove special characters using regex
-  sanitizedInput = sanitizedInput.replace(/[^\w\s]/gi, "");
-
-  // Convert to lowercase
-  sanitizedInput = sanitizedInput.toLowerCase();
-
-  return sanitizedInput;
+  return DOMPurify.sanitize(input.trim());
 };
 
-// Generic sanitize function using your existing sanitize logic
-function sanitize(input: any): string {
-  // Implement the actual sanitization logic (e.g., stripping unsafe characters)
-  return input?.toString().replace(/[^\w\s]/gi, '') ?? '';
+/**
+ * Universal sanitization function with smart defaults
+ * 
+ * @param input - Value to sanitize (any type)
+ * @param options - {
+ *   allowHtml: false,    // Set true to allow SOME HTML
+ *   allowedTags: [],     // Only used if allowHtml=true
+ *   strict: true         // Extra security for untrusted input
+ * }
+ */
+
+export function sanitize(
+  input: unknown,
+  options: {
+    allowHtml?: boolean;
+    allowedTags?: string[];
+    strict?: boolean;
+    returnTrusted?: boolean;
+  } = {}
+): string | TrustedHTML {
+  const { 
+    allowHtml = false, 
+    allowedTags = [], 
+    strict = true,
+    returnTrusted = false
+  } = options;
+
+  // Handle null/undefined
+  if (input == null) return '';
+  
+  // Convert to string
+  const str = typeof input === 'string' ? input : String(input);
+
+  // HTML Mode
+  if (allowHtml) {
+    const purified = DOMPurify.sanitize(str, {
+      ALLOWED_TAGS: allowedTags,
+      ALLOWED_ATTR: strict ? [] : ['href', 'target'],
+      FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed'],
+      FORBID_ATTR: ['style', 'on*'],
+      RETURN_TRUSTED_TYPE: returnTrusted,
+      ...(strict && { ALLOW_DATA_ATTR: false })
+    });
+    return returnTrusted ? purified as unknown as TrustedHTML : purified;
+  }
+
+  // Strict Text Mode (default)
+  if (strict) {
+    const purified = DOMPurify.sanitize(str, {
+      ALLOWED_TAGS: [],
+      ALLOWED_ATTR: [],
+      RETURN_TRUSTED_TYPE: returnTrusted,
+    });
+    return returnTrusted ? purified as unknown as TrustedHTML : purified;
+  }
+
+  // Lenient Text Mode
+  const result = str
+    .replace(/<[^>]*>?/gm, '')
+    .replace(/[^\p{L}\p{N}\s.,!?@#$-]/gu, '');
+    
+  if (returnTrusted) {
+    const purified = DOMPurify.sanitize(result, { RETURN_TRUSTED_TYPE: true });
+    return purified as unknown as TrustedHTML;
+  }
+  return result;
 }
 
-
 // Unified sanitization logic for SnapshotData and Snapshot
-function sanitizeSnapshotData<T>(snapshotData: SnapshotDataType<T>) {
-  if (isSnapshotData(snapshotData)) {
-    // Sanitize SnapshotData fields
-    snapshotData.title = sanitize(snapshotData.title || '');
-    snapshotData.description = sanitize(snapshotData.description || '');
-    // Other sanitization logic for SnapshotData
-  } else {
-    // Sanitize Snapshot fields
-    snapshotData.title = sanitize(snapshotData.title || '');
-    snapshotData.description = sanitize(snapshotData.description || '');
-    // Other sanitization logic for Snapshot
+function sanitizeSnapshotData<
+  T extends BaseData<any>,
+  K extends T = T
+>(snapshotData?: SnapshotDataType<T>) {
+  if (!snapshotData) return undefined;
+
+  // Handle case where it's a Map
+  if (snapshotData instanceof Map) {
+    return snapshotData;
   }
+
+  // Handle case where it has title/description
+  if ('title' in snapshotData) {
+    return {
+      ...snapshotData,
+      title: sanitize(snapshotData.title || ''),
+      description: 'description' in snapshotData ? sanitize(snapshotData.description || '') : undefined
+    };
+  }
+
   return snapshotData;
 }
 
 // Function to filter and sanitize user data
-export const sanitizeData = (data: string): string => {
-  if (typeof data !== "string") {
-    throw new Error("Input must be a string");
-  }
-
-  // Regular expression to match and remove script tags
-  const scriptTagRegex = /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi;
-
-  // Sanitize data by removing script tags
-  const sanitizedData = data.replace(scriptTagRegex, "");
-
-  return sanitizedData;
-};
-
-
-
 export const sanitizeUIEvent = (
   event: React.UIEvent<HTMLDivElement>
 ): React.UIEvent<HTMLDivElement> => {
@@ -254,12 +294,75 @@ export const encodeData = (data: string): string => {
 
   // Map of special characters to their corresponding HTML entities
   const htmlEntities: Record<string, string> = {
+    // Basic XML/HTML entities
     "&": "&amp;",
     "<": "&lt;",
     ">": "&gt;",
     '"': "&quot;",
-    "'": "&#39;",
+    "'": "&#39;", // or &apos; (but &apos; isn't supported in HTML4)
     "/": "&#x2F;",
+    
+    // Common special characters
+    "©": "&copy;",
+    "®": "&reg;",
+    "™": "&trade;",
+    "€": "&euro;",
+    "£": "&pound;",
+    "¥": "&yen;",
+    "¢": "&cent;",
+    "§": "&sect;",
+    "¶": "&para;",
+    
+    // Mathematical symbols
+    "−": "&minus;",
+    "×": "&times;",
+    "÷": "&divide;",
+    "±": "&plusmn;",
+    "≠": "&ne;",
+    "≈": "&asymp;",
+    "≤": "&le;",
+    "≥": "&ge;",
+    "∞": "&infin;",
+    
+    // Greek letters (common ones)
+    "α": "&alpha;",
+    "β": "&beta;",
+    "γ": "&gamma;",
+    "Δ": "&Delta;",
+    "π": "&pi;",
+    "Ω": "&Omega;",
+    
+    // Arrows
+    "←": "&larr;",
+    "→": "&rarr;",
+    "↑": "&uarr;",
+    "↓": "&darr;",
+    
+    // Accented characters
+    "á": "&aacute;",
+    "é": "&eacute;",
+    "í": "&iacute;",
+    "ñ": "&ntilde;",
+    "ü": "&uuml;",
+    
+    // Whitespace and control characters
+    " ": "&nbsp;", // Non-breaking space
+    " ": "&thinsp;", // Thin space
+    "–": "&ndash;", // En dash
+    "—": "&mdash;", // Em dash
+    
+    // Currency symbols
+    "$": "&dollar;",
+    "₹": "&#x20B9;", // Indian Rupee
+    "₽": "&#x20BD;", // Russian Ruble
+    
+    // Additional punctuation
+    "«": "&laquo;",
+    "»": "&raquo;",
+    "…": "&hellip;",
+    "•": "&bull;",
+    "¿": "&iquest;",
+    "¡": "&iexcl;"
   };
 
   // Function to replace special characters with HTML entities
@@ -277,26 +380,4 @@ export const isNullOrUndefined = (value: any): boolean => {
   return value === null || value === undefined;
 };
 
-const operation = 'createDatabase'; // Define the operation variable
-// Backend endpoint to handle database requests using the authentication token
-app.post('/database-request', async (req: any, res: any) => {
-  const { authToken, databaseQuery } = req.body;
-
-  // Validate the authToken (e.g., check if it's valid and not expired)
-  if (isValidAuthToken(authToken)) {
-    try {
-      // If the token is valid, perform the database operation using secure backend credentials
-      const databaseResult = await performDatabaseOperation(
-        operation,
-        databaseConfig,
-        databaseQuery
-      );
-      res.json({ result: databaseResult });
-    } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  } else {
-    // If the token is invalid or expired, return an error
-    res.status(401).json({ error: 'Unauthorized' });
-  }
-});
+export { sanitizeSnapshotData };

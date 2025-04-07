@@ -1,6 +1,6 @@
 import { BaseEvent, CustomEventType, SystemEvent } from '@/app/components/event/BaseEvent';
 import { CoreSnapshot } from "@/app/components/snapshots/CoreSnapshot";
-
+import { SnapshotOperationType } from "@/app/components/snapshots/SnapshotActions";
 import { BaseCustomEvent, CustomEventExtension } from '@/app/components/event/BaseCustomEvent';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { BaseData } from '@/app/components/models/data/Data';
@@ -115,6 +115,8 @@ export type SnapshotEvent<T extends BaseData<any>, K extends T = T> =
         criteria: SnapshotWithCriteria<T, K>;
         category: Category;
         snapshotId?: string | number | null;
+        operationType?: SnapshotOperationType; // Add this
+        categoryId?: string;    // Add this
     }
     | {
         type: "error";
@@ -124,9 +126,17 @@ export type SnapshotEvent<T extends BaseData<any>, K extends T = T> =
         criteria: SnapshotWithCriteria<T, K>;
         category: Category;
         snapshotId?: string | number | null;
+        operationType?: SnapshotOperationType; // Add this
+        categoryId?: string;    // Add this
     };
 
-
+type ExtendedSnapshotEvents<T extends BaseData<any>, K extends T = T> = SnapshotEvents<T, K> & {
+    type?: string;
+    snapshotId?: string | number | null;
+    snapshotStore?: SnapshotStore<T, K>;
+    snapshot?: Snapshot<T, K>;
+};
+    
 export type AllEvents<T extends BaseData<any>, K extends T = T> =
     | SnapshotEvent<T, K>
     | BaseCustomEvent
@@ -144,7 +154,8 @@ export type AllEvents<T extends BaseData<any>, K extends T = T> =
     | MeetingEvent<T, K>
     | IntegrationEvent<T, K>
     | ErrorEvent<T, K>
-    | CustomEventType<T, K>;
+    | CustomEventType<T, K>
+    | ExtendedSnapshotEvents<T, K>;
 
 
 function isEventAttendance<T extends BaseData<any>, K extends T = T>(

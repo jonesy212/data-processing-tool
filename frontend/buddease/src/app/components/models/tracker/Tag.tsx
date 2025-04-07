@@ -2,39 +2,35 @@ import React from 'react';
 import { TagsRecord } from '../../snapshots';
 import { BaseData } from '../data/Data';
 import { ExcludedFields } from '../../routing/Fields';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { StructuredMetadata, SpecificMetadata } from '@/app/configs/StructuredMetadata';
 import { AllTypes } from '../../typings/PropTypes';
+import { SharedTimestamps, SharedStatusFlags, SharedIdentifiers } from '@/app/components/documents/RelatedProps';
 
 // Define the Tag interface and TagOptions interface
 interface Tag<
-  T extends  BaseData<any>,
+  T extends BaseData<any>,
   K extends T = T
-> extends TagOptions<T, K> {
-  id: string;
-  name: string;
-  color: string;
-  relatedTags: string[];
+> extends TagOptions<T, K>, SharedTimestamps, SharedStatusFlags {
+    relatedTags: string[];
   // attribs:
 }
+
 
 interface TagOptions<
   T extends BaseData<any>,
   K extends T = T
-> {
-  id: string;
-  name: string;
+> extends SharedIdentifiers<T, K> {
+  
   color: string;
   description: string;
   enabled: boolean;
-  type: string | AllTypes;
   nulltype: AllTypes;
-  tags?: TagsRecord<T, K> | string[] | undefined; 
+  tags?: TagsRecord<T, K> | string[] | undefined;
   createdAt?: Date;
   updatedAt?: Date;
   createdBy: string;
   timestamp: number;
 }
-
 // TagProps for the TagComponent
 // TagProps for passing tag options to a TagComponent
 interface TagProps<T extends BaseData<any>, K extends T = T> {
@@ -93,9 +89,10 @@ const tagOptions1: TagOptions<BaseData> = {
       createdAt: undefined,
       updatedAt: undefined,
       createdBy: '',
-      timestamp: 0
+      timestamp: 0,
+      nulltype: {} as AllTypes
     },
-    nulltype: {} as AllTypes
+    
   },
   createdAt: undefined,
   updatedAt: undefined,

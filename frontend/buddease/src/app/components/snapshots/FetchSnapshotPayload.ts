@@ -1,4 +1,5 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { simulateFetch } from "@/app/simulate/simulateFetch";
 import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
 import { CalendarEvent } from "../calendar/CalendarEvent";
@@ -7,7 +8,6 @@ import { StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { Subscriber } from "../users/Subscriber";
 import { Snapshot } from "./LocalStorageSnapshotStore";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 
 
 interface FetchSnapshotPayload<
@@ -20,7 +20,7 @@ interface FetchSnapshotPayload<
     createdAt: string | Date | undefined
     updatedAt: string | Date | undefined
     status: StatusType | undefined;
-    category?: Category; // Optional category properties related to the snapshot
+    category?:  Category; // Optional category properties related to the snapshot
     data: T | Map<string, Snapshot<T, K>> | null | undefined;
     events: Record<string, CalendarEvent<T, K>[]>;
     dataItems: () => RealtimeDataItem[] | null;

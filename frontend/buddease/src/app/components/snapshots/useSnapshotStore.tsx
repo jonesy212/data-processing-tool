@@ -1,11 +1,10 @@
 // useSnapshotStore.ts
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import {
-    ConfigureSnapshotStorePayload,
-    SnapshotConfig,
+  ConfigureSnapshotStorePayload,
+  SnapshotConfig,
 } from "@/app/components/snapshots/SnapshotConfig";
-import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
-import { BrowserBehaviorConfig } from "@/app/components/state/BrowserBehaviorManager";
+import { SnapshotStoreProps } from '@/app/components/snapshots/SnapshotStoreProps';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { getSubscriptionLevel } from '@/app/components/subscriptions/SubscriptionLevel';
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
@@ -27,8 +26,8 @@ import { SubscriptionPayload } from "../actions/SubscriptionActions";
 import { TaskActions } from "../actions/TaskActions";
 import { ModifiedDate } from "../documents/DocType";
 import {
-    SnapshotManager,
-    SnapshotStoreOptions,
+  SnapshotManager,
+  SnapshotStoreOptions,
 } from "../hooks/useSnapshotManager";
 import useSubscription from "../hooks/useSubscription";
 import { determineCategory } from "../libraries/categories/determineCategory";
@@ -36,70 +35,68 @@ import { SnapshotLogger } from "../logging/Logger";
 import { Content } from "../models/content/AddContent";
 import { BaseData, Data } from "../models/data/Data";
 import {
-    ActivityActionEnum,
-    ActivityTypeEnum,
-    NotificationPosition,
-    PriorityTypeEnum,
-    ProjectStateEnum,
-    StatusType,
-    SubscriberTypeEnum,
-    SubscriptionTypeEnum,
+  ActivityActionEnum,
+  ActivityTypeEnum,
+  NotificationPosition,
+  PriorityTypeEnum,
+  ProjectStateEnum,
+  StatusType,
+  SubscriberTypeEnum,
+  SubscriptionTypeEnum,
 } from "../models/data/StatusType";
 import {
-    displayToast,
-    showErrorMessage,
-    showToast,
+  displayToast,
+  showErrorMessage,
+  showToast,
 } from "../models/display/ShowToast";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { Member } from "../models/teams/TeamMembers";
 import {
-    DataStoreMethods,
-    DataStoreWithSnapshotMethods,
+  DataStoreMethods,
+  DataStoreWithSnapshotMethods,
 } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import {
-    DataStore,
-    EventRecord,
-    InitializedState,
+  DataStore,
+  EventRecord
 } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Project, ProjectData, ProjectType } from "../projects/Project";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
 
 import {
-    addNotification,
-    NotificationData,
-} from "../support/NofiticationsSlice";
+  NotificationContextType,
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
+} from "@/app/context/NotificationContext";
 import {
-    NotificationContextType,
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
-} from "../support/NotificationContext";
+  addNotification,
+  NotificationData,
+} from "../support/NofiticationsSlice";
 import { Subscriber } from "../users/Subscriber";
 import UserRoles from "../users/UserRoles";
 import {
-    logActivity,
-    notifyEventSystem,
-    triggerIncentives,
-    updateProjectState,
+  logActivity,
+  notifyEventSystem,
+  triggerIncentives,
+  updateProjectState,
 } from "../utils/applicationUtils";
 import { useSecureUserId } from "../utils/useSecureUserId";
 import {
-    CoreSnapshot,
-    Snapshot,
-    Snapshots,
-    SnapshotsArray,
-    SnapshotUnion,
+  CoreSnapshot,
+  Snapshot,
+  Snapshots,
+  SnapshotsArray,
+  SnapshotUnion,
 } from "./LocalStorageSnapshotStore";
 
-import { Subscription } from '@/app/components/subscriptions/SubscriptionPlan';
-import { CreateSnapshotsPayload, Payload } from "../database/Payload";
-import { SchemaField } from "../database/SchemaField";
+import { Subscription } from '@/app/components/subscriptions/Subscription';
+import { CreateSnapshotsPayload, Payload } from "../../../server/database/Payload";
 import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import Version from "../versions/Version";
 import { createSnapshotInstance } from "./createSnapshotInstance";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
-import { SnapshotActions, SnapshotOperation } from "./SnapshotActions";
+import { sortByTimestamp } from "./handleSnapshotOperation";
+import { SnapshotActions } from "./SnapshotActions";
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import { delegate } from "./snapshotHandlers";
 import SnapshotStore from "./SnapshotStore";
@@ -123,7 +120,7 @@ const convertSubscriptionPayloadToSubscriber = <
 >(
   payload: SubscriptionPayload<T, K>
 ): Subscriber<CustomSnapshotData<T, K, Meta>, CustomPayload<T, K, Meta>> => {
-  const subscriber = new SubscriberCollection<CustomSnapshotData<T, K, Meta>, CustomPayload<T, K, Meta>>(
+  const subscriber = new Subscriber<CustomSnapshotData<T, K, Meta>, CustomPayload<T, K, Meta>>(
     payload.id,
     // Assuming payload.name is a string, replace with your actual data structure
     payload.name,
@@ -163,44 +160,6 @@ const convertSubscriptionPayloadToSubscriber = <
   return subscriber;
 };
 
-type SnapshotStoreProps<
-  T extends  BaseData<any>,
-  K extends T = T,
-> = {
-  storeId: string | number;
-  category: Category | undefined;
-  name: string;
-  criteria?: CriteriaType;
-  timestamp?: string | number | Date | undefined;
-  eventRecords?: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
-  snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>;
-  schema: Record<string, SchemaField>;
-  options?: SnapshotStoreOptions<T, K>;
-  config: Promise<SnapshotStoreConfig<T, K> | null>;
-  createdAt?: string | Date | undefined;
-  initialState: InitializedState<T, K>;
-  operation: SnapshotOperation<T, K>;
-  id?: string | number;
-  snapshots?: Snapshots<T, K>;
-  snapshotsArray?: SnapshotsArray<T>;
-  data?: InitializedData<T>| null | undefined
-  message?: string;
-  state?: Snapshot<T, K>[] | null;
-  existingConfigs?: Map<string, SnapshotConfig<T, K>>;
-  description?: string | undefined; // Could be optional
-  priority?: string | undefined;
-  version?: string | Version<T, K> | undefined;
-  additionalData?: CustomSnapshotData<T> | undefined; // Custom additional data
-  expirationDate: Date;
-  localStorage?: Storage; 
-  payload: Payload | undefined;
-  callback: (snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>>) => void;
-  storeProps: Partial<SnapshotStoreProps<T, K>>;
-  endpointCategory: string | number;
-  browserBehaviorConfig?: BrowserBehaviorConfig;
-  findIndex?(predicate: (snapshot: SnapshotUnion<T, K, StructuredMetadata<T, K>>) => boolean): number;
-}
-
 type SubscriptionPayloadActions = SubscriptionPayload<any, any> & Payload
 
 // Create the snapshot store
@@ -214,7 +173,7 @@ const useSnapshotStore = async  <
   ) =>  Promise<Subscription<T, K> | null>,
   storeProps?: SnapshotStoreProps<T, K>
 ): Promise<SnapshotStore<any>> => {
-  const [subscribers, setSubscribers] = useState<Subscriber<T, K>[]>([]);
+  const [subscribers, setSubscribers] = useState<Subscriber<T, K, StructuredMetadata<T, K>>[]>([]);
   
   if(!storeProps){
     throw new Error("SnapshotStoreProps not provided");
@@ -235,8 +194,8 @@ const useSnapshotStore = async  <
   } = storeProps;
 
   // Initialize state for snapshots
-  const [snapshots, setSnapshots] = useState<SnapshotStore<any>>(
-    new SnapshotStore<any>({
+  const [snapshots, setSnapshots] = useState<SnapshotStore<T, K, StructuredMetadata<T, K>>>(
+    () => new SnapshotStore<T, K, StructuredMetadata<T, K>>({
       storeId,
       initialState,
       name,
@@ -746,8 +705,7 @@ const useSnapshotStore = async  <
       snapshot: SnapshotStore<T, K> | Snapshot<T, K> | null,
       snapshotId: string | null,
       snapshotData: SnapshotData<T, K>,
-      category: symbol | string | Category | undefined,
-      snapshotConfig: SnapshotStoreConfig<T, K>,
+      category: Category | undefined,      snapshotConfig: SnapshotStoreConfig<T, K>,
       callback: (snapshotStore: SnapshotStore<any, any>) => void
     ): void {
       throw new Error("Function not implemented.");
@@ -858,8 +816,7 @@ const useSnapshotStore = async  <
       event: Event,
       id: number,
       snapshotStore: SnapshotStore<T, K>,
-      category: symbol | string | Category | undefined,
-      categoryProperties: CategoryProperties | undefined,
+      category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
       dataStoreMethods: DataStore<T, K>,
       data: T,
       filter?: (snapshot: Snapshot<T, K>) => boolean,
@@ -1111,8 +1068,7 @@ const useSnapshotStore = async  <
     mapSnapshots: function (
       storeIds: number[],
       snapshotId: string,
-      category: symbol | string | Category | undefined,
-      categoryProperties: CategoryProperties | undefined,
+      category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K>,
       timestamp: string | number | Date | undefined,
       type: string,
@@ -1123,8 +1079,7 @@ const useSnapshotStore = async  <
       callback: (
         storeIds: number[],
         snapshotId: string,
-        category: symbol | string | Category | undefined,
-        categoryProperties: CategoryProperties | undefined,
+        category: Category | undefined,        categoryProperties: CategoryProperties | undefined,
         snapshot: Snapshot<T, K>,
         timestamp: string | number | Date | undefined,
         type: string,
@@ -1876,7 +1831,7 @@ const useSnapshotStore = async  <
     const subscribers = getSubscribers(subscriber);
     const notify = (
       id: string,
-      notification: WritableDraft<NotificationData>,
+      notification: WritableDraft<NotificationData<T, K, StructuredMetadata<T, K>>>,
       date: Date,
       content: any,
       type: NotificationType
@@ -2612,8 +2567,7 @@ const useSnapshotStore = async  <
           mapSnapshots: function <U, V>(
             storeIds: number[],
             snapshotId: string,
-            category: symbol | string | Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
+            category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
             snapshot: Snapshot<T, K>,
             timestamp: string | number | Date | undefined,
             type: string,
@@ -2624,8 +2578,7 @@ const useSnapshotStore = async  <
             callback: (
               storeIds: number[],
               snapshotId: string,
-              category: symbol | string | Category | undefined,
-              categoryProperties: CategoryProperties | undefined,
+              category: Category | undefined,              categoryProperties: CategoryProperties | undefined,
               snapshot: Snapshot<T, K>,
               timestamp: string | number | Date | undefined,
               type: string,
@@ -2775,10 +2728,9 @@ const useSnapshotStore = async  <
             snapshotId: string | number | null,
             snapshot: T extends SnapshotData<T, K> ? Snapshot<T, K> : null,
             snapshotData: T,
-            category: symbol | string | Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
+            category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
             callback: (snapshot: T) => void,
-            snapshots: SnapshotsArray<T>,
+            snapshots: SnapshotsArray<T, K, Meta>,
             type: string,
             event: Event,
             snapshotContainer?: T | undefined,
@@ -3846,7 +3798,7 @@ const useSnapshotStore = async  <
         ): boolean {
           throw new Error("Function not implemented.");
         },
-        dataItems: null,
+        dataItems: undefined,
         newData: null,
         getInitialState: function (): Snapshot<T, K> | null {
           throw new Error("Function not implemented.");
@@ -4096,8 +4048,7 @@ const useSnapshotStore = async  <
     snapshotId: string,
     snapshot: T | null,
     snapshotData: T,
-    category: symbol | string | Category | undefined,
-    callback: (snapshot: T) => void,
+    category: Category | undefined,    callback: (snapshot: T) => void,
     snapshots: Snapshots<T, K>,
     type: string,
     event: Event,
@@ -4228,12 +4179,9 @@ const useSnapshotStore = async  <
     setSnapshots(uniqueSnapshots);
   };
 
-  const sortSnapshots = () => {
-    const sortedSnapshots = [...snapshots].sort((a, b) => {
-      const aTimestamp = a.timestamp ? new Date(a.timestamp).getTime() : 0;
-      const bTimestamp = b.timestamp ? new Date(b.timestamp).getTime() : 0;
-      return aTimestamp - bTimestamp;
-    });
+  // In your useSnapshotStore hook:
+  const sortSnapshots = (direction: 'asc' | 'desc' = 'asc') => {
+    const sortedSnapshots = sortByTimestamp(snapshots, direction);
     setSnapshots(sortedSnapshots);
   };
 

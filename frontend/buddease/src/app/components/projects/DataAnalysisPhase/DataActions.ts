@@ -5,7 +5,25 @@ import { StatusType } from "../../models/data/StatusType";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { DataProcessing, DataProcessingResult } from "./DataProcessing/DataProcessingService";
 
-export const DataActions = <T extends  BaseData<any>,  K extends T = T>() => ({  // Actions for data processing
+/**
+ * Factory function that creates a set of strongly-typed Redux actions for data management.
+ * 
+ * @template T - The base data type, must extend BaseData<any>
+ * @template K - The extended data type (defaults to T)
+ * 
+ * @returns {object} An object containing action creators for data operations with proper type safety
+ * 
+ * @example
+ * // Create actions for specific data type
+ * const UserActions = DataActions<UserData>();
+ * 
+ * // Dispatch actions with type safety
+ * dispatch(UserActions.addData(userSnapshot));
+ * dispatch(UserActions.fetchDataSuccess({ data: userList }));
+ */
+
+export const DataActions = <T extends YourDataType = YourDataType>() => ({
+   
    updateDataFrame: createAction<{ id: string; frame: any }>('data/updateDataFrame'),
    deleteDataFrame: createAction<{ id: string }>('data/deleteDataFrame'),
    updateDataTitle: createAction<{ id: string; title: string }>('data/updateDataTitle'),

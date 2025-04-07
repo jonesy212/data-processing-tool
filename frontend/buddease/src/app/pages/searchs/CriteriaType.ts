@@ -1,6 +1,7 @@
+import { FilterState } from "@/app/components/state/redux/slices/FilterSlice";
 import { MessageType } from "@/app/generators/MessaageType";
+import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
 import { CodingLanguageEnum, LanguageEnum } from "../../components/communications/LanguageEnum";
-import { DocumentTypeEnum } from "../../components/documents/DocumentGenerator";
 import { FileTypeEnum } from "../../components/documents/FileType";
 import FormatEnum from "../../components/form/FormatEnum";
 import AnimationTypeEnum from "../../components/libraries/animations/AnimationLibrary";
@@ -13,7 +14,6 @@ import { AnalysisTypeEnum } from "../../components/projects/DataAnalysisPhase/An
 import { SecurityFeatureEnum } from "../../components/security/SecurityFeatureEnum";
 import { NotificationTypeEnum } from "../../components/support/NotificationContext";
 import { IdeaCreationPhaseEnum } from "../../components/users/userJourney/IdeaCreationPhase";
-import { FilterState } from "@/app/components/state/redux/slices/FilterSlice";
 
 // CriteriaType.ts
 // Define CriteriaType incorporating FilterCriteria
@@ -102,4 +102,4 @@ function hasCriteriaProperties(snapshot: any): snapshot is FilterState {
     );
   }
   
-  export {hasCriteriaProperties}
+  export { hasCriteriaProperties };

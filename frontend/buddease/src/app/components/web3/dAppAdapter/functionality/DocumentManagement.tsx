@@ -1,8 +1,8 @@
 
 // DocumentManagement.tsx
-import { DocumentData,  } from "@/app/components/documents/DocumentBuilder";
+import { DocumentData, } from "@/app/components/documents/DocumentBuilder";
+import DocumentGenerator, { DocumentTypeEnum } from "@/server/DocumentGenerator";
 import { DappProps } from "../DAppAdapterConfig";
-import DocumentGenerator, { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
 
 const documentGenerator = new DocumentGenerator(); // Create an instance of DocumentGenerator
 

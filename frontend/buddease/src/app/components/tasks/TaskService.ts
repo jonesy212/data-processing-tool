@@ -334,7 +334,7 @@ class TaskService<
     } catch (error: any) {
       Logger.error(error);
       apiNotificationsService.error(
-        NOTIFICATION_MESSAGES.Task<T, K>.TASK_MARKED_IN_PROGRESS_FAILED
+        NOTIFICATION_MESSAGES.Task.TASK_MARKED_IN_PROGRESS_FAILED
       );
     }
   }

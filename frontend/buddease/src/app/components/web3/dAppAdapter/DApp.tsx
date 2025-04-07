@@ -1,3 +1,4 @@
+// DApp.tsx
 import appTreeApiService from "@/app/api/appTreeApi";
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
 import { ThemeEnum } from "@/app/components/libraries/ui/theme/Theme";
@@ -6,10 +7,10 @@ import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import YourClass from "@/app/utils/YourClass";
 import React, { FC } from "react";
 import winston from "winston";
-import { authToken } from "../../auth/authToken";
+import Connection from "../../../../server/database/Connection";
+import { authToken } from "@/server/auth/authToken";
 import { AquaChat } from "../../communications/chat/AquaChat";
 import LoadAquaState from "../../dashboards/LoadAquaState";
-import Connection from "../../database/Connection";
 import { DocumentData } from "../../documents/DocumentBuilder";
 import { DocumentOptions } from "../../documents/DocumentOptions";
 import useSocialAuthentication from "../../hooks/commHooks/useSocialAuthentication";
@@ -27,20 +28,22 @@ import FluencePlugin from "../pluginSystem/plugins/fluencePlugin";
 import { AquaConfig } from "../web_configs/AquaConfig";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
 import { manageDocuments } from "./functionality/DocumentManagement";
+import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
 
 export type CustomDocumentOptionProps = DocumentOptions & DappProps;
 
 interface CustomApp<
   T extends BaseData<any, any> = any,
   K extends T = T
-> extends CommonRelationship<T, K>{
-  id: string;
+  > extends CommonRelationship<T, K>, SharedIdentifiers<T, K> {
+    id: string;
   username: string;
   description: string;
   authToken: string;
   apiKey: string
   childIds?: K[],
   relatedData?: K[],
+  
   // Add any other properties as needed
 }
 
@@ -245,6 +248,12 @@ class CustomDAppAdapter<
     if(!this.appData){
       throw new Error("appData is not defined");
     }
+
+    // Define the sharedRelationships object
+    const sharedRelationships: SharedRelationshipData<any> = {
+      childIds: [], // Add your logic to populate this if needed
+      relatedData: [] // Add your logic to populate this if needed
+    };
     
     return {
       id: appId,
@@ -252,6 +261,7 @@ class CustomDAppAdapter<
       description: "This is a custom app.",
       authToken: authToken,
       apiKey: this.appData.apiKey,
+      sharedRelationships
     };
   }
 
@@ -396,7 +406,12 @@ class CustomDAppAdapter<
       teamMembers: [],
     };
 
-    this.config.dappProps.currentUser = userData;
+
+    if (userData.id) {
+      this.config.dappProps.currentUser = userData;
+    } else {
+      throw new Error("User ID is required");
+    }
 
     return yourClassInstance
   }
@@ -459,7 +474,7 @@ class CustomDAppAdapter<
   }
 
   manageDocuments<
-  T extends SupportedData<any, any> = SupportedData<any, any>, 
+  T extends BaseData<any, any> = BaseData<any, any>, 
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >(newDocument: DocumentData<T, K, Meta>) {

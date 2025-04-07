@@ -72,8 +72,7 @@
 //         },
 
 //         getSnapshot: function (
-//           category: symbol | string | Category | undefined,
-//           timestamp: any,
+//           category: Category | undefined,//           timestamp: any,
 //           id: number,
 //           snapshot: Snapshot<T, K>,
 //           snapshotStore: SnapshotStore<T, K>,
@@ -82,8 +81,7 @@
 //           throw new Error("Function not implemented.");
 //         },
 //         getSnapshotContainer: function (
-//           category: symbol | string | Category | undefined,
-//           timestamp: any,
+//           category: Category | undefined,//           timestamp: any,
 //           id: number,
 //           snapshot: Snapshot<BaseData, K>,
 //           snapshotStore: SnapshotStore<T, K>,

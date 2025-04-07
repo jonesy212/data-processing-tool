@@ -14,8 +14,8 @@ import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { isRealtimeDataItemArray } from '@/app/utils/dataTypeGuards';
+import { CreateSnapshotsPayload } from "../../../server/database/Payload";
 import { SnapshotDataType } from "../components/snapshots";
-import { CreateSnapshotsPayload } from "../database/Payload";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { Data } from "../models/data/Data";
 import { Subscriber } from "../users/Subscriber";
@@ -121,7 +121,7 @@ const snapshotDelegate = <T extends  BaseData<any>, K extends T = T, Meta extend
             payload: CreateSnapshotsPayload<T, K>,
             callback: (snapshots: Snapshot<T, K>[]) => void | null,
             snapshotDataConfig?: SnapshotConfig<T, K>[] | undefined,
-            category?: Category,
+            category?:  Category,
             categoryProperties?: string | CategoryProperties
           ) => Snapshot<T, K>[] | null;
           batchTakeSnapshot: (
@@ -203,15 +203,14 @@ const snapshotDelegate = <T extends  BaseData<any>, K extends T = T, Meta extend
             event: Event,
             id: number,
             snapshotStore: SnapshotStore<T, K>,
-            category: symbol | string | Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
+            category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
             dataStoreMethods: DataStore<T, K>,
             data: T,
           filter?: (snapshot: Snapshot<T, K>) => boolean,
           dataCallback?: (
             subscribers: Subscriber<T, K>[],
             snapshots: Snapshots<T, K>
-          ) => Promise<SnapshotUnion<T, K>[]>
+          ) => Promise<SnapshotUnion<T, K, Meta>[]>
         ) => Promise<Snapshot<T, K>[]>
         setData: (id: string, data: Map<string, Snapshot<T, K>>) => void;
         addData: (id: string, data: Partial<Snapshot<T, K>>) => void;
@@ -281,7 +280,7 @@ const snapshotDelegate = <T extends  BaseData<any>, K extends T = T, Meta extend
             snapshot2: Snapshot<T, K>;
             differences: Record<string, { snapshot1: any; snapshot2: any }>;
             versionHistory: {
-              snapshot1Version?: string | number | Version;
+              snapshot1Version?: string | number | Version | null ;
               snapshot2Version?: string | number | Version;
             };
           };

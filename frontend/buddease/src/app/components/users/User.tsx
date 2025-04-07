@@ -1,9 +1,18 @@
 // User.tsx
-import { SecuritySettings } from "@/app/components/settings/SecuritySettings";
 import { Attachment } from "@/app/components/documents/Attachment/attachment";
+import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { SecuritySettings } from "@/app/components/settings/SecuritySettings";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { UserPreferences } from "@/app/configs/UserPreferences";
 import { UserSettings } from "@/app/configs/UserSettings";
+import {
+    fetchUserAreaDimensions,
+    UnifiedMetadata
+} from "@/app/configs/database/MetaDataOptions";
+import { useMeta } from "@/app/configs/useMeta";
+import { useMetadata } from "@/app/configs/useMetadata";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { T, K, Meta } from "@/app/components/models/data/dataStoreMethods";
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
 import React from "react";
@@ -11,48 +20,34 @@ import { NotificationPreferences } from "../communications/chat/ChatSettingsModa
 import ChatSettings from "../communications/chat/ChatSettingsPanel";
 import { RealtimeUpdates } from "../community/ActivityFeedComponent";
 import {
-  CustomTransaction,
-  SmartContractInteraction,
+    CustomTransaction,
+    SmartContractInteraction,
 } from "../crypto/SmartContractInteraction";
 import { CryptoDocumentManager } from "../documents/cryptoDocumentManager";
-import CommonDetails, { SupportedData } from "../models/CommonData";
-import { BaseData, Data, SharedBaseData } from "../models/data/Data";
+import CommonDetails from "../models/CommonData";
+import { BaseData, SharedRelationshipData } from "../models/data/Data";
 import generateTimeBasedCode from "../models/realtime/TimeBasedCodeGenerator";
 import { Task } from "../models/tasks/Task";
 import { Team } from "../models/teams/Team";
 import { TeamMember } from "../models/teams/TeamMembers";
 import { Tag } from "../models/tracker/Tag";
 import { NFT } from "../nft/NFT";
+import { Product } from "../products/Product";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Project } from "../projects/Project";
 import { PrivacySettings } from "../settings/PrivacySettings";
-import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
-import SnapshotStore from "../snapshots/SnapshotStore";
+import { SnapshotStoreConfig, TagsRecord } from "../snapshots/";
+import { Snapshots } from "../snapshots/LocalStorageSnapshotStore";
 import { TwitterData } from "../socialMedia/TwitterIntegration";
+import { NotificationSettings } from "../support/NotificationSettings";
 import { DataProcessingTask } from "../todos/tasks/DataProcessingTask";
+import { SharedVersionData } from "../versions/VersionData";
 import { BlockchainAsset } from "./BlockchainAsset";
 import { BlockchainPermissions } from "./BlockchainPermissions";
 import { SocialLinks } from "./SocialLinks";
 import { UserRole } from "./UserRole";
 import UserRoles from "./UserRoles";
 import { ActivityLogEntry } from "./UserSlice";
-import { UserPreferences } from "@/app/configs/UserPreferences";
-import { SnapshotStoreConfig, TagsRecord } from "../snapshots/";
-import {  Snapshots } from "../snapshots/LocalStorageSnapshotStore";
-import { NotificationSettings } from "../support/NotificationSettings";
-import { Product } from "../products/Product";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import {
-  fetchUserAreaDimensions,
-  UnifiedMetaDataOptions,
-} from "@/app/configs/database/MetaDataOptions";
-import { useMeta } from "@/app/configs/useMeta";
-import { ExcludedFields } from "../routing/Fields";
-import { useMetadata } from "@/app/configs/useMetadata";
-import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
-import { SharedVersionData } from "../versions/VersionData";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
-import { SharedTimestamps, SharedStatusFlags, SharedIdentifiers } from '@/app/components/documents/RelatedProps'
 
 export interface User<
   T extends BaseData<any> = BaseData<any, any>,
@@ -62,7 +57,7 @@ export interface User<
 > extends UserData<T, K, Meta, ExcludedFields>,
   SharedTimestamps,
   SharedStatusFlags,
-  SharedIdentifiers
+  SharedIdentifiers<T, K, Meta, ExcludedFields>
 {
   username: string;
   firstName: string;
@@ -148,7 +143,8 @@ export interface User<
   preferences: UserPreferences | undefined;
 }
 
-interface ExtendedUser extends User {
+
+interface ExtendedUser<T extends BaseData = BaseData> extends BaseUser {
   workspaceUrl: string;
   workspaces: any[]; // Specify type as needed
   products: Product[]; // Specify type as needed
@@ -202,11 +198,11 @@ export interface UserData<
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof UserData<T, K, Meta> = never
 > extends BaseData<T, K, StructuredMetadata<T, K>, Attachment>,
-  SharedBaseData<K>,
+  SharedRelationshipData<K>,
   SharedVersionData,
   SharedTimestamps,
   SharedStatusFlags,
-  SharedIdentifiers {
+  SharedIdentifiers<T, K, Meta, ExcludedFields> {
   datasets?: string;
   username: string;
   tasks?: Task<T, K, Meta>[];
@@ -576,7 +572,7 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
           ...rest,
           id: id ? id.toString() : "",
           value: user.value ? user.value.toString() : undefined,
-          analysisResults: user.analysisResults as DataAnalysisResult<T>[],
+          analysisResults: user.analysisResults,
           label: label ? label.toString() : label,
           data: user.data as UserData<
             BaseData<any, any, StructuredMetadata<any, any>>,
@@ -595,7 +591,8 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
             ({} as StructuredMetadata<
               BaseData<any, any, StructuredMetadata<any, any>, Attachment>,
               BaseData<any, any, StructuredMetadata<any, any>, Attachment>
-            >),
+              >),
+          latestVersion: user.latestVersion
         }}
       />
     );
@@ -796,4 +793,5 @@ export const usersDataSource: Record<string, UserData> = {
 };
 
 export default UserDetails;
-export type { Address, Education, Employment, SocialLinks, ExtendedUser };
+export type { Address, Education, Employment, ExtendedUser, SocialLinks };
+

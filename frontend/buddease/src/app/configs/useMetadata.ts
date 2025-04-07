@@ -1,7 +1,7 @@
 import SecurityAudit from "@/app/components/security/SecurityAudit"; // Assuming this is the correct path to the SecurityAudit class
 import { baseConfig } from '@/app/configs/BaseConfig';
 import metadata from '@/app/layout';
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useAuth } from '../components/auth/AuthContext';
 import { BaseData } from "../components/models/data/Data";
 import { UserRole } from '../components/users/UserRole';
@@ -27,16 +27,16 @@ function useMetadata<
   } = {},
   projectId?: number,
 ): UnifiedMetadata<T, K, Meta, ExcludedFields> & {
-  options: UnifiedMetaDataOptions<T, K>;
-  updateOptions: (newOptions: Partial<UnifiedMetaDataOptions<T, K>>) => void;
+  options: UnifiedMetadata<T, K>;
+  updateOptions: (newOptions: Partial<UnifiedMetadata<T, K>>) => void;
 } {
   // Initialize options state
-  const [options, setOptions] = useState<UnifiedMetaDataOptions<T, K>>({
+  const [options, setOptions] = useState<UnifiedMetadata<T, K>>({
     // Default options here
   });
 
   // Function to update options
-  const updateOptions = (newOptions: Partial<UnifiedMetaDataOptions<T, K>>) => {
+  const updateOptions = (newOptions: Partial<UnifiedMetadata<T, K>>) => {
     setOptions((prevOptions) => ({ ...prevOptions, ...newOptions }));
   };
 
@@ -119,7 +119,7 @@ function useMetadata<
 
     return {
       area,
-      currentMeta: structuredMetadata as Meta,
+      currentMeta: structuredMetadata,
       projectId,
       overrides,
       relatedKeys,
@@ -133,6 +133,7 @@ function useMetadata<
       childIds: [],
       relatedData: [],
       latestVersion: structuredMetadata.latestVersion,
+      schema: structuredMetadata.schema
     };
   }, [area, relatedKeys, overrides, projectId, userRole, securityAudit]);
 

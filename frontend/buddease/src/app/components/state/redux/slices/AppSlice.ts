@@ -1,7 +1,10 @@
+import { UserProfile, userService } from "@/app/api/ApiUser";
 import { CalendarManagerState } from "@/app/components/calendar/CalendarSlice";
+import { ThemeEnum } from "@/app/components/libraries/ui/theme/Theme";
 import { RealtimeDataState } from "@/app/components/state/redux/slices/RealtimeDataSlice";
 import { ProjectOwnerState } from "@/app/components/users/ProjectOwnerSlice";
 import { UserManagerState } from "@/app/components/users/UserSlice";
+import { useSecureUserId } from "@/app/components/utils/useSecureUserId";
 import { DataAnalysisState } from "@/app/typings/dataAnalysisTypes";
 import { ActionReducerMapBuilder, createSlice, EntityState, PayloadAction } from "@reduxjs/toolkit";
 import { AppActions } from '../../../actions/AppActions';
@@ -25,10 +28,6 @@ import { AlignmentOptions, ToolbarState } from "./toolbarSlice";
 import { TrackerManagerState } from "./TrackerSlice";
 import { VersionState } from "./VersionSlice";
 import { VideoState } from "./VideoSlice";
-import { ThemeEnum } from "@/app/components/libraries/ui/theme/Theme";
-import { UserProfile, userService } from "@/app/components/users/ApiUser";
-import { useSecureUserId } from "@/app/components/utils/useSecureUserId";
-import { User } from "@/app/components/users/User";
 
 interface AppState {
     user: UserProfile,

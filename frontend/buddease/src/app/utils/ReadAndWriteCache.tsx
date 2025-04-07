@@ -1,11 +1,11 @@
-import { T, K } from "@/app/components/models/data/dataStoreMethods";
+import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import UserService, { userId, userService } from "../api/ApiUser";
 import { authToken } from "../components/auth/authToken";
 import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
 import { RealtimeData } from "../components/models/realtime/RealtimeData";
 import { CustomPhaseHooks } from "../components/phases/Phase";
 import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import UserService, { userId, userService } from "../components/users/ApiUser";
 import { VersionHistory, versionHistory } from "../components/versions/VersionData";
 import { VideoData } from "../components/video/Video";
 import { BackendConfig, backendConfig } from "../configs/BackendConfig";

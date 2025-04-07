@@ -1,6 +1,6 @@
 // CryptoWatchlist.ts
-
-import { DocumentPath } from "../documents/DocumentGenerator";
+import { BaseData } from '@/app/components/models/data/Data';
+import { DocumentPath } from "../../../server/DocumentGenerator";
 
 // Define the CryptoWatchlist class
 class CryptoWatchlist {
@@ -16,10 +16,27 @@ class CryptoWatchlist {
       this.createdAt = createdAt;
       this.updatedAt = updatedAt;
     }
+
+
+    addAsset(asset: string): void {
+      if (!this.assets.includes(asset)) {
+        this.assets.push(asset);
+        this.updatedAt = new Date();
+      }
+    }
+    
+    removeAsset(asset: string): void {
+      this.assets = this.assets.filter((a) => a !== asset);
+      this.updatedAt = new Date();
+    }
   }
   
 // Function to simulate loading a crypto watchlist from a database
-async function loadCryptoWatchlistFromDatabase(documentId: DocumentPath, userId: string): Promise<CryptoWatchlist | null> {
+async function loadCryptoWatchlistFromDatabase<
+  T extends BaseData<any>,
+  K extends T = T
+  >(documentId: DocumentPath<T, K>,
+    userId: string): Promise<CryptoWatchlist | null> {
   try {
     // Simulate fetching the crypto watchlist data from the database
     // For demonstration purposes, let's assume we have a hardcoded watchlist for the user

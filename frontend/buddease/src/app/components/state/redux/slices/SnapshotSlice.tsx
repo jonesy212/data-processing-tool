@@ -1,5 +1,4 @@
 // snapshots/SnapshotSlice.ts
-import { Payload } from '@/app/components/database/Payload';
 import { SnapshotManager, useSnapshotManager } from "@/app/components/hooks/useSnapshotManager";
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from "@/app/components/models/data/Data";
@@ -15,6 +14,7 @@ import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreCon
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { Payload } from '@/server/database/Payload';
 
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { Subscriber } from "@/app/components/users/Subscriber";
@@ -355,8 +355,7 @@ export const useSnapshotSlice = createSlice({
             initialData: T,
             snapshotData: SnapshotData<any, K>,
             snapshotStoreConfig: SnapshotStoreConfig<T, K>,
-            category: symbol | string | Category | undefined,
-            additionalData: any
+            category: Category | undefined,            additionalData: any
             ): Promise<Snapshot<BaseData, BaseData>> {
             throw new Error("Function not implemented.");
           },
@@ -633,8 +632,7 @@ export const useSnapshotSlice = createSlice({
               payload: FetchSnapshotPayload<BaseData>,
               snapshotStore: SnapshotStore<BaseData, BaseData>,
               payloadData: BaseData | Data,
-              category: symbol | string | Category | undefined,
-              timestamp: Date,
+              category: Category | undefined,              timestamp: Date,
               data: BaseData,
               delegate: SnapshotWithCriteria<BaseData, BaseData>[]
             ) => Snapshot<BaseData, BaseData>

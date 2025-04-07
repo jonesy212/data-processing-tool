@@ -3,13 +3,13 @@ import SearchComponent, {
   SearchComponentProps,
 } from "@/app/pages/searchs/SearchComponent";
 import React, { useEffect, useState } from "react";
+import { userId } from "../../api/ApiUser";
 import useErrorHandling from "../hooks/useErrorHandling";
 import { SearchLogger } from "../logging/Logger";
 import LoadingSpinner from "../models/tracker/LoadingSpinner";
-import { userId } from "../users/ApiUser";
-import SearchResult from "./SearchResult";
 import { sanitizeInput } from "../security/SanitizationFunctions";
 import { Entity } from "./FuzzyMatch";
+import SearchResult from "./SearchResult";
 
 const SearchPage: React.FC<SearchComponentProps> = ({
   componentSpecificData,

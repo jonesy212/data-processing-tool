@@ -2,11 +2,12 @@
 
 import { DocumentFormattingOptions } from '@/app/components/documents/ DocumentFormattingOptionsComponent';
 import { BaseData } from '@/app/components/models/data/Data';
-import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { ContentState, EditorState } from 'draft-js';
 import { Dispatch, SetStateAction } from "react";
+import { DocumentTypeEnum } from '../../../server/DocumentGenerator';
 import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
 import { Phase } from "../phases/Phase";
 import { TagsRecord } from '../snapshots';
@@ -17,7 +18,6 @@ import AppVersionImpl from "../versions/AppVersion";
 import { VersionData } from '../versions/VersionData';
 import { ModifiedDate } from "./DocType";
 import { DocumentData } from "./DocumentBuilder";
-import { DocumentTypeEnum } from './DocumentGenerator';
 import { DocumentOptions } from "./DocumentOptions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 

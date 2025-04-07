@@ -6,11 +6,10 @@ import { UIActions } from "../../actions/UIActions";
 import useErrorHandling from "../../hooks/useErrorHandling";
 import { NotificationType } from "../../support/NotificationContext";
 
-  export type ProgressBarAnimationType = "linear" | "ease-in-out" | "ease-out";
+export type ProgressBarAnimationType = "linear" | "ease-in-out" | "ease-out";
 
-  interface Progress {
+interface Progress {
     id: string;
-    
     name:string,
     color:string,
     description: string,

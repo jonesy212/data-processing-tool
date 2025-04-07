@@ -13,28 +13,28 @@ import useModalFunctions from "@/app/pages/dashboards/ModalFunctions";
 import ScheduleEventModal from "@/app/ts/ScheduleEventModal";
 import { makeAutoObservable } from "mobx";
 import {
-    getDefaultDocumentOptions,
+  getDefaultDocumentOptions,
 } from "../../documents/DocumentOptions";
 import useRealtimeData from "../../hooks/commHooks/useRealtimeData";
 import { BaseData, Data } from "../../models/data/Data";
 import {
-    PriorityTypeEnum,
-    StatusType,
+  PriorityTypeEnum,
+  StatusType,
 } from "../../models/data/StatusType";
 import { Member } from "../../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
 } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { VideoData } from "../../video/Video";
 import {
-    AssignEventStore,
-    ReassignEventResponse,
-    useAssignEventStore,
+  AssignEventStore,
+  ReassignEventResponse,
+  useAssignEventStore,
 } from "./AssignEventStore";
 import CalendarSettingsPage from "./CalendarSettingsPage";
 import { implementThen } from "./CommonEvent";
@@ -46,25 +46,25 @@ import { useDispatch } from "react-redux";
 import { EventActions } from "../../actions/EventActions";
 import { CalendarEvent } from "../../calendar/CalendarEvent";
 import {
-    AddEventPayload,
-    CalendarActionPayload,
-    CalendarActionType,
-    RemoveEventPayload,
-    SetEventStatusPayload,
-    UpdateEventPayload,
-} from "../../database/CalendarActionPayload";
+  AddEventPayload,
+  CalendarActionPayload,
+  CalendarActionType,
+  RemoveEventPayload,
+  SetEventStatusPayload,
+  UpdateEventPayload,
+} from "../../../../server/database/CalendarActionPayload";
 import { combinedEvents } from "../../event/Event";
 import {
-    createSnapshotStore,
-    SnapshotStoreOptions,
-    useSnapshotManager,
+  createSnapshotStore,
+  SnapshotStoreOptions,
+  useSnapshotManager,
 } from "../../hooks/useSnapshotManager";
 import { Category } from "../../libraries/categories/generateCategoryProperties";
 import { SnapshotContainer, snapshotContainer } from "../../snapshots";
 import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import {
-    SnapshotOperation,
-    SnapshotOperationType,
+  SnapshotOperation,
+  SnapshotOperationType,
 } from "../../snapshots/SnapshotActions";
 
 import { id } from 'ethers';
@@ -276,8 +276,7 @@ class CalendarManagerStoreClass<T extends  BaseData<any>,
   public timestamp: Date;
 
   constructor(
-    category: symbol | string | Category | undefined,
-    documentManager: DocumentStore<T, K>,
+    category: Category | undefined,    documentManager: DocumentStore<T, K>,
     storeProps: SnapsotStoreOptions<T, K>
   ) {
     this.timestamp = new Date(); // Initialize default value

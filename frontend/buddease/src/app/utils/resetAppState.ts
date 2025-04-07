@@ -1,14 +1,13 @@
 // resetAppState.ts
 
 import { useDispatch } from "react-redux";
-import { resetState } from "../components/state/redux/slices/AppSlice";
-import userSettings from "../configs/UserSettings";
-import useSettingManagerStore from "../components/state/stores/SettingsStore";
+import UserService from "../api/ApiUser";
 import { useThemeConfig } from "../components/hooks/userInterface/ThemeConfigContext";
-import { isUserLoggedIn } from "../pages/forms/utils/CommonLoginLogic";
-import { ThemeConfig } from "../components/libraries/ui/theme/ThemeConfig";
 import { ThemeEnum } from "../components/libraries/ui/theme/Theme";
-import UserService from "../components/users/ApiUser";
+import { ThemeConfig } from "../components/libraries/ui/theme/ThemeConfig";
+import { resetState } from "../components/state/redux/slices/AppSlice";
+import useSettingManagerStore from "../components/state/stores/SettingsStore";
+import { isUserLoggedIn } from "../pages/forms/utils/CommonLoginLogic";
 
 
 const dispatch = useDispatch()
@@ -142,4 +141,4 @@ const resetUserPreferences = () => {
 };
 
 
-export { resetAppState }
+export { resetAppState };

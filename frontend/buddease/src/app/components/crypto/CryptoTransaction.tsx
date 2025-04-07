@@ -12,6 +12,7 @@ interface CryptoTransaction {
   valuePerUnit: number; // Value per unit at the time of transaction
   status: "PENDING" | "COMPLETED" | "FAILED";
 }
+
 const CryptoTransaction: React.FC<{ transaction: CryptoTransaction }> = ({
   transaction,
 }) => {

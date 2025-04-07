@@ -1,9 +1,10 @@
 // RelatedProps.ts
-import { Label } from '@/app/components/projects/branding/BrandingSettings';
-import { AllTypes } from '@/app/components/typings/PropTypes';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { T, K, Meta } from "@/app/components/models/data/dataStoreMethods";
+import { BaseData } from "@/app/components/models/data/Data";
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { AllTypes } from '@/app/components/typings/PropTypes';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 interface SharedTimestamps {
 	createdAt?: string | Date | undefined;
@@ -78,17 +79,22 @@ interface SharedStatusFlags {
 	isUnderMaintenance?: boolean;
 }
 
-interface SharedIdentifiers {
+interface SharedIdentifiers<
+	T extends BaseData<any>,
+	K extends T = T,
+	Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+	ExcludedFields extends keyof T	= never
+> {
 	_id?: string;
 	id?: string | number | undefined;
 	type?: string | AllTypes | null;
 	title?: string;
-	label?: Label | string | null;
+	label?: Label | string | Record<string, string> | null
 	key?: string;
-	value?: string | number | Snapshot<T, K<T>, Meta<T, K<T>>, ExcludedFields> | null | undefined
+	value?: string | number | Snapshot<T, K, Meta, ExcludedFields> | null;
 	name?: string
 	category?: symbol | string | Category | undefined,
 }
 
 
-export type { SharedTimestamps, SharedStatusFlags, SharedIdentifiers }
+export type { SharedIdentifiers, SharedStatusFlags, SharedTimestamps };

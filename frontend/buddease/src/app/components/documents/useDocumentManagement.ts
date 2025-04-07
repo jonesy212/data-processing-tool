@@ -1,10 +1,10 @@
 // useDocumentManagement.ts
-
-import { useAuth } from "@/app/components/auth/AuthContext";
+import { useAuth } from "@/server/auth/AuthContext";
 import useErrorHandling from "../hooks/useErrorHandling";
 import axiosInstance from "../security/csrfToken";
 import * as apiDocument from '../../../app/api/ApiDocument'
 import useDocumentStore from "../state/stores/DocumentStore";
+import { DocumentObject } from '@/app/components/state/redux/slices/DocumentSlice';
 
 const useDocumentManagement = () => {
   const { handleError } = useErrorHandling();

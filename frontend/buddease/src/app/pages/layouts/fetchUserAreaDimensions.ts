@@ -5,10 +5,83 @@ interface AreaDimensions {
   height: number;
 }
 
-interface FetchOptions {
-  elementId?: string; 
-  listenForResize?: boolean; 
-  onChange?: (dimensions: AreaDimensions) => void; 
+interface FetchOptions<T extends BaseData = BaseData, K extends T = T> {
+  /**
+   * Core Data Fetching Options
+   */
+  /**
+   * Whether to process the snapshot with category logic
+   * @default true
+   */
+  processCategory?: boolean;
+  
+  /**
+   * Additional headers for the request
+   */
+  additionalHeaders?: Record<string, string>;
+  
+  /**
+   * Cache configuration
+   */
+  cache?: {
+    enabled: boolean;
+    maxAge?: number;
+    staleWhileRevalidate?: number;
+  };
+  
+  /**
+   * Error handling strategy
+   */
+  errorHandling?: 'throw' | 'log' | 'silent';
+  
+  /**
+   * Transformation to apply to the response
+   */
+  transform?: (data: SnapshotDataType<T, K>) => any;
+  
+  /**
+   * Logger instance
+   */
+  logger?: typeof UILogger;
+
+  /**
+   * UI/DOM Related Options
+   */
+  /**
+   * Element ID to observe
+   */
+  elementId?: string;
+  
+  /**
+   * Whether to listen for resize events
+   * @default false
+   */
+  listenForResize?: boolean;
+  
+  /**
+   * Callback when dimensions change
+   */
+  onChange?: (dimensions: AreaDimensions) => void;
+
+  /**
+   * Additional metadata
+   */
+  metadata?: {
+    /**
+     * Request origin context
+     */
+    source?: string;
+    
+    /**
+     * Priority level
+     */
+    priority?: 'low' | 'medium' | 'high';
+    
+    /**
+     * Timeout in milliseconds
+     */
+    timeout?: number;
+  };
 }
 
 interface Area {

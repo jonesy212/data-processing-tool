@@ -5,10 +5,10 @@ import { call, put, takeEvery, takeLatest } from "redux-saga/effects";
 import { addToHistory, redo, undo } from "../slices/UndoRedoSlice";
 
 // Import the Message type from your application
+import userService from "@/app/api/ApiUser";
 import { UndoRedoActions } from "@/app/components/actions/UndoRedoActions";
 import { authToken } from "@/app/components/auth/authToken";
 import Logger from "@/app/components/logging/Logger";
-import userService from "@/app/components/users/ApiUser";
 import { useSecureUserId } from "@/app/components/utils/useSecureUserId";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";

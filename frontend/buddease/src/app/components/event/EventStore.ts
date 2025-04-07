@@ -12,7 +12,7 @@ import { SubscriberCollection } from '@/app/components/users/SubscriberCollectio
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
-import { UpdateSnapshotPayload } from '../database/Payload';
+import { UpdateSnapshotPayload } from '../../../server/database/Payload';
 import { CombinedEvents } from '../hooks/useSnapshotManager';
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
@@ -175,7 +175,7 @@ const defaultEventStore = async <
     criteria: {} as CriteriaType,
     priority: "high",
     version: 1,
-    data: {} as InitializedData<T>,
+    data: {} as InitializedData<T, K>,
     subscribers: [],
     storeConfig: {} as StoreConfig,
     initialState: {} as InitializedState<T, K>,

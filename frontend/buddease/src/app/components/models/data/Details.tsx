@@ -17,6 +17,7 @@ import { CommonData, Customizations } from "../CommonData";
 import ListGenerator from "./../../../../app/generators/ListGenerator";
 import { Comment } from "./Comments";
 import { BaseData, Data } from "./Data";
+import { SharedMetadata, CoreMetadata } from "@/app/configs/metadata/createMetadataState";
 
 export type DataAndEventDetails = Data<any, any, any> | CommonEvent;
 
@@ -24,7 +25,7 @@ interface SharedDetails<
   T extends BaseData<any, any, any, Attachment>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> {
+> extends SharedMetadata<T, K>{
   participants: Participant[]
   uploadedAt: Date
   phase: Phase
@@ -32,10 +33,8 @@ interface SharedDetails<
   fakeData?: FakeData
   comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
   isCompleted: boolean;
-  currentMeta: Meta;
   previousMeta?: StructuredMetadata<T, K>;
-  currentMetadata: UnifiedMetadata<T, K>
-  label: Label
+  label: Label;
 }
 
 interface DetailsProps<

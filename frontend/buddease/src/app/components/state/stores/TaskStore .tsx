@@ -1,5 +1,7 @@
 //TaskManagerStore.tsx
 import { addSnapshot } from '@/app/api/SnapshotApi';
+import { NotificationType } from "@/app/context/NotificationContext";
+import { useSecureProjectId } from '@/app/components/utils/useSecureProjectId'
 import { saveAs } from '@/app/components/documents/editing/autosave';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { generateNewTask } from "@/app/generators/GenerateNewTask";
@@ -13,14 +15,14 @@ import { useSnapshotManager } from "../../hooks/useSnapshotManager";
 import { BaseData, Data } from "../../models/data/Data";
 import { PriorityTypeEnum, TaskStatus } from "../../models/data/StatusType";
 import { Task, tasksDataSource } from "../../models/tasks/Task";
-import { CustomSnapshotData, Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
 import { updateSnapshot } from '../../snapshots/snapshotHandlers';
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import { useSnapshotStore } from '../../snapshots/useSnapshotStore';
 import {
     NotificationTypeEnum,
     useNotification,
-} from "../../support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { taskService } from "../../tasks/TaskService";
 import { Todo } from "../../todos/Todo";
@@ -31,6 +33,8 @@ import { useApiManagerSlice } from "../redux/slices/ApiSlice";
 import { clearSnapshots, removeSnapshot } from '../redux/slices/SnapshotSlice';
 import { useTaskManagerSlice } from "../redux/slices/TaskSlice";
 import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
+import { AllStatus } from '@/app/components/state/stores/DetailsListStore';
+import { Message } from '@/app/generators/GenerateChatInterfaces'
 
 export interface TaskManagerStore {
   tasks: Record<string, Task[]>;
@@ -51,7 +55,7 @@ export interface TaskManagerStore {
 
   updateTaskPriority: (taskId: string, priority: PriorityTypeEnum) => void;
   filterTasksByStatus: (
-    status: "pending" | "inProgress" | "completed"
+    status: TaskStatus
   ) => Task[];
   getTaskCountByStatus: (
     status: "pending" | "inProgress" | "completed"
@@ -121,7 +125,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
   const assignedTaskStore = useAssignTaskStore();
   // Initialize SnapshotStore
 
-  const initSnapshot = {} as Snapshot<Data, Data>;
+  const initSnapshot = {} as Snapshot<Data<BaseData<any>>, Data<BaseData<any>>>;
 
   const dispatch = (action: any) => {
     const { type, payload } = action;
@@ -238,14 +242,10 @@ const useTaskManagerStore = (): TaskManagerStore => {
   oldUserId: string,
   newUserId: string
 ) => {
-  const reassignedTasks =
-    (assignedTaskStore[taskId] as Task[])?.map((task) => {
-      if (task.userId === oldUserId) {
-        return { ...task, userId: newUserId };
-      }
-      return task;
-    }) || [];
-
+  const tasks = assignedTaskStore[taskId] ?? [];
+  const reassignedTasks = tasks.map((task) =>
+    task.userId === oldUserId ? { ...task, userId: newUserId } : task
+  );
   setAssignedTaskStore({
     ...assignedTaskStore,
     [taskId]: reassignedTasks,
@@ -361,7 +361,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
     // Reset input fields after adding a task
     setTaskTitle("");
     setTaskDescription("");
-    setTaskStatus("pending");
+    setTaskStatus(TaskStatus.Pending);
   };
 
   const removeTask = (taskId: string) => {
@@ -877,7 +877,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
       }, {} as Record<string, Task>);
   
       // Simulate updating the state with the new tasks object
-      setTasks(updatedTasks);
+      setTasks(Object.values(updatedTasks));
     } catch (error) {
       console.error("Error archiving completed tasks", error);
     }
@@ -1196,8 +1196,11 @@ export { useTaskManagerStore };
   async function addToSnapshotList(
   snapshot: SnapshotStore<any>,
   subscribers: Subscriber<Data | CustomSnapshotData>[]): Promise<void> {
+  
+  const initialStoreId = useSecureStoreId()
+    
   // Add the snapshot to the SnapshotManager
-  (await  useSnapshotManager()).addSnapshot(snapshot);
+  (await  useSnapshotManager(initialStoreId)).addSnapshot(snapshot);
    }
 
 function tasksDataSourceToCSV(tasksDataSource: Record<string, Task>) {

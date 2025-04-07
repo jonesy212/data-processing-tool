@@ -1,13 +1,16 @@
 // SnapshotData.ts
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
+import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
 import { SnapshotDataType } from '@/app/components/snapshots';
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { SharedMetadata } from '@/app/configs/metadata/createMetadataState';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { Order } from "../crypto/Orders";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { BaseData, SharedBaseData } from "../models/data/Data";
+import { BaseData, ChildRelationship, SharedRelationshipData } from "../models/data/Data";
 import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
@@ -15,7 +18,6 @@ import { MapExcludedFieldsToMetaKeys } from "../routing/Fields";
 import { Subscription } from "../subscriptions/Subscription";
 import { AuditRecord } from "../users/Subscriber";
 import { SubscriberCollection } from "../users/SubscriberCollection";
-import Version from "../versions/Version";
 import { VersionHistory } from "../versions/VersionData";
 import { CoreSnapshot, Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from "./LocalStorageSnapshotStore";
 import { SnapshotConfig } from "./SnapshotConfig";
@@ -25,16 +27,17 @@ import SnapshotStore from "./SnapshotStore";
 import { InitializedData } from "./SnapshotStoreOptions";
 import { TagsRecord } from "./SnapshotWithCriteria";
 import { SnapshotStoreProps } from "./useSnapshotStore";
-import { ExcludedFields } from '@/app/components/routing/Fields';
-import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
 
 interface CustomSnapshotData<
   T extends BaseData<any>,
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
-> extends SharedBaseData<K>, SharedIdentifiers {
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  > extends BaseData<T, K, Meta>,
+  SharedRelationshipData<K>, SharedIdentifiers<T, K, Meta> {
   timestamp?: string | number | Date | undefined
   orders?: Order[];
+  customProperty?: unknown; 
+
 }
 
 // Original type of snapshotData
@@ -47,7 +50,7 @@ interface SnapshotRelationships<
 > {
   parentId?: string | null;
   parent?: Snapshot<T, K> | null;
-  children?: CoreSnapshot<T, K>[];
+  children?: ChildRelationship<T, K, Meta> | CoreSnapshot<T, K, Meta>[];
   childIds?: K[];
   getParentId(id: string, snapshot: Snapshot<T, K>): string | null;
   getChildIds(id: string, childSnapshot: CoreSnapshot<T, K>): (string | number | undefined)[]
@@ -77,14 +80,15 @@ interface SnapshotRelationships<
   ) => Snapshot<T, K> | null
 }
 
-
 interface SnapshotData<
   T extends BaseData<any> = BaseData<any, any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = never,
-> extends SnapshotBase<T, K>,
-  SnapshotMethods<T, K>, SharedIdentifiers {
+> extends SnapshotBase<T, K, Meta>,
+  SnapshotMethods<T, K, Meta>, // Extends SnapshotMethods
+  SharedMetadata<T, K>,
+  SharedIdentifiers<T, K, Meta, ExcludedFields> {
   _id?: string;
   storeId: number;
   snapshotIds?: string[];
@@ -92,9 +96,10 @@ interface SnapshotData<
   description?: string | null;
   tags?: TagsRecord<T, K> | string[] | undefined
   key?: string;
-  state?: SnapshotsArray<T> | null;
+  state?: SnapshotsArray<T, K, Meta> | null;
   topic?: string;
   meta?: StructuredMetadata<T, K>;
+  criteria?: CriteriaType
   configOption?:
     | string
     | SnapshotConfig<T, K>
@@ -102,7 +107,6 @@ interface SnapshotData<
     | null;
   priority?: string | PriorityTypeEnum;
   subscription?: Subscription<T, K> | null;
-  version?: string | number | Version<T, K> | undefined
   versionHistory?: VersionHistory
   config: Promise<SnapshotStoreConfig<T, K> | null>;
   metadata?: UnifiedMetadata<T, K, Meta, MapExcludedFieldsToMetaKeys<T, K, StructuredMetadata<T, K>, ExcludedFields>
@@ -122,8 +126,8 @@ interface SnapshotData<
   updatedAt?: string | Date;
   snapshotStore: SnapshotStore<T, K> | null;
   status?: StatusType | undefined
-  data: InitializedData<T>| null | undefined
-  category?: Category
+  data: InitializedData<T, K>| null | undefined
+  category?: string | symbol | Category
   categoryProperties?: CategoryProperties | undefined
   timestamp: string | number | Date | undefined;
   setSnapshotCategory: (id: string, newCategory: Category) => void;

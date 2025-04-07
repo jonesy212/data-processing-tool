@@ -1,11 +1,15 @@
 // DocumentBuilderComponent.tsx
 import { BaseData } from '@/app/components/models/data/Data';
+import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
+import { ExcludedFields } from '@/app/components/routing/Fields';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useDispatch } from 'react-redux';
 import { DocumentObject } from "../state/redux/slices/DocumentSlice";
 import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
 import DocumentBuilder, { saveDocument } from "./DocumentBuilder";
 import { getDefaultDocumentOptions } from "./DocumentOptions";
+
 const dispatch = useDispatch()
 
 function formatDocument<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
@@ -73,6 +77,20 @@ const buildDocument = async <T extends  BaseData<any>, K extends T = T, Meta ext
 
 // Usage of DocumentBuilder
 const DocumentBuilderComponent = () => {
+   // Initialize metadata state with proper types
+   const [currentMetadata, setCurrentMetadata] = useState<UnifiedMetadata<T, K, Meta, ExcludedFields>>(
+    getDefaultMetadata() // You'll need to implement this function
+  );
+  const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetadata<T, K, Meta, ExcludedFields>>(
+    getDefaultMetadata()
+  );
+
+  // Initialize access history
+  const [accessHistory, setAccessHistory] = useState<AccessHistory[]>([]);
+  
+  // Get last modified date
+  const [lastModifiedDate, setLastModifiedDate] = useState<Date>(new Date());
+
   return (
     <DocumentBuilder
       isDynamic={true}
@@ -85,10 +103,10 @@ const DocumentBuilderComponent = () => {
       }}
       documents={[]}
       buildDocument={buildDocument} // Pass the buildDocument function as a prop
-      currentMetadata={}
-      previousMetadata={}
-      accessHistory={}
-      lastModifiedDate={}
+      currentMetadata={currentMetadata}
+      previousMetadata={previousMetadata}
+      accessHistory={accessHistory}
+      lastModifiedDate={lastModifiedDate}
      
     />
   );

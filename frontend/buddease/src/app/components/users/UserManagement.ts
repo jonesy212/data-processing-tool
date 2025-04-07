@@ -1,8 +1,7 @@
 import { User } from '@/app/components/users/User';
 import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
-import CommonDetails from '../models/CommonData';
+import { userService } from '../../api/ApiUser';
 import { UserRole } from './UserRole';
-import { userService } from './ApiUser';
 
 class UserManagement {
  

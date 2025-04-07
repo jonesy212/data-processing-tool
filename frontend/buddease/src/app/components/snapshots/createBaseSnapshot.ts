@@ -84,8 +84,7 @@ const createSnapshot = async <
   snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields> | null,
   snapshotId: string | null,
   data: T,
-  category: symbol | string | Category | undefined,
-  storeProps: SnapshotStoreProps<T, K>,
+  category: Category | undefined,  storeProps: SnapshotStoreProps<T, K>,
   callback?: (snapshotStore: SnapshotStore<T, K> | null) => void
 ): Promise<{ snapshot: Snapshot<T, K>; snapshotStore: SnapshotStore<T, K> }> => {
   
@@ -136,12 +135,15 @@ const createSnapshot = async <
 
 function createBaseSnapshot<
   T extends  BaseData<any>, 
-  K extends T = T>(
+  K extends T = T
+>(
     baseData: T,
     baseMeta: Map<string, Snapshot<T, K>>,
     storeProps?: SnapshotStoreProps<T, K>,
     storeOptions?: SnapshotStoreOptions<T, K>,
-  ): Promise<{ data: Snapshot<T, K> }> {
+): Promise<{
+  data: Snapshot<T, K>
+}> {
     return new Promise ((resolve, reject) => ({
       data: baseData,
       meta: baseMeta,
@@ -204,15 +206,14 @@ function createBaseSnapshot<
         async mapSnapshots(
           storeIds: number[],
           snapshotId: string,
-          category: symbol | string | Category | undefined,
-          snapshot: Snapshot<T, K>,
+          category: Category | undefined,          snapshot: Snapshot<T, K>,
           timestamp: string | number | Date | undefined,
           type: string,
           event: Event,
           id: number,
           snapshotStore: SnapshotStore<T, K>,
           data: T
-        ): Promise<SnapshotsArray<T>> {
+        ): Promise<SnapshotsArray<T, K, Meta>> {
           try {
             const snapshotMap = new Map<string, Snapshot<T, K>>();
             snapshotMap.set(snapshotId, snapshot);
@@ -226,7 +227,7 @@ function createBaseSnapshot<
               fetch: async () => ({}),
             };
 
-            // Use type guard to ensure it’s a `SnapshotsArray<T>`
+            // Use type guard to ensure it’s a `SnapshotsArray<T, K, Meta>`
             if (isSnapshotArrayState(
               snapshotArray[0], 
               (id, snapshotData, category, callback, 
@@ -242,7 +243,7 @@ function createBaseSnapshot<
             )) {
               return Promise.resolve(toSnapshotsArray(snapshotArray));
             } else {
-              throw new Error("The mapped snapshots are not of type SnapshotsArray<T>");
+              throw new Error("The mapped snapshots are not of type SnapshotsArray<T, K, Meta>");
             }
           } catch (error) {
             console.error("Error mapping snapshots:", error);
@@ -423,8 +424,7 @@ function createBaseSnapshot<
       removeItem: (key: string) => Promise.resolve(),
       getSnapshot: (
         snapshot:  (id: string) => Promise<{
-        category: symbol | string | Category | undefined,
-        timestamp: any;
+        category: Category | undefined,        timestamp: any;
         id: any;
         snapshot: T;
         snapshotStore: SnapshotStore<T, K>;
@@ -499,7 +499,7 @@ function createBaseSnapshot<
                   callback,
                   snapshot
 
-                ): [] | SnapshotsArray<T> => {
+                ): [] | SnapshotsArray<T, K, Meta> => {
                   // Implement the subscription logic
                   // todo udate impementation
                   return []
@@ -657,7 +657,7 @@ function createBaseSnapshot<
               const versionInfo = createVersionInfo(versionData)
               // Create a new snapshot instance
               const newSnapshot: Snapshot<T, K> = {
-                data: data as InitializedData<T> | undefined,
+                data: data as InitializedData<T, K> | undefined,
                 meta: meta,
                 snapshotStoreConfig: snapshotStoreConfig,
                 getSnapshotItems: getSnapshotItems,
@@ -669,8 +669,7 @@ function createBaseSnapshot<
                 getAllKeys: function (
                   storeId: number,
                   snapshotId: string,
-                  category: symbol | string | Category | undefined,
-                  snapshot: Snapshot<T, K>,
+                  category: Category | undefined,                  snapshot: Snapshot<T, K>,
                   timestamp: string | number | Date | undefined,
                   type: string,
                   event: Event,
@@ -817,8 +816,7 @@ function createBaseSnapshot<
                   snapshot: SnapshotStore<T, K> | Snapshot<T, K> | null,
                   snapshotId: string | null,
                   snapshotData: SnapshotData<T, K>,
-                  category: symbol | string | Category | undefined,
-                  snapshotConfig: SnapshotStoreConfig<T, K>,
+                  category: Category | undefined,                  snapshotConfig: SnapshotStoreConfig<T, K>,
                   callback: (snapshotStore: SnapshotStore<any, any>) => void
                 ): void {
                   throw new Error("Function not implemented.");
@@ -889,7 +887,7 @@ function createBaseSnapshot<
                       snapshotSubscriberId: null,
                       snapshotContent: undefined,
                       store: null,
-                      snapshots: [], // Provide an initial value of type SnapshotsArray<T>
+                      snapshots: [], // Provide an initial value of type SnapshotsArray<T, K, Meta>
                       delegate: null,
                       getParentId: (snapshot: Snapshot<T, K>) => null,
                       getChildIds: (id: string, childSnapshot: Snapshot<T, K>) => [],
@@ -1262,8 +1260,7 @@ function createBaseSnapshot<
                   payload: FetchSnapshotPayload<T, K>,
                   snapshotStore: SnapshotStore<T, K>,
                   payloadData: BaseData |  BaseData<any>,
-                  category: symbol | string | Category | undefined,
-                  
+                  category: Category | undefined,                  
                   categoryProperties: CategoryProperties | undefined,
                   timestamp: Date,
                   data: BaseData,
@@ -1669,8 +1666,7 @@ function createBaseSnapshot<
                       payload: FetchSnapshotPayload<BaseData>,
                       snapshotStore: SnapshotStore<BaseData, BaseData>,
                       payloadData: BaseData |  BaseData<any>,
-                      category: symbol | string | Category | undefined,
-                      timestamp: Date,
+                      category: Category | undefined,                      timestamp: Date,
                       data: BaseData,
                       delegate: SnapshotWithCriteria<BaseData, BaseData>[]
                     ) => Snapshot<BaseData, BaseData>
@@ -1776,7 +1772,7 @@ function createBaseSnapshot<
       ) => Promise.resolve(),
       createSnapshot: (
         id: string,
-        category?: string | symbol | Category,
+        category?:  Category,
         callback?: (snapshot: Snapshot<T, K>) => void,
         snapshotData?: SnapshotStore<T, K>,
         snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> 
@@ -1787,8 +1783,7 @@ function createBaseSnapshot<
         initialData: T, 
         snapshotData: SnapshotData<any, K>,
         snapshotStoreConfig: SnapshotStoreConfig<SnapshotUnion<any>, K>,
-        category: symbol | string | Category | undefined,
-      ): Promise<SnapshotWithCriteria<T, K>> => ({} as Snapshot<T, Data>),
+        category: Category | undefined,      ): Promise<SnapshotWithCriteria<T, K>> => ({} as Snapshot<T, Data>),
       setSnapshotSuccess: (snapshotData, subscribers) => {},
       setSnapshotFailure: (error) => {},
       updateSnapshots: () => {},

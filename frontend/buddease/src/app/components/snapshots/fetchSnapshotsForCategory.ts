@@ -1,0 +1,43 @@
+import { BaseData } from '@/app/components/models/data/Data';
+// fetchSnapshotsForCategory.ts
+import clientApiService from "@/app/api/ApiClient";
+import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { SnapshotsArray } from '@/app/components/snapshots/LocalStorageSnapshotStore';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+
+/**
+ * Fetches snapshots for a specific category asynchronously.//+
+
+ * @template T - Type extending BaseData//+
+ * @template K - Type extending T, defaulting to T//+
+ * @param {string} snapshotId - The unique identifier for the snapshot//+
+ * @param {string} type - The type of snapshot to fetch//+
+ * @param {Category} [category] - Optional category to filter snapshots//+
+ * @returns {Promise<SnapshotsArray<T, K>>} A promise that resolves to an array of snapshots//+
+ */
+async function fetchSnapshotsForCategory<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
+  snapshotId: string,
+  type: string,
+  category?: Category
+): Promise<SnapshotsArray<T, K, Meta>> {
+  try {
+    const response = await clientApiService.get<SnapshotsArray<T, K, Meta>>(
+      `/snapshots`,
+      {
+        params: {
+          snapshotId,
+          type,
+          category: category ? String(category) : undefined
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch snapshots:', error);
+    return []; // Return empty array as fallback
+  }
+}

@@ -5,15 +5,17 @@ import { StatusType } from '@/app/components/models/data/StatusType';
 import { Tag } from '@/app/components/models/tracker/Tag';
 import { ConfigureSnapshotStorePayload, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotItem } from '@/app/components/snapshots';
 import { SnapshotStoreProps } from '@/app/components/snapshots//useSnapshotStore';
+import { SnapshotsArray } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { SnapshotWithCriteria } from ".";
 import { SnapshotWithData } from '../calendar/CalendarApp';
-import { CreateSnapshotsPayload, Payload } from '../database/Payload';
+import { CreateSnapshotsPayload, Payload } from '../../../server/database/Payload';
 import { CombinedEvents, SnapshotManager } from '../hooks/useSnapshotManager';
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { DataDetails } from "../models/data/Data";
@@ -21,7 +23,6 @@ import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { DataStore } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Subscription } from '../subscriptions/Subscription';
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 import Version from '../versions/Version';
 import { FetchSnapshotPayload } from './FetchSnapshotPayload';
@@ -33,7 +34,7 @@ import { SnapshotSubscriberManagement } from './SnapshotSubscriberManagement';
 
 
 
-type SnapshotMap = Map<T, [K<T>, SnapshotStore<Data<T, K<T>, Meta>, any>]>;
+type SnapshotMap = Map<T, [K<T>, SnapshotStore<Data<T, K<T>, StructuredMetadata<T, K<T>>>, any>]>;
 
 interface SnapshotMethods<
   T extends BaseData<any>,
@@ -46,7 +47,10 @@ interface SnapshotMethods<
   snapConfig: SnapshotConfig<T, K> | undefined;
   subscriberManagement?: SnapshotSubscriberManagement<T, K> | undefined;
   failureDate?: Date; // Tracks the most recent failure date
-
+  payload: Payload | undefined;
+  dataItems?: RealtimeDataItem[];
+  newData: Snapshot<T, K> | null;
+  getAll(): T[];
   getSnapshots: (category: string, data: Snapshots<T, K>) => void;
   getAllSnapshots: (
     storeId: number,
@@ -57,8 +61,7 @@ interface SnapshotMethods<
     event: Event,
     id: number,
     snapshotStore: SnapshotStore<T, K>,
-    category: symbol | string | Category | undefined,
-    categoryProperties: CategoryProperties | undefined,
+    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
     dataStoreMethods: DataStore<T, K>,
     data: T,
     filter?: (snapshot: Snapshot<T, K>) => boolean,
@@ -86,7 +89,7 @@ interface SnapshotMethods<
     snapshot2: Snapshot<T, K>;
     differences: Record<string, { snapshot1: any; snapshot2: any }>;
     versionHistory: {
-      snapshot1Version?: string | number | Version<T, K>;
+      snapshot1Version?: string | number | Version | null <T, K>;
       snapshot2Version?: string | number | Version<T, K>;
     };
   } | null;
@@ -149,6 +152,10 @@ interface SnapshotMethods<
     // snapshotId: string,
     // callback: (snapshots: Snapshots<T, K>) => Subscriber<T, K> | null,
     // snapshot: Snapshot<T, K> | null
+    category: Category | undefined,    snapshots: SnapshotsArray<T, K, Meta>,
+    snapshotId?: string,            // Keep if you need to filter by specific ID
+    callback?: (items: SnapshotItem<T, K>[]) => void, // Keep for async operations
+
   ) => (SnapshotStoreConfig<T, any> | SnapshotItem<Data<T, K, Meta>, any>)[] | undefined; // Adjust to specific type if known
  
   filterSnapshotsByStatus: (status: StatusType) => Snapshots<T, K>;
@@ -209,9 +216,7 @@ interface SnapshotMethods<
   getSnapshotId: (key: string | T, snapshot: Snapshot<T, K>) => string
   compareSnapshotState: (snapshot1: Snapshot<T, K> | null, snapshot2: Snapshot<T, K>) => boolean;
 
-  payload: Payload | undefined;
-  dataItems: RealtimeDataItem[];
-  newData: Snapshot<T, K> | null 
+
   getInitialState: () => Snapshot<T, K> | null;
   getConfigOption: (optionKey: string) => any;
   getTimestamp: () => Date | undefined;
@@ -219,7 +224,7 @@ interface SnapshotMethods<
     storeId: number,
     snapshotId: string,
     snapshotStoreConfigs: SnapshotStoreConfig<T, K>[],
-    snapshotStores?: SnapshotStoreReference<T, K>[],
+    snapshotStores?: SnapshotStoreReference<T, K>[] | Map<number, SnapshotStore<T, K, Meta>>
   ) => SnapshotMap
   
   
@@ -405,7 +410,7 @@ interface SnapshotMethods<
     payload: CreateSnapshotsPayload<T, K>,
     callback: (snapshots: Snapshot<T, K>[]) => void | null,
     snapshotDataConfig?: SnapshotConfig<T, K>[] | undefined,
-    category?: string | symbol | Category | undefined,
+    category?:  Category,
     categoryProperties?: string | CategoryProperties
   ) => Snapshot<T, K>[] | null;
 
@@ -423,7 +428,6 @@ interface SnapshotMethods<
     callback: (snapshots: Snapshots<T, K>) => void
   ) => void;
   events: CombinedEvents<T, K> | undefined;
-
 }
 
 export type { SnapshotMethods };

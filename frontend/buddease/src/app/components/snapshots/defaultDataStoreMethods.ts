@@ -349,8 +349,7 @@ const defaultDataStoreMethods = <T extends  BaseData<any>, K extends T = T, Meta
                             snapshot(
                                 id: string,
                                 snapshotData: SnapshotData<any, K>[],
-                                category: symbol | string | Category | undefined,
-                                dataStoreMethods: DataStore<T, K>,
+                                category: Category | undefined,                                dataStoreMethods: DataStore<T, K>,
                                 storeProps: SnapshotStoreProps<T, K>
                             ): Promise<{ snapshot: SnapshotStore<T, K>; }> {
                                 return new Promise(async (resolve, reject) => {
@@ -987,8 +986,7 @@ const defaultDataStoreMethods = <T extends  BaseData<any>, K extends T = T, Meta
                                 snapshotId: string,
                                 snapshot: T| null,
                                 snapshotData: T,
-                                category: symbol | string | Category | undefined,
-                                callback: (snapshot: T) => void,
+                                category: Category | undefined,                                callback: (snapshot: T) => void,
                                 snapshots: Snapshots<Data>,
                                 type: string,
                                 event: Event,
@@ -1063,8 +1061,7 @@ const defaultDataStoreMethods = <T extends  BaseData<any>, K extends T = T, Meta
                                     payload: FetchSnapshotPayload<K>,
                                     snapshotStore: SnapshotStore<T, K>,
                                     payloadData: T | Data,
-                                    category: symbol | string | Category | undefined,
-                                    timestamp: Date,
+                                    category: Category | undefined,                                    timestamp: Date,
                                     data: T,
                                     delegate: SnapshotWithCriteria<T, K>[]
                                 ) => void
@@ -1219,8 +1216,7 @@ const defaultDataStoreMethods = <T extends  BaseData<any>, K extends T = T, Meta
         mapSnapshots: function (
             storeIds: number[],
             snapshotId: string,
-            category: symbol | string | Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
+            category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
             snapshot: Snapshot<T, K>,
             timestamp: string | number | Date | undefined,
             type: string,
@@ -1231,8 +1227,7 @@ const defaultDataStoreMethods = <T extends  BaseData<any>, K extends T = T, Meta
             callback: (
             storeIds: number[],
             snapshotId: string,
-            category: symbol | string | Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
+            category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
             snapshot: Snapshot<T, K>,
             timestamp: string | number | Date | undefined,
             type: string,
@@ -1242,14 +1237,13 @@ const defaultDataStoreMethods = <T extends  BaseData<any>, K extends T = T, Meta
             data: K,
             index: number
             ) => SnapshotsObject<T, K>
-        ): Promise<SnapshotsArray<T>> {
+        ): Promise<SnapshotsArray<T, K, Meta>> {
             throw new Error("Function not implemented.");
         },
         mapSnapshotStore: function (
             storeId: number,
             snapshotId: string,
-            category: symbol | string | Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
+            category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
             snapshot: Snapshot<any, any>,
             timestamp: string | number | Date | undefined,
             type: string,
@@ -1288,8 +1282,7 @@ const defaultDataStoreMethods = <T extends  BaseData<any>, K extends T = T, Meta
             throw new Error("Function not implemented.");
         },
         getSnapshotWithCriteria: function (
-            category: symbol | string | Category | undefined,
-            timestamp: any,
+            category: Category | undefined,            timestamp: any,
             id: number,
             snapshot: Snapshot<T, K>,
             snapshotStore: SnapshotStore<T, K>,

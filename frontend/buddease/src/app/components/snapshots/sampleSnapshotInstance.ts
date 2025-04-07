@@ -4,7 +4,7 @@ import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import { Payload } from '../database/Payload';
+import { Payload } from '../../../server/database/Payload';
 import { SnapshotManager } from '../hooks/useSnapshotManager';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '../models/data/Data';
@@ -150,7 +150,7 @@ const sampleSnapshot: Snapshot<T, K<T>, Meta<T>> = {
     id: string,
     snapshotData: SnapshotData<T, K<T>>,
     additionalData: any,
-    category?: string | symbol | Category,
+    category?:  Category,
     callback?: (snapshot: Snapshot<T, K<T>>) => void,
     snapshotData?: SnapshotStore<T, K<T>>,
     snapshotStoreConfig?: SnapshotStoreConfig<T, K<T>>
@@ -163,8 +163,7 @@ const sampleSnapshot: Snapshot<T, K<T>, Meta<T>> = {
     initialData: T,
     snapshotData: SnapshotData<any, K<T>>,
     snapshotStoreConfig: SnapshotStoreConfig<T, K<T>>,
-    category: symbol | string | Category | undefined,
-    additionalData: any
+    category: Category | undefined,    additionalData: any
   ): Promise<Result<Snapshot<T, K<T>, never>>> {
     throw new Error("Function not implemented.");
   },
@@ -288,8 +287,7 @@ const sampleSnapshot: Snapshot<T, K<T>, Meta<T>> = {
     event: Event,
     id: number,
     snapshotStore: SnapshotStore<T, K<T>>,
-    category: symbol | string | Category | undefined,
-    categoryProperties: CategoryProperties | undefined,
+    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
     dataStoreMethods: DataStore<T, K<T>>,
     data: T,
     filter?: (snapshot: Snapshot<T, K<T>>) => boolean,
@@ -527,8 +525,7 @@ const sampleSnapshot: Snapshot<T, K<T>, Meta<T>> = {
   mapSnapshots: async function <U, V>(
     storeIds: number[],
     snapshotId: string,
-    category: symbol | string | Category | undefined,
-    categoryProperties: CategoryProperties | undefined,
+    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
     snapshot: Snapshot<T, K>,
     timestamp: string | number | Date | undefined,
     type: string,
@@ -539,8 +536,7 @@ const sampleSnapshot: Snapshot<T, K<T>, Meta<T>> = {
     callback: (
       storeIds: number[],
       snapshotId: string,
-      category: symbol | string | Category | undefined,
-      categoryProperties: CategoryProperties | undefined,
+      category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K>,
       timestamp: string | number | Date | undefined,
       type: string,

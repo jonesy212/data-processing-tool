@@ -1,7 +1,20 @@
 // CriteriaOptions.ts
-import {CommunicationTypeEnum, CollaborationPhaseEnum,
-  CollaborationToolEnum,
+import { LanguageEnum } from "@/app/components/communications/LanguageEnum";
+import { FileTypeEnum } from "@/app/components/documents/FileType";
+import AnimationTypeEnum from "@/app/components/libraries/animations/AnimationLibrary";
+import { DataStatus, NotificationStatus, PriorityTypeEnum, ProjectPhaseTypeEnum, StatusType, TaskStatus, TeamStatus } from "@/app/components/models/data/StatusType";
+import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
+import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
+import { SearchCriteria } from "@/app/components/routing/SearchCriteria";
+import { UserRoleEnum } from "@/app/components/users/UserRoles";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { MessageType } from "@/app/generators/MessaageType";
+import { DocumentTypeEnum } from "@/server/DocumentGenerator";
+import {
   ActivityLevelEnum,
+  CollaborationPhaseEnum,
+  CollaborationToolEnum,
+  CommunicationTypeEnum,
   CreativityLevelEnum,
   CryptoAssetTypeEnum,
   EngagementTypeEnum,
@@ -12,19 +25,9 @@ import {CommunicationTypeEnum, CollaborationPhaseEnum,
   MilestoneStatusEnum,
   PerformanceStatusEnum,
   PhaseDurationEnum,
-  TechnologyEnum} from './CriteriaEnums'
-import { DataStatus, NotificationStatus, PriorityTypeEnum, ProjectPhaseTypeEnum, StatusType, TaskStatus, TeamStatus } from "@/app/components/models/data/StatusType";
+  TechnologyEnum
+} from './CriteriaEnums';
 import { FilterCriteria } from "./FilterCriteria";
-import { SearchCriteria } from "@/app/components/routing/SearchCriteria";
-import { UserRoleEnum } from "@/app/components/users/UserRoles";
-import { LanguageEnum } from "@/app/components/communications/LanguageEnum";
-import { DocumentTypeEnum } from "@/app/components/documents/DocumentGenerator";
-import { FileTypeEnum } from "@/app/components/documents/FileType";
-import AnimationTypeEnum from "@/app/components/libraries/animations/AnimationLibrary";
-import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
-import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
-import { MessageType } from "@/app/generators/MessaageType";
 
 
 enum EffortLevelEnum {
@@ -149,8 +152,10 @@ enum EffortLevelEnum {
 
 
 
-export type {MixedCriteria,
-  ProjectManagementCriteria}
+export type {
+  MixedCriteria,
+  ProjectManagementCriteria
+};
 
 // Example usage
 const criteria: ProjectManagementComprehensiveCriteria = {

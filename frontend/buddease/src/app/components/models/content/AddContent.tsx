@@ -2,7 +2,10 @@
 import { BaseData } from '@/app/components/models/data/Data';
 
 import ContentItemComponent, { ContentItem } from '@/app/components/models/content/ContentItem';
+import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { TaskMetadata } from '@/app/configs/database/MetaDataOptions';
+import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
 import { Persona } from "@/app/pages/personas/Persona";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import React, { FormEvent, useState } from "react";
@@ -13,14 +16,12 @@ import { StatusType } from '../data/StatusType';
 import { TaskData } from '../tasks/Task';
 import ContentDetailsListItem from "./ContentDetailsListItem";
 import ContentToolbar from "./ContentToolbar";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-
 
 interface Content<
   T extends  BaseData<any, any> = BaseData<any, any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
- > {
+ > extends SharedMetadata<T, K> {
   id: string | number | undefined;
   title: string;
   description: string;
@@ -42,7 +43,13 @@ interface ContentProps {
   onComplete: () => void;
 }
 
-const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
+
+type DefaultContent = Content<BaseData<any>, BaseData<any>>;
+
+
+const AddContent: React.FC<{ onComplete: (content: DefaultContent) => void }> = ({ 
+  onComplete 
+}) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -56,7 +63,7 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
     }
 
     // Create new content object
-    const newContent: Content<any, any> = {
+    const newContent: DefaultContent = {
       id: Math.floor(Math.random() * 1000),
       title,
       description,
@@ -67,7 +74,9 @@ const AddContent: React.FC<ContentProps> = ({ onComplete }) => {
       data: undefined,
       categoryProperties: undefined,
       items: [],
-      contentItems: []
+      contentItems: [],
+      latestVersion: createLatestVersion<BaseData<any>, BaseData<any>>(),
+      schema: {}
     };
 
     // Send new content to server or perform other actions
@@ -570,7 +579,7 @@ export type { Content, ContentProps };
 
 
 
-const taskContent: Content<TaskData, TaskMetadata> = {
+const taskContent: Content<TaskData, TaskMetadata<T, K, Sub>> = {
   id: "task-001",
   title: "Develop Feature X",
   description: "Implement the new feature as per the requirements.",

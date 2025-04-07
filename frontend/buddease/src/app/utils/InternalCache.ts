@@ -1,6 +1,8 @@
 // InternalCache.ts
 import { T , K, Meta } from "@/app/components/models/data/dataStoreMethods";
 import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { ExcludedFields } from "../components/routing/Fields";
+import { StructuredMetadata } from "../configs/StructuredMetadata";
 
 class InternalCache<T> {
   private cache: Map<string, T>;
@@ -32,27 +34,55 @@ class InternalCache<T> {
 
 
 // Create a cache instance for your data type (e.g., BaseData)
-export const internalCache = new InternalCache<Promise<Snapshot<T, K<T>>>>();
+// 1. First define your cache with proper generic parameters
+export const internalCache = new InternalCache<
+  Snapshot<T, K<T>, StructuredMetadata<T, K<T>>, keyof T>
+>();
+
+
+// Option 1: For direct Snapshot storage (recommended for most cases)
+export const snapshotCache = new InternalCache<
+  Snapshot<T, K<T>, StructuredMetadata<T, K<T>>, keyof T>
+>();
+
+// Option 2: For Promise storage (if you need async cache operations)
+export const promiseSnapshotCache = new InternalCache<
+  Promise<Snapshot<T, K<T>, StructuredMetadata<T, K<T>>, keyof T>>
+>();
+
 
 // Example methods using the cache instance
 const cacheOperations = {
-  // Fetch an item from internal cache based on an ID
-  getFromInternalCache: (id: string): Promise<Snapshot<T, K<T>>> | undefined => {
-    return internalCache.get(id);
+  // For direct Snapshot storage
+  getSnapshot: (id: string): Snapshot<T, K<T>, StructuredMetadata<T, K<T>>, keyof T> | undefined => {
+    return snapshotCache.get(id);
   },
 
-  // Add an item to the internal cache
-  addToInternalCache: (id: string, item: Promise<Snapshot<T, K<T>>>): void => {
-    internalCache.set(id, item);
+  addSnapshot: (id: string, snapshot: Snapshot<T, K<T>, StructuredMetadata<T, K<T>>, keyof T>): void => {
+    snapshotCache.set(id, snapshot);
   },
 
-  // Remove an item from internal cache by ID
-  removeFromInternalCache: (id: string): void => {
-    internalCache.remove(id);
+  // For Promise storage
+  getPromiseSnapshot: (id: string): Promise<Snapshot<T, K<T>, StructuredMetadata<T, K<T>>, keyof T> | undefined> => {
+    const cachedPromise = promiseSnapshotCache.get(id);
+    if (!cachedPromise) {
+      return Promise.resolve(undefined);
+    }
+    return cachedPromise;
   },
 
-  // Clear all items from internal cache
-  clearInternalCache: (): void => {
-    internalCache.clear();
+  addPromiseSnapshot: (id: string, promise: Promise<Snapshot<T, K<T>, StructuredMetadata<T, K<T>>, keyof T>>): void => {
+    promiseSnapshotCache.set(id, promise);
   },
+
+  // Common operations
+  remove: (id: string): void => {
+    snapshotCache.remove(id);
+    promiseSnapshotCache.remove(id);
+  },
+
+  clear: (): void => {
+    snapshotCache.clear();
+    promiseSnapshotCache.clear();
+  }
 };

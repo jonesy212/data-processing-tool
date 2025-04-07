@@ -1,10 +1,10 @@
 // DataAnalysisResult.ts
-import { BaseData, SharedBaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/components/models/data/Data';
+import { Phase } from '@/app/components/phases/Phase';
+import { SnapshotStoreReference } from '@/app/components/snapshots/SnapshotStore';
+import { PriorityTypeEnum } from '../../models/data/StatusType';
 import { AllStatus } from "../../state/stores/DetailsListStore";
 import { AnalysisTypeEnum } from "./AnalysisType";
-import { Phase } from '@/app/components/phases/Phase';
-import { SnapshotStoreReference } from '@/app/components/snapshots/SnapshotStore'
-import { PriorityTypeEnum } from '../../models/data/StatusType';
 
 export interface DataAnalysisResult<
   T extends  BaseData<any>,
@@ -26,7 +26,7 @@ export interface DataAnalysisResult<
   sentimentAnalysis: boolean;
   phase: Phase<T, K>;
   priority: PriorityTypeEnum;
-  snapshotStores?: SnapshotStoreReference<T, K>[],
+  snapshotStores?: SnapshotStoreReference<T, K>[] | Map<number, SnapshotStore<T, K, Meta>>
   metrics: {
     // Object containing various metrics related to the analysis
     accuracy: number; // Accuracy metric
