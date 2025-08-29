@@ -3,7 +3,7 @@ import { BaseData } from '../data/Data';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 // Assume you have a way to get default values based on type U
-function getDefaultValueForField<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function getDefaultValueForField<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
     field: keyof SnapshotStoreConfig<T, K>
   ): T | K | string | number | boolean | null {
     switch (field) {

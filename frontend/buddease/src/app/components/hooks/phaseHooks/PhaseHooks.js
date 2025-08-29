@@ -75,7 +75,7 @@ var UserSettings_1 = require("@/app/configs/UserSettings");
 var configData_1 = require("@/app/configs/configData");
 var react_1 = require("react");
 var ipfsConfig_1 = require("../../../configs/ipfsConfig");
-var AuthContext_1 = require("../../auth/AuthContext");
+var AuthContext_1 = require("@/server/auth/AuthContext");
 var IPFS_1 = require("../../web3/dAppAdapter/IPFS");
 var dynamicHookGenerator_1 = require("../dynamicHooks/dynamicHookGenerator");
 // Define additional methods for managing test phases

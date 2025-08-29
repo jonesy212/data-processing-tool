@@ -20,7 +20,7 @@ import { NotificationState } from "./NotificationSlice";
 import { PagingState } from "./pagingSlice";
 import { ProjectState } from "./ProjectSlice";
 import { RandomWalkState } from "./RandomWalkManagerSlice";
-import { EntityId } from "./RootSlice";
+import EntityId from "./RootSlice";
 import { SettingsState } from "./SettingsSlice";
 import { TaskState } from "./TaskSlice";
 import { TodoManagerState } from "./TodoSlice";
@@ -37,13 +37,12 @@ interface AppState {
     currentLanguage: null
     isSidebarOpen: false,
     selectedTheme: 'light',
-    selectedLanguage: 'en'
-
+    selectedLanguage: 'en',
     
     videoState: VideoState;
     toolbarManager: ToolbarState,
     selectedToolBar: AlignmentOptions | null,
-  uiManager: UIState
+    uiManager: UIState
 
   // Project Management
   projectManager: ProjectState,
@@ -58,7 +57,7 @@ interface AppState {
   dataAnalysisManager: DataAnalysisState,
   calendarManager: CalendarManagerState
   todoManager:TodoManagerState,
-  documentManager: DocumentSliceState,
+  documentManager: DocumentSliceState<T, K, Meta>,
 
   // API & Networking
   apiManager: ApiManagerState,
@@ -260,4 +259,4 @@ export const useAppManagerSlice = createSlice({
 export const {resetState } = useAppManagerSlice.actions;
 
 export default useAppManagerSlice.reducer;
-export type { AppState };
+export { AppState };

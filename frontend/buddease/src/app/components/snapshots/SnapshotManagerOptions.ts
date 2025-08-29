@@ -1,11 +1,11 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { Snapshot } from "./LocalStorageSnapshotStore";
 import { subscribeToSnapshot, subscribeToSnapshots } from "./snapshotHandlers";
 import { SnapshotStoreOptions } from "./SnapshotStoreOptions";
 
-class SnapshotManagerOptions<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+class SnapshotManagerOptions<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
   private options: SnapshotStoreOptions<T, K> | undefined;
 
   constructor(initialOptions: Partial<SnapshotStoreOptions<T, K>> = {}) {

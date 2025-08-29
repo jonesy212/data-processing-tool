@@ -1,8 +1,10 @@
 // NotificationContext.ts
 import { NotificationPosition, PriorityTypeEnum } from "@/app/components/models/data/StatusType";
 import { DocumentTypeEnum } from "@/server/DocumentGenerator";
+import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import { createContext, ReactNode, useContext } from 'react';
 import NotificationStore from '../components/state/stores/NotificationStore';
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 
 interface NotificationProviderProps {
   children: ReactNode;
@@ -25,6 +27,15 @@ interface NotificationContextProps {
   ) => void;
   setDuration: (duration: number) => void;
   setNotifications: (notifications: Notification[]) => void;
+  
+  showNotification: (title: string, message: string | Message, content?: any) => void;
+  showSuccessNotification: (title: string, message: string | Message, content?: any) => void;
+  showErrorNotification: (title: string, message: string | Message, content?: any) => void;
+  showInfoNotification: (title: string, message: string | Message, content?: any) => void;
+  addNotification: (notification: NotificationData<any>) => void;
+  removeNotification: (notificationId: string) => void;
+  clearNotifications: () => void;
+  dismissNotification: (notificationId: string) => void;
 }
  
 type CustomNotificationType = "RandomDismiss";
@@ -36,6 +47,14 @@ type NotificationType =
   | CustomNotificationType;
 
 enum NotificationTypeEnum {
+  WELCOME = "Welcome",
+  INVALID_CREDENTIALS = "InvalidCredentials",
+  TEAM_JOIN_REQUEST = "TeamJoinRequest",
+  TEAM_JOIN_APPROVED = "TeamJoinApproved",
+  PAYMENT_RECEIVED = "PaymentReceived",
+  SYSTEM_UPDATE_IN_PROGRESS = "SystemUpdateInProgress",
+
+  ADD_PARTICIPANT = "ADD_PARTICIPANT",
   AccountCreated = "AccountCreated",
   AppVersion = "AppVersion",
   AnalyticsID = "AnalyticsID",
@@ -142,6 +161,11 @@ const useNotification = () => {
     addNotification: store.addNotification,
     removeNotification: store.removeNotification,
     clearNotifications: store.clearNotifications,
+    showNotification: store.showNotification,
+    showSuccessNotification: store.showSuccessNotification,
+    showErrorNotification: store.showErrorNotification,
+    showInfoNotification: store.showInfoNotification,
+ 
   };
 };
 

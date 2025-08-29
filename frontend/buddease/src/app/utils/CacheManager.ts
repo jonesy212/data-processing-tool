@@ -1,16 +1,15 @@
 // CacheManager.ts
+import { Snapshot } from "@/app/components/snapshots";
+import { NotificationType, useNotification } from "@/context/NotificationContext";
 import axios from "axios";
 import { promises as fs } from 'fs';
 import { create } from "mobx-persist";
-import getAppPath from "../../../appPath";
 import { LanguageEnum } from '../components/communications/LanguageEnum';
 import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
 import useErrorHandling from "../components/hooks/useErrorHandling";
 import { BaseData, Data } from "../components/models/data/Data";
 import { CustomPhaseHooks } from "../components/phases/Phase";
-import { Snapshot } from "../components/snapshots";
 import { RootState } from "../components/state/redux/slices/RootSlice";
-import { NotificationType, useNotification } from "../components/support/NotificationContext";
 import { getCurrentAppInfo } from "../components/versions/VersionGenerator";
 import { VideoData } from "../components/video/Video";
 import { backendConfig } from "../configs/BackendConfig";
@@ -18,6 +17,7 @@ import { UserPreferences } from "../configs/UserPreferences";
 import { UserSettings } from "../configs/UserSettings";
 import BackendStructure from "../configs/appStructure/BackendStructure";
 import FrontendStructure from "../configs/appStructure/FrontendStructure";
+import getAppPath from "../configs/appStructure/appPath";
 import { realtimeData } from "../generators/GenerateCache";
 import { generateInterfaces } from "../generators/GenerateInterfaces";
 import { DataAnalysisDispatch } from "../typings/dataAnalysisTypes";

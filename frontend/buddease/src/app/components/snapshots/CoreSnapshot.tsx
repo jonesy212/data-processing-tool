@@ -1,13 +1,11 @@
 // CoreSnapshot.ts
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { Task } from '@/app/components/models/tasks/Task';
-import { UserData } from "@/app/components/users/User";
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
-import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
-import { SnapshotData } from ".";
+import { SnapshotBase, SnapshotData } from ".";
 import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
 import { ChatRoom } from '../calendar/CalendarSlice';
 import { ContentItem } from "../cards/DummyCardLoader";
@@ -15,7 +13,7 @@ import { Sender } from '../communications/chat/Communication';
 import { CombinedEvents } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Content } from "../models/content/AddContent";
-import { BaseData } from "../models/data/Data";
+
 import { ProjectPhaseTypeEnum, StatusType } from "../models/data/StatusType";
 import { Phase, PhaseData } from "../phases/Phase";
 import { Label } from "../projects/branding/BrandingSettings";
@@ -25,41 +23,47 @@ import { Subscriber } from "../users/Subscriber";
 import { SubscriberCollection } from '../users/SubscriberCollection';
 import { User } from "../users/User";
 import {
-  Snapshot,
+  SnapshotEquality,
   Snapshots,
   SnapshotsArray
 } from "./LocalStorageSnapshotStore";
+import { Snapshot } from "./Snapshot";
 import { SnapshotOperation } from "./SnapshotActions";
 import { SnapshotConfig } from "./SnapshotConfig";
 import {
   SnapshotRelationships,
 } from "./SnapshotData";
-import { SharedProperties, SnapshotEvents } from "./SnapshotEvents";
+import { SnapshotEvents } from "./SnapshotEvents";
+import { SnapshotInitialization } from "./SnapshotInitialization";
 import { SnapshotItem } from "./SnapshotList";
-import SnapshotStore from "./SnapshotStore";
+import { SnapshotMethods } from "./SnapshotMethods";
+import { default as SnapshotStore } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreMethod } from "./SnapshotStoreMethod";
-import { InitializedData, InitializedDataStore } from "./SnapshotStoreOptions";
-import { SnapshotSubscriberManagement } from "./SnapshotSubscriberManagement";
+import { InitializedDataStore } from "./SnapshotStoreOptions";
+import { SnapshotCRUD } from "./SnapshotSubscriberManagement";
 import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
-
+import { SharedTimestamps } from '../models/CommonData';
+import { DefaultMeta, DefaultExcludedFields, BaseDataEntity } from '@/app/configs/BaseConfig';
+import { SharedIdentifiers } from '../../../data_analysis/frontend/buddease/src/app/components/documents/RelatedProps';
 
 interface CoreSnapshot<
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseDataEntity, 
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
-> extends SnapshotSubscriberManagement<T, K, Meta>,
-  SnapshotRelationships<T, K, Meta>,
-  SnapshotEvents<T, K, Meta>,
-  SharedProperties<T, K, Meta>,
-  SharedIdentifiers<T, K, Meta>
-  // Extend SnapshotEvents to include event-related methods
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends SharedIdentifiers<T, K, Meta, ExcludedFields>,
+    SnapshotMethods<T, K, Meta, ExcludedFields>,
+    SnapshotRelationships<T, K, Meta>,
+    SnapshotCRUD<T, K, Meta, ExcludedFields>,
+    SnapshotInitialization<T, K, Meta>,
+    SnapshotEquality<T, K, Meta, ExcludedFields>,
+    SnapshotBase<T, K, Meta, ExcludedFields>,
+    SharedTimestamps
 {
   metadata?: UnifiedMetadata<T, K>;
   config: Promise<SnapshotStoreConfig<T, K> | null>;
   configs?: SnapshotStoreConfig<T, K>[] | null;
-  data: InitializedData<T, K> | null | undefined;
   parentId?: string | null;
   operation?: SnapshotOperation<T, K>;
   description?: string | null;
@@ -79,7 +83,7 @@ interface CoreSnapshot<
   status?: StatusType | undefined;
   content?: string | Content<T, K>;
   contentItem?: string | ContentItem;
-  label: Label | string | null | undefined;
+  label?: Label | string | Record<string, string> | null
   excludedFields?: ExcludedFields;
   message?: (
     type: NotificationType,
@@ -92,7 +96,7 @@ interface CoreSnapshot<
   user?: User;
   type?: string | AllTypes;
   phases?: ProjectPhaseTypeEnum;
-  phase?: Phase<PhaseData<BaseData<T, K>>, PhaseData<BaseData<T, K>>> | null; // Use T and K instead of BaseData<any, any, ...>
+  phase?: Phase<PhaseData<BaseDataEntity>, PhaseData<BaseDataEntity>> | null; // Use T and K instead of BaseDataEntity<any, any, ...>
   ownerId?: string;
   store?: SnapshotStore<T, K> | null;
   state?: SnapshotsArray<T, K, Meta> | null; // Ensure state matches Snapshot<T> or null/undefined
@@ -107,7 +111,7 @@ interface CoreSnapshot<
   snapshots?: Snapshots<T, K>;
   initialState?: InitializedState<T, K> | {};
   nestedStores?: SnapshotStore<T, K>[];
-  events: CombinedEvents<T, K> | undefined;
+  events?: CombinedEvents<T, K> | undefined;
   tags?: TagsRecord<T, K> | string[] | undefined;
   setSnapshotData?: (
     snapshotStore: SnapshotStore<T, K>,

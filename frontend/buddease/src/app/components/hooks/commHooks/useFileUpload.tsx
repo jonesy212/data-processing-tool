@@ -4,15 +4,15 @@ import headersConfig from "@/app/api/headers/HeadersConfig";
 import { FileLogger } from "@/app/components/logging/Logger";
 import dotProp from "dot-prop";
 import { ChangeEvent, useState } from "react";
+import CustomFile from "../../documents/File";
 import axiosInstance from "../../security/csrfToken";
 import { generateCSRFToken } from "../../security/csrfTokenGenerator";
-import {
-  NotificationType,
-  useNotification,
-} from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+import {
+    NotificationType,
+    useNotification,
+} from "@/context/NotificationContext";
 import useErrorHandling from "../useErrorHandling";
-import CustomFile from "../../documents/File";
 const { notify } = useNotification();
 const { handleError } = useErrorHandling(); // Use useErrorHandling for error handling
 

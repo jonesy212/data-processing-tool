@@ -1,7 +1,7 @@
 // useAppDispatch.ts
-import { useDispatch } from 'react-redux';
+import rootReducer from '@/app/components/state/redux/slices/RootSlice';
 import { configureStore } from '@reduxjs/toolkit';
-import rootReducer from '../redux/slices/RootSlice';
+import { useDispatch } from 'react-redux';
 
 
 export const store = configureStore({

@@ -1,12 +1,12 @@
+import BackendStructure from "@/app/configs/appStructure/BackendStructure";
+import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import DesignDashboard from "@/app/pages/dashboards/DesignDashboard";
 import DynamicComponentWrapper from "@/app/utils/DynamicComponentWrapper";
 import React, { useState } from "react";
-import { ResponsiveDesign, ResponsiveDesignProps } from "./ResponsiveDesign"; // Import the ResponsiveDesign component
-import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
-import BackendStructure from "@/app/configs/appStructure/BackendStructure";
-import getAppPath from "../../../../appPath";
-import { getCurrentAppInfo } from "../versions/VersionGenerator";
+import getAppPath from "../../configs/appStructure/appPath";
 import { BoardItem, CollaborationBoardStore } from "../state/stores/CollaborationBoardStore";
+import { getCurrentAppInfo } from "../versions/VersionGenerator";
+import { ResponsiveDesign } from "./ResponsiveDesign"; // Import the ResponsiveDesign component
 
 const EnhancedDesignDashboard: React.FC = () => {
   const [colors, setColors] = useState<string[]>([

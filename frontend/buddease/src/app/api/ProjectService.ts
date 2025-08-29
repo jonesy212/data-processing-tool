@@ -1,17 +1,17 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import axiosInstance from "@/app/api/axiosInstance";
 import { makeAutoObservable } from 'mobx';
+import ProjectModel from "../../../models/ProjectModel";
 import { ProjectActions } from "../components/actions/ProjectActions";
+import { K, T } from '../components/models/data/dataStoreMethods';
 import { Task } from "../components/models/tasks/Task";
 import { Phase } from "../components/phases/Phase";
-import {Project, ProjectData} from "../components/projects/Project";
+import { Product } from "../components/products/Product";
+import { Project, ProjectData } from "../components/projects/Project";
+import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { User } from "../components/users/User";
 import { sendNotification } from "../components/users/UserSlice";
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { ProjectMetadata } from "../configs/StructuredMetadata";
-import ProjectModel from "../../../models/ProjectModel";
-import { Product } from "../components/products/Product";
-import { K, T } from '../components/models/data/dataStoreMethods';
 
 const API_BASE_URL = endpoints.projects;
 
@@ -98,7 +98,7 @@ class ProjectService {
   };    
   updateProjectData = async (
     id: string,
-    metadata: ProjectMetadata<T, K<T>>
+    metadata: ProjectMetadata<T, K>
   ): Promise<{ project: Project }> => {
     try {
       const response = await axiosInstance.put(`${API_BASE_URL}/${id}`, {

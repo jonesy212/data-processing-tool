@@ -7,13 +7,13 @@ import {
   import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots";
 
 const snapshotType = <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+ Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   snapshotObj: Snapshot<T, K>,
   snapshot: (

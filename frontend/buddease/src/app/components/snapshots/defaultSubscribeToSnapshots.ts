@@ -9,7 +9,7 @@ import { SnapshotsArray } from '@/app/components/snapshots/LocalStorageSnapshotS
 import CalendarManagerStoreClass from '@/app/components/state/stores/CalendarManagerStore';
 import { version } from '@/app/components/versions/Version';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { NotificationType } from '@/app/context/support/NotificationContext';
+import { NotificationType } from '@/app/context/context/NotificationContext';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { CreateSnapshotsPayload, Payload } from '@/server/database/Payload';
@@ -33,9 +33,9 @@ import { Callback } from "./subscribeToSnapshotsImplementation";
 ;
 
 export const defaultSubscribeToSnapshots = <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
     snapshotId: string,
     callback: (snapshots: Snapshot<T, K>[]) => Subscriber<BaseData, T> | null,
@@ -324,7 +324,7 @@ export const defaultSubscribeToSnapshots = <
           setSnapshot: function (snapshot: Snapshot<T, K>): void {
             throw new Error("Function not implemented.");
           },
-          transformSnapshotConfig: function <U extends BaseData>(config: SnapshotStoreConfig<U, K>): SnapshotStoreConfig<U, K> {
+          transformSnapshotConfig: function <U extends BaseDataEntity>(config: SnapshotStoreConfig<U, K>): SnapshotStoreConfig<U, K> {
             throw new Error("Function not implemented.");
           },
           setSnapshots: function (snapshots: Snapshots<T, K>): void {
@@ -336,7 +336,7 @@ export const defaultSubscribeToSnapshots = <
           mergeSnapshots: function (snapshots: Snapshots<T, K>, category: string): void {
             throw new Error("Function not implemented.");
           },
-          reduceSnapshots: function <U extends BaseData>(callback: (acc: U, snapshot: Snapshot<T, K>) => U, initialValue: U): U | undefined {
+          reduceSnapshots: function <U extends BaseDataEntity>(callback: (acc: U, snapshot: Snapshot<T, K>) => U, initialValue: U): U | undefined {
             throw new Error("Function not implemented.");
           },
           sortSnapshots: function (): void {

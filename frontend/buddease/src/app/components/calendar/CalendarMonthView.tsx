@@ -1,34 +1,32 @@
 // MonthView.jsx
-import { NotificationType } from "../../support/NotificationContext";
-import { NotificationPosition, ProjectStateEnum } from '../models/data/StatusType';
 import TaskList from "@/app/components/lists/TaskList";
 import { Project } from "@/app/components/projects/Project";
+import { Action, Dispatch, ThunkAction } from "@reduxjs/toolkit";
 import React from "react";
-import { Task } from "../models/tasks/Task";
-import { CommonCalendarProps } from "./Calendar";
-import CalendarMonth from "./CalendarMonth";
+import { useDispatch } from "react-redux";
+import { TaskActions } from "../actions/TaskActions";
 import CryptoTransaction from "../crypto/CryptoTransaction";
 import { ContentPost } from "../models/content/ContentPost";
-import { RootState } from "../state/redux/slices/RootSlice";
-import { rootStores } from "../state/stores/RootStores";
-import { TaskActions } from "../actions/TaskActions";
-import { useDispatch } from "react-redux";
-import {
-  dropTask,
-  resizeTask,
-  updateTaskPositionAsync,
-} from "../state/redux/slices/TaskSlice";
+import { NotificationPosition } from '../models/data/StatusType';
+import { Task } from "../models/tasks/Task";
 import { updateTask } from "../state/redux/slices/CollaborationSlice";
-import { Action, Dispatch, ThunkAction } from "@reduxjs/toolkit";
+import { RootState } from "../state/redux/slices/RootSlice";
+import {
+    dropTask,
+    resizeTask,
+    updateTaskPositionAsync,
+} from "../state/redux/slices/TaskSlice";
+import { rootStores } from "../state/stores/RootStores";
+import { CommonCalendarProps } from "./Calendar";
+import CalendarMonth from "./CalendarMonth";
 // import CalendarMonth from './CalendarMonthView';
- import { MonthInfo } from "./Month";
-import { YearInfo } from "./CalendarYear";
-import * as taskApi from "@/app/api/TasksApi";
-import { NOTIFICATION_TYPES } from "../support/NotificationTypes";
-import { TaskState } from "../state/redux/slices/TaskSlice";
+ import * as taskApi from "@/app/api/TasksApi";
 import { PriorityTypeEnum } from "../models/data/StatusType";
+import { TaskState } from "../state/redux/slices/TaskSlice";
+import { YearInfo } from "./CalendarYear";
+import { MonthInfo } from "./Month";
 
-import useNotification from "../support/NotificationContext";
+import useNotification from "@/context/NotificationContext";
 import { updateTaskDetails } from "../state/redux/slices/ContentSlice";
 
 const {notify} = useNotification;
@@ -145,7 +143,7 @@ const updateTaskPosition = (
 
 
   const updateTaskPositionSuccess = (taskId: string, newPosition: number) => ({
-    type: NOTIFICATION_TYPES.TASK_UPDATED,
+    type: NotificationTypeEnum.TaskLogged, 
     payload: { taskId, newPosition },
   });
 

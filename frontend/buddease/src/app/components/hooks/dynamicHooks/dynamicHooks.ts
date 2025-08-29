@@ -340,6 +340,14 @@ const subscriptionServiceInstance = {
   connectWeb3Provider: (web3Provider: Web3Provider) => {
     web3Provider.connectWeb3Provider();
   },
+
+  // ✅ Add notify method
+  notify<T>(hookName: string, message: T): void {
+    const subscription = this.subscriptions.get(hookName);
+    if (subscription) {
+      subscription.callback(message);
+    }
+  },
 };
 
 

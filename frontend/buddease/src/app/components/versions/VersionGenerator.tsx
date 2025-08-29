@@ -1,21 +1,22 @@
 // VersionGenerator.tsx
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 import { apiNotificationMessages, handleApiErrorAndNotify } from "@/app/api/ApiData";
 import DocumentPermissions from '@/app/components/documents/DocumentPermissions';
 import { TaskLogger } from "@/app/components/logging/Logger";
 import { BaseData } from "@/app/components/models/data/Data";
-import { InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
+import { EventManager, InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { Snapshot } from "@/app/components/snapshots";
 import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import Version from "@/app/components/versions/Version";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
-import { NotificationType, NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
+import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import getAppPath from "@/configs/appStructure/appPath";
 import { AxiosError } from "axios";
-import { Partial } from "react-spring";
-import getAppPath from "../appPath";
 import { ExtendedVersionData } from '../versions/VersionData';
-  
+
 const { notify } = useNotification();
   
 interface VersionGeneratorConfig {
@@ -43,7 +44,7 @@ T extends BaseData<any>,
 K extends T = T,
 > {
   version: Version<T, K>;
-  versionInfo: ExtendedVersionData
+  versionInfo: ExtendedVersionData<T, K>
 }
 
 // Define the getCurrentAppInfo function outside the VersionGenerator class
@@ -88,11 +89,14 @@ class VersionGenerator {
       // Notify about the generated version ID
       const message = `Generated version ID: ${versionID}`;
       notify(
-        message,
-        "versionGenerator",
-        new Date(),
-        NOTIFICATION_MESSAGES.Generators.GENERATE_VERSION_ID,
-        NotificationTypeEnum.GeneratedID
+        "versionGenerator", // id
+        message, // content
+        null, // notificationMessage (set to null as per your interface)
+        new Date(), // date
+        NotificationTypeEnum.GeneratedID, // type
+        undefined, // notificationType (optional)
+        undefined, // options (optional)
+        undefined // userName (optional)
       );
 
       // Generate appVersion and versionNumber using the provided generators
@@ -102,28 +106,43 @@ class VersionGenerator {
       const appPathWithVersion = getAppPath(versionNumber, appVersion);
 
       // Generate version object with standard and additional properties
-      const versionInfo: Partial<ExtendedVersionData> = {
+      const versionInfo: ExtendedVersionData<T, K> = {
+         // Required fields with defaults
+        userId: config.properties.userId ?? 'system', // Provide fallback for userId
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        versionNumber: '0.0.0', // Default version
+        appVersion: '1.0.0', // Default app version
+        
         appPathWithVersion,
         ...changes, // Merge changes into version properties
         ...additionalProperties, // Merge additional properties
+
+        // Ensure all required fields are present
+        ...(additionalProperties.userId ? {} : { userId: 'system' })
+  
       };
 
       // Log task completion event
       TaskLogger.logTaskCompleted(
-        "existingTaskId", // Provide existing task ID if available, otherwise pass null or an empty string
+        "existingTaskId",
         "Version Generation Task",
-        "TaskSuccess" as NotificationType,
+        "TaskSuccess" as NotificationTypeEnum,
         (message: string, type: string, date: Date, id: string) => {
           notify(
-            message,
-            type,
-            date,
-            NotificationTypeEnum.TaskBoardID
+            id, // First parameter is id
+            message, // Second is content
+            null, // Third is notificationMessage
+            date, // Fourth is date
+            NotificationTypeEnum.TaskBoardID, // Fifth is type
+            undefined, // Sixth is notificationType (optional)
+            undefined, // Seventh is options (optional)
+            undefined // Eighth is userName (optional)
           );
         }
       );
 
-      const version = new Version({
+      const version = new Version<BaseData<any>>({
         id: 1,
         versionNumber: "1.0.0",
         appVersion: "1.0.0",
@@ -138,7 +157,7 @@ class VersionGenerator {
         url: "https://example.com/version1",
         documentId: "documentId",
         draft: false,
-        userId: "userId",
+        userId: versionInfo.userId, // Now guaranteed to be string
         content: "Initial content",
         description: "Initial description",
         buildNumber: "1",
@@ -152,11 +171,16 @@ class VersionGenerator {
               retryAttempts: 3, // Example retry attempts
               name: "Project Name", // Example project name
               description: "Project Description", // Example project description
-              latestVersion: "1.0.0", // Example latest version
+              latestVersion: createLatestVersion<T, K>(), // Example latest version
               category: "Example Category", // Example category
               timestamp: new Date(), // Current timestamp
               createdBy: "user@example.com", // Example created by
-              metadata: {} as UnifiedMetadata<T, K>, // Example metadata
+              metadata: {} as UnifiedMetaDataOptions<
+                T,
+                BaseData<any, any, StructuredMetadata<any, any>, Attachment>,
+                StructuredMetadata<T, K>,
+                never
+              >, // Example metadata
               initialState: {} as InitializedState<T, K>, // Example initial state
               meta: {} as StructuredMetadata<T, K>, // Example meta
               mappedSnapshot: new Map<string, Snapshot<T, K>>(), // Example mapped snapshot
@@ -232,7 +256,7 @@ class VersionGenerator {
         // calculateHash: () => "hash",
       });
 
-      return { version, versionInfo: versionInfo };
+      return { version, versionInfo };
     } catch (error) {
       console.error("Error generating version:", error);
 

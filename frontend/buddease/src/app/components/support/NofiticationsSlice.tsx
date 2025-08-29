@@ -12,6 +12,7 @@ import { NotificationTypeEnum, NotificationType } from '@/app/context/Notificati
 import { T, K, Meta} from "@/app/components/models/data/dataStoreMethods";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
  import { Attachment } from '@/app/components/documents/Attachment/attachment'
+import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
  
 
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";
@@ -26,7 +27,7 @@ interface NotificationData<
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > extends Data<T, K, Meta>, CalendarEvent<T, K> {
-  id: string;
+  id: string | null;
   message: string;
 
   createdAt?: Date;
@@ -47,7 +48,7 @@ interface NotificationData<
 }
 
 interface NotificationsState {
-  notifications: NotificationData<T, K, Meta>[];
+  notifications: NotificationData<T, K, StructuredMetadata<<T, K>>[];
 }
 
 const initialState: NotificationsState = {
@@ -71,7 +72,7 @@ export const dispatchNotification = (
         // createdAt: new Date(),
         date: new Date(),
         content: successMessage,
-        completionMessageLog: {} as WritableDraft<LogData<T, K, Meta>>,
+        completionMessageLog: {} as WritableDraft<LogData<T, K, StructuredMetadata<<T, K>>>,
         type: NotificationTypeEnum.Info,
         message: successMessage,
         status: "tentative",
@@ -103,7 +104,7 @@ export const dispatchNotification = (
         id: actionType,
         createdAt: new Date(),
         content: errorMessage + ". Payload received: " + JSON.stringify(payload),
-        completionMessageLog: {} as WritableDraft<LogData<T, K, Meta>>,
+        completionMessageLog: {} as WritableDraft<LogData<T, K, StructuredMetadata<<T, K>>>>,
         type: NotificationTypeEnum.Error,
         message: errorMessage + ": " + error,
         status: "tentative",
@@ -124,8 +125,8 @@ export const dispatchNotification = (
         rsvpStatus: 'yes',
         participants: [],
         teamMemberId: '',
-        meta: {} as WritableDraft<Data<T, K, Meta>>,
-        getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<BaseData>, SnapshotWithCriteria<BaseData>>[]> {
+        meta: {} as WritableDraft<UnifiedMetadata<T, K, StructuredMetadata<T, K>>>,
+        getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<BaseData<T, K, Meta, AttachmentType, ExcludedFields>>, SnapshotWithCriteria<BaseData>>[]> {
           throw new Error('Function not implemented.');
         }
       },

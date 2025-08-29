@@ -1,5 +1,4 @@
-import File from '@/app/components/models/file/FileManager'
-
+import { File } from '@/app/components/models/file/FileManager'
 
 interface Attachment extends File {
   id?: string;
@@ -10,7 +9,6 @@ interface Attachment extends File {
   metadata?: Record<string, any>;
   fileName?: string;
 }
-
 
 export type FileType =
   | "image"

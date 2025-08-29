@@ -156,9 +156,9 @@ const dispatch = useDispatch();
 
 
 const area = fetchUserAreaDimensions().toString()
-const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
+const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
 
-const initializedState: InitializedState<T, K<T>> = {
+const initializedState: InitializedState<T, K> = {
   metadata: currentMetadata,
   initialized: false,
   initializedState: initialState,

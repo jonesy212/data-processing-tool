@@ -1,18 +1,19 @@
+import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { useMeta } from '@/app/configs/useMeta';
+import { NotificationContextProps, NotificationType, NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
-import React, { ReactNode, createContext, useState } from 'react';
+import { title } from 'process';
+import React, { createContext, useState } from 'react';
+import { BaseData } from '../models/data/Data';
 import { logData } from '../notifications/NotificationService';
 import { notificationStoreInstance } from '../state/stores/NotificationStore';
 import { NotificationData } from './NofiticationsSlice';
-import { NotificationContextProps, NotificationType, NotificationTypeEnum } from '@/app/context/NotificationContext';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { title } from 'process';
-import { BaseData } from '../models/data/Data';
-import { useMeta } from '@/app/configs/useMeta';
-import { T, K, Meta } from "@/app/components/models/data/dataStoreMethods";
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 
 export const notificationStore = notificationStoreInstance
-export const notificationData: NotificationData<T, K<T>, Meta<T, K<T>>>[] = [];
+export const notificationData: NotificationData<T, K, Meta<T, K>>[] = [];
 
 export const NotificationContext = createContext<NotificationContextProps | undefined>(undefined);
 
@@ -60,7 +61,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
   };
 
   // Define a metadata object
-  const currentMetadata: UnifiedMetaDataOptions<MyBaseData, MyExtendedData, MyMeta> = {
+  const currentMetadata: UnifiedMetadata<MyBaseData, MyExtendedData, MyMeta> = {
     author: "John Doe",
     timestamp: new Date(),
     revisionNotes: "Initial draft",

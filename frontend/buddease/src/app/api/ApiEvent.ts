@@ -85,7 +85,7 @@ export const handleEventApiErrorAndNotify = (
       errorMessageText as unknown as string,
       null,
       new Date(),
-      'EventApiError' as NotificationType
+      'EventApiError' as NotificationTypeEnum
     );
   }
 };

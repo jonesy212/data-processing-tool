@@ -12,7 +12,7 @@ import { User, UserData } from "../components/users/User";
     channelId: string | undefined;
     content: string;
     additionalData?: string;
-    tags: string[] | Tag<T, K<T>>[] ;
+    tags: string[] | Tag<T, K>[] ;
     userId?: number
     timestamp?:Date | string;
     text: string;

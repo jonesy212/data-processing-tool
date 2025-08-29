@@ -13,6 +13,7 @@ import SnapshotStore from '../../snapshots/SnapshotStore';
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { EventActions } from './../../../components/actions/EventActions';
 import { useSecureUserId } from '../../utils/useSecureUserId';
+
 export const ENDPOINT = "http://your-backend-endpoint"; // Update with your actual backend endpoint
 
 const isKnownAction = (action: any): action is AppActionsType => {

@@ -29,7 +29,7 @@ import { Subscriber } from "../users/Subscriber";
 import { addToSnapshotList } from "../utils/snapshotUtils";
 import { SimulatedDataSource } from "./createSnapshotOptions";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
-import { Snapshot, SnapshotsArray } from "./LocalStorageSnapshotStore";
+import { Snapshot, SnapshotsArray, SnapshotUnion } from "./LocalStorageSnapshotStore";
 ;
 
 import { versionData } from '@/app/configs/DocumentBuilderConfig';
@@ -39,21 +39,24 @@ import { createVersionInfo } from '../versions/createVersionInfo';
 import Version from '../versions/Version';
 import { defaultSubscribeToSnapshots } from './defaultSubscribeToSnapshots';
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
-import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import { defaultTransformDelegate } from './snapshotDefaults';
 import { SnapshotItem } from "./SnapshotList";
 import { getSnapshotItems } from './snapshotOperations';
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { InitializedData } from './SnapshotStoreOptions';
+import { InitializedData, InitializedDataStore } from './SnapshotStoreOptions';
 import { data, SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
-
-
+import { version } from 'os';
+import { Meta } from '../../../data_analysis/frontend/buddease/src/app/components/models/data/dataStoreMethods';
+import { storeId } from '../../../data_analysis/frontend/buddease/src/app/components/utils/snapshotUtils';
+import { BaseDataEntity, BaseDataRoot, DefaultMeta, DefaultExcludedFields } from '../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig';
+import { payload, Payload, CreateSnapshotsPayload } from '../../../data_analysis/frontend/buddease/src/server/database/Payload';
 
 interface BaseSnapshotProps<
-  T extends BaseData<any> = BaseData<any, any>, 
+  T extends BaseDataEntity = BaseDataRoot, 
   K extends T = T
 > {
   id: string;
@@ -75,11 +78,11 @@ interface BaseSnapshotProps<
 
 
 
-const createSnapshot = async <
-  T extends BaseData<any>,
+const createSnapshot = <
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
   >(
   snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields> | null,
   snapshotId: string | null,
@@ -851,7 +854,7 @@ function createBaseSnapshot<
                 setSnapshot: function (snapshot: Snapshot<T, K>): void {
                   throw new Error("Function not implemented.");
                 },
-                transformSnapshotConfig: function<U extends BaseData>(config: SnapshotStoreConfig<U, U>): SnapshotStoreConfig<U, U> {
+                transformSnapshotConfig: function<U extends BaseDataEntity>(config: SnapshotStoreConfig<U, U>): SnapshotStoreConfig<U, U> {
                   // Example transformation: Add a default initialState if not present
                   if (!config.initialState) {
                     config.initialState = {
@@ -1488,7 +1491,7 @@ function createBaseSnapshot<
                   setSnapshot: function (snapshot: Snapshot<BaseData, BaseData>): void {
                     throw new Error("Function not implemented.");
                   },
-                  transformSnapshotConfig: function <T extends BaseData>(config: SnapshotStoreConfig<BaseData, T>): SnapshotStoreConfig<BaseData, T> {
+                  transformSnapshotConfig: function <T extends BaseDataEntity>(config: SnapshotStoreConfig<BaseData, T>): SnapshotStoreConfig<BaseData, T> {
                     throw new Error("Function not implemented.");
                   },
                   setSnapshots: function (snapshots: Snapshots<T, K>): void {

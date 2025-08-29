@@ -16,9 +16,9 @@ import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
  * @returns {Promise<SnapshotsArray<T, K>>} A promise that resolves to an array of snapshots//+
  */
 async function fetchSnapshotsForCategory<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   snapshotId: string,
   type: string,
@@ -41,3 +41,5 @@ async function fetchSnapshotsForCategory<
     return []; // Return empty array as fallback
   }
 }
+
+export { fetchSnapshotsForCategory }

@@ -1,9 +1,8 @@
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { Data } from '../models/data/Data';
-import { Snapshot } from './LocalStorageSnapshotStore';
-import { SnapshotContainer } from './SnapshotContainer';
 import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { SnapshotContainer } from './SnapshotContainer';
 
 interface DelegateType<T, K> {
     processSnapshot: (snapshot: Snapshot<T, K>) => void;
@@ -42,7 +41,7 @@ async function getSnapshotDelegate<T, K>(
 }
 
 // Helper function to create a delegate from a container if needed
-function createDelegateFromContainer<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(container: SnapshotContainer<T, K>): DelegateType<T, K> {
+function createDelegateFromContainer<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(container: SnapshotContainer<T, K>): DelegateType<T, K> {
   return {
     processSnapshot: (snapshot: Snapshot<T, K>) => {
       try {
@@ -90,4 +89,5 @@ function createDelegateFromContainer<T extends  BaseData<any>, K extends T = T, 
 }
 
 
-export { getSnapshotDelegate }
+export { getSnapshotDelegate };
+export type { DelegateType }

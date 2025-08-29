@@ -1,16 +1,14 @@
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { addNoteAPI, updateNoteAPI } from "@/app/api/ApiNote";
+import { Snapshot } from "@/app/components/snapshots";
 import { UserData } from "@/app/components/users/User";
+import { VersionHistory } from "@/app/components/versions/VersionData";
 import { createMetaState } from '@/app/configs/metadata/createMetadataState';
-import React, { useState } from "react";
 import { Editor, EditorState, RichUtils } from "draft-js";
 import "draft-js/dist/Draft.css";
-import { NoteAttachment, NoteData, NoteStatus, Change, NoteOptions } from "./NoteData"; // Assuming you have a NoteData interface
-import { addNoteAPI, updateNoteAPI } from "@/app/api/ApiNote";
-import { Attachment } from '@/app/components/documents/Attachment/attachment'
-import Version from "../versions/Version";
-import { NoteVersion } from './NoteData'
+import React, { useState } from "react";
 import { Collaborator } from "../models/teams/TeamMembers";
-import { VersionHistory } from "@/app/components/versions/VersionData";
+import Version from "../versions/Version";
+import { Change, NoteAttachment, NoteData, NoteOptions, NoteStatus, NoteVersion } from "./NoteData"; // Assuming you have a NoteData interface
 
 const NoteBuilder: React.FC = () => {
   const [editorState, setEditorState] = useState(() =>

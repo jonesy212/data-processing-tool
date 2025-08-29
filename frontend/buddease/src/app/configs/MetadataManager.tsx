@@ -4,9 +4,9 @@ if (typeof window === 'undefined') {
   fs = require('fs');
 }
 
-import { Snapshot } from '@/app/components/snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from "@/app/components/snapshots";
 import { version } from '@/app/components/versions/Version';
-import { BaseMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { BaseMetadata, UnifiedMetaDataOptions, UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import * as path from 'path';
 import * as React from 'react';
@@ -14,7 +14,7 @@ import useErrorHandling from '../components/hooks/useErrorHandling';
 import { K, T } from '../components/models/data/dataStoreMethods';
 import determineFileType from './DetermineFileType';
 import { StructuredMetadata, getStructureMetadataPath, useUndoRedo } from './StructuredMetadata';
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+;
 
 
 // Define any extended metadata type if needed
@@ -25,8 +25,8 @@ interface ExtendedMetadata extends BaseMetadata {
 
 
 const area = fetchUserAreaDimensions().toString()
-const metadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
-const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
+const metadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
+const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
 
 const initialState: StructuredMetadata<BaseMetadata, UnifiedMetaDataOptions<BaseMetadata>> = {
   name: 'metadata',

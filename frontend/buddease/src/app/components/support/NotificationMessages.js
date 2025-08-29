@@ -1,15 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // Helper function to handle dynamic notification message
-
-const handleDynamicNotificationMessage = function (message) {
+const handleDynamicNotificationMessage = function (message, errorType, details) {
     if (typeof message === "string") {
         return message;
     }
-    else {
-        return message("errorType", "details");
+    else if (typeof message === "function") {
+        return message(errorType || "errorType", details || "details");
     }
+    return "Unknown error occurred";
 };
+
 // Wrapper function to set dynamic notification message
 var setDynamicNotificationMessageWrapper = function (message, errorType, details) {
     var dynamicMessage;
@@ -238,6 +239,8 @@ const NOTIFICATION_MESSAGES = {
         FETCH_EXCHANGE_DATA_ERROR: "Error fetching exchange data",
     },
     Document: {
+        HANDLE_DOCUMENT_ERROR: "Failed to perform action",
+        UPDATE_DOCUMENT_SUCCESS: "Document successfully updated",
         UPDATE_DOCUMENT_ERROR: "Error updating document",
         SORT_DOCUMENT_SUCCESS: "Documents have been sorted",
         SHARE_DOCUMENT_SUCCESS: "Documents have been sorted",
@@ -246,6 +249,7 @@ const NOTIFICATION_MESSAGES = {
         DELETE_DOCUMENT_ERROR: "Document could not be deleted",
         DOCUMENT_NOT_FOUND: "Document not found",
         SHARE_DOCUMENT_ERROR: "Share document could not be found",
+        ADD_DOCUMENT_SUCCESS: "Document has been added",
         FILTER_DOCUMENTS_SUCCESS: "Documents have been filtered",
         FILTER_DOCUMENTS_ERROR: "Documents have not been filtered, please try again",
         RESTORE_DOCUMENT_SUCCESS: "Documents have been restored",
@@ -615,6 +619,14 @@ const NOTIFICATION_MESSAGES = {
         ITEM_SELECTED: "Item selected in toolbar",
         ITEM_REMOVED: "Item removed from toolbar",
         ITEM_UPDATED: "Item updated in toolbar",
+        FETCHING_TOOLBAR_ITEMS: "Fetching toolbar items...",
+        ADDED_TOOLBAR_ITEM: "Toolbar item added successfully",
+        FAILED_TO_ADD_TOOLBAR_ITEM: "Failed to add toolbar item",
+        ERROR_ADDING_TOOLBAR_ITEM: "Error adding toolbar item",
+        REMOVED_TOOLBAR_ITEM: "Toolbar item removed successfully",
+        ERROR_REMOVING_TOOLBAR_ITEM: "Error removing toolbar item",
+        UPDATED_TOOLBAR_ITEM: "Toolbar item updated successfully",
+        ERROR_UPDATING_TOOLBAR_ITEM: "Error updating toolbar item",
     },
     // Team-related
     Team: {
@@ -759,4 +771,4 @@ const NOTIFICATION_MESSAGES = {
     },
 };
 const _default = NOTIFICATION_MESSAGES;
-export { _default as default };
+export { _default as default , handleDynamicNotificationMessage, setDynamicNotificationMessageWrapper };

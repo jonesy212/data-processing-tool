@@ -1,19 +1,18 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import { convertResponseToSnapshot, enrichSnapshotStore, isSnapshotStore, isYourResponseType, normalizeSnapshot, transformResponse } from "@/app/components/typings/YourSpecificSnapshotType";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { YourResponseType } from '../typings/types';
 import { isSnapshot } from '../utils/snapshotUtils';
-import { Snapshot } from './LocalStorageSnapshotStore';
 import SnapshotStore from './SnapshotStore';
 import { InitializedSnapshot } from './SnapshotStoreOptions';
-import { getLatestSnapshot } from './SnapshotOperations';
 
 
 
 /**
  * Converts API response data to an InitializedSnapshot with proper typing
  */
-function convertResponseToSnapshot<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
+function convertResponseToSnapshot<T extends BaseDataEntity, K extends T, Meta extends StructuredMetadata<T, K>>(
   data: unknown
 ): InitializedSnapshot<T, K, Meta> {
   // First convert to the proper intermediate type
@@ -26,7 +25,7 @@ function convertResponseToSnapshot<T extends BaseData, K extends T, Meta extends
 /**
  * Handles the first step of conversion to known types
  */
-function convertToIntermediateType<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
+function convertToIntermediateType<T extends BaseDataEntity, K extends T, Meta extends StructuredMetadata<T, K>>(
   data: unknown
 ): YourResponseType<T, K, Meta> | Snapshot<T, K, Meta> | SnapshotStore<T, K, Meta> {
   if (isSnapshotStore<T, K, Meta>(data)) {
@@ -42,7 +41,7 @@ function convertToIntermediateType<T extends BaseData, K extends T, Meta extends
 /**
  * Transforms intermediate types into an InitializedSnapshot
  */
-function enrichAsInitializedSnapshot<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
+function enrichAsInitializedSnapshot<T extends BaseDataEntity, K extends T, Meta extends StructuredMetadata<T, K>>(
   data: YourResponseType<T, K, Meta> | Snapshot<T, K, Meta> | SnapshotStore<T, K, Meta>
 ): InitializedSnapshot<T, K, Meta> {
   const baseSnapshot = isSnapshotStore(data) 
@@ -67,6 +66,7 @@ function enrichAsInitializedSnapshot<T extends BaseData, K extends T, Meta exten
 }
 
 export {
-    convertResponseToSnapshot, convertToIntermediateType,
-    enrichAsInitializedSnapshot
+  convertResponseToSnapshot, convertToIntermediateType,
+  enrichAsInitializedSnapshot
 };
+

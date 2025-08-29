@@ -1,65 +1,93 @@
 // useSecureStoreId
 import { useEffect, useState } from "react";
-import { useAuth } from "../auth/AuthContext";
+import { useAuth } from "@/server/auth/AuthContext";
 import { sanitizeData } from "../security/SanitizationFunctions";
 import { useNavigate } from "react-router-dom";
-
+import { sanitizeInput } from "@/app/components/security/SanitizationFunctions";
 export const useSecureStoreId = () => {
-  const [storeId, setStoreId] = useState<number | null>(null); // Initialize storeId as null or number
-  const [loadingError, setLoadingError] = useState<string | null>(null); // To handle loading errors
+  const [storeId, setStoreId] = useState<number | null>(null);
+  const [loadingError, setLoadingError] = useState<string | null>(null);
   const { isAuthenticated, isLoading, user } = useAuth();
   const navigate = useNavigate();
+
+  // Enhanced sanitization function
+  const sanitizeStoreId = (input: unknown): number | null => {
+    if (input === null || input === undefined) {
+      return null;
+    }
+
+    // Handle number type directly
+    if (typeof input === 'number') {
+      return input;
+    }
+
+    // Handle string type with proper sanitization
+    if (typeof input === 'string') {
+      const sanitized = sanitizeInput(input.trim());
+      const num = Number(sanitized);
+      return isNaN(num) ? null : num;
+    }
+
+    // Fallback for other types
+    try {
+      const sanitized = sanitizeInput(String(input));
+      const num = Number(sanitized);
+      return isNaN(num) ? null : num;
+    } catch {
+      return null;
+    }
+  };
 
   useEffect(() => {
     const fetchStoreId = async () => {
       if (isLoading) {
         console.log('Loading user authentication status...');
-        return; // Early return if still loading
+        return;
       }
 
       if (!isAuthenticated || !user) {
-        navigate('/login'); // Redirect to login if not authenticated
+        navigate('/login');
         return;
       }
 
       try {
-        const fetchedStoreId = user.storeId; // Assume `storeId` is a property on the `user` object
+        const fetchedStoreId = user.storeId;
+        const sanitizedId = sanitizeStoreId(fetchedStoreId);
 
-        if (typeof fetchedStoreId === "number") {
-          // Sanitize and set the store ID
-          const sanitizedStoreId = sanitizeData(String(fetchedStoreId));
-          setStoreId(Number(sanitizedStoreId));
-          setLoadingError(null); // Clear any previous errors
-        } else {
-          throw new Error("Invalid store ID fetched.");
+        if (sanitizedId === null) {
+          throw new Error("Invalid store ID format");
         }
+
+        // Additional validation
+        if (sanitizedId <= 0) {
+          throw new Error("Store ID must be positive");
+        }
+
+        setStoreId(sanitizedId);
+        setLoadingError(null);
       } catch (error) {
         console.error("Error fetching store ID:", error);
-        setLoadingError("Failed to load content. Please try again later.");
-        navigate('/error'); // Redirect to an error page
+        setLoadingError(
+          error instanceof Error 
+            ? error.message 
+            : "Failed to load content. Please try again later."
+        );
+        navigate('/error');
       }
     };
 
-    // Set a timeout to handle cases where loading takes too long
     const timer = setTimeout(() => {
       if (isLoading || !storeId) {
         setLoadingError("Loading is taking longer than expected. Please refresh the page.");
-        navigate('/error'); // Redirect to an error page or handle as needed
+        navigate('/error');
       }
-    }, 10000); // 10 seconds timeout, adjust as needed
+    }, 10000);
 
-    // Call fetchStoreId and clear the timeout if completed in time
     fetchStoreId().finally(() => clearTimeout(timer));
 
-  }, [isLoading, isAuthenticated, user, navigate]);
+  }, [isLoading, isAuthenticated, user, navigate, storeId]);
 
-  // Optionally handle different states based on loadingError
-  if (loadingError) {
-    console.error(loadingError);
-    // You could return an error message or component here if needed
-  }
-
-  return storeId;
+  return { storeId, loadingError }; // Return both values as an object
 };
 
 export default useSecureStoreId;

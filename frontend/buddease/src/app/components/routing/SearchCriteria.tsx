@@ -17,7 +17,7 @@ import { TenantManagementPhaseEnum } from "../phases/TenantManagementPhase";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { SecurityFeatureEnum } from "../security/SecurityFeatureEnum";
 import { RootState } from "../state/redux/slices/RootSlice";
-import { NotificationTypeEnum } from "../support/NotificationContext";
+import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { userService } from "../../api/ApiUserr";
 import { IdeaCreationPhaseEnum } from "../users/userJourney/IdeaCreationPhase";
 import { Entity, fuzzyMatchEntities } from "./FuzzyMatch";

@@ -1,13 +1,13 @@
+import { Snapshot } from "@/app/components/snapshots";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { CombinedEvents } from "../hooks/useSnapshotManager";
 import { BaseData } from '@/app/data/Data';
-import { Snapshot } from "./LocalStorageSnapshotStore";
+import { CombinedEvents } from "../hooks/useSnapshotManager";
 
 // Define SampleSnapshot implementing Snapshot<T, K>
 class SampleSnapshot<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+ Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
 >
   implements Snapshot<T, K> {
   id: string;

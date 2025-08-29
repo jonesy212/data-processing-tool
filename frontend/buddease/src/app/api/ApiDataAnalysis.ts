@@ -1,31 +1,31 @@
 // ApiDataAnalysis.ts
-import { data } from '@/app/components/snapshots/SnapshotWithCriteria';
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { StatusType } from '@/app/components/models/data/StatusType';
+import { Snapshot } from "@/app/components/snapshots";
+import { data } from '@/app/components/snapshots/SnapshotWithCriteria';
+import { YourResponseType } from "@/app/components/typings/types";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification
 } from "@/app/context/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
 import { BaseData } from "../components/models/data/Data";
 import { PriorityTypeEnum } from "../components/models/data/StatusType";
+import { T } from '../components/models/data/dataStoreMethods';
 import { DataAnalysisResult } from "../components/projects/DataAnalysisPhase/DataAnalysisResult";
-import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
+import SnapshotStore from '../components/snapshots/SnapshotStore';
 import { InitializedSnapshot } from "../components/snapshots/SnapshotStoreOptions";
+import { createSnapshot } from '../components/snapshots/createSnapshot';
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { isYourResponseType, isSnapshotStore, convertResponseToSnapshot } from "../components/typings/YourSpecificSnapshotType";
-import { YourResponseType } from "@/app/components/typings/types";
+import { isSnapshotStore, isYourResponseType } from "../components/typings/YourSpecificSnapshotType";
+import { convertResponseToSnapshot } from "../components/snapshots/InitializedSnapshotTypes";
+import { isSnapshot } from "../components/utils/snapshotUtils";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
-import { isSnapshot } from "../components/utils/snapshotUtils";
-import { T } from '../components/models/data/dataStoreMethods';
-import SnapshotStore from '../components/snapshots/SnapshotStore';
-import { createSnapshot } from '../components/snapshots/createSnapshot';
 
 const dispatch = useDispatch();
 // Define the API base URL for data analysis
@@ -682,4 +682,4 @@ export const sendAnalyticsDataToBackend = async (analyticsData: any): Promise<vo
 };
 
 
-export { isInitializedSnapshot }
+export { isInitializedSnapshot };

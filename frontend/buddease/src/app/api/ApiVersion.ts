@@ -1,15 +1,15 @@
 // ApiVersion.ts
 
-import { AxiosError } from "axios";
-import axiosInstance from "./axiosInstance"; // Ensure this is set up correctly for API calls
+import { Snapshot } from "@/app/components/snapshots";
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
+import { AxiosError } from "axios";
+import { BaseData } from "../components/models/data/Data";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { handleApiError } from "./ApiLogs";
 import { YourResponseType } from "../components/typings/types";
-import { endpoints } from "./ApiEndpoints";
-import { BaseData, Data } from "../components/models/data/Data";
-import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
 import { StructuredMetadata } from "../configs/StructuredMetadata";
+import { endpoints } from "./ApiEndpoints";
+import { handleApiError } from "./ApiLogs";
+import axiosInstance from "./axiosInstance"; // Ensure this is set up correctly for API calls
 
 // Define the API base URL for version data
 const VERSION_DATA_BASE_URL = endpoints.versionData;
@@ -94,6 +94,6 @@ const storeVersionedAnalyticsData = async (analyticsData: any): Promise<void> =>
 };
 
 
-export {fetchVersionData,
-    fetchAnalyticsData,
-    storeVersionedAnalyticsData,}
+export {
+  fetchAnalyticsData, fetchVersionData, storeVersionedAnalyticsData
+};

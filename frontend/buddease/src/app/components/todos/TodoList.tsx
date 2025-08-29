@@ -1,3 +1,4 @@
+import { Snapshot } from "@/app/components/snapshots";
 import axios from "axios";
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
@@ -5,7 +6,6 @@ import CommonDetails, { CommonData } from "../models/CommonData";
 import { Data } from "../models/data/Data";
 import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
-import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import useTodoManagerStore from "../state/stores/TodoStore";
 import { Todo } from "./Todo";

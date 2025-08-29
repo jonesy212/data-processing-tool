@@ -6,9 +6,8 @@ import { AxiosError } from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { ToolbarActions } from '../../actions/ToolbarActions';
 import { RootState } from '../../state/redux/slices/RootSlice';
-import { NotificationTypeEnum, useNotification } from '../../support/NotificationContext';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
-import React from 'react';
+import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
 
 
 const EnhancedVideoControlToolbar = () => {

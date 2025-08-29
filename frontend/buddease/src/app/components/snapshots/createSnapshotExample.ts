@@ -1,6 +1,6 @@
 // import { SnapshotData, SnapshotStoreConfig } from '@/app/components/snapshots';
 
-// import { Snapshot } from "./LocalStorageSnapshotStore";
+// import { Snapshot } from "@/app/components/snapshots";
 
 // import { Data } from '../models/data/Data';
 // import { K, T } from '../models/data/dataStoreMethods';

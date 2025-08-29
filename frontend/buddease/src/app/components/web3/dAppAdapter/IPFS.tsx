@@ -3,10 +3,14 @@ import { ethers } from 'ethers';
 import IPFS from 'ipfs';
 import { getConfigsData } from '../../../api/getConfigsApi';
 import { ipfsConfig } from '../../../configs/ipfsConfig';
-import { useAuth } from '../../auth/AuthContext';
+import { useAuth } from '@/server/auth/AuthContext';
 import { CustomDAppAdapter } from './DApp';
 import { DAppAdapterConfig, DappProps } from './DAppAdapterConfig';
-  // Get configs data and handle the case where it returns undefined
+import { documentOptions } from '../../hooks/userScenarioCreation';
+import { DocumentSize } from "@/app/components/models/data/StatusType";
+import { PoolConfig } from 'mysql';
+  
+// Get configs data and handle the case where it returns undefined
 const extendedProps: ExtendedDappProps | undefined = await getConfigsData();
 
 // Extend the existing DAppAdapterConfig interface
@@ -14,6 +18,10 @@ interface ExtendedDappProps extends DappProps {
   ipfsConfig: typeof ipfsConfig;
   ethereumRpcUrl: string; // Add ethereumRpcUrl property
   dappProps?: any; // Add dappProps property
+
+  dbConfig: PoolConfig;
+  systemApiResponse: any; 
+  userApiResponse: any;
 }
 
 interface ExtendedDAppAdapterConfig extends DAppAdapterConfig<ExtendedDappProps> {
@@ -33,7 +41,7 @@ if (currentUser) {
   // Ensure that currentUser is properly structured according to DappProps['currentUser']
   const currentUserForDapp: DappProps['currentUser'] = {
     id: currentUser.id, // Assign the user's ID
-    name: currentUser.username, // Assign the user's name
+    username: currentUser.username, // Assign the user's name
     role: String(currentUser.role), // Convert UserRole to string and assign it as the user's role
     teams: currentUser.teams, // Assign the user's teams
     projects: currentUser.projects, // Assign the user's projects
@@ -118,7 +126,7 @@ export class ExtendedDAppAdapter extends CustomDAppAdapter<ExtendedDappProps> {
             tasks: [],
             teamMembers: []
           },
-          documentSize: 'letter',
+          documentSize: DocumentSize.Letter,
           documentOptions: documentOptions,
           enableRealTimeUpdates: false,
           fluenceConfig: {

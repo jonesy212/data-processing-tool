@@ -1,12 +1,14 @@
-import { SnapshotDataType } from '@/app/components/snapshots';
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { useCallback } from 'react';
 import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot, SnapshotDataType } from '@/app/components/snapshots';
 
-import { SnapshotConfig } from '@/app/components/snapshots';
-import { CreateOptions,
+import {
+  CreateOptions,
   FetchAllOptions,
   FindSubscriberOptions,
-  GetConfigOptions } from '@/app/api/SnapshotOptions';
+  GetConfigOptions
+} from '@/app/api/SnapshotOptions';
+import { SnapshotConfig } from '@/app/components/snapshots';
 
 // SnapshotApiService.ts
 class SnapshotApiService {
@@ -66,7 +68,10 @@ const snapshotApi = new SnapshotApiService();
 // React-friendly functional wrappers
 export const useSnapshotApi = () => {
   const createSnapshot = useCallback(
-    async <T extends BaseData, K extends T = T>(
+    async <
+      T extends BaseData<any, any, any, any, any>,
+      K extends T = T
+    >(
       snapshot: Snapshot<T, K>,
       options?: CreateOptions
     ) => {
@@ -82,3 +87,6 @@ export const useSnapshotApi = () => {
     // ... other methods
   };
 };
+
+export default SnapshotApiService
+  

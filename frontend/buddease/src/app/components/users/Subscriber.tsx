@@ -6,67 +6,67 @@ import { TriggerIncentivesParams } from "@/app/components/utils/applicationUtils
 import { BaseDatabaseService } from "@/app/configs/DatabaseConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import {
+    NotificationType,
+    NotificationTypeEnum,
+} from "@/context/NotificationContext";
 import { Payload, UpdateSnapshotPayload } from "@/server/database/Payload";
 import { config } from "process";
 import { SubscriptionActions } from "../actions/SubscriptionActions";
 import { ModifiedDate } from "../documents/DocType";
 import {
-  SnapshotStoreOptions,
-  convertSnapshotToContent
+    SnapshotStoreOptions,
+    convertSnapshotToContent
 } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Content } from "../models/content/AddContent";
 import { BaseData, Data } from "../models/data/Data";
 import {
-  NotificationStatus,
-  SubscriberTypeEnum,
-  SubscriptionTypeEnum,
+    NotificationStatus,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum,
 } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import {
-  CustomSnapshotData,
-  SnapshotConfig,
-  SnapshotData,
-  SnapshotItem,
-  SnapshotStoreConfig,
-  SnapshotWithCriteria
+    CustomSnapshotData,
+    SnapshotConfig,
+    SnapshotData,
+    SnapshotItem,
+    SnapshotStoreConfig,
+    SnapshotWithCriteria
 } from "../snapshots";
 import { FetchSnapshotPayload } from "../snapshots/FetchSnapshotPayload";
 import {
-  Snapshot,
-  SnapshotsArray,
-  createSnapshotOptions
+    Snapshot,
+    SnapshotsArray,
+    createSnapshotOptions
 } from "../snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { SnapshotStorePublicMethods } from "../snapshots/SnapshotStorePublicMethods";
 import SnapshotStoreSubset from "../snapshots/SnapshotStoreSubset";
 import {
-  addSnapshotSuccess,
-  createInitSnapshot,
-  createSnapshotFailure,
-  createSnapshotSuccess,
-  updateSnapshot,
-  updateSnapshotFailure,
-  updateSnapshotSuccess,
-  updateSnapshots,
-  updateSnapshotsSuccess,
+    addSnapshotSuccess,
+    createInitSnapshot,
+    createSnapshotFailure,
+    createSnapshotSuccess,
+    updateSnapshot,
+    updateSnapshotFailure,
+    updateSnapshotSuccess,
+    updateSnapshots,
+    updateSnapshotsSuccess,
 } from "../snapshots/snapshotHandlers";
 import {
-  clearSnapshots,
-  removeSnapshot,
+    clearSnapshots,
+    removeSnapshot,
 } from "../state/redux/slices/SnapshotSlice";
 import {
-  FetchSnapshotByIdCallback,
-  Subscription,
+    FetchSnapshotByIdCallback,
+    Subscription,
 } from "../subscriptions/Subscription";
 import { SubscriptionLevel } from "../subscriptions/SubscriptionLevel";
 import {
-  NotificationType,
-  NotificationTypeEnum,
-} from "../support/NotificationContext";
-import {
-  YourSpecificSnapshotType,
-  convertMapToSnapshot
+    YourSpecificSnapshotType,
+    convertMapToSnapshot
 } from "../typings/YourSpecificSnapshotType";
 import { isSnapshotStoreConfig } from "../utils/snapshotUtils";
 import { sendNotification } from "./UserSlice";

@@ -1,7 +1,7 @@
 // RootSlice.ts
-
 import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { WritableDraft } from "immer";
+import { FilteredEventsState } from '@/stores/FilterStore'
 
 interface Task {
   id: string;
@@ -15,6 +15,7 @@ interface TaskManagerState {
 
 interface RootState {
   taskManager: TaskManagerState;
+  filterManager: FilteredEventsState
 }
 
 const initialState: TaskManagerState = {

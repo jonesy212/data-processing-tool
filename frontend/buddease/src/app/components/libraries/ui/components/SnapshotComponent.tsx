@@ -4,13 +4,13 @@ import { DataStoreMethods } from "@/app/components/projects/DataAnalysisPhase/Da
 import { DataStore } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import {
   CustomSnapshotData,
+  Snapshot,
   SnapshotConfig,
   SnapshotContainer,
   SnapshotData,
   SnapshotStoreConfig,
   SnapshotStoreProps,
 } from "@/app/components/snapshots";
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { isSnapshot } from "@/app/components/utils/snapshotUtils";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';

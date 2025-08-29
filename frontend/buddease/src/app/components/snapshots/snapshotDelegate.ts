@@ -30,7 +30,7 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 
 
-const snapshotDelegate = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const snapshotDelegate = <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotStoreConfig: SnapshotStoreConfig<T> | undefined
 ): SnapshotStoreConfig<T, K>[] => {
   

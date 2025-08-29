@@ -4,8 +4,8 @@ import { BaseData, Data } from '@/app/components/models/data/Data';
 import { ColorPalettes } from 'antd/es/theme/interface';
 import { TagsRecord } from '../../snapshots/SnapshotWithCriteria';
 import { Attachment } from '@/app/components/documents/Attachment/attachment'
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/configs/BaseConfig';
 
 // Define a basic type for the data associated with a comment
 type CommentData =  BaseData<any> & {
@@ -18,10 +18,11 @@ type CommentData =  BaseData<any> & {
   
   // Define a type for the metadata associated with a comment
 type CommentMeta<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+
 > = UnifiedMetaDataOptions<T, K, Meta, ExcludedFields> & {
     isPinned?: boolean;
     isFlagged?: boolean;
@@ -34,16 +35,17 @@ type CommentMeta<
   
   
 interface Comment<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
-> extends BaseData<T, K, Meta> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields> {
   id?: string;
-  text?: string | Content<T, K>;
+  text?: string | Content<T, K, Meta>;
   editedAt?: Date;
   editedBy?: string;
-  attachments?: Attachment[];
+  attachments?: AttachmentType[];
   replies?: Comment<T, K, Meta>[];
   likes?: number;
   watchLater?: boolean;

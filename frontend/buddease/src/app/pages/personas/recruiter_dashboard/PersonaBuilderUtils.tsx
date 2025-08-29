@@ -1,7 +1,7 @@
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import useRealtimeData from "@/app/components/hooks/commHooks/useRealtimeData";
 import { Data } from "@/app/components/models/data/Data";
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { useEffect, useState } from "react";
 

@@ -1,15 +1,15 @@
 // IdeaLifecycleProcess.tsx
 import { useState } from "react";
 
-import IdeaValidation from "../users/userJourney/IdeaValidation";
 import {
-  NotificationTypeEnum,
-  useNotification,
-} from "../support/NotificationContext";
+    NotificationTypeEnum,
+    useNotification,
+} from "@/context/NotificationContext";
+import axiosInstance from "../security/csrfToken";
+import IdeaValidation from "../users/userJourney/IdeaValidation";
+import ProofOfConcept from "../users/userJourney/ProofOfConcept";
 import * as IdeaLifecycleAPI from "./../../api/ApiIdeaLifecycle";
 import { IdeaLifecyclePhase } from "./ideaPhase/IdeaLifecyclePhase";
-import ProofOfConcept from "../users/userJourney/ProofOfConcept";
-import axiosInstance from "../security/csrfToken";
 
 const IdeaLifecycleProcess: React.FC = () => {
   const { notify } = useNotification();

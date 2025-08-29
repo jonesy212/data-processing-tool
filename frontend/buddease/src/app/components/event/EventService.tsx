@@ -1,13 +1,13 @@
 // EventService.ts
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { BaseData } from '@/app/components/models/data/Data';
 import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { Snapshot } from '@/app/components/snapshots';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { VersionHistory } from "@/app/components/versions/VersionData";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { createMetaState } from '@/app/configs/metadata/createMetadataState';
 import { useMeta } from "@/app/configs/useMeta";
 import { useMetadata } from "@/app/configs/useMetadata";
@@ -126,7 +126,7 @@ interface CustomEventWithProperties extends CustomEvent {
   endDate: Date;
   startTime?: Date;
   endTime?: Date;
-  snapshotStore: SnapshotStore<T, K<T>>;
+  snapshotStore: SnapshotStore<T, K>;
   eventId: string;
   eventType: string;
   timestamp: number;
@@ -361,8 +361,8 @@ class EventService {
   ): CalendarEvent {
 
     const area = fetchUserAreaDimensions().toString()
-    const metadata: UnifiedMetadata<T, K<T>> = useMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>(area);
-    const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
+    const metadata: UnifiedMetadata<T, K> = useMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>(area);
+    const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
 
     // Create a new CalendarEvent object with the provided parameters
     const customEvent: CalendarEvent = {
@@ -394,7 +394,7 @@ class EventService {
         undefined, // initialState: initial state of the metadata, can be undefined
         {} as Map<string, Snapshot<BaseData<any, any, StructuredMetadata<any, any>, never, Attachment>>>, // meta: additional metadata, can be an empty array if not needed
         { eventRecords: {} }, // events: event manager data, initializing with an empty event record
-        {} as Version<T, K<T>>, // version: version information, can be undefined if not applicable
+        {} as Version<T, K>, // version: version information, can be undefined if not applicable
         {} as VersionHistory, // lastUpdated: last updated version history, it should be provided
         true, // isActive: boolean flag indicating whether metadata is active or not
         {}, // config: configuration settings for the metadata, using an empty object
@@ -416,8 +416,8 @@ class EventService {
       date: new Date(),
       then: implementThen,
       analysisType: {} as AnalysisTypeEnum,
-      analysisResults: {} as DataAnalysisResult<T, K<T>>[],
-      videoData: {} as VideoData<T, K<T>>,
+      analysisResults: {} as DataAnalysisResult<T, K>[],
+      videoData: {} as VideoData<T, K>,
       timestamp: undefined,
       meta: {
         createdAt: new Date(),

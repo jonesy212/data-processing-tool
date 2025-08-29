@@ -4,10 +4,10 @@ import { getSnapshotId } from "@/app/api/SnapshotApi";
 import useDocumentManagement from '@/app/components/documents/useDocumentManagement';
 import { ApiConfig } from "@/app/configs/ConfigurationService";
 import { Payload, UpdateSnapshotPayload } from '@/server/database/Payload';
-import React, { useEffect, useState, forwardRef, useImperativeHandle, useRef } from "react";
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
 import {
-  SimpleCalendarEvent,
-  useCalendarContext,
+    SimpleCalendarEvent,
+    useCalendarContext,
 } from "../calendar/CalendarContext";
 import DynamicContent from "../documents/DynamicContent";
 import { BaseData, Data } from "../models/data/Data";
@@ -20,10 +20,9 @@ import { TrackerProps } from "../models/tracker/Tracker";
 import { NotificationManagerServiceProps } from "../notifications/NotificationService";
 import useNotificationManagerServiceProps from "../notifications/useNotificationManagerServiceProps";
 import { PromptPageProps } from "../prompts/PromptPage";
-import { headersConfig } from '../shared/SharedHeaders';
 import { SnapshotStoreProps } from '../snapshots';
 
-import CalendarManagerStoreClass, { updateCallback, CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import CalendarManagerStoreClass, { CalendarEvent, updateCallback } from '@/app/components/calendar/CalendarEvent';
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { storeProps } from "../snapshots/SnapshotStoreProps";
 import { DetailsItem } from "../state/stores/DetailsListStore";
@@ -134,10 +133,10 @@ const updateSnapshotMethod = (
   return Promise.resolve();
 };
 
-const data = new Map<string, Snapshot<T, K<T>>>(); // or whatever type fits
+const data = new Map<string, Snapshot<T, K>>(); // or whatever type fits
 
 // Assuming CalendarManagerStoreClass has a constructor that takes a snapshot as input
-const records = Array.from(data.values()).reduce<Record<string, CalendarManagerStoreClass<BaseData<any>, K<T>>[]>>(
+const records = Array.from(data.values()).reduce<Record<string, CalendarManagerStoreClass<BaseData<any>, K>[]>>(
   (acc, snapshot) => {
     const id = snapshot.id; // Replace with a unique ID field
     if (!acc[id]) {
@@ -259,8 +258,8 @@ const YourComponent: React.FC<YourComponentProps> = ({
   const updateSnapshot = async (
     snapshotId: string,
     data: Data<BaseData<any>>,
-    events: Record<string, CalendarEvent<T, K<T>>[]>,
-    snapshotStore: SnapshotStore<BaseData, K<T>>,
+    events: Record<string, CalendarEvent<T, K>[]>,
+    snapshotStore: SnapshotStore<BaseData, K>,
     dataItems: RealtimeDataItem[],
     newData: Data<BaseData<any>>,
     payload: UpdateSnapshotPayload<Data<BaseData<any>>>
@@ -298,7 +297,7 @@ const YourComponent: React.FC<YourComponentProps> = ({
     };
 
     
-    const snapshotStore = new SnapshotStore<BaseData, K<T>>({
+    const snapshotStore = new SnapshotStore<BaseData, K>({
       storeId, name, version, schema, options, category, config, operation, expirationDate,
       payload: mappedPayload, callback, storeProps, endpointCategory, initialState
     });
@@ -485,12 +484,12 @@ export default YourComponent;
 
 
 // Example:
-const { callback, payload, endpointCategory } = storeProps as SnapshotStoreProps<T, K<T>>
-const events: Record<string, CalendarEvent<T, K<T>>[]> = {};
-const storeData = new SnapshotStore<T, K<T>>({ storeId, name, initialState, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory, storeId });
+const { callback, payload, endpointCategory } = storeProps as SnapshotStoreProps<T, K>
+const events: Record<string, CalendarEvent<T, K>[]> = {};
+const storeData = new SnapshotStore<T, K>({ storeId, name, initialState, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory, storeId });
 
 
-const snapshotStore = new SnapshotStore<BaseData, K<T>>({ storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory});
+const snapshotStore = new SnapshotStore<BaseData, K>({ storeId, name, version, schema, options, category, config, operation, expirationDate, payload, callback, storeProps, endpointCategory});
 const dataItems: RealtimeDataItem[] = [];
 const newData: Data<BaseData<any>> = {
   timestamp: undefined

@@ -3,16 +3,16 @@ import { userPreferences } from "../configs/UserPreferences";
 import userSettings, { UserSettings } from "../configs/UserSettings";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UserData } from "@/app/components/users/User";
-import { UserConfig as ViteUserConfig } from 'vite';
-
-import { Attachment } from '@/app/components/documents/Attachment/attachment'
+import { UserConfig } from "../components/snapshots";
 
 
 interface UserConfigData<
   T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> extends BaseData<T, K, Meta>, UserConfig<T, K, Meta>, UserData<T, K, Meta> {
+> extends UserData<T, K, Meta>,  // ← This already includes BaseData via inheritance
+    UserConfig<T, K, Meta>       // ← Add UserConfig properties
+{
      // Add configuration-specific fields here
     settings: UserSettings;
     enabledFeatures: string[];

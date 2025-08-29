@@ -1,27 +1,27 @@
 // tasks/TaskActions.ts
 
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { createAction } from "@reduxjs/toolkit";
 import { Task } from "../models/tasks/Task";
 import { Idea } from "../users/Ideas";
-import { T, K } from "@/app/components/models/data/dataStoreMethods";
 
 export const TaskActions = {
   // Standard actions
-  add: createAction<Task<T, K<T>>>("addTask"),
+  add: createAction<Task<T, K>>("addTask"),
   remove: createAction<number>("removeTask"),
   toggle: createAction<number>("toggleTask"),
-  updateTask: createAction<{ taskId: number, task: Task<T, K<T>>, newTitle?: string }>("updateTaskTitle"), // Adjusted
-  validateTask: createAction<Task<T, K<T>>>("validateTask"),
-  createTask: createAction<{ projectId: string; phaseId: string; task: Task<T, K<T>> }>("createTask"),
+  updateTask: createAction<{ taskId: number, task: Task<T, K>, newTitle?: string }>("updateTaskTitle"), // Adjusted
+  validateTask: createAction<Task<T, K>>("validateTask"),
+  createTask: createAction<{ projectId: string; phaseId: string; task: Task<T, K> }>("createTask"),
   assignTask: createAction<{ projectId: string; taskId: string; assigneeId: string }>("assignTask"),
-  fetchTaskData: createAction<Task<T, K<T>>>("fetchDataSaga"),
+  fetchTaskData: createAction<Task<T, K>>("fetchDataSaga"),
 
   fetchTasksRequest: createAction("fetchTasksRequest"),
   fetchTasksByTaskUserId: createAction<{
     assigneeId: string,
-    tasks: Task<T, K<T>>[],
+    tasks: Task<T, K>[],
   }>("fetchTasksByTaskUserId"),
-  fetchTasksSuccess: createAction<{ tasks: Task<T, K<T>>[] }>("fetchTasksSuccess"),
+  fetchTasksSuccess: createAction<{ tasks: Task<T, K>[] }>("fetchTasksSuccess"),
   fetchTasksFailure: createAction<{ error: string }>("fetchTasksFailure"),
   
   
@@ -31,21 +31,21 @@ export const TaskActions = {
   completeAllTasksFailure: createAction<{ error: string }>("completeAllTasksFailure"),
   
   updateTaskPrioritySuccess: createAction<{
-    taskId: Task<T, K<T>>, priority: string
+    taskId: Task<T, K>, priority: string
     
    }>("updateTaskPrioritySuccess"),
-  assignTaskToCurrentUser: createAction<{generatedTask: Promise<Task<T, K<T>>>, currentUser: string }>("assignTaskToCurrentUser"),
-  addTaskSuccess: createAction<{ task: Task<T, K<T>> }>("addTaskSuccess"),
+  assignTaskToCurrentUser: createAction<{generatedTask: Promise<Task<T, K>>, currentUser: string }>("assignTaskToCurrentUser"),
+  addTaskSuccess: createAction<{ task: Task<T, K> }>("addTaskSuccess"),
   addTaskFailure: createAction<{ error: string }>("addTaskFailure"),
 
   // Additional actions for updating tasks
-  updateTaskSuccess: createAction<{ task: Task<T, K<T>> }>("updateTaskSuccess"),
-  updateTasksSuccess: createAction<{ tasks: Task<T, K<T>>[] }>("updateTasksSuccess"),
+  updateTaskSuccess: createAction<{ task: Task<T, K> }>("updateTaskSuccess"),
+  updateTasksSuccess: createAction<{ tasks: Task<T, K>[] }>("updateTasksSuccess"),
   updateTaskFailure: createAction<{ error: string }>("updateTaskFailure"),
   
   // Additional actions for removing tasks
   removeTaskSuccess: createAction<number>("removeTaskSuccess"),
-  removeTasksSuccess: createAction<{ tasks: Task<T, K<T>>[] }>("removeTasksSuccess"),
+  removeTasksSuccess: createAction<{ tasks: Task<T, K>[] }>("removeTasksSuccess"),
   removeTaskFailure: createAction<{ error: string }>("removeTaskFailure"),
   
 
@@ -63,17 +63,17 @@ export const TaskActions = {
 
 
 
-  markTaskAsInProgressSuccess: createAction<{taskId: Task<T, K<T>>, requestData: string}>("markTaskAsInProgressSuccess"),
+  markTaskAsInProgressSuccess: createAction<{taskId: Task<T, K>, requestData: string}>("markTaskAsInProgressSuccess"),
 
   updateTaskIdeas: createAction<{taskId: string, ideas: Idea[]}>("updateTaskIdeas"),
   // Batch actions for fetching
   batchFetchTasksRequest: createAction("batchFetchTasksRequest"),
-  batchFetchTasksSuccess: createAction<{ tasks: Task<T, K<T>>[] }>("batchFetchTasksSuccess"),
+  batchFetchTasksSuccess: createAction<{ tasks: Task<T, K>[] }>("batchFetchTasksSuccess"),
   batchFetchTasksFailure: createAction<{ error: string }>("batchFetchTasksFailure"),
 
   // Batch actions for updating
   batchUpdateTasksRequest: createAction<{ ids: number[], newTitles: string[] }>("batchUpdateTasksRequest"),
-  batchUpdateTasksSuccess: createAction<{ tasks: Task<T, K<T>>[] }>("batchUpdateTasksSuccess"),
+  batchUpdateTasksSuccess: createAction<{ tasks: Task<T, K>[] }>("batchUpdateTasksSuccess"),
   batchUpdateTasksFailure: createAction<{ error: string }>("batchUpdateTasksFailure"),
 
   // Batch actions for removing
@@ -87,6 +87,6 @@ export const TaskActions = {
   markTaskAsCompleteFailure: createAction<{ taskId: string, error: string }>("markTaskAsCompleteFailure"),
 
 
-  setAssignedTaskStore: createAction<{ task: Task<T, K<T>> | undefined , assignee: string, assignees?: string[], tasks?: Task<T, K<T>>[] }>("setAssignedTaskStore"),
+  setAssignedTaskStore: createAction<{ task: Task<T, K> | undefined , assignee: string, assignees?: string[], tasks?: Task<T, K>[] }>("setAssignedTaskStore"),
   
 };

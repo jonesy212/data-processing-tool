@@ -26,8 +26,8 @@ function isPrivacySettings(obj: any): obj is PrivacySettings {
   }
 
   export const openPrivacySettingsMenu = async (
-      videoId: string,
-      selectedSettings: PrivacySettings,
+    videoId: string,
+    selectedSettings: PrivacySettings,
     privacySettings: PrivacySettings
     // updatedSettings: PrivacySettings
   ) => {

@@ -5,13 +5,13 @@ import { Task } from "../models/tasks/Task";
 import {
   CalendarEvent,
   useCalendarManagerStore,
-} from "../state/stores/CalendarEvent";
-import { rootStores } from "../state/stores/RootStores";
-import { useTaskManagerStore } from "../state/stores/TaskStore ";
-import { useTeamManagerStore } from "../state/stores/TeamStore";
-import useTodoManagerStore, { TodoManagerStoreProps } from "../state/stores/TodoStore";
-import useTrackerStore from "../state/stores/TrackerStore";
-import TodoImpl, { Todo } from "../todos/Todo";
+} from "@/app/components/calendar/CalendarEvent";
+import { rootStores } from "@/app/components/state/stores/RootStores";
+import { useTaskManagerStore } from "@/app/components/state/stores/TaskStore ";
+import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
+import useTodoManagerStore, { TodoManagerStoreProps } from "@/app/components/state/stores/TodoStore";
+import useTrackerStore from "@/app/components/state/stores/TrackerStore";
+import TodoImpl, { Todo } from "@/app/components/todos/Todo";
 import ToolbarItem from "./ToolbarItem";
 import { showModalOrNotification } from "../hooks/commHooks/idleTimeoutUtils";
 import useSecureStoreId from '../utils/useSecureStoreId';

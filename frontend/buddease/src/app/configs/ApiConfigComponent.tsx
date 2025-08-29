@@ -2,7 +2,7 @@
 import { User } from "@/app/components/users/User";
 import { backendConfig } from "@/app/configs/BackendConfig";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
-import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent";
+import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent/ConfigurationServiceComponent";
 import DataVersionsConfig from "@/app/configs/DataVersionsConfig";
 import { frontendConfig } from "@/app/configs/FrontendConfig";
 import MainConfig from "@/app/configs/MainConfig";
@@ -16,7 +16,6 @@ import ErrorBoundary from "@/app/shared/ErrorBoundary";
 import { Form, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import getAppPath from "../../../appPath";
 import useFilePath from "../components/hooks/useFilePath";
 import { ComponentActions } from "../components/libraries/ui/components/ComponentActions";
 import CreateComponentForm from "../components/libraries/ui/components/CreateComponentForm";
@@ -32,6 +31,7 @@ import { selectApiConfigs } from "../components/state/redux/slices/ApiSlice";
 import { UserData } from "../components/users/User";
 import { getCurrentAppInfo } from "../components/versions/VersionGenerator";
 import UniqueIDGenerator from "../generators/GenerateUniqueIds";
+import getAppPath from "./appStructure/appPath";
  
 
 

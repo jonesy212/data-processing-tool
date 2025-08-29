@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { RandomWalkActions } from "./RandomWalkActions";
 import { addNotification } from "../../support/NotificationsSlice";
-import { NotificationTypeEnum } from "../../support/NotificationContext";
+import { NotificationTypeEnum } from "@/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
 const RandomWalk = () => {

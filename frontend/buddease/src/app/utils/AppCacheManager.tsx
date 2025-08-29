@@ -1,9 +1,9 @@
-import { Data, BaseData } from "../components/models/data/Data";
+import { Snapshot } from "@/app/components/snapshots";
+import { useNotification } from '@/app/context/context/NotificationContext';
+import { BaseData, Data } from "../components/models/data/Data";
 import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
-import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
-import { NotificationTypeEnum, useNotification } from '@/app/context/support/NotificationContext';
 
-import  { VideoData } from "../components/video/Video";
+import { VideoData } from "../components/video/Video";
 import FrontendStructure from "../configs/appStructure/FrontendStructureComponent";
 import AppCacheManagerExtended from "./AppCacheManagerExtended";
 import BackendCacheManager from "./BackendCacheManager";

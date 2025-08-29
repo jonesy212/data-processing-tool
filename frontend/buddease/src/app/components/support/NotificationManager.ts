@@ -1,14 +1,14 @@
+import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
+import { NotificationType, NotificationTypeEnum } from "@/app/context/NotificationContext";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import React from "react";
 import { LogData } from "../models/LogData";
-import { NotificationType, NotificationTypeEnum } from "@/app/context/NotificationContext";
-import { T, K, Meta} from "@/app/components/models/data/dataStoreMethods";
 
 type NotificationMessages = typeof NOTIFICATION_MESSAGES;
 
 interface NotificationManagerProps {
-  notifications: NotificationData<T, K, Meta<T, K<T>>>[];
+  notifications: NotificationData<T, K, Meta<T, K>>[];
   notify: (
     id: string,
     message: string,
@@ -16,28 +16,28 @@ interface NotificationManagerProps {
     date: Date,
     type: NotificationType
   ) => void;
-  setNotifications: React.Dispatch<React.SetStateAction<NotificationData<T, K, Meta<T, K<T>>>[]>>;
+  setNotifications: React.Dispatch<React.SetStateAction<NotificationData<T, K, Meta<T, K>>[]>>;
   onConfirm: (message: string, randomBytes: any) => void; // Corrected spelling of onConfirm
   onCancel: (message: string, randomBytes: any) => void; // Corrected spelling of onCancel
 }
 
 class NotificationManager extends React.Component<NotificationManagerProps> {
-  private notifications: NotificationData<T, K<T>, Meta<T, K<T>>>[] = [];
+  private notifications: NotificationData<T, K, Meta<T, K>>[] = [];
 
   // Method to get notifications
-  getNotifications(): NotificationData<T, K<T>, Meta<T, K<T>>>[] {
+  getNotifications(): NotificationData<T, K, Meta<T, K>>[] {
     return this.notifications;
   }
 
   // Method to add a notification
   addNotification(
-    message: NotificationData<T, K<T>, Meta<T, K>>,
+    message: NotificationData<T, K, Meta<T, K>>,
     date: Date,
     // type: NotificationType,
-    completionMessageLog: NotificationData<T, K<T>, Meta<T, K>>,
+    completionMessageLog: NotificationData<T, K, Meta<T, K>>,
     notificationType: NotificationType
   ): void {
-    const newNotification: NotificationData<T, K<T>, Meta<T, K>> = {
+    const newNotification: NotificationData<T, K, Meta<T, K>> = {
       id: UniqueIDGenerator.generateNotificationID(
         message,
         date,
@@ -49,7 +49,7 @@ class NotificationManager extends React.Component<NotificationManagerProps> {
       date: new Date(),
       content: "",
       message: "",
-      completionMessageLog: {} as LogData<T, K<T>, Meta>,
+      completionMessageLog: {} as LogData<T, K, Meta>,
       sendStatus: "Sent",
     };
     this.notifications.push(newNotification);

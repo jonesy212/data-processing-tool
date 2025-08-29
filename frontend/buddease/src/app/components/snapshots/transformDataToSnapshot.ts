@@ -4,11 +4,12 @@ import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarMan
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { SnapshotConfig, SnapshotStoreConfig } from ".";
 import { CombinedEvents } from "../hooks/useSnapshotManager";
-import { CoreSnapshot, Snapshot } from "./LocalStorageSnapshotStore";
+import { CoreSnapshot } from "./LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots";
 import { SnapshotEvents } from "./SnapshotEvents";
 import { InitializedData } from "./SnapshotStoreOptions";
 
-const transformDataToSnapshot =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const transformDataToSnapshot =  <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   item: CoreSnapshot<T, K>,
   snapshotConfig: SnapshotConfig<T, K>,
   snapshotStoreConfig: SnapshotStoreConfig<T, K>
@@ -266,7 +267,7 @@ const transformDataToSnapshot =  <T extends  BaseData<any>, K extends T = T, Met
 
 export default transformDataToSnapshot;
 
-function transformToCalendarManagerStoreClassMap<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function transformToCalendarManagerStoreClassMap<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   events: (SnapshotEvents<T, K> & CombinedEvents<T, K>) | {}
 ): Record<string, CalendarManagerStoreClass<T, K>[]> {
   const result: Record<string, CalendarManagerStoreClass<T, K>[]> = {};

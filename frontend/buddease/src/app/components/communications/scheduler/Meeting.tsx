@@ -1,7 +1,7 @@
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { Todo } from "../../todos/Todo";
 import { UserData } from "../../users/User";
-import { T, K } from "@/app/components/models/data/dataStoreMethods";
 
 export interface Meeting extends UserData {
   id: number;
@@ -11,7 +11,7 @@ export interface Meeting extends UserData {
   description: string;
   participants: string[]; // This can be an array of user IDs or names
   eventId?: CalendarEvent['id']
-  assignedTo?: Todo<T, K<T>>['assignedTo']
+  assignedTo?: Todo<T, K>['assignedTo']
   
   // Add any other properties relevant to a meeting
 }

@@ -8,6 +8,10 @@ import { Navigator, Routes } from "react-router-dom";
 import { v4 as uuidVFour } from "uuid"; // Import the uuid library or use your preferred UUID generator
 
 import {
+  NotificationProvider,
+  NotificationTypeEnum,
+} from "@/context/NotificationContext";
+import {
   Route,
   Router,
   useLocation,
@@ -42,10 +46,6 @@ import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContex
 import { DetailsItem } from "../components/state/stores/DetailsListStore";
 import { StoreProvider } from "../components/state/stores/StoreProvider";
 import { NotificationData } from "../components/support/NofiticationsSlice";
-import {
-  NotificationProvider,
-  NotificationTypeEnum,
-} from "../components/support/NotificationContext";
 import NotificationManager from "../components/support/NotificationManager";
 import { DocumentTree } from "../components/users/User";
 import { ButtonGenerator } from "../generators/GenerateButtons";
@@ -70,23 +70,23 @@ import { NotificationType } from "@/app/context/NotificationContext";
 import { EditorState } from "draft-js";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ChatSidebarProvider } from "../api/ChatSidebarProvider";
+import FilePreview from "../components/documents/FilePreview";
 import { ToolbarOptions } from "../components/documents/ToolbarOptions";
 import { PhaseHookConfig } from "../components/hooks/phaseHooks/PhaseHooks";
+import { authProvider } from "../components/interfaces/provider/authProviderInstance";
 import ToolbarItemsContext from "../components/libraries/toolbar/ToolbarItemsProvider";
 import useNotificationManagerService from "../components/notifications/NotificationService";
 import StepComponent from "../components/phases/steps/StepComponent";
+import steps from "../components/phases/steps/steps";
 import ProtectedRoute from "../components/routing/ProtectedRoute";
 import { ThemeState } from "../components/state/redux/slices/ThemeSlice";
+import { createLastUpdatedWithVersion, createLatestVersion } from "../components/versions/createLatestVersion";
+import DetermineFileType from "../configs/DetermineFileType";
+import { StructuredMetadata } from "../configs/StructuredMetadata";
 import StepProvider, { useStepContext } from "../context/StepContext";
 import UniqueIDGenerator from "../generators/GenerateUniqueIds";
 import FormBuilder from "./forms/formBuilder/FormBuilder";
 import LogViewer from "./logs/LogViewer";
-import steps from "../components/phases/steps/steps";
-import DetermineFileType from "../configs/DetermineFileType";
-import FilePreview from "../components/documents/FilePreview";
-import { authProvider } from "../components/interfaces/provider/authProviderInstance";
-import { StructuredMetadata } from "../configs/StructuredMetadata";
-import { createLastUpdatedWithVersion, createLatestVersion } from "../components/versions/createLatestVersion";
 
 interface ExtendedAppProps extends AppProps {
   brandingSettings: BrandingSettings;

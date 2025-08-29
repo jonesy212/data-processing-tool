@@ -1,6 +1,4 @@
 import { categorizeNews } from "@/app/components/community/articleKeywords";
-import { PhaseTypeEnums } from "@/app/components/state/stores/DocumentStore";
-import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 import { ModifiedDate } from "@/app/components/documents/DocType";
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { buildDocument } from '@/app/components/documents/DocumentBuilderComponent';
@@ -10,7 +8,6 @@ import {
     mapDocumentToProjectPhase
 } from "@/app/components/documents/DocumentOptions";
 import DocumentPermissions from "@/app/components/documents/DocumentPermissions";
-import { CategoryKeys } from "@/app/components/libraries/categories/CategoryManager";
 import { Content } from '@/app/components/models/content/AddContent';
 import { BaseData } from '@/app/components/models/data/Data';
 import { K, T } from '@/app/components/models/data/dataStoreMethods';
@@ -23,12 +20,12 @@ import { generateValidationRulesCode } from "@/app/components/security/validatio
 import { Snapshot } from '@/app/components/snapshots';
 import { DocumentObject } from '@/app/components/state/redux/slices/DocumentSlice';
 import { UserData } from '@/app/components/users/User';
+import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 import Version from "@/app/components/versions/Version";
 import { VersionData, VersionHistory } from "@/app/components/versions/VersionData";
 import { createMetaState } from '@/app/configs/metadata/createMetadataState';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import fs from "fs";
-import * as React from 'react';
 import { useState } from "react";
 import PersonaTypeEnum, { PersonaBuilder } from "./PersonaBuilder";
 
@@ -730,8 +727,8 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
       options: undefined,
       folderPath: '',
       previousMetadata: undefined,
-      currentMetadata: {} as UnifiedMetaDataOptions<UserData<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>, UserData<T, K<T>>,
-        StructuredMetadata<UserData<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>, UserData<T, K<T>>>, never>,
+      currentMetadata: {} as UnifiedMetaDataOptions<UserData<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>, UserData<T, K>,
+        StructuredMetadata<UserData<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>, UserData<T, K>>, never>,
       accessHistory: [],
       documentPhase: undefined,
       version: undefined,
@@ -977,16 +974,14 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
 // Example usage
 generateComponent("MyDataVizComponent", "DataVisualization", { dataProperties: ["data"], chartType: "bar" }, dataVisualizationProperties);
 export {
-    categorizeNews,
-    defaultCategoryProperties,
-    dataVisualizationProperties, generateComponent, 
-    generateFormsComponent, generateNewsCategories, 
-    generateNewsComponent, generateUserJourneyComponent, 
-    generateUserJourneyMapComponent, 
+    categorizeNews, dataVisualizationProperties, defaultCategoryProperties, generateComponent,
+    generateFormsComponent, generateNewsCategories,
+    generateNewsComponent, generateUserJourneyComponent,
+    generateUserJourneyMapComponent,
     generateUserScenarioComponent, generateUserScenarioMapComponent
 };
 
-export type { CategoryProperties };
+    export type { CategoryProperties };
 
 // Example usage of categories
 const newsFeedData = { /* Provide your news feed data here */ };

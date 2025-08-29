@@ -15,6 +15,7 @@ import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 interface FilteredEventsState {
   payload: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[];
 }
+
 class FilterStore {
   filteredEvents: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[] = [];
 
@@ -75,3 +76,4 @@ const useFilterStore = () => {
 };
 
 export { useFilterStore };
+export type { FilteredEventsState }

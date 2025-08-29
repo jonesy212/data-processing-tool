@@ -1,4 +1,4 @@
-import { Snapshot } from "./LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots";
 import { K, T } from "./SnapshotConfig";
 
 // Implement the getSnapshotEntries method

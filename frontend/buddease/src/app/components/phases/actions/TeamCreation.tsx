@@ -1,13 +1,13 @@
-import { useAuth } from "@/app/components/auth/AuthContext";
- import React, { useState } from "react";
+import { useAuth } from "@/server/auth/AuthContext";
+import React, { useState } from "react";
 import TeamData from "../../models/teams/TeamData";
 
 import TeamCreationConfirmationPage from "@/app/pages/teams/TeamCreationConfirmationPage";
 import TeamCreationQuestionnaire from "@/app/pages/teams/TeamCreationQuestionnaire";
 import * as TeamCreationAPI from "../../../../app/api/ApiTeam";
-import { NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
-import { TeamCreationPhase } from "./TeamCreationManager";
 import axiosInstance from "../../security/csrfToken";
+import { NotificationTypeEnum, useNotification } from "@/context/NotificationContext";
+import { TeamCreationPhase } from "./TeamCreationManager";
 
 const TeamCreationPhaseManager: React.FC = () => {
   const { state } = useAuth();

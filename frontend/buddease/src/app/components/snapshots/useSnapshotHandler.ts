@@ -1,11 +1,12 @@
 // // useSnapshotHandler.ts
 // import { useState } from 'react';
-// import { CustomSnapshotData, Snapshot } from './LocalStorageSnapshotStore';
+// import { CustomSnapshotData } from './LocalStorageSnapshotStore';
+// import { Snapshot } from "@/app/components/snapshots";
 // import { CategoryProperties } from './../app/pages/personas/ScenarioBuilder';
 // import { BaseData } from '../models/data/Data';
 // import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 
-// const useSnapshotHandler = <T extends BaseData, K extends CustomSnapshotData>() => {
+// const useSnapshotHandler = <T extends BaseDataEntity, K extends CustomSnapshotData>() => {
 //   const [snapshotStoreConfig, setSnapshotStoreConfig] = useState<SnapshotStoreConfig<T, K> | undefined>(undefined);
 //   const [snapshots, setSnapshots] = useState<Map<string, Snapshot<T, K>>>(new Map());
 

@@ -10,12 +10,12 @@ import * as React from 'react'
 import { CalendarEvent } from "../../calendar/CalendarEvent";
 import { useFilterStore } from "../../state/stores/FilterStore";
 import { refreshUIForFile } from "../../snapshots/refreshUI"
-import { FilteredEventsState } from '../../state/redux/slices/FilteredEventState'
+import { FilteredEventsState } from '@/stores/FilterStore'
 
 interface File {
   id?: string;
   name?: string | undefined;
-  metadata: FileMetadata
+  fileMetadata: FileMetadata
 }
 
 interface FileMetadata {
@@ -24,7 +24,7 @@ interface FileMetadata {
     size: number;
     createdAt: Date;
     updatedAt: Date;
-    [key: string]: any; // Additional metadata fields
+    [key: string]: any; // Additional fileMetadata fields
   }
 
 
@@ -62,10 +62,10 @@ interface FileManagerProps {
       filterStore.setFilteredEvents(filteredEvents);
     }, [filteredEvents, filterStore]);
   
-    // Update metadata for a specific file
+    // Update fileMetadata for a specific file
     const updateFileMetadata = (fileId: string, newMetadata: Partial<FileMetadata>) => {
       setFiles(prevFiles => {
-        const updatedFile = { ...prevFiles.get(fileId), metadata: { ...prevFiles.get(fileId)?.metadata, ...newMetadata } };
+        const updatedFile = { ...prevFiles.get(fileId), fileMetadata: { ...prevFiles.get(fileId)?.fileMetadata, ...newMetadata } };
 
         if(updatedFile.name === undefined){
           throw new Error("Must provide a file name to update file")
@@ -134,7 +134,7 @@ interface FileManagerProps {
       <ul>
         {Array.from(files.values()).map(file => (
           <li key={file.id}>
-            {file.name} - Size: {file.metadata.size}
+            {file.name} - Size: {file.fileMetadata.size}
             <button onClick={() => refreshUIForFile(Number(file.id))}>Refresh UI</button>
           </li>
         ))}

@@ -3,9 +3,8 @@ import { action, observable, runInAction } from 'mobx';
 import { useAuth } from '../../auth/AuthContext';
 import axiosInstance from '../../security/csrfToken';
 import DATA_NOTIFICATIONS from '../../support/DataNotifications';
-import { NotificationContextProps, NotificationTypeEnum } from '../../support/NotificationContext';
-import { Data } from './Data';
 import { YourResponseType } from '../../typings/types';
+import { NotificationContextProps, NotificationTypeEnum } from '@/context/NotificationContext';
 
 class DataService {
   @observable notification: NotificationContextProps | null = null;

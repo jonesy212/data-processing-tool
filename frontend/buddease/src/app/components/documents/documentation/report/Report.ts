@@ -1,7 +1,7 @@
 // Report.ts
 // Define the structure of a report
 
-import { T, K } from "@/app/components/models/data/dataStoreMethods";
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { TagsRecord } from "@/app/components/snapshots";
 
 export interface BaseReport {
@@ -16,7 +16,7 @@ export interface BaseReport {
 interface AddReportBase extends BaseReport {
   createdBy: string;
   content: string;
-  tags?: TagsRecord<T, K<T>> | string[] | undefined;
+  tags?: TagsRecord<T, K> | string[] | undefined;
   createdAt: Date;
 }
 
@@ -54,4 +54,5 @@ interface ResearchReport extends BaseReport {
 }
 
 
-export type { FinancialReport, ResearchReport, TechnicalReport, ReportOptions, AddReportBase, TechnicalSpecifications };
+export type { AddReportBase, FinancialReport, ReportOptions, ResearchReport, TechnicalReport, TechnicalSpecifications };
+

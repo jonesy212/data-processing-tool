@@ -2,6 +2,7 @@
 import { checkTodoCompletion, updateTodo } from "@/app/api/ApiTodo";
 import { handleTaskApiErrorAndNotify, updateTask } from "@/app/api/TasksApi";
 import { ProjectDetails } from "@/app/components/projects/Project";
+import { Snapshot } from "@/app/components/snapshots";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import { AxiosError } from "axios";
 import { Router, useRouter } from "next/router";
@@ -24,7 +25,6 @@ import { brandingSettings } from "../projects/branding/BrandingSettings";
 import TaskProgress from "../projects/projectManagement/TaskProgress";
 import TeamProgress from "../projects/projectManagement/TeamProgress";
 import TodoProgress from "../projects/projectManagement/TodoProgress";
-import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { createMilestone } from "../state/redux/slices/TrackerSlice";
 import { rootStores } from "../state/stores/RootStores";
 import { useTaskManagerStore } from "../state/stores/TaskStore ";

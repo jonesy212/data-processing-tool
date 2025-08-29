@@ -11,7 +11,7 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 
 // SnapshotManagement interface for snapshot operations
-export interface SnapshotManagement<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+export interface SnapshotManagement<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
   takeSnapshot(snapshot: Snapshot<T, K>): Promise<{ snapshot: Snapshot<T, K>; }>;
   updateSnapshot(
     snapshotId: string, 

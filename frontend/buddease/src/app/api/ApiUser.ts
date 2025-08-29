@@ -17,6 +17,11 @@ import updateUI from '../components/documents/editing/updateUI';
 
 const API_BASE_URL = endpoints.users;
 
+interface AdminUser extends UserProfile {
+  adminPermissions: string[];
+  canDeleteProjects: boolean;
+}
+
 interface UserProfile extends User {
   id: string;
   name: string;
@@ -45,10 +50,6 @@ export const url: string | undefined = dotProp.getProperty(
 
 // Dispatching the action with the correct userId
 dispatch(UserActions.fetchUserRequest({ userId: parsedUserId }));
-
-
-
-
 
 
 
@@ -574,10 +575,8 @@ updateUserRoles = async (users: {
     return [];
   };
 
-
-
 }
 
-export const userService = new UserService();
 export default UserService;
-export type { UserProfile };
+export const userService = new UserService();
+export type { UserProfile, AdminUser };

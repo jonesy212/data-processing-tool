@@ -2,12 +2,12 @@
 // import SnapshotStoreOptions from "../hooks/SnapshotStoreOptions";
 // import { Category } from "../libraries/categories/generateCategoryProperties";
 // import { Data } from "../models/data/Data";
-// import { Snapshot } from "./LocalStorageSnapshotStore";
+// import { Snapshot } from "@/app/components/snapshots";
 // import { SnapshotOperation } from "./SnapshotActions";
 // import SnapshotStore from "./SnapshotStore";
 // import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
-// function convertSnapshotStoreToStorage<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(snapshotStore: SnapshotStore<T, K>): Storage {
+// function convertSnapshotStoreToStorage<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshotStore: SnapshotStore<T, K>): Storage {
 //     const storage: Storage = window.localStorage;
   
 //     // Store the snapshot data in the Storage object (e.g., localStorage)
@@ -23,7 +23,7 @@
   
 
 
-// function convertStorageToSnapshotStore<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// function convertStorageToSnapshotStore<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
 //     storage: Storage,
 //     snapshotStoreId: number,
 //     topic: string, 

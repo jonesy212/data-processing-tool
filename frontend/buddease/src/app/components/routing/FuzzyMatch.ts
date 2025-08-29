@@ -1,31 +1,26 @@
 // FuzzyMatch.ts
-import { BaseData } from '@/app/components/models/data/Data';
+import { SharedIdentifiers, SharedTimestamps } from "@/app/components/documents/RelatedProps";
 import { AppMetadata } from '@/app/configs/database/MetaDataOptions';
 import AppTreeService from "@/app/services/AppTreeService";
-import fuzzysort from "fuzzysort";
 import { useAuth } from "@/server/auth/AuthContext";
+import fuzzysort from "fuzzysort";
 import { processTextWithSpaCy } from "../intelligence/AutoGPTSpaCyIntegration";
 import { AllTypes } from "../typings/PropTypes";
-import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
-import { T, K } from "@/app/components/models/data/dataStoreMethods";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/app/configs/BaseConfig";
 
 interface BaseEntity<
-  T extends BaseData<any> = any,
-  K extends T = T
-> extends SharedIdentifiers<T, K> {
-  name?: string | undefined;
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends SharedIdentifiers<T, K, Meta, ExcludedFields>, 
+    SharedTimestamps 
+{
   description?: string | null | undefined;
-  createdAt: string | Date | undefined;
-  appMetadata?: AppMetadata<T, K>;
-  createdBy: string | undefined;
-  updatedBy?: string;
+  appMetadata?: AppMetadata<T, K, Meta>;
   filePathOrUrl?: string;
   source?: string;
 }
-
-
-
 
 
 // Define a type for your entities

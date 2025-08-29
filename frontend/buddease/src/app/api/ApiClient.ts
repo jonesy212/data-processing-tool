@@ -1,19 +1,18 @@
 // ApiClient.ts
-import  FileImportData  from '../components/documents/FileImportData';
 import axiosInstance from "@/app/api/axiosInstance";
-import {  
-  useNotification,
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import {
+    useNotification,
 } from "@/app/context/NotificationContext";
-import { NotificationTypeEnum, NotificationType } from "../context/NotificationContext";
-import { T, K } from "@/app/components/models/data/dataStoreMethods";
-import { AxiosError, AxiosResponse } from "axios";
+import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import FileImportData from '../components/documents/FileImportData';
 import { headersConfig } from '../components/shared/SharedHeaders';
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
+import { VersionData } from '../components/versions/VersionData';
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import HeadersConfig from "./headers/HeadersConfig";
-import { VersionData } from '../components/versions/VersionData';
-
 
 const API_BASE_URL = endpoints.client;
 // Define a function to create headers using the provided configuration
@@ -383,7 +382,7 @@ class ClientApiService {
 
   async createFileVersion(
     fileId: string,
-    versionData: VersionData<T, K<T>>
+    versionData: VersionData<T, K>
   ): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/versions`, versionData),

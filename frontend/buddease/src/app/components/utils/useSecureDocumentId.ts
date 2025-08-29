@@ -1,7 +1,7 @@
 import { fetchDocumentById } from './../state/redux/slices/DocumentSlice';
 // useSecureDocumentId.ts
 import { useEffect, useState } from 'react';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '@/server/auth/AuthContext';
 import { sanitizeData } from '../security/SanitizationFunctions';
 import useDocumentStore, { Document } from '../state/stores/DocumentStore';
 import UserRoles, { UserRoleEnum } from '../users/UserRoles';

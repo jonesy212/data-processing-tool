@@ -9,7 +9,6 @@ import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import React, { useEffect } from "react";
 import { RealtimeData, RealtimeDataItem } from "../../models/realtime/RealtimeData"; // Adjust path as needed
-import { Snapshot } from "../../snapshots";
 
 interface RealtimeDataProps extends RealtimeDataItem  {
   userId: string;

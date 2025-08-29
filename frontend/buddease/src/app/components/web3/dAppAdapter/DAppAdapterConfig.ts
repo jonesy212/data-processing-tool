@@ -8,11 +8,19 @@ import { Task } from "../../models/tasks/Task";
 import { Team } from "../../models/teams/Team";
 import { TeamMember } from "../../models/teams/TeamMembers";
 import { Project } from "../../projects/Project";
+import { UserRole } from "./UserRole";
+import { Meta } from "@/app/components/models/data/dataStoreMethods";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/configs/BaseConfig";
 
 // FLUENCE_API_KEY EXPORT
 export const fluenceApiKey = process.env.FLUENCE_API_KEY;
 
-export interface DappProps {
+export interface DappProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  > {
   // General props
   appName: string;
   appVersion: string;
@@ -21,7 +29,7 @@ export interface DappProps {
   currentUser: {
     id: string | number;
     username: string;
-    role?: string;
+    role?: UserRole;
     teams?: Team[];
     
     projects?: Project[];
@@ -34,7 +42,7 @@ export interface DappProps {
     id: string;
     username: string;
     description: string;
-    tasks: Task[];
+    tasks: Task<T, K, Meta, ExcludedFields>[];
     teamMembers: TeamMember[];
   };
 
@@ -132,10 +140,10 @@ export interface DappProps {
 }
 
 export interface DAppAdapterConfig<
-  T extends DappProps = DappProps,          // Default to DappProps, can be extended
-  K = Extract<T, BaseData<any>>,     // Optional BaseData or related config
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Metadata
-  ExcludedFields extends keyof T = never    // Excluded fields for customization
+  T extends DappProps<BaseDataEntity> = DappProps<BaseDataEntity>,  // Use your default
+  K = Extract<T, BaseData<any>>
+  // Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  // ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
   // Common properties for DAppAdapter configuration
   appName: string;

@@ -1,18 +1,18 @@
-import { Permission } from '@/app/components/users/Permission';
-import UserRoles from '@/app/components/users/UserRoles';
 import axiosInstance from "@/app/api/axiosInstance";
+import { BaseData } from '@/app/components/models/data/Data';
 import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
-import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
+import { Permission } from '@/app/components/users/Permission';
 import { UserData } from "@/app/components/users/User";
+import UserRoles from '@/app/components/users/UserRoles';
+import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import { VersionData, VersionHistory } from "@/app/components/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
+import getAppPath from "@/app/configs/appStructure/appPath";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { hashString } from "@/app/generators/HashUtils";
-import getAppPath from "appPath";
 import * as path from "path";
 import { AppStructureItem } from "../appStructure/AppStructure";
 import { DataVersions } from "../DataVersionsConfig";
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 
 interface MyData extends BaseData<any> {
@@ -420,14 +420,7 @@ export default class FrontendStructure<T extends BaseData<any>, K extends T = T>
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
 
-const frontendStructure: FrontendStructure<UserData, UserConfigDataWithArgs> = new FrontendStructure<UserData, UserConfigDataWithArgs>(projectPath);
-
-// const frontend = new FrontendStructure()
-// Export frontendStructure
-export { frontendStructure };
-
-
-
+export const frontendStructure: FrontendStructure<UserData, UserConfigDataWithArgs> = new FrontendStructure<UserData, UserConfigDataWithArgs>(projectPath);
 
 
 const dir = path.join(

@@ -5,13 +5,14 @@ import * as userApi from "../../../api/UsersApi";
 import { UIActions } from "../../actions/UIActions";
 import { LogData } from "../../models/LogData";
 import { NotificationData } from "../../support/NofiticationsSlice";
-import { NotificationTypeEnum } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import NotificationMessagesFactory from "../../support/NotificationMessagesFactory";
 import { NOTIFICATION_TYPES } from "../../support/NotificationTypes";
+import { NotificationTypeEnum } from "@/context/NotificationContext";
 import useNotificationBar from "../commHooks/useNotificationBar";
 import { createPhaseHook } from "../phaseHooks/PhaseHooks";
 import useDarkModeToggle from "./useDarkModeToggle";
+import UserService from '@/api/ApiUser';
 
 
 const usePhaseUI = () => {
@@ -205,124 +206,76 @@ const usePhaseUI = () => {
   };
 
   
- const createNotificationBarPhaseHook = async () => {
+  const createNotificationBarPhaseHook = () => {
     return createPhaseHook(10000, {
       condition: (idleTimeoutDuration: number) =>
         isUserLoggedIn().then((userStatus: any) => !!userStatus),
+  
       asyncEffect: async ({ idleTimeoutId, startIdleTimeout }) => {
         const { addNotification, clearNotifications } = useNotificationBar();
         console.log("Notification Bar Phase Hook triggered");
-        await fetchAndDisplayNotifications(addNotification, clearNotifications);
+  
+        // Pick one approach: UIActions or fetchAndDisplayNotifications
+        await UIActions.fetchAndDisplayNotifications({
+          addNotification,
+          clearNotifications,
+        });
+  
         return clearNotifications;
       },
+  
       name: "Notification Bar Phase",
       isActive: false,
-      initialStartIdleTimeout: function (
-        timeoutDuration: number,
-        onTimeout: () => void
-      ): void {
+  
+      initialStartIdleTimeout(timeoutDuration: number, onTimeout: () => void) {
         this.idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
       },
-      resetIdleTimeout: async function (): Promise<void> {
+  
+      resetIdleTimeout: async () => {
         // Implementation for resetting idle timeout
       },
+  
       duration: undefined,
       idleTimeoutId: null,
-      clearIdleTimeout: function (): void {
+  
+      clearIdleTimeout() {
         // Implementation for clearing idle timeout
       },
-      onPhaseStart: function (): void {
+  
+      onPhaseStart() {
         // Implementation for phase start
       },
-      onPhaseEnd: function (): void {
+  
+      onPhaseEnd() {
         // Implementation for phase end
       },
-      startIdleTimeout: function (
-        timeoutDuration: number,
-        onTimeout: () => void
-      ): void {
-        const idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
+  
+      startIdleTimeout(timeoutDuration: number, onTimeout: () => void) {
+        this.idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
       },
+  
       cleanup: undefined,
-      startAnimation: function (): void {
+  
+      startAnimation() {
         // Implementation for starting animation
       },
-      stopAnimation: function (): void {
+  
+      stopAnimation() {
         // Implementation for stopping animation
       },
-      animateIn: function (): void {
+  
+      animateIn() {
         // Implementation for animating in
       },
-      toggleActivation: function (
-        accessToken?: string | null | undefined
-      ): void {
+  
+      toggleActivation(accessToken?: string | null) {
         // Implementation for toggling activation
       },
     });
   };
 }
 
-
-
-
-
-
-const createNotificationBarPhaseHook = async () => {
-  return createPhaseHook(10000, {
-    condition: (idleTimeoutDuration: number) =>
-      isUserLoggedIn().then((userStatus: any) => !!userStatus),
-    asyncEffect: async ({ idleTimeoutId, startIdleTimeout }) => {
-      const { addNotification, clearNotifications } = useNotificationBar();
-      console.log("Notification Bar Phase Hook triggered");
-     UIActions.fetchAndDisplayNotifications({ addNotification, clearNotifications });
-      return clearNotifications;
-    },
-    name: "Notification Bar Phase",
-    isActive: false,
-    initialStartIdleTimeout: function (
-      timeoutDuration: number,
-      onTimeout: () => void
-    ): void {
-      this.idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
-    },
-    resetIdleTimeout: async function (): Promise<void> {
-      // Implementation for resetting idle timeout
-    },
-    duration: undefined,
-    idleTimeoutId: null,
-    clearIdleTimeout: function (): void {
-      // Implementation for clearing idle timeout
-    },
-    onPhaseStart: function (): void {
-      // Implementation for phase start
-    },
-    onPhaseEnd: function (): void {
-      // Implementation for phase end
-    },
-    startIdleTimeout: function (
-      timeoutDuration: number,
-      onTimeout: () => void
-    ): void {
-      const idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
-    },
-    cleanup: undefined,
-    startAnimation: function (): void {
-      // Implementation for starting animation
-    },
-    stopAnimation: function (): void {
-      // Implementation for stopping animation
-    },
-    animateIn: function (): void {
-      // Implementation for animating in
-    },
-    toggleActivation: function (
-      accessToken?: string | null | undefined
-    ): void {
-      // Implementation for toggling activation
-    },
-  });
-};
-
+const userId = UserService.getCurrentUserId(); 
 const createDarkModeTogglePhaseHook = () => {
   const idleTimeoutDuration = 10000; // Define the idle timeout duration
   return createPhaseHook(idleTimeoutDuration, {
@@ -333,7 +286,7 @@ const createDarkModeTogglePhaseHook = () => {
       console.log("Dark Mode Toggle Phase Hook triggered");
 
       // Ensure fetchData returns a promise
-      const settings = await fetchData("dark-mode-settings");
+      const settings = await fetchData("dark-mode-settings", userId);
       if (settings !== null) {
         // Proceed only if settings is not null
         if (!isDarkMode) {
@@ -365,7 +318,7 @@ const createDarkModeTogglePhaseHook = () => {
   });
 };
 
-export { usePhaseUI, createDarkModeTogglePhaseHook};
+export { usePhaseUI };
 export const darkModeTogglePhaseHook = createDarkModeTogglePhaseHook();
 export const notificationBarPhaseHook = createNotificationBarPhaseHook();
 

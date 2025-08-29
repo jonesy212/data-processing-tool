@@ -1,27 +1,34 @@
 //CalendarEvent.ts
 import { Label } from '@/app/components/projects/branding/BrandingSettings';
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { NotificationType } from '@/app/context/NotificationContext';
+import { useMetadata } from "@/app/configs/useMetadata";
+import { PhaseData } from "@/app/components/phases/Phase";
+import { useMeta } from "@/app/configs/useMeta";
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CalendarEventWithCriteria } from "@/app/pages/searchs/FilterCriteria";
 import { DocumentOptions } from "../documents/DocumentOptions";
-import { CommonData } from "../models/CommonDetails";
+import { CommonData } from "../models/CommonData";
 import { BaseData } from "../models/data/Data";
 import { Team } from "../models/teams/Team";
 import { Member } from "../models/teams/TeamMembers";
 import { Phase } from "../phases/Phase";
 import { Snapshot, TagsRecord } from "../snapshots";
 import { WritableDraft } from "../state/redux/ReducerGenerator";
-import CommonEvent from "../state/stores/CommonEvent";
+import { CommonEvent } from "../state/stores/CommonEvent";
 import { AllStatus } from "../state/stores/DetailsListStore";
 import { Attendee } from "./Attendee";
-;
+import { data } from '@/app/components/snapshots/SnapshotWithCriteria';
+import { T, K } from "@/app/components/models/data/dataStoreMethods";
+import { Attachment } from '../documents/Attachment/attachment';
+
 
 interface CalendarEvent<
   T extends  BaseData<any> = BaseData,
   K extends T = T>
-  extends CommonEvent,
+  extends CommonEvent<T, K, Meta, ExcludedFields>,
     CommonData<T, K> {
   id: string;
   title: string;
@@ -45,8 +52,7 @@ interface CalendarEvent<
     additionalOptionsLabel?: string;
     // ...  
   };
-  documentPhase?: WritableDraft<Phase<T>>;
-  // Add more properties if needed
+  documentPhase?: WritableDraft<Phase<PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>>>;   // Add more properties if needed
   status?: AllStatus;
   isCompleted?: boolean;
   isActive?: boolean;
@@ -85,8 +91,8 @@ interface CalendarEvent<
 // Destructure `latestVersion` with a default value
 const { latestVersion = createLatestVersion<T, K>(), ...rest } = data;
 const area = fetchUserAreaDimensions().toString()
-const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
-const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
+const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
+const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
 
 const calendarEvent: CalendarEvent = {
   date: undefined,

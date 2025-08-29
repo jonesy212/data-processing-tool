@@ -1,9 +1,11 @@
 // CommonDetails.tsx
-import { SharedIdentifiers, SharedTimestamps } from '@/app/components/documents/RelatedProps';
+import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import { Label } from "@/app/components/projects/branding/BrandingSettings";
+import { Snapshot } from "@/app/components/snapshots";
 import { VersionData } from "@/app/components/versions/VersionData";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
 import { NotificationType } from '@/app/context/NotificationContext';
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -12,6 +14,7 @@ import { SchemaField } from '../../../server/database/SchemaField';
 import { MeetingData } from "../calendar/MeetingData";
 import { ScheduledData } from "../calendar/ScheduledData";
 import { CryptoData } from "../crypto/parseData";
+import { Attachment } from '../documents/Attachment/attachment';
 import { ModifiedDate } from "../documents/DocType";
 import { DocumentData } from "../documents/DocumentBuilder";
 import { FakeData } from "../intelligence/FakeDataGenerator";
@@ -20,7 +23,6 @@ import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { ProjectData } from "../projects/Project";
 import { TagsRecord } from "../snapshots";
-import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { AllStatus, DetailsItem } from "../state/stores/DetailsListStore";
 import { Todo } from "../todos/Todo";
 import { TradeData } from "../trading/TradeData";
@@ -39,6 +41,8 @@ import { RealtimeDataComponent } from "./realtime/RealtimeData";
 import { Task } from "./tasks/Task";
 import { TeamData } from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+
 interface Timestamped {
   timestamp?: string | number | Date | undefined;
   startDate?: string | Date;
@@ -73,14 +77,17 @@ interface Identifiable {
   _id?: string;
 }
 
-interface UserOwned extends SharedTimestamps {
-  createdBy: string | undefined;
+interface UserOwned<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends SharedTimestamps, SharedIdentifiers<T, K, Meta, ExcludedFields> {
   assignedUser?: string | null;
   documentOwner?: string;
 }
 
-
-interface Taggable<T extends BaseData<any>, K extends T = T> {
+interface Taggable<T extends BaseDataEntity, K extends T = T> {
   tags?: TagsRecord<T, K> | string[] | undefined;
   categories?: string[];
   keywords?: string[];
@@ -109,12 +116,11 @@ interface AccessControlled {
   isDownloadable?: boolean;
 }
 
-
 type ConditionalCommonData<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > = T extends DappProps
   ? CommonData<T, K, Meta, never>  // If T extends DappProps, return CommonData with appropriate constraints
   : T extends SupportedData<any>
@@ -122,102 +128,82 @@ type ConditionalCommonData<
   : CommonData<T>;
 
 
-
-  // Define a generic type for data
-  interface CommonData<
-    T extends BaseData<any, any, StructuredMetadata<any, any>>,
-    K extends T = T,
-    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-    ExcludedFields extends keyof T = never
-  > extends Identifiable,
-    UserOwned,
+// Define a generic type for data
+interface CommonData<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends Identifiable,
+    UserOwned<T, K, Meta, ExcludedFields>,
     Describable,
     Timestamped,
     Taggable<T, K>,
     DocumentContent,
     AccessControlled,
     CounterTrackable,
-    SharedIdentifiers<T, K, Meta>,
-    SharedTimestamps
-  {
-    _id?: string;
-    id?: string | number | undefined;
-    title?: string;
-    type?: AllTypes;
-    label?: Label | string | Record<string, string> | null;
-    timestamp?: string | number | Date | undefined;
-    blockNumber?: number | undefined
-    transactionHash?: string | undefined
-    event?: string;
-    signature?: string;
-    latestVersion: VersionData<T, K>;
-    email?: string;
-    schema?: Record<string, SchemaField>;
+    SharedMetadata<T, K, ExcludedFields>,
+    SharedIdentifiers<T, K, Meta, ExcludedFields>,
+    SharedTimestamps,
+    SharedStatusFlags // Add SharedStatusFlags here
+{  
+  // Keep only properties that are truly unique to CommonData
+  blockNumber?: number | undefined;
+  transactionHash?: string | undefined;
+  event?: string;
+  signature?: string;
+  email?: string;
+  username?: string;
+  startDate?: string | Date;
+  eventId?: string | null | undefined;
+  endDate?: string | Date;
+  status?: AllStatus | null;
+  collaborationOptions?: CollaborationOptions[] | undefined;
+  participants?: Member[];
+  metadata?: UnifiedMetadata<T, K>;
+  details?: DetailsItem<T>;
+  data?: DataWithOmittedFields<T, K, Meta, ExcludedFields>; 
     
-    username?: string;
-    name?: string
-    description?: string | null | undefined;
-    startDate?: string | Date;
-    value?: string | number | Snapshot<T, K, Meta, ExcludedFields> | null;
-    eventId?: string | null | undefined;
-    endDate?: string | Date;
-    status?: AllStatus | null;
-    collaborationOptions?: CollaborationOptions[] | undefined;
-    participants?: Member[];
-    metadata?: UnifiedMetadata<T, K>
-    details?: DetailsItem<T>
-    data?: DataWithOmittedFields<T, K, Meta, ExcludedFields>; 
-      
-    // data?: T extends CommonData<infer R> ? R : never;
-    projectId?: string;
-    tags?: TagsRecord<T, K> | string[] | undefined; 
-    categories?: string[];
-    documentType?: DocumentTypeEnum | string | null;
-    documentStatus?: string;
-    documentOwner?: string;
-    documentCreationDate?: Date;
-    documentLastModifiedDate?: Date;
-    documentVersion?: number;
-    documentContent?: string;
-    keywords?: string[];
-    options?: {
-      // ...
-      additionalOptions: readonly string[] | string | number | any[] | undefined;
-      // documentOptions: DocumentOptions
-      // ...
-    };
-    folderPath?: string;
-    
-    accessHistory?: AccessHistory[];
-    folders?: FolderData[];
-    lastModifiedDate?: ModifiedDate;
-    documentAccess?: string;
-    documentSharing?: string;
-    documentSecurity?: string;
-    documentRetention?: string;
-    documentLifecycle?: string;
-    documentWorkflow?: string;
-    documentIntegration?: string;
-    documentReporting?: string;
-    documentBackup?: string;
-    date: string | Date | undefined;
-    completed?: boolean;
-    then?: <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<T, K> | undefined;
+  projectId?: string;
+  categories?: string[];
+  documentType?: DocumentTypeEnum | string | null;
+  documentStatus?: string;
+  documentOwner?: string;
+  documentCreationDate?: Date;
+  documentLastModifiedDate?: Date;
+  documentVersion?: number;
+  documentContent?: string;
+  options?: {
+    additionalOptions: readonly string[] | string | number | any[] | undefined;
+  };
+  folderPath?: string;
+  
+  accessHistory?: AccessHistory[];
+  folders?: FolderData[];
+  documentAccess?: string;
+  documentSharing?: string;
+  documentSecurity?: string;
+  documentRetention?: string;
+  documentLifecycle?: string;
+  documentWorkflow?: string;
+  documentIntegration?: string;
+  documentReporting?: string;
+  documentBackup?: string;
+  date: string | Date | undefined;
+  completed?: boolean;
+  then?: <T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+    >(callback: (newData: Snapshot<BaseDataEntity, K>) => void
+    ) => Snapshot<T, K> | undefined;
 
-    // Moved from VideoCommonData
-    createdBy: string | undefined; // Moved to common data
-    updatedAt?: string | Date; // Moved to common data
-    viewsCount?: number; // Could be generalized if relevant across content types
-    likesCount?: number; // Could be generalized if relevant across content types
-    commentsCount?: number; // Could be generalized if relevant across content types
-    category?: symbol | string | Category | undefined,
-    isPrivate?: boolean; // General property
-    isUnlisted?: boolean; // General property
-    isLicensedContent?: boolean; // General property
-    isFamilyFriendly?: boolean; // General property
-    isEmbeddable?: boolean; // General property
-    isDownloadable?: boolean; // General property
+  // Moved from VideoCommonData
+  viewsCount?: number;
+  likesCount?: number;
+  commentsCount?: number;
 }
+
+
 interface Customizations<T> {
   [key: string]: (value: any) => React.ReactNode;
 }
@@ -242,9 +228,9 @@ type CommonDataTypes<
 
 // Group other types into their own union for flexibility
 type AdditionalDataTypes<
-T extends BaseData<any, any> = BaseData<any, any>,
-K extends T = T,
-Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  T extends BaseData<any, any> = BaseData<any, any>,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > = 
 | CommunityData
 | ProjectData
@@ -261,7 +247,7 @@ Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 type SupportedData<
   T extends BaseData<any, any> = BaseData<any, any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > =
   CommonDataTypes<T, K, Meta> & // Apply intersection to ensure core data is present
   AdditionalDataTypes<T, K, Meta> & // Include additional data types with flexibility
@@ -271,6 +257,8 @@ type SupportedData<
     type?: AllTypes; // Include the 'type' property with AllTypes union
   };
 // Define the DetailsProps interface with the generic CommonData type
+
+
 
 const CommonDetails = <
   T extends SupportedData<BaseData<any, any>>,
@@ -380,7 +368,7 @@ const CommonDetails = <
         transactionHash={data?.transactionHash || ""} // Add fallback value `""` if `transactionHash` is `undefined`
         event={data?.event || ""} // Add fallback value `""` if `event` is `undefined`
         signature={data?.signature || ""} // Add fallback value `""` if `signature` is `undefined`
-        latestVersion={data?.latestVersion || createDefaultVersionData<BaseData<any>, K<T>>()}
+        latestVersion={data?.latestVersion || createDefaultVersionData<BaseData<any>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>()}
         schema={data?.schema || {}}
       />
     </div>

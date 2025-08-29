@@ -1,11 +1,11 @@
 // AuthContext.tsx
 import { UserPreferences } from "@/app/configs/UserPreferences";
 import React, { createContext, useContext, useReducer } from "react";
-import { NFT } from "../nft/NFT";
-import { AuthStore, UserContactInfo, UserNotificationPreferences, UserSession, useAuthStore } from "../state/stores/AuthStore";
-import { User } from "../users/User";
-import { LanguageEnum } from "../communications/LanguageEnum";
-import { SubscriptionPlan } from "../subscriptions/SubscriptionPlan";
+import { NFT } from "@/app/components/nft/NFT";
+import { AuthStore, UserContactInfo, UserNotificationPreferences, UserSession, useAuthStore } from "@/app/components/state/stores/AuthStore";
+import { User } from "@/app/components/users/User";
+import { LanguageEnum } from "@/app/components/communications/LanguageEnum";
+import { SubscriptionPlan } from "@/app/components/subscriptions/SubscriptionPlan";
 
 
 // Define the types for the context and state

@@ -9,7 +9,7 @@ import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { AxiosError } from "axios";
 import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";
-import { DocumentPath } from "../../../../server/DocumentGenerator";
+import { DocumentPath } from "@/server/DocumentPath";
 import { userService } from "../../../api/ApiUser";
 import { DocumentData } from "../../documents/DocumentBuilder";
 import { DocumentPhaseTypeEnum } from "../../documents/DocumentPhaseType";
@@ -19,15 +19,33 @@ import { ProjectPhaseTypeEnum } from "../../models/data/StatusType";
 import { ProgressPhase } from "../../models/tracker/ProgressBar";
 import axiosInstance from "../../security/csrfToken";
 import { TagsRecord } from "../../snapshots";
-import { NotificationTypeEnum } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { AllTypes } from "../../typings/PropTypes";
 import { UserRoleEnum } from "../../users/UserRoles";
+import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { CustomComment } from "../redux/slices/BlogSlice";
-;
-
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 
 type PhaseTypeEnums = ProgressPhase | ProjectPhaseTypeEnum | DocumentPhaseTypeEnum | undefined;
+
+interface DocumentNotificationMessages {
+  ADD_DOCUMENT_SUCCESS: string;
+  DELETE_DOCUMENT_SUCCESS: string;
+  UPDATE_DOCUMENT_SUCCESS: string;
+  HANDLE_DOCUMENT_ERROR: string;
+  // Add more keys as needed
+}
+
+// Then create the actual object with the messages
+const documentNotificationMessages: DocumentNotificationMessages = {
+  ADD_DOCUMENT_SUCCESS: NOTIFICATION_MESSAGES.Document.ADD_DOCUMENT_SUCCESS,
+  DELETE_DOCUMENT_SUCCESS: NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_SUCCESS,
+  UPDATE_DOCUMENT_SUCCESS: NOTIFICATION_MESSAGES.Document.UPDATE_DOCUMENT_SUCCESS,
+  HANDLE_DOCUMENT_ERROR: NOTIFICATION_MESSAGES.Document.HANDLE_DOCUMENT_ERROR,
+  // Add more properties as needed
+};
+
+
 // Define the type for the document content
 interface DocumentContent<
   T extends  BaseData<any>, 
@@ -36,20 +54,20 @@ interface DocumentContent<
   ExcludedFields extends keyof T = never
 > {
   eventId: string;
-  content: Content<T, K>,
+  content: Content<T, K, Meta>,
   meta: Meta; 
   metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>; 
   // Add more properties as needed
 }
 
 interface DocumentBase<
-  T extends  BaseData<any> = BaseData<any, any>,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
   > {
-  id: string | number;
+  id?: string | number | undefined;
   title: string;
-  content: Content<T, K>;
+  content: Content<T, K, Meta>;
   description?: string | null | undefined;
   tags?: TagsRecord<T, K> | string[] | undefined; 
   createdAt: string | Date | undefined;
@@ -58,10 +76,10 @@ interface DocumentBase<
   updatedBy: string;
   visibility: AllTypes;
   phaseType: PhaseTypeEnums;
-  documentData?: DocumentData<T, K>;
+  documentData?: Document<T, K, Meta>;
   comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
   // selectedDocument: DocumentData<T> | null;
-  selectedDocuments?: DocumentData<T, K>[];
+  selectedDocuments?: Document<T, K, Meta>[];
   
 }
 
@@ -97,7 +115,7 @@ interface DocumentAdditionalProps <T extends  BaseData<any>, K extends T = T, Me
   currentScript: string | null;
   defaultView: Window | undefined;
   doctype: DocumentType | null;
-  ownerDocument: Document<T, K> | null;
+  ownerDocument: Document<T, K, Meta> | null;
   scrollingElement: Element | null;
   readyState: string;
   timeline: DocumentTimeline | undefined;
@@ -113,12 +131,12 @@ interface DocumentAdditionalProps <T extends  BaseData<any>, K extends T = T, Me
   implementation?: DOMImplementation;
   links?: any;
   location?: Location;
-  onfullscreenchange?: ((this: Document<T, K>, ev: Event) => any) | null;
-  onfullscreenerror?: ((this: Document<T, K>, ev: Event) => any) | null;
-  onpointerlockerror?: ((this: Document<T, K>, ev: Event) => any) | null;
-  onpointerlockchange?: ((this: Document<T, K>, ev: Event) => any) | null
-  onreadystatechange?: ((this: Document<T, K>, ev: Event) => any) | null;
-  onvisibilitychange?: ((this: Document<T, K>, ev: Event) => any) | null;
+  onfullscreenchange?: ((this: Document<T, K, Meta>, ev: Event) => any) | null;
+  onfullscreenerror?: ((this: Document<T, K, Meta>, ev: Event) => any) | null;
+  onpointerlockerror?: ((this: Document<T, K, Meta>, ev: Event) => any) | null;
+  onpointerlockchange?: ((this: Document<T, K, Meta>, ev: Event) => any) | null
+  onreadystatechange?: ((this: Document<T, K, Meta>, ev: Event) => any) | null;
+  onvisibilitychange?: ((this: Document<T, K, Meta>, ev: Event) => any) | null;
   pictureInPictureEnabled?: boolean;
 
   plugins?: any;
@@ -144,12 +162,12 @@ interface Document<
   defaultView: Window | undefined;
   phaseType: PhaseTypeEnums;
   doctype: DocumentType | null;
-  ownerDocument: Document<T, K> | null;
+  ownerDocument: Document<T, K, Meta> | null;
   scrollingElement: Element | null;
   requiredRole?: UserRoleEnum;
   timeline: DocumentTimeline | undefined;
   filePath?: DocumentPath<T, K, Meta>;
-  documentData?: DocumentData<T, K>;
+  documentData?: Document<T, K, Meta>;
   isPrivate?: boolean;
   _rev: string | undefined;
   _attachments?: Record<string, any> | undefined;
@@ -185,19 +203,19 @@ interface Document<
 }
 
   
-export interface DocumentStore <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
-  documents: Record<string, Document<T, K>>;
+export interface DocumentStore <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  documents: Record<string, Document<T, K, Meta>>;
   fetchDocuments: () => void;
   getSnapshotDataKey: (documentId: string, eventId: number, userId: string) => string;
   updateDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
-  getData: (id: string) => Document<T, K> | undefined;
-  addDocument: (document: Document<T, K>, content: Content<T, K>) => void;
+  getData: (id: string) => Document<T, K, Meta> | undefined;
+  addDocument: (document: Document<T, K, Meta>, content: Content<T, K, Meta>) => void;
   setDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
-  updateDocument: (id: number, updatedDocument: Document<T, K>) => void;
+  updateDocument: (id: number, updatedDocument: Document<T, K, Meta>) => void;
   deleteDocument: (id: number) => void;
   updateDocumentTags: (id: number, newTags: string[]) => void;
-  selectedDocument: DocumentData<T, K, Meta> | null; // Specify type arguments for DocumentData
-  selectedDocuments: Document<T, K>[] | undefined;
+  selectedDocument: Document<T, K, Meta> | undefined;
+  selectedDocuments: Document<T, K, Meta>[] | undefined;
   // Add more methods as needed
 }
 
@@ -206,8 +224,7 @@ const useDocumentStore = <
   K extends T = T, 
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >(): DocumentStore<T, K> => {
-  const [documents, setDocuments] = useState<Record<string, Document<T, K>>>({});
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [documents, setDocuments] = useState<Record<string, Document<T, K, Meta>>>({});  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { notify } = useNotification();
   const selectedDocumentId = useMemo(() => "", []);
@@ -230,15 +247,16 @@ const useDocumentStore = <
     }
   };
 
-  const addDocument = (document: Document<T, K>) => {
+  const addDocument = (document: Document<T, K, Meta>) => {
+    const documentId = String(document.id);
     setDocuments((prevDocuments) => ({
       ...prevDocuments,
-      [document.id]: document,
+      [documentId]: document,
     }));
     notify(
       "addDocumentSuccess",
       "Document added successfully",
-      NOTIFICATION_MESSAGES.Document.ADD_DOCUMENT_SUCCESS,
+      documentNotificationMessages.ADD_DOCUMENT_SUCCESS,
       new Date(),
       NotificationTypeEnum.OperationSuccess
     );
@@ -285,13 +303,14 @@ const useDocumentStore = <
 };
 
 
-  const selectedDocument = useMemo(() => {
-    return Object.values(documents).find((document) => document.id === selectedDocumentId);
-  }, [documents, selectedDocumentId]);
+const selectedDocument = useMemo(() => {
+  const doc = Object.values(documents).find((document) => document.id === selectedDocumentId);
+  return doc ? convertDocumentToDocumentData(doc) : undefined; // Convert to DocumentData or return null
+}, [documents, selectedDocumentId]);
   
-  const selectedDocuments = useMemo(() => {
-    return Object.values(documents).filter((document) => document.id === selectedDocumentId);
-  }, [documents, selectedDocumentId]);
+const selectedDocuments = useMemo(() => {
+  return Object.values(documents).filter((document) => document.id === selectedDocumentId) as Document<T, K, Meta>[];
+}, [documents, selectedDocumentId]);
 
   const getSnapshotDataKey = (documentId: string, eventId: number, userId: string): string => {
     // Generate a unique key for snapshot data using documentId, eventId, and userId
@@ -312,11 +331,12 @@ const useDocumentStore = <
     }
   };
 
-  const updateDocument = (id: number, updatedDocument: Document<T, K>) => {
+  const updateDocument = (id: number, updatedDocument: Document<T, K, Meta>) => {
     setDocuments((prevDocuments) => ({
       ...prevDocuments,
       [id]: updatedDocument,
     }));
+
     notify(
       "updateDocumentSuccess",
       "Document updated successfully",
@@ -338,7 +358,7 @@ const useDocumentStore = <
     notify(
       `Error ${action}`,
       error.message || "Unknown error",
-      "Failed to perform action",
+      NOTIFICATION_MESSAGES.Document.HANDLE_DOCUMENT_ERROR,
       new Date(),
       NotificationTypeEnum.Error
     );
@@ -426,7 +446,7 @@ const useDocumentStore = <
     }
   };
 
-  const store: DocumentStore<T, K> = makeAutoObservable({
+  const store: DocumentStore<T, K, Meta> = makeAutoObservable({
     documents,
     isLoading,
     error,
@@ -442,13 +462,28 @@ const useDocumentStore = <
     getSnapshotDataKey,
     getData,
     updateDocumentReleaseStatus,
-    setDocumentReleaseStatus
+    setDocumentReleaseStatus,
     // Add more methods as needed
   });
 
   return store;
 };
 
+// Helper function to convert Document to DocumentData
+const convertDocumentToDocumentData = <T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  document: Document<T, K, Meta>
+): Document<T, K, Meta> => {
+  // Implement conversion logic here
+  return {
+    // Map properties from Document to DocumentData
+    id: document.id,
+    title: document.title,
+    // ... other properties
+  } as Document<T, K, Meta>;
+};
+
+
 export default useDocumentStore;
 export type { Document, DocumentBase, DocumentMetadata, PhaseTypeEnums };
-

@@ -3,6 +3,7 @@ import { makeAutoObservable } from "mobx";
 import focusManagerInstance from "../../models/accessibility/FocusManager";
 import axiosInstance from "../../security/csrfToken";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+
 const { notify } = useNotification();
 export interface FeatureToggle {
   feature: string;

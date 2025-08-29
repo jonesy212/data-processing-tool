@@ -1,4 +1,5 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { Callback } from "@/app/components/snapshots/subscribeToSnapshotsImplementation";
 import { LiveEvent } from "@refinedev/core";
 import { useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
@@ -7,13 +8,12 @@ import {
 } from "../actions/SubscriptionActions";
 import { ModifiedDate } from "../documents/DocType";
 import { CustomSnapshotData, Snapshot, SnapshotContainerData } from "../snapshots";
-import { Callback } from "@/app/components/snapshots/subscribeToSnapshotsImplementation";
 
+import { createAction } from "@reduxjs/toolkit";
+import { K, T } from "../models/data/dataStoreMethods";
+import { ExcludedFields } from "../routing/Fields";
 import { fetchPortfolioUpdatesLastUpdated } from "../trading/TradingUtils";
 import { Subscriber } from "../users/Subscriber";
-import { T, K } from "../models/data/dataStoreMethods";
-import { ExcludedFields } from "../routing/Fields";
-import { createAction } from "@reduxjs/toolkit";
 
 interface UseSubscriptionOptions {
   channel: string;
@@ -56,8 +56,8 @@ const useSubscription = ({
       unsubscribeReason: string;
       unsubscribeData: any;
     },
-    callback: Callback<Snapshot<SnapshotContainerData<T, K<T>,
-      ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K<T>,
+    callback: Callback<Snapshot<SnapshotContainerData<T, K,
+      ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
       ExcludedFields<T, keyof T>>>> | null
   ) => {
     // Filter out the subscriber with the given subscriberId
@@ -92,7 +92,7 @@ const useSubscription = ({
     if (callback) {
       // Here, assuming you want to pass a Snapshot object to the callback.
       // You may need to adjust the structure of the Snapshot data accordingly.
-      const snapshot: Snapshot<SnapshotContainerData<T, K<T>, ExcludedFields<T, keyof T>>> = {
+      const snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>> = {
         // Populate the Snapshot with the relevant data
         snapshotId: unsubscribeDetails.snapshotId,
         snapshotData: unsubscribeDetails.unsubscribeData,

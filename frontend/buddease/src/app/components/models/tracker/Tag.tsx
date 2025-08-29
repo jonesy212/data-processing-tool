@@ -1,38 +1,41 @@
+import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
+import { SpecificMetadata, StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import React from 'react';
-import { TagsRecord } from '../../snapshots';
-import { BaseData } from '../data/Data';
 import { ExcludedFields } from '../../routing/Fields';
-import { StructuredMetadata, SpecificMetadata } from '@/app/configs/StructuredMetadata';
+import { TagsRecord } from '../../snapshots';
 import { AllTypes } from '../../typings/PropTypes';
-import { SharedTimestamps, SharedStatusFlags, SharedIdentifiers } from '@/app/components/documents/RelatedProps';
+import { BaseData } from '../data/Data';
+
+
 
 // Define the Tag interface and TagOptions interface
 interface Tag<
-  T extends BaseData<any>,
-  K extends T = T
-> extends TagOptions<T, K>, SharedTimestamps, SharedStatusFlags {
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends TagOptions<T, K, Meta, ExcludedFields>,
+  SharedTimestamps,
+  SharedStatusFlags {
     relatedTags: string[];
-  // attribs:
+    attribs?: Record<string, any>
 }
 
 
 interface TagOptions<
   T extends BaseData<any>,
-  K extends T = T
-> extends SharedIdentifiers<T, K> {
-  
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, 
+  ExcludedFields extends keyof T = never
+> extends SharedIdentifiers<T, K, Meta, ExcludedFields>, SharedTimestamps {
   color: string;
   description: string;
   enabled: boolean;
   nulltype: AllTypes;
   tags?: TagsRecord<T, K> | string[] | undefined;
-  createdAt?: Date;
-  updatedAt?: Date;
-  createdBy: string;
   timestamp: number;
 }
 // TagProps for the TagComponent
-// TagProps for passing tag options to a TagComponent
 interface TagProps<T extends BaseData<any>, K extends T = T> {
   tagOptions: TagOptions<T, K>; // This will allow flexibility for the tag options
   excludedFields?: ExcludedFields<T, keyof T>;
@@ -97,7 +100,8 @@ const tagOptions1: TagOptions<BaseData> = {
   createdAt: undefined,
   updatedAt: undefined,
   createdBy: '',
-  timestamp: 0
+  timestamp: 0,
+  nulltype: ""
 };
 
 const tagOptions2: TagOptions<BaseData> = {
@@ -124,8 +128,13 @@ tag1.props.children;
 tag2.props.children;
 
 // Sorting function for TagOptions
-const localeCompare =  <T extends BaseData, K extends T = T>(a: TagOptions<T, K>, b: TagOptions<T, K>) => {
-  return a.name.localeCompare(b.name);
+const localeCompare = <T extends BaseData, K extends T = T>(
+  a: TagOptions<T, K>,
+  b: TagOptions<T, K>
+): number => {
+  const nameA = a.name ?? '';
+  const nameB = b.name ?? '';
+  return nameA.localeCompare(nameB);
 };
 
 const sortTags =  <T extends BaseData, K extends T = T>(tags: TagOptions<T, K>[]) => {

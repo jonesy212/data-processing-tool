@@ -1,23 +1,19 @@
 import { Taggable } from '@/app/components/models/CommonData';
 import { BaseData } from "@/app/components/models/data/Data";
 import { EventManager, InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots";
+import { BaseConfig } from '@/app/configs/BaseConfig';
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { MetadataEntriesType, StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { createLatestVersion } from "../versions/createLatestVersion";
-import { versionData } from "../versions/Version";
-import { VersionData } from "../versions/VersionData";
-import { BaseConfig } from '@/app/configs/BaseConfig';
-import { U } from '@/app/components/snapshots/SnapshotStore'
-import { category } from '../utils/snapshotUtils';
 
 
 function convertBaseConfig<
-  U extends BaseData<any>,
+  U extends BaseDataEntity,
   T extends U,
   K extends T
 >(
-  baseConfig: BaseConfig<T, K, StructuredMetadata<T, K>> | undefined,
+  baseConfig: BaseConfig<T, K, StructuredMetadata<T, K>, ExcludedFields> | undefined,
   defaultBaseConfig: BaseConfig<U, K, StructuredMetadata<U, K>>
 ): BaseConfig<U, K, StructuredMetadata<U, K>> {
   // If baseConfig is undefined, return the default
@@ -29,7 +25,7 @@ function convertBaseConfig<
   return baseConfig as unknown as BaseConfig<U, K, StructuredMetadata<U, K>>;
 }
 
-function convertMetadata<U extends BaseData, K extends U = U>(
+function convertMetadata<U extends BaseDataEntity, K extends U = U>(
   metadata: UnifiedMetadata<U, K> | undefined
 ): StructuredMetadata<U, K> {
    // Define default values for all required properties

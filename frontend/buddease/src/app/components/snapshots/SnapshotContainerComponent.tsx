@@ -1,12 +1,12 @@
-import React from 'react';
 import { constructTarget, Target } from '@/app/api/EndpointConstructor';
+import { Snapshot } from "@/app/components/snapshots";
+import { useNotification } from '@/context/NotificationContext';
+import React from 'react';
 import { fetchAllSnapshots } from '../../api/SnapshotApi';
 import { endpoints } from '../../api/endpointConfigurations';
 import useErrorHandling from '../hooks/userInterface/automation_process';
 import { Data } from '../models/data/Data';
-import { useNotification } from '../support/NotificationContext';
 import SnapshotList from './SnapshotList'; // Use the existing SnapshotList class
-import { Snapshot } from './LocalStorageSnapshotStore';
 
 interface SnapshotContainerProps {
   target: Target;

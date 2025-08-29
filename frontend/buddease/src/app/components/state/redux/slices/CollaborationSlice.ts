@@ -36,6 +36,7 @@ import { Document } from "../../stores/DocumentStore";
 import { useUIManager } from "../../stores/UISlice";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 interface Resource {
   id: string;
   name: string;
@@ -54,10 +55,10 @@ enum ResourceType {
 interface CollaborationState<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StrucuredMetadata<T, K> = StrucuredMetadata<T, K>> {
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   sharedProjects: Project[];
   sharedMeetings: Meeting[];
-  participants: Participants[]
+  participants: Participant[]
   tasks: Task[];
   communications: Communication[];
   sharedResources: Resource[];
@@ -97,7 +98,10 @@ interface CollaborationState<
   // Add other collaboration-related state properties here
 }
 
-const initialState: CollaborationState<Data, UniffiedMetaDataOptions> = {
+const initialState: CollaborationState<
+  Data<T, K, StructuredMetadata<T, K>
+  >, UnifiedMetaDataOptions
+> = {
   sharedProjects: [],
   sharedMeetings: [],
   tasks: [],
@@ -131,7 +135,7 @@ const initialState: CollaborationState<Data, UniffiedMetaDataOptions> = {
   resources: [],
   collaboration: {
     documentData: {
-      content: "",
+      content: {},
       title: "",
       lastModifiedDate: { value: new Date(), isModified: false },
       id: "0",
@@ -152,7 +156,7 @@ const initialState: CollaborationState<Data, UniffiedMetaDataOptions> = {
       accessHistory: [],
       version: null,
       permissions: {} as DocumentPermissions,
-      versionData: {} as VersionData,
+      versionData: {} as VersionData<T, K>,
     },
     uiManager: {} as ReturnType<typeof useUIManager>,
     userService: new UserService(),

@@ -1,11 +1,10 @@
 import { version } from '@/app/components/versions/Version';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { T, K } from "../models/data/dataStoreMethods";
 
 /**
  * Function to validate if a given metadata object is valid.
  * @template T, K
- * @param {StructuredMetadata<T, K<T>>} meta - The metadata object to validate.
+ * @param {StructuredMetadata<T, K>} meta - The metadata object to validate.
  * @param {Record<string, string>} schema - Schema to validate the metadata against, with key-value pairs specifying expected types.
  * @returns {boolean} - Returns true if the metadata is valid, otherwise false.
  */

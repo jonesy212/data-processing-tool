@@ -9,7 +9,7 @@ import { User } from "../../users/User";
 import { Data } from "../data/Data";
 import { Progress } from "../tracker/ProgressBar";
 import { Member } from "./TeamMembers";
-import { CommonData } from "./models/CommonData";
+import { CommonData } from "@/app/components/models/CommonData";
 
 interface TeamData<
   T extends  BaseData<any>,
@@ -43,6 +43,12 @@ interface TeamData<
 
   // Add other team-related fields as needed
 }
+
+// A simple base data type for strings
+interface StringData extends BaseData<any> {
+  value: string;
+}
+
 const collaborationPreferences: CollaborationPreferences = {
   teamBuilding: {} as TeamBuildingSettings,
   projectManagement: {} as ProjectManagementSettings,
@@ -51,7 +57,7 @@ const collaborationPreferences: CollaborationPreferences = {
   branding: {} as BrandingSettings
 };
 
-const teamData: TeamData<BaseData<Data<string>, Data<string>, any>, string> & Partial<TeamData<Data<string>, string>> = {
+const teamData: TeamData<StringData, string> = {
   // Other team data properties
   collaborationPreferences: collaborationPreferences,
   id: 0,

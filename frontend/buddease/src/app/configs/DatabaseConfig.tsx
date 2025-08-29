@@ -1,6 +1,6 @@
 import { Client, Pool } from 'pg';
 import performDatabaseOperation from "../../server/database/DatabaseOperations";
-import { getAuthToken } from "../components/auth/getAuthToken";
+import { getAuthToken } from "@/server/auth/getAuthToken";
 import { sanitizeInput } from "../components/security/SanitizationFunctions";
 import { database } from "../generators/GenerateDatabase";
 

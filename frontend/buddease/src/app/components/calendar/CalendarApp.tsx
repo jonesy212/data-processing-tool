@@ -1,4 +1,6 @@
 // CalendarApp.tsx
+"use client";
+
 import { findSnapshotStoresById, snapshotContainer } from '@/app/api/SnapshotApi';
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { useSnapshotManager } from "@/app/components/hooks/useSnapshotManager";

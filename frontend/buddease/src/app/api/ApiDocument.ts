@@ -1,24 +1,24 @@
 // ApiDocument.ts
 import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
+import { BaseData } from '@/app/components/models/data/Data';
+import Collaborator from "@/app/components/models/TeamMembers";
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/context/NotificationContext";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 import { current } from "immer";
+import {
+    DocumentStatusEnum,
+    DocumentTypeEnum,
+} from "../../server/DocumentGenerator";
 import { DocumentOptions } from "../components/documents/DocumentOptions";
 import { Presentation } from "../components/documents/Presentation";
-import Collaborator from "@/app/components/models/TeamMembers";
-import { K, T } from './../components/models/data/dataStoreMethods';
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import {
-  DocumentStatusEnum,
-  DocumentTypeEnum,
-} from "../../server/DocumentGenerator";
-import { BaseData } from '@/app/components/models/data/Data';
 import { DocumentObject } from "../components/state/redux/slices/DocumentSlice";
 import { DatabaseConfig } from "../configs/DatabaseConfig";
 import { DocumentActions } from "../tokens/DocumentActions";
+import { K, T } from './../components/models/data/dataStoreMethods';
 // import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
@@ -225,7 +225,7 @@ const handleDocumentApiErrorAndNotify = (
 };
 
 
-const fakeApiCall = (documentId: number): Promise<DocumentObject<T, K<T>>> => {
+const fakeApiCall = (documentId: number): Promise<DocumentObject<T, K>> => {
   // Simulate an API call
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -234,19 +234,19 @@ const fakeApiCall = (documentId: number): Promise<DocumentObject<T, K<T>>> => {
         status: DocumentStatusEnum.Draft,
         type: DocumentTypeEnum.Document,
         // Other properties as needed
-      } as DocumentObject<T, K<T>>);
+      } as DocumentObject<T, K>);
     }, 1000);
   });
 };
 
 // Define an async thunk action creator to update the document name
 const updateDocumentName = createAsyncThunk<
-  DocumentObject<T, K<T>>, 
+  DocumentObject<T, K>, 
   { documentId: number; newName: string }
 >(
   "documents/updateDocumentName",
    ({ documentId, newName }, { dispatch }) => {
-    return new Promise<DocumentObject<T, K<T>>>((resolve, reject) => {
+    return new Promise<DocumentObject<T, K>>((resolve, reject) => {
       axiosInstance
         .put(
           `${API_BASE_URL}/documents/${documentId}/name`,
@@ -264,7 +264,7 @@ const updateDocumentName = createAsyncThunk<
             new Date(),
             "DocumentSuccess" as NotificationTypeEnum
           );
-          resolve(response.data as DocumentObject<T, K<T>>);
+          resolve(response.data as DocumentObject<T, K>);
         })
         .catch((error) => {
           
@@ -280,16 +280,16 @@ const updateDocumentName = createAsyncThunk<
 );
 
 // Define an async thunk action creator to fetch a document by ID
-const fetchDocumentById = createAsyncThunk<DocumentObject<T, K<T>>, number>(
+const fetchDocumentById = createAsyncThunk<DocumentObject<T, K>, number>(
   "documents/fetchDocumentById",
   (documentId: number, { dispatch }) => {
-    return new Promise<DocumentObject<T, K<T>>>((resolve, reject) => {
+    return new Promise<DocumentObject<T, K>>((resolve, reject) => {
       axiosInstance
         .get(`${API_BASE_URL}/documents/${documentId}`, {
           headers: headersConfig,
         })
         .then((response) => {
-          resolve(response.data as DocumentObject<T, K<T>>);
+          resolve(response.data as DocumentObject<T, K>);
         })
         .catch((error) => {
           console.error("Error fetching document:", error);
@@ -568,14 +568,14 @@ const updateDocumentNameAPI = async (
 
 
 const addDocumentAPI = (
-  documentData: DocumentObject<T, K<T>>
-): Promise<DocumentObject<T, K<T>>> => {
+  documentData: DocumentObject<T, K>
+): Promise<DocumentObject<T, K>> => {
   const addDocumentEndpoint = `${API_BASE_URL}/documents`;
 
   return new Promise((resolve, reject) => {
     axiosInstance
       .post(addDocumentEndpoint, documentData, { headers: headersConfig })
-      .then((response) => resolve(response.data as DocumentObject<T, K<T>>))
+      .then((response) => resolve(response.data as DocumentObject<T, K>))
       .catch((error) => {
         console.error("Error adding document:", error);
         handleDocumentApiErrorAndNotify(
@@ -591,7 +591,7 @@ const addDocumentAPI = (
 
 
 const loadPresentationFromDatabase = async (
-  presentationId: DocumentObject<T, K<T>>
+  presentationId: DocumentObject<T, K>
 ): Promise<Presentation> => {
   try {
     // Make a GET request to the API endpoint
@@ -917,7 +917,7 @@ const unlockDocument = async (documentId: string): Promise<any> => {
 };
 
 // Add document API
-const addDocument = async (newDocument: Document<T, K<T>>): Promise<Document<T, K<T>>> => {
+const addDocument = async (newDocument: Document<T, K>): Promise<Document<T, K>> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents`,
@@ -2345,32 +2345,32 @@ const documentTemplates = async (templatesData: any): Promise<any> => {
 
 
 export {
-  addDocument, addDocumentAPI, approveDocument, archiveDocument, assignTaskInDocument, automateDocumentTasks, backupDocuments, categorizeDocuments, collaborativeEditing, commentOnDocument, compareDocuments, connectWithExternalSystem, createDocumentVersion, customizeDocumentView, customizeReportSettings, decryptDocument, deleteDocumentAPI, documentAccessControls, documentActivityLogging, documentAnnotation, documentApprovalWorkflow,
-  documentLifecycleManagement, documentRedaction,
-  documentTemplates, documentVersionComparison,
-  downloadDocument, encryptDocument, exportDocumentReport,
-  exportToExternalSystem, fakeApiCall,
-  fetchAllDocumentsAPI, fetchDocumentById, fetchDocumentByIdAPI, fetchJsonDocumentByIdAPI,
-  fetchXmlDocumentByIdAPI, filterDocuments,
-  filterDocumentsAPI, generateDocument,
-  generateDocumentReport, getDocument, getDocumentUrl,
-  getDocumentVersions, grantDocumentAccess,
-  importFromExternalSource, initiateDocumentWorkflow,
-  intelligentDocumentSearch, listDocuments,
-  loadPresentationFromDatabase, lockDocument,
-  manageDocumentPermissions, mentionUserInDocument,
-  mergeDocuments, moveDocument,
-  provideFeedbackOnDocument, rejectDocument,
-  removeDocument, requestFeedbackOnDocument,
-  requestReviewOfDocument, resolveFeedbackOnDocument,
-  restoreDocument, retrieveBackup, revertToDocumentVersion,
-  revokeDocumentAccess, scheduleReportGeneration,
-  searchDocumentAPI, searchDocuments, shareDocument,
-  smartTagging, splitDocument, synchronizeWithCloudStorage,
-  tagDocuments, trackDocumentChanges, triggerDocumentEvents,
-  unlockDocument, updateDocument, updateDocumentAPI,
-  updateDocumentNameAPI, updateSnapshotDetails,
-  uploadDocument, validateDocument,
-  viewDocumentHistory
+    addDocument, addDocumentAPI, approveDocument, archiveDocument, assignTaskInDocument, automateDocumentTasks, backupDocuments, categorizeDocuments, collaborativeEditing, commentOnDocument, compareDocuments, connectWithExternalSystem, createDocumentVersion, customizeDocumentView, customizeReportSettings, decryptDocument, deleteDocumentAPI, documentAccessControls, documentActivityLogging, documentAnnotation, documentApprovalWorkflow,
+    documentLifecycleManagement, documentRedaction,
+    documentTemplates, documentVersionComparison,
+    downloadDocument, encryptDocument, exportDocumentReport,
+    exportToExternalSystem, fakeApiCall,
+    fetchAllDocumentsAPI, fetchDocumentById, fetchDocumentByIdAPI, fetchJsonDocumentByIdAPI,
+    fetchXmlDocumentByIdAPI, filterDocuments,
+    filterDocumentsAPI, generateDocument,
+    generateDocumentReport, getDocument, getDocumentUrl,
+    getDocumentVersions, grantDocumentAccess,
+    importFromExternalSource, initiateDocumentWorkflow,
+    intelligentDocumentSearch, listDocuments,
+    loadPresentationFromDatabase, lockDocument,
+    manageDocumentPermissions, mentionUserInDocument,
+    mergeDocuments, moveDocument,
+    provideFeedbackOnDocument, rejectDocument,
+    removeDocument, requestFeedbackOnDocument,
+    requestReviewOfDocument, resolveFeedbackOnDocument,
+    restoreDocument, retrieveBackup, revertToDocumentVersion,
+    revokeDocumentAccess, scheduleReportGeneration,
+    searchDocumentAPI, searchDocuments, shareDocument,
+    smartTagging, splitDocument, synchronizeWithCloudStorage,
+    tagDocuments, trackDocumentChanges, triggerDocumentEvents,
+    unlockDocument, updateDocument, updateDocumentAPI,
+    updateDocumentNameAPI, updateSnapshotDetails,
+    uploadDocument, validateDocument,
+    viewDocumentHistory
 };
 

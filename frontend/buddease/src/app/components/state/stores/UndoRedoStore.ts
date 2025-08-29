@@ -1,7 +1,7 @@
+import { Snapshot } from "@/app/components/snapshots";
 import { makeAutoObservable } from 'mobx';
 import { useState } from 'react';
 import { Data, } from '../../models/data/Data';
-import { Snapshot } from '../../snapshots';
 
 export interface UndoRedoStore {
   actions: any[];

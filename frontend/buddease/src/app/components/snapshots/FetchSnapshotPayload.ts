@@ -1,4 +1,5 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { simulateFetch } from "@/app/simulate/simulateFetch";
 import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
@@ -7,13 +8,12 @@ import { Category } from "../libraries/categories/generateCategoryProperties";
 import { StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { Subscriber } from "../users/Subscriber";
-import { Snapshot } from "./LocalStorageSnapshotStore";
 
 
 interface FetchSnapshotPayload<
   T extends  BaseData<any>, 
   K extends T = T,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
   > {
     title?: string;
     description?: string;
@@ -61,9 +61,9 @@ interface FetchTaskSnapshotPayload {
 
 
 async function fetchSnapshotPayload<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+ Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
 >(
   snapshotId: string,
   options?: {

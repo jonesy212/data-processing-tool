@@ -18,8 +18,7 @@ import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "@/app/components/phases/TenantManagementPhase";
 import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
 import { SecurityFeatureEnum } from "@/app/components/security/SecurityFeatureEnum";
-import { SnapshotData, SnapshotStoreConfig, SnapshotWithCriteria } from '@/app/components/snapshots';
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot, SnapshotData, SnapshotStoreConfig, SnapshotWithCriteria } from '@/app/components/snapshots';
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { FilterState } from "@/app/components/state/redux/slices/FilterSlice";
 import UserRoles from "@/app/components/users/UserRoles";
@@ -360,8 +359,8 @@ const criteria: FilterCriteria = {
   // Use `useMetadata` with appropriate type arguments for UnifiedMetaDataOptions
   const currentMetadata = useMetadata<
     T, 
-    K<T>, 
-    StructuredMetadata<T, K<T>>, 
+    K, 
+    StructuredMetadata<T, K>, 
     never, 
     Attachment
   >({

@@ -1361,9 +1361,9 @@ export default RetrievedSnapshotData;
 // Define `retrievedSnapshot` to return an instance of `RetrievedSnapshot<T, K>`
 const retrievedSnapshot: <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>() => RetrievedSnapshot<T, K> = () => {
   // Assuming `RetrievedSnapshotData<T, K>` is not a function but rather a data structure
-  const snapshotData: RetrievedSnapshot<T, K<T>> = {
+  const snapshotData: RetrievedSnapshot<T, K> = {
     // Populate with necessary properties according to RetrievedSnapshot structure
-    responseData: {} as SnapshotDataResponse<T, K<T>>, // Adjust as per your response structure
+    responseData: {} as SnapshotDataResponse<T, K>, // Adjust as per your response structure
     // Add other properties as needed
   };
 

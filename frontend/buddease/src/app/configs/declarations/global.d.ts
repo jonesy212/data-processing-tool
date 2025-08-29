@@ -1,11 +1,17 @@
 declare function require(path: string): any;
+import { Snapshot } from "@/app/components/snapshots";
 import { Presentation } from '../../components/documents/Presentation';
-import { Snapshot } from '../../components/snapshots/LocalStorageSnapshotStore';
 
 interface MyPropertiesOptions extends DocumentOptions {
   sections: any; // Add all required properties
   title?: string;
   // Add other properties as needed
+}
+
+interface DOMRectList {
+  readonly length: number;
+  item(index: number): DOMRect | null;
+  [index: number]: DOMRect;
 }
 
 declare global {

@@ -1,6 +1,7 @@
 // SnapshotConfig.ts
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
 import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
+import { SnapshotEvent } from '@/app/typings/eventTypes';
 
 import { isSnapshot } from '@/app/components/utils/snapshotUtils';
 import apiNotificationsService from '@/app/api/NotificationsService';
@@ -44,8 +45,8 @@ import { SubscriptionLevel } from "../subscriptions/SubscriptionLevel";
 import {
   NotificationType,
   NotificationTypeEnum,
-} from "../support/NotificationContext";
-import { userId } from "../../api/ApiUserr";
+} from "@/context/NotificationContext";
+import { userId } from "@/api/ApiUser";
 import { Subscriber, SubscriberCallback } from "../users/Subscriber";
 import {
   triggerIncentives
@@ -61,10 +62,12 @@ import { InitializedData, SnapshotStoreOptions } from "./SnapshotStoreOptions";
 
 import { SubscriberCollection } from '../users/SubscriberCollection';
 import {
-  Snapshot,
   Snapshots,
   SnapshotUnion,
 } from "./LocalStorageSnapshotStore";
+import {
+  Snapshot
+} from "./Snapshot";
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import { SnapshotItem } from "./SnapshotList";
 import SnapshotStore from "./SnapshotStore";
@@ -82,7 +85,7 @@ interface RetentionPolicy {
 }
 
 interface ConfigureSnapshotStorePayload<
-  T extends BaseData<any>, 
+  T extends BaseDataEntity, 
   K extends T = T
   > 
   extends Payload {
@@ -109,10 +112,10 @@ type MetadataTypes = StructuredMetadata<BaseData<any, any> , BaseData<any, any>>
 interface SnapshotConfig<
   T extends  BaseData<any>, 
   K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends Data<T> = never,
+ Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
 >
-  extends Snapshot<T, K>
+  extends Snapshot<T, K, Meta, ExcludedFields>
 {
   id: string | number;
   description?: string;
@@ -124,18 +127,18 @@ interface SnapshotConfig<
   snapshotCriteria?: SnapshotWithCriteria<T, K>;
   criteria: CriteriaType;
   priority?: string;
-  version?: string | number| Version;
+  version?: string | number| Version<T, K, Meta>;
   data: InitializedData<T, K> | null;
   subscribers: SubscriberCollection<T, K>[];
   storeConfig: SnapshotStoreConfig<T, K> | undefined;
   initialState: InitializedState<T, K>
   isCore: boolean;
-  additionalData: CustomSnapshotData<T, K, Meta> | undefined
+  additionalData?: CustomSnapshotData<T, K, Meta> | undefined
   hasSnapshots: () => Promise<boolean>
 }
 
 
-function createSnapshotConfig<T extends  BaseData<any> = BaseData<any, any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> (
+function createSnapshotConfig<T extends  BaseData<any> = BaseData<any, any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> (
   snapshotId: string,
   prefix: string,
   name: string,
@@ -169,7 +172,7 @@ function createSnapshotConfig<T extends  BaseData<any> = BaseData<any, any>, K e
   generatorType?: string,
 
   priority?: string,
-  version?: string | Version,
+  version?: string | Version<T, K>,
   additionalData?: CustomSnapshotData<T, K, Meta>,
   initialState?: any, // Define types as needed
   initialConfig?: any, // Define types as needed
@@ -182,7 +185,7 @@ function createSnapshotConfig<T extends  BaseData<any> = BaseData<any, any>, K e
   initializedState?: any, // Define types as needed
   snapshot?: any, // Define types as needed
   setCategory?: ((category: symbol | string | Category | undefined) => void) | undefined,
-  applyStoreConfig?: (SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>  | undefined) => void,
+  applyStoreConfig?: (SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>  | undefined),
   generateId?: (
     prefix: string,
     name: string,
@@ -294,8 +297,14 @@ function createSnapshotConfig<T extends  BaseData<any> = BaseData<any, any>, K e
         storeOptions
       );
 
-
-      const snapshotResolved = await (snapshotApi.getSnapshot(snapshotId, Number(storeId)) as Promise<Snapshot<T, K> | null>);
+      const snapshotResolved = await (snapshotApi.getSnapshot(
+        snapshotId, 
+        Number(storeId),
+        null as unknown as Snapshot<T, K>, // Provide required snapshot parameter
+        'your-type', // Provide required type parameter
+        {} as SnapshotEvent<T, K>, // Provide required event parameter
+        {} as SnapshotConfig<any> // Provide required snapshotConfig parameter
+      ) as Promise<Snapshot<T, K> | null>);
       
       if (snapshotResolved === null && snapshotResolved === undefined) {
         throw new Error("Snapshot not found");
@@ -419,10 +428,10 @@ function createSnapshotConfig<T extends  BaseData<any> = BaseData<any, any>, K e
 
 // Example of asynchronous function using async/await
 const updateSubscribersAndSnapshots = async <
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+ Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
     snapshotId: string,
     subscribers: Subscriber<T, K>[],

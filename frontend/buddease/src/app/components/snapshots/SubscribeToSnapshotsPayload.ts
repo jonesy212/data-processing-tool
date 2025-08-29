@@ -1,9 +1,9 @@
 // SubscribeToSnapshotsPayload.ts
+import { Snapshot } from "@/app/components/snapshots";
 import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
 import { BaseData } from "../models/data/Data";
-import { Snapshot } from "./LocalStorageSnapshotStore";
 
-interface SubscribeToSnapshotsPayload<T extends BaseData = any> {
+interface SubscribeToSnapshotsPayload<T extends BaseDataEntity = any> {
     snapshotIds: string[]; // List of snapshot IDs to subscribe to
     subscriptionContext: string; // Context or purpose of the subscription
     filters?: Partial<T>; // Optional filters to apply to the snapshots during subscription

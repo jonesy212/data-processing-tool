@@ -1,9 +1,9 @@
 // import { Data } from "../models/data/Data";
-// import { Snapshot } from "./LocalStorageSnapshotStore";
+// import { Snapshot } from "@/app/components/snapshots";
 // import { SnapshotItem } from "./SnapshotList";
 
 // // convertSnapshotToItem.ts
-// function convertSnapshotToItem<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// function convertSnapshotToItem<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
 //   snapshot: Snapshot<T, K>,
 //   id: string
 // ): SnapshotItem<T, K> {

@@ -1,7 +1,7 @@
 // UserJourneyManager.tsx
 import {IdeaLifecycleProcess} from '@app/components/phases/IdeaLifecycleProcess'
 import { TaskPhase } from '@/app/components/phases/TaskPhaseEnum'
-import { useAuth } from "@/app/components/auth/AuthContext";
+import { useAuth } from "@/server/auth/AuthContext";
 import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
 import {
   DevelopmentPhaseEnum,

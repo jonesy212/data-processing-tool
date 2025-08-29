@@ -36,4 +36,4 @@ export const openVideoOptionsMenu = async (): Promise<VideoOptions | null> => {
     showToast({ content: "Failed to open video options menu" });
     return null;
   }
-};
+}

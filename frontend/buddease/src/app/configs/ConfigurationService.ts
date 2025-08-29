@@ -21,6 +21,7 @@ import { frontendConfig } from "./FrontendConfig";
 import LazyLoadScriptConfigImpl from "./LazyLoadScriptConfig";
 import { ModuleType, userPreferences } from "./UserPreferences";
 import userSettings from "./UserSettings";
+import { BaseDataEntity, DefaultMeta, BaseDataRoot } from './BaseConfig';
 
 interface BaseRetryConfig {
   maxRetries?: number;
@@ -33,7 +34,11 @@ interface BaseCacheConfig {
 }
 
 
-interface BaseMetadataConfig<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface BaseMetadataConfig<
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+> {
   enableSnapshot?: boolean;
   eventRecords?: EventRecord<T, K>[] | []
 }
@@ -70,11 +75,14 @@ export interface ApiConfig {
   onLoad?: (response: any) => void;
 }
 
-interface ConfigurationOptions {
+interface ConfigurationOptions<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T
+> {
   namingConventions: any;
   lazyLoadScriptConfig: LazyLoadScriptConfigImpl;
   apiConfig: ApiConfig;
-  lastUpdated: VersionHistory;
+  lastUpdated: VersionHistory<T, K>;
   userPreferences: {
     modules: ModuleType;
     actions: never[];
@@ -110,7 +118,7 @@ const notify = useNotification
 
 
 export class ConfigurationService {
-  protected static instance: ConfigurationService;
+  protected static instance: ConfigurationService
   private apiConfig: ApiConfig;
   private cachedConfig: LazyLoadScriptConfigImpl | null = null;
   private apiConfigSubscribers: ((config: ApiConfig) => void)[] = [];
@@ -198,6 +206,7 @@ private getDefaultApiConfig(): ApiConfig {
     }
     return ConfigurationService.instance;
   }
+
 
   getSnapshotConfig(): LazyLoadScriptConfigImpl {
     // Example: Default configuration

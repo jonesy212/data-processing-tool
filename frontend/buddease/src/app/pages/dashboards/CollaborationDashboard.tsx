@@ -1,6 +1,6 @@
 // CollaborationDashboard.tsx
 import DynamicNamingConventions from "@/app/components/DynamicNamingConventions";
-import { useAuth } from "@/app/components/auth/AuthContext";
+import { useAuth } from "@/server/auth/AuthContext";
 import Stopwatch from "@/app/components/calendar/Stopwatch";
 import { ChatRoom } from "@/app/components/communications";
 import EditorWithPrompt from "@/app/components/documents/EditorWithPrompt";

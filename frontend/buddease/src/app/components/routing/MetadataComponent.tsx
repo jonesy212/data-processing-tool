@@ -8,7 +8,7 @@ import { UnifiedMetadata } from '../../configs/database/MetaDataOptions';
 
 
 
-const selectedmetadata: UnifiedMetadata<T, K<T>> = {
+const selectedmetadata: UnifiedMetadata<T, K> = {
   videoMetadata: {
     title: "",
     url: "",
@@ -75,11 +75,11 @@ const selectedmetadata: UnifiedMetadata<T, K<T>> = {
 
   const MetadataComponent: React.FC = () => {
   // Initialize state with selectedmetadata
-  const [currentMetadata, setCurrentMetadata] = useState<UnifiedMetaDataOptions<T, K<T>>(selectedmetadata);
-  const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetaDataOptions<T, K<T>>(selectedmetadata);
+  const [currentMetadata, setCurrentMetadata] = useState<UnifiedMetaDataOptions<T, K>(selectedmetadata);
+  const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetaDataOptions<T, K>(selectedmetadata);
 
   // If you need to update the metadata, for example on a user action or API call
-  const updateMetadata = (newMetadata: UnifiedMetadata<T, K<T>>) => {
+  const updateMetadata = (newMetadata: UnifiedMetadata<T, K>) => {
     // Save current metadata as previous before updating
     setPreviousMetadata(currentMetadata);
     // Update the current metadata
@@ -90,7 +90,7 @@ const selectedmetadata: UnifiedMetadata<T, K<T>> = {
     // Example logic if metadata changes come from external sources like API
     // Call to fetch metadata, then set the metadata state
     const fetchMetadata = async () => {
-      const fetchedMetadata: UnifiedMetadata<T, K<T>> = await getMetadataFromAPI(); // Replace with real API call
+      const fetchedMetadata: UnifiedMetadata<T, K> = await getMetadataFromAPI(); // Replace with real API call
       updateMetadata(fetchedMetadata);
     };
     fetchMetadata();

@@ -1,50 +1,67 @@
 import { ExchangeActions } from "@/app/components/actions/ExchangeActions";
-import useRealtimeData from "@/app/components/hooks/commHooks/useRealtimeData";
+import useRealtimeData, { RealtimeUpdateCallback } from "@/app/components/hooks/commHooks/useRealtimeData";
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 import { ExchangeData } from "@/app/components/models/data/ExchangeData";
 import { fetchDEXData } from "@/app/components/models/data/fetchExchangeData";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
-import { EventData } from "@/app/components/state/stores/AssignEventStore";
 import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
-import { RealtimeUpdateCallback } from '@/app/components/hooks/commHooks/useRealtimeData';
+import { EventData } from "@/app/components/state/stores/AssignEventStore";
 
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
+import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
+import { Snapshot } from "@/app/components/snapshots";
 import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { AllTypes } from "../../typings/PropTypes";
 import { BaseData } from "../data/Data";
-import { T, K, Meta } from "@/app/components/models/data/dataStoreMethods";
-import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/configs/BaseConfig";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
 
-interface BaseRealtimeData extends SharedIdentifiers<T, K<T>, Meta<T, K<T>>, keyof T> {
-  id: string | number | undefined; // Override id to ensure it's required
+interface BaseRealtimeData<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends SharedIdentifiers<T, K, Meta, ExcludedFields> {
+  id: string | number; // Override id to ensure it's required (remove undefined)
   name: string;
   value?: string | number | Snapshot<T, K, Meta, ExcludedFields> | null;
-  
-  type: string | AllTypes  | null; // Align with BaseData's expectation
+  type: string | AllTypes; // Remove null to align with BaseData's expectation
   date: Date; // Standardize to Date
   // Add other common properties shared by RealtimeDataItem and RealtimeData here
 }
 
-interface RealtimeDataItem extends BaseRealtimeData, EventData, SharedMetadata<K<T>> {
-  title?: string;
-  userId: string;
-  dispatch: (action: any) => void;
-  timestamp: string | number | Date; // Standardize to Date
-  data?: InitializedData<RealtimeDataItem> | null,
-  // Add other properties specific to RealtimeDataItem here
-}
-
-interface RealtimeData extends BaseRealtimeData {
+interface RealtimeData<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends BaseRealtimeData<T, K, Meta, ExcludedFields> {
   eventId: string;
   userId: string;
   dispatch: (action: any) => void;
   // Define other properties specific to RealtimeData here
-} 
+}
 
+interface RealtimeDataItem<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends 
+  BaseRealtimeData<T, K, Meta, ExcludedFields>, 
+  EventData, 
+  SharedMetadata<T, K, ExcludedFields>
+{
+  title?: string;
+  userId: string;
+  dispatch: (action: any) => void;
+  timestamp: Date;
+  data?: InitializedData<RealtimeDataItem<T, K, Meta, ExcludedFields>> | null;
+}
 
 const processSnapshotStore = <T extends BaseData<any, any>, K extends T = T>(
   snapshotStore: SnapshotStore<T, K>

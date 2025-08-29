@@ -1,10 +1,11 @@
 // components/Details.tsx
 
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { SharedIdentifiers } from '@/app/components/documents/RelatedProps';
 import { Label } from '@/app/components/projects/branding/BrandingSettings';
+import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Participant } from "@/app/pages/management/ParticipantManagementPage";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { FakeData } from "../../intelligence/FakeDataGenerator";
@@ -17,7 +18,6 @@ import { CommonData, Customizations } from "../CommonData";
 import ListGenerator from "./../../../../app/generators/ListGenerator";
 import { Comment } from "./Comments";
 import { BaseData, Data } from "./Data";
-import { SharedMetadata, CoreMetadata } from "@/app/configs/metadata/createMetadataState";
 
 export type DataAndEventDetails = Data<any, any, any> | CommonEvent;
 
@@ -25,7 +25,7 @@ interface SharedDetails<
   T extends BaseData<any, any, any, Attachment>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> extends SharedMetadata<T, K>{
+> extends SharedMetadata<T, K>,   SharedIdentifiers<T, K, Meta, ExcludedFields> {
   participants: Participant[]
   uploadedAt: Date
   phase: Phase
@@ -145,3 +145,4 @@ const Details: React.FC<DetailsProps<DataAndEventDetails>> = observer(
 export default DetailsProps;
 export { Details };
 export type { SharedDetails };
+

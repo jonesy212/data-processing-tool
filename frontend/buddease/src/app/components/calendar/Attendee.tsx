@@ -1,4 +1,5 @@
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { Snapshot } from "@/app/components/snapshots";
 import { projectMetadata, transformProjectToUnifiedMetadata } from "@/app/configs/StructuredMetadata";
 import { useState } from "react";
 import { getDefaultDocumentOptions } from "../documents/DocumentOptions";
@@ -8,7 +9,6 @@ import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { Team } from "../models/teams/Team";
 import { Member } from "../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
-import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { implementThen } from "../state/stores/CommonEvent";
 import { VideoData } from "../video/Video";
 import useAttendancePrediction from "./AttendancePrediction";
@@ -167,10 +167,10 @@ const useAttendeeAvailabilityAnalysis = (
 
 export { useAttendeeAvailabilityAnalysis };
 export type {
-    Attendee,
-    AttendeeAvailability, AttendeeAvailabilityPrediction,
-    AttendeeAvailabilityPredictionConfidenceInterval, BusyTime,
-    ExtendedAttendeeAvailability
+  Attendee,
+  AttendeeAvailability, AttendeeAvailabilityPrediction,
+  AttendeeAvailabilityPredictionConfidenceInterval, BusyTime,
+  ExtendedAttendeeAvailability
 };
 
 const event: CalendarEvent = {
@@ -197,7 +197,7 @@ const event: CalendarEvent = {
   then: implementThen,
   analysisType: {} as AnalysisTypeEnum,
   analysisResults: [],
-  videoData: {} as VideoData<Data<T>, K<T>>,
+  videoData: {} as VideoData<Data<T>, K>,
   content: "Event content",
   topics: [],
   highlights: [],
@@ -284,5 +284,5 @@ const calendarManagerState: CalendarManagerState = {
 
 export default calendarManagerState;
 export { event };
-export type { AttendeeAvailabilityAnalysis, Attendee };
+export type { Attendee, AttendeeAvailabilityAnalysis };
 

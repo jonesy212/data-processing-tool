@@ -2,7 +2,7 @@
 import { autosaveDrawing } from "@/app/components/documents/editing/autosaveDrawing";
 import { useMovementAnimations } from "@/app/components/libraries/animations/movementAnimations/MovementAnimationActions";
 import FolderData from '@/app/components/models/data/FolderData';
-import TrackerClass, { TrackerProps } from '@/app/components/models/tracker/Tracker';
+import Tracker, { TrackerProps } from '@/app/components/models/tracker/Tracker';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RefObject, useEffect, useRef } from "react";
@@ -27,7 +27,7 @@ import FileData from "@/app/components/models/data/FileData";
 import { useDrag } from "@/app/libraries/animations/DraggableAnimation/useDrag";
 import useText from "@/app/libraries/animations/DraggableAnimation/useText";
 import { ContentItem } from "../../stores/ContentStore";
-  
+import { K } from '@/app/components/models/data/dataStoreMethods'
 interface Guide {
   id: string;               // Unique identifier for the guide
   type: 'horizontal' | 'vertical'; // Type of the guide (horizontal or vertical)
@@ -53,11 +53,12 @@ interface AppearanceUpdate {
   backgroundColor?: string; // Optional background color update
   fontSize?: string; // Optional font size update
   fontFamily?: string; // Optional font family update
-  width?: string,
-  height?: string; // Optional width and height update
+  width?: string | number,
+  height?: string | number; // Optional width and height update
 }
 
-interface LayerEffectGuide extends Guide, SharedRelationshipData, AppearanceUpdate {}
+interface LayerEffectGuide extends Guide, SharedRelationshipData<K>, AppearanceUpdate { }
+
 interface LayerEffect extends LayerEffectGuide {
   effectType: string;        // Type of the effect (e.g., 'blur', 'shadow')
   options: object;           // Options specific to the effect (e.g., intensity, color)
@@ -74,14 +75,14 @@ interface Layer extends DrawingOptions {
   blendMode: BlendMode // Blend mode
 }
 
-interface SharedDrawingProps extends SharedRelationshipData {}
+interface SharedDrawingProps extends SharedRelationshipData<K> {}
 
 interface Shape extends SharedDrawingProps {
   id: string;                      // Unique identifier for the shape
   x: number;                       // X position of the shape
   y: number;                       // Y position of the shape
-  width: number;
-  height: number;
+  heigh?: number | string;
+  width?: string | number;
   fillColor: string;
   isFlippedX?: boolean;
   isFlippedY?: boolean; // Define additional shape properties as needed
@@ -113,8 +114,8 @@ interface Brush {
 interface DrawingElement {
   type: string;       // Type of the drawing element (e.g., 'circle', 'line')
   coordinates: { x: number; y: number }; // Position on the canvas
-  width: number,
-  height: number
+  width: string | number,
+  height?: string | number
 }
 
 
@@ -440,7 +441,7 @@ export const createMilestoneForTrackers = (trackers: TrackerProps[]) => (dispatc
 
 // Example transformation function from ContentItem to TrackerProps
 const convertContentItemToTracker = (item: ContentItem): WritableDraft<TrackerDrawingElement> => {
-  const tracker = new TrackerClass(
+  const tracker = new Tracker(
     item.id || '',
     item.type || 'Unnamed Tracker',
     [], // Initialize with empty or default phases
@@ -464,9 +465,9 @@ const convertContentItemToTracker = (item: ContentItem): WritableDraft<TrackerDr
     height: "",
    
     // Function to track changes for files
-    trackFileChanges: async (file: FileData) => {
+    trackFileChanges: async (file: FileData<T>) => {
       try {
-        // Use the existing TrackerClass method to track file changes
+        // Use the existing Tracker method to track file changes
         tracker.trackFileChanges(file);
 
         // Optionally update the UI or perform other side effects
@@ -479,7 +480,7 @@ const convertContentItemToTracker = (item: ContentItem): WritableDraft<TrackerDr
     // Function to track changes for folders
     trackFolderChanges: async (folder: FolderData) => {
       try {
-        // Use the existing TrackerClass method to track folder changes
+        // Use the existing Tracker method to track folder changes
         await tracker.trackFolderChanges(folder);
 
         // Optionally refresh folder contents or sync with server

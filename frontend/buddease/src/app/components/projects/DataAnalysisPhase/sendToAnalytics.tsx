@@ -1,7 +1,7 @@
 import axiosInstance from "@/app/api/axiosInstance";
 import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { Snapshot } from "../../snapshots";
 
 const sendToAnalytics = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(eventName: string, eventData: Record<string, any>, snapshot: Snapshot<T, K>) => {
   try {

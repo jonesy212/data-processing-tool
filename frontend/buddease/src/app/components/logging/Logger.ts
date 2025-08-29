@@ -5,26 +5,25 @@ import { LogData } from "@/app/components/models/LogData";
 import { Task } from "@/app/components/models/tasks/Task";
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
 import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/context/NotificationContext";
 
 import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import fs from 'fs';
 
 import useErrorHandling from "@/app/components/hooks/useErrorHandling";
 import { DataDetails } from "@/app/components/models/data/Data";
 import { team, Team } from "@/app/components/models/teams/Team";
-import TeamData from "@/app/components/models/teams/TeamData";
+import { TeamData } from "@/app/components/models/teams/TeamData";
 import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
 
+import { Snapshot } from "@/app/components/snapshots";
 import { DefaultCalendarEvent } from '../actions/CalendarEventActions';
 import { Theme } from '../libraries/ui/theme/Theme';
 import { encryptData } from "../security/encryptedData";
-import { Snapshot } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 
 const API_BASE_URL = endpoints.logging;
 const { notify } = useNotification() || { notify: () => {} };
@@ -1330,13 +1329,56 @@ class PaymentLogger extends Logger {
 }
 
 
-
-
-
 class ContentLogger extends Logger {
-  static logTaskCompletion(taskId: string, userId: string) {
-    throw new Error('Method not implemented.');
+  // Shared logging method for content-related events
+  static logContentCreation(title: string, contentId: string, userId: string) {
+    this.logEvent("Content", `${title} created (Content ID: ${contentId}, User ID: ${userId})`, userId);
   }
+
+  static logContentUpdate(title: string, contentId: string, userId: string, changes: string, upsert = false) {
+    this.logEvent("Content", `${title} updated (Content ID: ${contentId}, User ID: ${userId}, Changes: ${changes})`, userId);
+  }
+
+  static logContentDeletion(title: string, contentId: string, userId: string) {
+    this.logEvent("Content", `Content deleted (Content ID: ${contentId}, User ID: ${userId})`, userId);
+  }
+
+  static logContentCompletion(title: string, contentId: string, userId: string) {
+    this.logEvent("Content", `${title} completed (Content ID: ${contentId}, User ID: ${userId})`, userId);
+  }
+
+  static logTaskCreation(taskId: string, title: string, contentId: string, userId: string) {
+    this.logEvent("Content", `Task created (Task ID: ${taskId}, Title: ${title}, Content ID: ${contentId}, User ID: ${userId})`, userId);
+  }
+
+  static logTaskUpdate(taskId: string, title: string, contentId: string, userId: string, changes: string) {
+    this.logEvent("Content", `Task updated (Task ID: ${taskId}, Title: ${title}, Content ID: ${contentId}, User ID: ${userId}, Changes: ${changes})`, userId);
+  }
+
+  static logTaskEditing(taskId: string, userId: string) {
+    this.logEvent("Content", `Task updated (Task ID: ${taskId}, User ID: ${userId})`, userId);
+  }
+
+  static logTaskAssignment(taskId: string, userId: string) {
+    this.logEvent("Content", `Task assigned (Task ID: ${taskId}, User ID: ${userId})`, userId);
+  }
+
+  static logTaskReassignment(taskId: string, oldUserId: string, newUserId: string) {
+    this.logEvent("Content", `Task reassigned (Task ID: ${taskId}, Old User ID: ${oldUserId}, New User ID: ${newUserId})`, newUserId);
+  }
+
+  static logTaskDeletion(taskId: string, title: string, userId: string, contentId?: string) {
+    this.logEvent("Content", `Task deleted (Task ID: ${taskId}, Title: ${title}, Content ID: ${contentId}, User ID: ${userId})`, userId);
+  }
+
+  // Shared method for logging tasks and content (can be used by subclasses)
+  private static logEvent(logType: string, message: string, userId: string) {
+    this.logWithOptions(logType, message, userId);
+  }
+}
+
+
+class ContentLoggerClient extends ContentLogger {
   static logContentCreation(title: string, contentId: string, userId: string) {
     super.logWithOptions(
       "Content",
@@ -1345,88 +1387,11 @@ class ContentLogger extends Logger {
     );
   }
 
-  static logContentUpdate(title: string, contentId: string, userId: string, changes: string, upsert = false) {
-    super.logWithOptions(
-      "Content",
-      `${title} updated (Content ID: ${contentId}, User ID: ${userId}, Changes: ${changes})`,
-      userId
-    );
-  }
-
-  static logContentDeletion(title: string, contentId: string, userId: string) {
-    super.logWithOptions(
-      "Content",
-      `Content deleted (Content ID: ${contentId}, User ID: ${userId})`,
-      userId
-    );
-  }
-
-  static logTaskCreation(taskId: string, title: string, contentId: string, userId: string) {
-    super.logWithOptions(
-      "Content",
-      `Task created (Task ID: ${taskId}, Title: ${title}, Content ID: ${contentId}, User ID: ${userId})`,
-      userId
-    );
-  }
-
-  static logTaskUpdate(taskId: string, title: string, contentId: string, userId: string, changes: string) {
-    super.logWithOptions(
-      "Content",
-      `Task updated (Task ID: ${taskId}, Title: ${title}, Content ID: ${contentId}, User ID: ${userId}, Changes: ${changes})`,
-      userId
-    );
-  }
-
-  static logTaskEditing(taskId: string, userId: string) {
-    super.logWithOptions(
-      "Content",
-      `Task updated (Task ID: ${taskId}, User ID: ${userId})`,
-      userId
-    );
-  }
-
-  static logTaskAssignment(taskId: string, userId: string) {
-    super.logWithOptions(
-      "Content",
-      `Task assigned (Task ID: ${taskId}, User ID: ${userId})`,
-      userId
-    );
-  }
-
-
-  static logTaskReassignment(taskId: string, oldUserId: string, newUserId: string) {
-    super.logWithOptions(
-      "Content",
-      `Task reassigned (Task ID: ${taskId}, Old User ID: ${oldUserId}, New User ID: ${newUserId})`,
-      newUserId
-    );
-  }
-
-
-  static logTaskDeletion(taskId: string, title: string, userId: string, contentId?: string) {
-    super.logWithOptions(
-      "Content",
-      `Task deleted (Task ID: ${taskId}, Title: ${title}, Content ID: ${contentId}, User ID: ${userId})`,
-      userId
-    );
-  }
-  static logEventToFile(logType: string, message: string, fileName: string) {
-    fs.appendFileSync(fileName, JSON.stringify({
-      event: logType,
-      data: message,
-      timestamp: new Date()
-    }) + '\n');
-  }
-
-  static logContentCompletion(title: string, contentId: string, userId: string) {
-    super.logWithOptions(
-      "Content",
-      `${title} completed (Content ID: ${contentId}, User ID: ${userId})`,
-      userId
-    );
-  }
-  // Add more methods for other content-related events as needed
+  // Other client-side methods...
 }
+
+
+
 class IntegrationLogger extends Logger {
   static logAPIRequest(requestId: string, endpoint: string) {
     super.logWithOptions(
@@ -1871,27 +1836,28 @@ class ThemeLogger extends Logger {
 export default Logger;
 
 export {
-    AnalyticsLogger,
-    AnimationLogger, AssignBaseStoreLogger, AudioLogger,
-    BugLogger,
-    CalendarLogger,
-    ChannelLogger,
-    ChatLogger,
-    CollaborationLogger,
-    CommunityLogger,
-    ComponentLogger,
-    ConfigLogger,
-    ContentLogger, createErrorNotificationContent, DataLogger,
-    DexLogger,
-    DocumentLogger, errorLogger, ErrorLogger,
-    ExchangeLogger,
-    FileLogger,
-    FormLogger,
-    IntegrationLogger,
-    PaymentLogger,
-    SearchLogger,
-    SecurityLogger, SnapshotLogger, TaskLogger,
-    TeamLogger,
-    TenantLogger, ThemeLogger, UILogger, VideoLogger,
-    WebLogger
+  AnalyticsLogger,
+  AnimationLogger, AssignBaseStoreLogger, AudioLogger,
+  BugLogger,
+  CalendarLogger,
+  ChannelLogger,
+  ChatLogger,
+  CollaborationLogger,
+  CommunityLogger,
+  ComponentLogger,
+  ConfigLogger,
+  ContentLogger, ContentLoggerClient, createErrorNotificationContent, DataLogger,
+  DexLogger,
+  DocumentLogger, errorLogger, ErrorLogger,
+  ExchangeLogger,
+  FileLogger,
+  FormLogger,
+  IntegrationLogger,
+  PaymentLogger,
+  SearchLogger,
+  SecurityLogger, SnapshotLogger, TaskLogger,
+  TeamLogger,
+  TenantLogger, ThemeLogger, UILogger, VideoLogger,
+  WebLogger
 };
+

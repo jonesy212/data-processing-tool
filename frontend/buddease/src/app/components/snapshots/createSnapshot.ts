@@ -7,9 +7,9 @@ import { InitializedData, InitializedDataStore, SnapshotStoreOptions } from "./S
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 
 function createSnapshot<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   base: Snapshot<T, K, Meta>,
   extensions: Partial<SnapshotWithCriteria<T, K, Meta>> & {

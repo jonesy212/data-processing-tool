@@ -1,5 +1,4 @@
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import React from "react";
 import { BaseData, Data } from "./components/models/data/Data";
@@ -18,11 +17,11 @@ import { useSnapshot } from "./context/SnapshotContext";
 
 const area = fetchUserAreaDimensions().toString()
 const metadata: UnifiedMetadata<T, K> = useMetadata<BaseData<any>>(area);
-const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
+const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
 
-const { snapshotMap } = useSnapshot<T, K<T>, StructuredMetadata<T, K<T>>, keyof T>();
+const { snapshotMap } = useSnapshot<T, K, StructuredMetadata<T, K>, keyof T>();
 
-const mappedSnapshot: Map<string, Snapshot<T, K<T>, StructuredMetadata<T, K<T>>, keyof T>> = snapshotMap;
+const mappedSnapshot: Map<string, Snapshot<T, K, StructuredMetadata<T, K>, keyof T>> = snapshotMap;
 
 export const defaultMetadata = <
   T extends BaseData<any> = BaseData<any>,
@@ -156,10 +155,10 @@ export const videoMetadataExample: UnifiedMetadata<
     latestVersion: createLatestVersion<T, K>(),
     isActive: true, 
     config:  {},
-    version: version, 
+    version: null, 
     permissions: [], 
     customFields: [], 
-    versionData: {}, 
+    versionData: null, 
     meta: {} as StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>>,
     events: {} as EventManager<BaseData<any>, BaseData<any>>,
     metadata: {
@@ -178,7 +177,7 @@ export const videoMetadataExample: UnifiedMetadata<
         description: 'A sample video description.',
         keywords: ['video', 'sample', 'media'],
         authors: ['Video Creator'],
-        contributors: ['Editor 1'],
+        contributors: [],
         publisher: 'Video Publisher',
         copyright: '2024 Video Corp',
         license: 'CC-BY-4.0',
@@ -216,10 +215,10 @@ export const videoMetadataExample: UnifiedMetadata<
     frameRate: 30,
     aspectRatio: '16:9',
     baseData: {},
-    metadata: {}, 
+    metadata: null, 
     childIds: [], 
     relatedData: [],
-    data: {} as Data<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K<T>>>,
+    data: {} as Data<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K>>,
     colorSpace: 'sRGB',
     audioCodec: 'AAC',
     audioChannels: 2,

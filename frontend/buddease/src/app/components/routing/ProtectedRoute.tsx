@@ -1,6 +1,6 @@
 import React from 'react';
 import { LazyRouteFunction, Navigate, NonIndexRouteObject, RouteProps as ReactRouteProps, Route } from 'react-router-dom';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '@/server/auth/AuthContext';
 
 interface ProtectedRouteProps extends Omit<ReactRouteProps, 'component'> {
   component: React.ComponentType<any>;

@@ -10,7 +10,7 @@
 // import SnapshotStore from "./SnapshotStore";
 
 // // Utility function to convert Snapshot<BaseData, T>[] to Snapshots<T, K>
-// function convertSnapshotsArray<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// function convertSnapshotsArray<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
 //   snapshotsArray: Snapshot<T, K>[]
 // ): SnapshotsArray<T, K, Meta> {
 //     return snapshotsArray.map((snapshot) => {

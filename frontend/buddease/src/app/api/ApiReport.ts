@@ -1,17 +1,17 @@
-import { createSnapshot } from '@/app/api/SnapshotApi';
 import { endpoints } from '@/app/api/ApiEndpoints';
+import { createSnapshot } from '@/app/api/SnapshotApi';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
-import axiosInstance from "@/app/components/security/csrfToken";
-import { BaseReport, FinancialReport, ReportOptions,
-  TechnicalReport, ResearchReport,
-  AddReportBase
- } from '../components/documents/documentation/report/Report';
+import { Snapshot } from "@/app/components/snapshots";
+import {
+  AddReportBase,
+  BaseReport, FinancialReport, ReportOptions,
+  ResearchReport,
+  TechnicalReport
+} from '../components/documents/documentation/report/Report';
 import { FinancialMetrics, processFinancialMetrics } from '../components/metrics/FinancialMetrics';
 import { processTechnicalSpecifications, TechnicalSpecifications } from '../components/metrics/TechnicalSpecifications';
-import { Snapshot } from '../components/snapshots';
-import { analyzeResearchFindings, ResearchFindings } from '../pages/searchs/ResearchFindings';
-import { isFinancialReport, isTechnicalReport, isResearchReport } from '../typings/reportTypeGuards';
 import { createSnapshotInstance } from '../components/snapshots/createSnapshotInstance';
+import { analyzeResearchFindings, ResearchFindings } from '../pages/searchs/ResearchFindings';
 
 // Define the API base URL for reports
 const API_BASE_URL = endpoints.reports.list
@@ -149,4 +149,4 @@ export const removeReport = async (reportId: number): Promise<void> => {
 };
 
 
-export type { AddReport }
+export type { AddReport };

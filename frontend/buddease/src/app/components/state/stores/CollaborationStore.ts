@@ -1,7 +1,7 @@
 // CollaborationStore.ts
+import { useAuth } from "@/server/auth/AuthContext";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import { useAuth } from "../../auth/AuthContext";
 import { ExtendedCalendarEvent } from "../../calendar/CalendarEventTimingOptimization";
 import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
 import { useAssignEventStore } from "./AssignEventStore";

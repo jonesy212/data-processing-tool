@@ -1,8 +1,8 @@
 // Notification.ts
+import { NotificationContext, NotificationTypeEnum } from '@/context/NotificationContext';
 import React, { useContext } from 'react';
 import { ThemeConfigProps } from '../hooks/userInterface/ThemeConfigContext';
-import  useNotificationStore from '../state/stores/NotificationStore';
-import { NotificationContext, NotificationTypeEnum } from '../support/NotificationContext';
+import useNotificationStore from '../state/stores/NotificationStore';
 import { NotificationProps } from '../typings/PropTypes';
 
 interface NotificationStyleProps extends ThemeConfigProps, NotificationProps {}

@@ -5,7 +5,7 @@ import { BaseEvent } from '@/app/components/event/BaseEvent'
 import { SharedSnapshotEvent } from "@/app/typings/eventTypes";
 import { T, K } from "../models/data/dataStoreMethods";
 
-interface EventAttendance extends BaseEvent, SharedSnapshotEvent<T, K<T>> {
+interface EventAttendance extends BaseEvent, SharedSnapshotEvent<T, K> {
   eventId: string;
   attendees: Attendee[]; // Attendee IDs or emails
   attendanceProbability: Record<string, number>; // Attendee ID/email -> predicted attendance probability

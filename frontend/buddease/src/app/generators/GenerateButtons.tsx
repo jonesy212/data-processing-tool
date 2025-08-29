@@ -83,7 +83,6 @@ interface ButtonGeneratorProps<
 > extends SharedIdentifiers<T, K, Meta, ExcludedFields> {
   variant?: Record<string, string>; // Keep this as is for variant options
   date?: Date | string;
-  value?: any;
   timestamp?: string | Date;
   onSubmit?: () => void;
   onReset?: () => void;

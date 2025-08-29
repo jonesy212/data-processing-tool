@@ -1,15 +1,14 @@
 // Function to add or update a snapshot in the map
 
 import { BaseData } from '@/app/components/models/data/Data';
-import { SnapshotData } from '@/app/components/snapshots';
+import { Snapshot, SnapshotData } from '@/app/components/snapshots';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Subscription } from "../subscriptions/Subscription";
-import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotContainer } from "./SnapshotContainer";
 import SnapshotStore from "./SnapshotStore";
@@ -17,7 +16,7 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
 
 // Function to remove a snapshot from the map
-function removeSnapshotFromMap<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function removeSnapshotFromMap<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   map: Map<string, Snapshot<T, K>>,
   key: string
 ): Map<string, Snapshot<T, K>> {
@@ -26,7 +25,7 @@ function removeSnapshotFromMap<T extends  BaseData<any>, K extends T = T, Meta e
 }
 
 // Function to get a snapshot from the map
-function getSnapshotFromMap<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function getSnapshotFromMap<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   map: Map<string, Snapshot<T, K>>,
   key: string
 ): Snapshot<T, K> | undefined {
@@ -35,14 +34,14 @@ function getSnapshotFromMap<T extends  BaseData<any>, K extends T = T, Meta exte
 
 
 // Implementation of the getSnapshot method
-function getSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function getSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   this: SnapshotContainer<T, K>
 ): Snapshot<T, K> | null {
   return convertSnapshotContainer(this.snapshotContainer);
 }
 
 // Function to batch update multiple snapshots
-function batchUpdateSnapshots<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function batchUpdateSnapshots<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   existingMap: Map<string, Snapshot<T, K>>,
   updates: Map<string, Snapshot<T, K>>
 ): Map<string, Snapshot<T, K>> {
@@ -51,13 +50,13 @@ function batchUpdateSnapshots<T extends  BaseData<any>, K extends T = T, Meta ex
 }
 
 // Function to validate a snapshot before adding or updating
-function validateSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(snapshot: Snapshot<T, K>): boolean {
+function validateSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshot: Snapshot<T, K>): boolean {
   // Implement validation logic here (e.g., check for required fields)
   return snapshot.id !== undefined && snapshot.data !== undefined;
 }
 
 // Function to safely update snapshots
-function safeUpdateSnapshots<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function safeUpdateSnapshots<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   map: Map<string, Snapshot<T, K>>,
   key: string,
   snapshot: Snapshot<T, K>
@@ -100,7 +99,7 @@ safeUpdateSnapshots(snapshotsMap, 'newKey', newSnapshot);
  * @param snapshot - The snapshot to add or update.
  * @returns A new map with the added or updated snapshot.
  */
-function updateSnapshotMap<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function updateSnapshotMap<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   map: Map<string, Snapshot<T, K>>,
   key: string,
   snapshot: Snapshot<T, K>
@@ -109,7 +108,7 @@ function updateSnapshotMap<T extends  BaseData<any>, K extends T = T, Meta exten
   return map;
 }
 
-function isSnapshotFunction<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isSnapshotFunction<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshot: any
 ): snapshot is (
   id: string | number | undefined,

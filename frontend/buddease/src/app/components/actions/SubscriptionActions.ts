@@ -4,13 +4,13 @@ import { BaseData, Data } from '@/app/components/models/data/Data';
 import { Project } from '@/app/components/projects/Project';
 import { LogActivityParams } from '@/app/components/utils/applicationUtils';
 import { category } from '@/app/components/utils/snapshotUtils';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createAction } from "@reduxjs/toolkit";
 import { NotificationPosition, ProjectStateEnum } from '../models/data/StatusType';
 import { Callback, CustomSnapshotData, Snapshot, SnapshotContainerData } from "../snapshots";
-import { NotificationType, NotificationTypeEnum } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 import { TriggerIncentivesParams } from '../utils/applicationUtils';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
  
 interface SubscriptionPayload<
   // ExcludedFields extends keyof T = never,
@@ -125,7 +125,7 @@ interface SubscriptionPayload<
 
 export const SubscriptionActions = <
   T extends BaseData<any> = BaseData<any, any>,
-  K extends T & CustomSnapshotData<T, K, Meta> = T & CustomSnapshotData<T, T>,
+  K extends T & CustomSnapshotData<T, K, StructuredMetadata<T, K>> = T & CustomSnapshotData<T, T, StructuredMetadata<T, T>>,
   Meta extends StructuredMetadata<T, any> = StructuredMetadata<T, any>,
 >() => {
   const actions = {

@@ -1,25 +1,24 @@
-import { backend, backendStructure } from "@/app/configs/appStructure/BackendStructure";
+import { SnapshotData } from '@/app/components/snapshots/SnapshotData';
+import { SnapshotStoreProps } from '@/app/components/snapshots/useSnapshotStore';
+import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
+import { backendStructure } from "@/app/configs/appStructure/BackendStructure";
+import { frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { useMeta } from "@/app/configs/useMeta";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import DocumentPermissions from "../documents/DocumentPermissions";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
+import { K, T } from "../models/data/dataStoreMethods";
 import { Snapshot, SnapshotContainer, SnapshotsArray, SnapshotStoreConfig, TagsRecord } from "../snapshots";
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { convertSnapshotContainerToStore } from "../typings/YourSpecificSnapshotType";
-import Version from "./Version";
-import VersionImpl from "./Version";
+import { default as Version, default as VersionImpl } from "./Version";
 import { VersionData, VersionHistory } from "./VersionData";
-import { frontend, frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
-import { T, K } from "../models/data/dataStoreMethods";
-import { SnapshotStoreProps } from '@/app/components/snapshots/useSnapshotStore';
-import { useMeta } from "@/app/configs/useMeta";
-import { SnapshotData } from '@/app/components/snapshots/SnapshotData';
-import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 
 
 // Default reusable data
-const defaultData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
+const defaultData: Data<T, K, StructuredMetadata<T, K>> = {
   id: 'default-id', // Replace with a unique identifier logic if needed
   category: 'default-category',
   subtasks: [],
@@ -28,12 +27,12 @@ const defaultData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
 };
 
 
-const createVersionInfo = (versionData: string | VersionData<T, K<T>>): Version<T, K<T>> => {
+const createVersionInfo = (versionData: string | VersionData<T, K>): Version<T, K> => {
   const docPermissions = new DocumentPermissions(true, true);
 
   const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
 
-  const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
+  const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
   
     // If the versionData is a string, construct a default versionInfo object
   const defaultVersionInfo: Version<any, any> = {
@@ -72,7 +71,7 @@ const createVersionInfo = (versionData: string | VersionData<T, K<T>>): Version<
       currentMeta: currentMeta,
       metadataEntries: {},
       timestamp: new Date(),
-      latestVersion: createLatestVersion<T, K<T>>(),
+      latestVersion: createLatestVersion<T, K>(),
       schema: {}
     },
     versions: null,
@@ -184,7 +183,7 @@ export const handleSnapshot = (
   type: string,
   event: Event,
   storeProps: SnapshotStoreProps<T, K>,
-  snapshotContainer?: SnapshotContainer<T, K<T>>,
+  snapshotContainer?: SnapshotContainer<T, K>,
   snapshotStoreConfig?: SnapshotStoreConfig<Data, BaseData>
 ): Promise<Snapshot<Data, BaseData> | null> => {
 

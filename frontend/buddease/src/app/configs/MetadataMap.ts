@@ -1,6 +1,6 @@
+import { Snapshot } from "@/app/components/snapshots";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { BaseData } from "../components/models/data/Data";
-import { Snapshot } from "../components/snapshots";
 
 type MetadataMap<
   T extends BaseData<any>,

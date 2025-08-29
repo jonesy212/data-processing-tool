@@ -1,23 +1,22 @@
 // ApiData.ts
 // import { endpoints } from './ApiEndpoints';
-import { T , K, Meta } from "@/app/components/models/data/dataStoreMethods";
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
 
-import { fetchUserIdsFromDatabase } from "../api/ApiDatabase";
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError, AxiosResponse } from 'axios';
+import { fetchUserIdsFromDatabase } from "../api/ApiDatabase";
 import HighlightEvent from '../components/documents/screenFunctionality/HighlightEvent';
 import { useDataStore } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { addLog } from '../components/state/redux/slices/LogSlice';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
+import { notificationStore } from '../components/support/NotificationProvider';
 import { YourResponseType } from '../components/typings/types';
 import Version from '../components/versions/Version';
+import { StructuredMetadata } from "../configs/StructuredMetadata";
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
-import headersConfig from './headers/HeadersConfig';
-import NotificationStore from '../components/state/stores/NotificationStore';
-import { notificationStore } from '../components/support/NotificationProvider';
 import { endpoints } from './endpointConfigurations';
-import { StructuredMetadata } from "../configs/StructuredMetadata";
+import headersConfig from './headers/HeadersConfig';
 
 // Define the API base URL
 const { data: API_BASE_URL } = endpoints;
@@ -75,7 +74,7 @@ handleApiErrorAndNotify(
 );
 
 
-const fetchData = async (endpoint: string, id: number): Promise<{ data: YourResponseType<T, K<T>, StructuredMetadata<T, K<T>>> } | null> => {
+const fetchData = async (endpoint: string, id: number): Promise<{ data: YourResponseType<T, K, StructuredMetadata<T, K>> } | null> => {
   try {
     const response = await fetch(endpoint);
 
@@ -189,7 +188,7 @@ const removeData = async (dataId: number): Promise<void> => {
 
 const getDataVersions = async (
   versionId: number
-): Promise<Version<T, K<T>>[]> => {
+): Promise<Version<T, K>[]> => {
   try {
     const versionsEndpoint = `${API_BASE_URL}.getDataVersions.${versionId}`;
 
@@ -198,7 +197,7 @@ const getDataVersions = async (
         `Versions endpoint not found for version ID: ${versionId}`
       );
     }
-    const response:AxiosResponse = await axiosInstance.get<Version<T, K<T>>[]>(versionsEndpoint);
+    const response:AxiosResponse = await axiosInstance.get<Version<T, K>[]>(versionsEndpoint);
     return response.data;
   } catch (error) {
     console.error("Error fetching versions:", error);
@@ -386,19 +385,5 @@ const fetchApiData = async <T>(endpoint: string): Promise<T[]> => {
 
 
 export {
-  apiNotificationMessages,
-  handleApiErrorAndNotify,
-  fetchData,
-  getBackendVersion,
-  fetchHighlights,
-  addData,
-  removeData,
-  getDataVersions,
-  updateData,
-  getStoreIds,
-  getStoreId,
-  fetchUpdatedDynamicData,
-  getFrontendVersion,
-  getAllKeys,
-  fetchApiData,
-}
+    addData, apiNotificationMessages, fetchApiData, fetchData, fetchHighlights, fetchUpdatedDynamicData, getAllKeys, getBackendVersion, getDataVersions, getFrontendVersion, getStoreId, getStoreIds, handleApiErrorAndNotify, removeData, updateData
+};

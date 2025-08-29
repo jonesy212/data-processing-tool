@@ -1,6 +1,6 @@
 import { Button, Card, Divider, Tabs, Typography } from "antd";
 import React, { useState } from "react";
-import getAppPath from "../../../appPath";
+import { getCurrentAppInfo } from "../components/versions/VersionGenerator";
 import {
   ButtonGenerator,
   buttonGeneratorProps,
@@ -9,7 +9,7 @@ import { BackendConfig } from "./BackendConfig";
 import { FrontendConfig } from "./FrontendConfig";
 import BackendStructure from "./appStructure/BackendStructure";
 import FrontendStructure from "./appStructure/FrontendStructure";
-import { getCurrentAppInfo } from "../components/versions/VersionGenerator";
+import getAppPath from "./appStructure/appPath";
 const { TabPane } = Tabs;
 
 interface MainConfigProps {

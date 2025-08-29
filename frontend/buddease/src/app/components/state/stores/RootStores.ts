@@ -1,4 +1,6 @@
 // RootStores.ts
+import { ApiManagerStore, useApiManagerStore } from '@/api/ApiStore';
+import { CalendarManagerStore, useCalendarManagerStore } from '@/calendar/CalendarEvent';
 import { action, makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
 import { CalendarActionPayload, CalendarActionType } from '../../../../server/database/CalendarActionPayload';
@@ -6,12 +8,10 @@ import { EventStore } from '../../event/EventStore';
 import useUIStore from '../../libraries/ui/useUIStore';
 import { RealTimeDataStore } from '../../models/realtime/RealTimeDataStore';
 import { DataStore, useDataStore } from '../../projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { ApiManagerStore, useApiManagerStore } from './ApiStore';
 import { AppStore } from './AppStore';
 import { AuthorizationStore, useAuthorizationStore } from './AuthorizationStore';
 import { AuthStore, useAuthStore } from './AuthStore';
 import BrowserCheckStore from './BrowserCheckStore';
-import { CalendarManagerStore, useCalendarManagerStore } from './CalendarEvent';
 import { CollaborationStore, useCollaborationStore } from './CollaborationStore';
 import useDocumentStore, { DocumentStore } from './DocumentStore';
 import useIconStore, { IconStore } from './IconStore';

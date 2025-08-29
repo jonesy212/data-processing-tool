@@ -1,21 +1,21 @@
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
-import { DataDetails } from "../components/models/data/Data";
-import { NotificationData } from "../components/support/NofiticationsSlice";
-import {
-  NotificationType,
-  useNotification,
-} from "../context/NotificationContext";
-import { K, Meta, T } from "../components/models/data/dataStoreMethods";
 import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import { data } from '@/app/components/snapshots/SnapshotWithCriteria';
-import { useMeta } from "@/app/configs/useMeta";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { useMeta } from "@/app/configs/useMeta";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import {
+    NotificationType,
+    useNotification,
+} from "@/context/NotificationContext";
+import { DataDetails } from "../components/models/data/Data";
+import { K, Meta, T } from "../components/models/data/dataStoreMethods";
+import { NotificationData } from "../components/support/NofiticationsSlice";
 
 const area = fetchUserAreaDimensions().toString()
 
-const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
+const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
 const { versionNumber, appVersion } = getCurrentAppInfo();
 
 
@@ -118,10 +118,10 @@ class UniqueIDGenerator {
     return `${category}_${uniqueID}_${timestamp}`;
   }
   static generateNotificationID(
-    notification: NotificationData<T, K<T>, Meta<T, K<T>>>,
+    notification: NotificationData<T, K, Meta<T, K>>,
     date: Date,
     notificationType: NotificationType,
-    completionMessageLog: NotificationData<T, K<T>, Meta<T, K<T>>>,
+    completionMessageLog: NotificationData<T, K, Meta<T, K>>,
     callback?: () => void
   ): string {
     const notificationID = `${notificationType}_${notification.message.id}_${date.getTime()}`;
@@ -154,8 +154,6 @@ class UniqueIDGenerator {
   static generateTeamID(name: string): string {
     return `team_${name}`;
   }
-
-
 
   static generateTaskID(
     name: string,
@@ -351,6 +349,17 @@ class UniqueIDGenerator {
   }
 
 
+  static generateNotificationIDFromMessage(message: string | null): string {
+    if (!message) return `notification_${Date.now()}`;
+    // Replace spaces and special chars to make a safe ID
+    const sanitized = message
+      .toLowerCase()
+      .replace(/\s+/g, "_")
+      .replace(/[^a-z0-9_]/g, "");
+    return `${sanitized}_${Date.now()}`;
+  }
+
+
   static generateID(
     prefix: string,
     name: string,
@@ -360,7 +369,7 @@ class UniqueIDGenerator {
     chatThreadName?: string,
     chatMessageId?: string,
     chatThreadId?: string,
-    dataDetails?: DataDetails<T, K<T>>,
+    dataDetails?: DataDetails<T, K>,
     generatorType?: string,
   ): string {
     switch (type) {
@@ -480,7 +489,7 @@ const { latestVersion = createLatestVersion(), ...rest } = (data as Record<strin
 
 
 
-const videoDataDetails: DataDetails<T, K<T>> = {
+const videoDataDetails: DataDetails<T, K> = {
   _id: "",
   id: "video1",
   title: "Video Title",

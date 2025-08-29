@@ -1,7 +1,7 @@
 import { load } from 'cheerio';
 import mammoth from "mammoth";
 import path from "path";
-import getAppPath from "../../../../appPath";
+import getAppPath from "../../configs/appStructure/appPath";
 import { ParsedData } from "../crypto/parseData";
 import { DocData, YourDocxType } from "./DocType";
 

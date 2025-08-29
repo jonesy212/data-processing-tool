@@ -13,14 +13,14 @@ import { createBaseSnapshot } from "./createBaseSnapshot";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import {
   Snapshot
-} from "./LocalStorageSnapshotStore";
+} from "./Snapshot";
 import { default as SnapshotStore } from "./SnapshotStore";
 import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 import { Callback } from './subscribeToSnapshotsImplementation';
 import { SnapshotStoreProps } from './useSnapshotStore';
 
 
-function flatMap<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function flatMap<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   array: SnapshotStoreConfig<T, K>[],
   callback: (value: SnapshotStoreConfig<T, K>, index: number, array: SnapshotStoreConfig<T, K>[]) => T
 ): T extends (infer I)[] ? I[] : T[] {
@@ -80,10 +80,10 @@ function deepEqual(obj1: any, obj2: any): boolean {
 
 
 const createSnapshotInstance = <
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+ Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   baseData: T,
   baseMeta: Map<string, Snapshot<T, K>>,

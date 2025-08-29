@@ -1,17 +1,17 @@
 // BaseDataOperations
 import { fetchApiData } from '@/app/api/ApiData';
 import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import {
-    addData as addDataAction,
-    fetchDataFailure,
-    fetchDataRequest,
-    fetchDataSuccess,
-    removeData as removeDataAction,
-    updateDataDetails as updateDataDetailsAction
+  addData as addDataAction,
+  fetchDataFailure,
+  fetchDataRequest,
+  fetchDataSuccess,
+  removeData as removeDataAction,
+  updateDataDetails as updateDataDetailsAction
 } from '@/app/components/state/redux/slices/DataSlices'; // Adjust based on your project structure
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useDispatch } from 'react-redux';
-import { Snapshot } from '../../snapshots';
 
 interface BaseDataOperations<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
   fetchData(): Promise<void>; // Fetch data doesn't need parameters

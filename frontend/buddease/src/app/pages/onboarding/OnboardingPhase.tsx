@@ -1,6 +1,6 @@
 // OnboardingPhase.tsx
 import axiosInstance from "@/app/api/axiosInstance";
-import { useAuth } from "@/app/components/auth/AuthContext";
+import { useAuth } from "@/server/auth/AuthContext";
 import CommonDetails, {
   SupportedData,
 } from "@/app/components/models/CommonData";

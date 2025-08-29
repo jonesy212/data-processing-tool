@@ -1,14 +1,14 @@
 // DApp.tsx
 import appTreeApiService from "@/app/api/appTreeApi";
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
+import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
 import { ThemeEnum } from "@/app/components/libraries/ui/theme/Theme";
 import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import YourClass from "@/app/utils/YourClass";
+import { authToken } from "@/server/auth/authToken";
 import React, { FC } from "react";
 import winston from "winston";
 import Connection from "../../../../server/database/Connection";
-import { authToken } from "@/server/auth/authToken";
 import { AquaChat } from "../../communications/chat/AquaChat";
 import LoadAquaState from "../../dashboards/LoadAquaState";
 import { DocumentData } from "../../documents/DocumentBuilder";
@@ -16,7 +16,6 @@ import { DocumentOptions } from "../../documents/DocumentOptions";
 import useSocialAuthentication from "../../hooks/commHooks/useSocialAuthentication";
 import useErrorHandling from "../../hooks/useErrorHandling";
 import { DataLogger } from "../../logging/Logger";
-import { SupportedData } from "../../models/CommonData";
 import { BaseData, CommonRelationship } from "../../models/data/Data";
 import { DocumentSize } from "../../models/data/StatusType";
 import isValidAuthToken from "../../security/AuthValidation";
@@ -28,21 +27,25 @@ import FluencePlugin from "../pluginSystem/plugins/fluencePlugin";
 import { AquaConfig } from "../web_configs/AquaConfig";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
 import { manageDocuments } from "./functionality/DocumentManagement";
-import { SharedIdentifiers } from "@/app/components/documents/RelatedProps"
+import { SharedRelationshipData } from "@/app/components/models/data/Data";
+import { DefaultMeta, DefaultExcludedFields, BaseDataEntity } from '@/app/configs/BaseConfig';
 
 export type CustomDocumentOptionProps = DocumentOptions & DappProps;
 
 interface CustomApp<
   T extends BaseData<any, any> = any,
-  K extends T = T
-  > extends CommonRelationship<T, K>, SharedIdentifiers<T, K> {
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends CommonRelationship<T, K>, SharedIdentifiers<T, K, Meta, ExcludedFields> {
     id: string;
-  username: string;
-  description: string;
-  authToken: string;
-  apiKey: string
-  childIds?: K[],
-  relatedData?: K[],
+    name: string;    
+    username: string;
+    description: string;
+    authToken: string;
+    apiKey: string
+    childIds?: K[],
+    relatedData?: K[],
   
   // Add any other properties as needed
 }
@@ -53,7 +56,7 @@ type DatabaseType = 'fluence' | 'postgres' | 'mysql' | 'other';
 class CustomDAppAdapter<
   T extends DappProps, 
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > extends YourClass {
   private adapter: FC<DAppAdapterProps>;
   private config: DAppAdapterConfig<T>;
@@ -257,8 +260,9 @@ class CustomDAppAdapter<
     
     return {
       id: appId,
-      username: "Custom App",
+      name: "Custom App",
       description: "This is a custom app.",
+      username: "Jonh Jones",
       authToken: authToken,
       apiKey: this.appData.apiKey,
       sharedRelationships
@@ -408,7 +412,10 @@ class CustomDAppAdapter<
 
 
     if (userData.id) {
-      this.config.dappProps.currentUser = userData;
+      this.config.dappProps.currentUser = {
+        ...userData,
+        id: userData.id!, // non-null assertion, since we checked above
+      } as Required<Pick<UserData, "id" | "username">> & Partial<UserData>;
     } else {
       throw new Error("User ID is required");
     }
@@ -473,11 +480,12 @@ class CustomDAppAdapter<
     return component;
   }
 
+
   manageDocuments<
-  T extends BaseData<any, any> = BaseData<any, any>, 
-  K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
->(newDocument: DocumentData<T, K, Meta>) {
+    T extends SupportedData<any, any> = SupportedData<any, any>, 
+    K extends T = T,
+    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  >(newDocument: DocumentData<T, K, Meta>) {
     // Implement your logic here for document management
     console.log("Document management functionality enabled");
 

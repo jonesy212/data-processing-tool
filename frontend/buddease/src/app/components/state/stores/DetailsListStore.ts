@@ -1,51 +1,64 @@
+import { Message } from '@/app/generators/GenerateChatInterfaces';
 // DetailsListStore.ts
-import { PhaseData } from "@/app/components/phases/Phase";
+import {
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
+} from "@/app/components/context/NotificationContext";
 import { BaseData } from '@/app/components/models/data/Data';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
+import { PhaseData } from "@/app/components/phases/Phase";
+import { Participant } from "@/app/pages/management/ParticipantManagementPage";
 import { makeAutoObservable } from "mobx";
 import { FC } from "react";
 import { Data } from "../../models/data/Data";
 import { Team } from "../../models/teams/Team";
 import { Phase } from "../../phases/Phase";
 import SnapshotStore from "../../snapshots/SnapshotStore";
-import {
-  NotificationType,
-    NotificationTypeEnum,
-    useNotification,
-} from "@/app/components/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 
 import { Tag } from '@/app/components/models/tracker/Tag';
+import { SnapshotStoreProps } from '@/app/components/snapshots//useSnapshotStore';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CommunicationActionTypes } from "../../community/CommunicationActions";
 import { Attachment } from "../../documents/Attachment/attachment";
 import { DocumentStatus } from "../../documents/types";
 import { DataDetails } from "../../models/data/Data";
 import {
-    DataStatus,
-    MeetingStatus,
-    PriorityTypeEnum,
-    ProductStatus,
-    StatusType,
-    TaskStatus,
-    TeamStatus,
-    TodoStatus,
+  DataStatus,
+  MeetingStatus,
+  PriorityTypeEnum,
+  ProductStatus,
+  StatusType,
+  TaskStatus,
+  TeamStatus,
+  TodoStatus,
 } from "../../models/data/StatusType";
 import { Member, TeamMember } from "../../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Project } from "../../projects/Project";
-import { SnapshotConfig, SnapshotDataType, SnapshotStoreProps, TagsRecord } from "../../snapshots";
-import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
+import { SnapshotConfig, SnapshotDataType, TagsRecord } from "../../snapshots";
+
+import { Snapshot } from "@/app/components/snapshots";
 import { InitializedConfig, } from "../../snapshots/SnapshotStoreConfig";
 
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
+import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { useMeta } from "@/app/configs/useMeta";
+import { useMetadata } from "@/app/configs/useMetadata";
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { AllTypes } from "../../typings/PropTypes";
 import { createSnapshotStoreOptions } from "../../typings/YourSpecificSnapshotType";
-import { Label } from '@/app/components/projects/branding/BrandingSettings';
-import { Message } from "@/app/generators/GenerateChatInterfaces";
 
 const { notify } = useNotification();
+const { latestVersion = createLatestVersion<T, K>(), ...rest } = data;
+const area = fetchUserAreaDimensions().toString()
+const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
+const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
 
 // Union type of all status enums
 export type AllStatus =
@@ -103,7 +116,7 @@ interface DetailsItemExtended<
   isRecurring?: boolean;
   type?: AllTypes; //todo verif we match types
   status?: AllStatus | null; // Use enums for status property
-  participants?: Member[];
+  participants?: Participant[];
   description?: string | null | undefined;
   assignedProjects?: Project[];
   analysisType?: AnalysisTypeEnum | null;
@@ -126,7 +139,6 @@ interface DetailsItemExtended<
   isActive?: boolean;
   tags?: TagsRecord<T, K> | string[] | undefined
   subtitle?: string;
-  date?: Date;
   author?: string;
   // data?: T; // Make the data property optional
   teamMembers?: TeamMember[];
@@ -234,12 +246,12 @@ class DetailsListStoreClass <
     return "";
   }
 
-    private createDefaultPhase(): Phase<PhaseData<T>, K> {
+    private createDefaultPhase(): Phase<PhaseData<BaseData<any>>, K> {
     return {
       id: "",
       name: "",
       description: "",
-      startDate: "",
+      startDate: new Date(),
       subPhases: [], // Set subPhases as an empty array to meet the expected type
       endDate: new Date() ? new Date() : undefined,
       label: {},
@@ -249,33 +261,54 @@ class DetailsListStoreClass <
       date: new Date(),
       createdBy: ""
       // Initialize any other required properties of Phase here, based on Phase<T, K> structure
-    } as Phase<T, K>;
+    } as Phase<PhaseData<BaseData<any>>, PhaseData<BaseData<any>>>;
   }
 
-  private async initSnapshotStore(storeProps: SnapshotStoreProps<T, K>, snapConfig: SnapshotConfig<T, K>) {
-    const initialState = null;
+  private async initSnapshotStore(
+    storeProps: SnapshotStoreProps<T, K>,
+    snapConfig: SnapshotConfig<T, K>
+  ) {
+    const {
+      storeId,
+      initialState,
+      name,
+      snapshots,
+      category,
+      timestamp,
+      message,
+      version,
+      schema,
+      options,
+      config,
+      operation,
+      expirationDate,
+      payload,
+      callback,
+      storeProps: nestedStoreProps,
+      endpointCategory,
+    } = storeProps;
+  
     const snapshotStoreProps: SnapshotStoreProps<T, K> = {
-      initialState: storeProps.initialState,
-      id: storeProps.storeId.toString(), // Assuming ID needs to be a string
-      storeId: storeProps.storeId,
-      name: storeProps.name, // Assuming this relates to the store's name
-      state: storeProps.snapshots || initialState, // Handle snapshots appropriately
-      category: storeProps.category || 'default-category', // Default category
-      timestamp: storeProps.timestamp || new Date(), // Default timestamp
-      message: storeProps.message || '', // Default message
-      eventRecords: {}, // Default event records
-      version: storeProps.version,
-      schema: storeProps.schema,
-      options: storeProps.options,
-      config: storeProps.config,
-      operation: storeProps.operation,
-      expirationDate: storeProps.expirationDate,
-      payload: storeProps.payload,
-      callback: storeProps.callback,
-      storeProps: storeProps.storeProps,
-      endpointCategory: storeProps.endpointCategory,
-     
-    }
+      initialState,
+      id: storeId.toString(),
+      storeId,
+      name,
+      state: snapshots || null,
+      category: category || 'default-category',
+      timestamp: timestamp || new Date(),
+      message: message || '',
+      eventRecords: {}, 
+      version,
+      schema,
+      options,
+      config,
+      operation,
+      expirationDate,
+      payload,
+      callback,
+      storeProps: nestedStoreProps,
+      endpointCategory,
+    };
     
     // Initialize the snapshot store using snapshotStoreProps
     this.snapshotStore = new SnapshotStore<T, K>({
@@ -530,10 +563,10 @@ class DetailsListStoreClass <
         initializeWithData: snapConfig?.initializeWithData || undefined,
         hasSnapshots: snapConfig?.hasSnapshots,
         equals: snapConfig?.equals || null,
-        dataObject: snapsConfig?.dataObject,
-        deleted: snapsConfig?.deleted,
-        createdBy: snapsConfig?.createdBy,
-        mappedSnapshot: snapsConfig?.mappedSnapshot,
+        dataObject: snapConfig?.dataObject,
+        deleted: snapConfig?.deleted,
+        createdBy: snapConfig?.createdBy,
+        mappedSnapshot: snapConfig?.mappedSnapshot,
         
 
       };
@@ -542,6 +575,11 @@ class DetailsListStoreClass <
       // Ensure delegate is correctly typed as Snapshot<T, K>
       const delegateSnapshot: Snapshot<T, K> = {
         
+        dataObject: snapshotConfig.dataObject,
+        deleted: snapshotConfig.deleted,
+        createdBy: snapshotConfig.createdBy,
+        mappedSnapshot: snapshotConfig.mappedSnapshot,
+       
         // Provide appropriate default values for the snapshot
         id: snapshotConfig.id, // Default or generate an ID
         store: snapshotConfig.store, // Initialize appropriately
@@ -815,6 +853,11 @@ class DetailsListStoreClass <
         snapshotId: "snapshot_123", // Example snapshot ID, replace with actual ID
         category: category as unknown as CategoryProperties,
         categoryProperties: {
+          id: "0",
+          type: "snapshot type",
+          chartType: "chartType",
+          dataProperties: [],
+          formFields: [],
           name: "Snapshot Store Management",  // Name specific to managing snapshots
           description: "Category for managing snapshot stores and their operations.",  // Clear description of the category's purpose
           icon: "snapshot-store-icon.svg",  // Icon related to snapshots
@@ -1091,7 +1134,7 @@ class DetailsListStoreClass <
   }
 
   // Function to set a dynamic notification message
-  setDynamicNotificationMessage = (message: string) => {
+  setDynamicNotificationMessage = (message: Message) => {
     this.setDynamicNotificationMessage(message);
   };
 
@@ -1127,6 +1170,8 @@ class DetailsListStoreClass <
         isActive: false,
         analysisResults: [],
         updatedAt: undefined,
+        latestVersion: detail.latestVersion, 
+        date: detail.date,
         currentMeta: detail.currentMeta,
         currentMetadata: detail.currentMetadata
       });
@@ -1139,8 +1184,8 @@ class DetailsListStoreClass <
   }
 }
 
-const useDetailsListStore = <T extends  BaseData<any>,
-   
+const useDetailsListStore = <
+  T extends BaseData<any>,
   K extends T = T
 >(
     storeProps: SnapshotStoreProps<T, K>,

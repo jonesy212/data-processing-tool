@@ -43,8 +43,8 @@ import { SnapshotStoreProps } from "./useSnapshotStore";
 function createOptions<
   T extends  BaseData<any>, 
   K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+ Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(params: {
   id: string;
 	storeId: number;

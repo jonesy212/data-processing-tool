@@ -2,6 +2,7 @@
 // UIPhase.ts
 import { fetchData } from "@/app/api/ApiData";
 import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
+import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import UserService from '../../api/ApiUser';
@@ -13,7 +14,6 @@ import useDarkModeToggle from "../hooks/userInterface/useDarkModeToggle";
 import { logData } from "../notifications/NotificationService";
 import { updateCallback } from "../state/stores/CalendarEvent";
 import { NotificationData } from "../support/NofiticationsSlice";
-import { NotificationType, NotificationTypeEnum } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import NotificationMessagesFactory from "../support/NotificationMessagesFactory";
 

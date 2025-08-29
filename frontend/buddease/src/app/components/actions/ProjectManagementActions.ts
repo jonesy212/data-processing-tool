@@ -8,7 +8,7 @@ import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 export const ProjectManagementActions = <
   T extends  BaseData<any> = BaseData<any, any>, 
   K extends T = T,
-  ExcludedFields extends Data<T> = never,
+  ExcludedFields extends T = never,
   S extends CustomSnapshotData<T, K> = CustomSnapshotData<T, K>,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >() => ({
   // Tenant-related actions

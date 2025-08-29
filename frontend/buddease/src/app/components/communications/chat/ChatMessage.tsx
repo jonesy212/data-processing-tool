@@ -1,17 +1,17 @@
 // ChatMessage.tsx
 import { ChatApi } from "@/app/api/ChatApi";
+import { refreshUI } from '@/app/components/snapshots/refreshUI';
 import { AquaConfig } from "@/app/components/web3/web_configs/AquaConfig";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { refreshUI } from '@/app/components/snapshots/refreshUI'
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import GeolocationService from "@/app/services/GeolocationService";
 import { openChatSettingsPanel } from "@/app/utils/ChatSettingsPanelUtils";
 import { initializeGeolocationService } from "@/app/utils/GeolocationServiceUtils";
+import { useAuth } from "@/server/auth/AuthContext";
 import axios, { AxiosResponse } from "axios";
 import { EditorState } from "draft-js";
 import React, { useEffect, useState } from "react";
 import { ChatMessageActions } from "../../actions/ChatMessageActions";
-import { useAuth } from "../../auth/AuthContext";
 import ChatCard from "../../cards/ChatCard";
 import { FileUploadModalProps } from "../../cards/modal/FileUploadModal";
 import { subscriptionServiceInstance } from "../../hooks/dynamicHooks/dynamicHooks";

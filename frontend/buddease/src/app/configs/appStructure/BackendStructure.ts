@@ -1,9 +1,10 @@
-import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 // BackendStructure.ts
 import Logger from "@/app/components/logging/Logger";
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { SecureField, SecureMetadata } from '@/app/components/security/SecureField';
 import SecureFieldManager from '@/app/components/security/SecureFieldManager';
 import SecurityAudit from '@/app/components/security/SecurityAudit';
+import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 import { VersionHistory } from "@/app/components/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
@@ -12,7 +13,7 @@ import { hashString } from "@/app/generators/HashUtils";
 import { sanitizeDatabaseSchema } from '@/server/database/sanitizeDatabase';
 import * as fs from "fs/promises"; // Use promise-based fs module
 import * as path from "path";
-import getAppPath from "../../../../appPath";
+import getAppPath from "./appPath";
 import { AppStructureItem } from "./AppStructure";
 import { frontend } from "./FrontendStructure";
 
@@ -37,12 +38,12 @@ interface StructureSchema extends Schema {
 }
 
 export default class BackendStructure {
-  private structure?: Record<string, AppStructureItem> = {};
+  protected structure?: Record<string, AppStructureItem> = {};
   #structureHash: string | undefined;
   public globalState: any; // Add globalState property
 
-  private databaseSchema?: DatabaseSchema = {};
-  private services?: ServiceSchema = {};
+  protected databaseSchema?: DatabaseSchema = {};
+  protected services?: ServiceSchema = {};
 
   // Add versioning properties
   public major: number;
@@ -200,7 +201,7 @@ export default class BackendStructure {
               share: true,
             },
             versions: undefined,
-            versionData: []
+            versionData: null
           };
           if (this.structure) {
             this.structure[uniqueID] = appStructureItem;

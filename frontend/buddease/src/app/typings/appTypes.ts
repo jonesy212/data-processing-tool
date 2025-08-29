@@ -1,12 +1,12 @@
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { Snapshot } from "@/app/components/snapshots";
 import { Subscription } from "react-redux";
 import { Post } from "../components/community/DiscussionForumComponent";
+import { BaseData } from '../components/models/data/Data';
 import { Task } from "../components/models/tasks/Task";
 import { Member } from "../components/models/teams/TeamMembers";
-import { Snapshot } from "../components/snapshots/LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "../components/snapshots/SnapshotConfig";
 import SnapshotStore from "../components/snapshots/SnapshotStore";
-import { BaseData } from '../components/models/data/Data';
 import { StructuredMetadata } from '../configs/StructuredMetadata';
 
 interface CommunicationType {
@@ -105,13 +105,13 @@ interface BlockchainCapability {
 }
 
 export type {
-    BlockchainCapability,
-    CollaborationOption,
-    CommunicationType,
-    CreationPhase,
-    CryptoAction,
-    CryptoCommunity,
-    CryptoFeature,
-    CryptoInformation,
+  BlockchainCapability,
+  CollaborationOption,
+  CommunicationType,
+  CreationPhase,
+  CryptoAction,
+  CryptoCommunity,
+  CryptoFeature,
+  CryptoInformation
 };
 

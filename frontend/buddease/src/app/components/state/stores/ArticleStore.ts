@@ -3,9 +3,7 @@ import { createMessage } from "../../utils/createMessage";
 import { handleApiError } from "@/app/api/ApiLogs";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
-import { NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
-import { useState } from "react";
-import { Article } from "@/app/pages/blog/Blog";
+import { NotificationTypeEnum, useNotification } from "@/context/NotificationContext";
 
 const API_BASE_URL = "https://api.yourservice.com"; // Replace with your actual API base URL
 const axiosInstance = axios.create({ baseURL: API_BASE_URL });

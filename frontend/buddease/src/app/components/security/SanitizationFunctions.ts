@@ -1,10 +1,21 @@
-// SanitizationFunctions.ts
-import DOMPurify from "dompurify";
 import { BaseData } from '@/app/components/models/data/Data';
-import { SnapshotDataType } from '@/app/components/snapshots';
-import { User } from "../users/User";
+import { SnapshotDataType } from '@/app/components/snapshots/SnapshotContainer';
+// SanitizationFunctions.ts
+import { User } from "@/app/components/users/User";
+import DOMPurify from "dompurify";
 import { decryptedData } from "./decryptedData";
 import { Encryption } from "./Encryption";
+
+
+interface SanitizeDataOptions {
+  trimStrings?: boolean;
+  removeEmptyArrays?: boolean;
+  removeEmptyObjects?: boolean;
+  deepSanitize?: boolean;
+  stringSanitizer?: (input: string) => string;
+  maxDepth?: number;
+}
+
 
 export const validatePassword = (password: string): string[] => {
   const errors: string[] = [];
@@ -28,17 +39,40 @@ export const decryptData = (
 };
 
 // Function to sanitize comments
-export const sanitizeComments = (comment: string): string => {
-  // Implement sanitization logic specific to comments
+export const sanitizeComments = (input: unknown): string => {
+  // Handle null/undefined
+  if (input == null) return '';
 
-  // Remove HTML tags using regex
-  const sanitizedComment = comment.replace(/<[^>]*>/g, "");
+  let str: string;
+
+  try {
+    if (typeof input === 'string') str = input;
+    else if (typeof input === 'number' || typeof input === 'boolean') str = String(input);
+    else if (input instanceof Date) str = input.toISOString();
+    else if (input instanceof Map || input instanceof Set) str = JSON.stringify(Array.from(input));
+    else if (typeof input === 'object') str = JSON.stringify(input);
+    else str = String(input);
+  } catch (error) {
+    console.warn("sanitizeComments: failed to convert input to string", input, error);
+    str = '';
+  }
+
+  // Ensure we have a string before calling replace
+  if (typeof str !== 'string') str = '';
+
+  // Remove HTML tags
+  const sanitized = str.replace(/<[^>]*>/g, '');
 
   // Escape special characters
-  const escapedComment = escapeSpecialCharacters(sanitizedComment);
-
-  return escapedComment;
+  return sanitized
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 };
+
+
 
 // Helper function to escape special characters
 const escapeSpecialCharacters = (comment: string): string => {
@@ -56,11 +90,9 @@ const escapeSpecialCharacters = (comment: string): string => {
   return escapedComment;
 };
 
-export const sanitizeMessages = (message: string): string => {
-  // Implement sanitization logic specific to messages
-  // Example: Remove HTML tags, escape special characters
-  const sanitizedMessage = sanitizeInput(message);
-  return sanitizedMessage;
+
+export const sanitizeMessages = (message: unknown): string => {
+  return sanitizeInput(message);
 };
 
 // Function to generate an authentication token for a user
@@ -86,25 +118,17 @@ export const generateAuthToken = (userId: string): string => {
 
 // Function to validate an authentication token
 export const validateAuthToken = (authToken: string): boolean => {
-  // Extract the user ID from the authentication token
   const userId = extractUserIdFromToken(authToken);
-
-  // Perform token validation logic
-  const isValid = isTokenValid(authToken, userId);
-
-  return isValid;
+  return isTokenValid(authToken, userId);
 };
+
 
 // Helper function to extract the user ID from the authentication token
 const extractUserIdFromToken = (authToken: string): string => {
-  // Split the token by the delimiter ('-')
   const tokenParts = authToken.split("-");
-
-  // The last part of the token should be the user ID
-  const userId = tokenParts[tokenParts.length - 1];
-
-  return userId;
+  return tokenParts[tokenParts.length - 1];
 };
+
 
 // Helper function to perform token validation logic
 const isTokenValid = (authToken: string, userId: string): boolean => {
@@ -115,7 +139,7 @@ const isTokenValid = (authToken: string, userId: string): boolean => {
   const isValidLength = authToken.length === 32 + userId.length + 1;
 
   // Example: Check if the token format is valid (e.g., alphanumeric characters)
-  const isValidFormat = /^[a-zA-Z0-9]+$/.test(authToken);
+  const isValidFormat = /^[a-zA-Z0-9]+$/.test(authToken.replace(`-${userId}`, ""));
 
   // Example: Check if the token is associated with the correct user ID
   const isValidUserId = authToken.endsWith(`-${userId}`);
@@ -129,121 +153,136 @@ const isTokenValid = (authToken: string, userId: string): boolean => {
 // Function to validate user data
 export const validateUserData = (userData: User): string[] => {
   const errors: string[] = [];
+  if (!userData.username) errors.push("Username is required.");
+  else if (userData.username.length < 3) errors.push("Username must be at least 3 characters long.");
+  else if (userData.username.length > 20) errors.push("Username cannot exceed 20 characters.");
 
-  // Validate each field in the userData object
-  if (!userData.username) {
-    errors.push("Username is required.");
-  } else if (userData.username.length < 3) {
-    errors.push("Username must be at least 3 characters long.");
-  } else if (userData.username.length > 20) {
-    errors.push("Username cannot exceed 20 characters.");
-  }
-
-  if (!userData.email) {
-    errors.push("Email is required.");
-  } else if (!isValidEmail(userData.email)) {
-    errors.push("Invalid email format.");
-  }
-
-  // Add more validation rules for other fields as needed
+  if (!userData.email) errors.push("Email is required.");
+  else if (!isValidEmail(userData.email)) errors.push("Invalid email format.");
 
   return errors;
 };
 
-// Function to check if an email address is valid
-const isValidEmail = (email: string): boolean => {
-  // Regular expression for email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-};
 
+// Function to check if an email address is valid
+const isValidEmail = (email: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 // ✅ Replace manual sanitizeInput() with DOMPurify
-export const sanitizeInput = (input: string): string => {
-  return DOMPurify.sanitize(input.trim());
-};
+export function sanitizeInput(input: unknown): string {
+  let str = "";
+  if (input == null) str = '';
+  else if (typeof input === 'string') str = input;
+  else if (typeof input === 'number' || typeof input === 'boolean') str = String(input);
+  else if (input instanceof Date) str = input.toISOString();
+  else if (input instanceof Map || input instanceof Set) str = JSON.stringify(Array.from(input));
+  else if (typeof input === 'object') {
+    try { str = JSON.stringify(input); } catch { str = ''; }
+  } else str = String(input);
+
+  let sanitized = '';
+  for (let i = 0; i < str.length; i++) {
+    const charCode = str.charCodeAt(i);
+    if (charCode >= 32 && charCode <= 126) sanitized += str[i];
+  }
+  return sanitized;
+}
+
+function sanitizeData<T extends object>(data: T, options?: SanitizeDataOptions, currentDepth: number = 0): Partial<T> {
+  const { trimStrings = true, removeEmptyArrays = true, removeEmptyObjects = true, deepSanitize = true, stringSanitizer = (s: string) => s.trim(), maxDepth = 10 } = options || {};
+  if (currentDepth > maxDepth) return {} as Partial<T>;
+
+  const sanitized: Partial<T> = {};
+  for (const key in data) {
+    if (!Object.prototype.hasOwnProperty.call(data, key)) continue;
+    const value = data[key as keyof T];
+    if (value === undefined || value === null) continue;
+
+    if (typeof value === 'string') {
+      try {
+        const processed = trimStrings ? stringSanitizer(value) : value;
+        if (processed !== '') (sanitized as any)[key] = processed;
+      } catch {}
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      try {
+        const cleanedArray = deepSanitize ? value.map(item => typeof item === 'object' && item !== null ? sanitizeData(item, options, currentDepth + 1) : item).filter(item => item != null) : value;
+        if (!(removeEmptyArrays && cleanedArray.length === 0)) (sanitized as any)[key] = cleanedArray;
+      } catch {}
+      continue;
+    }
+
+    if (typeof value === 'object') {
+      try {
+        const cleanedObject = deepSanitize ? sanitizeData(value as object, options, currentDepth + 1) : value;
+        const isEmptyObject = removeEmptyObjects && Object.keys(cleanedObject).length === 0;
+        if (!isEmptyObject) (sanitized as any)[key] = cleanedObject;
+      } catch {}
+      continue;
+    }
+
+    (sanitized as any)[key] = value;
+  }
+
+  return sanitized;
+}
+
+
 
 /**
- * Universal sanitization function with smart defaults
+ * Universal sanitization function with smart defaults and robust type handling
  * 
  * @param input - Value to sanitize (any type)
  * @param options - {
  *   allowHtml: false,    // Set true to allow SOME HTML
  *   allowedTags: [],     // Only used if allowHtml=true
- *   strict: true         // Extra security for untrusted input
+ *   strict: true,        // Extra security for untrusted input
+ *   returnTrusted: false // Return TrustedHTML object
+ *   maxDepth?: number    // Maximum recursion depth for object/array sanitization
  * }
  */
-
-export function sanitize(
-  input: unknown,
-  options: {
-    allowHtml?: boolean;
-    allowedTags?: string[];
-    strict?: boolean;
-    returnTrusted?: boolean;
-  } = {}
-): string | TrustedHTML {
-  const { 
-    allowHtml = false, 
-    allowedTags = [], 
-    strict = true,
-    returnTrusted = false
-  } = options;
-
-  // Handle null/undefined
+export function sanitize(input: unknown, options: { allowHtml?: boolean; allowedTags?: string[]; strict?: boolean; returnTrusted?: boolean; maxDepth?: number; } = {}, currentDepth: number = 0): string | TrustedHTML {
+  const { allowHtml = false, allowedTags = [], strict = true, returnTrusted = false, maxDepth = 10 } = options;
   if (input == null) return '';
-  
-  // Convert to string
-  const str = typeof input === 'string' ? input : String(input);
 
-  // HTML Mode
+  if (currentDepth > maxDepth) return returnTrusted ? DOMPurify.sanitize('', { RETURN_TRUSTED_TYPE: true }) as unknown as TrustedHTML : '';
+
+  let str: string;
+  try {
+    if (typeof input === 'string') str = input;
+    else if (typeof input === 'number' || typeof input === 'boolean') str = String(input);
+    else if (input instanceof Date) str = input.toISOString();
+    else if (Array.isArray(input) || typeof input === 'object') str = JSON.stringify(sanitizeData(input, { trimStrings: true, deepSanitize: true, maxDepth: maxDepth - currentDepth }));
+    else str = String(input);
+  } catch { str = ''; }
+
   if (allowHtml) {
-    const purified = DOMPurify.sanitize(str, {
-      ALLOWED_TAGS: allowedTags,
-      ALLOWED_ATTR: strict ? [] : ['href', 'target'],
-      FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed'],
-      FORBID_ATTR: ['style', 'on*'],
-      RETURN_TRUSTED_TYPE: returnTrusted,
-      ...(strict && { ALLOW_DATA_ATTR: false })
-    });
-    return returnTrusted ? purified as unknown as TrustedHTML : purified;
+    try {
+      const purified = DOMPurify.sanitize(str, {
+        ALLOWED_TAGS: allowedTags,
+        ALLOWED_ATTR: strict ? [] : ['href', 'target', 'rel'],
+        FORBID_TAGS: ['style', 'script', 'iframe', 'object', 'embed', 'form'],
+        FORBID_ATTR: ['style', 'on*'],
+        RETURN_TRUSTED_TYPE: returnTrusted,
+        ALLOW_DATA_ATTR: !strict,
+      });
+      return returnTrusted ? purified as unknown as TrustedHTML : purified;
+    } catch { return ''; }
   }
 
-  // Strict Text Mode (default)
-  if (strict) {
-    const purified = DOMPurify.sanitize(str, {
-      ALLOWED_TAGS: [],
-      ALLOWED_ATTR: [],
-      RETURN_TRUSTED_TYPE: returnTrusted,
-    });
+  try {
+    const purified = DOMPurify.sanitize(str, { ALLOWED_TAGS: [], ALLOWED_ATTR: [], RETURN_TRUSTED_TYPE: returnTrusted });
     return returnTrusted ? purified as unknown as TrustedHTML : purified;
-  }
-
-  // Lenient Text Mode
-  const result = str
-    .replace(/<[^>]*>?/gm, '')
-    .replace(/[^\p{L}\p{N}\s.,!?@#$-]/gu, '');
-    
-  if (returnTrusted) {
-    const purified = DOMPurify.sanitize(result, { RETURN_TRUSTED_TYPE: true });
-    return purified as unknown as TrustedHTML;
-  }
-  return result;
+  } catch { return ''; }
 }
 
 // Unified sanitization logic for SnapshotData and Snapshot
-function sanitizeSnapshotData<
-  T extends BaseData<any>,
-  K extends T = T
->(snapshotData?: SnapshotDataType<T>) {
+function sanitizeSnapshotData<T extends BaseData<any>, K extends T = T>(snapshotData?: SnapshotDataType<T>) {
   if (!snapshotData) return undefined;
 
-  // Handle case where it's a Map
-  if (snapshotData instanceof Map) {
-    return snapshotData;
-  }
+  if (snapshotData instanceof Map) return snapshotData;
 
-  // Handle case where it has title/description
   if ('title' in snapshotData) {
     return {
       ...snapshotData,
@@ -255,129 +294,49 @@ function sanitizeSnapshotData<
   return snapshotData;
 }
 
+
 // Function to filter and sanitize user data
-export const sanitizeUIEvent = (
-  event: React.UIEvent<HTMLDivElement>
-): React.UIEvent<HTMLDivElement> => {
-  const scrollTop = (
-    event.currentTarget as HTMLDivElement
-  ).scrollTop.toString();
-  const scrollLeft = (
-    event.currentTarget as HTMLDivElement
-  ).scrollLeft.toString();
+export const sanitizeUIEvent = (event: React.UIEvent<HTMLDivElement>): React.UIEvent<HTMLDivElement> => {
+  const scrollTop = (event.currentTarget as HTMLDivElement).scrollTop.toString();
+  const scrollLeft = (event.currentTarget as HTMLDivElement).scrollLeft.toString();
 
-  const sanitizedData = `Scroll Top: ${encodeData(
-    scrollTop
-  )}, Scroll Left: ${encodeData(scrollLeft)}`;
-
+  const sanitizedData = `Scroll Top: ${encodeData(scrollTop)}, Scroll Left: ${encodeData(scrollLeft)}`;
   return {
     ...event,
     currentTarget: {
       ...event.currentTarget,
-      dataset: {
-        ...event.currentTarget.dataset,
-        sanitizedData,
-      },
-    },
+      dataset: { ...event.currentTarget.dataset, sanitizedData }
+    }
   };
 };
-
 
 // Function to encode user data to prevent XSS attacks
-export const encodeData = (data: string): string => {
-  if (typeof data !== "string") {
-    throw new Error("Input must be a string");
-  }
+export const encodeData = (data: unknown): string => {
+  if (data == null) return '';
 
-  // Regular expression to match special characters
+  let str: string;
+  if (typeof data === 'object' || Array.isArray(data)) {
+    try { str = JSON.stringify(data); } catch { str = String(data); }
+  } else str = String(data);
+
   const specialCharsRegex = /[&<>"'/]/g;
-
-  // Map of special characters to their corresponding HTML entities
   const htmlEntities: Record<string, string> = {
-    // Basic XML/HTML entities
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;", // or &apos; (but &apos; isn't supported in HTML4)
-    "/": "&#x2F;",
-    
-    // Common special characters
-    "©": "&copy;",
-    "®": "&reg;",
-    "™": "&trade;",
-    "€": "&euro;",
-    "£": "&pound;",
-    "¥": "&yen;",
-    "¢": "&cent;",
-    "§": "&sect;",
-    "¶": "&para;",
-    
-    // Mathematical symbols
-    "−": "&minus;",
-    "×": "&times;",
-    "÷": "&divide;",
-    "±": "&plusmn;",
-    "≠": "&ne;",
-    "≈": "&asymp;",
-    "≤": "&le;",
-    "≥": "&ge;",
-    "∞": "&infin;",
-    
-    // Greek letters (common ones)
-    "α": "&alpha;",
-    "β": "&beta;",
-    "γ": "&gamma;",
-    "Δ": "&Delta;",
-    "π": "&pi;",
-    "Ω": "&Omega;",
-    
-    // Arrows
-    "←": "&larr;",
-    "→": "&rarr;",
-    "↑": "&uarr;",
-    "↓": "&darr;",
-    
-    // Accented characters
-    "á": "&aacute;",
-    "é": "&eacute;",
-    "í": "&iacute;",
-    "ñ": "&ntilde;",
-    "ü": "&uuml;",
-    
-    // Whitespace and control characters
-    " ": "&nbsp;", // Non-breaking space
-    " ": "&thinsp;", // Thin space
-    "–": "&ndash;", // En dash
-    "—": "&mdash;", // Em dash
-    
-    // Currency symbols
-    "$": "&dollar;",
-    "₹": "&#x20B9;", // Indian Rupee
-    "₽": "&#x20BD;", // Russian Ruble
-    
-    // Additional punctuation
-    "«": "&laquo;",
-    "»": "&raquo;",
-    "…": "&hellip;",
-    "•": "&bull;",
-    "¿": "&iquest;",
-    "¡": "&iexcl;"
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;", "/": "&#x2F;",
+    "©": "&copy;", "®": "&reg;", "™": "&trade;", "€": "&euro;", "£": "&pound;", "¥": "&yen;",
+    "¢": "&cent;", "§": "&sect;", "¶": "&para;", "−": "&minus;", "×": "&times;", "÷": "&divide;",
+    "±": "&plusmn;", "≠": "&ne;", "≈": "&asymp;", "≤": "&le;", "≥": "&ge;", "∞": "&infin;",
+    "α": "&alpha;", "β": "&beta;", "γ": "&gamma;", "Δ": "&Delta;", "π": "&pi;", "Ω": "&Omega;",
+    "←": "&larr;", "→": "&rarr;", "↑": "&uarr;", "↓": "&darr;",
+    "á": "&aacute;", "é": "&eacute;", "í": "&iacute;", "ñ": "&ntilde;", "ü": "&uuml;",
+    " ": "&nbsp;", " ": "&thinsp;", "–": "&ndash;", "—": "&mdash;", "$": "&dollar;", "₹": "&#x20B9;",
+    "₽": "&#x20BD;", "«": "&laquo;", "»": "&raquo;", "…": "&hellip;", "•": "&bull;", "¿": "&iquest;", "¡": "&iexcl;"
   };
 
-  // Function to replace special characters with HTML entities
-  const replaceSpecialChars = (char: string): string => {
-    return htmlEntities[char];
-  };
-
-  // Encode data by replacing special characters with HTML entities
-  const encodedData = data.replace(specialCharsRegex, replaceSpecialChars);
-
-  return encodedData;
+  try { return str.replace(specialCharsRegex, (char) => htmlEntities[char] || char); }
+  catch { return ''; }
 };
+  
+export const isNullOrUndefined = (value: any): boolean => value === null || value === undefined;
 
-export const isNullOrUndefined = (value: any): boolean => {
-  return value === null || value === undefined;
-};
 
-export { sanitizeSnapshotData };
+export { sanitizeData, sanitizeSnapshotData };

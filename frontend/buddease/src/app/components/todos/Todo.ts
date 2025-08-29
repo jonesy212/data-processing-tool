@@ -25,7 +25,7 @@ import { LocalStorageSnapshotStore, Result, Snapshot, Snapshots, SnapshotsArray,
 import { ConfigureSnapshotStorePayload } from "../snapshots/SnapshotConfig";
 import SnapshotStore, { initialState } from "../snapshots/SnapshotStore";
 import { CustomComment } from "../state/redux/slices/BlogSlice";
-import { NotificationType } from '@/app/context/support/NotificationContext';
+import { NotificationType } from '@/app/context/context/NotificationContext';
 import { Task } from '@/app/components/models/tasks/Task';
 import { Idea } from "../users/Ideas";
 import { Subscriber } from "../users/Subscriber";
@@ -59,7 +59,7 @@ export interface Todo<
   todos: TodoImpl<T, K>[];
   title: string;
   selectedTodo?: Todo<T>;
-  subtasks: TodoImpl<T, K>[]
+  subtasks?: Array<Task<T, K, Meta, ExcludedFields> | TodoImpl<T, K, Meta, ExcludedFields>>;
   progress?: Progress;
   description: string;
   dueDate?: Date | null | undefined;
@@ -216,7 +216,7 @@ class TodoImpl<
   labels: string[] = [];
   comments: Comment<T, K, Meta, ExcludedFields>[] = [];
   attachments: Attachment[] = [];
-  subtasks: TodoImpl<T, K>[] = [];
+  subtasks: Array<Task<T, K, Meta, ExcludedFields> | TodoImpl<T, K, Meta, ExcludedFields>> = [];
 
   entities: Todo<T>[] = [];
 
@@ -260,8 +260,8 @@ class TodoImpl<
   snapshot: Snapshot<T, K> = {
     data: {} as InitializedData<T, K> | undefined,
     store: new LocalStorageSnapshotStore<T, K>({
-      window.localStorage,
-      this.category,
+      storage: window.localStorage,
+      category: this.category,
       options,
       config,
       initialState,

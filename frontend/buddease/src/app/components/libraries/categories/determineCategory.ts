@@ -1,8 +1,8 @@
 // determinCategory.ts
 import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { isCategoryProperties } from "./generateCategoryProperties";
 
 // determineCategory function

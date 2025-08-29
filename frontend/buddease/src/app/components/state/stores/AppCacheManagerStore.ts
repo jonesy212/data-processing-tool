@@ -2,7 +2,7 @@
 import { ExtendedData } from "@/app/utils/AppCacheManager";
 import AppCacheManagerExtended from "@/app/utils/AppCacheManagerExtended";
 import { makeAutoObservable } from "mobx";
-import { NotificationType, NotificationTypeEnum, useNotification } from "../../support/NotificationContext";
+import { NotificationType, NotificationTypeEnum, useNotification } from "@/context/NotificationContext";
 
 
 const notify = useNotification().notify(

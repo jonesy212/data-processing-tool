@@ -5,9 +5,9 @@ import {
 //UserStore.ts
 import { getTasksByUserId } from "@/app/api/TasksApi";
 import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
+import { useAuth } from "@/server/auth/AuthContext";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import { useAuth } from "../../auth/AuthContext";
 import CalendarEventTimingOptimization, {
     ExtendedCalendarEvent,
 } from "../../calendar/CalendarEventTimingOptimization";

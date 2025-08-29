@@ -7,7 +7,7 @@ import { Subscriber } from "../users/Subscriber";
 import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from "./LocalStorageSnapshotStore";
 
 type Callback<T> = (snapshot: T) => void;
-type UnifiedCallback<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = (snapshot: Snapshot<T, K>) => Subscriber<T, K> | Snapshot<T, K> | null;
+type UnifiedCallback<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> = (snapshot: Snapshot<T, K>) => Subscriber<T, K> | Snapshot<T, K> | null;
 
 type SingleEventCallbacks<T> = {
   [event: string]: Callback<T>[];
@@ -20,9 +20,9 @@ type MultipleEventsCallbacks<T> = {
 
 
 
-type SimplifiedSnapshot<T extends BaseData<any, any>> = Snapshot<T, T, StructuredMetadata<T, T>, never>;
+type SimplifiedSnapshot<T extends BaseDataEntity<any, any>> = Snapshot<T, T, StructuredMetadata<T, T>, never>;
 
-const handleSnapshot = <T extends BaseData<any, any>>(
+const handleSnapshot = <T extends BaseDataEntity<any, any>>(
   snap: SnapshotUnion<T, K, Meta>, 
   callback: (snapshot: SimplifiedSnapshot<T>) => void
 ) => {
@@ -33,7 +33,7 @@ const handleSnapshot = <T extends BaseData<any, any>>(
   }
 };
 
-function isSnapshotWithMetadata<T extends BaseData<any, any>>(
+function isSnapshotWithMetadata<T extends BaseDataEntity<any, any>>(
   snap: SnapshotUnion<T, K, Meta>
 ): snap is Snapshot<T, T, StructuredMetadata<T, T>, never> {
   return 'metadata' in snap; // Assuming metadata field is a discriminant
@@ -41,7 +41,7 @@ function isSnapshotWithMetadata<T extends BaseData<any, any>>(
 
 
 // Type guard to check if subscriber is a function
-const isFunction = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(fn: any): fn is (snap: Snapshot<T, K>) => void => {
+const isFunction = <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(fn: any): fn is (snap: Snapshot<T, K>) => void => {
   return typeof fn === 'function';
 };
 
@@ -73,7 +73,7 @@ const addSubscriptionMethods = <T extends Snapshot<any, any>>(callback: Callback
 };
 
 
-const subscribeToSnapshotsImpl = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const subscribeToSnapshotsImpl = <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotId: string,
   snapshotCallback: (
     snapshotStore: SnapshotStore<T, K>, 
@@ -119,7 +119,7 @@ const subscribeToSnapshotsImpl = <T extends  BaseData<any>, K extends T = T, Met
 };
 
 
-const subscribeToSnapshotImpl = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const subscribeToSnapshotImpl = <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotId: string,
   callback: (snapshot: Snapshot<T, K>) => Subscriber<T, K> | null,
   snapshot: Snapshot<T, K> | Snapshots<T, K> | SnapshotsArray<T, K, Meta>

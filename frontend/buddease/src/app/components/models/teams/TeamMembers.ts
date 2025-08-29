@@ -5,7 +5,6 @@ import { UserRole } from "../../users/UserRole";
 import { Team } from './Team';
 import { Task } from '../tasks/Task';
 
-
 export interface Member extends User {
   teamId: string;
   roleInTeam: string;
@@ -20,10 +19,19 @@ export interface Collaborator extends Member {
   // Add any other properties specific to Collaborator
 }
 
-// Define the Contributor interface or type// Define the Contributor interface extending Member
+export interface Contribution {
+  projectId: string;       // or number if projects have IDs
+  projectName: string;
+  role?: string;           // e.g., "developer", "designer"
+  commits?: number;        // optional number of commits/contributions
+  details: { note: string; date?: string }[]
+  date?: string;
+}
+
 interface Contributor extends Member {
-  contributions: number;
-  // Add any other properties specific to Contributor
+  contributions: Contribution[]; // detailed breakdown per project
+  joinedAt?: Date;
+  active?: boolean;
 }
 
 // Define the MemberData interface extending Member
@@ -31,6 +39,7 @@ interface MemberData extends Member {
   datasets?: string;
   tasks?: Task[];
   questionnaireResponses?: any;
+  userType: string
   // Add other fields specific to MemberData
 }
 interface TeamMember extends MemberData {

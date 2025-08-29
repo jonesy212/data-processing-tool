@@ -157,7 +157,7 @@ export const updateDrawing = async (
     useNotification().notify(
       "UpdateDrawingSuccessId",
       drawingNotificationMessages.UPDATE_DRAWING_SUCCESS,
-      { drawingId },
+      `${drawingNotificationMessages.UPDATE_DRAWING_SUCCESS} (ID: ${drawingId})`, 
       new Date(),
       NotificationTypeEnum.Success
     );
@@ -214,7 +214,7 @@ export const deleteDrawing = async (drawingId: number): Promise<void> => {
     useNotification().notify(
       "DeleteDrawingSuccessId",
       drawingNotificationMessages.DELETE_DRAWING_SUCCESS,
-      { drawingId },
+      `${drawingNotificationMessages.DELETE_DRAWING_SUCCESS} (ID: ${drawingId})`, 
       new Date(),
       NotificationTypeEnum.Success
     );

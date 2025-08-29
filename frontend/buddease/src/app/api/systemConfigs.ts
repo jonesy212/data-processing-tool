@@ -21,7 +21,7 @@ export const SystemConfigs = {
   aquaConfig: {} as AquaConfig, // Example addition for AquaConfig
   storeConfig: {} as ShoppingCenterConfig, // Example addition for StoreConfig
   dataVersions: {} as DataVersions, // Example addition for DataVersions
-  frontendStructure: {} as FrontendStructure,
+  frontendStructure: {} as FrontendStructure<T, K>,
   frontendDocumentConfig: {} as FrontendConfig,
   backendStructure: {} as BackendStructure,
   backendDocumentConfig: {} as BackendConfig,

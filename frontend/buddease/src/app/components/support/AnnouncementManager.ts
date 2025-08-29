@@ -1,11 +1,20 @@
-import { useNotification } from "./NotificationContext";
+import { useNotification } from "@/app/context/NotificationContext";
 
 class AnnouncementManager {
   static sendAnnouncement(message: string, sender: string): void {
     const { notify } = useNotification();
-    // Use the notification context to send announcements
-    notify(message, sender, new Date(), "Announcement");
+    notify(
+      "announcement-id",          // id
+      message,                    // content
+      null,                       // notificationMessage (if not needed)
+      new Date(),                 // date
+      NotificationTypeEnum.Info,  // type (choose from your enum)
+      "Announcement",             // optional notificationType
+      undefined,                  // options
+      sender                      // userName
+    );
   }
 }
+
 
 export default AnnouncementManager;

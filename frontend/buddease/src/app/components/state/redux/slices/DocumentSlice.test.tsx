@@ -1,5 +1,5 @@
 // DocumentSlice.test.tsx
-import { AnyAction, configureStore, EnhancedStore, UnknownAction } from '@reduxjs/toolkit';
+import { configureStore, EnhancedStore, UnknownAction } from '@reduxjs/toolkit';
 import thunk, { ThunkDispatch } from 'redux-thunk';
 import { RootState } from './RootSlice';
 
@@ -9,7 +9,7 @@ jest.mock('path/to/your/api', () => ({
 }));
 
 // Mock NotificationContext and other dependencies as needed
-jest.mock('@/app/components/support/NotificationContext', () => ({
+jest.mock('@/app/components/context/NotificationContext', () => ({
   useNotification: jest.fn(() => ({
     notify: jest.fn(),
   })),

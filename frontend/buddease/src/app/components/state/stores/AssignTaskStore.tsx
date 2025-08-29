@@ -1,19 +1,19 @@
 // AssignTaskStore.tsx
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { makeAutoObservable } from "mobx";
+import { Task } from "../../models/tasks/Task";
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+import { NotificationType } from "@/context/NotificationContext";
 import { AssignBaseStore, useAssignBaseStore } from "../AssignBaseStore";
-import { Task } from "../../models/tasks/Task";
-import { NotificationType } from "../../support/NotificationContext";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { T, K } from "@/app/components/models/data/dataStoreMethods";
 
 export interface AssignTaskStore extends AssignBaseStore {
   assignTask: (taskId: string, userId: string) => void;
   assignUsersToTasks: (taskIds: string[], userId: string) => void;
   unassignUsersFromTasks: (taskIds: string[], userId: string) => void;
   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
-  snapshotStore: SnapshotStore<Task<T, K<T>>>;
+  snapshotStore: SnapshotStore<Task<T, K>>;
 
   reassignUsersToTasks: (
     taskIds: string[],

@@ -1,10 +1,9 @@
-import axios from 'axios';
-import { updateUserPortfolio, logTradeActivity } from './portfolioService';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { getMarketPrice } from './priceService';
-import SnapshotStore  from '@/app/components/snapshots/SnapshotStore';
 import { BaseData } from '@/app/components/models/data/Data';
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots";
+import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { logTradeActivity, updateUserPortfolio } from './portfolioService';
+import { getMarketPrice } from './priceService';
 
 // Portfolio management in crypto
 export interface CryptoPortfolio {

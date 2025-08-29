@@ -1,3 +1,5 @@
+"use client";
+
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UserSettings } from "@/app/configs/UserSettings";
 import { Persona } from "@/app/pages/personas/Persona";
@@ -27,17 +29,15 @@ import { Progress } from "../tracker/ProgressBar";
 import TeamData from "./TeamData";
 import { Member, TeamMember } from "./TeamMembers";
 
-import { BaseDataOperations } from '';
 import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
 import { assignProject, unassignProject, updateProgress } from "../../calendar/CalendarApp";
 import {
-    CodingLanguageEnum,
-    LanguageEnum,
+  CodingLanguageEnum,
+  LanguageEnum,
 } from "../../communications/LanguageEnum";
 import { NotificationPreferenceEnum } from "../../notifications/Notification";
 import { SortCriteria } from "../../settings/SortCriteria";
-import { Snapshot } from "../../snapsho, updateProgressts/LocalStorageSnapshotStore";
-
+import { Snapshot } from "@/app/components/snapshots";
 // Assume 'options' is provided elsewhere
 const options: SearchOptions = {
   communicationMode: "email", // Example communication mode
@@ -734,6 +734,11 @@ const team: Team = {
     uploadQuota: 200,
     userType: "organization",
     fullName: "Baine Sanders",
+    fullName: "Baine Sanders",
+    firstName: "Baine",
+    lastName: "Sanders",
+    token: null,
+    avatarUrl: null,
     bio: "bio content",
     hasQuota: false,
     profilePicture: "profile picture",
@@ -743,7 +748,29 @@ const team: Team = {
     timeBasedCode: timeBasedCode,
     persona: {} as Persona,
     snapshots: [] as SnapshotStore<Snapshot<Data, Data>>[],
-  } as User,
+
+     // Required additional props
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  isVerified: false,
+  isActive: true,
+  isAdmin: false,
+  friends: [],
+  blockedUsers: [],
+  settings: null,
+  projects: [],
+  notifications: undefined,
+  profileAccessControl: undefined,
+  preferences: undefined,
+  activityLog: [],
+  skills: [],
+  hobbies: [],
+  achievements: [],
+  profileVisibility: "",
+  activityStatus: "",
+  isAuthorized: true,
+  roles: [UserRoles.Guest],
+  },
 
   then(callback: (newData: Team) => void) {
     const newData = {
@@ -894,6 +921,9 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
         progress: team.progress,
         description: team.description,
         analysisResults: team.analysisResults,
+        latestVersion: team.latestVersion,
+        date: team.date,
+        createdBy: team.createdBy,
         assignedProjects: team.assignedProjects,
         reassignedProjects: team.reassignedProjects
           .filter((reassignment) => reassignment.project !== undefined)

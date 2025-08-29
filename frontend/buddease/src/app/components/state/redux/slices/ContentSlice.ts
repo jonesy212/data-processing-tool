@@ -7,23 +7,27 @@ import { FileType } from "@/app/components/documents/Attachment/attachment";
 import { SupportedData } from '@/app/components/models/CommonData';
 import ContentDetails from "@/app/components/models/content/ContentDetails";
 import {
-    PriorityTypeEnum,
-    StatusType,
-    TaskStatus,
+  PriorityTypeEnum,
+  StatusType,
+  TaskStatus,
 } from "@/app/components/models/data/StatusType";
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import ExportTasksPayload from "@/app/components/models/tasks/ExportTasksPayload";
 import ImportTasksPayload from "@/app/components/models/tasks/ImportTasksPayload";
 import TaskDetails, { Task, TaskData } from "@/app/components/models/tasks/Task";
 import { Phase } from "@/app/components/phases/Phase";
 import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
 import { SortCriteria } from "@/app/components/settings/SortCriteria";
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots";
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotConfig';
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { TaskSort } from "@/app/components/sort/TaskSort";
 import { WritableDraft } from "@/app/components/state/redux/ReducerGenerator";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import {
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
+} from "@/context/NotificationContext";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { AxiosResponse } from "axios";
 import useWebNotifications from "../../../hooks/commHooks/useWebNotifications";
@@ -31,11 +35,6 @@ import { ContentLogger } from "../../../logging/Logger";
 import { ContentItem } from "../../../models/content/ContentItem";
 import { BaseData, Comment, Data } from "../../../models/data/Data";
 import { sanitizeInput } from "../../../security/SanitizationFunctions";
-import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
-} from "../../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../../support/NotificationMessages";
 import { Idea, IdeationSession } from "../../../users/Ideas";
 import { User } from "../../../users/User";

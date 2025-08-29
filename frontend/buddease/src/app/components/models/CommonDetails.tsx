@@ -52,5 +52,5 @@ const CommonDetails = <T extends  BaseData<any>, K extends T = T, Meta extends S
     </div>
   );
 };
-export default CommonDetails;
-export type { CommonData, Customizations };
+export { CommonDetails };
+export type { Customizations };

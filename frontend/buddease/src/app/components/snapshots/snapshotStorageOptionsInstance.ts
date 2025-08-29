@@ -11,6 +11,7 @@ import { SubscriberCollection } from '@/app/components/users/SubscriberCollectio
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { CustomSnapshotData, SnapshotContainer, SnapshotData, SnapshotStoreProps, SnapshotWithCriteria } from ".";
 import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload } from "../../../server/database/Payload";
 import { SnapshotWithData } from "../calendar/CalendarApp";
@@ -22,11 +23,11 @@ import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { NotificationType, NotificationTypeEnum } from "../support/NotificationContext";
 import { Subscriber } from "../users/Subscriber";
 import { VersionHistory } from "../versions/VersionData";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
-import { CoreSnapshot, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
+import { CoreSnapshot,  Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
+import { Snapshot } from "./Snapshot";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { SnapshotActionType } from "./SnapshotActionType";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
@@ -39,8 +40,8 @@ import { Callback, MultipleEventsCallbacks } from "./subscribeToSnapshotsImpleme
 interface SnapshotStorageOptions<
 T extends  BaseData<any>, 
 K extends T = T,
- Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
- ExcludedFields extends keyof T = never
+Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+ ExcludedFields extends keyof T = DefaultExcludedFields<T>
  > {
 	baseURL: string;
 	enabled: boolean;
@@ -64,7 +65,7 @@ K extends T = T,
 
 
 // Define a specific set of options for snapshot configuration
-interface SnapshotConfigOptions<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface SnapshotConfigOptions<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
 	id: string;
 	snapshotId: number;
 	snapshotStoreData: Snapshots<Data>;
@@ -177,8 +178,8 @@ const snapshotStorageOptions: SnapshotStorageOptions<Data, BaseData> = {
 			content: Content<
 				T,
 				K,
-				StructuredMetadata<T, K<T>>,
-				StructuredMetadata<T, K, StructuredMetadata<T, K<T>>>
+				StructuredMetadata<T, K>,
+				StructuredMetadata<T, K, StructuredMetadata<T, K>>
 			>,
 			data: any,
 			date: Date,
@@ -190,7 +191,7 @@ const snapshotStorageOptions: SnapshotStorageOptions<Data, BaseData> = {
 		notifySubscribers: function (
 			message: string, 
 			subscribers: Subscriber<Data, BaseData>[], 
-			data: Partial<SnapshotStoreConfig<Data, any, StructuredMetadata<T, K<T>>>>
+			data: Partial<SnapshotStoreConfig<Data, any, StructuredMetadata<T, K>>>
 		): Subscriber<Data, BaseData>[] {
 			throw new Error("Function not implemented.");
 		},
@@ -435,7 +436,7 @@ const snapshotStorageOptions: SnapshotStorageOptions<Data, BaseData> = {
 		setSnapshot: function (snapshot: Snapshot<Data, BaseData>): void {
 			throw new Error("Function not implemented.");
 		},
-		transformSnapshotConfig: function <T extends BaseData>(config: SnapshotStoreConfig<T, T>): SnapshotStoreConfig<T, T> {
+		transformSnapshotConfig: function <T extends BaseDataEntity>(config: SnapshotStoreConfig<T, T>): SnapshotStoreConfig<T, T> {
 			throw new Error("Function not implemented.");
 		},
 		setSnapshots: function (snapshots: Snapshots<Data>): void {
@@ -1380,6 +1381,6 @@ const snapshotConfigOptions: SnapshotConfigOptions<Data, BaseData> = {
 
 
 export {
-  snapshotConfigOptions
+    snapshotConfigOptions
 };
 

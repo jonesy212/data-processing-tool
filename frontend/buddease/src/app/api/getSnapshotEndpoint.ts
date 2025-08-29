@@ -1,5 +1,5 @@
 import { BaseData } from '@/app/components/models/data/Data';
-import { Snapshot } from "../components/snapshots";
+import { Snapshot } from "@/app/components/snapshots";
 import endpointConfigurations, { EndpointConfig } from "./endpointConfigurations";
 
 

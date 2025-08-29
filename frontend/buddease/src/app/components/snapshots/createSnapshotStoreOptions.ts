@@ -34,10 +34,11 @@ import { displayToast } from '../models/display/ShowToast';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { ExcludedFields } from '../routing/Fields';
 import {
-  Snapshot,
   SnapshotsArray,
   SnapshotUnion
 } from "../snapshots/LocalStorageSnapshotStore";
+import { useMeta } from '@/app/configs/useMeta';
+import { Snapshot } from "../snapshots/Snapshot";
 import { SubscriberCollection } from '../users/SubscriberCollection';
 import { convertToSubscriberCollection } from '../utils/SubscriberUtils';
 import { addToSnapshotList, generateSnapshotId, isSnapshot } from "../utils/snapshotUtils";
@@ -52,6 +53,7 @@ import { InitializedData } from './SnapshotStoreOptions';
 import { storeProps } from './SnapshotStoreProps';
 import { handleSnapshotOperation } from './handleSnapshotOperation';
 import { getCategory } from './snapshotContainerUtils';
+import { BaseDataEntity, BaseDataRoot, DefaultMeta, DefaultExcludedFields } from '@/app/configs/BaseConfig';
 
 
 interface Difference<T> {
@@ -114,9 +116,9 @@ function useMetaHandler<T, K extends T>(area?: string, config?: MetaConfig<T, K>
 
 
 const createSnapshotStoreOptions = <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >({
   initialState,
   snapshotId,
@@ -125,7 +127,8 @@ const createSnapshotStoreOptions = <
 }: {
   initialState: InitializedState<T, K>
   snapshotId?: string | number | null;
-  category: Category | undefined, categoryProperties: CategoryProperties | undefined;
+  category: Category | undefined, 
+  categoryProperties: CategoryProperties | undefined;
   dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K>>;
 }): Promise<SnapshotStoreOptions<T, K>> => {
   return new Promise(async (resolve, reject) => {
@@ -150,6 +153,8 @@ const createSnapshotStoreOptions = <
       const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
       const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
 
+      const categoryProperties = getCategoryProperties(category);
+          
       // Use the meta handler with proper typing
       const currentMeta = useMetaHandler<T, K>(area, {
         id: `snapshot-store-${storeId}`,
@@ -328,8 +333,6 @@ const createSnapshotStoreOptions = <
 
       const { subscription, subscriber } = getSubscription<T, K>(userId.toString(), snapshotId.toString());
   
- 
-
       // Access or define snapshotData. This would typically be passed into the function
       const newData = useSnapshotManager<T, K>(storeId)
   
@@ -1264,27 +1267,27 @@ const createSnapshotStoreOptions = <
 
 
 
-const isSnapshotStoreOptions =  <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(obj: any): obj is SnapshotStoreOptions<T, K> => {  
+const isSnapshotStoreOptions =  <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(obj: any): obj is SnapshotStoreOptions<T, K> => {  
   return obj && typeof obj === 'object' && 'data' in obj && 'initialState' in obj;
 };
 
-const getCurrentSnapshotStoreOptions =  <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const getCurrentSnapshotStoreOptions =  <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotStoreOptions: any
 ): SnapshotStoreOptions<T, K> | null => {
   return isSnapshotStoreOptions<T, K>(snapshotStoreOptions) ? snapshotStoreOptions : null;
 };
 
 const convertToArray = <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotStore: SnapshotStore<T, K>,
   snapshot: Snapshot<T, K> | Snapshots<T, K> | SnapshotsArray<T, K, Meta>
 ): SnapshotsArray<T, K, Meta> => {
   return Array.isArray(snapshot) ? snapshot as SnapshotsArray<T, K, Meta> : [snapshot] as SnapshotsArray<T, K, Meta>;
 };
 
-// const handleSingleSnapshot = <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// const handleSingleSnapshot = <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
 //   snapshot: Snapshot<T, K>,
 //   callback: Callback<Snapshot<T, K>>
 // ) => {
@@ -1314,7 +1317,7 @@ const convertToArray = <
 //   }
 // };
 
-// const handleSnapshotsArray =  <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// const handleSnapshotsArray =  <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
 //   snapshots: SnapshotsArray<T, K, Meta>,
 //   callback: Callback<Snapshot<T, K>>
 // ) => {
@@ -1348,7 +1351,7 @@ const convertToArray = <
 
 
 
-function isSnapshotsArray<T extends BaseData>(
+function isSnapshotsArray<T extends BaseDataEntity>(
   obj: any
 ): obj is SnapshotsArray<T, K, Meta> {
   return Array.isArray(obj) && obj.every(item => isSnapshot(item));
@@ -1358,19 +1361,19 @@ function isSnapshotsArray<T extends BaseData>(
 
 
 // Renamed function to avoid conflict
-const isSnapshotArrayState = <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(state: any): state is Snapshot<T, K>[] => {
+const isSnapshotArrayState = <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(state: any): state is Snapshot<T, K>[] => {
   // Logic to determine if it's a Snapshot array
   return Array.isArray(state) && state.every((item: any) => isSnapshot(item));
 };
 
 
-function toSnapshotsArray<T extends BaseData<any>, K extends T = T>(snapshots: Snapshot<T, K>[]): SnapshotsArray<T, K, Meta> {
+function toSnapshotsArray<T extends BaseDataEntity, K extends T = T>(snapshots: Snapshot<T, K>[]): SnapshotsArray<T, K, Meta> {
   // Transform if needed, or validate each snapshot type
   return snapshots as SnapshotsArray<T, K, Meta>;
 }
 
 
-function isCompatibleSnapshot <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isCompatibleSnapshot <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshot: Snapshot<T, K>
 ): snapshot is Snapshot<T, K> & { storeConfig: { tempData: any } } {
   if (snapshot.storeConfig === undefined) {
@@ -1385,7 +1388,7 @@ function isCompatibleSnapshot <T extends BaseData<any>, K extends T = T, Meta ex
 }
 
 // Define the type guard to check if an object is of type SnapshotUnion<T, T>
-function isSnapshotUnion<T extends BaseData<any>, K extends T>(
+function isSnapshotUnion<T extends BaseDataEntity, K extends T>(
   obj: any
 ): obj is SnapshotUnion<T, T> {
   // Check for required properties in SnapshotUnion<T, T>
@@ -1401,7 +1404,7 @@ function isSnapshotUnion<T extends BaseData<any>, K extends T>(
 }
 
 
-function convertSnapshotsObjectToArray<T extends BaseData, K extends T = T>(
+function convertSnapshotsObjectToArray<T extends BaseDataEntity, K extends T = T>(
   snapshotsObject: SnapshotsObject<T, K>
 ): SnapshotsArray<T, K, Meta> {
   const snapshotsArray = Object.values(snapshotsObject).map((snapshot) => {

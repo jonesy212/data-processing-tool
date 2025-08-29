@@ -1,7 +1,7 @@
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { Snapshot } from "@/app/components/snapshots";
 import { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
 import { CombinedEvents } from "../hooks/useSnapshotManager";
-import { Snapshot } from "../snapshots/LocalStorageSnapshotStore";
 import { triggerEvent, unsubscribe } from "../utils/applicationUtils";
 
 interface CalendarSnapshotEvents {
@@ -10,10 +10,10 @@ interface CalendarSnapshotEvents {
 
 
 // Example implementation of CombinedEvents
-const combinedEvents: CombinedEvents<T, K<T>> = {
+const combinedEvents: CombinedEvents<T, K> = {
   eventRecords: {},
   callbacks: {
-      default: [(snapshot: Snapshot<T, K<T>>) => {
+      default: [(snapshot: Snapshot<T, K>) => {
           // Handle snapshot data
           console.log(snapshot);
       }]

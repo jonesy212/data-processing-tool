@@ -1,7 +1,7 @@
 
-import { NotificationTypeEnum } from '@/app/components/context/NotificationContext';
 import { AppStructureItem } from '@/app/configs/appStructure/AppStructure';
 import { UserSettings } from '@/app/configs/UserSettings';
+import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import * as crypto from 'crypto'; // Correct crypto module for Node.js
 import * as docx from 'docx';
@@ -166,10 +166,18 @@ export default class MobXEntityStore {
         this.versionNumber = newVersionNumber;
       },
 
-      compare: function (otherVersion: Version<BaseData<any>, BaseData<any>>): number {
-        if (this.versionNumber > otherVersion.versionNumber) {
+      compare(otherVersion: Version<
+        BaseData<any>,
+        BaseData<any>,
+        StructuredMetadata<BaseData<any>, BaseData<any>>
+      >): number {
+        // Ensure versionNumber exists
+        const otherVersionNumber = otherVersion.versionNumber ?? 0;
+        const thisVersionNumber = this.versionNumber ?? 0;
+    
+        if (thisVersionNumber > otherVersionNumber) {
           return 1;
-        } else if (this.versionNumber < otherVersion.versionNumber) {
+        } else if (thisVersionNumber < otherVersionNumber) {
           return -1;
         } else {
           return 0;

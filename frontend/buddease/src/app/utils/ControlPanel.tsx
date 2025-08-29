@@ -1,8 +1,12 @@
 // ControlPanel.tsx
+import {
+  NotificationContextProps,
+  NotificationType,
+  useNotification
+} from "@/context/NotificationContext";
 import SpeedOutlined from "@ant-design/icons"; // Import SpeedOutlined icon from Ant Design icons
 import { Button, Dropdown, Menu, Slider, Space } from "antd"; // Import Slider and Button components from Ant Design
 import React, { useState } from "react";
-import apiNotificationsService from "../api/NotificationsService";
 import { CustomEventExtension } from "../components/event/BaseCustomEvent";
 import { createCustomEvent } from "../components/event/EventService";
 import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
@@ -10,18 +14,11 @@ import AnimationDial from "../components/libraries/animations/AnimationDial";
 import FadeInAnimation from "../components/libraries/animations/FadeInAnimation";
 import RotateAnimation from "../components/libraries/animations/RotateAnimation";
 import SlideUpAnimation from "../components/libraries/animations/SlideUpAnimation";
-import useNotificationManagerService, {
-  default as NotificationContainer,
-  default as useNotificationStore,
+import {
+  default as useNotificationStore
 } from "../components/state/stores/NotificationStore";
 import CustomizableTimersComponent from "../components/stopwatches/CustomizableTimersComponent";
 import responsiveDesignStore from "../components/styling/ResponsiveDesign";
-import {
-  NotificationContextProps,
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
-} from "../components/support/NotificationContext";
 import {
   ButtonGenerator,
   buttonGeneratorProps,

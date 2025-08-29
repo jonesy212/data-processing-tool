@@ -4,6 +4,7 @@ import {
   ConfigureSnapshotStorePayload,
   SnapshotConfig,
 } from "@/app/components/snapshots/SnapshotConfig";
+import { ExcludedFields } from '@/app/components/routing/Fields';
 import { SnapshotStoreProps } from '@/app/components/snapshots/SnapshotStoreProps';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { getSubscriptionLevel } from '@/app/components/subscriptions/SubscriptionLevel';
@@ -99,24 +100,29 @@ import { sortByTimestamp } from "./handleSnapshotOperation";
 import { SnapshotActions } from "./SnapshotActions";
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import { delegate } from "./snapshotHandlers";
-import SnapshotStore from "./SnapshotStore";
+import SnapshotStore, { U } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
+import { Attachment } from '../../../data_analysis/frontend/buddease/src/app/components/documents/Attachment/attachment';
+import { BaseDataEntity, DefaultMeta } from '../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig';
+import { SnapshotContext } from './SnapshotSubscriberManagement';
+import { SnapshotContainer } from './SnapshotContainer';
+import { InitializedDataStore } from './SnapshotStoreOptions';
 
 const SNAPSHOT_URL = process.env.REACT_APP_SNAPSHOT_URL;
 
 
 // Define CustomPayload that extends Payload and aligns with CustomSnapshotData
-type CustomPayload<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = 
+type CustomPayload<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> = 
   Payload & // Ensure Payload contains common properties
   CustomSnapshotData<T, K, Meta>;
 
   
 const convertSubscriptionPayloadToSubscriber = <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   payload: SubscriptionPayload<T, K>
 ): Subscriber<CustomSnapshotData<T, K, Meta>, CustomPayload<T, K, Meta>> => {
@@ -164,8 +170,11 @@ type SubscriptionPayloadActions = SubscriptionPayload<any, any> & Payload
 
 // Create the snapshot store
 const useSnapshotStore = async  <
-  T extends  BaseData<any>,
-  K extends T = T>(
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  
+>(
   addToSnapshotList: (
     snapshot: Snapshot<T, K>,
     subscribers: Subscriber<T, K>[],
@@ -423,7 +432,7 @@ const useSnapshotStore = async  <
       console.log(data);
     };
     // Create a new Subscriber instance with the required arguments
-    const subscriber = new Subscriber<CustomSnapshotData,  Data>(
+    const subscriber = new Subscriber<CustomSnapshotData<T, K, Meta, Attachment, ExcludedFields>, Data>(
       payload.id, // Replace 'unique_id' with the actual subscriber ID
       payload.name,
       {
@@ -749,7 +758,7 @@ const useSnapshotStore = async  <
     setSnapshot: function (snapshot: Snapshot<T, K>): void {
       throw new Error("Function not implemented.");
     },
-    transformSnapshotConfig: function <U extends BaseData>(
+    transformSnapshotConfig: function <U extends BaseDataEntity>(
       config: SnapshotConfig<U, U>
     ) {
       throw new Error("Function not implemented.");
@@ -965,7 +974,7 @@ const useSnapshotStore = async  <
     snapshotStore: null,
     getParentId: function (
       id: string,
-      snapshot: Snapshot<SnapshotUnion<BaseData, Meta>, T>
+      snapshot: Snapshot<SnapshotUnion<BaseData, K, Meta>, T>
     ): string | null {
       throw new Error("Function not implemented.");
     },
@@ -1079,7 +1088,8 @@ const useSnapshotStore = async  <
       callback: (
         storeIds: number[],
         snapshotId: string,
-        category: Category | undefined,        categoryProperties: CategoryProperties | undefined,
+        category: Category | undefined,
+        categoryProperties: CategoryProperties | undefined,
         snapshot: Snapshot<T, K>,
         timestamp: string | number | Date | undefined,
         type: string,
@@ -1371,7 +1381,7 @@ const useSnapshotStore = async  <
   }; // Function to notify subscribers
 
   const notifySubscribers = async (
-    subscribers: Subscriber<CustomSnapshotData, Data>[], // Accept both Data and CustomSnapshotData
+    subscribers: Subscriber<CustomSnapshotData<T, K, Meta, Attachment, ExcludedFields>, Data>[], // Accept both Data and CustomSnapshotData
     notify: NotificationContextType["notify"],
     id: string,
     notification: NotificationData,
@@ -1472,7 +1482,7 @@ const useSnapshotStore = async  <
         > {
           throw new Error("Function not implemented.");
         },
-        getData: function <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<
+        getData: function <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(): Promise<
           Snapshot<SnapshotWithCriteria<T, K>, SnapshotWithCriteria<T, K>>[]
         > {
           throw new Error("Function not implemented.");
@@ -1589,12 +1599,12 @@ const useSnapshotStore = async  <
     participants: [],
     teamMemberId: "",
     meta: undefined,
-    getSnapshotStoreData: function <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<
+    getSnapshotStoreData: function <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(): Promise<
       SnapshotStore<SnapshotWithCriteria<T, K>, SnapshotWithCriteria<Data, K>>[]
     > {
       throw new Error("Function not implemented.");
     },
-    getData: function <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<
+    getData: function <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(): Promise<
       Snapshot<T, K>[]
     > {
       throw new Error("Function not implemented.");
@@ -2320,7 +2330,7 @@ const useSnapshotStore = async  <
           setSnapshot: function (snapshot: Snapshot<T, K>): void {
             throw new Error("Function not implemented.");
           },
-          transformSnapshotConfig: function <T extends BaseData>(
+          transformSnapshotConfig: function <T extends BaseDataEntity>(
             config: SnapshotStoreConfig<BaseData, T>
           ) {
             throw new Error("Function not implemented.");
@@ -3056,7 +3066,7 @@ const useSnapshotStore = async  <
         setSnapshot: function (snapshot: Snapshot<T, K>): void {
           throw new Error("Function not implemented.");
         },
-        transformSnapshotConfig: function <T extends BaseData>(
+        transformSnapshotConfig: function <T extends BaseDataEntity>(
           config: SnapshotStoreConfig<BaseData, T>
         ) {
           throw new Error("Function not implemented.");
@@ -3641,7 +3651,7 @@ const useSnapshotStore = async  <
         setSnapshot: function (snapshot: Snapshot<T, K>): void {
           throw new Error("Function not implemented.");
         },
-        transformSnapshotConfig: function <T extends BaseData>(
+        transformSnapshotConfig: function <T extends BaseDataEntity>(
           config: SnapshotStoreConfig<BaseData, T>
         ) {
           throw new Error("Function not implemented.");
@@ -4286,8 +4296,26 @@ const useSnapshotStore = async  <
     fetchSnapshotFailure: () => {},
     getSnapshot: () => {},
     getSnapshots: () => {},
-    getAllSnapshots: () => {},
-
+    getAllSnapshots: (
+      storeId: number,
+      event: Event,
+      ctx: SnapshotContext<T, K, Meta, ExcludedFields> & {
+        timestamp: string;
+        type: string;
+        id: number;
+        categoryProperties?: CategoryProperties;
+        dataStoreMethods: DataStore<T, K>;
+        data: T;
+      },
+      filter?: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => boolean,
+      dataCallback?: (
+        subscribers: Subscriber<T, K>[],
+        snapshots: Snapshots<T, K, Meta, ExcludedFields>
+      ) => Promise<SnapshotUnion<T, K, Meta, ExcludedFields>[]>
+    ): Promise<Snapshot<T, K, Meta, ExcludedFields>[]> => {
+      // Your implementation logic here
+      return Promise.resolve([] as Snapshot<T, K, Meta, ExcludedFields>[]);
+    },
     // Utility Methods
     generateId: () => {},
 

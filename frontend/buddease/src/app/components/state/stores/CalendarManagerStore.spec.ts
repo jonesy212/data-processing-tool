@@ -1,5 +1,4 @@
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
-import { NotificationType } from '@/app/components/support/NotificationContext';
+import { NotificationType } from '@/app/components/context/NotificationContext';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { metadata } from '@/app/layout';
 import generateFakeData, { FakeDataPartial } from "../../intelligence/FakeDataGenerator";

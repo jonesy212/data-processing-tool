@@ -2,7 +2,7 @@ import { ClipboardData, CustomEventExtensionConstructor } from "../../event/Base
 import { ProjectPhaseTypeEnum } from "../../models/data/StatusType";
 import { RealtimeDataItem } from "../../models/realtime/RealtimeData";
 import { RootState } from "../../state/redux/slices/RootSlice";
-import { updateCallback } from "../../state/stores/CalendarEvent";
+import { updateCallback } from "@/app/components/hooks/commHooks/useUIRealtimeData";
 import useRealtimeData from "../commHooks/useRealtimeData";
 import { AsyncHook } from "../useAsyncHookLinker";
 import useResizablePanels from "../userInterface/useResizablePanels";

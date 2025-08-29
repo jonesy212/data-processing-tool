@@ -1,5 +1,7 @@
 import VersionImpl, { version } from '@/app/components/versions/Version';
+import { MetadataEntriesType } from "@/app/configs/StructuredMetadata";
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 
 import { CustomStyle } from '@/app/api/ApiService';
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
@@ -24,20 +26,21 @@ import {
   PrivacySettingEnum,
   ProjectPhaseTypeEnum,
 } from "../models/data/StatusType";
-import { Phase, PhaseData, PhaseMeta } from "../phases/Phase";
+import { Phase, PhaseLite } from "../phases/Phase";
 import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
 import { Document } from "../state/stores/DocumentStore";
 import { CustomProperties, HighlightColor } from "../styling/Palette";
 import { UserIdea } from "../users/Ideas";
 import Version from "../versions/Version";
 import { VersionData } from "../versions/VersionData";
-import { createLastUpdatedWithVersion } from '../versions/createLatestVersion';
+import { createLastUpdatedWithVersion, createLatestVersion } from '../versions/createLatestVersion';
 import { ModifiedDate } from "./DocType";
 import { computeChecksum, DocumentData, RevisionOptions } from "./DocumentBuilder";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 import { NoteAnimationOptions, NoteOptions } from "./NoteData";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
-
+import { BaseDataEntity, DefaultMeta } from '@/app/configs/BaseConfig';
+ 
 export interface CustomDocument extends docx.Document {
   createSection(): docx.SectionProperties;
   addParagraph(paragraph: docx.Paragraph): void;
@@ -107,7 +110,7 @@ interface Style {
   defaultZoomLevel: number;
   customProperties: CustomProperties | undefined;
   value: string;
-  metadata: StructuredMetadata<T, K<T>> | undefined;
+  metadata: StructuredMetadata<T, K> | undefined;
   tableStyles?: {
     backgroundColor?: string;
     borderColor?: string;
@@ -122,9 +125,10 @@ interface Style {
 
 // Define the interface for DocumentBuilderOptions extending DocumentOptions
 export interface DocumentBuilderOptions<
-  T extends BaseData<any> = BaseData<any, any>, 
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> 
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+>
 extends DocumentOptions<T, K, Meta> {
   canComment: boolean;
   canView: boolean;
@@ -160,16 +164,20 @@ export const getDefaultNoteOptions = (): NoteOptions => {
 
 // documentOptions.ts
 export interface DocumentOptions<
-T extends BaseData<any> = BaseData<any, any>,
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> {  // additionalDocumentOptions: [],
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+> {
+  // additionalDocumentOptions: [],
   additionalOptionsLabel: string,
   uniqueIdentifier: string;
   documentType: string | DocumentTypeEnum; // Add documentType property
   userIdea?: string | UserIdea | undefined;
   documentSize: DocumentSize;
-  name?: string,
+  name?: string;
+  currentVersion?: string; // the version currently assigned
+  newVersion?: string;     // optional: a requested new version
+ 
   description?: string | null | undefined,
   createdBy: string,
   createdByRenamed?: string
@@ -612,6 +620,9 @@ T extends BaseData<any> = BaseData<any, any>,
   revisionOptions?: RevisionOptions;
 }
 
+
+const area = fetchUserAreaDimensions().toString()
+
 // export type DocumentSize = "letter" | "legal" | "a4" | "custom"; // You can extend this list
 export const getDefaultDocumentOptions = (): DocumentOptions => {
   // todo update dynamic conent version
@@ -619,12 +630,12 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   const checksum = computeChecksum(versionData);
 
   return {
-    previousMeta: {} as StructuredMetadata<T, K<T>>,
-    currentMeta: {} as StructuredMetadata<T, K<T>>,
+    previousMeta: {} as StructuredMetadata<T, K>,
+    currentMeta: {} as StructuredMetadata<T, K>,
     documentOptions: {
 
-    previousMeta: {} as StructuredMetadata<T, K<T>>,
-    currentMeta: {} as StructuredMetadata<T, K<T>>,
+    previousMeta: {} as StructuredMetadata<T, K>,
+    currentMeta: {} as StructuredMetadata<T, K>,
     uniqueIdentifier: "",
     documentType: "default",
     userIdea: undefined,
@@ -815,56 +826,65 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   },
   accessHistory: [],
   versionData: {
-
-    id: '0',
-    lastUpdated: createLastUpdatedWithVersion(),
-    parentId: "0",
-    parentType: "",
-    parentVersion: "",
-    parentTitle: "",
-    parentContent: "",
-    parentName: "",
-    parentUrl: "",
-    parentChecksum: "",
-    parentAppVersion: "",
-    parentVersionNumber: "",
-    history: [],
-    isLatest: false,
-    isPublished: false,
-    publishedAt: null,
-    source: "",
-    status: "",
-    workspaceId: "",
-    workspaceName: "",
-    workspaceType: "",
-    workspaceUrl: "",
-    workspaceViewers: [],
-    workspaceAdmins: [],
-    workspaceMembers: [],
-    data: [],
-    name: "",
-    url: "",
-    versionNumber: "1.0.0",
-    documentId: "",
-    draft: false,
-    userId: "",
-    content: "",
-    metadata: {
-      author: "",
-      timestamp: new Date().toISOString(),
-      revisionNotes: undefined,
+    id: "0",
+  lastUpdated: createLastUpdatedWithVersion(),
+  parentId: "0",
+  parentType: "document", // could be "folder", "project", etc.
+  parentVersion: "0.0.0",
+  parentTitle: "Root Document",
+  parentContent: "Initial parent content",
+  parentName: "Root",
+  parentUrl: "/documents/0",
+  parentChecksum: "",
+  parentAppVersion: "1.0.0",
+  parentVersionNumber: "1.0.0",
+  history: [],
+  isLatest: true,
+  isPublished: false,
+  publishedAt: null,
+  source: "system", // could be "user", "import", etc.
+  status: "draft",  // e.g. "draft" | "in-review" | "published"
+  workspaceId: "workspace-0",
+  workspaceName: "Default Workspace",
+  workspaceType: "personal", // could be "personal", "team", "org"
+  workspaceUrl: "/workspaces/0",
+  workspaceViewers: [],
+  workspaceAdmins: [],
+  workspaceMembers: [],
+  data: [],
+  name: "Untitled Document",
+  url: "/documents/0",
+  versionNumber: "1.0.0",
+  documentId: "doc-0",
+  draft: true,
+  userId: "system", // or current user
+  content: "",
+  setServices: [],
+  notes: [],
+  buildNumber: "1",
+  latestVersion: createLatestVersion<T, K>(),
+  schema: {},
+  metadata: {
+    author: "system",
+    timestamp: new Date().toISOString(),
+    revisionNotes: "Initial version",
+    area: area,  // keeping your external reference
+    metadataEntries: {} as MetadataEntriesType<T, K>,
+    latestVersion: createLatestVersion<T, K>(),
+    schema: {}
     },
     backend: undefined,
     frontend: undefined,
 
     checksum: "",
-    version: version as VersionImpl<T, K<T>>,
+    version: version as VersionImpl<T, K>,
     timestamp: new Date().toISOString(),
     user: "Buddease",
     comments: [],
     changes: [],
     buildVersions: {
       data: undefined,
+      baseData: undefined,
       frontend: undefined,
       backend: undefined,
     },
@@ -886,7 +906,26 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   documentPhase: "Draft",
   additionalOptions: undefined,
   language: LanguageEnum.English,
-  setDocumentPhase: (phase: string | Phase<PhaseData<T, K>, PhaseMeta> | undefined, phaseType: DocumentPhaseTypeEnum) => ({ phase, phaseType }),
+  setDocumentPhase: (
+    phase: string | Phase | undefined,
+    phaseType: DocumentPhaseTypeEnum
+  ) => {
+    // Internal logic for additional parameters
+    const subPhases: [] = [];
+    const latestVersion = "";
+    const date = new Date();
+    const createdBy = "user";
+    
+    return { 
+      phase, 
+      phaseType,
+      // Include as optional properties
+      subPhases,
+      latestVersion,
+      date,
+      createdBy
+    };
+  },
   version: undefined,
   size: "0" as DocumentSize,
   animations: undefined,
@@ -1051,7 +1090,7 @@ export const getDocumentPhase = (phase: ProjectPhaseTypeEnum) => {
 
 
 
-const mapDocumentToProjectPhase = (document: Document<T, K<T>, StructuredMetadata<T, K<T>>>): ProjectPhaseTypeEnum => {
+const mapDocumentToProjectPhase = (document: Document<T, K, StructuredMetadata<T, K>>): ProjectPhaseTypeEnum => {
   switch (document.phaseType) {
     case "drafting":
       return ProjectPhaseTypeEnum.Draft;

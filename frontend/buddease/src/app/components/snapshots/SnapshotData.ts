@@ -12,14 +12,16 @@ import { Order } from "../crypto/Orders";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, ChildRelationship, SharedRelationshipData } from "../models/data/Data";
 import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { MapExcludedFieldsToMetaKeys } from "../routing/Fields";
 import { Subscription } from "../subscriptions/Subscription";
 import { AuditRecord } from "../users/Subscriber";
 import { SubscriberCollection } from "../users/SubscriberCollection";
 import { VersionHistory } from "../versions/VersionData";
-import { CoreSnapshot, Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from "./LocalStorageSnapshotStore";
+import {  Snapshots, SnapshotsArray, SnapshotUnion } from "./LocalStorageSnapshotStore";
+import { CoreSnapshot } from "./CoreSnapshot";
+import {  Snapshot } from "./Snapshot";
 import { SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotBase } from "./SnapshotContainer";
 import { SnapshotMethods } from "./SnapshotMethods";
@@ -27,13 +29,20 @@ import SnapshotStore from "./SnapshotStore";
 import { InitializedData } from "./SnapshotStoreOptions";
 import { TagsRecord } from "./SnapshotWithCriteria";
 import { SnapshotStoreProps } from "./useSnapshotStore";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import { Attachment } from "../documents/Attachment/attachment";
+import { BaseDataRoot } from "../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig";
 
 interface CustomSnapshotData<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-  > extends BaseData<T, K, Meta>,
-  SharedRelationshipData<K>, SharedIdentifiers<T, K, Meta> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends BaseDataEntity<T, K, Meta, AttachmentType, ExcludedFields>,
+  SharedRelationshipData<K>,
+  SharedIdentifiers<T, K, Meta, ExcludedFields>
+{
   timestamp?: string | number | Date | undefined
   orders?: Order[];
   customProperty?: unknown; 
@@ -41,13 +50,14 @@ interface CustomSnapshotData<
 }
 
 // Original type of snapshotData
-type OriginalSnapshotData<T extends BaseData<any>, K extends T = T> = SnapshotData<T, K, never>;
+type OriginalSnapshotData<T extends BaseDataEntity, K extends T = T> = SnapshotData<T, K, never>;
 
 interface SnapshotRelationships<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends SharedIdentifiers<T, K, Meta, ExcludedFields> {
   parentId?: string | null;
   parent?: Snapshot<T, K> | null;
   children?: ChildRelationship<T, K, Meta> | CoreSnapshot<T, K, Meta>[];
@@ -81,14 +91,14 @@ interface SnapshotRelationships<
 }
 
 interface SnapshotData<
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never,
-> extends SnapshotBase<T, K, Meta>,
-  SnapshotMethods<T, K, Meta>, // Extends SnapshotMethods
-  SharedMetadata<T, K>,
-  SharedIdentifiers<T, K, Meta, ExcludedFields> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends SnapshotBase<T, K, Meta, ExcludedFields>,
+  SnapshotMethods<T, K, Meta, ExcludedFields>, // Extends SnapshotMethods
+  SharedMetadata<T, K, ExcludedFields>
+{
   _id?: string;
   storeId: number;
   snapshotIds?: string[];
@@ -107,8 +117,7 @@ interface SnapshotData<
     | null;
   priority?: string | PriorityTypeEnum;
   subscription?: Subscription<T, K> | null;
-  versionHistory?: VersionHistory
-  config: Promise<SnapshotStoreConfig<T, K> | null>;
+  versionHistory?: VersionHistory<T, K>
   metadata?: UnifiedMetadata<T, K, Meta, MapExcludedFieldsToMetaKeys<T, K, StructuredMetadata<T, K>, ExcludedFields>
   > | {};
   isExpired: () => boolean | undefined
@@ -121,8 +130,7 @@ interface SnapshotData<
   subscribers: SubscriberCollection<T, K>[];
   delegate?: SnapshotStoreConfig<T, K>[];
   todoSnapshotId?: string;
-  dataStoreMethods?: DataStoreWithSnapshotMethods<T, K> | null;
-  createdAt: string | Date | undefined;
+  dataStoreMethods?: DataStoreMethods<T, K, Meta> | null;
   updatedAt?: string | Date;
   snapshotStore: SnapshotStore<T, K> | null;
   status?: StatusType | undefined

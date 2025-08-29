@@ -41,7 +41,14 @@ export const searchAPI = async <
     const searchResults: SearchResult<T, K>[] = results.map((note) => ({
       _id: note.id,
       id: note.id,
-      // name: note.name,
+      date: note.date,
+      uploadedBy: note.uploadedBy,
+      tagsOrCategories: note.tagsOrCategories,
+      format: note.format,
+      uploadedByTeamId: note.uploadedByTeamId,
+      uploadedByTeam: note.uploadedByTeam,
+      selectedDocument: note.selectedDocument,
+    
       lastModifiedBy: note.lastModifiedBy,
       createdByRenamed: note.createdByRenamed,
       createdDate: note.createdDate,
@@ -58,7 +65,6 @@ export const searchAPI = async <
       _rev: note._rev,
       phaseType: note.phaseType,
       label: note.label,
-     
      
       createdBy: note.createdBy ? note.createdBy : undefined,
       title: note.title,

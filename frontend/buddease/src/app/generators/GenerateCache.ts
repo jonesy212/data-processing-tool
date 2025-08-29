@@ -1,6 +1,8 @@
 // generateCache.ts
  import { FileTypeEnum } from "../components/documents/FileType";
 import FileApiService from "../components/event/FileApiService";
+import { BaseData } from '@/app/components/models/data/Data';
+
 import {
   useBrainstormingPhase,
   useMeetingsPhase,
@@ -45,7 +47,7 @@ export interface CacheData extends Data<CacheData> {
   lastUpdated: VersionHistory;
   userSettings: typeof userSettings;
   dataVersions: DataVersions;
-  frontendStructure: FrontendStructure;
+  frontendStructure: FrontendStructure<BaseData<any>, BaseData<any>>;
   backendStructure: BackendStructure;
   backendConfig: typeof backendConfig;
   frontendConfig: typeof frontendConfig

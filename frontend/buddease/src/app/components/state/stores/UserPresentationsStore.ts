@@ -1,14 +1,14 @@
 // UserPresentationsStore.ts
 
 import { BaseCustomEvent } from "@/app/components/event/BaseCustomEvent";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import CalendarEventTimingOptimization, {
-  ExtendedCalendarEvent,
+    ExtendedCalendarEvent,
 } from "../../calendar/CalendarEventTimingOptimization";
 import { Todo } from "../../todos/Todo";
 import { User } from "../../users/User";
+import { NotificationType } from "@/context/NotificationContext";
 import { useAssignEventStore } from "./AssignEventStore";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { NotificationType } from "../../support/NotificationContext";
 
 export type PresentationEventAssignment =
   | BaseCustomEvent

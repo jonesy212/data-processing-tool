@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { Phase } from '../components/phases/Phase';
-import { NotificationType, useNotification } from './../components/support/NotificationContext';
+import { NotificationType, useNotification } from '@/context/NotificationContext';
 import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import headersConfig from './headers/HeadersConfig';

@@ -1,24 +1,24 @@
 // Import necessary types and interfaces
 import { fetchEventData } from "@/app/api/ApiEvent";
 import appTreeApiService from "@/app/api/appTreeApi";
+import { fetchUsersByTaskApi } from "@/app/api/TasksApi";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { EventData } from "@/app/utils/ethereumUtils";
 import { isDataRecentEnough } from "@/app/utils/isDataRecentEnough";
 import { makeObservable } from "mobx";
 import {
-  default as CalendarEventTimingOptimization,
-  default as ExtendedCalendarEvent,
+    default as CalendarEventTimingOptimization,
+    default as ExtendedCalendarEvent,
 } from "../../calendar/CalendarEventTimingOptimization";
-import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
-} from "../../support/NotificationContext";
 import { User } from "../../users/User";
+import {
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification,
+} from "@/context/NotificationContext";
 import { ExtendedTodo, useAssignBaseStore } from "../AssignBaseStore";
 import { AuthStore } from "./AuthStore";
 import { PresentationEventAssignment } from "./UserPresentationsStore";
-import { EventData } from "@/app/utils/ethereumUtils";
-import { fetchUsersByTaskApi } from "@/app/api/TasksApi";
 
 const RESPONSES_STORAGE_KEY = "responses";
 
@@ -371,8 +371,9 @@ const useAssignEventStore = (): AssignEventStore => {
 
 export { useAssignEventStore };
 export type {
-  AssignEventStore,
-  EventData,
-  ExtendedTodo,
-  ReassignEventResponse,
+    AssignEventStore,
+    EventData,
+    ExtendedTodo,
+    ReassignEventResponse
 };
+

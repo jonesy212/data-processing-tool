@@ -1,16 +1,18 @@
 import { handleApiError } from "@/app/api/ApiLogs";
 import { createSnapshot, snapshotContainer } from '@/app/api/SnapshotApi';
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
-import { BaseData, Data } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/components/models/data/Data';
 import { version } from "@/app/components/versions/Version";
 import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import { CustomApp } from "@/app/components/web3/dAppAdapter/DApp";
+import { useNotification } from '@/app/context/NotificationContext';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import metadata from '@/app/layout';
+import { getAuthToken } from '@/server/auth/getAuthToken';
 import { AxiosError, AxiosRequestConfig } from "axios";
 import { Style as DocxStyle } from 'docx';
 import { ContentState } from 'draft-js';
-import { getAuthToken } from '@/server/auth/getAuthToken';
 import { EventAttendance } from '../components/calendar/AttendancePrediction';
 import { CodingLanguageEnum, LanguageEnum } from '../components/communications/LanguageEnum';
 import { ModifiedDate } from "../components/documents/DocType";
@@ -31,7 +33,6 @@ import { SnapshotConfigProps } from '../components/snapshots/SnapshotConfigProps
 import { storeProps } from '../components/snapshots/SnapshotStoreProps';
 import { AlignmentOptions } from '../components/state/redux/slices/toolbarSlice';
 import { Settings } from "../components/state/stores/SettingsStore";
-import { useNotification } from '@/app/context/NotificationContext';
 import UserRoles from '../components/users/UserRoles';
 import { generateSnapshotId } from '../components/utils/snapshotUtils';
 import useSecureStoreId from '../components/utils/useSecureStoreId';
@@ -54,12 +55,11 @@ import { endpoints } from "./ApiEndpoints";
 import { getSnapshotConfig, getSnapshotsAndCategory } from "./SnapshotApi";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
-
+import { createDefaultVersionData } from '@/versions/VersionData';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.data; // Assuming 'endpoints' has a property 'data' for the base URL
 const { notify } = useNotification();
-
 
 type CacheReadOptions<T extends  BaseData<any>> = {
   filePath: string;
@@ -79,7 +79,6 @@ interface CacheResponse<
   data: SupportedData<T, K, Meta>;
 }
 
-
 interface CustomStyle extends DocxStyle {
   fontSize?: string;
   fontWeight?: string;
@@ -88,82 +87,10 @@ interface CustomStyle extends DocxStyle {
   // Add other custom properties as needed
 }
 
-const createDefaultVersionData = (overrides?: Partial<VersionData>): VersionData => ({
-  versionNumber: "16px",
-  id: '0',
-  parentId: "",
-  parentType: "",
-  parentVersion: "",
-
-  parentTitle: "",
-  parentContent: "",
-  parentName: "",
-  parentUrl: "",
-  notes: "",
-  parentChecksum: "",
-  parentAppVersion: "",
-  parentVersionNumber: "",
-  isLatest: false,
-
-  isActive: false,
-  isPublished: false,
-  publishedAt: new Date(),
-  source: "",
-  status: "",
-
-  version: version,
-  timestamp: "",
-  user: "",
-  changes: [],
-
-  comments: [],
-  workspaceId: "",
-  workspaceName: "",
-  workspaceType: "",
-
-  workspaceUrl: "",
-  workspaceViewers: [],
-  workspaceAdmins: [],
-  workspaceMembers: [],
-
-  data: {
-    childIds: [],
-    relatedData: []
-  },
-  backend: {} as BackendStructure,
-  frontend: {} as FrontendStructure,
-  name: "",
-  url: "",
-  documentId: "",
-  draft: false,
-  userId: "",
-  lastUpdated: createLastUpdatedWithVersion(),
-  latestVersion: createLatestVersion<T, K>(),
-  content: "",
-  metadata: {
-    author: "",
-    timestamp: new Date().toISOString(),
-    revisionNotes: ""
-  },
-  major: 0,
-  minor: 0,
-
-  patch: 0,
-  checksum: "",
-
-  releaseDate: '',
-  history: [],
-  ...overrides,
-});
-
 const storeId = useSecureStoreId()
 if (!storeId){
   throw new Error("storeId already exists")
 }
-
-
-
-
 
 const authToken = getAuthToken()
 
@@ -173,38 +100,62 @@ const cacheKey = STORE_KEYS.USER_PREFERENCES; // Replace with the actual key you
 // Get the file path dynamically based on the cache key
 const filePath = getBackendStructureFilePath(cacheKey);
 
+async function initializeAppData() {
+  const configServiceInstance = ConfigurationService.getInstance();
 
-// Instantiate configuration service
-const configServiceInstance = ConfigurationService.getInstance();
+  // Await all configuration values
+  const apiKey = await configServiceInstance.getApiKey();
+  const appId = await configServiceInstance.getAppId();
+  const appDescription = await configServiceInstance.getAppDescription();
+  const username = await configServiceInstance.getUsername(); // assuming you added this
 
+  // Create AppSettings instance
+  const appSettings = new AppSettings(apiKey, appId, appDescription, username);
 
-// Retrieve values
-const apiKey = configServiceInstance.getApiKey();
-const appId = configServiceInstance.getAppId();
-const appDescription = configServiceInstance.getAppDescription();
-// Create an instance of AppSettings
-const appSettings = new AppSettings(apiKey, appId, appDescription);
+  // Create the appData object
+  const appData: CustomApp = {
+    id: appSettings.getAppId(),
+    username: appSettings.getUsername(),
+    name: currentAppName,
+    description: appSettings.getAppDescription(),
+    authToken: authToken,
+    apiKey: appSettings.getApiKey(),
+    relatedData: [],
+    sharedRelationships: {
+      childIds: [],
+      relatedData: [],
+    },
+  };
 
-const currentEvent = calendarEvent.get();
-// Create an instance of appData based on the CustomApp interface
-const appData: CustomApp = {
-  id: appSettings.getAppId(), // Retrieve the actual app ID
-  name: currentAppName, // Replace with the actual app name
-  description: appSettings.getAppDescription(), // Retrieve the actual description
-  authToken: authToken, // Replace with the actual auth token
-  apiKey: appSettings.getApiKey(), // Retrieve the actual API key
-  relatedData: []
-  // Add any additional properties here if needed
-};
+  return appData;
+}
+
+// // Usage
+initializeAppData().then(appData => {
+  console.log(appData);
+});
 
 // Generate headers with the authToken
-const options: CacheReadOptions<CustomApp> = {
-  apiKey: appData.apiKey, // Assuming `appData` has an apiKey property
-  token: authToken,
-  filePath: filePath,
-  currentEvent: currentEvent,
+async function runApp() {
+  // Initialize appData
+  const appData = await initializeAppData();
+  console.log(appData);
 
-};
+  // Generate headers with the authToken
+  const options: CacheReadOptions<CustomApp> = {
+    apiKey: appData.apiKey, // Now appData is available
+    token: authToken,
+    filePath: filePath,
+    currentEvent: currentEvent,
+  };
+
+  // Use options here, e.g., call a function that needs it
+  // await fetchData(options);
+}
+
+// Call the async wrapper
+runApp();
+
 
 // Example usage when calling getSnapshot
 const additionalHeaders: Record<string, string> = generateAllHeaders({ additionalHeaders: { 'Custom-Header': 'value' } }, authToken);
@@ -476,6 +427,8 @@ const cacheData: Partial<SupportedData> = {
       footerContent: "Footer Content",
       differentFirstPage: false,
       differentOddEven: false,
+      headerOptions: '',
+      footerOptions: ''
     },
     zoom: {
       enabled: true,
@@ -780,7 +733,11 @@ const cacheData: Partial<SupportedData> = {
 
     fullName: "",
     avatarUrl: "",
-    tier, token, uploadQuota, bannerUrl,
+    tier: "",
+    token: "",
+    uploadQuota: "",
+    bannerUrl: "",
+   
   },
   assignedUsers: [],
   collaborators: [],
@@ -936,7 +893,7 @@ const readCache = async <T extends BaseData<any>>(
     );
 
     // Fetch cache data using the file path and foundUserName
-    const cacheResponse: CacheResponse<T, K<T>, Meta<T, K>> | undefined = await fetchCacheData(filePath, dynamicCategory, foundUserName);
+    const cacheResponse: CacheResponse<T, K, Meta<T, K>> | undefined = await fetchCacheData(filePath, dynamicCategory, foundUserName);
 
     if (cacheResponse) {
       // Example: Extract relevant data from cacheResponse
@@ -1038,7 +995,6 @@ const fetchCacheData = async <
     throw error;
   }
 };
-
 
 
 

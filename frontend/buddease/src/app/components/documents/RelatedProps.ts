@@ -1,10 +1,10 @@
 // RelatedProps.ts
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { BaseData } from "@/app/components/models/data/Data";
 import { Label } from '@/app/components/projects/branding/BrandingSettings';
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots";
 import { AllTypes } from '@/app/components/typings/PropTypes';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 
 interface SharedTimestamps {
 	createdAt?: string | Date | undefined;
@@ -30,7 +30,6 @@ interface SharedTimestamps {
 	loginAttempts?: number;
 	lockoutEnd?: Date | null;
 }
-
 
 interface SharedStatusFlags {
 	isActive?: boolean;
@@ -80,20 +79,21 @@ interface SharedStatusFlags {
 }
 
 interface SharedIdentifiers<
-	T extends BaseData<any>,
+	T extends BaseDataEntity,
 	K extends T = T,
-	Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-	ExcludedFields extends keyof T	= never
+	Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+	ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
 	_id?: string;
 	id?: string | number | undefined;
 	type?: string | AllTypes | null;
 	title?: string;
-	label?: Label | string | Record<string, string> | null
+	label?: Label | string | Record<string, string> | null;
 	key?: string;
 	value?: string | number | Snapshot<T, K, Meta, ExcludedFields> | null;
-	name?: string
-	category?: symbol | string | Category | undefined,
+	name?: string;
+	category?: symbol | string | Category | undefined;
+	criteria?: CriteriaType
 }
 
 

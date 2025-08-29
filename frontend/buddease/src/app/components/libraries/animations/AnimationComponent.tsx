@@ -4,7 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import createDynamicHook, { DynamicHookResult } from '../../hooks/dynamicHooks/dynamicHookGenerator';
 import { AnimatedComponentProps } from '../../styling/AnimationsAndTansitions';
 
-import authService from '../../auth/AuthService';
+import authService from '@/server/auth/AuthService';
 import useIdleTimeout from '../../hooks/idleTimeoutHooks';
 import DraggableAnimation from './DraggableAnimation'; // Import DraggableAnimation
 

@@ -1,16 +1,14 @@
 // dataStoreMethods.ts
-import { Permission } from '@/app/components/users/Permission';
-import { addToSnapshotList } from '@/app/components/utils/snapshotUtils';
-import { BaseEntity } from '@/app/components/routing/FuzzyMatch'
 import { SnapshotData, SnapshotStoreProps } from '@/app/components/snapshots';
 import { Subscriber } from "@/app/components/users/Subscriber";
-import { isBaseData, isSnapshot } from '@/app/components/utils/snapshotUtils';
+import { addToSnapshotList, isBaseData, isSnapshot } from '@/app/components/utils/snapshotUtils';
 import { CustomHydrateResult } from "@/app/configs/DocumentBuilderConfig";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import { DataStore } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStore, InitializedState } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotConfig, SnapshotItem, SnapshotOperationType } from '../../snapshots';
-import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
+import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "../../snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots/Snapshot";
 
 import { UserData } from "@/app/components/users/User";
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
@@ -28,45 +26,40 @@ import useSecureStoreId from "../../utils/useSecureStoreId";
 import Version from "../../versions/Version";
 import { BaseData, Data } from "./Data";
 import { StatusType } from "./StatusType";
-import { AppMetadata } from '@/app/components/routing/FuzzyMatch'
+import { Attachment } from '../../documents/Attachment/attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import { DelegateType } from '../../snapshots/getSnapshotDelegate';
 
-
-
-
-// Concrete type for T
-type T = BaseEntity<AppMetadata> & {
-  // Domain-specific properties
-  name: string;
-  status: 'active' | 'archived';
-  // ... other fields
-};
-
-// Extended type for K (with additional properties)
-export type K = T & {
-  // Extended properties
-  permissions: Permission[];
-  ownerId: string;
-  // ... extended fields
-};
+// Assuming T is defined in your context
+type T = BaseDataEntity; // Replace with the appropriate type if necessary
+type K = T; // Use T or another type that extends BaseData
+ 
 
 export type UserConfigData<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> = BaseData<T, K, Meta> & UserConfig<T, K, Meta> & UserData<T, K, Meta>;
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  > = BaseData<T, K, Meta, Attachment, ExcludedFields> &
+    UserConfig<T, K, Meta> &
+    UserData<T, K, Meta>;
 
-type Meta<T extends BaseData<any>, K extends T> = StructuredMetadata<T, K>;
+type Meta<T extends BaseDataEntity, K extends T> = StructuredMetadata<T, K>;
 
-type ConvertMeta<U extends BaseData, K extends U = U> = 
-  Meta<U, K> extends StructuredMetadata<U, K> ? StructuredMetadata<U, K> : Meta<U, K>;
+type ConvertMeta<U extends BaseDataEntity, K extends U = U> = 
+  Meta<U, K> extends StructuredMetadata<U, K> ? StructuredMetadata<U, K> : never;
 
-  type ConvertMetadata<U extends BaseData, K extends U = U> = 
-  Meta<U, K> extends UnifiedMetadata<U, K> ? UnifiedMetadata<U, K> : Meta<U, K>;
-
-
+type ConvertMetadata<U extends BaseDataEntity, K extends U = U> = 
+  Meta<U, K> extends UnifiedMetadata<U, K, DefaultMeta<U, K>, keyof U> ?  // ← Add proper generic parameters
+    UnifiedMetadata<U, K, DefaultMeta<U, K>, keyof U> : 
+    Meta<U, K>;
 
 // Unified metadata type
-export type Metadata<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = UnifiedMetaDataOptions<T, K>;
+export type Metadata<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+> = UnifiedMetaDataOptions<T, K>;
 
 const storeId = useSecureStoreId()
 
@@ -79,15 +72,19 @@ function convertStringToT(key: string): T {
   return JSON.parse(key) as T; 
 }
 
+// Now the function should work correctly
 function createDefaultSnapshotWithCriteria<
-  T extends BaseData<any> = BaseData<any>,
-  K extends T = T
->(): SnapshotWithCriteria<T, K> {
-  return {
-    // Required Snapshot properties
-    dataObject: {},
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T,K> = DefaultMeta<T,K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
+  overrides?: Partial<SnapshotWithCriteria<T,K,Meta,ExcludedFields>>
+): SnapshotWithCriteria<T,K,Meta,ExcludedFields> {
+  const defaultSnapshot: SnapshotWithCriteria<T,K,Meta,ExcludedFields> = {
+    dataObject: {} as T,
     deleted: false,
-    initialState: {},
+    initialState: {} as Partial<T>,
     isCore: false,
     isDeleted: false,
     isModified: false,
@@ -99,41 +96,44 @@ function createDefaultSnapshotWithCriteria<
     isTransient: false,
     isUpdated: false,
     isValid: true,
-    metadata: undefined,
-    originalData: {},
+    metadata: undefined as unknown as Meta,
+    originalData: {} as Partial<T>,
     snapshotId: '',
     snapshotType: 'default',
     state: 'active',
     timestamp: new Date().toISOString(),
     version: 0,
-    
-    // SnapshotWithCriteria specific properties
-    criteria: {
-      filters: [],
-      limit: 0,
-      offset: 0,
-      sort: [],
-    },
+    criteria: { filters: [], limit: 0, offset: 0, sort: [] } as any,
     analysisType: undefined,
     events: undefined,
     subscribers: [],
     tags: [],
     snapshots: undefined,
-    delegate: {
-      id: 'default-delegate',
-      type: 'default',
-      metadata: undefined,
-      methods: {},
-    },
+    delegate: { id: 'default-delegate', type: 'default', metadata: undefined as unknown as Meta, methods: {} },
+  };
+
+  // Spread overrides safely
+  return {
+    ...defaultSnapshot,
+    ...(overrides as Partial<SnapshotWithCriteria<T,K,Meta,ExcludedFields>> || {})
   };
 }
 
 
-const configTransform = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+
+
+
+
+const configTransform = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+>(
   config: SnapshotStoreConfig<T, K>
 ): SnapshotStoreConfig<T, K> => {
   // Map the input `config` to a `SnapshotStoreConfig<T, K>`
   return {
+    // Optional properties
     id: config.id,
     storeId: config.storeId,
     find: config.find,
@@ -142,8 +142,7 @@ const configTransform = <T extends  BaseData<any>, K extends T = T, Meta extends
     callback: config.callback,
     isCore: config.isCore,
     operation: config.operation,
-    
-    // Optional properties
+    initialBaseConfig: config.initialBaseConfig,
     snapshotManager: config.snapshotManager,
     payload: config.payload,
     snapshotStoreData: config.snapshotStoreData,
@@ -358,13 +357,14 @@ const configTransform = <T extends  BaseData<any>, K extends T = T, Meta extends
 
 
     // Add other mappings as needed
-  } as SnapshotStoreConfig<T, K>;
+  }
+  //  as SnapshotStoreConfig<T, K>;
 };
 
-function createDefaultSnapshotStoreConfig(): SnapshotStoreConfig<T, BaseData<any>> {
+function createDefaultSnapshotStoreConfig(): SnapshotStoreConfig<T, BaseDataEntity> {
   return {
     id: "defaultId",
-    snapshotWithCriteria: createDefaultSnapshotWithCriteria<T, K<T>>(), // Default criteria
+    snapshotWithCriteria: createDefaultSnapshotWithCriteria<T, K>(), // Default criteria
     // Initialize other fields as needed
   };
 }
@@ -373,9 +373,9 @@ function createDefaultSnapshotStoreConfig(): SnapshotStoreConfig<T, BaseData<any
 const defaultSnapshotStoreConfig = createDefaultSnapshotStoreConfig();
 
 const dataStoreMethods = <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(): {
   data: T | undefined;
   storage: SnapshotStore<T, K>[];
@@ -432,7 +432,7 @@ const dataStoreMethods = <
       // Implement logic to fetch data versions from a data source
       return undefined;
     },
-    updateDataVersions: (id: number, versions: Snapshots<BaseData>) => { },
+    updateDataVersions: (id: number, versions: Snapshots<BaseDataEntity>) => { },
     getBackendVersion: () => {
       const conditionForHydrateResult = true; // Replace with actual condition
 
@@ -440,7 +440,7 @@ const dataStoreMethods = <
         const hydrateResult: CustomHydrateResult<number> = {
           storeKey: "dataStore",
           storeValue: 0,
-          version: {} as Version,
+          version: {} as Version<T, K, Meta>,
           customProperty1: "",
           customMethod: () => { },
           // The `rehydrate` method now returns `hydrateResult` to ensure recursive compatibility
@@ -1216,7 +1216,7 @@ const dataStoreMethods = <
     return {};
   },
 
-    getItem: (key: T): Promise<Snapshot<any,  BaseData<any>> | undefined> => {
+    getItem: (key: T): Promise<Snapshot<any,  BaseDataEntity> | undefined> => {
       return new Promise((resolve, reject) => {
         const methods = dataStoreMethods<T, K, Meta>(); // Call the function to get the methods
         if (methods.storage?.length) {
@@ -1303,7 +1303,8 @@ const dataStoreMethods = <
     getAllItems: async (
       storeId: number,
       snapshotId: string,
-      category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
+      category: Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
       snapshot: SnapshotUnion<T, K, Meta> | null,
       timestamp: string | number | Date | undefined,
       type: string,
@@ -1330,9 +1331,8 @@ const dataStoreMethods = <
           })
         );
 
-
         const filteredItems = items.filter(
-          (item): item is  BaseData<any> => item !== undefined
+          (item): item is  BaseDataEntity => item !== undefined
         );
 
         return filteredItems.map(item => ({
@@ -1650,7 +1650,7 @@ const dataStoreMethods = <
 
     meta: {},
 
-    getSnapshotStoreData: function <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+    getSnapshotStoreData: function <T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
       id: number,
       storeProps: SnapshotStoreProps<T, K>
     ): Promise<SnapshotStore<T, K> | undefined> {
@@ -1722,9 +1722,9 @@ const dataStoreMethods = <
     getSnapshotWithCriteria: function (
       category: Category | undefined,      timestamp: any,
       id: number,
-      snapshot: Snapshot<BaseData, any>,
+      snapshot: Snapshot<BaseDataEntity, any>,
       snapshotStore: SnapshotStore<T, any>,
-      data:  BaseData<any>
+      data:  BaseDataEntity
     ): Promise<SnapshotWithCriteria<T, K> | undefined> {
       return new Promise((resolve, reject) => {
         resolve(undefined);
@@ -1736,7 +1736,7 @@ const dataStoreMethods = <
       id: number,
       snapshot: Snapshot<BaseData, any>,
       snapshotStore: SnapshotStore<T, any>,
-      data:  BaseData<any>
+      data:  BaseDataEntity
     ): Promise<Snapshot<T, any>[] | undefined> {
       return new Promise((resolve, reject) => {
         resolve(undefined);
@@ -1747,7 +1747,7 @@ const dataStoreMethods = <
       id: number,
       snapshot: Snapshot<BaseData, any>,
       snapshotStore: SnapshotStore<T, any>,
-      data:  BaseData<any>
+      data:  BaseDataEntity
     ): Promise<SnapshotWithCriteria<T, K>[] | undefined> {
       return new Promise((resolve, reject) => {
         resolve(undefined);
@@ -1817,7 +1817,7 @@ const dataStoreMethods = <
     },
 
     updateStoreData: (
-      data:  BaseData<any>,
+      data:  BaseDataEntity,
       id: number,
       newData: SnapshotStore<T, K>
     ): Promise<SnapshotStore<T, K>[]> => {
@@ -1829,7 +1829,7 @@ const dataStoreMethods = <
       category: string, // Adjusted to more specific type
       timestamp: string, // Adjusted to more specific type
       id: number,
-      snapshot: Snapshot<T, K, Meta>,
+      snapshot: Snapshot<T, K, DefaultMeta<T, K>>,
       snapshotStore: SnapshotStore<T, K>,
       snapshotData: SnapshotData<T, K>,
       data: InitializedData<T, K> | null | undefined,
@@ -1869,7 +1869,8 @@ const dataStoreMethods = <
     mapSnapshotStore: (
       storeId: number,
       snapshotId: string,
-      category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
+      category: Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<any, any>,
       timestamp: string | number | Date | undefined,
       type: string,
@@ -1936,5 +1937,5 @@ export const updateSnapshotDetails = async (
 };
 
 export { dataStoreMethods };
-export type { ConvertMeta, ConvertMetadata, Meta, T, K};
+export type { ConvertMeta, ConvertMetadata, K, Meta, T };
 

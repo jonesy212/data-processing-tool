@@ -43,7 +43,8 @@ import { isSnapshot, isSnapshotOfType } from "@/app/components/utils/snapshotUti
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { NotificationType } from "@/app/context/NotificationContext";
 import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/server/database/Payload';
-;
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+
 
 import { getCurrentAppInfo } from '@/app/components/versions/VersionGenerator';
 import { createVersionInfo } from '@/app/components/versions/createVersionInfo';
@@ -67,20 +68,46 @@ import { returnsSnapshotStore } from './../../../snapshots/responsetUtils';
 const dispatch = useDispatch()
 
 
-interface CommonDataStoreMethods <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
-  getSnapshotByKey(key: string): Snapshot<T, K> | undefined;
-  mapSnapshotStore(): Map<string, Snapshot<T, K>>;
+interface CommonDataStoreMethods<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = never  // ← Add ExcludedFields
+> {
+  getSnapshotByKey(key: string): Snapshot<T, K, Meta, ExcludedFields> | undefined;
+  mapSnapshotStore(): Map<string, Snapshot<T, K, Meta, ExcludedFields>>;
   getSubscribers(): SubscriberCollection<T, K>;
   getDataWithSearchCriteria(criteria: FilterCriteria): T[];
   getDataWithSearchCriteria(criteria: SearchCriteria): T[];
-  getDataWithSearchCriteria(criteria: MixedCriteria): T[];  // Mixed criteria
+  getDataWithSearchCriteria(criteria: MixedCriteria): T[];  
+  addData: (id: string, data: Partial<Snapshot<T, K, Meta, ExcludedFields>>) => void;
 }
 
+function createDataStore<
+ T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+>(
+  
+) {
+  const config = {} as SnapshotStoreConfig<T, K>;
+  const store = new SnapshotStore<T, K>(config);
+  return {
+    store,
+    config,
+  };
+}
 
-export interface DataStore<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+export interface DataStore<
+ T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>
   extends SnapshotSubscriberManagement<T, K, Meta>,
   BaseSnapshotProps<T, K>,
-  SnapshotStoreConfig<T, K, Meta>
+  SnapshotStoreConfig<T, K, Meta>,
+  CommonDataStoreMethods<T, K, Meta, ExcludedFields>
 {
   id: string | number | undefined
   data?: InitializedData<T, K> | null;
@@ -97,15 +124,21 @@ export interface DataStore<T extends  BaseData<any>, K extends T = T, Meta exten
     data: Snapshot<T, K> | Snapshot<T, CustomSnapshotData<T, K, Meta> & K, StructuredMetadata<T, CustomSnapshotData<T, K, Meta> & K>>
   ) => Promise<SnapshotStore<T, K>[] | undefined>;
 
-
- // Add convertKeyToT method
- convertKeyToT: (key: string) => T; // Adjust as necessary
- 
- getSubscribers: () => Promise<{
-  subscribers: Subscriber<T, K>[];
-  snapshots: Snapshots<T, K>;
-}>;
-
+  // Add convertKeyToT method
+  convertKeyToT: (key: string) => T; // Adjust as necessary
+  
+  getSubscribers: (
+    snapshotId: string,
+    category: Category | undefined,    
+    categoryProperties: CategoryProperties | undefined,
+    snapshot: Snapshot<T, K>,
+    timestamp: string | number | Date | undefined,
+    type: string,
+    event: Event,
+    id: number,
+    snapshotStore: SnapshotStore<T, K>,
+    data: T
+  ) => Promise<Subscriber<T, K>[]>;
 
   getSnapshotByKey: (
     storeId: number,
@@ -138,7 +171,8 @@ export interface DataStore<T extends  BaseData<any>, K extends T = T, Meta exten
     callback: (
       storeIds: number[],
       snapshotId: string,
-      category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
+      category: Category | undefined,      
+      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K>,
       timestamp: string | number | Date | undefined,
       type: string,
@@ -186,7 +220,6 @@ export interface DataStore<T extends  BaseData<any>, K extends T = T, Meta exten
     // snapshotStore: SnapshotStore<any, any>,
   //   data: Data
   // ) => Promise<SnapshotStore<T>[]>;
-
 
   getSuubscribers: (
     snapshotId: string,
@@ -350,14 +383,22 @@ export interface DataStore<T extends  BaseData<any>, K extends T = T, Meta exten
 
 
 
-interface VersionedData <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface VersionedData <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+> {
   versionNumber: string;
   appVersion: string;
   content: any;
   getData: (id: number) => Promise<SnapshotStore<T, K>[]>;
 }
 
-const useVersionedData =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const useVersionedData =  <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+>(
   data: Map<string, T>,
   fetchData: () => Promise<SnapshotStore<T, K>[]>,
 ): VersionedData<T, K> => {
@@ -372,11 +413,20 @@ const useVersionedData =  <T extends  BaseData<any>, K extends T = T, Meta exten
 
 
 
-interface CallbackItem<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends SnapshotItem<T, K> {
+interface CallbackItem<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+> extends SnapshotItem<T, K
+> {
   callback: (snapshot: Snapshot<T, K>) => void;
 }
 
-type InitializedState<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
+type InitializedState<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+> =
   | T
   | Snapshot<T, K>
   | SnapshotStore<T, K>
@@ -387,7 +437,11 @@ type InitializedState<T extends  BaseData<any>, K extends T = T, Meta extends St
   
   
   
-  const initializeState = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  const initializeState = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+>(
     initialState: InitializedState<T, K, Meta>
   ): InitializedState<T, K, Meta> => {
     if (isSnapshot(initialState)) {
@@ -409,21 +463,34 @@ type InitializedState<T extends  BaseData<any>, K extends T = T, Meta extends St
   
 
 
-interface EventManager<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface EventManager<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+> {
   eventRecords: {
     [key: string]: EventRecord<T, K>[]; // Index signature to allow string keys
   };
 }
 
 // Factory function to create an instance of EventManager
-function createEventManager<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): EventManager<T, K, Meta> {
+function createEventManager<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+>(): EventManager<T, K, Meta
+> {
   return {
     eventRecords: {} // Initialize with an empty object
   };
 }
 
 
-interface EventRecord<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface EventRecord<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+> {
   record: CalendarManagerStoreClass<T, K>;  // Adjust as necessary
   records?: CalendarManagerStoreClass<T, K>[];  // Adjust as necessary
   callback: (snapshot: Snapshot<T, K>) => void;
@@ -433,9 +500,10 @@ interface EventRecord<T extends  BaseData<any>, K extends T = T, Meta extends St
 }
 
 
-class ConfigurableSnapshotStore<T extends  BaseData<any>, 
-K extends T = T,
- Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+class ConfigurableSnapshotStore<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
  > extends SnapshotStore<T, K>  
  implements SnapshotStoreCore<T, K, Meta> {
 
@@ -459,7 +527,12 @@ K extends T = T,
   }
 }
 
-const useDataStore = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const useDataStore = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  >(
   initialState: InitializedState<T, K> = null
 ): DataStore<T, K> & VersionedData<T, K> => {
   const data: Map<string, Snapshot<T, K>> = new Map<string, Snapshot<T, K>>();
@@ -1507,10 +1580,14 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
               getInitialDelegate: function (): SnapshotStoreConfig<T, K> {
                 throw new Error('Function not implemented.');
               },
-              transformSnapshot: function <U extends BaseData, T extends BaseData>(snapshot: Snapshot<BaseData, T>): Snapshot<U, U> {
+              transformSnapshot: function <
+              U extends BaseDataEntity, 
+              T extends BaseDataEntity>(snapshot: Snapshot<BaseDataEntity, T>): Snapshot<U, U> {
                 throw new Error('Function not implemented.');
               },
-              transformInitialState: function <U extends BaseData, T extends BaseData>(initialState: InitializedState<BaseData, T>): InitializedState<U, U> {
+              transformInitialState: function <
+              U extends BaseDataEntity, 
+              T extends BaseDataEntity>(initialState: InitializedState<BaseDataEntity, T>): InitializedState<U, U> {
                 throw new Error('Function not implemented.');
               },
               restoreSnapshot: function <R>(
@@ -1526,7 +1603,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
                 event: string | SnapshotEvents<T, K>,
                 subscribers: SubscriberCollection<T, K>,
                 snapshotContainer?: T,
-                snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData, Meta>, T> | undefined
+                snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseDataEntity, Meta>, T> | undefined
               ): Snapshot<T, K> | null {
                 try {
                   // Logic to restore the snapshot based on the provided snapshotData
@@ -2375,6 +2452,6 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K> | undefined> => {
   };
 };
 
-export { createEventManager, initializeState, useDataStore };
+export { createEventManager, createDataStore, initializeState, useDataStore };
 export type { CommonDataStoreMethods, ConfigurableSnapshotStore, EventManager, EventRecord, InitializedState, VersionedData };
 

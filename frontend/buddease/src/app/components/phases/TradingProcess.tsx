@@ -2,6 +2,7 @@
 import axiosInstance from "@/app/api/axiosInstance";
 import React, { useState } from "react";
 
+import { useStepContext } from "@/app/context/StepContext";
 import TradingConfirmationPage from "@/app/pages/confirmation/TradingConfirmationPage";
 import RiskAssessmentPage from "@/app/pages/crypto/RiskAssessmentPage";
 import ProfessionalTraderCalls from "@/app/pages/personas/ProfessionalTraderCalls";
@@ -10,9 +11,9 @@ import ProfessionalTraderDashboard from "@/app/pages/personas/ProfessionalTrader
 import ProfessionalTraderProfile from "@/app/pages/personas/ProfessionalTraderProfile";
 import VerificationPage from "@/app/pages/profile/VerificationPage";
 import {
-  NotificationTypeEnum,
-  useNotification,
-} from "../support/NotificationContext";
+    NotificationTypeEnum,
+    useNotification,
+} from "@/context/NotificationContext";
 import TradingReviewStep from "../trading/TradingReviewStep";
 import * as TradingAPI from "./../../api/ApiTrading";
 import TradingPreferencesStep from "./TradingPreferencesStep";
@@ -21,7 +22,6 @@ import TraderTypesSelection from "./crypto/TraderTypesSelection";
 import TradingAssetsStep from "./steps/TradingAssetsStep";
 import TradingBasicInfoStep from "./steps/TradingBasicInfoStep";
 import TradingSummaryStep from "./steps/TradingSummaryStep";
-import { useStepContext } from "@/app/context/StepContext";
 
 const TradingProcess: React.FC = () => {
   const { notify } = useNotification();

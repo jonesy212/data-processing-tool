@@ -15,20 +15,26 @@ import { Member } from "../../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
 import { SnapshotData, SnapshotStoreConfig } from '../../snapshots';
 import { FetchSnapshotPayload } from '../../snapshots/FetchSnapshotPayload';
-import { Snapshot, SnapshotsArray, SnapshotUnion } from '../../snapshots/LocalStorageSnapshotStore';
+import { SnapshotsArray, SnapshotUnion } from '../../snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from '@/app/components/snapshots/Snapshot';
 import SnapshotStore from '../../snapshots/SnapshotStore';
 import { snapshotStoreConfigInstance } from '../../snapshots/snapshotStoreConfigInstance';
 import { SnapshotWithCriteria, TagsRecord } from '../../snapshots/SnapshotWithCriteria';
 import { Callback } from '../../snapshots/subscribeToSnapshotsImplementation';
-import { convertToDataSnapshot, isSnapshot } from '../../typings/YourSpecificSnapshotType';
+import { convertToDataSnapshot } from '../../typings/YourSpecificSnapshotType';
+import { isSnapshot } from "@/app/components/utils/snapshotUtils";
 import { Subscriber } from '../../users/Subscriber';
 import { ExtendedVersionData } from '../../versions/VersionData';
 import { VideoData } from "../../video/Video";
 
-interface CommonEvent extends Data<T> {
+interface CommonEvent<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = never
+> extends Data<T, K, Meta> {  // Fixed: Data requires T, K, Meta
   title: string;
 
-  
   // Shared date properties
   date: string | Date | undefined;
 
@@ -40,16 +46,20 @@ interface CommonEvent extends Data<T> {
   // Recurrence properties
   recurring?: boolean;
   recurrenceRule?: string;
+  
   // Other common properties
-  category?: symbol | string | Category | undefined,
+  category?: symbol | string | Category | undefined;
   timezone?: string;
   participants: Member[];
   language?: string;
   agenda?: string;
   collaborationTool?: string;
-  metadata?: UnifiedMetadata<T, K, Meta, ExcludedFields>
+  metadata?: UnifiedMetadata<T, K, Meta, ExcludedFields>;
+  
   // Implement the `then` function using the reusable function
-  then?: <T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
+  then?: <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+    callback: (newData: Snapshot<BaseData, K>) => void
+  ) => Snapshot<Data<T, K, Meta>, K> | undefined; // Fixed return type
 }
 
 // Define the function to implement the `then` functionality
@@ -243,10 +253,10 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
   return snapshot;
 }
 
+const metadata: UnifiedMetadata<T, K> = useMetadata<BaseData<any>>(area);
 
-
-// Define the `commonEvent` object using the `CommonEvent` interface
-const commonEvent: CommonEvent = {
+// Define the `defaultCommonEvent` object using the `CommonEvent` interface
+const defaultCommonEvent: CommonEvent = {
   _id: "",
   id: "",
   title: "",
@@ -261,7 +271,7 @@ const commonEvent: CommonEvent = {
   language: "",
   agenda: "",
   collaborationTool: "",
-  metadata: {},
+  metadata: metadata,
 
   status: StatusType.Scheduled,
   isActive: false,
@@ -269,10 +279,10 @@ const commonEvent: CommonEvent = {
   phase: null,
   // Implement the `then` function using the reusable function
   then: <T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-    callback: (newData: Snapshot<Data, K>) => void) => implementThen(callback),
+    callback: (newData: Snapshot<Data<T, K, Meta>, K>) => void) => implementThen(callback),
   analysisType: {} as AnalysisTypeEnum.COMPARATIVE,
   analysisResults: [],
-  videoData: {} as VideoData,
+  videoData: {} as VideoData<T, K>,
 };
-export default CommonEvent;
-export { commonEvent };
+export { CommonEvent, defaultCommonEvent };
+

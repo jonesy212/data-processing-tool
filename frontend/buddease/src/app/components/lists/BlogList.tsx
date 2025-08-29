@@ -1,7 +1,7 @@
 import { Content } from '@/app/components/models/content/AddContent';
 import { BaseData } from '@/app/components/models/data/Data';
 import { StatusType } from "@/app/components/models/data/StatusType";
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots";
 import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import ListGenerator from "@/app/generators/ListGenerator";

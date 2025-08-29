@@ -1,10 +1,13 @@
+import { fetchUserAreaDimensions, UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import React, { useState } from "react";
 import Stopwatch from "../calendar/Stopwatch";
-import { enhancedPhaseHook, setCurrentPhase } from "../hooks/phaseHooks/EnhancePhase";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
-import { PhaseHookConfig } from "../hooks/phaseHooks/PhaseHooks";
 import useAsyncHookLinker from "../hooks/useAsyncHookLinker";
-import { Phase, CustomPhaseHooks } from "./Phase";
+import { Phase } from "./Phase";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { useMetadata } from "@/app/configs/useMetadata";
+import { useMeta } from "@/app/configs/useMeta";
+import { BaseData } from "../models/data/Data";
+import { T, K } from "../models/data/dataStoreMethods";
 // Function to get a phase component based on the selected phase name
 function getPhaseComponent(selectedPhaseName: string): React.FC | undefined {
   const selectedPhase = genericLifecyclePhases.find(
@@ -22,27 +25,29 @@ const defaultCondition = async (idleTimeoutDuration: number): Promise<boolean> =
 };
 
 
+
   // Reusable PhaseManager component
   const PhaseManager: React.FC<{ phases: Phase[] }> = ({ phases }) => {
     const [currentPhase, setCurrentPhase] = useState<Phase | null>(null);
 
+    const area = fetchUserAreaDimensions().toString()
+    const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+    const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
+
     const createPhases = () => {
       // Logic to create phases...
 
-
-
-    const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
-    const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
-
-   
       // Example: Create an array of phase objects
       const newPhases: Phase[] = [
         {
           id: "201-1",
           name: "Phase 1",
-          description, label, 
-          currentMeta, 
-          currentMetadata,
+          description: "Phase 1 Description",
+          label: "", 
+          currentMeta: currentMeta,
+          currentMetadata: currentMetadata,
+          createdBy: "",
+          date: new Date(),
           startDate: new Date(),
           endDate: new Date(),
           component: () => <div>Phase 1 Component</div>,
@@ -63,6 +68,9 @@ const defaultCondition = async (idleTimeoutDuration: number): Promise<boolean> =
           name: "Phase 2",
           startDate: new Date(),
           endDate: new Date(),
+          description: "Phase 2 Description",
+          date: new Date(),
+          createdBy: "",
           component: () => <div>Phase 2 Component</div>,
           subPhases: [],
           hooks: {
@@ -158,6 +166,9 @@ const genericLifecyclePhases: Phase[] = [
     name: "Idea Lifecycle",
     startDate: new Date(),
     endDate: new Date(),
+    description: "Lifecycle Description",
+    date: new Date(),
+    createdBy: "user 1",
     component: () => <IdeaLifecyclePhase />,
     subPhases: [],
     hooks: {

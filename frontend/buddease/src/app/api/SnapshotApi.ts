@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { snapshot, SnapshotOperation, SnapshotStoreProps } from '@/app/components/snapshots';
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
@@ -30,11 +31,8 @@ import { DataStore } from '../components/projects/DataAnalysisPhase/DataProcessi
 import { sendToAnalytics } from '../components/projects/DataAnalysisPhase/sendToAnalytics';
 import { ProjectType } from "../components/projects/Project";
 import { ConfigureSnapshotStorePayload, SnapshotConfig, SnapshotData, SnapshotDataType, SnapshotStoreConfig, SnapshotWithCriteria, useSnapshotStore } from "../components/snapshots";
-import {
-  Snapshot,
-  snapshotFunction,
-  Snapshots
-} from "../components/snapshots/LocalStorageSnapshotStore";
+import { snapshotFunction, Snapshots } from "../components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "../components/snapshots/Snapshot";
 import { SnapshotContainer, SnapshotContainerData } from "../components/snapshots/SnapshotContainer";
 import SnapshotList from "../components/snapshots/SnapshotList";
 import { isSnapshotFunction } from '../components/snapshots/SnapshotMap';
@@ -74,6 +72,8 @@ import createRequestHeaders from "./headers/requestHeaders";
 import { unsubscribe } from '../components/utils/applicationUtils';
 import { createSnapshotInstance } from '../components/snapshots/createSnapshotInstance';
 import { SnapshotEvent } from '../typings/eventTypes';
+import { CreateOptions } from './SnapshotOptions';
+import SnapshotApiService from './SnapshotApiService';
 
 const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
 const dispatch = useDispatch()
@@ -209,9 +209,13 @@ const apiCall = <
 const snapshotApi = new SnapshotApiService();
 
 // React-friendly functional wrappers
+// React-friendly functional wrappers
 export const useSnapshotApi = () => {
   const createSnapshot = useCallback(
-    async <T extends BaseData, K extends T = T>(
+    async <
+      T extends BaseData<any, any, any, any, any>, // Provide all required type arguments
+      K extends T = T
+    >(
       snapshot: Snapshot<T, K>,
       options?: CreateOptions
     ) => {
@@ -361,7 +365,11 @@ const createSnapshot = async <
 };
 
 // Function to determine category from a Snapshot
-const determineCategory = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const determineCategory = <
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
   snapshot: Snapshot<T, K>
 ): string => {
   const category = snapshot.category; // Assuming 'category' is a property of Snapshot
@@ -375,6 +383,7 @@ const getSnapshotsAndCategory = async <
 >(
   category: Category | undefined,
   snapshotId: string,
+  storeId: number, 
   snapshot: Snapshot<T, K>,
   type: string,
   event: SnapshotEvent<T, K>,
@@ -390,16 +399,15 @@ const getSnapshotsAndCategory = async <
 
   try {
     const response = await axiosInstance.get(targetUrl, { headers });
+    const isValidSnapshotFunc = (entry: any): entry is Snapshot<T, K> => isSnapshot<T, K>(entry);
 
     const snapshotsData: Snapshot<T, K>[] = response.data
-      .filter(isValidSnapshot)
-      .map((entry) => entry && ({
+      .filter(isValidSnapshotFunc)
+      .map((entry: Snapshot<T, K>) => ({
         ...entry,
         filterSnapshotsByStatus: entry?.filterSnapshotsByStatus,
         filterSnapshotsByCategory: entry?.filterSnapshotsByCategory,
-      }))
-      .filter((entry): entry is Snapshot<T, K> => entry !== undefined);
-
+      }));
     // Get the category from the snapshot using determineCategory
     const categoryFromSnapshot = determineCategory(snapshot);
 
@@ -510,8 +518,6 @@ const findSnapshotsBySubscriber = async <T extends  BaseData<any>, K extends T =
         hasSnapshots: entry.hasSnapshots ?? (() => false), // Default to a function that returns false if undefined
         initializeWithData: entry.initializeWithData ? entry.initializeWithData : () => { },
 
-
-        removeSubscriber: entry.removeSubscriber,
         onInitialize: entry.onInitialize,
         onError: entry.onError,
         taskIdToAssign: entry.taskIdToAssign,
@@ -863,9 +869,13 @@ const handleOtherStatusCodes = (appConfig: AppConfig, statusCode: number) => {
 };
 
 
-const addSnapshot = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const addSnapshot = async <
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
   newSnapshot: Omit<Snapshot<T, K>, "id">
-): Promise<void> => {
+): Promise<Snapshot<T, K>> => {
   try {
     const token = localStorage.getItem("accessToken");
     const userId = localStorage.getItem("userId");
@@ -880,23 +890,34 @@ const addSnapshot = async <T extends  BaseData<any>, K extends T = T, Meta exten
     ];
 
     const headers = Object.assign({}, ...headersArray);
-    const response = await axiosInstance.post("/snapshots", newSnapshot, {
-      headers: headers as Record<string, string>,
-    });
+    const response = await axiosInstance.post<Snapshot<T, K>>(
+      "/snapshots",
+      newSnapshot,
+      { headers: headers as Record<string, string> }
+    );
 
     if (response.status === 201) {
-      console.log("Snapshot added successfully:", response.data);
+      const addedSnapshot = response.data;
 
-      // Notify subscribers of successful snapshot addition
-      subscriptionServiceInstance.notify("snapshotAdded", response.data);
+      console.log("Snapshot added successfully:", addedSnapshot);
+
+      // ✅ Notify with the properly typed Snapshot
+      subscriptionServiceInstance.notify<Snapshot<T, K>>(
+        "snapshotAdded",
+        addedSnapshot
+      );
+
+      return addedSnapshot;
     } else {
       console.error("Failed to add snapshot. Status:", response.status);
+      throw new Error(`Failed to add snapshot. Status: ${response.status}`);
     }
   } catch (error) {
     handleApiError(error as AxiosError<unknown>, "Failed to add snapshot");
     throw error;
   }
 };
+
 
 
 const addSnapshotSuccess = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
@@ -2102,7 +2123,7 @@ const getSnapshotConfig = <T extends  BaseData<any>, K extends T = T, Meta exten
         const additionalHeaders = createHeaders();
 
         const { criteria } = storeProps
-        const snapshotId = getSnapshotId(criteria)
+          const snapshotId = getSnapshotId(criteria)
         if (!snapshotId) {
             throw new Error("")
           }
@@ -2112,9 +2133,8 @@ const getSnapshotConfig = <T extends  BaseData<any>, K extends T = T, Meta exten
 
         const snapshotStore = await fetchSnapshotStoreData(id); // Replace with your actual fetch logic
 
-
         const snapshotContainer = snapshotApi.getSnapshotContainer(
-          await snapshotId,
+          snapshotId,
           Number(storeId),
           headers, 
           storeProps, 
@@ -2362,13 +2382,15 @@ const getSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta extend
   snapshotFunction: (
     id: string | number | undefined,
     snapshotData: SnapshotData<T, K>,
-    category: Category | undefined,    callback: (snapshot: SnapshotStore<T, K>) => void,
+    category: Category | undefined,
+    callback: (snapshot: SnapshotStore<T, K, Meta>) => void,
     criteria: CriteriaType,
     snapshotId?: string | number | null,
-    snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, SnapshotWithCriteria<any, BaseData>>,
-    snapshotContainerData?: SnapshotStore<T, K> | Snapshot<T, K> | null
-  ) => Promise<SnapshotData<T, K>>
-): Promise<SnapshotStore<T, K>> => {
+    snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta>,
+    snapshotStoreConfigSearch?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, SnapshotWithCriteria<any, BaseData>>,
+    snapshotContainerData?: SnapshotStore<T, K, Meta> | Snapshot<T, K, Meta> | null
+  ) => Promise<SnapshotData<T, K, Meta>>
+): Promise<SnapshotStore<T, K, Meta>> => {
   return new Promise(async (resolve, reject) => {
     try {
       const accessToken = localStorage.getItem("accessToken");

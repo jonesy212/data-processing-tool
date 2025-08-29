@@ -4,10 +4,10 @@ import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import { action, observable } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
 import React, { useState } from "react";
-import getAppPath from "../../../../appPath";
+import getAppPath from "../../configs/appStructure/appPath";
+import { BoardItem, CollaborationBoardStore } from "../state/stores/CollaborationBoardStore";
 import { getCurrentAppInfo } from "../versions/VersionGenerator";
 import { ColorSwatchProps } from "./ColorPalette";
-import { BoardItem, CollaborationBoardStore } from "../state/stores/CollaborationBoardStore";
  
 // Usage of getCurrentAppInfo
 interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {

@@ -1,7 +1,7 @@
+import { NotificationTypeEnum, useNotification } from "@/context/NotificationContext"; // Import the notification context
 import { Data } from "../components/models/data/Data";
 import { useDetailsContext } from "../components/models/data/DetailsContext";
 import { DetailsItem } from "../components/state/stores/DetailsListStore";
-import { NotificationTypeEnum, useNotification } from "../components/support/NotificationContext"; // Import the notification context
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { endpoints } from "./ApiEndpoints";
 import axiosInstance from "./axiosInstance";

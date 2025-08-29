@@ -6,6 +6,8 @@ import useRealtimeEditing from "./hooks/useRealtimeEditing";
 import useDocumentStore, { Document } from "./state/stores/DocumentStore";
 import calculateKPMBasedOnEditorChanges from "./strategy/calculateKPMBasedOnEditorChanges";
 import * as apiDocument from './../../app/api/ApiDocument'
+
+
 const RealtimeTranscriptionComponent = () => {
   const { documents, fetchDocuments, updateDocument } = useDocumentStore();
   const documentIds = Object.keys(documents);

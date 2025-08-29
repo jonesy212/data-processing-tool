@@ -16,11 +16,12 @@ import { StatusType } from '../data/StatusType';
 import { TaskData } from '../tasks/Task';
 import ContentDetailsListItem from "./ContentDetailsListItem";
 import ContentToolbar from "./ContentToolbar";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 
 interface Content<
-  T extends  BaseData<any, any> = BaseData<any, any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
  > extends SharedMetadata<T, K> {
   id: string | number | undefined;
   title: string;

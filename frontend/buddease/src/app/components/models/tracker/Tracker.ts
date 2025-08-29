@@ -1,7 +1,9 @@
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 //Tracker.ts
+import { HighlightColor } from "@/app/components/styling/Palette";
+import { detectMetadataChanges } from "@/app/configs/metadata/detectMetadataChanges";
+import { useAuth } from "@/server/auth/AuthContext";
 import path from "path";
-import { useDispatch } from "react-redux";
-import { useAuth } from "../../auth/AuthContext";
 import { Phase } from "../../phases/Phase";
 import { Stroke } from "../../state/redux/slices/DrawingSlice";
 import { Payment } from "../../subscriptions/SubscriptionPlan";
@@ -14,12 +16,10 @@ import {
   updateProfilePicture,
   updateQuota,
 } from "../../users/UserSlice";
+import { BaseData } from "../data/Data";
+import { K, T } from "../data/dataStoreMethods";
 import FileData from "../data/FileData";
 import FolderData from "../data/FolderData";
-import { HighlightColor } from "@/app/components/styling/Palette";
-import { T } from "../data/dataStoreMethods";
-import { BaseData } from "../data/Data";
-import { detectMetadataChanges } from "@/app/configs/metadata/detectMetadataChanges";
 
 
 export interface SharedFormattingOptions {
@@ -39,7 +39,7 @@ interface CommonTrackerProps {
   trackFileChanges?: (file: FileData<T>) => void;  // Optional
   trackFolderChanges?: (folder: FolderData) => void;  // Optional
   updateUserProfile?: (userData: User, dispatch: any) => void;  // Optional
-  sendNotification?: (notification: NotificationData, userData: User) => void;  // Optional
+  sendNotification?: (notification: NotificationData<T, K, StructuredMetadata<T, K>>, userData: User) => void;  // Optional
   stroke?: Stroke;
   strokeColor?: string;
   strokeWidth?: number;
@@ -89,7 +89,7 @@ interface TrackerProps extends CommonTrackerProps {
 }
 
 const userData = {} as User;
-class TrackerClass implements TrackerProps {
+class Tracker implements TrackerProps {
   id: string;
   name: string;
   phases: Phase[];
@@ -331,7 +331,7 @@ class TrackerClass implements TrackerProps {
     }
   }
 
-  sendNotification(notification: NotificationData, userData: User): void {
+  sendNotification(notification: NotificationData<T, K, StructuredMetadata<T, K>>, userData: User): void {
     // Access dispatch function from AuthContext
     const { dispatch } = useAuth();
 
@@ -378,5 +378,5 @@ class TrackerClass implements TrackerProps {
   }
 }
 
-export default TrackerClass;
+export default Tracker;
 export type { CommonTrackerProps, TrackerProps };

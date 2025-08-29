@@ -1,11 +1,11 @@
 // components/DynamicNamingConventions.tsx
 import { configServiceInstance } from '@/configs/ConfigurationService';
+import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
 import React from 'react';
 import { NamingConventionsError } from '../shared/shared_error';
 import { useDynamicComponents } from './DynamicComponentsContext';
-import { NotificationTypeEnum, useNotification } from './support/NotificationContext';
-import NOTIFICATION_MESSAGES, { handleDynamicNotificationMessage } from './support/NotificationMessages';
-import { NOTIFICATION_TYPES } from './support/NotificationTypes';
+import NOTIFICATION_MESSAGES from './support/NotificationMessages';
+import handleDynamicNotificationMessage  from './support/NotificationMessages'
 
 interface DynamicNamingConventionsProps {
   dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering
@@ -17,7 +17,8 @@ const handleNamingConventionsErrors = (
   error: NamingConventionsError,
   details?: string
 ) => {
-  let errorDetails = details || "";
+  let errorDetails = details || error.message || "";
+
 
   const errorMessage = handleDynamicNotificationMessage(
     NOTIFICATION_MESSAGES.NamingConventionsError.DEFAULT,

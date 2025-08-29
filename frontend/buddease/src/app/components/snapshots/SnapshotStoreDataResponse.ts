@@ -12,12 +12,14 @@ import { Subscriber } from "../users/Subscriber";
 import { Snapshot, Snapshots, SnapshotsArray } from "./LocalStorageSnapshotStore";
 import { SnapshotItem } from "./SnapshotList";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { Meta } from '../models/data/dataStoreMethods';
+import { SharedIdentifiers } from '../documents/RelatedProps';
 
 
 type OptionalSnapshotProps<
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >  = Omit<
   SnapshotDataResponse<T, K, Meta>,
   'transformDelegate'
@@ -274,18 +276,18 @@ type OptionalSnapshotProps<
 };
 
 interface OptionalSnapshotDataResponse<
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > extends SnapshotDataResponse<T, K, Meta>
 //  OptionalSnapshotProps<T, K, Meta> 
  {}
 
 interface SnapshotStoreDataResponse<
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+> extends SharedIdentifiers<T, K, Meta>
 // extends OptionalSnapshotDataResponse
  {
   id: string | number;
@@ -324,7 +326,6 @@ interface SnapshotStoreDataResponse<
   subscriberId?: string;
   length?: number;
   content?: any; // Adjust to specific type if known
-  value?: any; // Adjust to specific type if known
   todoSnapshotId?: string;
   snapshotStore?: any; // Adjust to specific type if known
   dataItems?: any[]; // Adjust to specific type if known

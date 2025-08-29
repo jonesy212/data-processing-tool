@@ -1,10 +1,10 @@
 // presentationLibrary.ts
 import { Data, DataDetails } from '@/app/components/models/data/Data';
+import { BaseMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Presentation, Slide } from "../../documents/Presentation";
-import { NotificationType, NotificationTypeEnum } from "../../support/NotificationContext";
+import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { generatePresentationJSON } from "./generatePresentationJSON";
-import { BaseMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 
 
 enum PresentationType {
@@ -121,7 +121,7 @@ function removeSlideFromPresentation(
 
 // Export the presentation library functions and types
 export {
-  addSlideToPresentation, createPresentation, removeSlideFromPresentation
+    addSlideToPresentation, createPresentation, removeSlideFromPresentation
 };
 
-export type { PresentationMetadata, PresentationData }
+    export type { PresentationData, PresentationMetadata };

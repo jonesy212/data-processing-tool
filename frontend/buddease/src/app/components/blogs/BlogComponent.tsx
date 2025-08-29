@@ -1,19 +1,19 @@
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
+import { Meta } from '@/app/components/models/data/dataStoreMethods';
+import { Snapshot } from "@/app/components/snapshots";
 import { BaseMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { NotificationType, useNotification } from '@/context/NotificationContext';
 import React, { useEffect, useState } from 'react';
 import { BlogData } from '../lists/BlogList';
 import { Content } from '../models/content/AddContent';
 import { BaseData, Data } from '../models/data/Data';
-import { Snapshot } from '../snapshots/LocalStorageSnapshotStore';
+import Tracker from '../models/tracker/Tracker';
 import { CustomSnapshotData, SnapshotData } from '../snapshots/SnapshotData';
 import SnapshotStore from '../snapshots/SnapshotStore';
 import { Subscription } from '../subscriptions/Subscription';
-import { NotificationType, useNotification } from '../support/NotificationContext';
 import { Subscriber, SubscriberCallback } from '../users/Subscriber';
 import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '../utils/applicationUtils';
 import { snapshotId } from '../utils/snapshotUtils';
 import * as subscriberApi from './../../api/subscriberApi';
-import TrackerClass from '../models/tracker/Tracker';
 
 type BlogContentType<T extends BaseData<any>, K extends T = T> = {
   body: string;                     // Main content of the blog post
@@ -95,7 +95,7 @@ const BlogComponent: React.FC<BlogProps<BlogData<Data<BaseData<any>>>, BlogDataM
   const [subscriptionData, setSubscriptionData] = useState<Subscription<BlogData<Data<BaseData<any>>>, BlogDataMeta> | undefined>(); 
   const { sendNotification } = useNotification(); 
 
-  const tracker = new TrackerClass("blogPost123", "Blog Post Tracker", [], {
+  const tracker = new Tracker("blogPost123", "Blog Post Tracker", [], {
     width: 100, 
     color: "black",
   }, 2, "#ff6347", false, false, 0, 0);

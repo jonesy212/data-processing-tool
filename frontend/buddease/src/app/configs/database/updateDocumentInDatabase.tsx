@@ -2,7 +2,7 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from "@/app/api/axiosInstance";
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import { useAuth } from "@/app/components/auth/AuthContext";
+import { useAuth } from "@/server/auth/AuthContext";
 import { DocumentData } from "@/app/components/documents/DocumentBuilder";
 import { DocumentId, DocumentStatus } from "@/app/components/documents/types";
 import { Drawing } from "@/app/components/libraries/drawing/generateDrawingJSON";
@@ -15,6 +15,9 @@ import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { AxiosError, AxiosResponse } from "axios";
 import { PoolConfig } from 'pg';
 import configData from "../configData";
+import { sanitizeInput } from "@/app/components/security/SanitizationFunctions";
+import { SnapshotDataType } from "@/app/components/snapshots";
+import { DatabaseConfig } from "../DatabaseConfig";
 
 const { notify } = useNotification();
 
@@ -139,7 +142,7 @@ if (typeof documentId === "string" || typeof documentId === "object") {
 
 // Combined function to load drawing from the database
 async function loadDrawingFromDatabase(
-  documentId: DocumentData | DocumentId
+  documentId: DocumentData<T, K, Meta, ExcludedFields> | DocumentId
 ): Promise<Drawing | string> {
   try {
     // Check if the documentId is of type DocumentData
@@ -207,7 +210,7 @@ const saveTodoToDatabase = async (todoData: any): Promise<void> => {
   }
 };
 
- const saveDocumentToDatabase = async (document: DatasetModel, content: string): Promise<void> => { 
+ const saveDocumentToDatabase = async (document: DatasetModel<T, K, Meta>, content: string): Promise<void> => { 
   try {
 
     // Initialize database client

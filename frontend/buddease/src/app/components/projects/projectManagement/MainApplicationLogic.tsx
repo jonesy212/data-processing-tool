@@ -1,5 +1,5 @@
 // MainApplicationLogic.tsx
-import { useAuth } from "@/app/components/auth/AuthContext";
+import { useAuth } from "@/server/auth/AuthContext";
 import ExtendedAppLogic from "@/app/pages/ExtendedAppLogic";
 import OnboardingPage from "@/app/pages/onboarding/OnboardingPage";
 import UserJourneyManager from "@/app/pages/personas/UserJourney";

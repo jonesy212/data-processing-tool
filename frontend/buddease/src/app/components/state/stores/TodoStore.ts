@@ -13,14 +13,14 @@ import { useSnapshotManager } from "../../hooks/useSnapshotManager";
 import { Data } from "../../models/data/Data";
 import { Snapshot, Snapshots } from '../../snapshots/LocalStorageSnapshotStore';
 import SnapshotStore from "../../snapshots/SnapshotStore";
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { Todo } from "../../todos/Todo";
 import { todoService } from "../../todos/TodoService";
 import useSecureStoreId from '../../utils/useSecureStoreId';
+import {
+    NotificationTypeEnum,
+    useNotification,
+} from "@/context/NotificationContext";
 import { AllStatus } from './DetailsListStore';
 
 const { notify } = useNotification();

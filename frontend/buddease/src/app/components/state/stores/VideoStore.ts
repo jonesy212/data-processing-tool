@@ -1,25 +1,39 @@
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
 import { BaseData } from '@/app/components/models/data/Data';
-import { handleApiErrorAndNotify } from "@/app/api/ApiData";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import {
   NotificationTypeEnum,
   useNotification,
 } from "@/app/context/NotificationContext"; 
-import { AxiosError } from "axios";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
 import axiosInstance from "../../security/csrfToken";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { VideoData } from "../../video/Video";
  
-export interface Video extends BaseData {
-  id: string;
+export interface Video {
+  id: string; 
   content: string;
   watchLater: boolean;
   tags: string[];
   isActive: boolean;
   url: string;
-  // Add more properties from Data and DataDetails as needed
+
+  // Any extra video-specific fields
+  resolution?: string;
+  duration?: number;
+  uploadedBy?: string;
+  thumbnailUrl?: string;
+  currentMeta?: any;
+  currentMetadata?: any;
+  [key: string]: any;
+}
+
+export interface VideoWrapper<
+  T extends BaseData<any> = BaseData<any>,
+  K extends T = T
+> extends BaseData<T, K> {
+  videoData: VideoData<T, K>; // use full metadata-rich type
 }
 
 export interface VideoStore<
@@ -51,6 +65,7 @@ const convertToVideoData = <T extends BaseData<any>, K extends T = T>(
     currentMeta: {}, // Provide default values or actual data
     currentMetadata: {},
     date: new Date(),
+    label: {} as Label,
     video: {} as T, // Provide default values or actual data
   };
 };
@@ -135,7 +150,7 @@ const useVideoStore = <T extends BaseData<any>, K extends T = T>(): VideoStore<T
       [String(video.id)]: [videoData], // Convert video.id to a string
     }));
     notify(
-      "addVideoSuccess",
+      null,
       "Video added successfully",
       NOTIFICATION_MESSAGES.Video.ADD_VIDEO_SUCCESS,
       new Date(),
@@ -150,7 +165,7 @@ const useVideoStore = <T extends BaseData<any>, K extends T = T>(): VideoStore<T
       [id]: [videoData],
     }));
     notify(
-      "updateVideoSuccess",
+      null,
       "Video updated successfully",
       NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_SUCCESS,
       new Date(),
@@ -168,7 +183,7 @@ const useVideoStore = <T extends BaseData<any>, K extends T = T>(): VideoStore<T
       endpoints.videos.deleteVideo + id
     );
     notify(
-      "deletedVideoSuccess",
+      null,
       `You have successfully deleted the video ${videoId}`,
       NOTIFICATION_MESSAGES.Video.DELETE_VIDEO_SUCCESS,
       new Date(),

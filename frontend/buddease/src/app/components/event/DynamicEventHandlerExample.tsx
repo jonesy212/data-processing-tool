@@ -11,6 +11,7 @@ import { DocumentActions } from "@/app/tokens/DocumentActions";
 import { useAppSelector } from "@/app/utils/useAppSelector";
 import { AxiosResponse } from "axios";
 import { Router, useRouter } from "next/router";
+import { callback } from 'chart.js/helpers';
 import React, {
     BaseSyntheticEvent,
     MouseEventHandler,
@@ -54,6 +55,7 @@ import ReusableButton from "../libraries/ui/buttons/ReusableButton";
 import { BlogActions } from "../models/blogs/BlogAction";
 import { ProgressDataProps } from "../models/data/ProgressData";
 import { SortingType } from "../models/data/StatusType";
+import { K, T } from "../models/data/dataStoreMethods";
 import {
     initiateBitcoinPayment,
     initiateEthereumPayment,
@@ -72,12 +74,10 @@ import { DetailsItem } from "../state/stores/DetailsListStore";
 import { historyManagerStore } from "../state/stores/HistoryStore";
 import { Subscription } from "../subscriptions/Subscription";
 import { UIApi } from "../users/APIUI";
+import { snapshotId } from "../utils/snapshotUtils";
 import * as apiSnapshot from "./../../api/SnapshotApi";
 import { BaseCustomEvent } from "./BaseCustomEvent";
 import { CustomMouseEvent } from "./EventService";
-import { callback } from "node_modules/chart.js/dist/helpers/helpers.core";
-import { T, K } from "../models/data/dataStoreMethods";
-import { snapshotId } from "../utils/snapshotUtils";
 
 const dispatch = useDispatch();
 // State and other logic...
@@ -300,7 +300,7 @@ const resetStateVariables = () => {
 
 const clearResources = (
   socket: WebSocket | null,
-  subscription: Subscription<T, K<T>> | null,
+  subscription: Subscription<T, K> | null,
   unsubscribeDetails?: UnsubscribeDetails
 ) => {
 
@@ -330,7 +330,7 @@ const cleanupState = (subscription: any) => {
 };
 
 const cleanupSubscriptions = (
-  subscription: Subscription<T, K<T>> | null,
+  subscription: Subscription<T, K> | null,
   unsubscribeDetails?: UnsubscribeDetails,
 ) => {
 
@@ -348,7 +348,7 @@ const cleanupSocketConnection = (socket: WebSocket) => {
 
 const closeConnections = (
   socket: WebSocket,
-  subscription: Subscription<T, K<T>>| null,
+  subscription: Subscription<T, K>| null,
   unsubscribeDetails?: UnsubscribeDetails
 ) => {
   // Close any open connections
@@ -1172,7 +1172,7 @@ const DynamicEventHandlerService = ({
   handleSorting,
 }: {
   handleSorting: (
-    snapshotList: Promise<SnapshotList<T, K<T>>>,
+    snapshotList: Promise<SnapshotList<T, K>>,
     event: SyntheticEvent<Element, Event> | MouseEvent
   ) => void;
 }) => {
@@ -1183,10 +1183,10 @@ const DynamicEventHandlerService = ({
 
   // State to track messages
   const [messages, setMessages] = useState<string[]>([]);
-  const snapshhotListRef = useRef<Promise<SnapshotList<T, K<T>>>>();
+  const snapshhotListRef = useRef<Promise<SnapshotList<T, K>>>();
   let sentiment: AxiosResponse<any, any>;
 
-  const handleSortingWrapper = (snapshotList: Promise<SnapshotList<T, K<T>>>) => {
+  const handleSortingWrapper = (snapshotList: Promise<SnapshotList<T, K>>) => {
     // Handle sorting logic
     // Assuming snapshotList is an array or object with sorting functionality
     (async () => {
@@ -2502,7 +2502,7 @@ const DynamicEventHandlerService = ({
         });
     
         // Fetch the sorted list using the constructed Target
-        const snapshotList: Promise<SnapshotList<T, K<T>>> = apiSnapshot.getSortedList(targetConfig);
+        const snapshotList: Promise<SnapshotList<T, K>> = apiSnapshot.getSortedList(targetConfig);
         handleSorting(snapshotList, event);
       }
     );

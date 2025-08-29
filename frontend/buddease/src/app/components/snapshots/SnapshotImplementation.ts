@@ -1,6 +1,6 @@
 // import { Data } from "../models/data/Data";
 // import { generateSnapshotId } from "../utils/snapshotUtils";
-// import { Snapshot } from "./LocalStorageSnapshotStore";
+// import { Snapshot } from "@/app/components/snapshots";
 
 // class SnapshotImplementation<T> {
 //   data: T | null;

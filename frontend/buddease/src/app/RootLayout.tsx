@@ -1,16 +1,12 @@
+"use client";
 // @ts-nocheck
-// @use-client
-// RootLayout.tsx
+
 import React, { useEffect, useState } from "react";
+import { AppProviders } from "./Provider";
 import { useDynamicComponents } from "./components/DynamicComponentsContext";
-import useLayoutGenerator, {
-  DocumentGenerationResult,
-} from "./components/hooks/GenerateUserLayout";
+import useLayoutGenerator, { DocumentGenerationResult } from "./components/hooks/GenerateUserLayout";
 import { useThemeConfig } from "./components/hooks/userInterface/ThemeConfigContext";
-import {
-  AnimatedComponent,
-  AnimatedComponentRef,
-} from "./components/libraries/animations/AnimationComponent";
+import { AnimatedComponent, AnimatedComponentRef } from "./components/libraries/animations/AnimationComponent";
 import { Data } from "./components/models/data/Data";
 import responsiveDesignStore from "./components/styling/ResponsiveDesign";
 import { User } from "./components/users/User";
@@ -19,244 +15,154 @@ import { DocxGeneratorOptions } from "./generators/docxGenerator";
 import DesignDashboard from "./pages/dashboards/DesignDashboard";
 import { useLayout } from "./pages/layouts/LayoutContext";
 
-type RootLayoutProps = {
-  children: React.ReactNode;
-};
+type RootLayoutProps = { children: React.ReactNode };
+interface DynamicComponentConfig { RootLayout?: React.ComponentType<{ children: React.ReactNode }>; }
 
 const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
-  const [isComponentLoaded, setComponentLoaded] = useState<boolean>(false);
-  const [isMinimized, setIsMinimized] = useState<boolean>(false); // State to track if the layout control button is minimized
+  const [isComponentLoaded, setComponentLoaded] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
 
   const { setLayout } = useLayout();
-  const {
-    isDarkMode,
-    setPrimaryColor,
-    setSecondaryColor,
-    setFontSize,
-    setFontFamily,
-  } = useThemeConfig();
+  const { isDarkMode, setPrimaryColor, setSecondaryColor, setFontSize, setFontFamily } = useThemeConfig();
+  const animatedComponentRef = React.useRef<AnimatedComponentRef>(null);
 
-  const handleMinimizeToggle = (): void => {
-    setIsMinimized(!isMinimized); // Toggle the state to minimize or maximize the layout control button
+  const handleMinimizeToggle = () => setIsMinimized(!isMinimized);
+
+  const handleExitFullscreen = () => {
+    document.exitFullscreen().catch(err => console.error("Error exiting fullscreen:", err));
   };
 
-  const handleExitFullscreen = (): void => {
-    document.exitFullscreen(); // Exit fullscreen mode
-  };
-
-  const condition = () => {
-    // Your condition logic goes here
-    // Check if the component is loaded or not
-    if (isComponentLoaded && animatedComponentRef.current) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-  // Change this line in RootLayout
   const layoutEffect = async () => {
-    // Your layout effect logic goes here
-    // For example, toggle the animated component
-
-    if (animatedComponentRef.current) {
-      // Use the values in your logic or UI
+    if (!animatedComponentRef.current) return;
+    try {
       animatedComponentRef.current.toggleActivation();
-
-      // Assume these functions update the state
       setPrimaryColor("#3498db");
       setSecondaryColor("#e74c3c");
       setFontSize("16px");
       setFontFamily("Arial, sans-serif");
-      // Set background color through the context
       setLayout({ backgroundColor: isDarkMode ? "#1a1a1a" : "#fff" });
+
       const configResult = await layoutConfig();
-      console.log(configResult);
-      // You can use other theme properties here
-      console.log("Is Dark Mode:", isDarkMode);
-      console.log("Primary Color:", setPrimaryColor);
-      console.log("Secondary Color:", setSecondaryColor);
-      console.log("Font Size:", setFontSize);
-      console.log("Font Family:", setFontFamily);
+      console.log("Layout config result:", configResult);
+    } catch (error) {
+      console.error("Error in layout effect:", error);
     }
   };
 
   const cleanup = () => {
-    // Reset state properties
-    setPrimaryColor(""); // Reset primary color
-    setSecondaryColor(""); // Reset secondary color
-    setFontSize(""); // Reset font size
-    setFontFamily(""); // Reset font family
-    setLayout({ backgroundColor: "" }); // Reset background color
+    setPrimaryColor("");
+    setSecondaryColor("");
+    setFontSize("");
+    setFontFamily("");
+    setLayout({ backgroundColor: "" });
     setComponentLoaded(false);
-
-    // Clear resources or perform other cleanup actions if needed
-    // For example:
-    // - Clear timeouts or intervals
-    // - Remove event listeners
-    // - Dispose of subscriptions or resources
-    // - Reset any other state properties or context values
   };
 
   const documentGenerator = {
-    generateDocument: async (
-      documentGeneratorOptions: DocxGeneratorOptions
-    ) => {
-      // Your document generation logic goes here
-      const { templatePath, outputPath, data, user } = documentGeneratorOptions;
-      // Generate document
-      return {
-        templatePath: templatePath,
-        outputPath: outputPath,
-        data: data,
-        user: user,
-      };
+    generateDocument: async (opts: DocxGeneratorOptions) => {
+      try {
+        const { templatePath, outputPath, data, user } = opts;
+        return { templatePath: String(templatePath), outputPath: String(outputPath), data, user };
+      } catch (error) {
+        console.error("Error generating document:", error);
+        throw error;
+      }
     },
   };
 
-  const animatedComponentRef = React.useRef<AnimatedComponentRef>(null);
-  const { toggleActivation } = useLayoutGenerator({
+  useLayoutGenerator({
     condition: () => true,
     layoutEffect,
-    documentGeneratorOptions: {
-      templatePath: "",
-      outputPath: "",
-      data: {} as Data,
-      user: {} as User,
-    },
+    documentGeneratorOptions: { templatePath: "", outputPath: "", data: {} as Data, user: {} as User },
     generateDocument: async (): Promise<DocumentGenerationResult> => {
       try {
         await documentGenerator.generateDocument({} as DocxGeneratorOptions);
+        return { message: "Document generated successfully.", success: true };
       } catch (error) {
         console.error("Error generating document:", error);
+        return { message: "Document generation failed", success: false };
       }
-      return {
-        message: "Document generated successfully.",
-        success: true,
-      };
     },
     layoutConfigGetter: async () => {
-      return {
-        documentGeneration: "Document generated successfully.",
-        designDashboard: (
-          <DesignDashboard
-            colors={responsiveDesignStore.colors}
-            frontendStructure={responsiveDesignStore.frontendStructure}
-            backendStructure={responsiveDesignStore.backendStructure}
-            onColorChange={(newColors: string[]) => {}}
-            onCloseFileUploadModal={async function () {}}
-            onHandleFileUpload={async (file: FileList | null) => {
-              if (file) {
-                // Handle file upload logic here
-                const fileReader = new FileReader();
-                fileReader.onload = async () => {
-                  // Pass file content to document generator
-                  await documentGenerator.generateDocument({
-                    templatePath: "",
-                    outputPath: "",
-                    data: {} as Data,
-                    user: {} as User,
-                  });
-                };
-                fileReader.readAsText(file[0]);
-              }
-            }}
-          />
-        ),
-        responsiveDesignStore: responsiveDesignStore,
-      };
+      try {
+        return {
+          documentGeneration: "Document generated successfully.",
+          designDashboard: (
+            <DesignDashboard
+              colors={responsiveDesignStore.colors.map(String)}
+              frontendStructure={responsiveDesignStore.frontendStructure}
+              backendStructure={responsiveDesignStore.backendStructure}
+              onColorChange={() => {}}
+              onCloseFileUploadModal={async () => {}}
+              onHandleFileUpload={async (file) => {
+                if (file) {
+                  const reader = new FileReader();
+                  reader.onload = async () => {
+                    await documentGenerator.generateDocument({
+                      templatePath: "",
+                      outputPath: "",
+                      data: {} as Data,
+                      user: {} as User,
+                    });
+                  };
+                  reader.readAsText(file[0]);
+                }
+              }}
+            />
+          ),
+          responsiveDesignStore,
+        };
+      } catch (error) {
+        console.error("Error in layout config getter:", error);
+        return {
+          documentGeneration: "Error generating layout config",
+          designDashboard: <div>Error loading dashboard</div>,
+          responsiveDesignStore,
+        };
+      }
     },
   });
 
-  // Using the dynamic components context to determine which component to render
-  const { dynamicConfig } = useDynamicComponents();
-  const DynamicRootLayout = dynamicConfig.RootLayout || DefaultRootLayout;
+  const { dynamicConfig } = useDynamicComponents() as { dynamicConfig: DynamicComponentConfig };
+  const LayoutComponent = typeof dynamicConfig?.RootLayout === "function" ? dynamicConfig.RootLayout : DefaultRootLayout;
 
-  const animatedComponent = (
-    <AnimatedComponent ref={animatedComponentRef} animationClass={""} />
-  );
-
-  // Add useEffect to handle layout effect on component mount
   useEffect(() => {
-    if (isComponentLoaded) {
-      if (condition()) {
-        layoutEffect();
-      }
-    }
-  }, [condition, isComponentLoaded, layoutEffect]);
-
-  // Function to handle layout effect
-  const handleLayoutEffect = async () => {
-    if (animatedComponentRef.current) {
-      animatedComponentRef.current.toggleActivation();
-
-      // Set theme properties
-      setPrimaryColor("#3498db");
-      setSecondaryColor("#e74c3c");
-      setFontSize("16px");
-      setFontFamily("Arial, sans-serif");
-      setLayout({ backgroundColor: isDarkMode ? "#1a1a1a" : "#fff" });
-
-      // Call layoutConfig to update layout configuration
-      const configResult = await layoutConfig();
-      console.log(configResult);
-
-      // Log theme properties
-      console.log("Is Dark Mode:", isDarkMode);
-      console.log("Primary Color:", setPrimaryColor);
-      console.log("Secondary Color:", setSecondaryColor);
-      console.log("Font Size:", setFontSize);
-      console.log("Font Family:", setFontFamily);
-    }
-  };
+    if (isComponentLoaded && animatedComponentRef.current) layoutEffect().catch(console.error);
+    return cleanup;
+  }, [isComponentLoaded]);
 
   return (
-    <div className="root-layout">
-      {/* Sidebar */}
-      <Sidebar />
+    <AppProviders>
+      <div className="root-layout">
+        <Sidebar />
+        <div>
+          {!isMinimized && (
+            <div>
+              <ToggleSwitch
+                label="Fullscreen"
+                checked={isComponentLoaded}
+                onChange={(checked) => {
+                  checked
+                    ? document.documentElement.requestFullscreen().catch(console.error)
+                    : handleExitFullscreen();
+                  setComponentLoaded(checked);
+                }}
+              />
+              <button onClick={handleExitFullscreen}>Exit Fullscreen</button>
+            </div>
+          )}
+          <button onClick={handleMinimizeToggle}>
+            {isMinimized ? "Maximize" : "Minimize"}
+          </button>
 
-      {/* Content */}
-      <div>
-        {!isMinimized && (
-          <div>
-            {/* Toggle switch for fullscreen mode */}
-            <ToggleSwitch
-              label="Fullscreen"
-              checked={isComponentLoaded}
-              onChange={(checked) => {
-                if (checked) {
-                  document.documentElement.requestFullscreen();
-                } else {
-                  document.exitFullscreen();
-                }
-                setComponentLoaded(checked);
-              }}
-            />
-            {/* Button to exit fullscreen mode */}
-            <button onClick={handleExitFullscreen}>Exit Fullscreen</button>
-          </div>
-        )}
-        {/* Minimize button */}
-        <button onClick={handleMinimizeToggle}>
-          {isMinimized ? "Maximize" : "Minimize"}
-        </button>
-
-        {/* Existing content */}
-        <html lang="en">
-          <body onClick={toggleActivation}>
-            {animatedComponent}
-            <AnimatedComponent ref={animatedComponentRef} animationClass={""} />
-            <DynamicRootLayout>{children}</DynamicRootLayout>
-          </body>
-        </html>
+          <AnimatedComponent ref={animatedComponentRef} animationClass="" />
+          <LayoutComponent>{children}</LayoutComponent>
+        </div>
       </div>
-    </div>
+    </AppProviders>
   );
 };
 
-// DefaultRootLayout.tsx
-const DefaultRootLayout: React.FC<any> = ({ children }: any) => {
-  // Your default layout logic goes here
-  return <div>{children}</div>;
-};
+const DefaultRootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => <div>{children}</div>;
 
 export default RootLayout;

@@ -1,18 +1,18 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import axiosInstance from "../security/csrfToken";
-import { Snapshot } from "../snapshots";
 import {
-    addEvent,
-    removeAllEvents,
-    removeEvent,
-    selectEventError,
-    selectEventLoading,
-    selectEvents,
+  addEvent,
+  removeAllEvents,
+  removeEvent,
+  selectEventError,
+  selectEventLoading,
+  selectEvents,
 } from "../state/redux/slices/EventSlice";
 import { CustomEventExtension } from "./BaseCustomEvent";
 import { defaultEventStore, EventStore } from "./EventStore";
@@ -177,4 +177,4 @@ const EventManager: React.FC<EventManagerProps> = ({
 };
 
 export default EventManager;
-export type { SnapshotCallback }
+export type { SnapshotCallback };

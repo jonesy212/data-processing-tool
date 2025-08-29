@@ -1,113 +1,132 @@
 import { FileType } from "@/app/components/documents/Attachment/attachment";
+import { storeProps } from '@/app/components/snapshots/SnapshotStoreProps';
 import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
+import getAppPath from '@/app/configs/appStructure/appPath';
 import { AppStructureItem, AppStructurePermissions } from "@/app/configs/appStructure/AppStructure";
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure, { frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
+import { BaseDataEntity } from '@/app/configs/BaseConfig';
+import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import getAppPath from 'appPath';
+import { Content } from '@/app/components/models/content/AddContent';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { createBaseData } from "../hooks/useSnapshotManager";
 import { Comment } from '../models/data/Comments';
-import { BaseData, Data } from "../models/data/Data";
 import { K, T } from "../models/data/dataStoreMethods";
+import { InitializedData } from "../snapshots/SnapshotStoreOptions";
 import { CustomComment } from '../state/redux/slices/BlogSlice';
 import { HistoryEntry } from '../state/stores/HistoryStore';
 import MobXEntityStore from '../state/stores/MobXEntityStore';
-import { BuildVersion, version } from "./Version";
+import { BuildVersion, Version, version } from "./Version";
 import { getCurrentAppInfo } from "./VersionGenerator";
+import { SharedIdentifiers, SharedTimestamps } from '@/app/components/documents/RelatedProps';
 
-interface SharedVersionData { 
-  major?: number,
-  minor?: number,
-  patch?: number,
+const { snapshotData } = storeProps 
+
+const baseData: BaseDataEntity = createBaseData({ ...snapshotData });
+
+interface SharedAuditInfo {
+  createdBy?: string;
+  updatedBy?: string;
+  author?: string;
+  user?: string;
 }
 
-interface SharedUpdateHistory extends SharedVersionData {
-  lastUpdated?: Date | VersionHistory; // Added
-  timestamp: Date;
-  changeLogSummary?: string;
+interface SharedVersioning {
+  major: number;
+  minor: number;
+  patch: number;
+  versionNumber?: string;
+  buildNumber: string | number;
 }
 
-// Interfaces
-interface VersionHistory extends SharedUpdateHistory{
-  // Define the structure of the version history
-  // Each element represents a version of the data
-  versionData: string | VersionData<T, K<T>> | null | {} | null;
-  latestVersion: VersionData<T, K<T>>; // A reference to the most recent version
-  history?: HistoryEntry[] | undefined;
+interface SharedContent {
+  content?: string | Content<T, K>;
+  description?: string;
+  notes: string[];
+  changes: string[];
 }
 
-
-// Import necessary dependencies if needed
-export interface LastUpdated {
-  timestamp: Date;
-  updatedBy: string;
-  lastUpdated?: Date | VersionHistory;
-  changeLogSummary: string | undefined
-  // Define the structure of the last updated history
-}
-
-
-
-export function createLastUpdated(
-  summary?: string,
-
-): LastUpdated {
-  const now = new Date();
-  return {
-    lastUpdated: now || {},
-    timestamp: now,
-    updatedBy: "system",
-    changeLogSummary: summary || "No changes recorded.",
-  };
-}
-
-
-interface CoreDataItem {
-  id: string;
-  name?: string;
+interface CoreDataItem<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends SharedIdentifiers<T, K, Meta, ExcludedFields>, 
+  SharedTimestamps {
   type?: string | Promise<FileType>;
   path?: string;
   draft?: boolean;
   permissions?: AppStructurePermissions;
 }
 
+interface SharedUpdateHistory<T extends BaseDataEntity = BaseDataEntity, K extends T = T> {
+  lastUpdated?: Date | VersionHistory<T, K>;
+  changeLogSummary?: string;
+}
 
-interface VersionedDataItem<T extends BaseData, K extends T = T> extends CoreDataItem {
+export interface LastUpdated<T extends BaseDataEntity = BaseDataEntity, K extends T = T> 
+  extends SharedUpdateHistory<T, K>, SharedTimestamps, SharedAuditInfo {
+}
+
+interface VersionHistory<T extends BaseDataEntity, K extends T = T> 
+  extends SharedUpdateHistory {
+  versionData: string | VersionData<T, K> | null | {};
+  latestVersion?: MinimalVersion<T, K>;
+  history?: HistoryEntry[];
+  versions: Version<T, K>[];
+  currentVersionIndex: number;
+}
+
+interface VersionedDataItem<
+  T extends BaseDataEntity,
+  K extends T = T
+> 
+  extends CoreDataItem<T, K, Meta, ExcludedFields> {
   versions?: DataVersions;
   versionData?: VersionData<T, K> | null;
   items?: Record<string, VersionedDataItem<T, K>>;
 }
 
+interface AppStructureDataItem<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  > extends CoreDataItem<T, K, Meta, ExcludedFields>,
+  SharedIdentifiers<T, K, Meta, ExcludedFields> {
+  content?: string | Content<T, K>;
+  versions?: DataVersions;
+  versionData?: VersionData<BaseDataEntity, BaseDataEntity> | null;
+  items?: Record<string, AppStructureDataItem<T, K, Meta, ExcludedFields>>;
+}
 
 interface ExtendedVersionData<
-  T extends BaseData,
-  K extends T = T
-  > extends VersionedDataItem<T, K> {
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> 
+  extends VersionedDataItem<T, K>,
+          SharedVersioning,
+          SharedAuditInfo,
+          SharedTimestamps {
+  
   // Version-specific properties
   url?: string;
-  name?: string;
-  versionNumber?: string;
   appVersion?: string;
   documentId?: string;
-  userId: string;
-  content: string;
-  
-  metadata: {
-    author?: string;
-    timestamp?: string | number | Date;
-    revisionNotes?: string;
-  };
-  
+  userId?: string;
+  content?: string | Content<T, K>;
+  metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>;
   comments?: (Comment<T, K, StructuredMetadata<T, K>> | CustomComment)[];
+  versionHistory: VersionHistory<T, K>;
   releaseDate?: string | Date;
-  lastUpdated?: Date | VersionHistory;
+  lastUpdated?: Date | VersionHistory<T, K>;
   buildVersions?: BuildVersion;
-  
-  // Semantic versioning
-  major: number;
-  minor: number;
-  patch: number;
+  currentHash: string;
   
   // Publication info
   published?: boolean;
@@ -116,17 +135,48 @@ interface ExtendedVersionData<
 }
 
 
-interface VersionData<T extends BaseData<any>, K extends T = T> 
-  extends ExtendedVersionData<T, K>, SharedMetadata<T, K> {
-  // Add more specific properties if needed
-  id: string;
-  parentId: string | null;
-  isLatest: boolean;
-  isActive: boolean;
-  isPublished: boolean;
-  workspaceId: string;
-  setServices: (services: Record<string, any>) => void; // Add setServices method
+interface SharedVersionData { 
+  major?: number,
+  minor?: number,
+  patch?: number,
+}
+
+interface SharedUpdateHistory<T extends BaseDataEntity = BaseDataEntity, K extends T = T> {
+  lastUpdated?: Date | VersionHistory<T, K>;  // Match the broader type
+  timestamp: string | number | Date | undefined;
+  changeLogSummary?: string;
+}
+
+export function createLastUpdated<T extends BaseDataEntity = BaseDataEntity>(
+  summary?: string,
+): LastUpdated<T> {
+  const now = new Date();
+  return {
+    lastUpdated: now,
+    timestamp: now,
+    updatedBy: "system",
+    changeLogSummary: summary || "No changes recorded.",
+  };
+}
+
+
+// A minimal version slice (use Pick to set the baseline)
+type MinimalVersion<T extends BaseDataEntity<any>, K extends T = T> = 
+  Partial<
+    Pick<VersionData<T, K>, "versionNumber" | "timestamp" | "author" | "schema">> & {
+};
+
+interface VersionData<T extends BaseDataEntity, K extends T = T> 
+  extends ExtendedVersionData<T, K>,
+          SharedVersioning,
+          Omit<SharedMetadata<T, K>, "permissions"> {
   
+  // Identity and core
+  id: string | number;
+  author?: string;
+  type?: string;
+  // Relationships
+  parentId: string | null;
   parentAppVersion?: string;
   parentVersionNumber?: string;
   parentType?: string | null;
@@ -136,38 +186,42 @@ interface VersionData<T extends BaseData<any>, K extends T = T>
   parentName?: string;
   parentUrl?: string;
   parentChecksum?: string;
-  parentMetadata?: {}; // Adjust as per actual type
-  description?: string;
+  parentMetadata?: {};
+  
+  // Status
+  isLatest: boolean;
+  isActive: boolean;
+  isPublished: boolean;
   publishedAt?: Date | null;
-  source?: string;
   status?: string;
-  timestamp?: number | string | Date | undefined
-  user: string;
   
-  notes: string[]
-  changes: string[];
-  
+  // Workspace
+  workspaceId: string;
   workspaceName: string;
   workspaceType: string;
   workspaceUrl: string;
   workspaceViewers: string[];
   workspaceAdmins: string[];
   workspaceMembers: string[];
- 
-  createdAt?: string | Date | undefined;
-  createdBy?: string ,
-  updatedAt?: string | Date | undefined;
-  _structure?: Record<string, AppStructureItem[]>; // Adjust as per actual type
-  frontendStructure?: Promise<AppStructureItem[]>; // Adjust as per actual type
-  backendStructure?: Promise<AppStructureItem[]>; // Adjust as per actual type
   
-  history?: HistoryEntry[] | undefined
-  data?: Data<BaseData<any>> | undefined;
+  // Services
+  setServices?: (services: Record<string, any>) => void;
+  services?: Record<string, any>;
+  
+  // App structure
+  _structure?: Record<string, AppStructureItem[]>;
+  frontendStructure?: Promise<AppStructureItem[]>;
+  backendStructure?: Promise<AppStructureItem[]>;
+  
+  // Backend/Frontend
   backend?: BackendStructure | undefined;
   frontend?: FrontendStructure<T, K> | undefined;
-  services?: Record<string, any>;
+  
+  // Data
+  data?: InitializedData<T, K>;
+  
+  // Remove the duplicate 'user' since we have author/updatedBy/createdBy
 }
-
 
 // Example usage and data
 const updatedContent = "Updated file content here...";
@@ -177,8 +231,7 @@ const revisionNotes = "Added new section and fixed typos.";
 
 
 
-
-const transformToStructureItems = (data: Record<string, CoreDataItem>): { [key: string]: AppStructureItem } => {
+const transformToStructureItems = (data: Record<string, AppStructureDataItem>): { [key: string]: AppStructureDataItem } => {
   // Validate input data
   if (!data || typeof data !== "object") {
     throw new Error("Invalid input data. Expected an object.");
@@ -214,172 +267,119 @@ const transformToStructureItems = (data: Record<string, CoreDataItem>): { [key: 
 
 
 const createDefaultVersionData = <
-  T extends BaseData<any> = BaseData<any>,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T
 >(
   overrides?: Partial<VersionData<T, K>>
-): VersionData<T, K> => ({
-  
-  // Required properties
-  id: "0",
-  parentId: null,
-  parentType: "",
-  isLatest: false,
-  isActive: false,
-  isPublished: false,
-  setServices: () => {},
-  notes: [],
-  version: {
-    id: '0',
-    isActive: false,
-    releaseDate: '',
-    buildNumber: "",
-    versionHistory: "",
-    currentHash: "",
-    structureData: "",
-    
+): VersionData<T, K> => {
+  const now = new Date();
 
-    major: 0,
-    minor: 0,
-    patch: 0,
-    name: '',
-    user: '',
-    url: '',
-    versionNumber: '',
-    documentId: '',
-    draft: false,
-    userId: '',
-    content: '',
-    description: '',
-    buildNumber: '',
-    versions: undefined,
-    appVersion: '',
-    checksum: '',
+  // Create a complete base version with ALL required properties in one object
+  const baseVersion: VersionData<T, K> = {
+    // Required properties from VersionData and ExtendedVersionData
+    id: 0,
     parentId: null,
-    parentType: '',
-    parentVersion: '',
-    parentTitle: '',
-    parentContent: '',
-    parentName: '',
-    parentUrl: '',
-    parentChecksum: '',
-    parentAppVersion: '',
-    parentVersionNumber: '',
     isLatest: false,
+    isActive: false,
     isPublished: false,
-    publishedAt: null,
-    source: '',
-    status: '',
-    workspaceId: '',
-    workspaceName: '',
-    workspaceType: '',
-    workspaceUrl: '',
-    workspaceViewers: [],
-    workspaceAdmins: [],
-    workspaceMembers: [],
-    setServices: () => { },
-    notes: [],
-    changes: [],
-    schema: {},
-    latestVersion: createLatestVersion<T, K>(),
-    data: undefined,  
     metadata: {
       area: "createDefaultVersionData",
       metadataEntries: {},
-      latestVersion: createLatestVersion<T, K>(),
-      schema: {}
+      latestVersion: undefined, // will set later
+      schema: {},
     },
-    _structure: {},
-    transformToStructureItems: (data: any): AppStructureItem[] => {
-      const structureObject = transformToStructureItems(data); // Get the object
-      return Object.values(structureObject); // Convert the object to an array
-    },
-
+    currentHash: "default-hash",
+    checksum: "default-checksum",
     versionHistory: {
       versionData: null,
-      latestVersion: createLatestVersion<T, K>(),
+      latestVersion: undefined, // will set later
       history: [],
-      timestamp: new Date(),
+      timestamp: now,
+      versions: [],
+      currentVersionIndex: 0
     },
-    getVersionNumber: () => "",
-    updateStructureHash: async () => {},
-    setStructureData: (newData: string) => {},
-    hash: (value: string) => value,
-    currentHash: '',
-    structureData: '',
-    calculateHash: () => "hash",
-    getStructure: async (): Promise<Record<string, AppStructureItem> | undefined> => {
-      throw new Error("getStructure not implemented");
-    },
-  } as VersionData<T, K>,
 
-  // Current version
-
-  timestamp: new Date().toISOString(), // Example ISO timestamp
-  user: "user123", // Example user identifier
-  changes: ["Added introduction section", "Fixed typos"], // Example changes
-  comments: [], // Empty array for comments
-  workspaceId: "workspace456", // Example workspace identifier
-  workspaceName: "TypeScript Workspace", // Workspace name
-  workspaceType: "shared", // Workspace type, e.g., 'private' or 'shared'
-
-  workspaceUrl: "https://example.com/workspace", // Example workspace URL
-  workspaceViewers: ["viewer1", "viewer2"], // Example viewers
-  workspaceAdmins: ["admin1"], // Example admin users
-  workspaceMembers: ["member1", "member2"], // Example members
-
-  data: {
-    major: 1,
+    // Other properties from your original version
+    releaseDate: now.toISOString(),
+    author: "jack johnson",
+    buildNumber: "0",
+    structureData: "default-structure",
+    major: 0,
     minor: 0,
     patch: 0,
-    childIds: ["doc1", "doc2"], // Example child document IDs
-    relatedData: ["relatedDoc1", "relatedDoc2"], // Example related data
-  },
-  backend: backendStructure,
-  frontend: frontendStructure,
-  name: "Version 1", // Example name for the version
-  url: "https://example.com/version1", // URL for this version
-  documentId: "doc123", // Document ID
-  draft: false, // Indicates if it's a draft
-  userId: "user123", // User identifier
-
-  content: "This is the content of the version.", // Example content
-  metadata: {
-    author: "John Doe", // Example author
-    timestamp: new Date().toISOString(), // Example metadata timestamp
-    revisionNotes: "Initial draft created.", // Example revision notes
-  },
-  major: 1, // Major version number
-  minor: 0, // Minor version number
-
-  patch: 0, // Patch version number
-  checksum: "12345abcde", // Example checksum
-  
-  releaseDate: new Date().toISOString(), // Example release date
-
-  history: [{
-    versionId: "versionId", 
-    description: "history description",
-    releaseDate: new Date(),
-    timestamp: new Date("2024-01-01T00:00:00Z").getTime(), 
-    changes: ["Initial version"],
-    data: {
-      childIds: ["doc1", "doc2"],
-      relatedData: ["relatedDoc1", "relatedDoc2"],
+    name: "Default Version Name",
+    user: "System",
+    url: "/default-version",
+    versionNumber: "0.0.0",
+    documentId: "default-doc",
+    draft: false,
+    userId: "default-user",
+    content: "Default content",
+    description: "Default description",
+    versions: undefined,
+    appVersion: "1.0.0",
+    parentType: "none",
+    parentVersion: "0.0.0",
+    parentTitle: "Default Parent Title",
+    parentContent: "Default Parent Content",
+    parentName: "Default Parent Name",
+    parentUrl: "/default-parent-url",
+    parentChecksum: "default-parent-checksum",
+    parentAppVersion: "0.0.0",
+    parentVersionNumber: "0.0.0",
+    publishedAt: null,
+    source: "System",
+    status: "Draft",
+    workspaceId: "default-workspace",
+    workspaceName: "Default Workspace",
+    workspaceType: "Default",
+    workspaceUrl: "/default-workspace",
+    workspaceViewers: [],
+    workspaceAdmins: [],
+    workspaceMembers: [],
+    setServices: () => {},
+    notes: [],
+    changes: [],
+    latestVersion: undefined,
+    data: undefined,
+    _structure: {},
+    transformToStructureItems: (data: any): AppStructureItem[] =>
+      Object.values(transformToStructureItems(data)),
+    getVersionNumber: () => "0.0.0",
+    updateStructureHash: async () => {},
+    setStructureData: () => {},
+    hash: (value: string) => value,
+    calculateHash: () => "hash",
+    getStructure: async () => {
+      throw new Error("getStructure not implemented");
     },
-  }],
+    comments: [],
+    backend: undefined,
+    frontend: undefined,
+    timestamp: now.toISOString(),
+  };
 
-  ...overrides, 
-});
+  // Step 2: safely assign latestVersion references
+  baseVersion.latestVersion = baseVersion;
+  baseVersion.metadata.latestVersion = baseVersion;
+  baseVersion.versionHistory.latestVersion = baseVersion;
 
-const versions: VersionHistory = {
+  // Step 3: return with overrides
+  return {
+    ...baseVersion,
+    ...overrides,
+  };
+};
+
+const versions: VersionHistory<BaseDataEntity, BaseDataEntity> = {
   major: 1,
   minor: 1, 
   patch: 0,
   history: [],
   latestVersion: createDefaultVersionData({ id: "1", isLatest: true }),
   lastUpdated: new Date("2024-01-01T00:00:00Z"),
-
+  versions: [],
+  currentVersionIndex: 0,
   timestamp: new Date("2024-11-24T12:00:00Z"),
   versionData: [
     {
@@ -399,36 +399,58 @@ const versions: VersionHistory = {
       changes: [],
       versionData: [],
       checksum: calculateChecksum(updatedContent),
-      id: 0,
-      parentId: "",
-      parentType: "",
-      parentVersion: "",
-      parentTitle: "",
-      parentContent: "",
-      parentName: "",
-      parentUrl: "",
-      parentChecksum: "",
-      parentAppVersion: "",
-      parentVersionNumber: "",
-      isLatest: false,
-      isPublished: false,
-      publishedAt: null,
-      source: "",
-      status: "",
-      timestamp: new Date(),
-      user: "",
-      comments: [],
-      workspaceId: "",
-      workspaceName: "",
-      workspaceType: "",
-      workspaceUrl: "",
-      workspaceViewers: [],
-      workspaceAdmins: [],
-      workspaceMembers: [],
-      data: undefined,
-      backend: undefined,
-      frontend: undefined,
-      version: {},
+      id: 1,
+      parentId: "root",
+      parentType: "application",
+      parentVersion: "0.9.0",
+      parentTitle: "Production Release v0.9",
+      parentContent: "Previous stable production version",
+      parentName: "Production v0.9",
+      parentUrl: "https://example.com/version0.9",
+      parentChecksum: "a1b2c3d4e5f67890",
+      parentAppVersion: "0.9.0",
+      parentVersionNumber: "0.9.0",
+      isLatest: true,
+      isPublished: true,
+      publishedAt: new Date("2024-01-15T10:30:00Z"),
+      source: "CI/CD Pipeline",
+      status: "published",
+      timestamp: new Date("2024-01-15T10:00:00Z"),
+      user: "devops-system",
+      comments: [
+        {
+          id: "comment-1",
+          author: "code-reviewer",
+          text: "Looks good to merge",
+          timestamp: new Date("2024-01-14T16:45:00Z")
+        }
+      ],
+      workspaceId: "workspace-prod-001",
+      workspaceName: "Production Workspace",
+      workspaceType: "production",
+      workspaceUrl: "https://workspace.example.com/prod",
+      workspaceViewers: ["viewer-1", "viewer-2"],
+      workspaceAdmins: ["admin-1", "admin-2"],
+      workspaceMembers: ["member-1", "member-2", "member-3"],
+      data: {
+        entities: [],
+        metadata: {}
+      },
+      backend: {
+        apiEndpoints: ["/api/v1/users", "/api/v1/data"],
+        database: "postgresql",
+        server: "node-express"
+      },
+      frontend: {
+        framework: "react",
+        components: ["Header", "Footer", "MainContent"],
+        styles: "css-modules"
+      },
+      version: {
+        id: 1,
+        name: "Version 1.0.0",
+        description: "Initial production release"
+      },
     }
   ]
 };
@@ -441,10 +463,22 @@ const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
 const backendStructure = new BackendStructure(projectPath, globalState);
 
+const versionHistory: VersionHistory<BaseDataEntity, BaseDataEntity> = {
+  history: [],
+  versionData: [],
+  latestVersion: undefined,
+  versions: [],
+  currentVersionIndex: 0,
+  timestamp: new Date(),
+  // Add other required properties from VersionHistory interface
+  changeLogSummary: "Initial version history",
+};
 
-const versionData: Promise<VersionData<BaseData<any>>> = (async () => {
+
+const versionData: Promise<VersionData<BaseDataEntity<any>>> = (async () => {
   let databaseSchema: Record<string, any> | undefined;
   let services: Record<string, any> | undefined;
+  const area = fetchUserAreaDimensions().toString()
 
   // Generate appVersion and versionNumber using the provided generators
   const { versionNumber, appVersion } = getCurrentAppInfo();
@@ -467,68 +501,104 @@ const versionData: Promise<VersionData<BaseData<any>>> = (async () => {
   }
 
   if (!version) {
-    throw new Error("Not abe to find version")
+    throw new Error("Not able to find version")
   }
+  
+
+// Then create mockVersion and other dependencies
+const mockVersion: Version<BaseDataEntity<any>, BaseDataEntity<any>, StructuredMetadata<BaseDataEntity<any>, BaseDataEntity<any>>> = {
+  id: 0,
+  major: 1,
+  minor: 0,
+  patch: 0,
+  name: "Initial Version",
+  // ... all other required properties
+} as Version<BaseDataEntity<any>, BaseDataEntity<any>, StructuredMetadata<BaseDataEntity<any>, BaseDataEntity<any>>>;
+
+  
+const latestVersionData = createLatestVersion();
+const lastUpdatedData = createLastUpdated("Version history initialized.");
+
+// Now update versionHistory with the actual data
+Object.assign(versionHistory, {
+  ...latestVersionData,
+  ...lastUpdatedData,
+  versions: [
+    ...(latestVersionData && 'versions' in latestVersionData && Array.isArray(latestVersionData.versions) ? latestVersionData.versions : []),
+    ...(lastUpdatedData && 'versions' in lastUpdatedData && Array.isArray(lastUpdatedData.versions) ? lastUpdatedData.versions : []),
+    mockVersion
+  ],
+});
+
   // Define the resolved VersionData object
-  const resolvedVersionData: VersionData<BaseData<any>> = {
-    id: "0",
-    name: "Version 1",
+  const resolvedVersionData: VersionData<BaseDataEntity<any>> = {
+    id: "version-1",
+    name: "Initial Version",
     lastUpdated: new Date(),
     appPathWithVersion,
-    version,
-    url: "", // Add a default URL or fetch it
+    version: null,
+    author: "system", // Default system author
+    buildNumber: 1, // Start with build 1
+    versionHistory: versionHistory,
+    schema: {},
+    currentHash: 'Initial hash',
+    url: "/versions/version-1", // Meaningful URL
     timestamp: new Date(),
     versionNumber,
-    notes: [],
+    notes: ["Initial version created"],
     history: [],
-    documentId: "", // Add a default documentId or fetch it
+    documentId: "doc-version-1", // Meaningful document ID
     isActive: true,
     releaseDate: new Date().toISOString(),
     draft: false,
-    userId: "", // Add a default userId or fetch it
-    content: "", // Add default content or fetch it
-    checksum: "", // Add a default checksum or calculate it
+    userId: "system-user", // Default system user
+    content: "Initial version content", // Default content
+    checksum: generateChecksum("Initial version content"), // Calculate checksum
     metadata: {
-      author: "", // Add a default author or fetch it
+      author: "system", // Consistent author
       timestamp: new Date(),
+      area: area,
+      metadataEntries: {},
+      schema: {}
     },
     versionData: undefined,
-    major: 0,
+    major: 1, // Start with major version 1
     minor: 0,
     patch: 0,
     data: [],
-    user: "", // Add a default user or fetch it
+    user: "system", // Consistent user
     comments: [],
     backend: backendStructure,
     frontend: frontendStructure,
-    changes: [],
+    changes: ["Initial version created"],
     buildVersions: {
       data: [],
       backend: backendStructure,
       frontend: frontendStructure,
+      baseData: baseData
     },
-    parentId: "", // Add a default parentId or fetch it
-    parentType: "", // Add a default parentType or fetch it
-    parentVersion: "", // Add a default parentVersion or fetch it
-    parentTitle: "", // Add a default parentTitle or fetch it
-    parentContent: "", // Add a default parentContent or fetch it
-    parentName: "", // Add a default parentName or fetch it
-    parentUrl: "", // Add a default parentUrl or fetch it
-    parentChecksum: "", // Add a default parentChecksum or fetch it
-    parentAppVersion: "", // Add a default parentAppVersion or fetch it
-    parentVersionNumber: "", // Add a default parentVersionNumber or fetch it
-    isLatest: false,
+    parentId: "none", // No parent initially
+    parentType: "none",
+    parentVersion: "0.0.0",
+    parentTitle: "No Parent",
+    parentContent: "No parent content",
+    parentName: "No Parent",
+    parentUrl: "/",
+    parentChecksum: "none",
+    parentAppVersion: "0.0.0",
+    parentVersionNumber: "0.0.0",
+    isLatest: true, // This is the latest version initially
     isPublished: false,
     publishedAt: null,
-    source: "", // Add a default source or fetch it
-    status: "", // Add a default status or fetch it
-    workspaceId: "", // Add a default workspaceId or fetch it
-    workspaceName: "", // Add a default workspaceName or fetch it
-    workspaceType: "", // Add a default workspaceType or fetch it
-    workspaceUrl: "", // Add a default workspaceUrl or fetch it
+    source: "system-generated", // Source information
+    status: "draft",
+    workspaceId: "default-workspace",
+    workspaceName: "Default Workspace",
+    workspaceType: "development",
+    workspaceUrl: "/workspaces/default",
     workspaceViewers: [],
-    workspaceAdmins: [],
-    workspaceMembers: [],
+    workspaceAdmins: ["system-admin"],
+    workspaceMembers: ["system-user"],
     _structure: {},
 
     services, // Initialize services as undefined or with default values
@@ -549,7 +619,40 @@ const versionData: Promise<VersionData<BaseData<any>>> = (async () => {
   return resolvedVersionData;
 })();
 
+// Helper function for checksum generation
+function generateChecksum(content: string): string {
+  // Simple checksum implementation - replace with your actual checksum logic
+  let hash = 0;
+  for (let i = 0; i < content.length; i++) {
+    hash = ((hash << 5) - hash) + content.charCodeAt(i);
+    hash |= 0;
+  }
+  return hash.toString(16);
+}
 
+// Usage: Await the Promise to get the resolved VersionData object
+versionData.then((data) => {
+  console.log("Resolved VersionData:", data);
+
+  // Example: Call setServices
+  if (data.setServices) {
+    data.setServices({
+      authService: {
+        endpoint: "https://api.example.com/auth",
+        apiKey: "your-api-key",
+      },
+      services: {}
+    });
+  } else {
+    console.warn("setServices method is not available on this VersionData object");
+  }
+}).catch((error) => {
+  console.error("Error creating version data:", error);
+});
+
+
+const latestVersionData = createLatestVersion();
+const lastUpdatedData = createLastUpdated("Version history initialized.");
 
 
 
@@ -572,28 +675,18 @@ const newServices = {
 async function updateServices() {
   try {
     const versionData = await createDefaultVersionData(); // Await the promise
-    versionData.setServices(newServices); // Now you can call methods
-    console.log("Updated services:", versionData.services);
+    
+    // Add null check before calling setServices
+    if (versionData.setServices) {
+      versionData.setServices(newServices); // Now you can call methods safely
+      console.log("Updated services:", versionData.services);
+    } else {
+      console.warn("setServices method is not available on this VersionData object");
+    }
   } catch (error) {
     console.error("Error:", error);
   }
 }
-
-// Usage: Await the Promise to get the resolved VersionData object
-versionData.then((data) => {
-  console.log("Resolved VersionData:", data);
-
-  // Example: Call setServices
-  data.setServices({
-    authService: {
-      endpoint: "https://api.example.com/auth",
-      apiKey: "your-api-key",
-    },
-    services: {}
-  });
-}).catch((error) => {
-  console.error("Error creating version data:", error);
-});
 
 
 // Function to calculate checksum (example implementation)
@@ -611,22 +704,6 @@ function calculateChecksum(content: string): string {
   return hexChecksum;
 }
 
-// Resolve the versionData Promise
-const resolvedVersionData = await versionData;
-
-export const versionHistory: VersionHistory = {
-  history: [],
-  versionData: versionData ? [versionData] : [], // Use empty array instead of null
-  latestVersion: resolvedVersionData || {
-    id: 0,
-    name: "Initial Version",
-    timestamp: new Date(),
-  }, 
-  ...createLatestVersion(),
-  ...createLastUpdated("Version history initialized."),
-};
-
-
-export { createDefaultVersionData };
-export type { ExtendedVersionData, SharedVersionData, VersionData, VersionHistory, CoreDataItem };
+export { createDefaultVersionData, versionHistory };
+export type { CoreDataItem, ExtendedVersionData, MinimalVersion, SharedVersionData, VersionData, VersionHistory };
 

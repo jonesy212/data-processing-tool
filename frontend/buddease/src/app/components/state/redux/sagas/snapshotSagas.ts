@@ -1,9 +1,9 @@
 // sagas/snapshotSagas.ts
 import { Data } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import { SnapshotActions } from '@/app/components/snapshots/SnapshotActions';
 import { YourResponseType } from '@/app/components/typings/types';
 import { call, put, takeLatest } from 'redux-saga/effects';
-import { Snapshot } from '../../../snapshots/SnapshotStore';
 
 // Replace with the actual API endpoints or functions
 const api = new Api();

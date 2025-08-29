@@ -1,6 +1,7 @@
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { BaseData } from '@/app/components/models/data/Data';
-import { Snapshot, SnapshotData, SnapshotWithCriteria } from '@/app/components/snapshots';
+import { Callback, Snapshot, SnapshotData, SnapshotsArray, SnapshotWithCriteria } from '@/app/components/snapshots';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { SnapshotSubscriberManagement } from "@/app/components/snapshots/SnapshotSubscriberManagement";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
@@ -11,8 +12,15 @@ import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import { EventRecord } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SubscriberCallbackType } from "../subscriptions/Subscription";
 import { SubscriberCollection } from '../users/SubscriberCollection';
+import { Subscriber } from '../users/Subscriber';
+import { SnapshotContext } from '@/app/components/snapshots/SnapshotSubscriberManagement'
+import { ExcludedFields } from '@/app/components/routing/Fields';
 
-interface BaseEventCallbacks<T extends BaseData<any>, K extends T = T> {
+interface BaseEventCallbacks<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+> {
   onInitialize?: () => void;
   on?: (
     event: string,
@@ -49,84 +57,70 @@ interface BaseEventCallbacks<T extends BaseData<any>, K extends T = T> {
   ) => void;
 }
 
-interface EventManagement<T extends BaseData<any>, K extends T = T> {
+interface EventManagement<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+> {
   // Global event subscription
   subscribe: (
-    event: string,
-    callback: (snapshot: Snapshot<T, K>) => void
-  ) => void;
+    snapshotId: string,
+    unsubscribe: UnsubscribeDetails,
+    subscriber: Subscriber<T, K> | null,
+    data: T,
+    event: string | Event,
+    callback: Callback<SnapshotContext<T, K, Meta, ExcludedFields>>
+  ) => [] | SnapshotsArray<T, K, Meta>;
+  
   
   unsubscribe: (
-    snapshotId: number,
+    snapshotId: string,
     unsubscribeDetails: UnsubscribeDetails,
-    callback: SubscriberCallbackType<T, K> | null
+    callback: SubscriberCallbackType<T, K> | null,
+    ctx?: SnapshotContext<T, K, Meta, ExcludedFields>
   ) => void;
 
   emit: (
     event: string,
-    snapshot: Snapshot<T, K>,
-    snapshotId: string,
-    subscribers: SubscriberCollection<T, K>,
-    type: string,
-    snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
-    criteria: SnapshotWithCriteria<T, K>,
-    category: Category,
-    snapshotData: SnapshotData<T, K>
+    ctx: SnapshotContext<T, K, Meta, ExcludedFields> & {
+      snapshotId: string;
+      type: string;
+      dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[];
+      criteria?: SnapshotWithCriteria<T, K>;
+    }
   ) => void;
+
   once: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
   removeAllListeners: (event?: string) => void,
 }
 
-interface SnapshotEventHandlers<T extends BaseData<any>, K extends T = T> {
-  onSnapshotAdded: (
-    event: string,
-    snapshot: Snapshot<T, K>,
-    snapshotId: string,
-    subscribers: SubscriberCollection<T, K>,
-    snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
-    subscriberId: string,
-    criteria: SnapshotWithCriteria<T, K>,
-    category: Category
-  ) => void;
-  onSnapshotRemoved: (
-    event: string,
-    snapshot: Snapshot<T, K>,
-    snapshotId: string,
-    subscribers: SubscriberCollection<T, K>,
-    type: string,
-    snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
-    criteria: SnapshotWithCriteria<T, K>,
-    category: Category,
-    snapshotData: SnapshotData<T, K>
-  ) => void;
-  onSnapshotUpdated: (
-    event: string,
-    snapshotId: string,
-    snapshot: Snapshot<T, K>,
-    data: Map<string, Snapshot<T, K>>,
-    events: Record<string, CalendarManagerStoreClass<T, K>[]>,
-    snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
-    newData: Snapshot<T, K>,
-    payload: UpdateSnapshotPayload<T>,
-    store: SnapshotStore<any, K>
-  ) => void;
-  onError: (
-    event: string,
-    error: Error,
-    snapshot: Snapshot<T, K>,
-    snapshotId: string,
-    snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
-    criteria: SnapshotWithCriteria<T, K>,
-    category: Category
-  ) => void;
+export interface SnapshotEventHandlers<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+> {
+  /** Mainstream / standard snapshot event hooks */
+  onSnapshotAdded: (event: string, ctx: SnapshotContext<T, K, Meta>) => void;
+  onSnapshotRemoved: (event: string, ctx: SnapshotContext<T, K, Meta> & { type: string }) => void;
+  onSnapshotUpdated: (event: string, ctx: SnapshotContext<T, K, Meta> & { snapshotId: string; data: Map<string, Snapshot<T, K>>; events: Record<string, CalendarManagerStoreClass<T, K>[]>; store: SnapshotStore<any, K> }) => void;
+  onError: (event: string, ctx: SnapshotContext<T, K, Meta> & { error: Error }) => void;
+
+  /** Optional / alternative event hooks */
+  beforeSnapshotAdd?: (event: string, ctx: SnapshotContext<T, K, Meta>) => void;
+  afterSnapshotRemove?: (event: string, ctx: SnapshotContext<T, K, Meta>) => void;
+
+  /** Primary sources / context */
+  logSnapshotEvent?: (event: string, ctx: SnapshotContext<T, K, Meta>) => void;
 }
 
-interface RecordManagement<T extends BaseData<any>, K extends T = T> {
+
+interface RecordManagement<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> {
   addRecord: (
     event: string,
     record: CalendarManagerStoreClass<T, K>,
@@ -137,16 +131,16 @@ interface RecordManagement<T extends BaseData<any>, K extends T = T> {
     snapshotId: string,
     snapshot: Snapshot<T, K>,
     snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
+    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
     criteria: SnapshotWithCriteria<T, K>,
     category: Category
   ) => void;
 }
 
 interface SharedProperties<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > {
   eventRecords: Record<string, EventRecord<T, K, Meta>[]> | null;
   records: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
@@ -154,22 +148,23 @@ interface SharedProperties<
   eventsDetails?: Record<string, any>;
 }
 
-// Step 2:  Define the common SnapshotEvents interface
-interface SnapshotEvents<
-  T extends BaseData<any>,
+ interface SnapshotEvents<
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
-  extends BaseEventCallbacks<T, K>,
-          EventManagement<T, K>,
-          SnapshotEventHandlers<T, K>,
-          RecordManagement<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+> extends
+  BaseEventCallbacks<T, K, Meta>,
+  EventManagement<T, K, Meta, ExcludedFields>,
+  SnapshotEventHandlers<T, K, Meta>,
+  RecordManagement<T, K, Meta>,
   SharedProperties<T, K>,
-  SnapshotSubscriberManagement<T, K, Meta>
+  SnapshotSubscriberManagement<T, K, Meta, ExcludedFields>
 {
   key?: string;
   target?: EventTarget; // Event target
   snapshotData?: SnapshotData<T, K>;
-  dataItems?: RealtimeDataItem[];
+  dataItems?: RealtimeDataItem<T, K, Meta, ExcludedFields>[];
 }
 
 export type { SharedProperties, SnapshotEvents };

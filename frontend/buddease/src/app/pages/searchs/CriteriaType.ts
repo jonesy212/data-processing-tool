@@ -12,48 +12,50 @@ import { TaskPhaseEnum } from "../../components/phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "../../components/phases/TenantManagementPhase";
 import { AnalysisTypeEnum } from "../../components/projects/DataAnalysisPhase/AnalysisType";
 import { SecurityFeatureEnum } from "../../components/security/SecurityFeatureEnum";
-import { NotificationTypeEnum } from "../../components/support/NotificationContext";
 import { IdeaCreationPhaseEnum } from "../../components/users/userJourney/IdeaCreationPhase";
+import { NotificationTypeEnum } from "@/context/NotificationContext";
 
 // CriteriaType.ts
 // Define CriteriaType incorporating FilterCriteria
 export type CriteriaType = {
-    startDate?: Date;
-    filterBy?: string;
-    value?: string
-    endDate?: Date;
-    status?: StatusType | null;
-    priority?: PriorityTypeEnum | null;
-    assignedUser?: string | null;
-    notificationType?: NotificationTypeEnum | null;
-    todoStatus?: TodoStatus | null;
-    taskStatus?: TaskStatus | null;
-    teamStatus?: TeamStatus | null;
-    dataStatus?: DataStatus | null;
-    calendarStatus?: CalendarStatus | null;
-    notificationStatus?: NotificationStatus | null;
-    bookmarkStatus?: BookmarkStatus | null;
-    priorityType?: PriorityTypeEnum | null;
-    projectPhase?: ProjectPhaseTypeEnum | null;
-    developmentPhase?: DevelopmentPhaseEnum | null;
-    subscriberType?: SubscriberTypeEnum | null;
-    subscriptionType?: SubscriptionTypeEnum | null;
-    analysisType?: AnalysisTypeEnum | null;
-    documentType?: DocumentTypeEnum | null;
-    fileType?: FileTypeEnum | null;
-    tenantType?: TenantManagementPhaseEnum | null;
-    ideaCreationPhaseType?: IdeaCreationPhaseEnum | null;
-    securityFeatureType?: SecurityFeatureEnum | null;
-    feedbackPhaseType?: FeedbackPhaseEnum | null;
-    contentManagementType?: ContentManagementPhaseEnum | null;
-    taskPhaseType?: TaskPhaseEnum | null;
-    animationType?: AnimationTypeEnum | null;
-    languageType?: LanguageEnum | null;
-    codingLanguageType?: CodingLanguageEnum | null;
-    formatType?: FormatEnum | null;
-    privacySettingsType?: PrivacySettingEnum | null;
-    messageType?: MessageType | null;
-    tableName?: string
+  startDate?: Date;
+  filterBy?: string;
+  value?: string
+  endDate?: Date;
+  limit?: number
+  offset?: number;
+  status?: StatusType | null;
+  priority?: PriorityTypeEnum | null;
+  assignedUser?: string | null;
+  notificationType?: NotificationTypeEnum | null;
+  todoStatus?: TodoStatus | null;
+  taskStatus?: TaskStatus | null;
+  teamStatus?: TeamStatus | null;
+  dataStatus?: DataStatus | null;
+  calendarStatus?: CalendarStatus | null;
+  notificationStatus?: NotificationStatus | null;
+  bookmarkStatus?: BookmarkStatus | null;
+  priorityType?: PriorityTypeEnum | null;
+  projectPhase?: ProjectPhaseTypeEnum | null;
+  developmentPhase?: DevelopmentPhaseEnum | null;
+  subscriberType?: SubscriberTypeEnum | null;
+  subscriptionType?: SubscriptionTypeEnum | null;
+  analysisType?: AnalysisTypeEnum | null;
+  documentType?: DocumentTypeEnum | null;
+  fileType?: FileTypeEnum | null;
+  tenantType?: TenantManagementPhaseEnum | null;
+  ideaCreationPhaseType?: IdeaCreationPhaseEnum | null;
+  securityFeatureType?: SecurityFeatureEnum | null;
+  feedbackPhaseType?: FeedbackPhaseEnum | null;
+  contentManagementType?: ContentManagementPhaseEnum | null;
+  taskPhaseType?: TaskPhaseEnum | null;
+  animationType?: AnimationTypeEnum | null;
+  languageType?: LanguageEnum | null;
+  codingLanguageType?: CodingLanguageEnum | null;
+  formatType?: FormatEnum | null;
+  privacySettingsType?: PrivacySettingEnum | null;
+  messageType?: MessageType | null;
+  tableName?: string
     // Add more filter criteria as needed
 };
   

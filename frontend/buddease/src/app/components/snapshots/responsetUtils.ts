@@ -1,22 +1,20 @@
 // responsetUtils.ts
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { fetchSnapshotById } from '@/app/api/SnapshotApi';
-import { SnapshotData } from '@/app/components/snapshots';
+import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot, SnapshotData } from '@/app/components/snapshots';
 import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Category } from '../libraries/categories/generateCategoryProperties';
-import { Data } from '../models/data/Data';
 import { DataStore, InitializedState } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { Snapshot } from './LocalStorageSnapshotStore';
 import { SnapshotConfig } from './SnapshotConfig';
 import { SnapshotContainer } from './SnapshotContainer';
 import SnapshotStore from './SnapshotStore';
 import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 import { SnapshotStoreDataResponse } from './SnapshotStoreDataResponse';
 import { SnapshotStoreProps } from './useSnapshotStore';
-import { BaseData } from '@/app/components/models/data/Data';
 
-function handleSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(snapshot: Snapshot<any, any>) {
+function handleSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshot: Snapshot<any, any>) {
     if ('snapshotMethods' in snapshot.data) {
       // Safely access SnapshotStore specific methods
       const methods = (snapshot.data as SnapshotStoreDataResponse<T,K>).snapshotMethods;
@@ -29,7 +27,7 @@ function handleSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends 
   }
 
 
-function mapResponseToSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function mapResponseToSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   response: any
 ): Snapshot<SnapshotStoreDataResponse<T, K>> {
     return {
@@ -291,7 +289,28 @@ const returnsSnapshotStore = async (
 };
 
 
-export {handleSnapshot,
+export {
+  handleSnapshot,
   mapResponseToSnapshot,
-  returnsSnapshotStore,
-}
+  returnsSnapshotStore
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

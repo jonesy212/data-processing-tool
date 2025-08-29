@@ -1,9 +1,8 @@
 // useDataExport.ts
 import { useState } from 'react';
 import axiosInstance from '../../security/csrfToken';
-import { NotificationTypeEnum, useNotification } from '../../support/NotificationContext';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
-import { NOTIFICATION_TYPES } from '../../support/NotificationTypes';
+import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 
 const { ERROR } = NOTIFICATION_TYPES;
 
@@ -23,8 +22,8 @@ export const useDataExport = () => {
       NOTIFICATION_MESSAGES.Data.ERROR_EXPORTING_DATA,
       new Date,
       NotificationTypeEnum.Error);
-    throw new Error(ERROR);
-  };
+      throw new Error(NotificationTypeEnum.Error);
+    };
 
   const exportDataToServer = async (data: any): Promise<DataExportResult> => {
     try {
@@ -61,7 +60,7 @@ export const useDataExport = () => {
       return Promise.reject({
         status: 500,
         data: [],
-        errorType: ERROR,
+        errorType: NotificationTypeEnum.Error,
       });
     }
 

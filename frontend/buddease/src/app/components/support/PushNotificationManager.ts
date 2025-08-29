@@ -1,4 +1,4 @@
-import { useNotification } from "./NotificationContext";
+import { useNotification } from "@/context/NotificationContext";
 
 class PushNotificationManager {
   static sendPushNotification(message: string, sender: string): void {

@@ -1,11 +1,11 @@
 // UIActions.tsx
+import { K } from "@/app/components/models/data/dataStoreMethods";
+import { CollaborationData } from "@/app/pages/community/CollaborationData";
 import { createAction } from "@reduxjs/toolkit";
 import React from "react";
 import { Progress } from "../models/tracker/ProgressBar";
 import { SearchResultWithQuery } from "../routing/SearchResult";
 import { CollaborationState } from "../state/redux/slices/CollaborationSlice";
-import { CollaborationData } from "@/app/pages/community/CollaborationData";
-import { T, K } from "@/app/components/models/data/dataStoreMethods";
 
 
 interface FetchUserDataPayload {
@@ -21,7 +21,7 @@ export type GesterEvent = React.TouchEvent<HTMLDivElement> & React.PointerEvent<
 
 
 export const UIActions = {
-  updateCollaborationState: createAction<CollaborationState<CollaborationData, K<T>>>("updateCollaborationState"),
+  updateCollaborationState: createAction<CollaborationState<CollaborationData, K>>("updateCollaborationState"),
   setIsGestureInProgress: createAction<boolean>("setIsGestureInProgress"),
   setGestureStartPosition: createAction<{ x: number; y: number }>("setGestureStartPosition"),
   setGestureCurrentPosition: createAction<{ x: number; y: number }>("setGestureCurrentPosition"),

@@ -1,9 +1,9 @@
 // articleApi.ts
+import { useNotification } from "@/context/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
 import { addLog } from "../components/state/redux/slices/LogSlice";
 import { useArticleStore } from "../components/state/stores/ArticleStore";
-import { useNotification } from "../components/support/NotificationContext";
 import { User } from "../components/users/User";
 import { Message } from "../generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "../generators/GenerateUniqueIds";
@@ -104,13 +104,10 @@ export const articleApiService: ArticleApiService = observable({
       notificationContext.showSuccessNotification(
         "Article Created",
         {
-          ...message,
           id: "article-created",
-          sender: undefined,
-          senderId: undefined,
-        } as Message,
-        `Article "${articleData.title}" was created successfully.`,
-        articleData
+          content: `Article "${articleData.title}" was created successfully.`,
+          type: "success"
+        } as Message
       );
 
       return response.data;

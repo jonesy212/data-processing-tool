@@ -5,8 +5,8 @@ import {
   fetchContentIdFromAPI
 } from "@/app/api/ApiContent";
 import { ExcludedFields } from '@/app/components/routing/Fields';
+import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
-import { createLatestVersion } from "./components/versions/createLatestVersion";
 
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { BaseData } from '@/app/components/models/data/Data';
@@ -21,6 +21,7 @@ import { useMetadata } from "@/app/configs/useMetadata";
 import { usePanelContents } from "@/app/generators/usePanelContents";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import Clipboard from "@/app/ts/clipboard";
+import { FinancialReport } from "@/documents/documentation/report/Report";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import crypto from "crypto";
 import {
@@ -31,9 +32,9 @@ import {
   RichUtils,
 } from "draft-js";
 import "draft-js/dist/Draft.css";
-import React, { useState } from "react";
-import getAppPath from "../../../../appPath";
-import { DocumentPath, DocumentTypeEnum, FinancialReport } from "../../../server/DocumentGenerator";
+import React, { useState, version } from "react";
+import { DocumentPath, DocumentTypeEnum } from "../../../server/DocumentGenerator";
+import getAppPath from "../../configs/appStructure/appPath";
 import { LanguageEnum } from "../communications/LanguageEnum";
 import useErrorHandling from "../hooks/useErrorHandling";
 import ResizablePanels from "../hooks/userInterface/ResizablePanels";
@@ -88,6 +89,8 @@ import {
 import { ToolbarOptionsComponent, ToolbarOptionsProps } from "./ToolbarOptions";
 import { ResearchReport, TechnicalReport } from "./documentation/report/Report";
 import { getTextBetweenOffsets } from "./getTextBetweenOffsets";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/configs/BaseConfig";
+import { versions } from "process";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 
@@ -106,10 +109,10 @@ type WritableTodoSubtasks = WritableDraft<TodoSubtasks>;
 
 
 interface DocumentData<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
   extends DocumentBase<T, K>, CommonData<T, K, Meta, ExcludedFields>, 
 DatasetModel<T, K, Meta> {
@@ -171,7 +174,7 @@ DatasetModel<T, K, Meta> {
       }
     | undefined;
   version: Version<T, K> | undefined | null;
-  versionData: VersionData | undefined;
+  versionData: VersionData<T, K> | undefined;
   visibility: AllTypes;
   url?: string;
   updatedDocument?: DocumentData<T, K>;
@@ -438,12 +441,10 @@ const initialOptions: DocumentOptions = {
     externalLinks: [],
     externalReferences: [],
     externalRelatedItems: [],
-  } as unknown as VersionData,
+  } as unknown as VersionData<T, K>,
   currentContent: new ContentState(),
   previousContent: undefined,
   additionalOptionsLabel: "additionalOptionsLabel",
-  previousMeta: {},
-  currentMeta: {}
 };
 
 export const [options, setOptions] = useState<Options>(initialOptions);
@@ -511,7 +512,9 @@ const getMetadataForContentState = (
         description: "description2",
         keywords: ["keyword1", "keyword2"],
         authors: ["author1", "author2"],
-        contributors: ["contributor1", "contributor2"],
+        contributors: [{
+
+        }],
         publisher: "publisher1",
         copyright: "copyright1",
         license: "license1",
@@ -528,7 +531,9 @@ const getMetadataForContentState = (
         description: "description2",
         keywords: ["keyword3", "keyword4"],
         authors: ["author3", "author4"],
-        contributors: ["contributor3", "contributor4"],
+        contributors: [{
+          
+        }],
         publisher: "publisher2",
         copyright: "copyright2",
         license: "license2",
@@ -574,7 +579,7 @@ export const saveDocument = createAsyncThunk(
 const extractMetadata = async (
   contentId: string,
   contentState: ContentState
-): Promise<UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>> => {
+): Promise<UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, ExcludedFields<T, K>>> => {
   const contentString = contentState.getPlainText();
   return await getMetadataFromPlainText(contentId, contentString);
 };
@@ -585,7 +590,7 @@ const extractMetadata = async (
 
 
 
- const updateMetadata = (newMetadata: UnifiedMetadata) => {
+ const updateMetadata = (newMetadata: UnifiedMetadata<T, K, Meta, ExcludedFields>) => {
   // Save current metadata as previous before updating
   setPreviousMetadata(currentMetadata);
   // Update the current metadata
@@ -597,8 +602,8 @@ const extractMetadata = async (
 const handleMetadataExtraction = async (
   contentState: ContentState,
   previousContentState: ContentState,
-  setCurrentMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions>>,
-  setPreviousMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions>>,
+  setCurrentMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, ExcludedFields<T, K>>>>,
+  setPreviousMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, ExcludedFields<T, K>>>>,
   contentId?: string 
 ) => {
 
@@ -637,7 +642,7 @@ const convertedAccessHistory = options.accessHistory.map(
 
 
 // Now you can use these values in DocumentBuilderProps
-const documentBuilderProps: DocumentBuilderProps = {
+const documentBuilderProps: DocumentBuilderProps<T, K, StructuredMetadata<T, K>, ExcludedFields<T, K>> = {
   isDynamic: true,
   documents: [],
   projectPath: projectPath,
@@ -1128,7 +1133,7 @@ const documentBuilderProps: DocumentBuilderProps = {
   id: "",
   _id: "",
   title: "",
-  content: "",
+  content: {},
   permissions: undefined,
   folders: [],
   folderPath: "",
@@ -1272,9 +1277,9 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 
 
     const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
-    const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
+    const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
 
-    const documentData: DocumentData<T, K<T>, Meta<T, K>, ExcludedFields<T, K<T>>> = {}
+    const documentData: DocumentData<T, K, Meta<T, K>, ExcludedFields<T, K>> = {}
     // Create a document object
     const documentObject: DocumentObject<BaseData<string, string, StructuredMetadata<any, any>>> = {
       // Document Identification & Versioning

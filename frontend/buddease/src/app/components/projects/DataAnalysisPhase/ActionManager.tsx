@@ -1,8 +1,8 @@
 // ActionManager.ts
 
 import { Task } from "../../models/tasks/Task";
-import { useNotification } from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
+import { useNotification } from "@/context/NotificationContext";
 
 class ActionManager {
     private notify: (message: string, type: string, timestamp: Date, context: string) => void; // Define the notify method

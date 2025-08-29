@@ -1,9 +1,9 @@
 // ContentHelpers.ts
 import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import { Task } from "../../models/tasks/Task";
 import { Project } from "../../projects/Project";
 import { SnapshotData } from "../../snapshots";
-import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { Todo } from "../../todos/Todo";
 
 export function isTask<

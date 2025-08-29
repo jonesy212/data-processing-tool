@@ -1,6 +1,6 @@
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots";
 import { SubscriptionLevel } from "@/app/components/subscriptions/SubscriptionLevel";
 import { SubscriberCallback } from '@/app/components/users/Subscriber';
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';

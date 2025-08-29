@@ -1,5 +1,5 @@
 // ChangePasswordForm.tsx
-import { useAuth } from "@/app/components/auth/AuthContext";
+import { useAuth } from "@/server/auth/AuthContext";
 import { sanitizeInput } from "@/app/components/security/SanitizationFunctions";
 import { User } from "@/app/components/users/User";
 import React, { useState } from "react";

@@ -70,9 +70,9 @@ const apiNotificationMessages: NoteNotificationMessages = {
 // Extend SearchNotesResponse with attributes from YourResponseType
 type SearchNotesResponse = {
   // Add specific attributes related to search notes if needed
-  results: Note<T, K<T>>[]; // Assuming an array of Note objects in the response
+  results: Note<T, K>[]; // Assuming an array of Note objects in the response
   totalCount: number; // Total count of search results
-  searchData: SearchResponseData<T, K<T>>;
+  searchData: SearchResponseData<T, K>;
 };
 
 interface Note<

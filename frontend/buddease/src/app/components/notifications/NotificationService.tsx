@@ -1,25 +1,27 @@
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { LogData } from "@/app/components/models/LogData";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import {
-    NotificationTypeEnum,
-    useNotification,
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/context/NotificationContext";
-import { NotificationType } from '@/app/context/NotificationContext';
+import React from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { EventActions } from "../actions/EventActions";
 import AnnouncementManager from "../support/AnnouncementManager";
 import {
-    NotificationData,
-    selectNotifications,
+  NotificationData,
+  selectNotifications,
 } from "../support/NofiticationsSlice";
 import { NotificationActions } from "../support/NotificationActions";
 import PushNotificationManager from "../support/PushNotificationManager";
 
-
-
+const dispatch = useDispatch();
 
 interface NotificationContainer {
-  notifications: NotificationData[];
-  setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>>;
+  notifications: NotificationData<T, K, StructuredMetadata<T, K>>[];
+  setNotifications: React.Dispatch<React.SetStateAction<NotificationData<T, K, StructuredMetadata<T, K>>>[]>;
   notify: (
     id: string,
     message: string,
@@ -30,15 +32,15 @@ interface NotificationContainer {
   sendPushNotification: (message: string, sender: string) => void;
   sendAnnouncement: (message: string, sender: string) => void;
   handleButtonClick: () => Promise<void>;
-  dismissNotification: (notification: NotificationData) => void;
-  addNotification: (notification: NotificationData) => void;
+  dismissNotification: (notification: NotificationData<T, K, StructuredMetadata<T, K>>) => void;
+  addNotification: (notification: NotificationData<T, K, StructuredMetadata<T, K>>) => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
 }
 
 interface NotificationContainer {
-  notifications: NotificationData[];
-  setNotifications: React.Dispatch<React.SetStateAction<NotificationData[]>>;
+  notifications: NotificationData<T, K, StructuredMetadata<T, K>>[];
+  setNotifications: React.Dispatch<React.SetStateAction<NotificationData<T, K, StructuredMetadata<T, K>>>[]>;
   notify: (
     id: string,
     message: string,
@@ -49,8 +51,8 @@ interface NotificationContainer {
   sendPushNotification: (message: string, sender: string) => void;
   sendAnnouncement: (message: string, sender: string) => void;
   handleButtonClick: () => Promise<void>;
-  dismissNotification: (notification: NotificationData) => void;
-  addNotification: (notification: NotificationData) => void;
+  dismissNotification: (notification: NotificationData<T, K, StructuredMetadata<T, K>>) => void;
+  addNotification: (notification: NotificationData<T, K, StructuredMetadata<T, K>>) => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
 }
@@ -79,7 +81,7 @@ interface NotificationContainer {
     }
   };
 
-export const logData: LogData = {
+export const logData: LogData<T, K, Meta> = {
   id: "",
   message: "",
   createdAt: new Date(),
@@ -102,7 +104,7 @@ const useNotificationManagerService = (): NotificationContainer => {
   const dispatch = useDispatch();
 
   const setNotifications: React.Dispatch<
-    React.SetStateAction<NotificationData[]>
+    React.SetStateAction<NotificationData<T, K, StructuredMetadata<T, K>>>[]
   > = (value) => {
     // Dispatch action to set notifications in the store or update local state
     dispatch(NotificationActions.setNotifications(value));
@@ -164,21 +166,21 @@ const useNotificationManagerService = (): NotificationContainer => {
         completionMessageLog: logData,
         sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error",
         notificationType:
-          "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/support/NotificationContext" as NotificationType,
+          "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/context/NotificationContext" as NotificationType,
       })
     );
     // Send push notification on button click
     await Promise.resolve(sendPushNotification("New message!", "App"));
   };
 
-  const dismissNotification = (notification: NotificationData): void => {
+  const dismissNotification = (notification: NotificationData<T, K, StructuredMetadata<T, K>>): void => {
     // Dispatch action to dismiss notification
     dispatch(NotificationActions.removeNotification(notification.id as string));
     // Implement dismissal logic here
     console.log("Notification dismissed:", notification);
   };
 
-  const addNotification = (notification: NotificationData): void => {
+  const addNotification = (notification: NotificationData<T, K, StructuredMetadata<T, K>>): void => {
     dispatch(NotificationActions.addNotification(notification));
   };
 

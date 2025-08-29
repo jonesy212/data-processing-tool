@@ -3,7 +3,7 @@
 import { makeAutoObservable } from 'mobx';
 import { useEffect } from 'react';
 import { initializeUserData } from '../../pages/onboarding/PersonaBuilderData.js';
-import { useAuth } from '../auth/AuthContext';
+import { useAuth } from '@/server/auth/AuthContext';
 import { Tracker } from '../models/tracker/Tracker';
 import { rootStores } from '../state/stores/RootStores';
 import TrackerStore from '../state/stores/TrackerStore';

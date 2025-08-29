@@ -14,9 +14,9 @@ import { BaseData } from '../data/Data';
 
 // Example functions for fetching initial snapshot data and current data
 const fetchInitialSnapshotData = async  <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(): Promise<Snapshot<T, K>[]> => {
   await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate delay of 1 second
 

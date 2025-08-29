@@ -1,18 +1,17 @@
-import React, { useEffect, useState } from 'react';
 import { Exchange } from "@/app/components/crypto/Exchange";
 import { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from "@/app/components/crypto/exchangeIntegration";
 import useRealtimeDextData from "@/app/components/hooks/commHooks/useRealtimeDextData";
 import useRealtimeExchangeData from "@/app/components/hooks/commHooks/useRealtimeExchangeData";
 import { Data } from "@/app/components/models/data/Data";
-import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
-import { useDispatch } from "react-redux";
-import { RealtimeUpdateCallback } from "../../hooks/commHooks/useUIRealtimeData";
-import { RealtimeData, RealtimeDataItem } from "./RealtimeData";
-import { DEX } from "../../crypto/DEX";
-import { CalendarEvent } from '../../state/stores/CalendarEvent';
 import SnapshotList, { SnapshotItem } from '@/app/components/snapshots/SnapshotList';
+import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from "react-redux";
+import { DEX } from "../../crypto/DEX";
+import { RealtimeUpdateCallback } from "../../hooks/commHooks/useUIRealtimeData";
+import { CalendarEvent } from '../../state/stores/CalendarEvent';
+import { RealtimeData, RealtimeDataItem } from "./RealtimeData";
 
 const RealTimeDataCollection: React.FC<{}> = () => {
   const dispatch = useDispatch();

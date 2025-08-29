@@ -1,11 +1,9 @@
 import { BaseData } from '@/app/components/models/data/Data';
-import { SnapshotConfig, SnapshotData } from '@/app/components/snapshots';
+import { Snapshot, SnapshotConfig, SnapshotData } from '@/app/components/snapshots';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { Snapshot } from "../../snapshots";
 import { CategoryKeys } from "./CategoryManager";
-
 
 type CategoryIdentifier = string | symbol;
 type Category = CategoryKeys | CategoryIdentifier | CategoryProperties | undefined;

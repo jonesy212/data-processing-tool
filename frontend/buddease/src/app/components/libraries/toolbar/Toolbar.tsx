@@ -1,8 +1,8 @@
 import { endpoints } from '@/app/api/ApiEndpoints';
-import axiosInstance from '../../security/csrfToken';
-import { NotificationType, useNotification } from '../../support/NotificationContext';
 import ToolbarItem from '../../documents/ToolbarItem';
+import axiosInstance from '../../security/csrfToken';
 import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
+import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
 
 const { notify } = useNotification();
 const API_BASE_URL = endpoints.toolbar;
@@ -18,7 +18,7 @@ export const fetchToolbarItems = async (toolbarId: string): Promise<typeof Toolb
       'Error fetching toolbar items',
       NOTIFICATION_MESSAGES.Toolbar.FETCHING_TOOLBAR_ITEMS,
       new Date(),
-      "Toolbar" as NotificationType
+      "Toolbar" as NotificationTypeEnum
     );
     throw error;
   }
@@ -33,9 +33,9 @@ export const addToolbarItem = async (newItem: Omit<typeof ToolbarItem, 'id'>) =>
       notify(
         'success',
         'Toolbar item added successfully',
-        NOTIFICATION_MESSAGES.Toolbar.ADDED_TOOOLBAR_ITEM,
+        NOTIFICATION_MESSAGES.Toolbar.ADDED_TOOLBAR_ITEM,
         new Date(),
-        "Toolbar" as NotificationType
+        "Toolbar" as NotificationTypeEnum
       );
       // Handle the logic for adding the new item to the toolbar context
       createdItem 
@@ -46,7 +46,7 @@ export const addToolbarItem = async (newItem: Omit<typeof ToolbarItem, 'id'>) =>
         'Failed to add toolbar item',
         NOTIFICATION_MESSAGES.Toolbar.FAILED_TO_ADD_TOOLBAR_ITEM,
         new Date(),
-        "Toolbar" as NotificationType
+        "Toolbar" as NotificationTypeEnum
       );
     }
   } catch (error) {
@@ -56,7 +56,7 @@ export const addToolbarItem = async (newItem: Omit<typeof ToolbarItem, 'id'>) =>
       'Error adding toolbar item',
       NOTIFICATION_MESSAGES.Toolbar.ERROR_ADDING_TOOLBAR_ITEM,
       new Date(),
-      "Toolbar" as NotificationType
+      "Toolbar" as NotificationTypeEnum
     );
     throw error;
   }
@@ -70,7 +70,7 @@ export const removeToolbarItem = async (itemId: string): Promise<void> => {
       'Toolbar item removed successfully',
       NOTIFICATION_MESSAGES.Toolbar.REMOVED_TOOLBAR_ITEM,
       new Date(),
-      "Toolbar" as NotificationType
+      "Toolbar" as NotificationTypeEnum
     );
     // Handle the logic for removing the item from the toolbar context
   } catch (error) {
@@ -80,7 +80,7 @@ export const removeToolbarItem = async (itemId: string): Promise<void> => {
       'Error removing toolbar item',
       NOTIFICATION_MESSAGES.Toolbar.ERROR_REMOVING_TOOLBAR_ITEM,
       new Date(),
-      "Toolbar" as NotificationType
+      "Toolbar" as NotificationTypeEnum
     );
     throw error;
   }
@@ -94,7 +94,7 @@ export const updateToolbarItem = async (itemId: string, newItemData: Partial<typ
       'Toolbar item updated successfully',
       NOTIFICATION_MESSAGES.Toolbar.UPDATED_TOOLBAR_ITEM,
       new Date(),
-      "Toolbar" as NotificationType
+      "Toolbar" as NotificationTypeEnum
     );
     return response.data;
   } catch (error) {
@@ -104,7 +104,7 @@ export const updateToolbarItem = async (itemId: string, newItemData: Partial<typ
       'Error updating toolbar item',
       NOTIFICATION_MESSAGES.Toolbar.ERROR_UPDATING_TOOLBAR_ITEM,
       new Date(),
-      "Toolbar" as NotificationType
+      "Toolbar" as NotificationTypeEnum
     );
     throw error;
   }

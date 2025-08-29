@@ -85,7 +85,7 @@ class SnapshotFetchError extends Error {
 
 const snapshotSubscribers: Map<string, Set<Subscriber<BaseData, BaseData>>> = new Map();
 
-export const subscribeToSnapshots =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const subscribeToSnapshots =  <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotStore: SnapshotStore<T, K>,
   snapshotId: string,
   snapshotData: SnapshotData<T, K>,
@@ -115,7 +115,7 @@ export const subscribeToSnapshots =  <T extends  BaseData<any>, K extends T = T,
 
 
 
-export const subscribeToSnapshot =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const subscribeToSnapshot =  <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotId: string,
   callback: (snapshot: Snapshot<T, K>) => Subscriber<T, K> | null,
   snapshot: Snapshot<T, K>
@@ -140,11 +140,11 @@ export const subscribeToSnapshot =  <T extends  BaseData<any>, K extends T = T, 
 // Create a function to initialize the snapshot store
 const initializeSnapshotStore = async (
   id: string,
-  snapshotStoreData: SnapshotStoreConfig<T, K<T>>[],
+  snapshotStoreData: SnapshotStoreConfig<T, K>[],
   // category: symbol | string | Category | undefined,
   categoryProperties: CategoryProperties | undefined,
-  dataStoreMethods: DataStoreMethods<T, K<T>>,
-): Promise<SnapshotStore<BaseData, K<T>>> => {
+  dataStoreMethods: DataStoreMethods<T, K>,
+): Promise<SnapshotStore<BaseData, K>> => {
   // Initialize snapshotManager and snapshotStore
   const category = "New Category";
   const storeId = useSecureStoreId()
@@ -184,17 +184,17 @@ const initializeSnapshotStore = async (
   newDataMap.set(newData.id!.toString(), newData);
 
   // Example usage:
-  const newSnapshot: Snapshot<T, K<T>> = {
+  const newSnapshot: Snapshot<T, K> = {
     id: "123",
     data: newDataMap,
     timestamp: new Date(),
     category: "New Category",
     type: "",
-    meta: {} as StructuredMetadata<T, K<T>> | undefined,
+    meta: {} as StructuredMetadata<T, K> | undefined,
     // mappedMeta: new Map<string, Snapshot< BaseData<any>, any>>(),
     snapshotStoreConfig: {} as SnapshotStoreConfig<T, any> | null | undefined,
-    getSnapshotItems: function(): (SnapshotStoreConfig<T, K<T>> | SnapshotItem< BaseData<any>, any>)[] {
-      const items: (SnapshotStoreConfig<T, K<T>> | SnapshotItem< BaseData<any>, any>)[] = [];
+    getSnapshotItems: function(): (SnapshotStoreConfig<T, K> | SnapshotItem< BaseData<any>, any>)[] {
+      const items: (SnapshotStoreConfig<T, K> | SnapshotItem< BaseData<any>, any>)[] = [];
   
       // Add the snapshot store configuration to the array if it exists
       this.snapshotStoreConfig && items.push(this.snapshotStoreConfig);
@@ -223,9 +223,9 @@ const initializeSnapshotStore = async (
 };
 
 async function createSnapshotStore<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   id: string,
   snapshotStoreData: SnapshotStoreConfig<T, K>[],
@@ -617,7 +617,7 @@ async function createSnapshotStore<
   return snapshotStore;
 }
 
-export const createSnapshotSuccess = async  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const createSnapshotSuccess = async  <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshot: Snapshot<T, K>,
   storeId: number
 ) => {
@@ -694,7 +694,7 @@ export const createSnapshotSuccess = async  <T extends  BaseData<any>, K extends
 };
 
 
-export const onSnapshot = async  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const onSnapshot = async  <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotId: number,
   snapshot: Snapshot<T, K>,
   type: string,
@@ -735,7 +735,7 @@ export const onSnapshot = async  <T extends  BaseData<any>, K extends T = T, Met
 }
 
 
-export const onSnapshots = async  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const onSnapshots = async  <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotId: string,
   snapshots: Snapshots<T, K>,
   type: string,
@@ -776,9 +776,9 @@ const defaultGetDelegate = (snapshotStoreConfig: SnapshotStoreConfig<any, any>[]
 
 
 export const delegate = async <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<SnapshotStoreConfig<T, K>[]> => {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(): Promise<SnapshotStoreConfig<T, K>[]> => {
   try {
     const snapshotManager = await useSnapshotManager<T, K, Meta >(initialStoreId);
 
@@ -795,7 +795,7 @@ export const delegate = async <
 
 
 
-export const getDelegate = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const getDelegate = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotStoreConfig: SnapshotStoreConfig<T, K>[] | undefined,
   dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K>>
 ): Promise<SnapshotStoreConfig<T, K>[]> => {
@@ -882,7 +882,7 @@ export const handleSnapshotSuccess = <T extends Data<T>>(message: string, snapsh
 };
 
 
-export const updateSnapshots = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const updateSnapshots = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshot: Snapshot<T, K>
 ) => {
   const snapshotStore = await useSnapshotManager(initialStoreId);
@@ -926,7 +926,7 @@ export const updateSnapshots = async <T extends  BaseData<any>, K extends T = T,
 
 
 
-export const updateSnapshotSuccess = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const updateSnapshotSuccess = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshot: Snapshot<T, K>,
   subscribers: Subscriber<T, K>[],
   snapshotData: SnapshotData<T, K>
@@ -965,7 +965,7 @@ export const updateSnapshotSuccess = async <T extends  BaseData<any>, K extends 
 };
 
 
-export const updateSnapshotFailure = async<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const updateSnapshotFailure = async<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   subscribers: Subscriber<T, K>[],
   payload: { error: Payload },
 ) => {
@@ -1009,7 +1009,7 @@ export const setSnapshotManager = async (snapshotManager: SnapshotManager<T, K>)
 
 
 
-export const createSnapshotFailure = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const createSnapshotFailure = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshot: Snapshot<T, K>, // Assuming T is your data type
   error: any,
 ) => {
@@ -1048,7 +1048,7 @@ export const createSnapshotFailure = async <T extends  BaseData<any>, K extends 
   // Other logic related to handling the error or additional actions
 };
 
-export const addSnapshotSuccess = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const addSnapshotSuccess = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshot: Snapshot<T, K>
 ) => {
   const snapshotStore = await useSnapshotStore(addToSnapshotList, storeProps);
@@ -1113,11 +1113,10 @@ export const addSnapshotSuccess = async <T extends  BaseData<any>, K extends T =
   return { snapshot: [] };
 };
 
-
-export const updateSnapshot = async <
-  T extends BaseData<any>,
+const updateSnapshot = async <
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   snapshotId: string,
   snapshotOrStore: Snapshot<T, K> | SnapshotStore<T, K>,
@@ -1259,9 +1258,9 @@ const deleteSnapshot = async (
 
 
 export const getAllSnapshots = async  <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
   >(
   snapshotConfig: SnapshotStoreConfig<T, K, Meta>
 ): Promise<SnapshotStore<T, K, Meta>[]> => {
@@ -1314,9 +1313,9 @@ export const getAllSnapshots = async  <
 };
 
 const batchFetchSnapshots = async <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   criteria: CriteriaType,
   snapshotData: (
@@ -1402,9 +1401,9 @@ const batchFetchSnapshots = async <
 };
 
 export const batchTakeSnapshot = async  <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   snapshot: SnapshotStore<T, K>, // Use both type arguments for SnapshotStore
   snapshots:  SnapshotsArray<T, K, Meta> // Use both type arguments for SnapshotStore
@@ -1417,9 +1416,8 @@ export const batchTakeSnapshot = async  <
   }
 };
 
-
 // Handler for batch updating snapshots
-const batchUpdateSnapshots = async  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const batchUpdateSnapshots = async  <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   subscribers: Subscriber<T, K>[],
   snapshots: SnapshotsArray<T, K, Meta>
 ): Promise<{ snapshots: SnapshotsArray<T, K, Meta> }[]> => {
@@ -1430,19 +1428,15 @@ const batchUpdateSnapshots = async  <T extends  BaseData<any>, K extends T = T, 
   }
 };
 
-
-
-export const batchUpdateSnapshotsSuccess =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const batchUpdateSnapshotsSuccess =  <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   subscribers: Subscriber<T, K>[],
   snapshots: SnapshotStore<T, K>[]
 ): { snapshots: SnapshotStore<T, K>[] }[] => {
   return [{ snapshots }];
 };
 
-
 // Handler for batch taking snapshots request
-
-export const batchTakeSnapshotsRequest = async  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const batchTakeSnapshotsRequest = async  <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotData: (
     subscribers: Subscriber<T, K>[],
     snapshots: SnapshotStore<T, K>[]
@@ -1452,9 +1446,7 @@ export const batchTakeSnapshotsRequest = async  <T extends  BaseData<any>, K ext
   return { snapshots };
 };
 
-
-
-export const batchUpdateSnapshotsRequest = async  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const batchUpdateSnapshotsRequest = async  <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotData: (
     subscribers: Subscriber<T, K>[],
     snapshots: Snapshots<T, K>
@@ -1464,10 +1456,8 @@ export const batchUpdateSnapshotsRequest = async  <T extends  BaseData<any>, K e
   return { snapshots };
 };
 
-
-
 // Define batchFetchSnapshotsRequest function
-export async function batchFetchSnapshotsRequest <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export async function batchFetchSnapshotsRequest <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   subscribers: Subscriber<T, K>[],
   snapshots: Snapshots< BaseData<any>, Meta>
 ): Promise<{
@@ -1511,7 +1501,7 @@ export async function batchFetchSnapshotsRequest <T extends  BaseData<any>, K ex
 }
 
 // Handler for batch fetching snapshots success
-export const batchFetchSnapshotsSuccess = <
+const batchFetchSnapshotsSuccess = <
   T extends  BaseData<any>, 
   K extends T = T>(
   subscribers: Subscriber<Snapshot<T, K>>[],
@@ -1521,16 +1511,51 @@ export const batchFetchSnapshotsSuccess = <
 }
 
 // Handler for batch fetching snapshots failure
-export const batchFetchSnapshotsFailure = <
-  T extends  BaseData<any>, 
-  K extends T = T>(payload: { error: Error }) => {
-  // handle failure
+const batchFetchSnapshotsFailure = <
+  T extends BaseDataEntity, 
+  K extends T = T
+>(payload: { error: Error }) => {
+  // Log the error for debugging
+  console.error("Batch fetch snapshots failed:", payload.error);
 
+  // Create a standardized error response object
+  const errorResponse = {
+    success: false,
+    message: payload.error.message || "An unknown error occurred while fetching snapshots.",
+    stack: payload.error.stack,
+    timestamp: new Date().toISOString(),
+  };
+
+  // Optional: Could integrate with your error handling system or Redux
+  // Example if you're dispatching an error action:
+  dispatch({ type: "BATCH_FETCH_SNAPSHOTS_FAILURE", payload: errorResponse });
+
+  // Return error response so it can be consumed by calling code
+  return errorResponse;
 };
 
 // Handler for batch updating snapshots failure
-export const batchUpdateSnapshotsFailure = (payload: { error: Error }) => {
-  // handle failure
+const batchUpdateSnapshotsFailure = (payload: { error: Error }) => {
+  const { error } = payload;
+
+  // 1. Log the error for debugging
+  console.error("[Snapshot Batch Update Failure]:", error);
+
+  // 2. Optionally notify the user (replace with your notification system)
+  if (typeof window !== "undefined") {
+    alert(`Snapshot update failed: ${error.message}`);
+  }
+
+  // 3. Optionally update application state to mark snapshots as failed
+  // This depends on your state management (Redux, Zustand, etc.)
+  // Example (pseudo-code for Redux):
+  dispatch({
+    type: 'SNAPSHOT_BATCH_UPDATE_FAILED',
+    payload: { error }
+  });
+
+  // 4. Additional recovery logic: rollback, retry, or mark specific snapshots as failed
+  failedSnapshots.forEach(snapshot => markAsFailed(snapshot.id, error.message));
 };
 
 function adaptSnapshot<T extends  BaseData<any>,
@@ -1576,11 +1601,10 @@ function adaptSnapshot<T extends  BaseData<any>,
   return adaptedSnapshot;
 }
 
-
-export const fetchSnapshot = async <
-  T extends BaseData<any>,
+const fetchSnapshot = async <
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   snapshotId: string,
   options: {
@@ -1738,10 +1762,6 @@ const notifySubscribers = async <
 
   return subscribers;
 };
-
-
-
-
 
 export { adaptSnapshot, batchFetchSnapshots, batchFetchSnapshotsFailure, batchFetchSnapshotsSuccess, batchUpdateSnapshots, batchUpdateSnapshotsFailure, createSnapshotStore, deleteSnapshot, fetchSnapshot, initializeSnapshotStore, notifySubscribers, updateSnapshot };
 

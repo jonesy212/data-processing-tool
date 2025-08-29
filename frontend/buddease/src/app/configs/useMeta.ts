@@ -1,13 +1,12 @@
+import { Snapshot } from "@/app/components/snapshots";
 import { useMemo } from "react";
 import { BaseData } from "../components/models/data/Data";
 import { PhaseData } from "../components/phases/Phase";
 import { EventManager } from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Snapshot } from "../components/snapshots";
-import Version from "../components/versions/Version";
-import VersionImpl from "../components/versions/Version";
+import { default as Version, default as VersionImpl } from "../components/versions/Version";
 import { StructuredMetadata } from "./StructuredMetadata";
-import { frontendStructure } from "./appStructure/FrontendStructure";
 import { backendStructure } from "./appStructure/BackendStructure";
+import { frontendStructure } from "./appStructure/FrontendStructure";
 
 function useMeta<
     T extends BaseData<any>,

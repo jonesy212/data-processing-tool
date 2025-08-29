@@ -1,5 +1,5 @@
 import MainConfig from "@/app/configs/MainConfig";
-import { traverseFrontendDirectory } from "@/app/configs/declarations/traverseFrontend";
+import { traverseFrontendDirectory } from "@/server/traverseFrontend";
 import { SystemConfigs } from "../api/systemConfigs";
 import { UserConfigs } from "../api/userConfigs";
 import { AquaConfig } from "../components/web3/web_configs/AquaConfig";

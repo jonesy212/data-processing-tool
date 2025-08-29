@@ -2,7 +2,7 @@
 import { useSecureSnapshotId } from '@/app/components/utils/useSecureSnapshotId';
 import { useSecureStoreId } from '@/app/components/utils/useSecureStoreId';
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { authToken } from "@/app/components/auth/authToken";
+import { authToken } from "@/server/auth/authToken";
 import createCacheHeaders from "./cacheHeaders";
 import generateCustomHeaders from "./customHeaders";
 import createRequestHeaders from "./requestHeaders";

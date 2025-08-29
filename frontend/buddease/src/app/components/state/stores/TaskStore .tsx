@@ -1,9 +1,14 @@
 //TaskManagerStore.tsx
 import { addSnapshot } from '@/app/api/SnapshotApi';
-import { NotificationType } from "@/app/context/NotificationContext";
-import { useSecureProjectId } from '@/app/components/utils/useSecureProjectId'
 import { saveAs } from '@/app/components/documents/editing/autosave';
+import { Snapshot } from "@/app/components/snapshots";
+import { AllStatus } from '@/app/components/state/stores/DetailsListStore';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import {
+  NotificationType, NotificationTypeEnum,
+  useNotification
+} from "@/app/context/NotificationContext";
+import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import { makeAutoObservable } from "mobx";
 import { title } from 'process';
@@ -15,14 +20,9 @@ import { useSnapshotManager } from "../../hooks/useSnapshotManager";
 import { BaseData, Data } from "../../models/data/Data";
 import { PriorityTypeEnum, TaskStatus } from "../../models/data/StatusType";
 import { Task, tasksDataSource } from "../../models/tasks/Task";
-import { Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
 import { updateSnapshot } from '../../snapshots/snapshotHandlers';
 import SnapshotStore from "../../snapshots/SnapshotStore";
 import { useSnapshotStore } from '../../snapshots/useSnapshotStore';
-import {
-    NotificationTypeEnum,
-    useNotification,
-} from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { taskService } from "../../tasks/TaskService";
 import { Todo } from "../../todos/Todo";
@@ -33,8 +33,6 @@ import { useApiManagerSlice } from "../redux/slices/ApiSlice";
 import { clearSnapshots, removeSnapshot } from '../redux/slices/SnapshotSlice';
 import { useTaskManagerSlice } from "../redux/slices/TaskSlice";
 import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
-import { AllStatus } from '@/app/components/state/stores/DetailsListStore';
-import { Message } from '@/app/generators/GenerateChatInterfaces'
 
 export interface TaskManagerStore {
   tasks: Record<string, Task[]>;

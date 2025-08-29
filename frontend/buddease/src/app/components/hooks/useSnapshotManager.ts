@@ -1,3 +1,4 @@
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 // useSnapshotManager.ts
 import { getStoreId } from '@/app/api/ApiData';
 import { fetchEventId } from '@/app/api/ApiEvent';
@@ -51,11 +52,12 @@ import { LibraryAsyncHook } from "./useAsyncHookLinker";
 const { notify } = useNotification();
 
 interface CombinedEvents<
-  T extends  BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
-  extends SnapshotEvents<T, K, Meta>, SnapshotEvents<T, K, Meta> {
+  extends SnapshotEvents<T, K, Meta, ExcludedFields> {
   subscribers: SubscriberCollection<T, K>[],
   event: string | CombinedEvents<T, K> | SnapshotEvents<T, K>,
   trigger: (
@@ -76,7 +78,7 @@ interface CombinedEvents<
     subscribers: SubscriberCollection<T, K>,
     type: string,
     snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
+    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
     criteria: SnapshotWithCriteria<T, K>,
     category: Category,
     snapshotData: SnapshotData<T, K>
@@ -88,7 +90,7 @@ interface CombinedEvents<
     data: Map<string, Snapshot<T, K>>,
     events: Record<string, CalendarManagerStoreClass<T, K>[]>,
     snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
+    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
     newData: Snapshot<T, K>,
     payload: UpdateSnapshotPayload<T>,
     store: SnapshotStore<any, K>
@@ -100,7 +102,7 @@ interface CombinedEvents<
     snapshot: Snapshot<T, K>,
     snapshotId: string,
     snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
+    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
     criteria: SnapshotWithCriteria<T, K>,
     category: Category
   ) => void;
@@ -113,18 +115,19 @@ interface CombinedEvents<
   ) => void;
 
   unsubscribe: (
-    snapshotId: number,
+    snapshotId: string,
     unsubscribeDetails: UnsubscribeDetails,
-    callback: SubscriberCallbackType<T, K> | null
+    callback: SubscriberCallbackType<T, K> | null,
+    ctx?: SnapshotContext<T, K, Meta, ExcludedFields>
   ) => void;
 }
 
 interface SnapshotManager<
-  T extends  BaseData<any>, 
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
-  > extends Snapshot<T, K, Meta> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+> extends Snapshot<T, K, Meta> {
   initSnapshot: (
     snapshotConfig: SnapshotStoreConfig<T, K>[],
     snapshotData: SnapshotData<T, K>
@@ -219,7 +222,7 @@ const convertSnapshotToContent =  <T extends  BaseData<any>, K extends T = T, Me
   snapshot: Snapshot<T, K>
 ): Content<T, K> => {
   // Convert snapshot.data to match SnapshotWithCriteria<T, BaseData>
-  let data: SnapshotWithCriteria<T, K> | CustomSnapshotData<T> | null | undefined;
+  let data: SnapshotWithCriteria<T, K> | CustomSnapshotData<T, K, DefaultMeta<T, K>, Attachment> | null | undefined;
 
   if (snapshot.data instanceof Map) {
     data = convertMapToCustomSnapshotData(snapshot.data);
@@ -228,7 +231,7 @@ const convertSnapshotToContent =  <T extends  BaseData<any>, K extends T = T, Me
     data = snapshot.data as unknown as SnapshotWithCriteria<T, K>;
   } else {
     // Fallback: Handle other cases or convert data if necessary
-    data = snapshot.data as CustomSnapshotData<T, K> | null | undefined;
+    data = snapshot.data as CustomSnapshotData<T, K, DefaultMeta<T, K>, Attachment> | null | undefined;
   }
 
   return {
@@ -240,7 +243,7 @@ const convertSnapshotToContent =  <T extends  BaseData<any>, K extends T = T, Me
     timestamp: snapshot.timestamp ?? new Date(),
     categoryProperties: snapshot.categoryProperties ?? "default-category-properties",
     length: 0,
-    data: data,
+    data: snapshot.data,
     latestVersion: snapshot.latestVersion ?? {},
     items: snapshot.items ?? [],
     contentItems: snapshot.contentItems ?? []
@@ -571,11 +574,18 @@ const createSnapshotConfig = <
   }
 };
 
+interface SnapshotStoreConfigWithMethods<T, K> extends SnapshotStoreConfig<T, K> {
+  getAllSnapshots: (ref: SnapshotStore<T, K> | null) => Promise<Snapshot<T, K>[]>;
+}
 
-export const useSnapshotManager =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const useSnapshotManager = <
+  T extends BaseData<any>, 
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
   initialStoreId: number
 ) => {
-  const [snapshotManager, setSnapshotManager] = useState<SnapshotStoreConfig<T, K> | null>(null);
+  const [snapshotManager, setSnapshotManager] = useState<SnapshotStoreConfigWithMethods<T, K> | null>(null);
   const [snapshotStore, setSnapshotStore] = useState<SnapshotStore<T, K> | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -866,7 +876,7 @@ export const useSnapshotManager =  <T extends  BaseData<any>, K extends T = T, M
             ) => Promise<Snapshot<T, K>>,
             data: Map<string, Snapshot<T, K>>,
             events: Record<string, CalendarManagerStoreClass<T, K>[]>, // Added prop
-            dataItems: RealtimeDataItem[], // Added prop
+            dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[], // Added prop
             newData: Snapshot<T, K>, // Added prop
             payload: ConfigureSnapshotStorePayload<T, K>, // Added prop
             store: SnapshotStore<T, K>, // Added prop

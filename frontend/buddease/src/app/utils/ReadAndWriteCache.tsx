@@ -1,7 +1,7 @@
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import UserService, { userId, userService } from "../api/ApiUser";
-import { authToken } from "../components/auth/authToken";
+import { authToken } from "../server/authToken";
 import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
 import { RealtimeData } from "../components/models/realtime/RealtimeData";
 import { CustomPhaseHooks } from "../components/phases/Phase";
@@ -91,7 +91,7 @@ const constructCacheData = (
 };
 
 // Function to read cache data
-function readCache(userId: string): CacheData | null {
+export function readCache(userId: string): CacheData | null {
   try {
     const cachedData = localStorage.getItem("cached" + userId);
     if (cachedData) {
@@ -107,7 +107,7 @@ function readCache(userId: string): CacheData | null {
 }
 
 // Assuming userService.fetchUser and userService.fetchUserById return promises
-const writeCache = async (userId: string, userData: Promise<CacheData>) => {
+export const writeCache = async (userId: string, userData: Promise<CacheData>) => {
   try {
     // Fetch user data
     const user = await userService.fetchUserData(req, res);
@@ -165,3 +165,5 @@ UserService.fetchUser(userId,authToken).then((user) => {
     writeCache(userId, userDataPromise);
   });
 });
+
+

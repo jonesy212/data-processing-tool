@@ -1,17 +1,17 @@
-import { BaseEvent, CustomEventType, SystemEvent } from '@/app/components/event/BaseEvent';
-import { CoreSnapshot } from "@/app/components/snapshots/CoreSnapshot";
-import { SnapshotOperationType } from "@/app/components/snapshots/SnapshotActions";
 import { BaseCustomEvent, CustomEventExtension } from '@/app/components/event/BaseCustomEvent';
+import { BaseEvent, CustomEventType, SystemEvent } from '@/app/components/event/BaseEvent';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { BaseData } from '@/app/components/models/data/Data';
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots";
+import { CoreSnapshot } from "@/app/components/snapshots/CoreSnapshot";
+import { SnapshotOperationType } from "@/app/components/snapshots/SnapshotActions";
 import SnapshotStore, { handleSnapshotEvent } from '@/app/components/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/components/snapshots/SnapshotWithCriteria';
 import { EventAttendance } from '../components/calendar/AttendancePrediction';
+import { EventManager } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SnapshotData } from "../components/snapshots";
 import { SnapshotEvents } from '../components/snapshots/SnapshotEvents';
 import { SubscriberCollection } from "../components/users/SubscriberCollection";
-import { EventManager } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
 
 interface SharedSnapshotEvent<T extends BaseData<any>, K extends T = T> extends BaseEvent {
     snapshotId?: string | number | null;
@@ -250,6 +250,7 @@ function isCustomEvent<T extends BaseData<any>, K extends T = T>(
     return 'eventType' in event;
 }
 
-export { handleEvent, isCustomEvent, isEventManager, isEventAttendance, isSnapshotEvent, isSystemEvent, isTaskEvent };
+export { handleEvent, isCustomEvent, isEventAttendance, isEventManager, isSnapshotEvent, isSystemEvent, isTaskEvent };
 
-export type { BaseEvent, SharedSnapshotEvent };
+  export type { BaseEvent, SharedSnapshotEvent };
+

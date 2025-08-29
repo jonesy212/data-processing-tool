@@ -1,16 +1,15 @@
 // AutomatioProcess.ts
-import {ErrorHandlingActions}  from '../../../api/ErrorHandlingActions';
+import { Snapshot } from "@/app/components/snapshots";
+import { NotificationType, NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
 import ReactDOM, { useEffect } from 'react';
+import { ErrorHandlingActions } from '../../../api/ErrorHandlingActions';
 import { BaseData, Data } from '../../models/data/Data';
- import errorHandlingStore from '../../state/stores/ErrorHandlingStore';
-import { NotificationType, NotificationTypeEnum, useNotification } from '../../support/NotificationContext';
-import RandomWalkSuggestions from './RandomWalkSuggestions';
-import React from "react";
-import { notify } from '../../utils/snapshotUtils';
-import { Snapshot } from '../../snapshots/LocalStorageSnapshotStore';
+import { K, T } from '../../models/data/dataStoreMethods';
 import SnapshotStore from '../../snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '../../snapshots/SnapshotWithCriteria';
-import { K, T } from '../../models/data/dataStoreMethods';
+import errorHandlingStore from '../../state/stores/ErrorHandlingStore';
+import { notify } from '../../utils/snapshotUtils';
+import RandomWalkSuggestions from './RandomWalkSuggestions';
 
 
 // Define a custom hook to handle errors and notifications
@@ -81,9 +80,9 @@ const useErrorHandling = () => {
 
 
 // Automated system setup process
-const config: SnapshotStoreConfigType<Snapshot<Data, K<T>>, K<T>> = new SnapshotStoreConfig({} as SnapshotStoreConfig<Snapshot<Data, K<T>>, K<T>>, notify).configure();
+const config: SnapshotStoreConfigType<Snapshot<Data, K>, K> = new SnapshotStoreConfig({} as SnapshotStoreConfig<Snapshot<Data, K>, K>, notify).configure();
 
-const setupAutomationSystem = (config: SnapshotStoreConfigType<Snapshot<Data, K<T>>, K<T>>, notify: (message: string, content: any, date: Date, type: NotificationType) => void) => {
+const setupAutomationSystem = (config: SnapshotStoreConfigType<Snapshot<Data, K>, K>, notify: (message: string, content: any, date: Date, type: NotificationType) => void) => {
   // Configure SnapshotStore
   typeof SnapshotStoreConfig === "function" && new SnapshotStoreConfig(config, notify);
 

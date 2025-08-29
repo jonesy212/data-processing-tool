@@ -2,12 +2,13 @@ import { SubscriberCollection } from '@/app/components/users/SubscriberCollectio
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData } from "../models/data/Data";
-import { Snapshot, SnapshotUnion } from "./LocalStorageSnapshotStore";
+import { Snapshot } from "./Snapshot";
+import {  SnapshotUnion } from "./LocalStorageSnapshotStore";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 interface SnapshotStorePublicMethods<
-  T extends BaseData,
+  T extends BaseDataEntity,
   K extends T = T> {
   // Method to retrieve snapshot items
   getSnapshotItems(): Snapshot<T, K>[];

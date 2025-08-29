@@ -1,8 +1,9 @@
+import { Snapshot } from "@/app/components/snapshots"; // Removed snapshotStore import as it's not used
 import useSnapshotManager from '../hooks/useSnapshotManager';
 import { Data } from '../models/data/Data';
 import { Team } from '../models/teams/Team';
-import { Snapshot } from '../snapshots/SnapshotStore'; // Removed snapshotStore import as it's not used
 import { useAssignTeamMemberStore } from '../state/stores/AssignTeamMemberStore';
+
 interface TeamSnapshot extends Snapshot<Team[]> {
   // Remove the 'data' property as it conflicts with the index signature
   [teamId: string]: Team[]; // Index signature mapping string keys to arrays of Team objects

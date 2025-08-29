@@ -1,6 +1,7 @@
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
 import { Phase, PhaseData } from '@/app/components/phases/Phase';
+import { CoreSnapshot } from "@/app/components/snapshots/CoreSnapshot";
 import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
 import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 import { fetchUserAreaDimensions, UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
@@ -30,8 +31,6 @@ import {
   SnapshotWithCriteria,
   TagsRecord,
 } from "../../snapshots/SnapshotWithCriteria";
-import { CoreSnapshot } from "@/app/components/snapshots/CoreSnapshot";
-
 import { ExtendedTodo } from "../../state/AssignBaseStore";
 import { CustomComment } from "../../state/redux/slices/BlogSlice";
 import { Stroke } from "../../state/redux/slices/DrawingSlice";
@@ -63,8 +62,10 @@ import {
   StatusType,
   SubscriptionTypeEnum,
 } from "./StatusType";
-
-
+import { Snapshot } from '../../snapshots';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import { Content } from '../content/AddContent';
+ 
 interface SharedRelationshipData<K> {
   childIds?: K[] | undefined;
   relatedData?: K[] | undefined,
@@ -81,20 +82,19 @@ interface SharedPhaseData {
   phase: Phase<any, any> | null;
   priority: PriorityTypeEnum
 }
-
-
+ 
 type DataWithOmittedFields<
-  T extends BaseData<any, any, StructuredMetadata<any, any>>, // Removed Attachment
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = never
 > = Omit<Data<T, K, Meta>, ExcludedFields>;
-
+ 
 // Define the interface for DataDetails
 interface DataDetails<
-  T extends  BaseData<any>,
+  T extends BaseDataEntity, 
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = never
 > extends CommonData<T, K, Meta> {
   _id?: string;
@@ -140,19 +140,23 @@ type TodoSubtasks = Array<
   >;
 
   type ChildRelationship<
-  T extends BaseData<any>,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> = 
-  | { type: 'metadata'; ids: Meta extends { childIds: infer C } ? C : never }
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+> =
+  | { type: 'metadata'; ids: Meta extends { childIds: (infer C)[] } ? C[] : never }
   | { type: 'direct'; ids: K[] };
+
   
 interface BaseData<
-  T extends BaseData<any> = any,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, 
-  AttachmentType extends Attachment = Attachment
-  > extends SharedTimestamps, SharedStatusFlags, SharedIdentifiers<T, K, Meta>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends SharedTimestamps,
+  SharedStatusFlags,
+  SharedIdentifiers<T, K, Meta, ExcludedFields>
 {
   sharedData?: SharedRelationshipData<K>;
   children?: ChildRelationship<T, K, Meta> | CoreSnapshot<T, K, Meta>[];
@@ -190,7 +194,7 @@ interface BaseData<
   leader?: User | null;
   snapshotStores?: SnapshotStoreReference<T, K>[];
   snapshots?: Snapshots<T, K>; // Simplify snapshots type
-  text?: string;
+  text?: string | Content<T, K, Meta>;
   category?: symbol | string | Category | undefined;
   notificationTypes?: NotificationSettings;
   categoryProperties?: CategoryProperties;
@@ -206,16 +210,17 @@ interface BaseData<
 }
 
 interface Data<
-  T extends BaseData<any>,
+  T extends BaseDataEntity, 
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-> extends BaseData<any> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  > extends BaseData<T, K, Meta>,
+  SharedIdentifiers<T, K, Meta> {
   category?: symbol | string | Category | undefined;
   categoryProperties?: CategoryProperties;
   subtasks?: TodoImpl<any, any>[];
   actions?: SnapshotStoreConfig<T, K>[];
   snapshotWithCriteria?: SnapshotWithCriteria<T, K>;
-  value?: any;
+  value?: string | number | Snapshot<T, K, Meta> | null;
   label?: any;
   metadata?: UnifiedMetadata<T, K, StructuredMetadata<T, K>, keyof T> | {};
   major?: number;
@@ -228,7 +233,7 @@ interface Data<
 // Define the UserDetails component
 const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
   
-  const getTagNames = (tags: TagsRecord<T, K<T>> | string[]): string[] => {
+  const getTagNames = (tags: TagsRecord<T, K> | string[]): string[] => {
     if (Array.isArray(tags)) {
       return tags.filter((tag): tag is string => typeof tag === 'string'); // Ensure all elements are strings
     }
@@ -263,6 +268,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
         createdBy: data.createdBy,
         description: data.description,
         phase: data.phase,
+        date: data.date,
         isActive: data.isActive,
         tags: data.tags ? getTagNames(data.tags) : [], // Now tags is a string array
         status: data.status,
@@ -280,10 +286,10 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
 
 
 const area = fetchUserAreaDimensions().toString()
-const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(area)
-const currentMeta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area)
+const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
+const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
 
-const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
+const coreData: Data<T, K, StructuredMetadata<T, K>> = {
   _id: "1",
   id: "data1",
   title: "Sample Data",
@@ -348,7 +354,7 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
     }, // This should match the type defined in Tag
     subPhases: [],
     createdBy: "creator1",
-    latestVersion: createLatestVersion<T, K<T>>(),
+    latestVersion: createLatestVersion<T, K>(),
   },
   phaseType: ProjectPhaseTypeEnum.Ideation,
   dueDate: new Date(),
@@ -361,8 +367,6 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
     email: "",
     tier: "",
   } as unknown as UserAssignee,
-
-
 
   collaborators: [],
   comments: [],
@@ -607,12 +611,12 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
         taskStatus: {},
 
 
-        fetchTasksSuccess: (payload: { tasks: Task<T, K<T>>[]; }) => { },
+        fetchTasksSuccess: (payload: { tasks: Task<T, K>[]; }) => { },
         fetchTasksFailure: (payload: { error: string; }) => { },
         fetchTasksRequest: () => { },
         completeAllTasksSuccess: (success: string) => { },
 
-        completeAllTasks: (payload: { task: Task<T, K<T>>[]; }) => { },
+        completeAllTasks: (payload: { task: Task<T, K>[]; }) => { },
         completeAllTasksFailure: (payload: { error: string; }) => { },
         NOTIFICATION_MESSAGE: "",
         NOTIFICATION_MESSAGES: {},
@@ -620,10 +624,10 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
         setDynamicNotificationMessage: (message: string) => { },
         takeTaskSnapshot: (taskId: string) => { },
         markTaskAsComplete: (taskId: string) => { },
-        updateTaskPositionSuccess: (payload: { task: Task<T, K<T>>; }) => { },
+        updateTaskPositionSuccess: (payload: { task: Task<T, K>; }) => { },
 
-        batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task<T, K<T>>[]>) => { },
-        batchFetchTaskSnapshotsSuccess: (taskId: Record<string, Task<T, K<T>>[]>) => { },
+        batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task<T, K>[]>) => { },
+        batchFetchTaskSnapshotsSuccess: (taskId: Record<string, Task<T, K>[]>) => { },
         batchFetchUserSnapshotsRequest: (snapshotData: Record<string, User[]>) => { },
 
 
@@ -669,7 +673,7 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
           assignBoardAutomationToTeam: {},
           assignBoardCustomFieldToTeam: {},
 
-          assignTask: (task: Task<T, K<T>, StructuredMetadata<T, K<T>>>) => {
+          assignTask: (task: Task<T, K, StructuredMetadata<T, K>>) => {
             // Logic to assign a task
           },
           assignUsersToTasks: (taskId: string, userIds: string[]) => {
@@ -772,21 +776,21 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
 
         updateTaskDueDate: (taskId: string, dueDate: Date) => { },
         updateTaskPriority: (taskId: string, priority: PriorityTypeEnum) => { },
-        filterTasksByStatus: (status: AllStatus): Task<T, K<T>>[] => {
+        filterTasksByStatus: (status: AllStatus): Task<T, K>[] => {
           // Implement logic to filter tasks by their status
-          return coreData.tasks.filter((task: Task<T, K<T>>) => task.status === status);
+          return coreData.tasks.filter((task: Task<T, K>) => task.status === status);
         },
 
         getTaskCountByStatus: (status: AllStatus): number => {
           // Implement logic to count tasks by status
-          return coreData.tasks.filter((task: Task<T, K<T>>) => task.status === status).length;
+          return coreData.tasks.filter((task: Task<T, K>) => task.status === status).length;
         },
 
         clearAllTasks: () => { },
         archiveCompletedTasks: () => { },
         updateTaskAssignee: (taskId: string, assignee: User) => async (dispatch: any): Promise<void> => {
           // Implement logic to update the assignee of a task
-          const taskIndex = coreData.tasks.findIndex((task: Task<T, K<T>>) => task._id === taskId);
+          const taskIndex = coreData.tasks.findIndex((task: Task<T, K>) => task._id === taskId);
           if (taskIndex !== -1) {
             coreData.tasks[taskIndex].assignee = assignee;
             // Dispatch an action to update the state (assuming Redux or similar)
@@ -794,33 +798,33 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
           }
         },
 
-        getTasksByAssignee: async (tasks: Task<T, K<T>>[], assignee: User): Promise<Task<T, K<T>>[]> => {
+        getTasksByAssignee: async (tasks: Task<T, K>[], assignee: User): Promise<Task<T, K>[]> => {
           // Implement logic to get tasks assigned to a specific user
           return tasks.filter(task => task.assigneeId === assignee._id);
         },
 
 
-        getTaskById: (taskId: string): Task<T, K<T>> | null => {
+        getTaskById: (taskId: string): Task<T, K> | null => {
           // Implement logic to find a task by its ID
-          return coreData.tasks.find((task: Task<T, K<T>>) => task._id === taskId) || null;
+          return coreData.tasks.find((task: Task<T, K>) => task._id === taskId) || null;
         },
 
 
         sortByDueDate: () => { },
         exportTasksToCSV: () => { },
         dispatch: (action: any) => { },
-        addTaskSuccess: (payload: { task: Task<T, K<T>>; }) => { },
-        addTask: (task: Task<T, K<T>>) => { },
-        addTasks: (tasks: Task<T, K<T>>[]) => { },
+        addTaskSuccess: (payload: { task: Task<T, K>; }) => { },
+        addTask: (task: Task<T, K>) => { },
+        addTasks: (tasks: Task<T, K>[]) => { },
         assignTaskToUser: (taskId: string, userId: string) => { },
 
         removeTask: (taskId: string) => { },
         removeTasks: (taskIds: string[]) => { },
-        fetchTasksByTaskId: async (taskId: string): Promise<Task<T, K<T>> | null> => {
+        fetchTasksByTaskId: async (taskId: string): Promise<Task<T, K> | null> => {
           try {
             const response = await taskService.getTaskById(taskId);
             if (response?.data) {
-              return response.data as Task<T, K<T>>; // Cast to the expected type
+              return response.data as Task<T, K>; // Cast to the expected type
             }
             throw new Error("No task data found");
           } catch (error) {
@@ -994,7 +998,7 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
       area: 'coreData', 
       currentMeta: currentMeta,
       metadataEntries: {},
-      latestVersion: createLatestVersion<T, K<T>>(),
+      latestVersion: createLatestVersion<T, K>(),
 
     },
     currentMeta: currentMeta,
@@ -1271,8 +1275,9 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
       amount: 100,
       date: new Date(),
       description: "Sample transaction",
-      type: null,
-      typeName: null,
+      type: "buy", // ← Business category (string)
+      transactionType: 3, // ← Ethereum transaction type (number) - ADD THIS
+      typeName: "cancun",
       to: null,
       nonce: 0,
       gasLimit: BigInt(0),
@@ -1292,43 +1297,31 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
       fromPublicKey: null,
 
       isSigned(): boolean {
-        return !!(this.type && this.typeName && this.from && this.signature);
+        return !!(this.transactionType && this.typeName && this.from && this.signature);
       },
       serialized: "",
       unsignedSerialized: "",
       inferType(): number {
-        if (this.type !== null && this.type !== undefined) {
-          return this.type;
-        }
-        return 0;
+        return this.transactionType ?? 0;
       },
       
       inferTypes(): number[] {
-        const types: number[] = [];
-        if (this.type !== null && this.type !== undefined) {
-          types.push(this.type);
-        }
-        if (this.maxFeePerGas !== null && this.maxPriorityFeePerGas !== null) {
-          types.push(2);
-        }
-        if (types.length === 0) {
-          types.push(0);
-        }
-        return types;
+        return [this.transactionType ?? 0];
       },
 
       isLegacy() {
-        return this.type === 0 && this.gasPrice !== null;
+        return this.transactionType === 0 && this.gasPrice !== null;
       },
       isBerlin() {
         return (
-          this.type === 1 && this.gasPrice !== null && this.accessList !== null
+          this.transactionType === 1 && 
+          this.gasPrice !== null && 
+          this.accessList !== null
         );
       },
-
       isLondon() {
         return (
-          this.type === 2 &&
+          this.transactionType === 2 &&
           this.accessList !== null &&
           this.maxFeePerGas !== null &&
           this.maxPriorityFeePerGas !== null
@@ -1336,7 +1329,7 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
       },
       isCancun() {
         return (
-          this.type === 3 &&
+          this.transactionType === 3 &&
           this.to !== null &&
           this.accessList !== null &&
           this.maxFeePerGas !== null &&
@@ -1371,6 +1364,7 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
           title: "",
           accessList: [],
           type: null,
+          transactionType: 0,
           typeName: null,
           from: null,
           signature: null,
@@ -1388,7 +1382,9 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
           hash: null,
           unsignedHash: "",
           fromPublicKey: null,
-
+          currency: "",
+          timestamp: new Date(),
+          status: "pending",
           equals(transaction: CustomTransaction): boolean {
             return (
               this.id === transaction.id &&
@@ -1442,6 +1438,7 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
         const customTransaction: CustomTransaction = {
           id: this.id ?? null,
           type: this.type ?? null,
+          transactionType: this.transactionType ?? 0,
           title: this.title ?? null,
           startDate: this.startDate,
           endDate: this.endDate,
@@ -1458,6 +1455,9 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
           data: this.data || "",
           description: this.description ?? null,
           value: myBigInt,
+          currency: this.currency ?? "USD", // Default currency
+          timestamp: this.timestamp ?? new Date(), // Default to now
+          status: this.status ?? "completed", // Default status    
           unsignedHash: this.unsignedHash ?? null,
           notificationsEnabled: this.notificationsEnabled ?? false,
           amount: 0,
@@ -1492,11 +1492,10 @@ const coreData: Data<T, K<T>, StructuredMetadata<T, K<T>>> = {
 };
 
 export type {
-  BaseData, CommonRelationship, Data,
+  BaseData, ChildRelationship, CommonRelationship, Data,
   DataDetails,
   DataDetailsComponent,
-  DataDetailsProps, DataWithOmittedFields, SharedRelationshipData, TodoSubtasks,
-  ChildRelationship
+  DataDetailsProps, DataWithOmittedFields, SharedRelationshipData, TodoSubtasks
 };
 
 

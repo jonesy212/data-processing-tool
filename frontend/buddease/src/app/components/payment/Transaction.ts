@@ -6,7 +6,8 @@ import { AccessList, Signature } from "ethers";
 interface BaseTransaction {
   _id?: string;
   id: string | null;
-  type: number | null;
+  type: string | null;
+  transactionType: number | null;
   typeName: string | null;
   from: string | null;
   signature: Signature | null;
@@ -25,6 +26,7 @@ interface Transaction extends BaseTransaction {
   amount?: number | null;
   id: string | null;
   type: 'buy' | 'sell' | 'transfer' | 'exchange' | null;
+  transactionType: number
   currency: string;
   timestamp: Date;
   status: 'pending' | 'completed' | 'failed';

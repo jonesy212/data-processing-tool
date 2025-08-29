@@ -1,20 +1,20 @@
 import { Project } from "@/app/components/projects/Project";
 import { TaskMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { ProjectMetadata, StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { } from '@/app/typings/appTypes';
+
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { BaseData } from '../models/data/Data';
-import { K, Meta } from '../models/data/dataStoreMethods';
 import { Task, TaskData } from '../models/tasks/Task';
 
+// Pick specific keys from T
 type Fields<T, K extends keyof T> = Pick<T, K>;
 type IncludeFields<T, K extends keyof T> = Pick<T, K>;
 
-// Define a utility type that excludes specific keys
+// Exclude specific keys from T
 type ExcludeKeys<T, K extends keyof T> = Omit<T, K>;
 type IncludeKeys<T, K extends keyof T> = Pick<T, K>;
 
-
+// Combine include and exclude logic
 type InclusiveExclusiveFields<
   T,
   Include extends keyof T = never,
@@ -22,7 +22,6 @@ type InclusiveExclusiveFields<
 > = Include extends never
   ? ExcludeKeys<T, Exclude>
   : IncludeFields<T, Include> & ExcludeKeys<T, Exclude>;
-
 
 
 // Example of using Fields and ExcludeKeys with UnifiedMetaDataOptions
@@ -95,22 +94,30 @@ function processMetadata<T extends UnifiedMetaDataOptions<any>>(metadata: T) {
 
   console.log("Excluded Fields:", excludedFields);
 }
-// Creating an example task metadata object that satisfies UnifiedMetaDataOptions
+
+// Example: use BaseDataEntity directly
 const exampleTaskMeta: UnifiedMetadata<
-  T extends BaseData<any> = BaseData<any, any>,
-  K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never,
-  > = {
+  BaseDataEntity,                  // T
+  BaseDataEntity,                  // K
+  StructuredMetadata<BaseDataEntity, BaseDataEntity>, // Meta
+  never                            // ExcludedFields
+> = {
   taskMetadata: {
     taskId: '123',
     taskName: 'Complete documentation',
-    _id, priority, assignedTo, id, 
+    id: 'task-1',
+    priority: 'High',
+    assignedTo: ['user1'],
   },
-  source: 'TaskMetadata', // If needed, adjust this according to your type definitions
+  source: 'TaskMetadata',
+  timestamp: new Date(),
+  metadataEntries: {},
+  sharedMetadata: {},
+  sharedBaseData: { childIds: [], relatedData: [] },
 };
 
-// Call the function with the example metadata
+// Call a function that processes the metadata
 processMetadata(exampleTaskMeta);
+
 
 export type { ExcludedFields, ExcludeKeys, Fields, InclusiveExclusiveFields, MapExcludedFieldsToMetaKeys };

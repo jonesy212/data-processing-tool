@@ -1,5 +1,5 @@
 import axiosInstance from "@/app/api/axiosInstance";
-import { useAuth } from "@/app/components/auth/AuthContext";
+import { useAuth } from "@/server/auth/AuthContext";
 import { User, UserData } from "@/app/components/users/User";
 import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
 import { useEffect, useState } from "react";

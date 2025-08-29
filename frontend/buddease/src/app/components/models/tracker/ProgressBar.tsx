@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
 import { UIActions } from "../../actions/UIActions";
 import useErrorHandling from "../../hooks/useErrorHandling";
-import { NotificationType } from "../../support/NotificationContext";
+import { NotificationType } from "@/context/NotificationContext";
 
 export type ProgressBarAnimationType = "linear" | "ease-in-out" | "ease-out";
 

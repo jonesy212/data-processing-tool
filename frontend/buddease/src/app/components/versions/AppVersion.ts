@@ -1,7 +1,7 @@
 import { getCurrentAppInfo } from '@/app/components/versions/VersionGenerator';
 import BackendStructure from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
-import getAppPath from 'appPath';
+import getAppPath from '@/app/configs/appStructure/appPath';
 import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
 import { RootState } from "../state/redux/slices/RootSlice";
 import { VersionData } from "./VersionData";
@@ -30,10 +30,12 @@ interface AppVersion extends Versionable {
   isDevBuild: boolean;
   updateAppName: (name: string) => void;
   getAppName: () => string;
+  updateVersionNumber: (version: string) => void; // NEW
+  getVersionNumber: () => string;  
 }
 
-
-class AppVersionImpl implements AppVersion, Versionable {
+//removed Versionabe from implements
+class AppVersionImpl implements AppVersion {
   appName: string = "";
   releaseDate: string = "2023-04-20"; // Ensure releaseDate is typed as a string
   releaseNotes: string[] = [];
@@ -45,7 +47,7 @@ class AppVersionImpl implements AppVersion, Versionable {
   build: number = 0;
   isDevBuild: boolean = false;
 
-  frontendStructure: Promise<FrontendStructure>;
+  frontendStructure: Promise<FrontendStructure<T, K>>;
   backendStructure: Promise<BackendStructure>;
 
   constructor(versionInfo: {
@@ -56,13 +58,17 @@ class AppVersionImpl implements AppVersion, Versionable {
     this.appName = versionInfo.appName || "";
     this.releaseDate = versionInfo.releaseDate;
     this.releaseNotes = versionInfo.releaseNotes || [];
-    
+   
+    // Parse version if provided
+    if (versionInfo.versionNumber) {
+    this.updateVersionNumber(versionInfo.versionNumber);
+    }
     // Initialize structures
     this.frontendStructure = this.getFrontendStructure();
     this.backendStructure = this.getBackendStructure();
   }
 
-  private async getFrontendStructure(): Promise<FrontendStructure> {
+  private async getFrontendStructure(): Promise<FrontendStructure<T, K>> {
     return Promise.resolve({
       id: 1,
       name: "Frontend",
@@ -87,9 +93,9 @@ class AppVersionImpl implements AppVersion, Versionable {
       frontendVersions: ["1.0.0", "1.1.0"],
       getStructureAsArray: () => ["Component1", "Component2"],
       getStructureChecksum: () => "checksum123",
-      major: 1, 
-      minor: 0,
-      patch: 0
+      major: this.major,
+      minor: this.minor,
+      patch: this.patch
     });
   }
 
@@ -105,9 +111,9 @@ class AppVersionImpl implements AppVersion, Versionable {
       version: "1.0.0",
       services: ["UserService", "AuthService"],
       databaseSchema: "v1.2",
-      major: 1,
-      minor: 0,
-      patch: 0,
+      major: this.major,
+      minor: this.minor,
+      patch: this.patch,
       toSecureMetadata: backendStructure.toSecureMetadata(),
       sanitize: backendStructure.sanitize(userRole, isAdmin),
       getDatabaseSchema: () => "v1.2",
@@ -146,6 +152,18 @@ class AppVersionImpl implements AppVersion, Versionable {
 
   getVersionStringWithBuildNumber(buildNumber: number): string {
     return `${this.major}.${this.minor}.${this.patch}.${this.build}.${buildNumber}`;
+  }
+
+
+  getVersionNumber(): string {
+    return `${this.major}.${this.minor}.${this.patch}`;
+  }
+
+  updateVersionNumber(version: string): void {
+    const [major, minor, patch] = version.split(".").map(Number);
+    if (major !== undefined) this.major = major;
+    if (minor !== undefined) this.minor = minor;
+    if (patch !== undefined) this.patch = patch;
   }
 }
 
@@ -232,8 +250,8 @@ const appVersion: AppVersion = new AppVersionImpl({
   workspaceViewers: [], // Add workspaceViewers property
   workspaceAdmins: [], // Add workspaceAdmins property
   versions: {
-    data: {} as VersionData,
-    frontend: {} as FrontendStructure,
+    data: {} as VersionData<T, K>,
+    frontend: {} as FrontendStructure<T, K>,
     backend: {} as BackendStructure,
   },
 });

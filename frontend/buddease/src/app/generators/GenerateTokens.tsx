@@ -1,7 +1,7 @@
 import { useNotification } from "@/app/context/NotificationContext";
+import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { endpoints } from "../api/ApiEndpoints";
 import axiosInstance from "../api/axiosInstance";
-import { NotificationTypeEnum } from "../components/support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 
 const API_BASE_URL = endpoints.generators.generateTransferToken

@@ -21,7 +21,7 @@ import SnapshotStore from "./SnapshotStore";
 const snapConfig: SnapshotConfig<T, K> | undefined = {/* your snapshot configuration logic here */}
 
 // newStoreUtils.ts
-export const createSnapshotStores = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const createSnapshotStores = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshot: Snapshot<T, K>,
   snapshotStore: SnapshotStore<T, K>,
   snapshotManager: SnapshotManager<T, K>,

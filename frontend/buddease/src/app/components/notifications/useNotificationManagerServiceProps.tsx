@@ -1,4 +1,4 @@
-import { NotificationType, NotificationTypeEnum } from "../support/NotificationContext";
+import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import useNotificationManagerService from "./NotificationService";
 
 // useNotificationManagerServiceProps.tsx

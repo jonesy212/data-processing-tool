@@ -1,11 +1,11 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 function transformToSnapshotMap<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   map: Map<string, T>
 ): Map<string, Snapshot<T, K>> {
@@ -69,9 +69,9 @@ function transformToSnapshotMap<
 
 
 function transformSnapshotConfig<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 
 >(config: SnapshotStoreConfig<T, K>): SnapshotStoreConfig<T, K> {
   const { initialState, configOption, ...rest } = config;

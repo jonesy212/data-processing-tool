@@ -1,6 +1,7 @@
 import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
 import { BaseData } from '@/app/components/models/data/Data';
 import { Label } from "@/app/components/projects/branding/BrandingSettings";
+import { Snapshot } from "@/app/components/snapshots";
 import { createSnapshotInstance } from '@/app/components/snapshots/createSnapshotInstance';
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { User } from "@/app/components/users/User";
@@ -15,7 +16,6 @@ import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { createMessage, MessageProps } from "../utils/createMessage";
 import { useSecureUserId } from '../utils/useSecureUserId';
-import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { InitializedData } from './SnapshotStoreOptions';
 import { SnapshotStoreProps } from "./useSnapshotStore";
@@ -24,9 +24,9 @@ import { SnapshotStoreProps } from "./useSnapshotStore";
 interface SnapshotItem<
   T extends  BaseData<any>, 
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
-> extends Snapshot<T, K, Meta, ExcludedFields>, SharedIdentifiers<T, K, Meta> {
+ Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends Snapshot<T, K, Meta, ExcludedFields>,   SharedIdentifiers<T, K, Meta, ExcludedFields> {
   id: string;
   message?: (
     type: NotificationType, 
@@ -48,7 +48,7 @@ interface SnapshotItem<
 class SnapshotList<
   T extends  BaseData<any>, 
   K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
   private snapshots: SnapshotItem<T, K>[];
   private id: string;
   public category: string;
@@ -202,7 +202,7 @@ class SnapshotList<
 
 
 
-const createSnapshotItem = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const createSnapshotItem = <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotId: string | null,
   data: T,
   category: Category | undefined,  snapshotStore: SnapshotStore<T, K> | null,

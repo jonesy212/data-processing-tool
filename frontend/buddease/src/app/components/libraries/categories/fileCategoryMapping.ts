@@ -1,9 +1,9 @@
 // fileCategoryMapping.ts
 import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import { FileCategory, fileMapping } from "../../documents/FileType";
 import { determineFileCategoryLogger } from "../../logging/determineFileCategoryLogger";
 import { T } from "../../models/data/dataStoreMethods";
-import { Snapshot } from "../../snapshots";
 import { getAllSnapshotEntries } from "../../snapshots/getSnapshotEntries";
 // Define a mapping of file categories to their corresponding snapshot entries
 const fileCategoryMapping: { [category in FileCategory]: string[] } = {

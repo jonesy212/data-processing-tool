@@ -4,12 +4,12 @@
 // import { Category } from "../libraries/categories/generateCategoryProperties";
 // import { Data } from "../models/data/Data";
 // import { defaultSubscribeToSnapshots } from "./defaultSubscribeToSnapshots";
-// import { Snapshot } from "./LocalStorageSnapshotStore";
+// import { Snapshot } from "@/app/components/snapshots";
 // import { SnapshotConfig } from "./SnapshotConfig";
 // import { getSnapshotItems } from "./snapshotOperations";
 
 // // createSnapshots.ts
-// const createSnapshots = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// const createSnapshots = <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
 //     id: string,
 //     snapshotId: string,
 //     snapshot: Snapshot<T, K>,

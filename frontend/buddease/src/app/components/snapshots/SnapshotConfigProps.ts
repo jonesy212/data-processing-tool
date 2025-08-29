@@ -1,10 +1,10 @@
 import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { CategoryProperties } from './../../pages/personas/ScenarioBuilder';
-import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotContainer } from "./SnapshotContainer";
 import SnapshotStore from "./SnapshotStore";
@@ -12,7 +12,7 @@ import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
 
 // SnapshotCommonProps for properties specific to snapshots, extending BaseEntity for common properties
-interface SnapshotCommonProps<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends BaseEntity {
+interface SnapshotCommonProps<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> extends BaseEntity {
   criteria?: any; // Define a more specific type if needed
   category?:  Category; // Optional category
   categoryProperties?: CategoryProperties; // Define the type as needed
@@ -28,7 +28,7 @@ interface SnapshotCommonProps<T extends  BaseData<any>, K extends T = T, Meta ex
 
 
 
-interface SnapshotConfigProps<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> extends SnapshotCommonProps<T, K> {
+interface SnapshotConfigProps<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> extends SnapshotCommonProps<T, K> {
   id: string;
   subscriberId: string;
   dataStoreMethods: DataStoreMethods<T, K>; // Replace `any` with the appropriate type

@@ -13,7 +13,7 @@ import Version, { version } from "@/app/components/versions/Version";
 import { VersionData } from "@/app/components/versions/VersionData";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
-import BackendStructure, { backend, backendStructure } from "@/app/configs/appStructure/BackendStructure";
+import { backend, backendStructure } from "@/app/configs/appStructure/BackendStructure";
 import FrontendStructure, { frontend, frontendStructure } from "@/app/configs/appStructure/FrontendStructure";
 import { AppThunk } from "@/app/configs/appThunk";
 import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
@@ -35,10 +35,10 @@ import DocumentPermissions from "@/app/components/documents/DocumentPermissions"
 import { BaseData } from "@/app/components/models/data/Data";
 import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
+import getAppPath from "@/app/configs/appStructure/appPath";
 import { ClientInformation } from '@/server/database/ClientInformation';
 import { data } from '@tensorflow/tfjs';
-import getAppPath from "appPath";
-import { globalState } from 'mobx/dist/internal';
+
 
 
 const {versionNumber, appVersion} = getCurrentAppInfo()
@@ -59,7 +59,7 @@ interface DocumentSliceState<
   documentBuilder?: typeof DocumentBuilder;
 }
 
-const initialDocumentSliceState: DocumentSliceState<BaseData, Meta<T, K<T>>> = {
+const initialDocumentSliceState: DocumentSliceState<BaseData, Meta<T, K>> = {
   documentList: [],
   selectedDocument: null,
   filteredDocuments: [],
@@ -108,7 +108,7 @@ interface ViewTransition {
 }
 
 
-function toObject(document: DocumentObject<T, K<T>, StructuredMetadata<T, K<T>>>): object {
+function toObject(document: DocumentObject<T, K, StructuredMetadata<T, K>>): object {
   return { ...document };
 }
 
@@ -150,8 +150,8 @@ const initialState: DocumentObject<BaseData, BaseData> = {
   keywords: [],
   options: {} as DocumentOptions,
   folderPath: "",
-  previousMetadata: {} as UnifiedMetadata<T, K<T>>,
-  currentMetadata: {} as UnifiedMetadata<T, K<T>>,
+  previousMetadata: {} as UnifiedMetadata<T, K>,
+  currentMetadata: {} as UnifiedMetadata<T, K>,
   accessHistory: [],
   folders: [],
   lastModifiedDate: {} as WritableDraft<ModifiedDate>,
@@ -265,11 +265,14 @@ const initialState: DocumentObject<BaseData, BaseData> = {
       author: "Author Name",
       timestamp: new Date(),
       metadataEntries: {},
-      schema: {}
+      schema: {},
+      latestVersion: createLatestVersion<T, K>(),
     },
     getVersion: async () => "1.0",
     versionHistory: {
-      versionData: []
+      versionData: [],
+      latestVersion: "",
+      timestamp: ""
     },
     mergeAndHashStructures: async (
       baseStructure, 
@@ -658,28 +661,7 @@ function createNewDocument<
             versionNumber: "1.0",
           },
         },
-        backend: {
-          id: "backend",
-          name: "Backend",
-          type: "folder",
-          path: "./backend",
-          content: "",
-          draft: false,
-          permissions: {
-            read: true,
-            write: true,
-            delete: true,
-            share: true,
-            execute: true,
-          },
-          items: backendStructure.getStructure(),
-          getStructureAsArray: backendStructure.getStructureAsArray.bind(backendStructure),
-          traverseDirectoryPublic: backendStructure.traverseDirectoryPublic?.bind(backendStructure),
-          getStructure: () => backendStructure.getStructure(),
-          structureHash, globalState, setDatabaseSchema, getDatabaseSchema,
-          setServices, getServices, getStructureHash, setStructureHash,
-          updateStructureHash, getStructureHashAndUpdateIfNeeded, backendVersions,
-        } as BackendStructure, // Version of the backend
+        backend: backendStructure, // Version of the backend
         frontend: {
           id: "frontend",
           name: "Frontend",
@@ -1420,7 +1402,11 @@ export const exportDocumentsAsync = createAsyncThunk(
 );
 
 // Define the transformations object and applyTransformation function
-const applyTransformation = <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K>>(
+const applyTransformation = <
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
   document: WritableDraft<DocumentObject<T, K, Meta>>,
   documentTag: string,
   transformation: (doc: WritableDraft<DocumentObject<T, K, Meta>>, value: string) => void,
@@ -1430,44 +1416,44 @@ const applyTransformation = <T extends BaseData<any>, K extends T = T, Meta exte
 };
 
 const transformations = {
-  tag: (document: WritableDraft<DocumentObject<T, K, Meta>>, tag: string) => {
+  tag: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, tag: string) => {
     document.content = `${tag} Tagged: ${document.content}`;
   },
 
-  categorize: (document: WritableDraft<DocumentObject<T, K, Meta>>, category: string) => {
+  categorize: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, category: string) => {
     document.content = `${category} Categorized: ${document.content}`;
   },
 
-  customizeView: (document: WritableDraft<DocumentObject<T, K, Meta>>, view: string) => {
+  customizeView: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, view: string) => {
     document.content = `${view} Customized: ${document.content}`;
   },
 
-  comment: (document: WritableDraft<DocumentObject<T, K, Meta>>, comment: string) => {
+  comment: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, comment: string) => {
     document.content = `${comment} Commented: ${document.content}`;
   },
 
-  mention: (document: WritableDraft<DocumentObject<T, K, Meta>>, mention: string) => {
+  mention: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, mention: string) => {
     document.content = `${mention} Mentioned: ${document.content}`;
   },
 
-  assignTask: (document: WritableDraft<DocumentObject<T, K, Meta>>, task: string) => {
+  assignTask: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, task: string) => {
     document.content = `${task} Assigned: ${document.content}`;
   },
 
-  requestReview: (document: WritableDraft<DocumentObject<T, K, Meta>>, review: string) => {
+  requestReview: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, review: string) => {
     document.content = `${review} Requested: ${document.content}`;
   },
 
-  approve: (document: WritableDraft<DocumentObject<T, K, Meta>>, approval: string) => {
+  approve: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, approval: string) => {
     document.content = `${approval} Approved: ${document.content}`;
   },
 
-  reject: (document: WritableDraft<DocumentObject<T, K, Meta>>, rejection: string) => {
+  reject: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, rejection: string) => {
     document.content = `${rejection} Rejected: ${document.content}`;
   },
 
   provideFeedback: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     feedback: string
   ) => {
     document.content = `${feedback} Provided: ${document.content}`;
@@ -1475,62 +1461,62 @@ const transformations = {
     
   },
 
-  requestFeedback: (document: WritableDraft<DocumentObject<T, K, Meta>>, review: string) => {
+  requestFeedback: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, review: string) => {
     document.content = `${review} Requested: ${document.content}`;
   },
 
   resolveFeedback: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     feedback: string
   ) => {
     document.content = `${feedback} Resolved: ${document.content}`;
   },
 
   collaborate: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     collaborator: string
   ) => {
     document.content = `${collaborator} Collaborated: ${document.content}`;
   },
 
-  version: (document: WritableDraft<DocumentObject<T, K, Meta>>, version: string) => {
+  version: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, version: string) => {
     document.content = `${version} Versioned: ${document.content}`;
   },
 
-  annotate: (document: WritableDraft<DocumentObject<T, K, Meta>>, annotation: string) => {
+  annotate: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, annotation: string) => {
     document.content = `${annotation} Annotated: ${document.content}`;
   },
 
-  logActivity: (document: WritableDraft<DocumentObject<T, K, Meta>>, activity: string) => {
+  logActivity: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, activity: string) => {
     document.content = `${activity} Logged: ${document.content}`;
   },
 
-  revert: (document: WritableDraft<DocumentObject<T, K, Meta>>, revert: string) => {
+  revert: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, revert: string) => {
     document.content = `${revert} Reverted: ${document.content}`;
   },
 
-  search: (document: WritableDraft<DocumentObject<T, K, Meta>>, search: string) => {
+  search: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, search: string) => {
     document.content = `${search} Searched: ${document.content}`;
   },
 
-  grantAccess: (document: WritableDraft<DocumentObject<T, K, Meta>>, access: string) => {
+  grantAccess: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
-  viewHistory: (document: WritableDraft<DocumentObject<T, K, Meta>>, view: string) => {
+  viewHistory: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, view: string) => {
     document.content = `${view} Viewed: ${document.content}`;
   },
 
-  compare: (document: WritableDraft<DocumentObject<T, K, Meta>>, compare: string) => {
+  compare: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, compare: string) => {
     document.content = `${compare} Compared: ${document.content}`;
   },
 
-  revokeAccess: (document: WritableDraft<DocumentObject<T, K, Meta>>, access: string) => {
+  revokeAccess: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
   managePermissions: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     permissions: string
   ) => {
     // Add permission transformation logic
@@ -1538,113 +1524,113 @@ const transformations = {
   },
 
   initiateWorkflow: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     workflow: string
   ) => {
     document.content = `${workflow} Initiated: ${document.content}`;
   },
 
-  automateTasks: (document: WritableDraft<DocumentObject<T, K, Meta>>, tasks: string) => {
+  automateTasks: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, tasks: string) => {
     document.content = `${tasks} Automated: ${document.content}`;
   },
 
-  triggerEvents: (document: WritableDraft<DocumentObject<T, K, Meta>>, events: string) => {
+  triggerEvents: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, events: string) => {
     document.content = `${events} Triggered: ${document.content}`;
   },
 
   approvalWorkflow: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     workflow: string
   ) => {
     document.content = `${workflow} Approved: ${document.content}`;
   },
 
   lifecycleManagement: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     lifecycle: string
   ) => {
     document.content = `${lifecycle} Lifecycle: ${document.content}`;
   },
 
   connectWithExternalSystem: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     externalSystem: string
   ) => {
     document.content = `${externalSystem} Connected: ${document.content}`;
   },
 
   synchronizeWithCloudStorage: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     cloudStorage: string
   ) => {
     document.content = `${cloudStorage} Synchronized: ${document.content}`;
   },
 
   importFromExternalSource: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     externalSource: string
   ) => {
     document.content = `${externalSource} Imported: ${document.content}`;
   },
 
   exportToExternalSystem: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     externalSystem: string
   ) => {
     document.content = `${externalSystem} Exported: ${document.content}`;
   },
 
-  generateReport: (document: WritableDraft<DocumentObject<T, K, Meta>>, report: string) => {
+  generateReport: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, report: string) => {
     document.content = `${report} Generated: ${document.content}`;
   },
 
-  exportReport: (document: WritableDraft<DocumentObject<T, K, Meta>>, report: string) => {
+  exportReport: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, report: string) => {
     document.content = `${report} Exported: ${document.content}`;
   },
 
   scheduleReportGeneration: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     report: string
   ) => {
     document.content = `${report} Scheduled: ${document.content}`;
   },
 
   customizeReportSettings: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     report: string
   ) => {
     document.content = `${report} Customized: ${document.content}`;
   },
 
-  backupDocuments: (document: WritableDraft<DocumentObject<T, K, Meta>>, backup: string) => {
+  backupDocuments: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, backup: string) => {
     document.content = `${backup} Backed up: ${document.content}`;
   },
 
-  retrieveBackup: (document: WritableDraft<DocumentObject<T, K, Meta>>, backup: string) => {
+  retrieveBackup: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, backup: string) => {
     document.content = `${backup} Retrieved: ${document.content}`;
   },
 
-  redaction: (document: WritableDraft<DocumentObject<T, K, Meta>>, redaction: string) => {
+  redaction: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, redaction: string) => {
     document.content = `${redaction} Redacted: ${document.content}`;
   },
 
-  accessControls: (document: WritableDraft<DocumentObject<T, K, Meta>>, access: string) => {
+  accessControls: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
-  templates: (document: WritableDraft<DocumentObject<T, K, Meta>>, template: string) => {
+  templates: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, template: string) => {
     document.content = `${template} Templates: ${document.content}`;
   },
 
   updateDocumentVersion: (
-    document: WritableDraft<DocumentObject<T, K, Meta>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
     version: string
   ) => {
     document.content = `${version} Version updated: ${document.content}`;
   },
 
   getDocumentVersion: (
-    document: WritableDraft<DocumentData>,
+    document: WritableDraft<DocumentData<T, K,  StructuredMetadata<T, K>, keyof T>>,
     version: string
   ) => {
     document.content = `${version} Version retrieved: ${document.content}`;
@@ -1988,11 +1974,11 @@ export const useDocumentManagerSlice = createSlice({
       },
       prepare: () => {
         // Generate a new document with default values
-        const newDocument: WritableDraft<DocumentObject<T, K, Meta>> = {
+        const newDocument: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>> = {
           _id: "i989adn8dd",
           id: Math.floor(Math.random() * 1000).toString(), // Generate a unique ID
           title: "New Document",
-          content: "", // Add default content if needed
+          content:{}, // Add default content if needed
           topics: [], // Add default topics if needed
           highlights: [], // Add default highlights if needed
           files: [], // Add default files if needed
@@ -2052,7 +2038,7 @@ export const useDocumentManagerSlice = createSlice({
           _routing_values_as_array_of_objects_with_key_and_value: [],
           _routing_values_as_array_of_objects_with_key_and_value_and_value: [],
           filePathOrUrl: "",
-          uploadedBy: 0,
+          uploadedBy: "",
           uploadedAt: "",
           tagsOrCategories: "",
           format: "",
@@ -2071,7 +2057,7 @@ export const useDocumentManagerSlice = createSlice({
           contentType: "",
           cookie: "",
           currentScript: null,
-          defaultView: null,
+          defaultView: undefined,
           designMode: "",
           dir: "",
           doctype: null,

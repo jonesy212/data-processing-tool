@@ -1,10 +1,7 @@
 // ApiTrade.ts
-import { NotificationTypeEnum } from "../components/support/NotificationContext";
+import { NotificationType, NotificationTypeEnum, useNotification } from "@/context/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { observable } from "mobx";
-import { NotificationType, useNotification } from "../components/support/NotificationContext";
-import { User } from "../components/users/User";
-import { Message } from "../generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "../generators/GenerateUniqueIds";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";

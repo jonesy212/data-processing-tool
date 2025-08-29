@@ -1,7 +1,6 @@
+import { Snapshot } from "@/app/components/snapshots";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
-import { Data, BaseData } from "../models/data/Data";
-import { Snapshots } from '@/app/components/snapshots/LocalStorageSnapshotStore';
+import { BaseData } from "../models/data/Data";
 
 // convertSnapshotsToRecord.ts
 function convertSnapshotsToRecord<
@@ -22,4 +21,4 @@ function convertSnapshotsToRecord<
     return record;
   }
   
-  export { convertSnapshotsToRecord }
+  export { convertSnapshotsToRecord };

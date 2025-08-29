@@ -1,12 +1,12 @@
 // ApiCrypto.ts
 
-import { AxiosError } from "axios";
-import { headersConfig } from "../components/shared/SharedHeaders";
 import {
   NotificationType,
   NotificationTypeEnum,
   useNotification,
-} from "../components/support/NotificationContext";
+} from "@/context/NotificationContext";
+import { AxiosError } from "axios";
+import { headersConfig } from "../components/shared/SharedHeaders";
 import { endpoints } from "./ApiEndpoints";
 import axiosInstance from "./axiosInstance";
 

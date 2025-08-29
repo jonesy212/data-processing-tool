@@ -1,6 +1,9 @@
+import SecureFieldManager from '@/app/components/security/SecureFieldManager';
+import SecurityAudit from '@/app/components/security/SecurityAudit';
 import { AppConfig } from "@/app/configs/AppConfig";
 import { ApiConfig } from "@/app/configs/ConfigurationService";
-import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent /ConfigurationServiceComponent";
+import ConfigurationServiceComponent from "@/app/configs/ConfigurationServiceComponent/ConfigurationServiceComponent";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useFeatureContext } from "@/app/context/FeatureContext";
 import { BytesLike } from "ethers";
 import React, { useEffect, useState } from "react";
@@ -12,16 +15,13 @@ import useIdleTimeout from "../hooks/idleTimeoutHooks";
 import { useThemeConfig } from "../hooks/userInterface/ThemeConfigContext";
 import { Theme } from "../libraries/ui/theme/Theme";
 import { Data } from "../models/data/Data";
+import { K, T } from "../models/data/dataStoreMethods";
 import useNotificationManagerService from "../notifications/NotificationService";
 import { NotificationData } from "../support/NofiticationsSlice";
 import NotificationManager from '../support/NotificationManager';
 import { User } from "../users/User";
 import { UserRole } from "../users/UserRole";
 import { ConfigCard } from "./DashboardConfigCard";
-import { T, K, Meta } from "../models/data/dataStoreMethods";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import SecurityAudit from '@/app/components/security/SecurityAudit';
-import SecureFieldManager from '@/app/components/security/SecureFieldManager';
 
 interface AdminDashboardProps extends YourComponentProps {
   isAuthenticated: boolean;
@@ -34,7 +34,7 @@ interface AdminDashboardProps extends YourComponentProps {
   config: AppConfig;
   updateConfig: (newConfig: Partial<AppConfig>) => void;
   fetchData: () => void;
-  data: Data<T, K<T>, StructuredMetadata<T, K<T>>>[];
+  data: Data<T, K, StructuredMetadata<T, K>>[];
   theme: Theme;
   changeTheme: (newTheme: Theme) => void;
   navigateTo: (route: string) => void;

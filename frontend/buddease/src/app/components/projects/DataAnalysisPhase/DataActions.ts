@@ -1,8 +1,7 @@
 // data/DataActions.ts
-import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import { createAction, PayloadAction } from "@reduxjs/toolkit";
 import { StatusType } from "../../models/data/StatusType";
-import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import { DataProcessing, DataProcessingResult } from "./DataProcessing/DataProcessingService";
 
 /**

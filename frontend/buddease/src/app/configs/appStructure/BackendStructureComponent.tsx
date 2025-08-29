@@ -1,7 +1,7 @@
  import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import { NextApiRequest, NextApiResponse } from "next";
 import path from "path";
-import getAppPath from "../../../../appPath";
+import getAppPath from "./appPath";
 import BackendStructure from "./BackendStructure";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

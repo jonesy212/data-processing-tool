@@ -3,11 +3,13 @@ class AppSettings {
   private apiKey: string;
   private appId: string;
   private appDescription: string;
+  private username: string;
 
-  constructor(apiKey: string, appId: string, appDescription: string) {
+  constructor(apiKey: string, appId: string, appDescription: string, username: string) {
     this.apiKey = apiKey;
     this.appId = appId;
     this.appDescription = appDescription;
+    this.username = username;
   }
 
   getApiKey(): string {
@@ -20,5 +22,9 @@ class AppSettings {
 
   getAppDescription(): string {
     return this.appDescription;
+  }
+
+  getUsername(): string {
+    return this.username;      // <-- add a getter
   }
 }

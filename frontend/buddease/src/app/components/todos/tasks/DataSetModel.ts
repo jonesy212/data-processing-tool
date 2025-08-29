@@ -1,7 +1,6 @@
 import { ProgressPhase } from '@/app/components/models/tracker/ProgressBar';
-// Assuming you have an interface for the User and Team models as well
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { DocumentPath } from "../../../../server/DocumentGenerator";
+import { DocumentPath } from "@/server/DocumentPath";
 import { ModifiedDate } from "../../documents/DocType";
 import { DocumentData } from "../../documents/DocumentBuilder";
 import { Content } from "../../models/content/AddContent";
@@ -13,13 +12,14 @@ import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { DocumentObject } from "../../state/redux/slices/DocumentSlice";
 import { DocumentBase, PhaseTypeEnums } from "../../state/stores/DocumentStore";
 import { AllTypes } from "../../typings/PropTypes";
+import { BaseDataEntity, DefaultMeta } from '@/app/configs/BaseConfig';
 
 
 interface DatasetModel<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
-  extends BaseEntity, DocumentBase<T, K> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+> extends BaseEntity, DocumentBase<T, K> {
   filePathOrUrl?: string;
   uploadedBy: string; // Assuming this is the user ID
   uploadedAt?: string; // Assuming the date is sent as a string
@@ -29,6 +29,7 @@ interface DatasetModel<
   url?: string |undefined;
   // Add other fields as needed
   type?: AllTypes;
+
   // Relationships
   uploadedByTeamId: number | null; // Assuming this is the team ID
   uploadedByTeam: Team | null; // Assuming you have a Team interface
@@ -92,7 +93,8 @@ const dataset: DatasetModel<Data<BaseData>> = {
     length: 0,
     items: [],
     data: undefined,
-    contentItems: []
+    contentItems: [],
+    schema: {}
   }
 
 };export { dataset };

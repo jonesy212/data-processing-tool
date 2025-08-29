@@ -1,13 +1,13 @@
 // defaultSnapshotSubscribeFunctions.ts
 import * as snapshotApi from '@/app/api/SnapshotApi';
+import { Snapshot } from "@/app/components/snapshots";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { BaseData } from "../models/data/Data";
 import { CoreSnapshot } from "./CoreSnapshot";
-import { Snapshot } from "./LocalStorageSnapshotStore";
 import { Callback } from "./subscribeToSnapshotsImplementation";
 
 // Function to unsubscribe from snapshots
-export const defaultUnsubscribeFromSnapshots = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const defaultUnsubscribeFromSnapshots = <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotId: string,
   callback: Callback<Snapshot<T, K>>,
   snapshot: Snapshot<T, K> // Ensure this matches the expected type
@@ -25,7 +25,7 @@ export const defaultUnsubscribeFromSnapshots = <T extends  BaseData<any>, K exte
 };
 
 
-function convertCoreToSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertCoreToSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   coreSnapshot: CoreSnapshot<T, K>
 ): Snapshot<T, K> {
   return {
@@ -42,7 +42,7 @@ function convertCoreToSnapshot<T extends  BaseData<any>, K extends T = T, Meta e
   };
 }
 
-export const fetchAndCreateSnapshot = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const fetchAndCreateSnapshot = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotId: string,
   storeId: number,
   additionalHeaders?: Record<string, string>
@@ -130,7 +130,7 @@ export const fetchAndCreateSnapshot = async <T extends  BaseData<any>, K extends
 }
 
 
-export const defaultSubscribeToSnapshot = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const defaultSubscribeToSnapshot = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotId: string,
   storeId: number, // Added storeId parameter
   callback: (snapshot: Snapshot<T, K>) => void,

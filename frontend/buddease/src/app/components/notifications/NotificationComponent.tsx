@@ -1,11 +1,11 @@
+import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { randomBytes } from "ethers";
 import React from "react";
+import { ThemeConfigProps } from "../hooks/userInterface/ThemeConfigContext";
 import { NotificationData } from "../support/NofiticationsSlice";
-import { NotificationType, NotificationTypeEnum } from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import './NotificationComponent.css'; // Assuming styles are defined here
 import useNotificationManagerService from "./NotificationService";
-import { ThemeConfigProps } from "../hooks/userInterface/ThemeConfigContext";
 
 interface CustomNotificationProps {
   type: NotificationType;

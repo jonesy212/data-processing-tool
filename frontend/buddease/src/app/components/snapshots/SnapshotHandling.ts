@@ -9,7 +9,7 @@ import SnapshotStore from './SnapshotStore';
 import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 
 
-interface SnapshotHandling<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface SnapshotHandling<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
     mapSnapshots(
         storeIds: number[],
         snapshotId: string,

@@ -1,6 +1,5 @@
 import { Content } from '@/app/components/models/content/AddContent';
-
-
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
 
 import { BaseData } from '@/app/components/models/data/Data';
 import { SnapshotStoreConfig } from '@/app/components/snapshots';
@@ -18,10 +17,11 @@ import {
   SnapshotWithCriteria
 } from './index';
 
-import { SchemaField } from '../../../server/database/SchemaField';
-
+import { SharedIdentifiers } from "../documents/RelatedProps";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
+import { SchemaField } from '../../../server/database/SchemaField';
 import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import { DataStore, EventRecord, InitializedState } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
@@ -29,45 +29,43 @@ import { Subscription } from '../subscriptions/Subscription';
 import { AllTypes } from '../typings/PropTypes';
 import { Subscriber } from '../users/Subscriber';
 import { SnapshotStoreCore } from './SnapshotCore';
+import { ExcludedFields } from '@/app/components/routing/Fields';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/configs/BaseConfig';
 
 
-type MetaDataOptions<T extends BaseData<any>, K extends T = T> = StructuredMetadata<T, K> | ProjectMetadata<T, K>;
+type MetaDataOptions<  T extends BaseDataEntity,
+  K extends T = T > = DefaultMeta<T, K> | ProjectMetadata<T, K>;
 
 // Define InitializedData with T and K
-type InitializedData<T extends BaseData<any>, K extends T = T> =
+type InitializedData<  T extends BaseDataEntity,
+  K extends T = T > =
   | T
-  | Map<string, Snapshot<T, K, StructuredMetadata<T, K>>>
+  | Map<string, Snapshot<T, K, DefaultMeta<T, K>>>
+  | SnapshotStoreConfig<T, K, DefaultMeta<T, K>>
   | null;
 
 // Define InitializedDataStore with T and K
-type InitializedDataStore<T extends BaseData<any>, K extends T = T> = T | DataStore<T, K> | Map<string, SnapshotStore<T, K>> | null;
+type InitializedDataStore<  T extends BaseDataEntity,
+  K extends T = T
+> = T | DataStore<T, K> | Map<string, SnapshotStore<T, K>> | null;
 
 // Renaming SnapshotStoreConfig to InitializedDelegate
-type InitializedDelegate<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
+type InitializedDelegate<  T extends BaseDataEntity, K extends T = T> =
   SnapshotStoreConfig<T, K>[] | (() => Promise<SnapshotStoreConfig<T, K>[]>);
 
 // New type for InitializedDelegateSearch
-type InitializedDelegateSearch<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
+type InitializedDelegateSearch<
+    T extends BaseDataEntity,
+    K extends T = T
+> =
   () => Promise<SnapshotWithCriteria<T, K>[] | null>;
 
-type ConvertSnapshotWithCriteria<
-  T extends BaseData<any>,
+
+type InitializedSnapshot<
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
-> = SnapshotStoreConfig<
-  SnapshotWithCriteria<T, K>,
-  SnapshotWithCriteria<T, K>,
-  Meta,
-  ExcludedFields
->;
-
-
-
-  type InitializedSnapshot<
-  T extends BaseData<any>,
-  K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > = Snapshot<T, K, Meta> & {
     /** 
      Flag indicating this snapshot has been properly initialized
@@ -96,9 +94,9 @@ type ConvertSnapshotWithCriteria<
 };
 
 interface SnapshotInstanceProps<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > extends SnapshotStoreCore<T, K> {
   name: string;
   schema: Record<string, SchemaField>;
@@ -122,13 +120,13 @@ interface SnapshotInstanceProps<
     callback?: (snapshot: Snapshot<T, K>) => void,
     snapshotData?: SnapshotStore<T, K>,
     snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, never>,
+    subscribers?: SubscriberCollection<T, K>
   ) => Promise<SnapshotStore<T, K>>,
 }
 
 interface SnapshotConfigOption<
-  T extends BaseData<any>,
-  K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  T extends BaseDataEntity,
+  K extends T = T
 >
   extends Omit<SnapshotInstanceProps<T, K>, 'configureSnapshot'> {  // Exclude configureSnapshot
   snapshotStore: SnapshotStoreConfig<T, K> | null; // Define as config option
@@ -139,13 +137,18 @@ interface SnapshotConfigOption<
 }
 
 
+type SnapshotWithCriteriaAsBase<
+  T extends BaseDataEntity,
+  K extends T = T
+> =
+  BaseData<any> & Omit<SnapshotWithCriteria<T, K>, keyof BaseData<any>>;
+
 interface SnapshotStoreOptions<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
-> {
-  id: string | number | null;
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends SharedIdentifiers<T, K, Meta, ExcludedFields> {
   storeId: number;
   data?: InitializedData<T, K> | null;
   baseURL: string;
@@ -156,8 +159,8 @@ interface SnapshotStoreOptions<
   staleWhileRevalidate: number;
   cacheKey: string;
   initialState: InitializedState<T, K, Meta> | {};
-  initialConfig: SnapshotConfig<T, K>;
-  
+  initialConfig?: SnapshotStoreConfig<T, K> | null;
+  initialBaseConfig: SnapshotConfig<T, K>;
   key?: string;
   keys?: string[];
   snapshotObj?: Snapshot<T, K, Meta> | null;
@@ -168,12 +171,10 @@ interface SnapshotStoreOptions<
 
   category: Category;
   date: string | number | Date | undefined;
-  type: string | AllTypes | null;
   content?: string | Content<T, K> | undefined;
   snapshotId?: string | number | null;
   snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, ExcludedFields> | undefined;
   metadata?: UnifiedMetadata<T, K, Meta, ExcludedFields> | {}
-  criteria: CriteriaType;
   callbacks: MultipleEventsCallbacks<Snapshot<T, K>>;
   snapshotConfig?: SnapshotConfig<T, K>[] | undefined;
 
@@ -360,9 +361,9 @@ interface SnapshotStoreOptions<
     snapshotStore?: SnapshotStore<T, K>,
     snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> | null,
     snapshotStoreConfigSearch?: SnapshotStoreConfig<
-      SnapshotWithCriteria<any, BaseData<T, K>>,
-      SnapshotWithCriteria<any, BaseData<T, K, StructuredMetadata<T, K>>>
-      >
+      BaseData<any>, // T is BaseData
+      SnapshotWithCriteriaAsBase<any, BaseData<any>> // K extends T
+  >
   ) => Snapshot<T, K> | null,
 
   configureSnap: (
@@ -396,6 +397,11 @@ interface SnapshotStoreOptions<
 }
 
 export type {
-  InitializedData, InitializedDataStore, InitializedDelegate, InitializedDelegateSearch, InitializedSnapshot, MetaDataOptions, SnapshotConfigOption, SnapshotInstanceProps, SnapshotStoreOptions
+  InitializedData, InitializedDataStore,
+  InitializedDelegate, InitializedDelegateSearch,
+  InitializedSnapshot, MetaDataOptions,
+  SnapshotConfigOption, SnapshotInstanceProps,
+  SnapshotStoreOptions,
+  SnapshotWithCriteriaAsBase
 };
 

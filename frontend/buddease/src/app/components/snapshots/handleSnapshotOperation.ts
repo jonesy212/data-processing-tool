@@ -1,12 +1,12 @@
 // handleSnapshotOperation.ts
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { Snapshot } from "./LocalStorageSnapshotStore";
-import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import * as snapshotApi from "@/app/api/SnapshotApi";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
+import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import { SnapshotStoreActions } from "@/app/components/snapshots/SnapshotActions";
+import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
+import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 
 // First, extract the sorting logic to a shared utility function
@@ -22,10 +22,10 @@ const sortByTimestamp = <T extends { timestamp?: string | Date }>(
 };
 
 function handleMapOperation<
-  T extends BaseData<any>, 
+  T extends BaseDataEntity, 
   K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+ Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
   >(
   snapshot: Snapshot<T, K, Meta, ExcludedFields>,
   data: InitializedData<T, K> | undefined,
@@ -90,7 +90,7 @@ function handleMapOperation<
 }
 
 // Define handleSnapshotOperation
-const handleSnapshotOperation = <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const handleSnapshotOperation = <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshot: Snapshot<T, K>,
   config: SnapshotStoreConfig<T, K>,
   mappedData: Map<string, SnapshotStoreConfig<T, K>>,
@@ -146,7 +146,7 @@ const handleSnapshotOperation = <T extends BaseData<any>, K extends T = T, Meta 
 };
 
 
-function handleSnapshotStoreConfigOperation<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function handleSnapshotStoreConfigOperation<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshot: Snapshot<T, K>,
   data: SnapshotStoreConfig<T, K>,
   operationType: SnapshotOperationType
@@ -195,7 +195,7 @@ function handleSnapshotStoreConfigOperation<T extends  BaseData<any>, K extends 
 
 
 // Define handleSnapshotStoreOperation
-const handleSnapshotStoreOperation = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const handleSnapshotStoreOperation = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotId: string,
   snapshotStore: SnapshotStore<T, K>,
   snapshot: Snapshot<T, K>,

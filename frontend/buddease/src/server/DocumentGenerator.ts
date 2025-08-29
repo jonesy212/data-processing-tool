@@ -69,7 +69,7 @@ export class DocumentGenerator {
     const financialReportFileName = "financial_report.docx";
 
     try {
-      await generateFinancialReportContent(options, documents);
+      await generateFinancialReportContent(options, [documents]);
       const generatedFilePath = path.join(__dirname, 'generated', financialReportFileName);
       await fs.promises.writeFile(generatedFilePath, financialReportContent);
       return `Financial Report created successfully at ${generatedFilePath}.`;

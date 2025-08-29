@@ -5,7 +5,11 @@ import { DebugInfo, TempData } from "../models/data/TempData";
 import { InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
-interface SnapshotConfiguration<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>{
+interface SnapshotConfiguration<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+>{
   initialState: InitializedState<T, K> | {};
   configOption?: string | SnapshotStoreConfig<T, K> | null;
 
@@ -19,7 +23,6 @@ interface SnapshotConfiguration<T extends  BaseData<any>, K extends T = T, Meta 
 
   // initialState: Map<string, Snapshot<T, K>> | SnapshotStore<T, K> | Snapshot<T, K> | null;
   initialConfig?: SnapshotStoreConfig<T, K> | null;
-
 
   // Load configuration method
   loadConfig(): void;

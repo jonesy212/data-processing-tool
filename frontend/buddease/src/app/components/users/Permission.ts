@@ -1,21 +1,21 @@
+// Permission.ts
 
 interface BasePermissions {
-  canView: boolean;
-  canEdit: boolean;
-  canDelete?: boolean | undefined;
-  read?: boolean; // Add read
-  write?: boolean; // Add write
-  delete?: boolean; // Add delete
+  canView?: boolean;
+  canEdit?: boolean;
+  canDelete?: boolean;
+  read?: boolean;
+  write?: boolean;
+  delete?: boolean;
 }
 
-// Permission.ts
-interface Permission extends BasePermissions {
+interface Permission {
   userId: string;
-  permissions: UserPermissions; // Using UserPermissions as the structure
-  rolePermissions?: Permissions; // Optionally include role-specific permissions
+  permissions: UserPermissions; // Category-based
+  rolePermissions?: Permissions; 
   permissionType: 'read' | 'write';
-  share?: boolean; // Optional property for sharing permissions
-  execute?: boolean; // Optional property for execution permissions
+  share?: boolean;
+  execute?: boolean;
   [key: string]: any;
 }
 

@@ -1,8 +1,10 @@
+import { DataStoreMethods } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 // SnapshotStoreProps.ts
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { BaseData } from '@/app/components/models/data/Data';
+import { AllStatus } from '@/app/components/state/stores/DetailsListStore';
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
-import { SnapshotConfig, SnapshotData } from '@/app/components/snapshots';
+import { SnapshotConfig, SnapshotData, SnapshotDataType } from '@/app/components/snapshots';
 import { ConfigureSnapshotStorePayload } from "@/app/components/snapshots/SnapshotConfig";
 import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
 import { data } from '@/app/components/snapshots/SnapshotWithCriteria';
@@ -22,10 +24,10 @@ import { Data } from "../models/data/Data";
 import { displayToast } from '../models/display/ShowToast';
 import { DataStore, InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import {
-  Snapshot,
-  Snapshots,
-  SnapshotsArray,
-  SnapshotUnion
+    Snapshot,
+    Snapshots,
+    SnapshotsArray,
+    SnapshotUnion
 } from "../snapshots/LocalStorageSnapshotStore";
 import { SnapshotOperation, SnapshotOperationType } from "../snapshots/SnapshotActions";
 import SnapshotStore from "../snapshots/SnapshotStore";
@@ -42,7 +44,6 @@ import { K, T } from '../models/data/dataStoreMethods';
 import { BrowserBehaviorConfig } from "../state/BrowserBehaviorManager";
 import { addToSnapshotList } from '../utils/snapshotUtils';
 import Version from "../versions/Version";
-
 
 type SnapshotStoreProps<
   T extends  BaseData<any>,
@@ -80,16 +81,17 @@ type SnapshotStoreProps<
   endpointCategory: string | number;
   browserBehaviorConfig?: BrowserBehaviorConfig;
   findIndex?(predicate: (snapshot: SnapshotUnion<T, K, StructuredMetadata<T, K>>) => boolean): number;
-  }
+}
 
-const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
+const { latestVersion = createLatestVersion<T, K>(), ...rest } = (data as Record<string, any>) || {};
 
 
 // Initialize storeProps with meaningful values
-const storeProps: SnapshotStoreProps<T, K<T>> = {
+const storeProps: SnapshotStoreProps<T, K> = {
     category: "storeProp-category",  // Assuming category can be a string
     expirationDate: new Date(),
-    payload: { 
+  
+   payload: { 
         error: undefined,  // Provide a valid error value (e.g., `null` or an error object)
         meta: {
           name: "Sample Notification",
@@ -97,7 +99,7 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
           type: NotificationTypeEnum.Info, // Replace with the appropriate enum value
           startDate: new Date(),
           endDate: new Date(),
-          status: AllStatus.ACTIVE, // Replace with the appropriate status
+          status: StatusType.ACTIVE, // Replace with the appropriate status
           id: "unique-notification-id",
           isSticky: false,
           isDismissable: true,
@@ -118,7 +120,7 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
     name: "MySnapshotStore", // Provide a valid name
     version: {
   
-      isActive: true,
+            isActive: true,
       releaseDate: "2023-07-20",
       updateStructureHash: async () => {},
       setStructureData: (newData: string) => { },
@@ -147,8 +149,9 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
         metadataEntries: {}, 
         schema: {},
         timestamp: new Date(),
+        latestVersion
       },
-      versions: null,
+            versions: null,
       checksum: 'abc123',
       isLatest: true,
       isPublished: true,
@@ -232,6 +235,10 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
           author: "Author Name", // Provide a valid author name
           timestamp: new Date(), // Provide a valid timestamp; can be Date, string, or number
           revisionNotes: "Initial version created.", // Optional property
+          area: 'storeProps area',
+          metadataEntries: {},
+          latestVersion,
+          schema: {}
         }, // Add required property
       },
       description: "Version description", // Description of the version
@@ -247,7 +254,8 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
       parentAppVersion: "1.0.0", // App version of the parent
       parentVersionNumber: "1.0.0", // Version number of the parent
       getVersionNumber: () => ""
-    }, // Example version
+    },
+    // Example version
     schema: {}, // Provide a valid schema or mock
     options: {
       id: 0,
@@ -272,53 +280,62 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
       criteria: {},
       callbacks: {},
       subscribeToSnapshots: (
-        snapshotStore: SnapshotStore<T, K<T>>,
+        snapshotStore: SnapshotStore<T, K>,
         snapshotId: string,
-        snapshotData: SnapshotData<T, K<T>>,
+        snapshotData: SnapshotData<T, K>,
         category: Category | undefined,
-        snapshotConfig: SnapshotStoreConfig<T, K<T>>,
+        snapshotConfig: SnapshotStoreConfig<T, K>,
         callback: (
-          snapshotStore: SnapshotStore<T, K<T>>, 
-          snapshots: SnapshotsArray<T, K<T>, StructuredMetadata<T, K<T>>>
-        ) => Subscriber<T, K<T>> | null,
-        snapshots: SnapshotsArray<T, K<T>, StructuredMetadata<T, K<T>>>,
+          snapshotStore: SnapshotStore<T, K>, 
+          snapshots: SnapshotsArray<T, K, StructuredMetadata<T, K>>
+        ) => Subscriber<T, K> | null,
+        snapshots: SnapshotsArray<T, K, StructuredMetadata<T, K>>,
         unsubscribe?: UnsubscribeDetails, 
-      ): SnapshotsArray<T, K<T>, StructuredMetadata<T, K<T>>> | [] => {
+      ): SnapshotsArray<T, K, StructuredMetadata<T, K>> | [] => {
         // Implement your logic here
         return snapshots; // or modify the snapshots as needed
       },
       subscribeToSnapshot: (
         snapshotId: string,
-        callback: (snapshot: Snapshot<T, K<T>>) => Subscriber<T, K<T>> | null,
-        snapshot: Snapshot<T, K<T>>
-      ):Subscriber<T, K<T>> | null  => {
+        callback: (snapshot: Snapshot<T, K>) => Subscriber<T, K> | null,
+        snapshot: Snapshot<T, K>
+      ):Subscriber<T, K> | null  => {
         // Implement your logic here
         return null; // or return a Subscriber if necessary
       },
       unsubscribeToSnapshots: (
         snapshotId: string,
-        snapshot: Snapshot<T, K<T>>,
+        snapshot: Snapshot<T, K>,
         type: string,
         event: Event,
-        callback: (snapshot: Snapshot<T, K<T>>) => void  
+        callback: (snapshot: Snapshot<T, K>) => void  
       ) => {
         // Implement your logic here
       },
       unsubscribeToSnapshot: (snapshotId: string,
-        snapshot: Snapshot<T, K<T>>,
+        snapshot: Snapshot<T, K>,
         type: string,
         event: Event,
-        callback: (snapshot: Snapshot<T, K<T>>) => void
+        callback: (snapshot: Snapshot<T, K>) => void
       ) => {
         // Implement your logic here
       },
       delegate: null,
-      getDelegate: (context) => {
-        // Implement your logic here
-        return []; // or your logic to return an array of SnapshotStoreConfig<T, K<T>>
+      getDelegate: async (context) => {
+        const { useSimulatedDataSource, simulatedDataSource } = context;
+  
+        if (useSimulatedDataSource) {
+          const stores = simulatedDataSource.map(() => {
+            const { store } = createDataStore<T, K>();
+            return store;
+          });
+  
+          return stores;
+        }
+  
+        return [];
       },
-
-      getCategory: async <T extends BaseData<any>, K extends T = T>(
+      getCategory: async <T extends BaseDataEntity, K extends T = T>(
         snapshotId: string,
         snapshot: Snapshot<T, K>,
         type: string,
@@ -422,17 +439,68 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
           id,
           storeId,
           snapshotId,
-          snapshotData,
+          snapshotData: (
+            snapshotId: string | number | null,
+            data: Snapshot<T, K>,
+            mappedSnapshotData: Map<string, Snapshot<T, K>> | null | undefined,
+            snapshotData: SnapshotData<T, K>,
+            snapshotStore: SnapshotStore<T, K>,
+            category: Category | undefined,
+            categoryProperties: CategoryProperties | undefined,
+            dataStoreMethods: DataStoreMethods<T, K>,
+            storeProps: SnapshotStoreProps<T, K>,
+        ): Promise<SnapshotDataType<T, K>> => {
+            return new Promise(async (resolve, reject) => {
+              try {
+                // Implement the logic of snapshotData here
+                const result = await snapshotData(
+                  snapshotId ?? data.id, // Use the snapshot id if provided
+                  data,                   // The snapshot data
+                  mappedSnapshotData,     // The mapped snapshot data (can be null or undefined)
+                  snapshotData,           // Additional snapshot data
+                  snapshotStore,          // The snapshot store
+                  category,               // The category (optional)
+                  categoryProperties,     // Category properties (optional)
+                  dataStoreMethods,       // Data store methods
+                  snapshotStore.getStoreProps?.() ?? {}, // Store properties (fallback to empty object)
+                  snapshotId              // The snapshot id (optional)
+                );
+                resolve(result); // Resolve with the result
+              } catch (error) {
+                reject(error); // Reject if an error occurs
+              }
+            });
+          },
           dataStoreMethods,
           category,
           categoryProperties: categoryProperties || {
-            id: snapshotId,
-            type: 'default',
-            name: typeof category === 'object' ? category.name : String(category),
-            // Fill in other required CategoryProperties
-            description: '',
-            icon: 'default',
-            color: '#000000',
+          id: snapshotId,
+          type: 'default',
+          name: typeof category === 'object' ? category.name : String(category),
+          description: '',
+          icon: 'default',
+          color: '#000000',
+          iconColor: '#FFFFFF',        // Default value
+          isActive: true,              // Default value
+          isPublic: false,             // Default value
+          isSystem: false,             // Default value
+          isDefault: false,            // Default value
+          isHidden: false,             // Default value
+          isHiddenInList: false,      // Default value
+          UserInterface: [],           // Default value
+          DataVisualization: [],       // Default value
+          Forms: undefined,            // Default value
+          Analysis: [],                // Default value
+          Communication: [],           // Default value
+          TaskManagement: [],          // Default value
+          Crypto: [],                  // Default value
+          brandName: '',               // Default value
+          brandLogo: '',               // Default value
+          brandColor: '#000000',       // Default value
+          brandMessage: '',            // Default value
+          chartType: 'bar',            // Default value
+          dataProperties: [],          // Default value
+          formFields: [], 
             // ... all other required CategoryProperties fields
           },
           // Optional properties
@@ -500,11 +568,11 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
         categoryProperties?: CategoryProperties,
         callback?: (snapshotStore: SnapshotStore<T, Data<T>>) => void,
         snapshotStoreConfig?: SnapshotStoreConfig<T, Data<T>>
-      ): Promise<Snapshot<T, K<T>> | null> => {
+      ): Promise<Snapshot<T, K> | null> => {
           const baseData: BaseData = createBaseData({ ...snapshotData });
           
           // Your implementation logic<T>
-          const newSnapshot: Snapshot<T, K<T>> = createSnapshotInstance(baseData, baseMeta, snapshotId, transformedSnapshot, category, snapshotStore, snapshotStoreConfig)
+          const newSnapshot: Snapshot<T, K> = createSnapshotInstance(baseData, baseMeta, snapshotId, transformedSnapshot, category, snapshotStore, snapshotStoreConfig)
           
           // Call callback if provided
           callback?.(newSnapshot);
@@ -512,19 +580,19 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
           return Promise.resolve(newSnapshot); // Resolve with the created Snapshot
       },
       configureSnapshotStore: (
-        snapshotStore: SnapshotStore<T, K<T>>,
+        snapshotStore: SnapshotStore<T, K>,
         snapshotId: string,
-        data: Map<string, Snapshot<T, K<T>>>,
+        data: Map<string, Snapshot<T, K>>,
         events: Record<string, any>,
         dataItems: RealtimeDataItem[],
-        newData: Snapshot<T, K<T>>,
-        payload: ConfigureSnapshotStorePayload<T, K<T>>,
-        store: SnapshotStore<T, K<T>>,
-        callback?: (snapshotStore: SnapshotStore<T, K<T>>) => void
+        newData: Snapshot<T, K>,
+        payload: ConfigureSnapshotStorePayload<T, K>,
+        store: SnapshotStore<T, K>,
+        callback?: (snapshotStore: SnapshotStore<T, K>) => void
       ): Promise<{
-        snapshotStore: SnapshotStore<T, K<T>>, 
-        storeConfig: SnapshotStoreConfig<T, K<T>>,
-        updatedStore?: SnapshotStore<T, K<T>>
+        snapshotStore: SnapshotStore<T, K>, 
+        storeConfig: SnapshotStoreConfig<T, K>,
+        updatedStore?: SnapshotStore<T, K>
       }> => {
           // Step 1: Update the snapshot data
           if (snapshotId && newData) {
@@ -553,13 +621,21 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
           }
       
           // Step 4: Update snapshotStore configuration based on the payload
-          const storeConfig: SnapshotStoreConfig<T, K<T>> = {
-              // Populate the configuration based on the payload and other provided parameters
-              id: snapshotId,
-              records: convertSnapshotsToRecord(Array.from(data.values())), // Transform the array to the expected Record type
-              options: payload.options || {}, // Use options from the payload if available
-              metadata: payload.metadata || {}, // Use metadata from the payload if available
-              category: payload.category, // Optionally set a category from the payload
+          const storeConfig: SnapshotStoreConfig<T, K> = {
+            // Populate the configuration based on the payload and other provided parameters
+            id: snapshotId,
+            records: convertSnapshotsToRecord(Array.from(data.values())), // Transform the array to the expected Record type
+            options: payload.options || {}, // Use options from the payload if available
+            metadata: payload.metadata || {}, // Use metadata from the payload if available
+            category: payload.category, // Optionally set a category from the payload
+            getSnapshotManager: payload.getSnapshotManager,
+            find: payload.find,
+            callback: payload.callback,
+            storeId: payload.storeId,
+            isCore: payload.isCore,
+            configId: payload.configId,
+            operation: payload.operation,
+            data: payload.data,
           };
       
           // Step 5: Optionally, call the callback if provided
@@ -578,17 +654,17 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
         dataStoreMethods
       ) => {
         // Implement your logic here
-        return {}; // or the appropriate Partial<DataStoreWithSnapshotMethods<T, K<T>>>
+        return {}; // or the appropriate Partial<DataStoreWithSnapshotMethods<T, K>>
       },
-      // Array of SnapshotStoreMethod<T, K<T>>
+      // Array of SnapshotStoreMethod<T, K>
       snapshotMethods: [],
       handleSnapshotOperation: (
-        snapshot: Snapshot<T, K<T>>,
-        data: SnapshotStoreConfig<T, K<T>>,
-        mappedData: Map<string, SnapshotStoreConfig<T, K<T>>>,
-        operation: SnapshotOperation<T, K<T>>, // Ensure you use this in your logic
+        snapshot: Snapshot<T, K>,
+        data: SnapshotStoreConfig<T, K>,
+        mappedData: Map<string, SnapshotStoreConfig<T, K>>,
+        operation: SnapshotOperation<T, K>, // Ensure you use this in your logic
         operationType: SnapshotOperationType
-      ): Promise<Snapshot<T, K<T>> | null> => {
+      ): Promise<Snapshot<T, K> | null> => {
         return new Promise((resolve) => {
   
           // Use useSecureUserId to get the current user's ID and ensure the user is authenticated
@@ -606,7 +682,7 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
             return; // Exit the function early
           }
           // Use the isSnapshot type guard to validate the snapshot
-          const isValidSnapshot = isSnapshot<T, K<T>>(snapshot);
+          const isValidSnapshot = isSnapshot<T, K>(snapshot);
           
           if (!isValidSnapshot) {
             resolve(null); // Resolve with null if the snapshot is invalid
@@ -614,7 +690,7 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
           }
           // Check if a snapshot with the requested properties exists
           const existingSnapshot = data.records.find(
-            (record: CalendarManagerStoreClass<T, K<T>>) => record.id === snapshot.id
+            (record: CalendarManagerStoreClass<T, K>) => record.id === snapshot.id
           );
           if (!existingSnapshot) {
             console.warn("No matching snapshot found for the provided properties.");
@@ -661,7 +737,8 @@ const storeProps: SnapshotStoreProps<T, K<T>> = {
       isClosable: true,
       optionalData: {},
       useSimulatedDataSource: false,
-      simulatedDataSource: [], // Update as per your requirements
+      simulatedDataSource: {}, 
+      // Update as per your requirements
      
     }, 
     

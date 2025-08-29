@@ -3,7 +3,7 @@
 // import { useState } from "react";
 // import { BaseData } from "../models/data/Data";
 // import { displayToast } from "../models/display/ShowToast";
-// import { Snapshot } from "./LocalStorageSnapshotStore";
+// import { Snapshot } from "@/app/components/snapshots";
 // import { SnapshotActions } from "./SnapshotActions";
 // import SnapshotStore from "./SnapshotStore";
 // import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
@@ -11,7 +11,7 @@
 // import { Subscriber } from "../users/Subscriber";
 
 // // addToSnapshotList.ts
-// const addToSnapshotList = async  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// const addToSnapshotList = async  <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
 //   snapshotStore: SnapshotStore<T, K>,
 //   subscribers: Subscriber<T, K>[]
 // ) => {

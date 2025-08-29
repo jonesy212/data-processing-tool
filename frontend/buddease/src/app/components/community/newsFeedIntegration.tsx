@@ -1,9 +1,9 @@
 // newsFeedIntegration.tsx
 // Example function to update state with news feed data
 
+import { NotificationType, useNotification } from "@/context/NotificationContext";
 import { updateFilteredNewsUI } from "../libraries/ui/updateFilteredNewsUI";
 import axiosInstance from "../security/csrfToken";
-import { NotificationType, useNotification } from "../support/NotificationContext";
 import { categorizeNews, identifyTrendingTopics } from "./articleKeywords";
 
 import { useState } from "react";
@@ -365,4 +365,5 @@ const filterNewsFeed = (newsData: any): void => {
   };
   
 
-  export { analyzeSentiment, filterNewsFeed, storeSentimentAnalysisResults, updateSentimentAnalysisUI, fetchMoreNews };
+  export { analyzeSentiment, fetchMoreNews, filterNewsFeed, storeSentimentAnalysisResults, updateSentimentAnalysisUI };
+

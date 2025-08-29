@@ -3,14 +3,19 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import * as subscriptionApi from "@/app/api/subscriberApi";
-import { createSubscriber } from '@/app/components/crypto';
+import { createSubscriber } from '@/app/components/crypto/exchangeIntegration';
 import { SnapshotData } from '@/app/components/snapshots';
+import { createSnapshotInstance } from '@/app/components/snapshots/createSnapshotInstance';
 import { getSnapshotDelegate } from '@/app/components/snapshots/getSnapshotDelegate';
-import { createSnapshotInstance } from '@/app/components/snapshots/snapshot';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
 import useModalFunctions from "@/app/pages/dashboards/ModalFunctions";
 import ScheduleEventModal from "@/app/ts/ScheduleEventModal";
+import {
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
+} from "@/context/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import {
   getDefaultDocumentOptions,
@@ -24,11 +29,6 @@ import {
 import { Member } from "../../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import SnapshotStore from "../../snapshots/SnapshotStore";
-import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
-} from "../../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { VideoData } from "../../video/Video";
 import {
@@ -42,9 +42,8 @@ import { AllStatus } from "./DetailsListStore";
 import { useStore } from "./StoreProvider";
 
 import { getSnapshotConfig } from "@/app/api/SnapshotApi";
+import { Snapshot } from "@/app/components/snapshots";
 import { useDispatch } from "react-redux";
-import { EventActions } from "../../actions/EventActions";
-import { CalendarEvent } from "../../calendar/CalendarEvent";
 import {
   AddEventPayload,
   CalendarActionPayload,
@@ -53,6 +52,8 @@ import {
   SetEventStatusPayload,
   UpdateEventPayload,
 } from "../../../../server/database/CalendarActionPayload";
+import { EventActions } from "../../actions/EventActions";
+import { CalendarEvent } from "../../calendar/CalendarEvent";
 import { combinedEvents } from "../../event/Event";
 import {
   createSnapshotStore,
@@ -61,7 +62,6 @@ import {
 } from "../../hooks/useSnapshotManager";
 import { Category } from "../../libraries/categories/generateCategoryProperties";
 import { SnapshotContainer, snapshotContainer } from "../../snapshots";
-import { Snapshot } from "../../snapshots/LocalStorageSnapshotStore";
 import {
   SnapshotOperation,
   SnapshotOperationType,
@@ -85,6 +85,8 @@ import { MobXRootState } from "./RootStores";
 
 
 const dispatch = useDispatch()
+const { subscriber, tempSubscriber } = createSubscriber();
+
 type SnapshotWithCriteriaOrBase = Snapshot<any, BaseData> | SnapshotWithCriteria<any, BaseData>;
 
 // export type RealTimeCollaborationTool = "google" | "microsoft" | "zoom" | "none";
@@ -170,12 +172,12 @@ export interface CalendarManagerStore<
   // dispatch: (action: PayloadAction<any, string, any, any>) => void;
   openScheduleEventModal: (content: JSX.Element) => void;
   openCalendarSettingsPage: () => void;
-    getData: (id: string) => Promise<Snapshot<T, K<T>>>
+    getData: (id: string) => Promise<Snapshot<T, K>>
   updateDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
   getState: () => MobXRootState; // Add getState method
   // Logic for handling actions
   action: (type: CalendarActionType, actionPayload: ActionPayload) => void;
-  events: Record<string, CalendarEvent<T, K<T>>[]>;
+  events: Record<string, CalendarEvent<T, K>[]>;
   eventTitle: string;
   eventDescription: string;
   eventStatus: AllStatus;
@@ -189,8 +191,8 @@ export interface CalendarManagerStore<
   updateEventDescription: (eventId: string, description: string) => void;
   updateEventStatus: (eventId: string, status: AllStatus) => void;
   updateEventDate: (eventId: string, eventDate: Date) => void;
-  addEvent: (event: CalendarEvent<T, K<T>>) => void;
-  addEvents: (eventsToAdd: CalendarEvent<T, K<T>>[]) => void;
+  addEvent: (event: CalendarEvent<T, K>) => void;
+  addEvents: (eventsToAdd: CalendarEvent<T, K>[]) => void;
   removeEvent: (eventId: string) => void;
   removeEvents: (eventIds: string[]) => void;
   reassignEvent: (
@@ -202,14 +204,14 @@ export interface CalendarManagerStore<
     reassignData: ReassignEventResponse[]
   ) => void;
 
-  addEventSuccess: (payload: { event: CalendarEvent<T, K<T>> }) => void;
+  addEventSuccess: (payload: { event: CalendarEvent<T, K> }) => void;
   fetchEventsSuccess: (payload: {
-    calendarEvents: CalendarEvent<T, K<T>>[];
+    calendarEvents: CalendarEvent<T, K>[];
   }) => void;
   fetchEventsFailure: (payload: { error: string }) => void;
   fetchEventsRequest: (
     eventIds: string[],
-    events: Record<string, CalendarEvent<T, K<T>>[]>
+    events: Record<string, CalendarEvent<T, K>[]>
   ) => void;
 
   completeAllEventsSuccess: () => void;
@@ -221,7 +223,7 @@ export interface CalendarManagerStore<
     documentId: number,
     eventId: number,
     userId: string,
-    events: Record<string, CalendarEvent<T, K<T>>[]>,
+    events: Record<string, CalendarEvent<T, K>[]>,
     snapshotStore: 
     string 
     | SnapshotStoreConfig<T, K> 
@@ -241,8 +243,11 @@ export interface CalendarManagerStore<
 
 
 
-class CalendarManagerStoreClass<T extends  BaseData<any>, 
-  K extends T = T>
+class CalendarManagerStoreClass<
+  T extends  BaseData<any>, 
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  >
   implements CalendarManagerStore<T, K>,
   CommonCalendarManagerMethods<T, K> 
 {
@@ -276,7 +281,8 @@ class CalendarManagerStoreClass<T extends  BaseData<any>,
   public timestamp: Date;
 
   constructor(
-    category: Category | undefined,    documentManager: DocumentStore<T, K>,
+    category: Category | undefined,
+    documentManager: DocumentStore<T, K>,
     storeProps: SnapsotStoreOptions<T, K>
   ) {
     this.timestamp = new Date(); // Initialize default value

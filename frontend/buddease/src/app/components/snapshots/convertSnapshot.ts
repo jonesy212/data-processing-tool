@@ -1,6 +1,6 @@
 // convertSnapshot.ts
 import * as snapshotApi from "@/app/api/SnapshotApi";
-import { SnapshotDataType } from '@/app/components/snapshots';
+import { Snapshot, SnapshotDataType } from '@/app/components/snapshots';
 import { SnapshotData } from '@/app/components/snapshots/SnapshotData';
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
 import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
@@ -16,7 +16,6 @@ import { convertSnapshotData, convertSnapshotMap } from "../typings/YourSpecific
 import { Subscriber } from '../users/Subscriber';
 import { createSnapshotStoreOptions } from "./createSnapshotStoreOptions";
 import { SnapshotConfig, SnapshotStoreConfig, SnapshotStoreMethod, SnapshotStoreProps } from "./index";
-import { Snapshot } from "./LocalStorageSnapshotStore";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import SnapshotStore from "./SnapshotStore";
 
@@ -72,13 +71,11 @@ function convertBaseDataToK<
   return convertedSnapshot;
 }
 
-
-
 function convertSnapshot<
-    T extends BaseData<any>, 
-    K extends T = T, 
-    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-    ExcludedFields extends keyof T = never
+  T extends BaseDataEntity, 
+  K extends T = T, 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   snapshot: Snapshot<T, K>,
   context: {
@@ -206,7 +203,6 @@ function convertSnapshot<
         dataStoreMethods: convertedDataStoreMethods,
       });
 
-      
       const defaultMetadata: UnifiedMetadata<T, K> = {
         // Assigning project-related properties to `projectMetadata`
         projectMetadata: {

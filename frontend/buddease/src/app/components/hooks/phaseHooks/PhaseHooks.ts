@@ -3,9 +3,9 @@
 import userSettings from "@/app/configs/UserSettings";
 import configData from "@/app/configs/configData";
 import BrandingSettings from "@/app/libraries/theme/BrandingService";
+import { useAuth } from "@/server/auth/AuthContext";
 import { useEffect } from "react";
 import { ipfsConfig } from '../../../configs/ipfsConfig';
-import { useAuth } from "../../auth/AuthContext";
 import { BrainstormingSettings } from "../../interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
 import { TeamBuildingSettings } from "../../interfaces/settings/TeamBuildingSettings";
@@ -14,10 +14,18 @@ import { Progress } from "../../models/tracker/ProgressBar";
 import IdeationPhaseComponent from "../../phases/IdeationPhaseComponent";
 import { CustomPhaseHooks, Phase } from "../../phases/Phase";
 import {
-  ExtendedDAppAdapter,
-  ExtendedDappProps
+    ExtendedDAppAdapter,
+    ExtendedDappProps
 } from "../../web3/dAppAdapter/IPFS";
 import createDynamicHook from "../dynamicHooks/dynamicHookGenerator";
+
+
+
+
+const phaseHooks: { [key: string]: CustomPhaseHooks } = {};
+let idleTimeoutId: NodeJS.Timeout | null = null; // Initialize idleTimeoutId to null
+let startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
+
 
  export interface PhaseHookConfig {
    name: string;
@@ -158,7 +166,7 @@ export const createPhaseHook =
       idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
     },
   });
-  };
+};
 
 const usePhaseHooks = ({ condition, asyncEffect }: PhaseHookConfig): void => {
   useEffect(() => {
@@ -188,11 +196,6 @@ const phaseNames = [
   "Decentralized Storage Phase",
   // Add more phase names as needed
 ];
-
-const phaseHooks: { [key: string]: CustomPhaseHooks } = {};
-let idleTimeoutId: NodeJS.Timeout | null = null; // Initialize idleTimeoutId to null
-let startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => void;
-
 
 // Define additional phases based on your project
 const additionalPhaseNames = [

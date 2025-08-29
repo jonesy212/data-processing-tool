@@ -1,12 +1,12 @@
 // snapshotUtils.tsx
-import { SnapshotEvents } from '@/app/components/snapshots/SnapshotEvents';
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
 import { SnapshotContainer, SnapshotData } from '@/app/components/snapshots';
+import { SnapshotEvents } from '@/app/components/snapshots/SnapshotEvents';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { getSubscriptionLevel } from "../subscriptions/SubscriptionLevel";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { useNotification } from "@/context/NotificationContext";
 import { IHydrateResult } from "mobx-persist";
 import { ModifiedDate } from "../documents/DocType";
 import { Category } from "../libraries/categories/generateCategoryProperties";
@@ -23,16 +23,18 @@ import {
 import SnapshotStore from "../snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "../snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps, useSnapshotStore } from "../snapshots/useSnapshotStore";
-import { Subscription } from "../subscriptions/Subscription";
-import { useNotification } from "../support/NotificationContext";
-import { Subscriber } from "../users/Subscriber";
+import { SubscriberCallbackType, Subscription } from "../subscriptions/Subscription";
+import { getSubscriptionLevel } from "../subscriptions/SubscriptionLevel";
+import { Subscriber, SubscriberCallback } from "../users/Subscriber";
 import useSecureSnapshotId from './useSecureSnapshotId';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import useSecureStoreId from './useSecureStoreId';
 
 function isHydrateResult<T>(result: any): result is IHydrateResult<T> {
   return (result as IHydrateResult<T>).then !== undefined;
 }
 
-function isSnapshotConfig<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(config: any): config is SnapshotConfig<T, K> {
+function isSnapshotConfig<T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(config: any): config is SnapshotConfig<T, K> {
   return config && 'storeConfig' in config && 'additionalData' in config;
 }
 
@@ -57,7 +59,7 @@ const isSnapshotStoreCoreData = (
 };
 
 // Type guard function to check if a value is a SnapshotUnion<BaseData, Meta>
-const isSnapshotUnionBaseData = <T extends BaseData<any>, K extends T = T>(
+const isSnapshotUnionBaseData = <T extends BaseDataEntity, K extends T = T>(
   value: any
 ): value is SnapshotUnion<BaseData, Meta<T, K>> => {
   return isSnapshotBaseData(value) || isSnapshotWithCriteriaBaseData(value);
@@ -97,7 +99,7 @@ function convertToSnapshotArray<T extends BaseData, K extends T = T>(
 }
 
 function convertToSnapshotWithCriteria<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >(
@@ -342,7 +344,7 @@ function convertToSnapshotWithCriteria<
 }
 
 
-function isSnapshotOfType <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isSnapshotOfType <T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: Snapshot<T, K>,
   typeCheck: (snapshot: Snapshot<T, K>) => snapshot is Snapshot<T, K>
 ): snapshot is Snapshot<T, K> {
@@ -360,7 +362,7 @@ function findCorrectSnapshotStore(
 
 
 // Type guard to check if data is SnapshotWithCriteria<T, BaseData>
-function isSnapshotWithCriteria <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isSnapshotWithCriteria <T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   data: any
 ): data is SnapshotWithCriteria<T, BaseData> {
   return (
@@ -373,7 +375,7 @@ function isSnapshotWithCriteria <T extends  BaseData<any>, K extends T = T, Meta
 
 
 
-function isSnapshotStoreConfig<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isSnapshotStoreConfig<T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   item: any
 ): item is SnapshotStoreConfig<T, K>[] {
   return (
@@ -385,7 +387,7 @@ function isSnapshotStoreConfig<T extends  BaseData<any>, K extends T = T, Meta e
 }
 
 
-export const addToSnapshotList = async  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const addToSnapshotList = async  <T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshot: Snapshot<T, K>,
   subscribers: Subscriber<T, K>[],
   storeProps?: SnapshotStoreProps<T, K>
@@ -431,12 +433,12 @@ export const addToSnapshotList = async  <T extends  BaseData<any>, K extends T =
 
 
 export const getSnapshotsBySubscriber = async <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = never
 >(
-  subscriber: Subscriber<T, K, Meta, ExcludedFields>,
+  subscriber: Subscriber<T, K, Meta>,
   storeProps?: SnapshotStoreProps<T, K>
 ): Promise<T[]> => {
   if (!storeProps) {
@@ -533,7 +535,7 @@ export const addSnapshotHandler = (
 };
 
 
-function isSnapshotDataType<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isSnapshotDataType<T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   data: any
 ): data is SnapshotDataType<T, K> {
   // Check if the data is a Map
@@ -557,7 +559,11 @@ function isSnapshotDataType<T extends  BaseData<any>, K extends T = T, Meta exte
 
 
 
-function isSnapshot<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isSnapshot<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+>(
   obj: any
 ): obj is Snapshot<T, K, Meta> {
   return (
@@ -574,11 +580,11 @@ function isSnapshot<T extends BaseData<any>, K extends T = T, Meta extends Struc
 
 
 
-function isSnapshotData<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(data: any): data is SnapshotData<T, K> {
+function isSnapshotData<T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(data: any): data is SnapshotData<T, K> {
   return data && typeof data === 'object' && 'storeId' in data && 'config' in data && (data as SnapshotData<T, K>).storeId !== undefined;
 }
 
-const isArrayOfTypeT = <T extends  BaseData<any>>(array: any[]): array is T[] => {
+const isArrayOfTypeT = <T extends  BaseDataEntity>(array: any[]): array is T[] => {
   return array.every(item => {
     // Add your type-checking logic here. For example:
     return typeof item === 'object' && item !== null && 'category' in item; // Adjust accordingly
@@ -586,7 +592,7 @@ const isArrayOfTypeT = <T extends  BaseData<any>>(array: any[]): array is T[] =>
 };
 
 // Type guard to check if a given callback is a SubscriberCallback
-function isSubscriberCallback<T extends  BaseData<any>, K extends T>(
+function isSubscriberCallback<T extends  BaseDataEntity, K extends T>(
   callback: SubscriberCallbackType<T, K>
 ): callback is SubscriberCallback<T, K> {
   return (
@@ -599,14 +605,19 @@ function isSubscriberCallback<T extends  BaseData<any>, K extends T>(
 type BaseType<T> = T extends BaseData<infer U> ? U : never;
 
 
-function castToSnapshot<T extends BaseData<any>, K extends BaseType<T> = BaseType<T>>(
-  snapshot: SnapshotUnion<T, K, Meta> | null
+function castToSnapshot<
+  T extends BaseDataEntity,
+  K extends BaseType<T> = BaseType<T>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
+  snapshot: SnapshotUnion<T, K, Meta, ExcludedFields> | null
 ): Snapshot<T, K> | null {
   return snapshot as Snapshot<T, K> | null;
 }
 
 
-function isSnapshotContainer<T extends  BaseData<any>, K extends T>(
+function isSnapshotContainer<T extends  BaseDataEntity, K extends T>(
   data: any
 ): data is SnapshotContainer<T, K> {
   return data && typeof data.category !== "undefined" && typeof data.data !== "undefined";
@@ -619,14 +630,113 @@ function isBaseData<T>(data: any): data is BaseData<T> {
 }
 
 
-export {
-    castToSnapshot, convertToSnapshotArray, findCorrectSnapshotStore, isArrayOfTypeT, isBaseData, isHydrateResult, isSnapshot, isSnapshotConfig, isSnapshotContainer, isSnapshotData, isSnapshotDataType, isSnapshotOfType, isSnapshotStoreConfig, isSnapshotStoreCoreData, isSnapshotUnionBaseData, isSnapshotWithCriteria, isSubscriberCallback
+// Default values for props
+const defaultCategory: Category = {
+  id: 'default-category',
+  name: 'Default Category',
+  description: 'Default category description',
+  type: 'default',
+  properties: {}
 };
+
+const defaultSnapshotConfig: SnapshotConfig<any, any> = {
+  storeConfig: {
+    storeId: 'default-store',
+    name: 'Default Store',
+    version: '1.0.0'
+  },
+  additionalData: {},
+  autoSync: true,
+  validationRules: []
+};
+
+const defaultSnapshotEvent: SnapshotEvent<any, any> = {
+  type: 'snapshotCreated',
+  metadata: { timestamp: new Date().toISOString() }
+};
+
+const defaultSnapshotValue: Snapshot<any, any> = {
+  id: 'default-snapshot',
+  data: new Map(),
+  category: defaultCategory,
+  properties: {},
+  metadata: {} as any,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  version: '1.0.0',
+  getSnapshotItems: () => [],
+  validate: () => true
+};
+
+// Get values from hooks and context
+const notification = useNotification();
+const snapshotIdValue = useSecureSnapshotId();
+
+type SnapshotEvent<T extends BaseData<any> = BaseData<any>, K extends T = T> = SnapshotEvents<T, K>;
+
+// Get current values from context or state
+const categoryValue: Category | undefined = defaultCategory; // Replace with actual category from your state/context
+const snapshotValue: Snapshot<any, any> = defaultSnapshotValue; // Replace with actual snapshot
+const typeValue = 'snapshotOperation'; // Replace with actual type
+const eventValue: SnapshotEvent<any, any> = defaultSnapshotEvent; // Replace with actual event
+const snapshotConfigValue: SnapshotConfig<any, any> = defaultSnapshotConfig; // Replace with actual config
+ 
+// Get current snapshot from store or context
+const currentSnapshot = snapshotValue; // Replace with actual current snapshot
+
+// Helper functions to get actual values
+function getCategoryValue(): Category | undefined {
+  // Implement logic to get current category from your application state
+  return categoryValue;
+}
+
+function getSnapshotValue(): Snapshot<any, any> {
+  // Implement logic to get current snapshot from your application state
+  return snapshotValue;
+}
+
+function getTypeValue(): string {
+  // Implement logic to get operation type
+  return typeValue;
+}
+
+function getEventValue(): SnapshotEvents<any, any> {
+  // Implement logic to get current event
+  return eventValue;
+}
+
+function getSnapshotConfigValue(): SnapshotConfig<any, any> {
+  // Implement logic to get snapshot config
+  return snapshotConfigValue;
+}
 
 export const generateSnapshotId = UniqueIDGenerator.generateSnapshotID();
 export const notify = useNotification();
 export const snapshotId = useSecureSnapshotId()
 export const storeId = useSecureStoreId()
-export const category = snapshotApi.getSnapshotCategory()
-export const snapshot = snapshotApi.getSnapshot(String(snapshotId), Number(storeId), additionalHeaders);
+
+
+export const category = snapshotApi.getSnapshotsAndCategory(
+  getCategoryValue(),          // Category | undefined
+  snapshotIdValue,             // string
+  storeId,                // number (added missing parameter)
+  getSnapshotValue(),          // Snapshot<T, K>
+  getTypeValue(),              // string
+  getEventValue(),             // SnapshotEvent<T, K>
+  getSnapshotConfigValue(),    // SnapshotConfig<T, K>
+  additionalHeaders      // Record<string, string> (optional)
+);
+
+export const snapshot = snapshotApi.getSnapshot(
+  String(snapshotId), 
+  Number(storeId), 
+  currentSnapshot, // You need to provide the snapshot object
+  "your-type-here", // You need to provide the type string
+  snapshotEvent, // You need to provide the SnapshotEvent
+  snapshotConfig, // You need to provide the SnapshotConfig
+  additionalHeaders // This is optional
+);
+export {
+    castToSnapshot, convertToSnapshotArray, findCorrectSnapshotStore, isArrayOfTypeT, isBaseData, isHydrateResult, isSnapshot, isSnapshotConfig, isSnapshotContainer, isSnapshotData, isSnapshotDataType, isSnapshotOfType, isSnapshotStoreConfig, isSnapshotStoreCoreData, isSnapshotUnionBaseData, isSnapshotWithCriteria, isSubscriberCallback
+};
 export const snapshots = snapshotApi.getSnapshots(category)

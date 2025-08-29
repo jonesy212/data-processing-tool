@@ -1,8 +1,8 @@
 // SnapshotStoreConfigComponent.tsx
+import { Snapshot } from "@/app/components/snapshots";
+import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
 import { useEffect, useState } from 'react';
 import { SnapshotOperation, SnapshotOperationType } from "../snapshots/SnapshotActions";
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
-import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
 
 interface SnapshotStoreConfigComponentProps<T extends Data, K extends Data> {
   config: SnapshotStoreConfig<T, K>;

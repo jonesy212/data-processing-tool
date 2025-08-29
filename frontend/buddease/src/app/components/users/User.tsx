@@ -1,7 +1,8 @@
 // User.tsx
 import { Attachment } from "@/app/components/documents/Attachment/attachment";
+import { DataType } from "../models/CommonData";
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
 import { SecuritySettings } from "@/app/components/settings/SecuritySettings";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UserPreferences } from "@/app/configs/UserPreferences";
@@ -36,7 +37,7 @@ import { Product } from "../products/Product";
 import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Project } from "../projects/Project";
 import { PrivacySettings } from "../settings/PrivacySettings";
-import { SnapshotStoreConfig, TagsRecord } from "../snapshots/";
+import { SnapshotStoreConfig } from "../snapshots/";
 import { Snapshots } from "../snapshots/LocalStorageSnapshotStore";
 import { TwitterData } from "../socialMedia/TwitterIntegration";
 import { NotificationSettings } from "../support/NotificationSettings";
@@ -48,80 +49,129 @@ import { SocialLinks } from "./SocialLinks";
 import { UserRole } from "./UserRole";
 import UserRoles from "./UserRoles";
 import { ActivityLogEntry } from "./UserSlice";
+import { AllTypes } from "../typings/PropTypes";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { DocumentTypeEnum } from "@/server/DocumentGenerator";
+import { ActivityActionEnum, ActivityTypeEnum, BookmarkStatus, BorderStyle, CalendarStatus, CalendarViewType, ChatType, CollaborationOptionType, ComponentStatus, DataStatus, DocumentPhaseEnum, DocumentSize, IncludeType, Layout, MeetingStatus, NotificationPosition, NotificationStatus, Orientation, OutcomeType, PriorityTypeEnum, PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "../models/data/StatusType";
+import { ExcludedFields } from "../routing/Fields";
+import { BaseDataEntity, BaseDataRoot, DefaultMeta } from "@/app/configs/BaseConfig";
+
+export interface BaseUser extends User<
+  BaseData<any>, BaseData<any>,
+  StructuredMetadata<BaseData<any>, BaseData<any>>
+  >,
+  SharedIdentifiers<T, K, StructuredMetadata<T, K>
+  >,
+  SharedTimestamps,
+  SharedStatusFlags
+  {
+  // Base properties that all users share
+  email: string;
+}
+
+export const DataTypeEnums = {
+  ...NotificationTypeEnum,
+  ...DocumentTypeEnum,
+  ...PriorityTypeEnum,
+  ...ActivityActionEnum,
+  ...ActivityTypeEnum, 
+  ...BookmarkStatus,
+  ...BorderStyle,
+  ...CalendarStatus, 
+  ...CalendarViewType, 
+  ...ChatType,
+  ...CollaborationOptionType,
+  ...ComponentStatus,
+  ...DataStatus, 
+  ...DocumentPhaseEnum, 
+  ...DocumentSize,
+  ...IncludeType,
+  ...Layout, 
+  ...NotificationPosition, 
+  ...NotificationStatus,
+  ...Orientation,
+  ...OutcomeType,
+  ...PrivacySettingEnum, 
+  ...ProductStatus, 
+  ...ProjectStateEnum, 
+  ...SortingType,
+  ...StatusType, 
+  ...SubscriberTypeEnum, 
+  ...SubscriptionTypeEnum, 
+  ...TaskStatus, 
+  ...TeamStatus,
+  ...TodoStatus, 
+  ...MeetingStatus,
+  // Add all your other 330+ enums here
+  DEFAULT: "Default" as const,
+} as const;
 
 export interface User<
   T extends BaseData<any> = BaseData<any, any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Update to match pattern
-  ExcludedFields extends keyof UserData<T, K, Meta> = never
-> extends UserData<T, K, Meta, ExcludedFields>,
-  SharedTimestamps,
-  SharedStatusFlags,
-  SharedIdentifiers<T, K, Meta, ExcludedFields>
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+> extends UserData<T, K, Meta>
 {
+  // Required fields
   username: string;
-  firstName: string;
-  lastName: string;
-  type?: string;
   email: string;
-
-  tags?: TagsRecord | string[];
-  isUserMessage?: boolean;
   tier: string;
-  token: string | null;
   uploadQuota: number;
-  usedQuota?: number;
-  avatarUrl: string | null;
-  bannerUrl: string | null;
-  createdAt: string | Date | undefined;
-  updatedAt: string | Date | undefined;
-  fullName: string | null;
+  hasQuota: boolean;
+  processingTasks: DataProcessingTask[];
+  role: UserRole | undefined;
+  persona: Persona | null;
+  friends: User[];
+  blockedUsers: User[];
+  activityLog: ActivityLogEntry[];
+  activityStatus: string;
+  isAuthorized: boolean;
+  
+  // Recommended optional fields
+  roles?: UserRole[];
+  firstName?: string;
+  lastName?: string;
+  type?: string | AllTypes | null;
+  token?: string | null;
+  avatarUrl?: string | null;
+  bannerUrl?: string | null;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+  fullName?: string | null;
   isVerified?: boolean;
   isActive?: boolean;
   isAdmin?: boolean;
   isSubscribed?: boolean;
   lastLogin?: Date;
-  roles: UserRole[];
-  bio: string | null;
-  userType: string;
-  hasQuota: boolean;
+  bio?: string | null;
   school?: string;
   grade?: string;
-  profilePicture: string | null;
-  processingTasks: DataProcessingTask[];
+  profilePicture?: string | null;
   data?: UserData;
   createdBy?: string;
-  role: UserRole | undefined;
-  persona: Persona | null;
-  friends: User[];
   analysisResults?: DataAnalysisResult<T>[];
   isLoggedIn?: boolean;
-  isDeleted?: boolean;
   localeCompare?: (other: Message) => number;
-  blockedUsers: User[];
-  settings: UserSettings | null;
-  interests: string[];
-  followers: User[];
-  privacySettings: PrivacySettings | undefined;
-  notifications: NotificationSettings | undefined;
-  activityLog: ActivityLogEntry[];
-  projects?: Project[]; // Define the type explicitly as an array of Project objects
-  socialLinks: SocialLinks | undefined;
-  relationshipStatus: string | null;
-  hobbies: string[];
+  settings?: UserSettings | null;
+  interests?: string[];
+  followers?: User[];
+  privacySettings?: PrivacySettings;
+  notifications?: NotificationSettings;
+  projects?: Project[];
+  socialLinks?: SocialLinks;
+  relationshipStatus?: string | null;
+  hobbies?: string[];
   address?: Address;
   language?: string;
   education?: Education[];
   employment?: Employment[];
   dependencies?: Task<T, K, StructuredMetadata<T, K>>[];
   dateOfBirth?: Date;
-  skills: string[];
-  achievements: string[];
-  profileVisibility: string;
+  skills?: string[];
+  achievements?: string[];
+  profileVisibility?: string;
   phoneNumber?: string;
-  profileAccessControl: ProfileAccessControl | undefined;
-  activityStatus: string;
-  isAuthorized: boolean;
+  profileAccessControl?: ProfileAccessControl;
   notificationPreferences?: NotificationPreferences;
   securitySettings?: SecuritySettings;
   emailVerificationStatus?: boolean;
@@ -140,32 +190,32 @@ export interface User<
   decentralizedMessagingKeys?: any;
   decentralizedAuthentication?: any;
   twitterData?: TwitterData;
-  preferences: UserPreferences | undefined;
+  preferences?: UserPreferences;
 }
-
 
 interface ExtendedUser<T extends BaseData = BaseData> extends BaseUser {
-  workspaceUrl: string;
-  workspaces: any[]; // Specify type as needed
-  products: Product[]; // Specify type as needed
-  roles: any[]; // Specify type as needed
-  permissions: any[]; // Specify type as needed
-  status: string;
-  statusText: string;
-  activeProduct: string;
-  activeWorkspace: string;
-  activeRole: string;
-  activePermissions: any[]; // Specify type as needed
-  activeWorkspacePermissions: any[]; // Specify type as needed
-  activeProductPermissions: any[]; // Specify type as needed
-  activeRolePermissions: any[]; // Specify type as needed
-  activeWorkspaceRoles: any[]; // Specify type as needed
-  activeProductRoles: any[]; // Specify type as needed
-  activeWorkspaceProducts: any[]; // Specify type as needed
-  activeProductWorkspaces: any[]; // Specify type as needed
-  activeRoleWorkspaces: any[]; // Specify type as needed
-  activeRoleProducts: any[]; // Specify type as needed
+  workspaceUrl?: string;
+  workspaces?: any[]; // Optional to allow partial creation
+  products?: Product[];
+  roles?: UserRole[];
+  permissions?: any[];
+  status?: string;
+  statusText?: string;
+  activeProduct?: string;
+  activeWorkspace?: string;
+  activeRole?: string;
+  activePermissions?: any[];
+  activeWorkspacePermissions?: any[];
+  activeProductPermissions?: any[];
+  activeRolePermissions?: any[];
+  activeWorkspaceRoles?: any[];
+  activeProductRoles?: any[];
+  activeWorkspaceProducts?: any[];
+  activeProductWorkspaces?: any[];
+  activeRoleWorkspaces?: any[];
+  activeRoleProducts?: any[];
 }
+
 
 interface Address {
   street: string;
@@ -192,275 +242,274 @@ interface Employment {
 
 const timeBasedCode: string = generateTimeBasedCode();
 
-export interface UserData<
-  T extends BaseData<any> = BaseData<any, any>,
-  K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof UserData<T, K, Meta> = never
-> extends BaseData<T, K, StructuredMetadata<T, K>, Attachment>,
-  SharedRelationshipData<K>,
-  SharedVersionData,
-  SharedTimestamps,
-  SharedStatusFlags,
-  SharedIdentifiers<T, K, Meta, ExcludedFields> {
-  datasets?: string;
-  username: string;
-  tasks?: Task<T, K, Meta>[];
-  questionnaireResponses?: any;
-  chatSettings?: ChatSettings;
-  projects?: Project[];
-  storeId: number;
-  teams?: Team[];
-  teamMembers?: TeamMember[];
-  yourDocuments?: DocumentTree;
-  visualizations?: VisualizationData[];
-  traits?: typeof CommonDetails;
-  timeBasedCode?: typeof timeBasedCode;
-  realtimeUpdates?: RealtimeUpdates[];
-  age?: number;
-  gender?: string;
-  location?: string;
-  occupation?: string;
-  incomeLevel?: string;
-  unreadNotificationCount?: number;
-  snapshots?: Snapshots<T, K>;
-  snapshotConfiguration?: SnapshotStoreConfig<any, any>[];
-  analysisResults?: DataAnalysisResult<T>[];
-  role: UserRole | undefined;
-  deletedAt?: Date | null;
-  lastLogin?: Date;
-  lastLogout?: Date;
-  lastPasswordChange?: Date;
-  lastEmailChange?: Date;
-  lastNameChange?: Date;
-  lastProfileChange?: Date;
-  lastAvatarChange?: Date;
-  lastBannerChange?: Date;
-  lastStatusChange?: Date;
-  lastRoleChange?: Date;
-  lastTierChange?: Date;
-  lastPaymentChange?: Date;
-  lastSubscriptionChange?: Date;
-  lastEmailVerification?: Date;
-  lastPasswordReset?: Date;
-  lastLoginAttempt?: Date;
-  loginAttempts?: number;
-  lockoutEnd?: Date | null;
-  twoFactorEnabled?: boolean;
-  phoneNumberConfirmed?: boolean;
-  phoneNumber?: string;
-  securityStamp?: string | null;
-  concurrencyStamp?: string | null;
-  accessFailedCount?: number | null;
-  subscriptionType?: string | null;
-  subscriptionEndDate?: Date | null;
-  paymentMethod?: string | null;
-  paymentMethodId?: string | null;
-  paymentMethodExpiry?: string | null;
-  paymentMethodLast4?: string | null;
-  paymentMethodBrand?: string | null;
-  paymentMethodCountry?: string | null;
-  paymentMethodPostalCode?: string | null;
-  paymentMethodEmail?: string | null;
-  paymentMethodCustomerId?: string | null;
-  paymentMethodSubscriptionId?: string | null;
-  paymentMethodSubscriptionStatus?: string | null;
-  paymentMethodSubscriptionStartDate?: Date | null;
-  paymentMethodSubscriptionEndDate?: Date | null;
-  paymentMethodSubscriptionCancelAtPeriodEnd?: boolean | null;
-  paymentMethodSubscriptionCancelAtDate?: Date | null;
-  paymentMethodSubscriptionCancelReason?: string | null;
-  paymentMethodSubscriptionCancelRedirectUrl?: string | null;
-  paymentMethodSubscriptionCancelRetryAfter?: number | null;
-  paymentMethodSubscriptionCanceledAt?: Date | null;
-  paymentMethodSubscriptionCanceledReason?: string | null;
-  paymentMethodSubscriptionCanceledRedirectUrl?: string | null;
-  paymentMethodSubscriptionCanceledRetryAfter?: number | null;
-  paypalEmail?: string | null;
-  stripeCustomerId?: string | null;
-  stripeSubscriptionId?: string | null;
-  stripeSubscriptionStatus?: string | null;
-  stripeCustomerPortalLink?: string | null;
-  stripeSetupIntentClientSecret?: string | null;
-  stripePaymentIntentClientSecret?: string | null;
-  stripeWebhookSecret?: string | null;
-  stripePublicKey?: string | null;
-  stripePrivateKey?: string | null;
-  stripeWebhookEndpointSecret?: string | null;
-  stripeWebhookSigningSecret?: string | null;
-  stripeWebhookSecretHeader?: string | null;
-  stripeSuccessUrl?: string | null;
-  stripeCancelUrl?: string | null;
-  stripeProductId?: string | null;
-  stripePriceId?: string | null;
-  stripePlanId?: string | null;
-  stripeTaxId?: string | null;
-  stripeSetupIntentId?: string | null;
-  stripePaymentIntentId?: string | null;
-  stripePaymentMethodId?: string | null;
-  stripeSubscriptionItemId?: string | null;
-  stripeTaxRateId?: string | null;
-  stripeProduct?: string | null;
-  stripePrice?: string | null;
-  stripePlan?: string | null;
-  stripeTax?: string | null;
-  subscriptionData?: any | null;
-  emailVerification?: string | null;
-  emailVerificationToken?: string | null;
-  emailVerificationTokenExpiry?: Date | null;
-  passwordReset?: string | null;
-  passwordResetToken?: string | null;
-  passwordResetTokenExpiry?: Date | null;
-  emailConfirmationToken?: string | null;
-  emailConfirmationTokenExpiry?: Date | null;
-  lastLoginToken?: string | null;
-  loginTokenExpiry?: Date | null;
-  userAuthenticator?: string | null;
-  userAuthenticationToken?: string | null;
-  userAuthenticationTokenExpiry?: Date | null;
-  refreshToken?: string | null;
-  refreshTokenExpiry?: Date | null;
-  registrationConfirmation?: string | null;
-  registrationConfirmationToken?: string | null;
-  registrationConfirmationTokenExpiry?: Date | null;
-  welcomeEmail?: string | null;
-  welcomeEmailSent?: boolean | null;
-  unsubscribeEmail?: string | null;
-  unsubscribeEmailSent?: boolean | null;
-  welcomeMessage?: string | null;
-  welcomeMessageSent?: boolean | null;
-  emailSignature?: string | null;
-  referralCode?: string | null;
-  referralCodeExpiry?: Date | null;
-  referralCodeLimit?: number | null;
-  referredBy?: string | null;
-  invitedBy?: string | null;
-  inviteCode?: string | null;
-  inviteCodeExpiry?: Date | null;
-  inviteCodeLimit?: number | null;
-  autoConfirmEmail?: boolean | null;
-  emailConfirmed?: boolean | null;
-  profileCompleted?: boolean | null;
-  personaCompleted?: boolean | null;
-  termsAccepted?: boolean | null;
-  privacyAccepted?: boolean | null;
-  dataDeleted?: boolean | null;
-  deletedReason?: string | null;
-  deletedBy?: string | null;
-  updatedAt?: string | Date | undefined;
-  createdAt?: string | Date;
-  createdBy?: string;
-  modifiedAt?: Date;
-  modifiedBy?: string;
-  deleted?: boolean;
-  active?: boolean;
-  completed?: boolean;
-  isValid?: boolean;
-  isPrimary?: boolean;
-  isPreferred?: boolean;
-  isCurrent?: boolean;
-  isDefault?: boolean;
-  isLocked?: boolean;
-  isVerified?: boolean;
-  isActive?: boolean;
-  isAdmin?: boolean;
-  isModerator?: boolean;
-  isStaff?: boolean;
-  isSuper?: boolean;
-  isOwner?: boolean;
-  isManager?: boolean;
-  isLead?: boolean;
-  isMember?: boolean;
-  isHost?: boolean;
-  isParticipant?: boolean;
-  isPublisher?: boolean;
-  isSubscriber?: boolean;
-  isFollowing?: boolean;
-  isFriend?: boolean;
-  isBlocked?: boolean;
-  isMuted?: boolean;
-  isIgnored?: boolean;
-  isAccepted?: boolean;
-  isApproved?: boolean;
-  isRejected?: boolean;
-  isInvited?: boolean;
-  isConfirmed?: boolean;
-  isCompleted?: boolean;
-  isSuccessful?: boolean;
-  isCancelled?: boolean;
-  isExpired?: boolean;
-  isClosed?: boolean;
-  isDeleted?: boolean;
-  isBanned?: boolean;
-  isDisabled?: boolean;
-  isSuspended?: boolean;
-  isPending?: boolean;
-  isRequested?: boolean;
-  isRecommended?: boolean;
-  isPopular?: boolean;
-  isTrending?: boolean;
-  isViral?: boolean;
-  isControversial?: boolean;
-  isFeatured?: boolean;
-  isSponsored?: boolean;
-  isPromoted?: boolean;
-  isBoosted?: boolean;
-  isBookmarked?: boolean;
-  isSaved?: boolean;
-  isLiked?: boolean;
-  isDisliked?: boolean;
-  isShared?: boolean;
-  isViewed?: boolean;
-  isRead?: boolean;
-  isUnread?: boolean;
-  isNotified?: boolean;
-  isNoteworthy?: boolean;
-  isResponsible?: boolean;
-  isAccountable?: boolean;
-  isConsulted?: boolean;
-  isInformed?: boolean;
-  isEngaged?: boolean;
-  isAvailable?: boolean;
-  isOnline?: boolean;
-  isOffline?: boolean;
-  isAway?: boolean;
-  isBusy?: boolean;
-  isDoNotDisturb?: boolean;
-  isUnderMaintenance?: boolean;
-  isBlockedByEmail?: boolean;
-  isBlockedByPhone?: boolean;
-  isBlockedBySMS?: boolean;
-  isBlockedByMessenger?: boolean;
-  isBlockedByChat?: boolean;
-  isBlockedByVideo?: boolean;
-  isBlockedByVoice?: boolean;
-  //todo integrate external auth
-  isBlockedByVOIP?: boolean;
-  isBlockedByTelegram?: boolean;
-  isBlockedByWhatsApp?: boolean;
-  isBlockedByWeChat?: boolean;
-  isBlockedBySignal?: boolean;
-  isBlockedBySkype?: boolean;
-  isBlockedBySlack?: boolean;
-  isBlockedByDiscord?: boolean;
-  isBlockedByZoom?: boolean;
-  isBlockedByGoogleMeet?: boolean;
-  isBlockedByTeams?: boolean;
-  isBlockedBySnapchat?: boolean;
-  isBlockedByTwitter?: boolean;
-  isBlockedByLinkedIn?: boolean;
-  isBlockedByFacebook?: boolean;
-  isBlockedByInstagram?: boolean;
-  isBlockedByTikTok?: boolean;
-  isBlockedBySnapgram?: boolean;
-  isBlockedBySoundcloud?: boolean;
-  isBlockedBySpotify?: boolean;
-  isBlockedByTwitch?: boolean;
-  isBlockedByReddit?: boolean;
-  isBlockedByPinterest?: boolean;
-  isBlockedByTumblr?: boolean;
-  isBlockedByFlickr?: boolean;
-}
+  export interface UserData<
+    T extends BaseDataEntity = BaseDataRoot,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  > extends BaseData<T, K, Meta, Attachment>,
+    SharedRelationshipData<K>,
+    
+    SharedVersionData
+  {
+    datasets?: string;
+    id?: string | number;
+    username: string;
+    tasks?: Task<T, K, Meta>[];
+    questionnaireResponses?: any;
+    chatSettings?: ChatSettings;
+    projects?: Project[];
+    storeId: number;
+    teams?: Team[];
+    teamMembers?: TeamMember[];
+    yourDocuments?: DocumentTree;
+    visualizations?: VisualizationData[];
+    traits?: typeof CommonDetails;
+    timeBasedCode?: typeof timeBasedCode;
+    realtimeUpdates?: RealtimeUpdates[];
+    age?: number;
+    gender?: string;
+    location?: string;
+    occupation?: string;
+    incomeLevel?: string;
+    unreadNotificationCount?: number;
+    snapshots?: Snapshots<T, K>;
+    snapshotConfiguration?: SnapshotStoreConfig<any, any>[];
+    analysisResults?: DataAnalysisResult<T>[];
+    role: UserRole | undefined;
+    deletedAt?: Date | null;
+    lastLogin?: Date;
+    lastLogout?: Date;
+    lastPasswordChange?: Date;
+    lastEmailChange?: Date;
+    lastNameChange?: Date;
+    lastProfileChange?: Date;
+    lastAvatarChange?: Date;
+    lastBannerChange?: Date;
+    lastStatusChange?: Date;
+    lastRoleChange?: Date;
+    lastTierChange?: Date;
+    lastPaymentChange?: Date;
+    lastSubscriptionChange?: Date;
+    lastEmailVerification?: Date;
+    lastPasswordReset?: Date;
+    lastLoginAttempt?: Date;
+    loginAttempts?: number;
+    lockoutEnd?: Date | null;
+    twoFactorEnabled?: boolean;
+    phoneNumberConfirmed?: boolean;
+    phoneNumber?: string;
+    securityStamp?: string | null;
+    concurrencyStamp?: string | null;
+    accessFailedCount?: number | null;
+    subscriptionType?: string | null;
+    subscriptionEndDate?: Date | null;
+    paymentMethod?: string | null;
+    paymentMethodId?: string | null;
+    paymentMethodExpiry?: string | null;
+    paymentMethodLast4?: string | null;
+    paymentMethodBrand?: string | null;
+    paymentMethodCountry?: string | null;
+    paymentMethodPostalCode?: string | null;
+    paymentMethodEmail?: string | null;
+    paymentMethodCustomerId?: string | null;
+    paymentMethodSubscriptionId?: string | null;
+    paymentMethodSubscriptionStatus?: string | null;
+    paymentMethodSubscriptionStartDate?: Date | null;
+    paymentMethodSubscriptionEndDate?: Date | null;
+    paymentMethodSubscriptionCancelAtPeriodEnd?: boolean | null;
+    paymentMethodSubscriptionCancelAtDate?: Date | null;
+    paymentMethodSubscriptionCancelReason?: string | null;
+    paymentMethodSubscriptionCancelRedirectUrl?: string | null;
+    paymentMethodSubscriptionCancelRetryAfter?: number | null;
+    paymentMethodSubscriptionCanceledAt?: Date | null;
+    paymentMethodSubscriptionCanceledReason?: string | null;
+    paymentMethodSubscriptionCanceledRedirectUrl?: string | null;
+    paymentMethodSubscriptionCanceledRetryAfter?: number | null;
+    paypalEmail?: string | null;
+    stripeCustomerId?: string | null;
+    stripeSubscriptionId?: string | null;
+    stripeSubscriptionStatus?: string | null;
+    stripeCustomerPortalLink?: string | null;
+    stripeSetupIntentClientSecret?: string | null;
+    stripePaymentIntentClientSecret?: string | null;
+    stripeWebhookSecret?: string | null;
+    stripePublicKey?: string | null;
+    stripePrivateKey?: string | null;
+    stripeWebhookEndpointSecret?: string | null;
+    stripeWebhookSigningSecret?: string | null;
+    stripeWebhookSecretHeader?: string | null;
+    stripeSuccessUrl?: string | null;
+    stripeCancelUrl?: string | null;
+    stripeProductId?: string | null;
+    stripePriceId?: string | null;
+    stripePlanId?: string | null;
+    stripeTaxId?: string | null;
+    stripeSetupIntentId?: string | null;
+    stripePaymentIntentId?: string | null;
+    stripePaymentMethodId?: string | null;
+    stripeSubscriptionItemId?: string | null;
+    stripeTaxRateId?: string | null;
+    stripeProduct?: string | null;
+    stripePrice?: string | null;
+    stripePlan?: string | null;
+    stripeTax?: string | null;
+    subscriptionData?: any | null;
+    emailVerification?: string | null;
+    emailVerificationToken?: string | null;
+    emailVerificationTokenExpiry?: Date | null;
+    passwordReset?: string | null;
+    passwordResetToken?: string | null;
+    passwordResetTokenExpiry?: Date | null;
+    emailConfirmationToken?: string | null;
+    emailConfirmationTokenExpiry?: Date | null;
+    lastLoginToken?: string | null;
+    loginTokenExpiry?: Date | null;
+    userAuthenticator?: string | null;
+    userAuthenticationToken?: string | null;
+    userAuthenticationTokenExpiry?: Date | null;
+    refreshToken?: string | null;
+    refreshTokenExpiry?: Date | null;
+    registrationConfirmation?: string | null;
+    registrationConfirmationToken?: string | null;
+    registrationConfirmationTokenExpiry?: Date | null;
+    welcomeEmail?: string | null;
+    welcomeEmailSent?: boolean | null;
+    unsubscribeEmail?: string | null;
+    unsubscribeEmailSent?: boolean | null;
+    welcomeMessage?: string | null;
+    welcomeMessageSent?: boolean | null;
+    emailSignature?: string | null;
+    referralCode?: string | null;
+    referralCodeExpiry?: Date | null;
+    referralCodeLimit?: number | null;
+    referredBy?: string | null;
+    invitedBy?: string | null;
+    inviteCode?: string | null;
+    inviteCodeExpiry?: Date | null;
+    inviteCodeLimit?: number | null;
+    autoConfirmEmail?: boolean | null;
+    emailConfirmed?: boolean | null;
+    profileCompleted?: boolean | null;
+    personaCompleted?: boolean | null;
+    termsAccepted?: boolean | null;
+    privacyAccepted?: boolean | null;
+    dataDeleted?: boolean | null;
+    deletedReason?: string | null;
+    deletedBy?: string | null;
+    updatedAt?: string | Date | undefined;
+    createdAt?: string | Date;
+    createdBy?: string;
+    modifiedAt?: Date;
+    modifiedBy?: string;
+    deleted?: boolean;
+    active?: boolean;
+    completed?: boolean;
+    isValid?: boolean;
+    isPrimary?: boolean;
+    isPreferred?: boolean;
+    isCurrent?: boolean;
+    isDefault?: boolean;
+    isLocked?: boolean;
+    isVerified?: boolean;
+    isActive?: boolean;
+    isAdmin?: boolean;
+    isModerator?: boolean;
+    isStaff?: boolean;
+    isSuper?: boolean;
+    isOwner?: boolean;
+    isManager?: boolean;
+    isLead?: boolean;
+    isMember?: boolean;
+    isHost?: boolean;
+    isParticipant?: boolean;
+    isPublisher?: boolean;
+    isSubscriber?: boolean;
+    isFollowing?: boolean;
+    isFriend?: boolean;
+    isBlocked?: boolean;
+    isMuted?: boolean;
+    isIgnored?: boolean;
+    isAccepted?: boolean;
+    isApproved?: boolean;
+    isRejected?: boolean;
+    isInvited?: boolean;
+    isConfirmed?: boolean;
+    isCompleted?: boolean;
+    isSuccessful?: boolean;
+    isCancelled?: boolean;
+    isExpired?: boolean;
+    isClosed?: boolean;
+    isDeleted?: boolean;
+    isBanned?: boolean;
+    isDisabled?: boolean;
+    isSuspended?: boolean;
+    isPending?: boolean;
+    isRequested?: boolean;
+    isRecommended?: boolean;
+    isPopular?: boolean;
+    isTrending?: boolean;
+    isViral?: boolean;
+    isControversial?: boolean;
+    isFeatured?: boolean;
+    isSponsored?: boolean;
+    isPromoted?: boolean;
+    isBoosted?: boolean;
+    isBookmarked?: boolean;
+    isSaved?: boolean;
+    isLiked?: boolean;
+    isDisliked?: boolean;
+    isShared?: boolean;
+    isViewed?: boolean;
+    isRead?: boolean;
+    isUnread?: boolean;
+    isNotified?: boolean;
+    isNoteworthy?: boolean;
+    isResponsible?: boolean;
+    isAccountable?: boolean;
+    isConsulted?: boolean;
+    isInformed?: boolean;
+    isEngaged?: boolean;
+    isAvailable?: boolean;
+    isOnline?: boolean;
+    isOffline?: boolean;
+    isAway?: boolean;
+    isBusy?: boolean;
+    isDoNotDisturb?: boolean;
+    isUnderMaintenance?: boolean;
+    isBlockedByEmail?: boolean;
+    isBlockedByPhone?: boolean;
+    isBlockedBySMS?: boolean;
+    isBlockedByMessenger?: boolean;
+    isBlockedByChat?: boolean;
+    isBlockedByVideo?: boolean;
+    isBlockedByVoice?: boolean;
+    //todo integrate external auth
+    isBlockedByVOIP?: boolean;
+    isBlockedByTelegram?: boolean;
+    isBlockedByWhatsApp?: boolean;
+    isBlockedByWeChat?: boolean;
+    isBlockedBySignal?: boolean;
+    isBlockedBySkype?: boolean;
+    isBlockedBySlack?: boolean;
+    isBlockedByDiscord?: boolean;
+    isBlockedByZoom?: boolean;
+    isBlockedByGoogleMeet?: boolean;
+    isBlockedByTeams?: boolean;
+    isBlockedBySnapchat?: boolean;
+    isBlockedByTwitter?: boolean;
+    isBlockedByLinkedIn?: boolean;
+    isBlockedByFacebook?: boolean;
+    isBlockedByInstagram?: boolean;
+    isBlockedByTikTok?: boolean;
+    isBlockedBySnapgram?: boolean;
+    isBlockedBySoundcloud?: boolean;
+    isBlockedBySpotify?: boolean;
+    isBlockedByTwitch?: boolean;
+    isBlockedByReddit?: boolean;
+    isBlockedByPinterest?: boolean;
+    isBlockedByTumblr?: boolean;
+    isBlockedByFlickr?: boolean;
+  }
 
 // Add a new type for visualization data
 export interface VisualizationData {
@@ -500,11 +549,7 @@ const userData: UserData = {
   location: "Texas",
   occupation: "Software Engineer",
   incomeLevel: "string",
-  snapshots: {} as Snapshots<BaseData<any, any, 
-  StructuredMetadata<any, any>, Attachment>, 
-    BaseData<any, any, StructuredMetadata<any, any>,
-    Attachment>
-  >,
+  snapshots: {} as Snapshots<BaseData<T, K, Meta<T, K>, Attachment>>,
   role: {} as UserRole,
   deletedAt: null,
   lastLogin: new Date(),
@@ -561,30 +606,39 @@ const handleDocumentEncryption = (document: DocumentTree) => {
 // using common details we generate details for components by mapping through the objects.
 const UserDetails: React.FC<{ user: User }> = ({ user }) => {
   const { id, analysisResults, snapshots, label, ...rest } = user;
+  // Assuming you have an array that might contain undefined
+  const potentialTags: (string | undefined)[] = ['tag1', undefined, 'tag2', 'tag3', undefined];
+
+  // Fix: Filter out undefined values
+  const validTags: string[] = potentialTags.filter((tag): tag is string => tag !== undefined);
 
   if (user && user.data && user.yourDocuments!) {
     // Call handleDocumentEncryption with user's documents
     handleDocumentEncryption(user.yourDocuments);
 
+
+    const getDefaultType = (): AllTypes => {
+      // Return appropriate default based on your logic
+      return DataTypeEnums.DEFAULT; // or MessageType.Default, etc.
+    };
+    
     return (
       <CommonDetails
         details={{
           ...rest,
           id: id ? id.toString() : "",
           value: user.value ? user.value.toString() : undefined,
+          date: user.date,
+          type: user.type ?? getDefaultType(),
           analysisResults: user.analysisResults,
           label: label ? label.toString() : label,
           data: user.data as UserData<
             BaseData<any, any, StructuredMetadata<any, any>>,
             BaseData<any, any, StructuredMetadata<any, any>>,
-            StructuredMetadata<T, K<T>>
+            StructuredMetadata<T, K>
           >,
           createdBy: user.createdBy,
-          tags: Array.isArray(user.tags)
-            ? user.tags.map((tag) =>
-                typeof tag === "string" ? tag : (tag as Tag<any>).name
-              )
-            : [],
+          tags: validTags,
           currentMetadata: user.currentMetadata,
           currentMeta:
             user.currentMeta ||
@@ -601,8 +655,8 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
   }
 };
 const area = fetchUserAreaDimensions().toString();
-const meta: StructuredMetadata<T, K<T>> = useMeta<T, K<T>>(area);
-const currentMetadata: UnifiedMetadata<T, K<T>> = useMetadata<T, K<T>>(
+const meta: StructuredMetadata<T, K> = useMeta<T, K>(area);
+const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(
   area
 );
 export const usersDataSource: Record<string, UserData> = {

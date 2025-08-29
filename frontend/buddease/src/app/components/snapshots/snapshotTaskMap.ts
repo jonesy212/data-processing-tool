@@ -2,7 +2,8 @@ import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarMan
 import { SnapshotDataResponse } from "@/app/utils/retrieveSnapshotData";
 import { Subscriber } from "ethers";
 import { Task } from "react-native";
-import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SubscriberCollection } from ".";
+import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject } from ".";
+import { SubscriberCollection } from "@/users/SubscriberCollection";
 import { CreateSnapshotsPayload } from "../../../server/database/Payload";
 import { CalendarEvent } from "../calendar/CalendarEvent";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
@@ -11,16 +12,16 @@ import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import FetchSnapshotPayload from "./FetchSnapshotPayload";
+import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
-import { SnapshotConfig } from "./snapshot";
+import { SnapshotConfig } from "./Snapshot";
 import { K, T } from "./SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 
 //snapshotTaskMap.ts
-const snapshotTasktMap = new Map<string, Snapshot<Task, Data>>([
+const snapshotTasktMap = new Map<string, Snapshot<Task, Data<T, K, Meta>>>([
   [
     'subtask1',
     {

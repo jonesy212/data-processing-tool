@@ -1,25 +1,31 @@
 // snapshotContainerUtils.ts
-import { snapshot } from '.';
-import { getSnapshotConfig } from "@/app/api/SnapshotApi";
-import { handleSnapshotOperation } from "./handleSnapshotOperation";
-import { DataStore } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { createSnapshot, getSnapshotContainer, getSnapshotId } from "@/app/api/SnapshotApi";
-import { SnapshotData } from '@/app/components/snapshots';
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
-import { snapshotId } from './../utils/snapshotUtils';
-import { category } from '@/app/components/utils/snapshotUtils';
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { generateCategoryProperties, isCategoryProperties } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { createSnapshot } from "@/app/api/SnapshotApi";
+import { Category, generateCategoryProperties, isCategoryProperties } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { DataStore } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { ConfigureSnapshotStorePayload, data, Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreProps } from '@/app/components/snapshots';
 import { createSnapshotStoreConfig } from '@/app/components/snapshots/snapshotStoreConfigInstance';
-import { SnapshotConfig } from '@/app/components/snapshots';
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import { snapshotConfigOptions } from '@/app/components/snapshots/snapshotStorageOptionsInstance';
+import { category } from '@/app/components/utils/snapshotUtils';
 import { CategoryProperties, convertToCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { SnapshotEvent } from '@/app/typings/eventTypes';
+import { snapshot } from '.';
 import { BaseData } from '../models/data/Data';
-import { dataStoreMethods } from "../models/data/dataStoreMethods";
-import { Snapshot } from "./LocalStorageSnapshotStore";
+import { dataStoreMethods, K, T } from "../models/data/dataStoreMethods";
+import { snapshotId } from './../utils/snapshotUtils';
+import { handleSnapshotOperation } from "./handleSnapshotOperation";
 import { snapshotStoreConfigInstance } from "./snapshotStoreConfigInstance";
-import { SnapshotEvent } from '@/app/typings/eventTypes'
+import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { criteria } from '@/app/pages/searchs/FilterCriteria';
+import { callback } from 'chart.js/helpers';
+import { id } from 'ethers';
+import { RealtimeDataItem } from '../models/realtime/RealtimeData';
+import CalendarManagerStoreClass from '../state/stores/CalendarManagerStore';
+import { store } from '../state/stores/useAppDispatch';
+import { payload } from '../users/Subscriber';
+import SnapshotStore from './SnapshotStore';
+import { storeProps } from './SnapshotStoreProps';
 // Subscription management logic
 
 const subscribeToSnapshots = () => {
@@ -55,7 +61,7 @@ const snapshotIdObject = {
 };
 
 // Then use it like this:
-const initializeSnapshotConfig = async <T extends BaseData<any>, K extends T = T>(
+const initializeSnapshotConfig = <T extends BaseDataEntity, K extends T = T>(
   id: string | number,
   snapshotId: string,
   snapshotData: SnapshotData<T, K>,
@@ -78,10 +84,13 @@ const initializeSnapshotConfig = async <T extends BaseData<any>, K extends T = T
   endpointCategory: string | number,
   snapshotContainer: SnapshotContainer<T, K>
 ) => {
-  const config = await snapshotApi.getSnapshotConfig<T, K, StructuredMetadata<T, K>>(
+  const config = snapshotApi.getSnapshotConfig<T, K, StructuredMetadata<T, K>>(
     id,
     snapshotId,
-    snapshotData,
+    {
+      ...snapshotData,
+      value: snapshotData.value != null ? String(snapshotData.value) : undefined
+    },
     criteria,
     category,
     categoryProperties,
@@ -123,7 +132,7 @@ const snapshotConfig = await initializeSnapshotConfig(
   callback,
   storeProps,
   endpointCategory,
-  snapshotContainer
+  snapshotApi.snapshotContainer
 );
 
 const currentCategory = (type: string, event: SnapshotEvent<T, K>,
@@ -142,7 +151,7 @@ const snapshotStore = snapshotManager?.state
 const createdSnapshotConfig = createSnapshotStoreConfig(snapshotStore)
 const getDelegate = () => delegate;
 const getCategory = async <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
 >(
   snapshotId: string,

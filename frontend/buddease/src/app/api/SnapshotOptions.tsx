@@ -1,14 +1,11 @@
 // SnapshotOptions.tsx
-import SnapshotStore  from '@/app/components/snapshots/SnapshotStore';
-import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
-import { Snapshot } from "@/app/components/snapshots/LocalStorageSnapshotStore";
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { SnapshotDataType } from '@/app/components/snapshots';
-import { SnapshotWithCriteria } from '@/app/components/snapshots/SnapshotWithCriteria';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { UILogger } from '@/app/components/logging/Logger';
+import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
+import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
+import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
+import { SnapshotWithCriteria } from '@/app/components/snapshots/SnapshotWithCriteria';
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
   interface CreateOptions<T extends BaseData = BaseData, K extends T = T> {
     /**
@@ -142,8 +139,9 @@ import { UILogger } from '@/app/components/logging/Logger';
     };
   }
 
-  export type {CreateOptions,
-    FetchAllOptions,
-    FindSubscriberOptions,
-    GetConfigOptions
-}
+  export type {
+  CreateOptions,
+  FetchAllOptions,
+  FindSubscriberOptions,
+  GetConfigOptions
+};

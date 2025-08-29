@@ -2,7 +2,7 @@
 // import { BaseData } from "../models/data/Data";
 // import { snapshotType } from "../typings/YourSpecificSnapshotType";
 // import { data } from "../versions/Version";
-// import { Snapshot } from "./LocalStorageSnapshotStore";
+// import { Snapshot } from "@/app/components/snapshots";
 // import { SnapshotStoreConfig, snapshotConfig } from "./SnapshotConfig";
 // import SnapshotStore from "./SnapshotStore";
 // import { delegate, subscribeToSnapshots } from "./snapshotHandlers";

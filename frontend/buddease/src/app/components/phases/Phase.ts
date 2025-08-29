@@ -4,7 +4,7 @@ import { BaseData } from '@/app/components/models/data/Data';
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { Label } from '@/app/components/projects/branding/BrandingSettings';
 import { SharedProperties } from "@/app/components/snapshots/SnapshotEvents";
-import { BaseConfig } from '@/app/configs/BaseConfig';
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
@@ -19,46 +19,68 @@ import { Member } from "../models/teams/TeamMembers";
 import { Progress } from "../models/tracker/ProgressBar";
 import { TagsRecord } from "../snapshots";
 import { DetailsItem } from "../state/stores/DetailsListStore";
+import { VersionData } from "../versions/VersionData";
 
 interface PhaseData<
-  T extends BaseData<any, any, StructuredMetadata<any, any>, Attachment>,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-> extends BaseData<T, K, StructuredMetadata<T, K>>, SharedProperties<T, K, StructuredMetadata<T, K>> {
-  // Define any properties specific to phase-related data
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields>,
+        SharedProperties<T, K, Meta> {
+ // Define any properties specific to phase-related data
   phaseName?: string;
   startDate?: Date;
   endDate?: Date;
+  subPhases?: PhaseData<T, K>[];
+
 }
 
-interface PhaseMeta<
-  T extends BaseData<any, any, any, Attachment> = BaseData<any, any, any, Attachment>,
-  K extends T = T
-  > extends StructuredMetadata<T, K> {
-  baseConfig: BaseConfig<T, K, StructuredMetadata<T, K>>;
+export interface PhaseMeta<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends StructuredMetadata<T, K, ExcludedFields> {
+  baseConfig: BaseConfig<T, K, StructuredMetadata<T, K>, ExcludedFields>;
   createdBy?: string;
   updatedBy?: string;
   archived?: boolean;
   relatedUsers?: string[];
   deadline?: Date | string;
   childIds?: K[];
-  [key: string]: any; // Add more metadata as needed
+  
+  [key: string]: any; // flexible extra metadata
 }
 
-
-type DataWithOmittedFields<T extends BaseData<any, any, StructuredMetadata<any, any>, Attachment>, 
+type DataWithOmittedFields<
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > = Omit<Data<T, K, Meta>, ExcludedFields>;
+
+
+export interface PhaseLite {
+  id?: string;               // Identifier for the phase
+  name?: string;             // Human-readable name
+  description?: string;      // Short description
+  startDate?: Date;          // Optional start date
+  endDate?: Date;            // Optional end date
+  index?: number;            // Optional ordering index
+  color?: string;            // Optional display color
+  status?: string;           // Optional status (active, complete, etc.)
+  isActive?: boolean;        // Whether the phase is currently active
+  isComplete?: boolean;      // Completion status
+}
 
 // Define a type for a phase
 export interface Phase<
-  T extends PhaseData<BaseData<any, any>> = PhaseData<BaseData<any, any>>,
+  T extends PhaseData<BaseDataEntity> = PhaseData<BaseDataEntity>,
   K extends T = T,
-  Meta extends PhaseMeta = PhaseMeta
-> extends CommonData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>,
-  BaseData<any, any, StructuredMetadata<any, any>, Attachment>, Meta
-> {
+  Meta extends PhaseMeta<T, K> = PhaseMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends CommonData<T, K, Meta, ExcludedFields> {
     id: string;
   index?: number;
   name: string;
@@ -85,95 +107,120 @@ export interface Phase<
 }
 
 export class PhaseImpl<
-  T extends PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>> = PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>>,
+  T extends BaseData<any, any, any, Attachment, any> = BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> implements Phase<PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, 
-  BaseData<any, any, StructuredMetadata<any, any>, Attachment>
-  >, 
-  PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>> {
+  Meta extends PhaseMeta<T, K, never> = PhaseMeta<T, K, never>
+> implements Phase<T, K, Meta> {
   id: string = "";
   name: string = "";
-  startDate: Date | undefined = undefined; 
-  endDate: Date | undefined = undefined; 
-  subPhases: string[] | Phase<PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, PhaseMeta>[] = [];
-  createdBy: string = ""; // Moved to common data
-  latestVersion: VersionData<T, K>;
-  // component: React.FC = () => <div>Phase Component</div>,
+  index?: number;
+  description: string = "";
+  startDate?: Date;
+  endDate?: Date;
+  subPhases: string[] | Phase<T, K, Meta>[] = [];
+  component!: FC<any>;
   hooks: CustomPhaseHooks<T> = {
-    // Initialize hooks object
-    resetIdleTimeout: async () => {}, // Example implementation, you can adjust as needed
+    resetIdleTimeout: async () => {},
     isActive: false,
     progress: null,
     condition: async () => true,
   };
-  title: string = "";
-  description: string = "";
   data: any;
-  duration: number = 0; // Duration of the phase in seconds
+  duration: number = 0;
   lessons: Lesson[] = [];
-
-  // New properties added to fix the error
-  label: Label = { text: "",
-    color: "#000000" };
-  // Use BaseData instead of PhaseData for currentMeta
+  tasks?: Task[];
+  members?: Member[];
+  color?: string;
+  status?: string;
+  isActive?: boolean = true;
+  type?: string;
+  responsibleUsers?: string[];
+  isComplete?: boolean = false;
+  createdBy: string = "";
+  updatedBy?: string;
+  archived?: boolean;
+  relatedUsers?: string[];
+  deadline?: Date | string;
   currentMeta: PhaseMeta<BaseData<any, any, any, Attachment>> = {} as PhaseMeta<BaseData<any, any, any, Attachment>>;
-  currentMetadata: UnifiedMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, never> = 
-  {} as UnifiedMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, never>;
-  date: Date = new Date(); 
-  
-  // Default to the current date
-  constructor(
-    name: string,
-    startDate: Date,
-    endDate: Date,
-    subPhases: string[] | Phase<PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, PhaseMeta>[],
-    component: React.FC,
-    hooks: CustomPhaseHooks<T>,
-    data: any,
-    description: string,
-    title: string,
-    label?: Label,  // Added to constructor parameters
-    currentMeta?: PhaseMeta<BaseData<any, any, any, Attachment>>,
-    currentMetadata?: UnifiedMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, never>, // Added to constructor parameters
-    date?: Date // Added to constructor parameters
-  ) {
-    this.name = name;
-    this.startDate = startDate;
-    this.endDate = endDate;
-    this.subPhases = subPhases;
-    this.hooks = hooks;
-    this.data = data;
-    this.description = description;
-    this.component = component;
-    this.title = title;
+  currentMetadata: UnifiedMetadata<T, K, Meta, never> = {} as UnifiedMetadata<T, K, Meta, never>;
+  label: Label = { text: "", color: "#000000" };
+  title: string = "";
+  date: Date = new Date();
+  collaborationOptions?: CollaborationOptions[];
+  participants?: Member[];
+  metadata?: UnifiedMetadata<T, K>;
+  details?: DetailsItem<any>;
+  categories?: string[];
+  documentType?: DocumentTypeEnum | string;
+  documentStatus?: string;
+  documentOwner?: string;
+  documentAccess?: string;
+  documentSharing?: string;
+  documentSecurity?: string;
+  documentRetention?: string;
+  documentLifecycle?: string;
+  documentWorkflow?: string;
+  documentIntegration?: string;
+  documentReporting?: string;
+  documentBackup?: string;
 
-    if (label) this.label = label;
-    if (currentMeta) this.currentMeta = currentMeta;
-    if (currentMetadata) this.currentMetadata = currentMetadata;
-    if (date) this.date = date;
+  // Flexible tags to satisfy TS
+  tags?: string[] | TagsRecord<T, K> | undefined = [];
+
+  constructor(options: {
+    id?: string;
+    name?: string;
+    index?: number;
+    description?: string;
+    startDate?: Date;
+    endDate?: Date;
+    subPhases?: string[] | Phase<T, K, Meta>[];
+    component?: FC<any>;
+    hooks?: CustomPhaseHooks<T>;
+    data?: any;
+    duration?: number;
+    lessons?: Lesson[];
+    tasks?: Task[];
+    members?: Member[];
+    color?: string;
+    status?: string;
+    isActive?: boolean;
+    type?: string;
+    responsibleUsers?: string[];
+    isComplete?: boolean;
+    createdBy?: string;
+    updatedBy?: string;
+    archived?: boolean;
+    relatedUsers?: string[];
+    deadline?: Date | string;
+    currentMeta?: PhaseMeta<BaseData<any, any, any, Attachment>>;
+    currentMetadata?: UnifiedMetadata<T, K, Meta, never>;
+    label?: Label;
+    title?: string;
+    date?: Date;
+    collaborationOptions?: CollaborationOptions[];
+    participants?: Member[];
+    metadata?: UnifiedMetadata<T, K>;
+    details?: DetailsItem<any>;
+    categories?: string[];
+    documentType?: DocumentTypeEnum | string;
+    documentStatus?: string;
+    documentOwner?: string;
+    documentAccess?: string;
+    documentSharing?: string;
+    documentSecurity?: string;
+    documentRetention?: string;
+    documentLifecycle?: string;
+    documentWorkflow?: string;
+    documentIntegration?: string;
+    documentReporting?: string;
+    documentBackup?: string;
+    tags?: string[] | TagsRecord<T, K>;
+  } = {}) {
+    Object.assign(this, options);
   }
-  component: FC<{}>;
-  // tasks?: Task[] | undefined;
-  collaborationOptions?: CollaborationOptions[] | undefined;
-  participants?: Member[] | undefined;
-  metadata?: UnifiedMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>
-  details?: DetailsItem<any> | undefined; 
-  tags?: TagsRecord<T, K> | string[] | undefined;
-  categories?: string[] | undefined;
-  documentType?: DocumentTypeEnum | string | undefined;
-  documentStatus?: string | undefined;
-  documentOwner?: string | undefined;
-  documentAccess?: string | undefined;
-  documentSharing?: string | undefined;
-  documentSecurity?: string | undefined;
-  documentRetention?: string | undefined;
-  documentLifecycle?: string | undefined;
-  documentWorkflow?: string | undefined;
-  documentIntegration?: string | undefined;
-  documentReporting?: string | undefined;
-  documentBackup?: string | undefined;
 }
+
 
 
 
@@ -193,13 +240,13 @@ export interface CustomPhaseHooks<
 }
 
 export const customPhaseHooks = {
-  canTransitionTo: (currentPhase: Phase<PhaseData<T, K<T>>>, nextPhase: Phase<PhaseData<T, K<T>>>) => {
+  canTransitionTo: (currentPhase: Phase<PhaseData<T, K>>, nextPhase: Phase<PhaseData<T, K>>) => {
     // Ensure the next phase's start date is after the current phase's end date
   const isValidTransition = currentPhase.endDate! < nextPhase.startDate!;
   return isValidTransition;
   },
 
-  handleTransitionTo: async (currentPhase: Phase<PhaseData<T, K<T>>>, nextPhase: Phase<PhaseData<T, K<T>>>) => {
+  handleTransitionTo: async (currentPhase: Phase<PhaseData<T, K>>, nextPhase: Phase<PhaseData<T, K>>) => {
    // Log the transition
   console.log(`Transitioning from ${currentPhase.name} to ${nextPhase.name}`);
 
@@ -245,8 +292,9 @@ const saveCurrentPhaseData = async (phaseData: Phase): Promise<void> => {
 };
 
 // Example function to notify of the phase transition
-const notifyTransition = (nextPhase: Phase<PhaseData<T, K<T>>>): void => {
+const notifyTransition = (nextPhase: Phase<PhaseData<T, K>>): void => {
   console.log(`Now in phase: ${nextPhase.name}`);
 };
 
-export type { PhaseData, PhaseMeta };
+export type { PhaseData, PhaseLite, PhaseMeta };
+

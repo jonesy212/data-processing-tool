@@ -5,9 +5,13 @@ import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { initiateDataAnalysis } from "@/app/services/dataAnalysisService";
 import ErrorHandler from "@/app/shared/ErrorHandler";
+import {
+    NotificationTypeEnum,
+    useNotification,
+} from "@/context/NotificationContext";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { produce } from "immer";
-import { ChangeEvent } from "react";
+import React, { ChangeEvent } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient, { io } from "socket.io-client";
 import { CalendarActions } from "../actions/CalendarEventActions";
@@ -22,10 +26,10 @@ import { Theme } from "../libraries/ui/theme/Theme";
 import { EventContentAnalysis, EventContentValidationResults, EventImpactAnalysis, ScheduleOptimization } from "../models/data/EventContentAnalysis";
 import { EngagementMetrics, EventConflictDetectionResult, EventContent, EventEffectivenessEvaluation, EventFeedbackAnalysis, EventPriorityClassification, EventRiskAssessment, EventRoiAnalysis, EventSuccessPrediction, EventTrendDetectionResult, FollowUpAction, ImpactPrediction, OutcomeVariabilityPrediction, PersonalizedInvitation, RecommendedOptimization } from "../models/data/EventPriorityClassification";
 import {
-  CalendarStatus,
-  PriorityStatus,
-  ProjectPhaseTypeEnum,
-  StatusType,
+    CalendarStatus,
+    PriorityStatus,
+    ProjectPhaseTypeEnum,
+    StatusType,
 } from "../models/data/StatusType";
 import { showErrorMessage, showToast } from "../models/display/ShowToast";
 import { LogData } from "../models/LogData";
@@ -37,15 +41,11 @@ import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { CalendarEvent } from "../state/stores/CalendarEvent";
 import CalendarEventAlternative from "../state/stores/CalendarEventAlternative";
 import {
-  dispatchNotification,
-  NotificationData,
-  SendStatus,
+    dispatchNotification,
+    NotificationData,
+    SendStatus,
 } from "../support/NofiticationsSlice";
 import { NotificationActions } from "../support/NotificationActions";
-import {
-  NotificationTypeEnum,
-  useNotification,
-} from "../support/NotificationContext";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import { User } from "../users/User";
 import { AttendancePrediction } from "./AttendancePrediction";
@@ -74,7 +74,6 @@ import { CalendarViewProps } from "./CalendarView";
 import DefaultCalendarEventViewingDetails from "./DefaultCalendarEventViewingDetails";
 import EventDetailsComponent from "./EventDetailsComponent";
 import ExternalCalendarOverlay from "./ExternalCalendarOverlay";
-import React from "react";
 interface Milestone {
   id: string;
   title: string;

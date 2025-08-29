@@ -1,38 +1,33 @@
 // chatUtils.ts
-import { ChatApi } from "@/app/api/ChatApi";
-import useApiUserPreferences from "@/app/api/preferences/ApiUserPreferences";
 import { getUserPreferences } from "@/app/configs/UserPreferences";
 import configureCollaborationPreferences from "@/app/pages/community/configureCollaborationPreferences";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
 import RichTextEditor from "@/documents/RichTextEditor";
-import { useParams } from "next/navigation";
 import { CollaborationActions } from "../../actions/CollaborationActions";
 import { openNotificationPreferencesModal } from "../../cards/modal/openNotificationPreferencesModal";
+import { saveToLocalStorage } from "../../hooks/useLocalStorage";
 import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
 import { showErrorMessage, showToast } from "../../models/display/ShowToast";
 import { isValidNotificationPreferences } from "../../security/validationRulesCode";
 import { PrivacySettings } from "../../settings/PrivacySettings";
 import { configureSecuritySettings } from "../../settings/configureSecuritySettings";
 import { saveSecuritySettings } from "../../settings/saveSecuritySettings";
-import {
-  NotificationContextProps,
-  NotificationType,
-} from "../../support/NotificationContext";
+import { DocumentEditingPermissions } from '../../users/Permissions';
 import { useSecureDocumentId } from "../../utils/useSecureDocumentId";
 import { useSecureUserId } from "../../utils/useSecureUserId";
-import VideoAPI from "../../video/VideoAPI";
 import { openPrivacySettingsMenu } from "../../video/openPrivacySettingsMenu";
 import { openVideoOptionsMenu } from "../../video/openVideoOptionsMenu";
 import {
-  AudioOptions,
-  ChatSettingsModal,
-  NotificationPreferences,
-  VideoOptions,
+    NotificationContextProps,
+    NotificationType,
+} from "@/context/NotificationContext";
+import {
+    AudioOptions,
+    ChatSettingsModal,
+    NotificationPreferences,
+    VideoOptions,
 } from "./ChatSettingsModal";
-import { DocumentEditingPermissions } from '../../users/Permissions'
 import openAudioOptionsMenu from "./features/openAudioOptionsMenu";
-import { saveToLocalStorage } from "../../hooks/useLocalStorage";
-import { useContext } from "react";
 
 type SidebarController = {
   close: () => void;

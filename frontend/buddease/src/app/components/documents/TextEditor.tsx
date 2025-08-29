@@ -8,7 +8,8 @@ import { useEffect, useState } from "react";
 import Quill from "react-quill";
 import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
 import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
-import { getToolbarOptions } from "./documents/ToolbarOptions";
+import { getToolbarOptions } from "@/app/components/documents/ToolbarOptions";
+import { ToolbarOptionsComponent } from "./ToolbarOptions";
 
 export interface TextEditorProps extends ToolbarOptionsProps {
   id: string;

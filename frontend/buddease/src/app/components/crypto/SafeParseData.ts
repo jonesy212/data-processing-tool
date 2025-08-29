@@ -7,7 +7,7 @@ interface DataWithComment<T extends   BaseData<any>> {
   comment: string;
 }
 
-const safeParseData = <T extends DataWithComment<T>>(
+const safeParseData = <T extends DataWithComment<BaseData<any>>>(
   data: T[],
   threshold: number
 ): ParsedData<T>[] => {
@@ -16,14 +16,15 @@ const safeParseData = <T extends DataWithComment<T>>(
   try {
     const sanitizedData = data.map((item) => ({
       ...item,
-      // Sanitize comments before parsing data
-      comment: sanitizeComments(item.comment),
-    })) 
+      comment: sanitizeComments(String(item.comment ?? ''))
+    }));
 
     return parseData<T>(sanitizedData, threshold);
-  } catch (error: any) {
-    const errorMessage = "Error parsing data";
-    handleError(errorMessage, { componentStack: error.stack });
+  } catch (error) {
+    handleError("Error parsing data", { 
+      error,
+      originalData: data 
+    });
     return [];
   }
 };

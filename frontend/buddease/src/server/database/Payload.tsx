@@ -1,9 +1,12 @@
 // Payload.ts
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
+import { Snapshot } from "@/app/components/snapshots";
 import { SnapshotActions } from '@/app/components/snapshots/SnapshotActions';
 import { addToSnapshotList, category } from '@/app/components/utils/snapshotUtils';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useNotification } from "@/app/context/NotificationContext";
+import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { LiveEvent } from '@refinedev/core';
 import { useDispatch } from 'react-redux';
 import * as subscriptionApi from "../../app/api/subscriberApi";
@@ -15,14 +18,17 @@ import { BaseData, Data } from "../../app/components/models/data/Data";
 import { K, T } from '../../app/components/models/data/dataStoreMethods';
 import { StatusType } from "../../app/components/models/data/StatusType";
 import { RealtimeDataItem } from "../../app/components/models/realtime/RealtimeData";
-import { Snapshot } from "../../app/components/snapshots/LocalStorageSnapshotStore";
 import { AllStatus } from "../../app/components/state/stores/DetailsListStore";
 import { Subscriber } from "../../app/components/users/Subscriber";
 import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '../../app/components/utils/applicationUtils';
-import { NotificationTypeEnum } from "../support/NotificationContext";
 
 
-interface ExtendedBaseDataPayload<T extends  BaseData<any>,  K extends T = T, Meta extends {} = StructuredMetadata<T, K>> extends BaseData<T, K, Meta> {
+interface ExtendedBaseDataPayload<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends {} = StructuredMetadata<T, K>
+  > extends BaseData<T, K, StructuredMetadata<T, K>>
+{
   meta?: {
     name: string;
     timestamp: Date;
@@ -126,8 +132,7 @@ interface Payload {
 
 const { notify } = useNotification()
 const subscribers = await subscriptionApi.getSubscribersAPI()
-const { setSnapshots } = SnapshotActions<T, K<T>>();
-
+const { setSnapshots } = SnapshotActions<T, K>();
 const { subscribe, unsubscribe } = useSubscription({
   channel: "your_channel_here",
   onLiveEvent: (event: LiveEvent) => {
@@ -146,19 +151,25 @@ const { subscribe, unsubscribe } = useSubscription({
     const payloadMessage = "Received new snapshot payload";
     SnapshotLogger.log(payloadLogType, payloadMessage, payload);
 
-    const dispatch = useDispatch();
     const snapshot = payload.data;
+
+    // Get current snapshots from Redux store
+    const currentSnapshots = useSelector((state: AppState) => state.snapshots.snapshotsArray);
+    
+    const dispatch = useDispatch();
 
     // Determine the type of operation based on the scenario (e.g., replacing or appending)
     const isAppendingSnapshot = true; // This can be set based on your app's logic
-    const snapshotsArray = [snapshot]; // Single snapshot to be added
 
     if (isAppendingSnapshot) {
-      // Conditionally dispatch based on the expected behavior of setSnapshots
-      dispatch(setSnapshots((prevSnapshots) => [...prevSnapshots, ...snapshotsArray]));
+      // Option 1: Use addSnapshot action if available (recommended)
+      dispatch(addSnapshot(snapshot));
+      
+      // Option 2: Or use setSnapshots with the updated array
+      // dispatch(setSnapshots([...currentSnapshots, snapshot]));
     } else {
-      // If we're replacing the entire snapshot list, just dispatch the new snapshots
-      dispatch(setSnapshots(snapshotsArray)); 
+      // If we're replacing the entire snapshot list
+      dispatch(setSnapshots([snapshot])); 
     }
 
     // If you need to update the snapshot list with subscribers
@@ -167,9 +178,13 @@ const { subscribe, unsubscribe } = useSubscription({
   enabled: true, // Enable subscription
 });
 
-
-
-  const payload: Partial<SubscriptionPayload<Data<any>>> = {
+const payload: Partial<SubscriptionPayload<
+  BaseData<any>, // T
+  BaseData<any>, // K (extends T)
+  never,         // ExcludedFields
+  CustomSnapshotData<BaseData<any>, BaseData<any>>, // S
+  StructuredMetadata<BaseData<any>, BaseData<any>>  // Meta
+  >> = {
     id: "unique_id",
     subscriberId: "unique_id",
     email: "<EMAIL>",

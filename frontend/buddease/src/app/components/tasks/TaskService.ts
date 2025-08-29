@@ -3,13 +3,13 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import apiNotificationsService from "@/app/api/NotificationsService";
 import NOTIFICATION_MESSAGES from '@/app/components/support/NotificationMessages';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { AxiosResponse } from "axios";
 import { action, observable, runInAction } from "mobx";
 import Logger from "../logging/Logger";
 import { Task } from "../models/tasks/Task";
 import { Progress } from "../models/tracker/ProgressBar";
 import axiosInstance from "../security/csrfToken";
-import { NotificationTypeEnum } from "../support/NotificationContext";
 
 const API_BASE_URL = endpoints.tasks;
 

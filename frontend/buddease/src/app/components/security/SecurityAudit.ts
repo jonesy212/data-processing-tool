@@ -1,8 +1,13 @@
 import SecureFieldManager from "./SecureFieldManager";
 import { useSecurityAudit } from '@/app/components/utils/useSecurityAudit';
+import { BaseDataEntity, BaseDataRoot } from "@/app/configs/BaseConfig";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 
-class SecurityAudit {
+class SecurityAudit<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+> {
   private config: { userRoles: string[]; adminRole: string };
 
   constructor(config = { userRoles: ["user", "manager"], adminRole: "admin" }) {
@@ -10,59 +15,52 @@ class SecurityAudit {
   }
 
   /**
-   * Sanitize the provided state using SecureFieldManager.
-   * @param state - The state object to sanitize.
-   * @param userRole - The role of the user accessing the state.
-   * @param isAdmin - Whether the user has admin privileges.
-   * @returns The sanitized state object.
+   * Sanitize the provided metadata.
    */
-  sanitizeMetadata<T>(metadata: Partial<T>, userRole: string, isAdmin: boolean): Partial<T> {
+  sanitizeMetadata(
+    metadata: Partial<Meta>,
+    userRole: string,
+    isAdmin: boolean
+  ): Partial<Meta> {
     const { sanitizeMetadata } = useSecurityAudit();
-    return sanitizeMetadata(metadata); // Leverage the sanitize logic from useSecurityAudit
+    return sanitizeMetadata(metadata); // leverage external sanitize logic
   }
 
   /**
    * Conduct a security audit of the state and return findings.
-   * @param state - The state object to audit.
-   * @returns An array of audit findings.
    */
-  conductAudit(state: Record<string, any>): string[] {
+  conductAudit(state: Meta): string[] {
     const findings: string[] = [];
-    Object.keys(state).forEach((key) => {
-      const field = state[key];
-      if (field && field.isSensitive) {
-        findings.push(`Sensitive field detected: ${key}`);
-      }
-    });
+    if (state.metadataEntries) {
+      Object.keys(state.metadataEntries).forEach((key) => {
+        const entry = state.metadataEntries[key];
+        if (entry && (entry as any).isSensitive) {
+          findings.push(`Sensitive field detected: ${key}`);
+        }
+      });
+    }
     return findings;
   }
 
-
   /**
-   * Sanitize the state based on user roles and admin rights.
-   * @param state - The metadata to sanitize.
-   * @param userRole - The role of the user (e.g., 'admin', 'user').
-   * @param isAdmin - Boolean indicating whether the user is an admin.
-   * @returns The sanitized state.
+   * Sanitize the metadata based on user role and admin privileges.
    */
   sanitizeState(
-    state: StructuredMetadata<any, any>,
+    state: Meta,
     userRole: string,
     isAdmin: boolean
-  ): StructuredMetadata<any, any> {
+  ): Meta {
     const sanitizedMetadata = { ...state };
-    
-    // Loop through the metadata entries and apply sanitization based on user role
+
     if (!isAdmin && state.metadataEntries) {
       Object.keys(state.metadataEntries).forEach((key) => {
         const metadataEntry = state.metadataEntries[key];
-        
-        // Sanitize based on user role
+
+        // Mask or remove sensitive information for non-admin users
         if (userRole !== this.config.adminRole) {
-          // Mask or remove sensitive information for non-admin users
           metadataEntry.description = "Access restricted";
-          metadataEntry.keywords = []; // Remove sensitive keywords
-          metadataEntry.authors = []; // Remove authors for non-admins
+          metadataEntry.keywords = [];
+          metadataEntry.authors = [];
         }
       });
     }
@@ -72,30 +70,22 @@ class SecurityAudit {
 
   /**
    * Review and display audit findings.
-   * @param findings - The array of audit findings.
    */
   reviewFindings(findings: string[]): void {
     if (findings.length === 0) {
       console.log("No sensitive data issues detected.");
     } else {
       console.log("Audit Findings:");
-      findings.forEach((finding, index) => {
-        console.log(`${index + 1}. ${finding}`);
-      });
+      findings.forEach((finding, idx) => console.log(`${idx + 1}. ${finding}`));
       console.log("Recommendations:");
-      console.log("- Ensure sensitive fields are appropriately sanitized.");
-      console.log("- Limit access based on roles and permissions.");
+      console.log("- Ensure sensitive fields are sanitized.");
+      console.log("- Limit access based on roles.");
       console.log("- Regularly review security policies.");
     }
   }
 }
 
 export default SecurityAudit;
-
-
-
-
-
 
 
 

@@ -1,5 +1,6 @@
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import React from "react";
 import { useDispatch } from "react-redux";
@@ -11,7 +12,6 @@ import { WritableDraft } from "../state/redux/ReducerGenerator";
 import { RootState } from "../state/redux/slices/RootSlice";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { SendStatus } from "../support/NofiticationsSlice";
-import { NotificationTypeEnum } from "../support/NotificationContext";
 import { SimpleCalendarEvent } from "./CalendarContext";
 import { formatCalendarAsCSV } from "./formatCalendarAsCSV";
 import { formatCalendarAsXLS } from "./formatCalendarAsXLS";
@@ -332,8 +332,8 @@ export const calendarViewManagerSlice = createSlice({
       let exportData;
       switch (format.toLowerCase()) {
         case 'csv':
-          let commonEvents: (WritableDraft<SimpleCalendarEvent> | WritableDraft<CalendarEvent>)[] = events,
-          exportData = formatCalendarAsCSV(commonEvents, calendarDisplaySettings);
+          let defaultCommonEvents: (WritableDraft<SimpleCalendarEvent> | WritableDraft<CalendarEvent>)[] = events,
+          exportData = formatCalendarAsCSV(defaultCommonEvents, calendarDisplaySettings);
           break;
         case 'xls':
           // Format calendar data as XLS

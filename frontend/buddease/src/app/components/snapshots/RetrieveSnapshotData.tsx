@@ -3,7 +3,7 @@
 // import { RetrievedSnapshot } from '@/app/utils/retrieveSnapshotData';
 // import { BaseData } from '../data/Data';
 // import axiosInstance from '../security/csrfToken';
-// import { Snapshot } from './LocalStorageSnapshotStore';
+// import { Snapshot } from "@/app/components/snapshots";
 // import { SnapshotData } from './SnapshotData';
 // import SnapshotStoreComponent from './SnapshotStoreComponent';
 
@@ -27,9 +27,9 @@
 
 // // Define the function to retrieve snapshot data
 // export const retrieveSnapshotData =  <
-//   T extends BaseData<any>,
+//   T extends BaseDataEntity,
 //   K extends T = T,
-//   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+//   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
 //   ): Promise<Snapshot<SnapshotDataResponse<T, K>> | null> => {
 //   return new Promise(async (resolve, reject) => {
 //     // Define a function to convert RetrievedSnapshot<SnapshotDataResponse> to SnapshotStore<Snapshot<Data, Data>>
@@ -241,4 +241,5 @@ const retrievedSnapshot: RetrievedSnapshot<T, K> = {
   };
 
 
-  export { retrievedSnapshot }
+  export { retrievedSnapshot };
+
