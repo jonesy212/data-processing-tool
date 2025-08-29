@@ -43,3 +43,6 @@ dist/
 
 # personal content
 todos/*.txt
+
+.DS_Store.DS_Store
+frontend/.DS_Store
