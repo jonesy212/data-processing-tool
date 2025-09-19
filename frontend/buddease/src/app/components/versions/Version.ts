@@ -6,13 +6,13 @@ import UserRoles from '@/app/components/users/UserRoles';
 import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import metadata from '@/app/layout';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { useAuth } from "@/server/auth/AuthContext";
 import {
   snapshotContainer,
   snapshotStoreConfig, SnapshotStoreConfig,
   SnapshotWithCriteria
 } from ".";
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
       
 import { SharedRelationshipData } from "@/app/components/models/data/Data";
 import { EventManager } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
@@ -23,26 +23,26 @@ import FrontendStructure, { frontendStructure } from "@/app/configs/appStructure
 import { fetchUserAreaDimensions } from '@/app/configs/database/MetaDataOptions';
 import { sharedMetadata } from "@/app/configs/metadata/createMetadataState";
 
-import getAppPath from "../../configs/appStructure/appPath";
-import { BaseData, Data } from "../models/data/Data";
-import { VersionData, VersionHistory } from "./VersionData";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 import { Taggable } from '@/app/components/models/CommonData';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 import { dataVersions } from "@/app/configs/DocumentBuilderConfig";
 import { MetadataEntriesType, StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
+import getAppPath from "../../configs/appStructure/appPath";
 import { Attachment } from "../documents/Attachment/attachment";
 import DocumentPermissions from "../documents/DocumentPermissions";
 import { createBaseData } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
+import { BaseData, Data } from "../models/data/Data";
 import { K, T } from "../models/data/dataStoreMethods";
 import { Member } from "../models/teams/TeamMembers";
 import { data, TagsRecord } from "../snapshots/SnapshotWithCriteria";
 import { HistoryEntry } from '../state/stores/HistoryStore';
 import { User } from "../users/User";
 import { fluenceApiKey } from "../web3/dAppAdapter/DAppAdapterConfig";
-import { DefaultMeta, BaseDataEntity } from '@/app/configs/BaseConfig';
+import { VersionData, VersionHistory } from "./VersionData";
+import { BumpVersionOptions } from "./BumpVersionOptions";
 
 interface ExtendedVersion extends Version<T, K> {
   name: string;
@@ -222,7 +222,12 @@ function createVersion<
     description: "This is the initial release version.",
     buildNumber: "build_001",
     transformToStructureItems: (data: any) => [],
-    bumpVersion: function(this: Version<T, K, Meta>, type: "major" | "minor" | "patch" = "patch", notes?: string): Version<T, K, Meta> {
+    bumpVersion: function (
+      this: Version<T, K, Meta>, 
+      type: "major" | "minor" | "patch" = "patch", 
+      notes?: string,
+      options: BumpVersionOptions = {}
+    ): Version<T, K, Meta> {
       // Create a new version object with updated version numbers
       const newVersionId = Math.floor(Math.random() * 1000000);
       
@@ -283,15 +288,37 @@ function createVersion<
           break;
       }
 
-      // Update checksum (simplified example - you'd use a real hash function)
-      newVersion.checksum = this.generateChecksum(newVersion);
-
-      // Add version notes if provided
+      // Handle version notes conditionally
       if (notes) {
-        newVersion.versionNotes = notes;
+        switch (options.notesStrategy || 'append') {
+          case 'append':
+            newVersion.versionNotes = [...this.versionNotes, notes];
+            break;
+          case 'prepend':
+            newVersion.versionNotes = [notes, ...this.versionNotes];
+            break;
+          case 'replace':
+            newVersion.versionNotes = [notes];
+            break;
+          case 'ignore':
+            // Keep existing notes
+            newVersion.versionNotes = this.versionNotes;
+            break;
+        }
+      } else {
+        newVersion.versionNotes = this.versionNotes;
       }
 
-      return newVersion;
+      // Optional: clear previous notes if specified
+      if (options.clearPreviousNotes) {
+        newVersion.versionNotes = notes ? [notes] : [];
+      }
+
+      // Optional: limit number of notes
+      if (options.maxNotes && newVersion.versionNotes.length > options.maxNotes) {
+        newVersion.versionNotes = newVersion.versionNotes.slice(-options.maxNotes);
+      }  
+      return newVersion
     },
     // Helper method for checksum generation (simplified)
     generateChecksum: function(version: Version<T, K, Meta>): string {
@@ -1204,7 +1231,7 @@ class VersionImpl<
     return new VersionImpl<T, K>(processedInfo);
   }
   // Method to get version data
-  getVersionData?(): VersionData<T, K> | undefined {
+async getVersionData?(): Promise<VersionData<T, K> | undefined> {
     const { content, name, url, versionNumber } = this;
     if (!content || !name || !versionNumber) {
       return undefined;
@@ -1298,7 +1325,7 @@ class VersionImpl<
     };
 
     // Function to create a Version object from ExtendedVersion data
-    const createVersion = (versionData: ExtendedVersion): VersionImpl<T, K> => {
+    const createVersion = async (versionData: ExtendedVersion): Promise<VersionImpl<T, K>> => {
       
       const {
         content,
@@ -1347,12 +1374,22 @@ class VersionImpl<
 
       const category = process.argv[3] as keyof CategoryProperties;
       const snapshotId: string | number | undefined = snapshot?.store?.snapshotId ?? undefined;
-      const storeId = await snapshotApi.getSnapshotStoreId(Number(snapshotId));
-      const criteria = await snapshotApi.getSnapshotCriteria(snapshotContainer, snapshot)
+      
+      // All async operations moved here
+      const [storeId, criteria, snapshotData] = await Promise.all([
+        snapshotApi.getSnapshotStoreId(Number(snapshotId)),
+        snapshotApi.getSnapshotCriteria(snapshotContainer, snapshot),
+        snapshotApi.getSnapshotData(snapshotContainer, snapshot, criteria, storeId, config)
+      ]);
+
       const config: SnapshotStoreConfig<SnapshotWithCriteria<Data, any>, any> = snapshotStoreConfig;
-      const snapshotStoreDataConfig = snapshotApi.getSnapshotStoreConfigData(Number(snapshotId), snapshotContainer, criteria, storeId, config)
-      // Correctly handle the snapshotManager instance
-      const snapshotData = await snapshotApi.getSnapshotData(snapshotContainer, snapshot, criteria, storeId, config)
+      const snapshotStoreDataConfig = snapshotApi.getSnapshotStoreConfigData(
+        Number(snapshotId), 
+        snapshotContainer, 
+        criteria, 
+        storeId, 
+        config
+      );
       
       const docPermissions = new DocumentPermissions(true, false);
       const baseData: BaseData = createBaseData({ ...snapshotData });
@@ -1410,19 +1447,15 @@ class VersionImpl<
         isDeleted: false,
         publishedBy: "publisher",
         lastModifiedBy: "modified by",
-
         deletedAt: new Date(),
         lastModifiedAt: new Date(),
         rootId: "",
         branchId: "",
         isLocked: false,
-
         lockedBy: "",
         lockedAt: new Date(),
         isArchived: false,
         archivedBy: "",
-
-
         archivedAt: new Date(),
         tags: {},
         categories: [],
@@ -1443,10 +1476,13 @@ class VersionImpl<
       return version;
     };
 
+    // You'll need to call createVersion with actual versionData
+    const versionData = await createVersion(/* pass actual versionData here */);
+    
     // Return or use 'data' as needed
     return versionData;
-
   }
+
   // Method to update version history
   updateVersionHistory?(newVersionData: VersionData<T, K>): void {
     if (Array.isArray(this.versionHistory.versionData)) {
@@ -2008,6 +2044,5 @@ const devVersion: DevVersion<T, K> = {
 };
 
 export { createVersion, devVersion, version, versionData };
-export type { BuildVersion, Version, Versions };
-export type { BuildVersion, Version, Versions };
+export type { BuildVersion, BuildVersion, Version, Version, Versions, Versions };
 

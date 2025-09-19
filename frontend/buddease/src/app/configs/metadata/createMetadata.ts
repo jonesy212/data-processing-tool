@@ -1,8 +1,8 @@
 import { EventManager, InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
-import { BaseData } from "../../components/models/data/Data";
 import crypto from 'crypto';
+import { BaseData } from "../../components/models/data/Data";
 
 interface DashboardMeta<T extends BaseData<any>, K extends T = T>
   extends StructuredMetadata<T, K> {
@@ -37,7 +37,7 @@ export const createMetadata = <
   T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   options: UnifiedMetadata<T, K, Meta, ExcludedFields>
 ): Meta => {

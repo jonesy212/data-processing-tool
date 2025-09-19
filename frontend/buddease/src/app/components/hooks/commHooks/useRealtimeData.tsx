@@ -9,24 +9,39 @@ import socketIOClient, { Socket } from 'socket.io-client';
 import { RealtimeData, RealtimeDataItem } from "../../models/realtime/RealtimeData";
 import axiosInstance from "../../security/csrfToken";
 import SnapshotStore from "../../snapshots/SnapshotStore";
-
+import { DefaultMeta, DefaultExcludedFields, BaseDataEntity } from "@/app/configs/BaseConfig";
+ 
 export const ENDPOINT = endpoints.backend
 
-export type RealtimeUpdateCallback<T extends RealtimeData, K extends T = T> = (
+export type RealtimeUpdateCallback<
+  T extends RealtimeData<
+    BaseDataEntity,
+    BaseDataEntity,
+    DefaultMeta<BaseDataEntity, BaseDataEntity>,
+    keyof BaseDataEntity
+  >,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> = (
   id: string,
-  events: Record<string, CalendarEvent[]>,
-  snapshotStore: SnapshotStore<T, K>,
-  dataItems: T[],
-  data?: InitializedData<T, K> | null, 
-  
+  events: Record<string, CalendarEvent<T, K, Meta, ExcludedFields>[]>,
+  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+  dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
+  data?: InitializedData<T, K, Meta, ExcludedFields> | null
 ) => void;
 
-const useRealtimeData = <T extends RealtimeDataItem, K extends T = T>(
-  initialData: RealtimeDataItem[],
-  updateCallback: RealtimeUpdateCallback<T, K>
+const useRealtimeData = <
+  T extends RealtimeData<BaseDataEntity, BaseDataEntity>,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
+  initialData: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
+  updateCallback: RealtimeUpdateCallback<T, K, Meta, ExcludedFields>
 ) => {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [realtimeData, setRealtimeData] = useState<RealtimeDataItem[]>(initialData);
+  const [realtimeData, setRealtimeData] = useState<RealtimeDataItem<T, K, Meta, ExcludedFields>[]>(initialData);
   const dispatch = useDispatch();
 
   const fetchData = async (userId: string, callback: (action: any) => void) => {
@@ -38,12 +53,12 @@ const useRealtimeData = <T extends RealtimeDataItem, K extends T = T>(
       });
       dispatch({ type: "UPDATE_REALTIME_DATA", payload: response.data });
       socket!.emit("updateData", response.data);
-      callback(response.data); // Call the callback function with the response data
+      callback(response.data);
     } catch (error) {
       console.error("Error fetching or synchronizing data:", error);
     }
   };
-  
+
   useEffect(() => {
     const socket = socketIOClient(ENDPOINT);
     setSocket(socket);
@@ -52,47 +67,35 @@ const useRealtimeData = <T extends RealtimeDataItem, K extends T = T>(
       "updateData",
       (
         id: string,
-        events: Record<string, CalendarEvent[]>,
-        snapshotStore: SnapshotStore<T, K>, // Also fix type here
-        dataItems: RealtimeDataItem[],
-        data?: InitializedData<T, K> | null, 
+        events: Record<string, CalendarEvent<T, K, Meta, ExcludedFields>[]>,
+        snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+        dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
+        data?: InitializedData<T, K, Meta, ExcludedFields> | null
       ) => {
-
-        if (!data ||!snapshotStore ||!dataItems) {
+        if (!data || !snapshotStore || !dataItems) {
           console.error("Received data, snapshotStore, or dataItems is null");
           return;
         }
-        
-        if (isArrayOfTypeT<T>(dataItems)) {
-          updateCallback(id, events, snapshotStore, dataItems, data);
-          setRealtimeData(dataItems);
-        } else {
-          console.error("Received dataItems do not match the expected type T");
-        }
 
+        updateCallback(id, events, snapshotStore, dataItems, data);
         setRealtimeData(dataItems);
         socket.emit("realtimeUpdate", data);
       }
-    );  
+    );
 
+    // handle socket errors
     socket.on("connect_error", (error: any) => {
       console.error("WebSocket connection error:", error);
-      setTimeout(() => {
-        socket.connect();
-      }, 3000); // Retry connection after 3 seconds
+      setTimeout(() => socket.connect(), 3000);
     });
 
     socket.on("disconnect", (reason: string) => {
       console.log("WebSocket disconnected:", reason);
-      if (reason === "io server disconnect") {
-        socket.connect();
-      }
+      if (reason === "io server disconnect") socket.connect();
     });
 
     const intervalId = setInterval(() => {
-      if (socket.connected) {
-        fetchData("", () => {}).catch(console.error);
-      }
+      if (socket.connected) fetchData("", () => {}).catch(console.error);
     }, 5000);
 
     return () => {
@@ -103,5 +106,6 @@ const useRealtimeData = <T extends RealtimeDataItem, K extends T = T>(
 
   return { realtimeData, fetchData };
 };
+
 
 export default useRealtimeData;

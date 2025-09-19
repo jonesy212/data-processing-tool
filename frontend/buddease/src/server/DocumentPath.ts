@@ -4,7 +4,7 @@ import { Content } from "@/app/components/models/content/AddContent";
 import { BaseData } from "@/app/components/models/data/Data";
 import { DocumentBase } from "@/app/components/state/stores/DocumentStore";
 import { DatasetModel } from "@/app/components/todos/tasks/DataSetModel";
-import Version from "@/app/components/versions/Version";
+import { Version } from "@/app/components/versions/Version";
 import { VersionData } from "@/app/components/versions/VersionData";
 import { AppStructurePermissions } from "@/app/configs/appStructure/AppStructure";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
@@ -16,7 +16,9 @@ interface DocumentPath<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-> extends DocumentBase, CommonData<T, K, Meta>, DatasetModel<T, K, Meta> {
+> extends DocumentBase, 
+CommonData<T, K, Meta>, 
+DatasetModel<T, K, Meta> {
   id: string;
   _id: string;
   title: string;

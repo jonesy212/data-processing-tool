@@ -1,24 +1,36 @@
 import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
 import getAppPath from "@/app/configs/appStructure/appPath";
-import { AppStructureItem, AppStructurePermissions } from "@/app/configs/appStructure/AppStructure";
+import { AppStructurePermissions } from "@/app/configs/appStructure/AppStructure";
 import { backend } from "@/app/configs/appStructure/BackendStructure";
 import { frontend } from "@/app/configs/appStructure/FrontendStructure";
+import { DataVersions } from '@/app/components/versions'
+
 import * as fs from "fs";
 import * as path from "path";
 
-/**
- * Recursively traverse a frontend directory and collect TSX file info.
- */
-export async function traverseFrontendDirectory(dir: string): Promise<AppStructureItem[]> {
+// Simplified interface for file traversal
+interface FileSystemItem {
+  id: string;
+  name: string;
+  type: string;
+  path: string;
+  content?: string;
+  draft: boolean;
+  permissions?: AppStructurePermissions;
+  versions?: DataVersions;
+  versionData?: any;
+  items?: { [key: string]: FileSystemItem };
+}
+
+async function traverseFrontendDirectory(dir: string): Promise<FileSystemItem[]> {
   const files = await fs.promises.readdir(dir);
-  const result: AppStructureItem[] = [];
+  const result: FileSystemItem[] = [];
 
   for (const file of files) {
     const filePath = path.join(dir, file);
     const stat = await fs.promises.stat(filePath);
 
     if (stat.isDirectory()) {
-      // Optional: recursively traverse subdirectories
       const nested = await traverseFrontendDirectory(filePath);
       result.push(...nested);
     } else if (file.endsWith(".tsx")) {
@@ -27,7 +39,7 @@ export async function traverseFrontendDirectory(dir: string): Promise<AppStructu
       const backendHash = await backend.getStructureHash();
       const frontendHash = await frontend.getStructureHash();
 
-      const appStructureItem: AppStructureItem = {
+      const fileSystemItem: FileSystemItem = {
         path: filePath,
         content: fileContent,
         id: file,
@@ -58,26 +70,21 @@ export async function traverseFrontendDirectory(dir: string): Promise<AppStructu
         versionData: null,
       };
 
-      result.push(appStructureItem);
+      result.push(fileSystemItem);
     }
   }
 
   return result;
 }
 
-/**
- * Helper to get the full project structure based on the current app version.
- */
-export async function getProjectStructure(): Promise<AppStructureItem[]> {
+export async function getProjectStructure(): Promise<FileSystemItem[]> {
   const { versionNumber, appVersion } = getCurrentAppInfo();
   const projectPath = getAppPath(versionNumber, appVersion);
   const projectStructure = await traverseFrontendDirectory(projectPath);
   return projectStructure;
 }
 
-
-
-// export { traverseFrontendDirectory };
+export { traverseFrontendDirectory };
 
 
 

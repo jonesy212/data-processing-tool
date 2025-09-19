@@ -6,22 +6,22 @@
 // import { Snapshot } from "@/app/components/snapshots";
 
 
-// class SnapshotStoreComponent<T extends  BaseData<any>,  
+// class SnapshotStoreComponent<T extends BaseDataEntity,  
 //   K extends T = T> {
 //   private id: string | number | null;
 //   private category: symbol | string | Category | undefined;
-//   private snapshots: Map<string, Snapshot<T, K>>;
-//   private callbacks: MultipleEventsCallbacks<Snapshot<T, K>>;
+//   private snapshots: Map<string, Snapshot<T, K, Meta, ExcludedFields>>;
+//   private callbacks: MultipleEventsCallbacks<Snapshot<T, K, Meta, ExcludedFields>>;
 
-//   constructor(options: SnapshotStoreOptions<T, K>) {
+//   constructor(options: SnapshotStoreOptions<T, K, Meta, ExcludedFields>) {
 //     this.id = options.id
 //     this.category = options.category;
-//     this.snapshots = new Map<string, Snapshot<T, K>>();
+//     this.snapshots = new Map<string, Snapshot<T, K, Meta, ExcludedFields>>();
 //     this.callbacks = options.callbacks || {};
 //   }
 
 //   // Method to add a snapshot
-//   addSnapshot(snapshot: Snapshot<T, K>): void {
+//   addSnapshot(snapshot: Snapshot<T, K, Meta, ExcludedFields>): void {
 //     if (!snapshot || !snapshot.id) {
 //       throw new Error('Invalid snapshot data.');
 //     }
@@ -42,7 +42,7 @@
 //   }
 
 //   // Method to update a snapshot
-//   updateSnapshot(snapshot: Snapshot<T, K>): void {
+//   updateSnapshot(snapshot: Snapshot<T, K, Meta, ExcludedFields>): void {
 //     if (!snapshot || !snapshot.id) {
 //       throw new Error('Invalid snapshot data.');
 //     }
@@ -54,17 +54,17 @@
 //   }
 
 //   // Method to retrieve a snapshot
-//   getSnapshot(id: string): Snapshot<T, K> | undefined {
+//   getSnapshot(id: string): Snapshot<T, K, Meta, ExcludedFields> | undefined {
 //     return this.snapshots.get(id);
 //   }
 
 //   // Method to retrieve all snapshots
-//   getAllSnapshots(): Snapshot<T, K>[] {
+//   getAllSnapshots(): Snapshot<T, K, Meta, ExcludedFields>[] {
 //     return Array.from(this.snapshots.values());
 //   }
 
 //   // Method to trigger callbacks
-//   private triggerCallbacks(event: string, snapshot: Snapshot<T, K>): void {
+//   private triggerCallbacks(event: string, snapshot: Snapshot<T, K, Meta, ExcludedFields>): void {
 //     const eventCallbacks = this.callbacks[event] || [];
 //     eventCallbacks.forEach(callback => callback(snapshot));
 
@@ -74,7 +74,7 @@
 //   }
 
 //   // Method to register a callback for an event
-//   on(event: string, callback: Callback<Snapshot<T, K>>): void {
+//   on(event: string, callback: Callback<Snapshot<T, K, Meta, ExcludedFields>>): void {
 //     if (!this.callbacks[event]) {
 //       this.callbacks[event] = [];
 //     }
@@ -82,7 +82,7 @@
 //   }
 
 //   // Method to unregister a callback for an event
-//   off(event: string, callback: Callback<Snapshot<T, K>>): void {
+//   off(event: string, callback: Callback<Snapshot<T, K, Meta, ExcludedFields>>): void {
 //     if (!this.callbacks[event]) return;
 //     this.callbacks[event] = this.callbacks[event].filter(cb => cb !== callback);
 //   }
@@ -90,22 +90,22 @@
 //   // Method to clear all snapshots
 //   clearSnapshots(): void {
 //     this.snapshots.clear();
-//     this.triggerCallbacks('clear', {} as Snapshot<T, K>); // Trigger clear event
+//     this.triggerCallbacks('clear', {} as Snapshot<T, K, Meta, ExcludedFields>); // Trigger clear event
 //   }
 
 //   // Method to find snapshots by a specific criterion
-//   findSnapshotsByCriterion(predicate: (snapshot: Snapshot<T, K>) => boolean): Snapshot<T, K>[] {
+//   findSnapshotsByCriterion(predicate: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => boolean): Snapshot<T, K, Meta, ExcludedFields>[] {
 //     return Array.from(this.snapshots.values()).filter(predicate);
 //   }
 
 //   // Method to sort snapshots
-//   sortSnapshots(compareFn: (a: Snapshot<T, K>, b: Snapshot<T, K>) => number): Snapshot<T, K>[] {
+//   sortSnapshots(compareFn: (a: Snapshot<T, K, Meta, ExcludedFields>, b: Snapshot<T, K, Meta, ExcludedFields>) => number): Snapshot<T, K, Meta, ExcludedFields>[] {
 //     return Array.from(this.snapshots.values()).sort(compareFn);
 //   }
 
 //   // Method to categorize snapshots
-//   categorizeSnapshots(): Map<string, Snapshot<T, K>[]> {
-//     const categories = new Map<string, Snapshot<T, K>[]>();
+//   categorizeSnapshots(): Map<string, Snapshot<T, K, Meta, ExcludedFields>[]> {
+//     const categories = new Map<string, Snapshot<T, K, Meta, ExcludedFields>[]>();
 //     this.snapshots.forEach((snapshot) => {
 //       const category = snapshot.category ?? 'uncategorized';
 //       if (!categories.has(category)) {

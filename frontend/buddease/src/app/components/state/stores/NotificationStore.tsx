@@ -1,11 +1,12 @@
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { BaseData } from '@/app/components/models/data/Data';
 import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { Snapshot } from "@/app/components/snapshots";
 import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
-import Version from "@/app/components/versions/Version";
+import { Version } from "@/app/components/versions/Version";
 import { VersionHistory } from "@/app/components/versions/VersionData";
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { createMetaState } from '@/app/configs/metadata/createMetadataState';
@@ -17,6 +18,8 @@ import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimens
 import { action, makeObservable, observable } from 'mobx';
 import { createContext } from 'react';
 import { NotificationData } from '../../support/NofiticationsSlice';
+import { LogData } from '../../models/LogData';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 
 // Define the type for notification messages
 interface NotificationMessages {
@@ -54,8 +57,9 @@ const NOTIFICATION_MESSAGES: NotificationMessages = {
 };
 
 const area = fetchUserAreaDimensions().toString()
-const metadata: UnifiedMetadata<T, K> = useMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>(area);
-const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+  const currentMetadata: UnifiedMetadata<T, K, StructuredMetadata<T, K>> = 
+    useMetadata<T, K, StructuredMetadata<T, K>>('notification-area'); // Updated area for notifactions
+  const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
 
 class NotificationStore {
   @observable notifications: NotificationData<T, K>[] = [];
@@ -103,8 +107,7 @@ class NotificationStore {
   ) => {
 
     // If no ID is passed, generate one from the notificationMessage string
-    const id = _id ?? UniqueIDGenerator.generateNotificationIDFromMessage(notificationMessage);
-
+    const notificationId = id ?? UniqueIDGenerator.generateNotificationIDFromMessage(notificationMessage);
     const actualNotificationType = notificationType ?? type;
     
     const message = this.generateNotificationMessage(
@@ -145,65 +148,38 @@ class NotificationStore {
       rsvpStatus: "notResponded",
       participants: [],
       teamMemberId: "",
-      
-      currentMeta: currentMeta,
-      currentMetadata: createMetaState(
-        "", // id: unique identifier for the metadata
-        "", // apiEndpoint: endpoint for the API to fetch metadata
-        "", // apiKey: authentication key for API requests
-        0, // timeout: request timeout in milliseconds
-        0, // retryAttempts: number of retry attempts in case of failure
-        "", // name: name of the metadata entity
-        "", // category: category for metadata
-        "", // timestamp: timestamp when the metadata was last modified
-        "", // createdBy: user who created the metadata
-        [], // tags: tags associated with the metadata
-        {} as UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, StructuredMetadata<T, K>, never>, // metadata: metadata object, can be undefined initially
-        undefined, // initialState: initial state of the metadata, can be undefined
-        {} as Map<string, Snapshot<BaseData<any, any, StructuredMetadata<any, any>, Attachment>>>, // meta: additional metadata, can be an empty array if not needed
-        { eventRecords: {} }, // events: event manager data, initializing with an empty event record
-        {} as Version<T, K>, // version: version information, can be undefined if not applicable
-        {} as VersionHistory<T, K>, // lastUpdated: last updated version history, it should be provided
-        true, // isActive: boolean flag indicating whether metadata is active or not
-        {}, // config: configuration settings for the metadata, using an empty object
-        [], // permissions: permissions associated with the metadata, empty for now
-        {}, // customFields: any custom fields you might have for metadata, empty object
-        "", // baseUrl: the base URL for API requests, can be an empty string if not used
-        [], // relatedData: related data associated with metadata, empty array for now
-        [], 
-
-      ),
       topics: [],
       highlights: [],
       files: [],
-      meta: {},
+      currentMeta: currentMeta,
+      meta: currentMetadata
     });
   };
-
 
   @action
   showNotification = (title: string, message: string | Message, content?: any) => {
     const notification: NotificationData<T, K> = {
-      id: uuid(), // or some unique ID generator
+      id: UniqueIDGenerator.generateSnapshoItemID('notification'), // ✅ Fixed
       title,
       message,
       content,
       date: new Date(),
-      type: 'default' as NotificationTypeEnum, // adjust as needed
+      type: 'default' as NotificationTypeEnum,
+      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "default"} as LogData<T, K, StructuredMetadata<T, K>>
     };
     this.addNotification(notification);
   };
 
-
   @action
   showSuccessNotification = (title: string, message: string | Message, content?: any) => {
     const notification: NotificationData<T, K> = {
-      id: uuid(),
+      id: UniqueIDGenerator.generateSnapshoItemID('success_notification'), // ✅ Fixed
       title,
       message,
       content,
       date: new Date(),
       type: 'success' as NotificationTypeEnum,
+      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "success"} as LogData<T, K, StructuredMetadata<T, K>>
     };
     this.addNotification(notification);
   };
@@ -211,12 +187,13 @@ class NotificationStore {
   @action
   showErrorNotification = (title: string, message: string | Message, content?: any) => {
     const notification: NotificationData<T, K> = {
-      id: uuid(),
+      id: UniqueIDGenerator.generateSnapshoItemID('error_notification'), // ✅ Fixed
       title,
       message,
       content,
       date: new Date(),
       type: 'error' as NotificationTypeEnum,
+      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "error"} as LogData<T, K, StructuredMetadata<T, K>>
     };
     this.addNotification(notification);
   };
@@ -224,16 +201,16 @@ class NotificationStore {
   @action
   showInfoNotification = (title: string, message: string | Message, content?: any) => {
     const notification: NotificationData<T, K> = {
-      id: uuid(),
+      id: UniqueIDGenerator.generateSnapshoItemID('info_notification'), // ✅ Fixed
       title,
       message,
       content,
       date: new Date(),
       type: 'info' as NotificationTypeEnum,
+      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "info"} as LogData<T, K, StructuredMetadata<T, K>>
     };
     this.addNotification(notification);
   };
-
   @action
   dismissNotification = (notificationId: string) => {
     this.removeNotification(notificationId);

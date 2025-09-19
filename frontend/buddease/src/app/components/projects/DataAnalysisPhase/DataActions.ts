@@ -3,6 +3,8 @@ import { Snapshot } from "@/app/components/snapshots";
 import { createAction, PayloadAction } from "@reduxjs/toolkit";
 import { StatusType } from "../../models/data/StatusType";
 import { DataProcessing, DataProcessingResult } from "./DataProcessing/DataProcessingService";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import { Attachment } from "../../../data_analysis/frontend/buddease/src/app/components/documents/Attachment/attachment";
 
 /**
  * Factory function that creates a set of strongly-typed Redux actions for data management.
@@ -21,8 +23,14 @@ import { DataProcessing, DataProcessingResult } from "./DataProcessing/DataProce
  * dispatch(UserActions.fetchDataSuccess({ data: userList }));
  */
 
-export const DataActions = <T extends YourDataType = YourDataType>() => ({
-   
+export const DataActions = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>() => ({
    updateDataFrame: createAction<{ id: string; frame: any }>('data/updateDataFrame'),
    deleteDataFrame: createAction<{ id: string }>('data/deleteDataFrame'),
    updateDataTitle: createAction<{ id: string; title: string }>('data/updateDataTitle'),
@@ -38,10 +46,15 @@ export const DataActions = <T extends YourDataType = YourDataType>() => ({
    fetchDataSuccess: createAction<{ data: T[] }>("fetchDataSuccess"),
    fetchDataFailure: createAction<{ error: string }>("fetchDataFailure"),
  
-   addData: createAction<Snapshot<T, K>>("addData"),
+   addData: createAction<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>("addData"),
    addDataSuccess: createAction<{ data: T }>("addDataSuccess"),
    addDataFailure: createAction<{ error: string }>("addDataFailure"),
-   updateData: createAction<{id: number, newData: Snapshot<T, K>}>("updateData"),
+     updateData: createAction<{
+    id: number, 
+    newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    meta?: Meta,
+    attachmentType?: AttachmentType
+  }>("updateData"),
    
    updateDataTitleSuccess: createAction<{ id: number; title: string }>("updateDataTitleSuccess"),
    processDataForAnalysis: createAction<DataProcessing>("processDataForAnaysis"),

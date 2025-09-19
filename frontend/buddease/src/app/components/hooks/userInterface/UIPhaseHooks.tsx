@@ -12,82 +12,96 @@ import { NotificationTypeEnum } from "@/context/NotificationContext";
 import useNotificationBar from "../commHooks/useNotificationBar";
 import { createPhaseHook } from "../phaseHooks/PhaseHooks";
 import useDarkModeToggle from "./useDarkModeToggle";
-import UserService from '@/api/ApiUser';
+import UserService from "@/api/ApiUser";
+import {
+  Snapshot,
+  BaseDataEntity,
+  DefaultMeta,
+  DefaultExcludedFields,
+} from "../../models"; // adjust paths
 
-
-const usePhaseUI = () => {
+const usePhaseUI = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>() => {
   const dispatch = useNotificationBar();
-  const { isDarkMode } = useDarkModeToggle();
-  
-  const createDarkModeTogglePhaseHook = () => {
-    // Define the condition for when the phase hook should be active
-    const condition = () => true;
+  const { isDarkMode, toggleDarkMode } = useDarkModeToggle();
+  const userId = UserService.getCurrentUserId();
 
-    // Define the duration for the phase hook
+  /** ---------------- Dark Mode Phase Hook ---------------- */
+  const createDarkModeTogglePhaseHook = () => {
+    const condition = () => true;
     const duration = "10000";
 
-    // Define the asynchronous effect that the phase hook will perform
     const asyncEffect = async () => {
-      // Perform any asynchronous operations here
-      // For example, fetch data or toggle dark mode
       console.log("Dark Mode Toggle Phase Hook triggered");
 
-      // Example: Toggle dark mode
-      const { toggleDarkMode, isDarkMode } = useDarkModeToggle();
-      await fetchData("dark-mode-settings"); // Added two null arguments
-      if (!isDarkMode) {
+      const settings = await fetchData("dark-mode-settings", userId);
+      if (settings !== null && !isDarkMode) {
         toggleDarkMode();
       }
 
-      // Example: Fetch user data and display notification
       await fetchUserDataAndDisplayNotification(
-        useNotificationBar().addNotification, null, null
+        dispatch.addNotification,
+        null,
+        null
       );
 
-      // Return a cleanup function if necessary
       return () => console.log("Cleanup for Dark Mode Toggle Phase");
     };
 
-    // Define other properties of the phase hook object
-    const name = "";
+    const name = "Dark Mode Toggle Phase";
     const isActive = false;
 
-    // Return the phase hook object
-    return {
-      condition,
-      duration,
-      asyncEffect,
-      name,
-      isActive,
-    };
+    return { condition, duration, asyncEffect, name, isActive };
   };
 
-  const notify = async (
-    type: NotificationTypeEnum,
-    message: string,
-    isDarkMode: boolean
-  ) => {
-    const dispatch = useNotificationBar();
-    try {
-      await dispatch.addNotification({
-        message: message,
-        type: "success",
-        onCancel: () => {
-          console.log("Notification dispatched successfully");
-        },
-      });
-    } catch (error) {
-      await dispatch.addNotification({
-        message: message,
-        type: "error",
-        onCancel: undefined,
-      });
-      console.error("Failed to dispatch notification:", error);
-    }
+  /** ---------------- Notification Bar Phase Hook ---------------- */
+  const createNotificationBarPhaseHook = () => {
+    return createPhaseHook<T>(10000, {
+      condition: (idleTimeoutDuration: number) =>
+        isUserLoggedIn().then((userStatus: any) => !!userStatus),
+
+      asyncEffect: async ({ idleTimeoutId, startIdleTimeout }) => {
+        const { addNotification, clearNotifications } = useNotificationBar();
+        console.log("Notification Bar Phase Hook triggered");
+
+        await UIActions.fetchAndDisplayNotifications({
+          addNotification,
+          clearNotifications,
+        });
+
+        return clearNotifications;
+      },
+
+      name: "Notification Bar Phase",
+      isActive: false,
+
+      initialStartIdleTimeout(timeoutDuration: number, onTimeout: () => void) {
+        this.idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
+      },
+
+      resetIdleTimeout: async () => {},
+      duration: undefined,
+      idleTimeoutId: null,
+      clearIdleTimeout() {},
+      onPhaseStart() {},
+      onPhaseEnd() {},
+      startIdleTimeout(timeoutDuration: number, onTimeout: () => void) {
+        this.idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
+      },
+      cleanup: undefined,
+      startAnimation() {},
+      stopAnimation() {},
+      animateIn() {},
+      toggleActivation(accessToken?: string | null) {},
+    });
   };
 
-
-  const logData: LogData = {
+  /** ---------------- Notification Helpers ---------------- */
+  const logData: LogData<BaseDataEntity> = {
     date: new Date(),
     endpoint: endpoints.notifications,
     method: "GET",
@@ -117,21 +131,29 @@ const usePhaseUI = () => {
       teamMemberId: "",
       taskIdToAssign: undefined,
       meta: undefined,
-    }
+    },
   };
 
-  const displayNotification = (
-    notification: NotificationData,
+  const displayNotification = <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  >(
+    notification: NotificationData<T, K, Meta>,
     addNotification: Function
   ) => {
-    const message = notification.message; // Access message directly from notification
+    const message = notification.message;
     const type = message ? "info" : "error";
     const defaultMessage =
       message || NOTIFICATION_MESSAGES.NO_NOTIFICATIONS.DEFAULT;
     addNotification(defaultMessage, type);
   };
 
-  const fetchAndDisplayNotifications = async (
+  const fetchAndDisplayNotifications = async <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  >(
     addNotification: Function,
     clearNotifications: Function
   ) => {
@@ -139,14 +161,12 @@ const usePhaseUI = () => {
       const notifications = await fetchData("notifications");
       if (notifications !== null) {
         if (Array.isArray(notifications)) {
-          // Check if notifications is an array before using forEach
-          (notifications as NotificationData[]).forEach(
-            (notification: NotificationData) => {
-              displayNotification(notification, addNotification);
+          (notifications as NotificationData<T, K, Meta>[]).forEach(
+            (notification: NotificationData<T, K, Meta>) => {
+              displayNotification<T, K, Meta>(notification, addNotification);
             }
           );
         } else {
-          // Handle the case when notifications is empty
           displayNotification(
             {
               data: undefined,
@@ -167,13 +187,12 @@ const usePhaseUI = () => {
               taskIdToAssign: undefined,
               meta: undefined,
               getSnapshotStoreData: undefined,
-              getaData: undefined
+              getaData: undefined,
             },
             addNotification
           );
         }
       } else {
-        // Handle the case when notifications is null
         console.error("Notifications is null.");
       }
     } catch (error: any) {
@@ -186,14 +205,14 @@ const usePhaseUI = () => {
       );
     }
   };
-  
+
   const fetchUserDataAndDisplayNotification = async (
     addNotification: Function,
     req: any,
     res: any
   ) => {
     try {
-      const userData = await userApi.fetchUserData(req, res); // Call the API function with req and res
+      const userData = await userApi.fetchUserData(req, res);
       addNotification(
         NotificationMessagesFactory.createCustomMessage("User data fetched"),
         "success"
@@ -205,120 +224,15 @@ const usePhaseUI = () => {
     }
   };
 
-  
-  const createNotificationBarPhaseHook = () => {
-    return createPhaseHook(10000, {
-      condition: (idleTimeoutDuration: number) =>
-        isUserLoggedIn().then((userStatus: any) => !!userStatus),
-  
-      asyncEffect: async ({ idleTimeoutId, startIdleTimeout }) => {
-        const { addNotification, clearNotifications } = useNotificationBar();
-        console.log("Notification Bar Phase Hook triggered");
-  
-        // Pick one approach: UIActions or fetchAndDisplayNotifications
-        await UIActions.fetchAndDisplayNotifications({
-          addNotification,
-          clearNotifications,
-        });
-  
-        return clearNotifications;
-      },
-  
-      name: "Notification Bar Phase",
-      isActive: false,
-  
-      initialStartIdleTimeout(timeoutDuration: number, onTimeout: () => void) {
-        this.idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
-      },
-  
-      resetIdleTimeout: async () => {
-        // Implementation for resetting idle timeout
-      },
-  
-      duration: undefined,
-      idleTimeoutId: null,
-  
-      clearIdleTimeout() {
-        // Implementation for clearing idle timeout
-      },
-  
-      onPhaseStart() {
-        // Implementation for phase start
-      },
-  
-      onPhaseEnd() {
-        // Implementation for phase end
-      },
-  
-      startIdleTimeout(timeoutDuration: number, onTimeout: () => void) {
-        this.idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
-      },
-  
-      cleanup: undefined,
-  
-      startAnimation() {
-        // Implementation for starting animation
-      },
-  
-      stopAnimation() {
-        // Implementation for stopping animation
-      },
-  
-      animateIn() {
-        // Implementation for animating in
-      },
-  
-      toggleActivation(accessToken?: string | null) {
-        // Implementation for toggling activation
-      },
-    });
+  return {
+    createDarkModeTogglePhaseHook,
+    createNotificationBarPhaseHook,
+    fetchAndDisplayNotifications,
+    fetchUserDataAndDisplayNotification,
   };
-}
-
-const userId = UserService.getCurrentUserId(); 
-const createDarkModeTogglePhaseHook = () => {
-  const idleTimeoutDuration = 10000; // Define the idle timeout duration
-  return createPhaseHook(idleTimeoutDuration, {
-    name: "Dark Mode Toggle Phase",
-    condition: async () => true,
-    asyncEffect: async ({ idleTimeoutId, startIdleTimeout }) => {
-      const { toggleDarkMode, isDarkMode } = useDarkModeToggle();
-      console.log("Dark Mode Toggle Phase Hook triggered");
-
-      // Ensure fetchData returns a promise
-      const settings = await fetchData("dark-mode-settings", userId);
-      if (settings !== null) {
-        // Proceed only if settings is not null
-        if (!isDarkMode) {
-          toggleDarkMode();
-        }
-
-        // Use the correct structure for addNotification
-        const notificationBar: any = useNotificationBar(); // Specify type as 'any'
-        try {
-          UIActions.fetchUserDataAndDisplayNotification(
-            notificationBar.addNotification
-          );
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        console.error("Failed to fetch dark mode settings: settings is null");
-      }
-
-      return () => console.log("Cleanup for Dark Mode Toggle Phase");
-    },
-
-    duration: idleTimeoutDuration.toString(), // Include duration property
-    startIdleTimeout: (timeoutDuration: number, onTimeout: () => void | undefined) => {
-      if (onTimeout) {
-        setTimeout(onTimeout, timeoutDuration);
-      }
-    },
-  });
 };
 
-export { usePhaseUI };
-export const darkModeTogglePhaseHook = createDarkModeTogglePhaseHook();
-export const notificationBarPhaseHook = createNotificationBarPhaseHook();
+const darkModeTogglePhaseHook = usePhaseUI().createDarkModeTogglePhaseHook();
+const notificationBarPhaseHook = usePhaseUI().createNotificationBarPhaseHook();
 
+export { usePhaseUI, darkModeTogglePhaseHook, notificationBarPhaseHook };

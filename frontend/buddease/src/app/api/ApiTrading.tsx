@@ -1,8 +1,8 @@
-import { NotificationTypeEnum, useNotification, NotificationType } from "@/app/context/NotificationContext";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError } from 'axios';
 import { DocumentData } from '../components/documents/DocumentBuilder';
 import { WritableDraft } from '../components/state/redux/ReducerGenerator';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
@@ -103,7 +103,7 @@ export const fetchTradingDataAPI = async <
   T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   tradingId: number,
   dataCallback: (data: WritableDraft<DocumentData<T, K, Meta, ExcludedFields>>) => void

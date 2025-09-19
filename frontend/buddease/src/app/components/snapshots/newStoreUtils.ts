@@ -1,152 +1,208 @@
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { ConfigureSnapshotStorePayload, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreProps } from '@/app/components/snapshots';
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { SnapshotConfig, SnapshotData } from '@/app/components/snapshots';
+import { BaseDataEntity, DefaultMeta } from '@/app/configs/BaseConfig';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import { Subscription } from 'react-redux';
 import { K, Snapshot, snapshot, snapshotContainer, SnapshotOperation, SnapshotOperationType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotWithCriteria, subscribeToSnapshot, subscribeToSnapshots, T } from ".";
 import { CreateSnapshotStoresPayload } from "../../../server/database/Payload";
 import { SnapshotManager, useSnapshotManager } from "../hooks/useSnapshotManager";
 import { BaseData, Data } from "../models/data/Data";
-import { RealtimeDataItem } from '../models/realtime/RealtimeData';
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { DataStore } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { EventRecord } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { ExcludedFields } from '../routing/Fields';
-import CalendarManagerStoreClass from '../state/stores/CalendarManagerStore';
 import SnapshotManagerOptions from "./SnapshotManagerOptions";
 import SnapshotStore from "./SnapshotStore";
 
-const snapConfig: SnapshotConfig<T, K> | undefined = {/* your snapshot configuration logic here */}
+const snapConfig: SnapshotConfig<T, K, Meta, ExcludedFields> | undefined = {/* your snapshot configuration logic here */}
 
 // newStoreUtils.ts
-export const createSnapshotStores = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-  snapshot: Snapshot<T, K>,
-  snapshotStore: SnapshotStore<T, K>,
-  snapshotManager: SnapshotManager<T, K>,
-  payload: CreateSnapshotStoresPayload<T, K>,
-  callback: (snapshotStore: SnapshotStore<T, K>[]) => void | null,
-  snapshotStoreData?: SnapshotStore<T, K>[],
+export const createSnapshotStores = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+>(
+  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+  snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>,
+  payload: CreateSnapshotStoresPayload<T, K, Meta, ExcludedFields>,
+  callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>[]) => void | null,
+  snapshotStoreData?: SnapshotStore<T, K, Meta, ExcludedFields>[],
   category?:  Category,
-  snapshotStoreDataConfig?: SnapshotStoreConfig<T, K> | undefined,
+  snapshotStoreDataConfig?: SnapshotStoreConfig<T, K, Meta, ExcludedFields> | undefined,
 ) => {
   const snapshotStoreConfigData = snapshotStoreDataConfig || undefined;
   const snapshotId = snapshot?.store?.snapshotId ?? undefined;
   const storeId = await snapshotApi.getSnapshotStoreId(snapshotId);
-  const config: SnapshotStoreConfig<T, K> | SnapshotStoreConfig<any, any>[] | undefined = snapshotStoreConfigData;
+  const config: SnapshotStoreConfig<T, K, Meta, ExcludedFields> | SnapshotStoreConfig<any, any>[] | undefined = snapshotStoreConfigData;
   // Use dynamic properties with SnapshotManagerOptions
-  const options = await useSnapshotManager<T, K>(storeId)
-    ? new SnapshotManagerOptions<T, K>({
-        baseURL: "custom-base-url",
-        enabled: true,
-        maxRetries: 5,
-        retryDelay: 2000,
-        maxAge: 500,
-        staleWhileRevalidate: 1000,
-        cacheKey: "custom-cache-key",
-        snapshotStoreConfig: snapshotStoreConfigData,
-        unsubscribeToSnapshots: () => { /* custom unsubscribe logic */ },
-        unsubscribeToSnapshot: () => { /* custom unsubscribe logic */ },
-        getCategory: category ? { name: category as string } : undefined,
-        getSnapshotConfig: (id: string | number,
-          snapshotId: string | null,
-          criteria: CriteriaType,
-          category: Category | undefined,          categoryProperties: CategoryProperties | undefined,
-          subscriberId: string | undefined,
-          delegate: SnapshotWithCriteria<T, K>[],
-          snapshotData: SnapshotData<T, K>,
-          snapshot: (
-            id: string | number | undefined,
-            snapshotId: string | null,
-            snapshotData: SnapshotData<T, K>,
-            category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
-            callback: (snapshotStore: SnapshotStore<T, K> | null) => void,
-            dataStore: DataStore<T, K>,
-            dataStoreMethods: DataStoreMethods<T, K>,
-            // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
-            metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
-            subscriberId: string, // Add subscriberId here
-            endpointCategory: string | number,// Add endpointCategory here
-            storeProps: SnapshotStoreProps<T, K>,
-            snapshotConfigData: SnapshotConfig<T, K>,
-            subscription: Subscription<T, K>,
-            snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
-            snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null,
-          ) => Promise<Snapshot<T, K>>,
-          data: Map<string, Snapshot<T, K>>,
-          events: Record<string, CalendarManagerStoreClass<T, K>[]>, // Added prop
-          dataItems: RealtimeDataItem[], // Added prop
-          newData: Snapshot<T, K>, // Added prop
-          payload: ConfigureSnapshotStorePayload<T, K>, // Added prop
-          store: SnapshotStore<T, K>, // Added prop
-          callback: (snapshot: SnapshotStore<T, K>) => void, // Added prop
-          storeProps: SnapshotStoreProps<T, K>,
-          endpointCategory: string | number,
-          snapshotContainer: Promise<SnapshotContainer<T, K>>
-        ): SnapshotConfig<T, K> => {
-          // Return the snapConfig or undefined if not set
-          return snapConfig ? snapConfig : undefined;
-        },
-        // handleSnapshotOperation: (
-        //   snapshot: Snapshot<T, K>, 
-        //   data: Map<string, Snapshot<T, K>>, 
-        //   operation: SnapshotOperation<T, K>,
-        //   operationType: SnapshotOperationType
-        // )
-        //   // : Promise<Snapshot<T, K>>
-        //   => 
-        //     {
-        //   // Custom operation handling logic
-          
-        //   // Make sure to return a valid Promise<Snapshot<T, K>>
-        //   return Promise.resolve(snapshot); // Example return, adjust to your logic
-        // },
-    
-        handleSnapshotStoreOperation: async (
-          snapshotId: string, 
-          snapshotStore: SnapshotStore<T, K>, 
-          snapshot: Snapshot<T, K>,
-          operation: SnapshotOperation<T, K>,
-          operationType: SnapshotOperationType, 
-          callback: (snapshotStore: SnapshotStore<T, K>) => void
-        ): Promise<void> => { /* custom store operation handling */ },
-        displayToast: (message) => console.log("Toast message:", message),
-        addToSnapshotList: (snapshot) => { /* custom logic to add snapshot */ },
-        simulatedDataSource: () => ({ /* simulated data */ }),
-      }).get()
-    : {
-      baseURL: "custom-base-url",
-        enabled: true,
-        maxRetries: 5,
-        retryDelay: 2000,
-        maxAge: 500,
-        staleWhileRevalidate: 1000,
-        cacheKey: "custom-cache-key",
-        eventRecords: {},
-        category: '',
-        date: new Date(),
-        type: '',
-        data: new Map<string, Snapshot<T, K>>(),
-        initialState: null,
-        snapshotId: '',
-        snapshotConfig: [],
-        subscribeToSnapshots: subscribeToSnapshots,
-        subscribeToSnapshot: subscribeToSnapshot,
-        delegate: [],
-        dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K>,
-        getDelegate: [],
-        getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K> {
-          throw new Error('Function not implemented.');
-        },
-        snapshotMethods: [],
-      };
+  // Use dynamic properties with SnapshotManagerOptions
+  const options = await useSnapshotManager<T, K, Meta, ExcludedFields>(storeId)
+  ? new SnapshotManagerOptions<T, K, Meta, ExcludedFields<T>>({
+      handleSnapshotStoreOperation: async (
+        snapshotId: string, 
+        snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>, 
+        snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+        operation: SnapshotOperation<T, K, Meta, ExcludedFields>,
+        operationType: SnapshotOperationType, 
+        callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void
+      ): Promise<void> => { /* custom store operation handling */ },
+      displayToast: async (message) => console.log("Toast message:", message),
+      addToSnapshotList: async (snapshot) => { /* custom logic to add snapshot */ },
+      simulatedDataSource: (
+        entityType: string, 
+        storeId: number, 
+        config?: SnapshotStoreConfig<T, K, ExcludedFieldE>,
+        excludedFields?: DefaultExcludedFields<T>
+      ) => ({
+        // Required properties from SnapshotInstanceProps
+        id: 'mock-simulated-data-source',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        meta: new Map() as DefaultMeta<T, K>,
+        
+        // Required properties from SimulatedDataSource interface
+        data: {
+          initialized: true,
+          entities: new Map().set("mock-entity", {
+            id: "mock-entity",
+            title: "Mock Entity",
+            description: "Mock description",
+            timestamp: new Date(),
+            category: "mock-category"
+          } as T),
+          metadata: new Map(),
+          lastUpdated: new Date()
+        } as InitializedData<T, K, Meta, ExcludedFields>,
+        
+        fetchData: async (): Promise<SnapshotStoreConfig<T, K, Meta>> => ({
+          baseURL: "mock-base-url",
+          enabled: true,
+          maxRetries: 3,
+          retryDelay: 1000,
+          maxAge: 300000,
+          staleWhileRevalidate: 60000,
+          cacheKey: "mock-cache-key",
+          eventRecords: {} as Record<string, EventRecord<T, K, Meta, ExcludedFields>[]>,
+          category: 'mock-category',
+          date: new Date(),
+          type: 'mock-type',
+          data: new Map(),
+          initialState: null,
+          snapshotId: 'mock-snapshot-id',
+          snapshotConfig: [],
+          subscribeToSnapshots: async (
+            snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+            snapshotId: string,
+            snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+            category: Category | undefined,
+            snapshotConfig: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
+            callback: (
+              snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+              snapshots: SnapshotsArray<T, K, Meta>
+            ) => Subscriber<T, K, Meta, ExcludedFields> | null,
+            snapshots: SnapshotsArray<T, K, Meta>,
+            unsubscribe?: UnsubscribeDetails,
+          ): Promise<SnapshotsArray<T, K, Meta>> => {
+            // Your subscription logic here
+            console.log('Subscribing to snapshots:', snapshotId);
+            
+            // Simulate fetching snapshots
+            const mockSnapshots: SnapshotsArray<T, K, Meta> = [
+              {
+                id: snapshotId,
+                data: new Map().set('mock-key', {
+                  data: {
+                    id: 'mock-data',
+                    title: 'Mock Title',
+                    description: 'Mock Description',
+                    timestamp: new Date(),
+                    category: 'mock-category'
+                  } as T,
+                  meta: new Map() as Meta,
+                  events: {
+                    eventRecords: new Map()
+                  }
+                }),
+                meta: new Map() as Meta,
+                createdAt: new Date(),
+                updatedAt: new Date()
+              }
+            ];
+            
+            // Call the callback with the snapshots
+            callback(snapshotStore, mockSnapshots);
+            
+            // Return the snapshots array
+            return mockSnapshots;
+          },
+          subscribeToSnapshot: async () => {},
+          delegate: [],
+          dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>,
+          getDelegate: async () => [],
+          getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields> {
+            return {} as DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>;
+          },
+          snapshotMethods: []
+        }),
+        
+        // Optional: Additional data methods
+        get: async (id: string) => ({
+          id,
+          data: {
+            id: "mock-data",
+            title: "Mock Title",
+            description: "Mock Description",
+            timestamp: new Date(),
+            category: "Mock Category"
+          } as T,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }),
+        create: async (data: Partial<T>) => ({
+          id: `mock-${Date.now()}`,
+          data: {
+            ...data,
+            id: `mock-${Date.now()}`,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          } as T,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }),
+        update: async (id: string, data: Partial<T>) => ({
+          id,
+          data: {
+            ...data,
+            id,
+            updatedAt: new Date()
+          } as T,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }),
+        delete: async (id: string) => true,
+        list: async () => [{
+          id: "mock-item-1",
+          data: {
+            id: "mock-item-1",
+            title: "Mock Item 1",
+            description: "Description 1",
+            timestamp: new Date(),
+            category: "Category 1"
+          } as T,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }]
+      }),
+    }).get()
+  : {
+      // ... rest of your alternative configuration
+    };
 
-  const operation: SnapshotOperation<T, K> = {
+  const operation: SnapshotOperation<T, K, Meta, ExcludedFields> = {
     operationType: SnapshotOperationType.FindSnapshot,
   };
 
-  const newStore = new SnapshotStore<T, K>(storeId, options, category, config, operation);
+  const newStore = new SnapshotStore<T, K, Meta, ExcludedFields>(storeId, options, category, config, operation);
   callback([newStore]);
   // Simulate a delay before receiving the update
   setTimeout(() => {
@@ -175,7 +231,7 @@ const snapshotManagerResponse = await useSnapshotManager(storeId);
 const options = snapshotManagerResponse && snapshotManagerResponse.snapshotManager
   ? snapshotManagerResponse.snapshotManager.getData(data)
   : {
-    data: new Map<string, Snapshot<T, K>>(),
+    data: new Map<string, Snapshot<T, K, Meta, ExcludedFields>>(),
     initialState: null,
     snapshotId: "",
     category: { /* Default category values */ },
@@ -185,17 +241,17 @@ const options = snapshotManagerResponse && snapshotManagerResponse.snapshotManag
     subscribeToSnapshots: subscribeToSnapshots,
     subscribeToSnapshot: subscribeToSnapshot,
     delegate: [],
-    dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K>,
+    dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>,
     getDelegate: [],
-    getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K> {
+    getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields> {
       throw new Error("Function not implemented.");
     },
     snapshotMethods: [],
     eventRecords: null,
   };
 
-const operation: SnapshotOperation<T, K> = {
+const operation: SnapshotOperation<T, K, Meta, ExcludedFields> = {
   operationType: SnapshotOperationType.FindSnapshot,
 };
 
-export const newStore = new SnapshotStore<T, K>(storeId, options, category, config, operation);
+export const newStore = new SnapshotStore<T, K, Meta, ExcludedFields>(storeId, options, category, config, operation);

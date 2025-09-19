@@ -14,6 +14,7 @@ import { K, T } from "../models/data/dataStoreMethods";
 import { ExcludedFields } from "../routing/Fields";
 import { fetchPortfolioUpdatesLastUpdated } from "../trading/TradingUtils";
 import { Subscriber } from "../users/Subscriber";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/configs/BaseConfig";
 
 interface UseSubscriptionOptions {
   channel: string;
@@ -32,7 +33,12 @@ const portfolioUpdatesLastUpdated = async (): Promise<number | ModifiedDate | nu
 }; 
 
 
-const useSubscription = ({
+const useSubscription = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>({
   channel,
   onLiveEvent,
   enabled = true,
@@ -56,9 +62,8 @@ const useSubscription = ({
       unsubscribeReason: string;
       unsubscribeData: any;
     },
-    callback: Callback<Snapshot<SnapshotContainerData<T, K,
-      ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K,
-      ExcludedFields<T, keyof T>>>> | null
+    callback: Callback<Snapshot<SnapshotContainerData<T, K, Meta, ExcludedFields>,
+      SnapshotContainerData<T, K, Meta, ExcludedFields>>> | null
   ) => {
     // Filter out the subscriber with the given subscriberId
     const updatedSubscribers = subscribers.filter(
@@ -92,10 +97,20 @@ const useSubscription = ({
     if (callback) {
       // Here, assuming you want to pass a Snapshot object to the callback.
       // You may need to adjust the structure of the Snapshot data accordingly.
-      const snapshot: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>> = {
+      const snapshot: Snapshot<SnapshotContainerData<T, K, Meta, ExcludedFields>> = {
         // Populate the Snapshot with the relevant data
         snapshotId: unsubscribeDetails.snapshotId,
         snapshotData: unsubscribeDetails.unsubscribeData,
+        dataObject: unsubscribeDetails.dataObject,
+        deleted: unsubscribeDetails.deleted,
+        initialState: unsubscribeDetails.initialState,
+        isCore: unsubscribeDetails.isCore,
+        initialConfig: unsubscribeDetails.initialConfig,
+        onInitialize: unsubscribeDetails.onInitialize,
+        onError: unsubscribeDetails.onError,
+        taskIdToAssign: unsubscribeDetails.taskIdToAssign,
+       
+        
         // Include other relevant data here as needed
       };
       

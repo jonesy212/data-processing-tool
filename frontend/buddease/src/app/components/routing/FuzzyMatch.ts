@@ -1,77 +1,92 @@
 // FuzzyMatch.ts
-import { SharedIdentifiers, SharedTimestamps } from "@/app/components/documents/RelatedProps";
+import { SharedIdentifiers, SharedTimestamps, BaseEntityProperties } from "@/app/components/documents/RelatedProps";
 import { AppMetadata } from '@/app/configs/database/MetaDataOptions';
 import AppTreeService from "@/app/services/AppTreeService";
 import { useAuth } from "@/server/auth/AuthContext";
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
+
 import fuzzysort from "fuzzysort";
 import { processTextWithSpaCy } from "../intelligence/AutoGPTSpaCyIntegration";
 import { AllTypes } from "../typings/PropTypes";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/app/configs/BaseConfig";
-
 interface BaseEntity<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends SharedIdentifiers<T, K, Meta, ExcludedFields>, 
-    SharedTimestamps 
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SharedIdentifiers<T, K, Meta, ExcludedFields, IncludedFields>,
+          SharedTimestamps
 {
-  description?: string | null | undefined;
-  appMetadata?: AppMetadata<T, K, Meta>;
+  description?: string | null;
+  appMetadata?: AppMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   filePathOrUrl?: string;
   source?: string;
 }
 
-
 // Define a type for your entities
-interface Entity extends BaseEntity {
-  type?: string | AllTypes | null
+interface Entity<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends BaseEntity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+          BaseEntityProperties 
+{
+  type?: string | AllTypes | null;
 }
 
-
 // Function to perform fuzzy matching with spaCy processing
-export const fuzzyMatchEntities = async (
+export const fuzzyMatchEntities = async <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   query: string,
-  entities: Entity[]
-): Promise<Entity[]> => {
+  entities: Entity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+): Promise<Entity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
-    // Get the authentication state from the context
     const { user } = useAuth();
+    if (!user || !user.isLoggedIn) return [];
 
-    // Check if the user is logged in
-    if (!user || !user.isLoggedIn) {
-      return [];
-    }
+    const appTree = await AppTreeService.getTree();
+    if (!appTree) return [];
 
-    // Get the app tree
-    const appTree = await AppTreeService.getTree(); // Assuming getTree function is defined in AppTreeService
-
-    // If there is no app tree, return an empty array
-    if (!appTree) {
-      return [];
-    }
-
-    // Convert the appTree to an array or use the expected type for processTextWithSpaCy
     const appTreeArray = Object.values(appTree);
-
-    // Use spaCy to process the query for advanced NLP features
     const processedQuery = await processTextWithSpaCy(query, appTreeArray);
 
-    // Perform fuzzy search on the processed query
-    const results = fuzzysort.go(processedQuery, entities, { key: "name" });
+    const results = fuzzysort.go(
+      processedQuery,
+      entities,
+      { key: "name" }
+    );
 
-    // Return the matched entities
     return results.map((result) => result.obj);
   } catch (error) {
-    console.error(
-      "Error performing fuzzy matching with spaCy processing:",
-      error
-    );
+    console.error("Error performing fuzzy matching with spaCy processing:", error);
     return [];
   }
 };
 
-const entities: Entity[] = [
+
+// Example concrete entity type using generics
+type ConcreteEntity = Entity<
+  BaseDataEntity,         // T
+  BaseDataEntity,         // K
+  DefaultMeta<BaseDataEntity, BaseDataEntity>, // Meta
+  Attachment,             // AttachmentType
+  keyof BaseDataEntity,   // ExcludedFields
+  keyof BaseDataEntity    // IncludedFields
+>;
+
+// Define entities array with proper generic typing
+const entities: ConcreteEntity[] = [
   {
     id: 1, name: "Apple Inc.", description: "Tech company", source: "local", type: "company",
     createdBy: undefined,

@@ -8,7 +8,7 @@ function transformToSnapshotMap<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   map: Map<string, T>
-): Map<string, Snapshot<T, K>> {
+): Map<string, Snapshot<T, K, Meta, ExcludedFields>> {
   return new Map(
     [...map.entries()].map(([key, value]) => [
       key,
@@ -62,7 +62,7 @@ function transformToSnapshotMap<
         addDataStatus: () => {
           console.log("Default addDataStatus called");
         }, // Placeholder for adding data status
-      } as Snapshot<T, K>,
+      } as Snapshot<T, K, Meta, ExcludedFields>,
     ])
   );
 }
@@ -73,7 +73,7 @@ function transformSnapshotConfig<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 
->(config: SnapshotStoreConfig<T, K>): SnapshotStoreConfig<T, K> {
+>(config: SnapshotStoreConfig<T, K, Meta, ExcludedFields>): SnapshotStoreConfig<T, K, Meta, ExcludedFields> {
   const { initialState, configOption, ...rest } = config;
 
   const transformedConfigOption =

@@ -2,66 +2,67 @@
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { Snapshot, SnapshotDataType } from '@/app/components/snapshots';
 import { SnapshotData } from '@/app/components/snapshots/SnapshotData';
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, ExcludedFields } from '@/app/configs/BaseConfig';
 import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { BaseData } from "../models/data/Data";
 import { T } from '../models/data/dataStoreMethods';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStore, useDataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Subscription } from "../subscriptions/Subscription";
 import { convertSnapshotData, convertSnapshotMap } from "../typings/YourSpecificSnapshotType";
 import { Subscriber } from '../users/Subscriber';
 import { createSnapshotStoreOptions } from "./createSnapshotStoreOptions";
 import { SnapshotConfig, SnapshotStoreConfig, SnapshotStoreMethod, SnapshotStoreProps } from "./index";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
+import { SnapshotContainerType } from './SnapshotContainer';
 import SnapshotStore from "./SnapshotStore";
 
-
 function convertBaseDataToK<
-  T extends  BaseData<any>, 
+  T extends BaseDataEntity, 
   K extends T = T,
->(snapshot: Snapshot<T, K>): Snapshot<T, K> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+>(snapshot: Snapshot<T, K, Meta, ExcludedFields>): Snapshot<T, K, Meta, ExcludedFields> {
   // Convert the properties field to match type K
   const convertedProperties = snapshot.properties as unknown as K;
 
-  // Convert the subscribers field to SubscriberCollection<T, K>[]
-  const convertedSubscribers: SubscriberCollection<T, K>[] = snapshot.subscribers.map(subscriber => {
+  // Convert the subscribers field to SubscriberCollection<T, K, Meta, ExcludedFields>[]
+  const convertedSubscribers: SubscriberCollection<T, K, Meta, ExcludedFields>[] = snapshot.subscribers.map(subscriber => {
     if (Array.isArray(subscriber)) {
       // If subscriber is an array, map each element
-      return subscriber.map(sub => sub as unknown as Subscriber<T, K>);
+      return subscriber.map(sub => sub as unknown as Subscriber<T, K, Meta, ExcludedFields>);
     } else {
       // If subscriber is a Record<string, Subscriber[]>
-      const convertedRecord: Record<string, Subscriber<T, K>[]> = {};
+      const convertedRecord: Record<string, Subscriber<T, K, Meta, ExcludedFields>[]> = {};
       for (const key in subscriber) {
         convertedRecord[key] = subscriber[key].map((
-          sub: Subscriber<T, K>
-        ) => sub as unknown as Subscriber<T, K>);
+          sub: Subscriber<T, K, Meta, ExcludedFields>
+        ) => sub as unknown as Subscriber<T, K, Meta, ExcludedFields>);
       }
       return convertedRecord;
     }
   });
 
   // Convert the snapshotData field
-  const convertedSnapshotData = snapshot.snapshotData as unknown as SnapshotData<T, K> & {
+  const convertedSnapshotData = snapshot.snapshotData as unknown as SnapshotData<T, K, Meta, ExcludedFields> & {
     snapshotData: (
       id: string | number | undefined,
       snapshotId: string | number | null,
-      data: Snapshot<T, K>,
-      mappedSnapshotData: Map<string, Snapshot<T, K>> | null | undefined,
-      snapshotData: SnapshotData<T, K>,
-      snapshotStore: SnapshotStore<T, K>,
+      data: Snapshot<T, K, Meta, ExcludedFields>,
+      mappedSnapshotData: Map<string, Snapshot<T, K, Meta, ExcludedFields>> | null | undefined,
+      snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+      snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
-      dataStoreMethods: DataStoreMethods<T, K>,
-      storeProps: SnapshotStoreProps<T, K>
-    ) => Promise<SnapshotDataType<T, K>>;
+      dataStoreMethods: DataStoreMethods<T, K, Meta, ExcludedFields>,
+      storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>
+    ) => Promise<SnapshotDataType<T, K, Meta, ExcludedFields>>;
   };
 
-  // Construct the new Snapshot<T, K>
-  const convertedSnapshot: Snapshot<T, K> = {
+  // Construct the new Snapshot<T, K, Meta, ExcludedFields>
+  const convertedSnapshot: Snapshot<T, K, Meta, ExcludedFields> = {
     ...snapshot,
     properties: convertedProperties,
     subscribers: convertedSubscribers,
@@ -77,13 +78,13 @@ function convertSnapshot<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
-  snapshot: Snapshot<T, K>,
+  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
   context: {
     useSimulatedDataSource: boolean;
-    simulatedDataSource: SnapshotStoreConfig<T, K>[];
+    simulatedDataSource: SnapshotStoreConfig<T, K, Meta, ExcludedFields>[];
   },
-  storeProps: SnapshotStoreProps<T, K>
-): Promise<Snapshot<T, K>> {
+  storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>
+): Promise<Snapshot<T, K, Meta, ExcludedFields>> {
   return new Promise((resolve, reject) => {
     try {
       if (!snapshot.store) {
@@ -91,33 +92,33 @@ function convertSnapshot<
       }
 
        // Convert dataStoreMethods
-      const dataStoreMethods = snapshot.store.getDataStoreMethods() as DataStoreWithSnapshotMethods<T, K>;
+      const dataStoreMethods = snapshot.store.getDataStoreMethods() as DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>;
 
       // Convert snapshot methods
       const convertedSnapshotMethods = dataStoreMethods.snapshotMethods?.map(
-        (method: SnapshotStoreMethod<T, K>) => ({
+        (method: SnapshotStoreMethod<T, K, Meta, ExcludedFields>) => ({
           ...method,
           snapshot: (
             id: string | number | undefined,
             snapshotId: string | null,
-            snapshotData: SnapshotData<T, K>,
+            snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
             category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
-            callback: (snapshotStore: SnapshotStore<T, K>) => void,
-            dataStore: DataStore<T, K>,
-            dataStoreMethods: DataStoreMethods<T, K>,
+            callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void,
+            dataStore: DataStore<T, K, Meta, ExcludedFields>,
+            dataStoreMethods: DataStoreMethods<T, K, Meta, ExcludedFields>,
             metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
             subscriberId: string,
             endpointCategory: string | number,
-            storeProps: SnapshotStoreProps<T, K>,
-            snapshotConfigData: SnapshotConfig<T, K>,
-            subscription: Subscription<T, K>,
-            snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
-            snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
+            storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+            snapshotConfigData: SnapshotConfig<T, K, Meta, ExcludedFields>,
+            subscription: Subscription<T, K, Meta, ExcludedFields>,
+            snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
+            snapshotContainer?: SnapshotContainerType<T, K, Meta, ExcludedFields>
           ) =>
             method.snapshot(
               id,
               snapshotId,
-              convertSnapshotData<T, K>(snapshotData),
+              convertSnapshotData<T, K, Meta, ExcludedFields>(snapshotData),
               category,
               categoryProperties,
               callback,
@@ -137,34 +138,34 @@ function convertSnapshot<
 
       // Convert snapshotConfig
       const convertedSnapshotConfig = snapshot.store.snapshotConfig.map(
-        (config: SnapshotConfig<T, K>) => ({
+        (config: SnapshotConfig<T, K, Meta, ExcludedFields>) => ({
           ...config,
           dataStoreMethods: {
             ...config.dataStoreMethods,
             snapshotMethods: config.dataStoreMethods?.snapshotMethods?.map(
-              (method: SnapshotStoreMethod<T, K>) => ({
+              (method: SnapshotStoreMethod<T, K, Meta, ExcludedFields>) => ({
                 ...method,
                 snapshot: (
                   id: string | number | undefined,
                   snapshotId: string | null,
-                  snapshotData: SnapshotData<T, K>,
+                  snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
                   category: Category | undefined,                  categoryProperties: CategoryProperties | undefined,
-                  callback: (snapshotStore: SnapshotStore<T, K>) => void,
-                  dataStore: DataStore<T, K>,
-                  dataStoreMethods: DataStoreMethods<T, K>,
+                  callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void,
+                  dataStore: DataStore<T, K, Meta, ExcludedFields>,
+                  dataStoreMethods: DataStoreMethods<T, K, Meta, ExcludedFields>,
                   metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
                   subscriberId: string,
                   endpointCategory: string | number,
-                  storeProps: SnapshotStoreProps<T, K>,
-                  snapshotConfigData: SnapshotConfig<T, K>,
-                  subscription: Subscription<T, K>,
-                  snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
-                  snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
+                  storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+                  snapshotConfigData: SnapshotConfig<T, K, Meta, ExcludedFields>,
+                  subscription: Subscription<T, K, Meta, ExcludedFields>,
+                  snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
+                  snapshotContainer?: SnapshotContainerType<T, K, Meta, ExcludedFields>
                 ) =>
                   method.snapshot(
                     id,
                     snapshotId,
-                    convertSnapshotData<T, K>(snapshotData),
+                    convertSnapshotData<T, K, Meta, ExcludedFields>(snapshotData),
                     category,
                     categoryProperties,
                     callback,
@@ -180,22 +181,22 @@ function convertSnapshot<
                     snapshotContainer
                   ),
               })
-            ) as SnapshotStoreMethod<T, K>[],
+            ) as SnapshotStoreMethod<T, K, Meta, ExcludedFields>[],
           },
         })
       );
 
-      // Convert dataStoreMethods to ensure compatibility with DataStoreWithSnapshotMethods<T, K>
-      const convertedDataStoreMethods: DataStoreWithSnapshotMethods<T, K> = {
+      // Convert dataStoreMethods to ensure compatibility with DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>
+      const convertedDataStoreMethods: DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields> = {
         ...dataStoreMethods,
         snapshotMethods: convertedSnapshotMethods,
         getDelegate: dataStoreMethods.getDelegate as (context: {
           useSimulatedDataSource: boolean;
-          simulatedDataSource: SnapshotStoreConfig<T, K>[]
-        }) => Promise<SnapshotStoreConfig<T, K>[]>,
+          simulatedDataSource: SnapshotStoreConfig<T, K, Meta, ExcludedFields>[]
+        }) => Promise<SnapshotStoreConfig<T, K, Meta, ExcludedFields>[]>,
       };
 
-      const options = createSnapshotStoreOptions<T, K>({
+      const options = createSnapshotStoreOptions<T, K, Meta, ExcludedFields>({
         initialState: snapshot.store.initialState ?? null,
         snapshotId: snapshot.store.snapshotId,
         category: snapshot.store.category ?? ({} as Category),
@@ -203,7 +204,7 @@ function convertSnapshot<
         dataStoreMethods: convertedDataStoreMethods,
       });
 
-      const defaultMetadata: UnifiedMetadata<T, K> = {
+      const defaultMetadata: UnifiedMetadata<T, K, Meta, ExcludedFields> = {
         // Assigning project-related properties to `projectMetadata`
         projectMetadata: {
           startDate: snapshot.store.startDate || undefined,
@@ -257,9 +258,9 @@ function convertSnapshot<
           snapshot.store.getSnapshotData(),
           snapshot.store.snapshot,
           snapshot.store.data instanceof Map 
-          ? convertSnapshotMap<T, K>(snapshot.store.data) 
-            : new Map<string, Snapshot<T, K>>(),
-          snapshot.store.events ? snapshot.store.events : {} as Record<string, CalendarManagerStoreClass<T, K>[]>,
+          ? convertSnapshotMap<T, K, Meta, ExcludedFields>(snapshot.store.data) 
+            : new Map<string, Snapshot<T, K, Meta, ExcludedFields>>(),
+          snapshot.store.events ? snapshot.store.events : {} as Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>,
           snapshot.store.dataItems,
           snapshot.store.newData,
           snapshot.store.getPayload(),
@@ -276,11 +277,13 @@ function convertSnapshot<
           const { storeId, name, version, schema, options, config, expirationDate,
             payload, callback, endpointCategory, initialState
           } = storeProps;
-          const operation: SnapshotOperation<T, K> = {
+          const operation: SnapshotOperation<T, K, Meta, ExcludedFields> = {
             operationType: SnapshotOperationType.FindSnapshot,
           };
 
-          const newStore = new SnapshotStore<T, K>({
+          const snapshotStoreConfig = useDataStore().snapshotStoreConfig
+
+          const newStore = new SnapshotStore<T, K, Meta, ExcludedFields>({
             storeId,
             name,
             version,
@@ -325,7 +328,7 @@ function convertStoreId(storeId: string | number): number {
   }
 }
 
-function deepConvert<T, K>(source: T): K {
+function deepConvert<T, K, Meta, ExcludedFields>(source: T): K {
   // Recursively map properties from T to K
   if (Array.isArray(source)) {
     return source.map(item => deepConvert(item)) as unknown as K;

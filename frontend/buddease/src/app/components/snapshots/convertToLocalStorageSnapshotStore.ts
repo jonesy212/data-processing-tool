@@ -3,9 +3,9 @@ import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStor
 import { LocalStorageSnapshotStore } from "./LocalStorageSnapshotStore";
 
 function convertToLocalStorageSnapshotStore<T extends BaseDataEntity, K extends T = T>(
-  dataStore: DataStore<T, K>
-): LocalStorageSnapshotStore<T, K> {
-  return new LocalStorageSnapshotStore<T, K>({
+  dataStore: DataStore<T, K, Meta, ExcludedFields>
+): LocalStorageSnapshotStore<T, K, Meta, ExcludedFields> {
+  return new LocalStorageSnapshotStore<T, K, Meta, ExcludedFields>({
     localStorage: window.localStorage,
     category: dataStore.category,
     options: dataStore.options,

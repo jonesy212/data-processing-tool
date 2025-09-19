@@ -29,15 +29,37 @@ import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
 import { manageDocuments } from "./functionality/DocumentManagement";
 import { SharedRelationshipData } from "@/app/components/models/data/Data";
 import { DefaultMeta, DefaultExcludedFields, BaseDataEntity } from '@/app/configs/BaseConfig';
+import { Attachment } from '@/components/documents/Attachment/attachment';
+import { AppEntity, AppExcludedFields, AppK, AppMeta, AppSnapshot, AppSnapshotStoreConfig } from "./snapshotStoreConfigInstance";
 
-export type CustomDocumentOptionProps = DocumentOptions & DappProps;
 
-interface CustomApp<
-  T extends BaseData<any, any> = any,
+
+export type CustomDocumentOptionProps<
+  T extends BaseDataEntity = AppEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends CommonRelationship<T, K>, SharedIdentifiers<T, K, Meta, ExcludedFields> {
+> = DocumentOptions & DappProps<T, K, Meta, ExcludedFields>;
+
+interface CustomApp<
+    T extends BaseData<
+    AppEntity,                                    // T
+    AppEntity,                                    // K
+    DefaultMeta<AppEntity, AppEntity>,           // Meta
+    Attachment,                                   // AttachmentType
+    DefaultExcludedFields<AppEntity>             // ExcludedFields
+  > = BaseData<
+    AppEntity,
+    AppEntity,
+    DefaultMeta<AppEntity, AppEntity>,
+    Attachment,
+    DefaultExcludedFields<AppEntity>
+  >,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends CommonRelationship<T, K>, SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields> {
     id: string;
     name: string;    
     username: string;

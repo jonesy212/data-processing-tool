@@ -2,7 +2,8 @@
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { BaseData } from '@/app/components/models/data/Data';
 import { SnapshotContainer, SnapshotData } from '@/app/components/snapshots';
-import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshots, SnapshotsArray, SnapshotsObject } from "@/app/components/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/components/snapshots/Snapshot";
 import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { SnapshotStoreMethod } from "@/app/components/snapshots/SnapshotStoreMethod";
@@ -11,13 +12,14 @@ import { SubscriberCollection } from '@/app/components/users/SubscriberCollectio
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { DefaultExcludedFields, DefaultMeta } from '../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig';
 import { DataStore } from "./DataStore";
-
 
 interface DataStoreWithSnapshotMethods<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > 
   extends DataStore<T, K, Meta> {
   snapshotMethods: SnapshotStoreMethod<T, K>[] | undefined
@@ -26,7 +28,8 @@ interface DataStoreWithSnapshotMethods<
 type AddDataParams<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > = {
   id: string;
   data: T;
@@ -41,7 +44,9 @@ type AddDataParams<
 export interface DataStoreMethods <
   T extends BaseData<any>,  
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>
   extends DataStoreWithSnapshotMethods<T, K, Meta> { 
   mapSnapshot: (
     id: number,
@@ -59,7 +64,8 @@ export interface DataStoreMethods <
   mapSnapshots: (
     storeIds: number[],
     snapshotId: string,
-    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
+    category: Category | undefined,
+    categoryProperties: CategoryProperties | undefined,
 
     snapshot: Snapshot<T, K>,
     timestamp: string | number | Date | undefined,
@@ -71,7 +77,8 @@ export interface DataStoreMethods <
     callback: (
       storeIds: number[],
       snapshotId: string,
-      category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
+      category: Category | undefined,
+      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K>,
       timestamp: string | number | Date | undefined,
       type: string,
@@ -80,7 +87,7 @@ export interface DataStoreMethods <
       snapshotStore: SnapshotStore<T, K>,
       data: K,
       index: number
-    ) => SnapshotsObject<T, K>
+    ) => SnapshotsObject<T, K, Meta, ExcludedFields>
   ) => Promise<SnapshotsArray<T, K, Meta>>
 
   addSnapshot: (snapshot: Snapshot<T, K>,

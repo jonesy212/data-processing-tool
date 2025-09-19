@@ -1,9 +1,29 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RealtimeData } from '../../../models/realtime/RealtimeData';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+
+
+interface RealtimeDataEntity extends BaseDataEntity {
+  id: string;
+  value: string | number;
+  timestamp?: Date;
+  type?: string;
+}
+
+type RealtimeDataK = RealtimeDataEntity;
+type RealtimeDataMeta = DefaultMeta<RealtimeDataEntity, RealtimeDataK>;
+type RealtimeDataExcludedFields = DefaultExcludedFields<RealtimeDataEntity>;
+type AppRealtimeData = RealtimeData<
+  RealtimeDataEntity,
+  RealtimeDataK,
+  RealtimeDataMeta,
+  RealtimeDataExcludedFields
+>;
+
 
 // Define interface for the state
 export interface RealtimeDataState {
-  realtimeDataList: RealtimeData[];
+  realtimeDataList: AppRealtimeData[];
 }
 
 // Define initial state
@@ -16,14 +36,14 @@ export const useRealtimeDataSlice = createSlice({
   name: 'realtimeData',
   initialState,
   reducers: {
-    fetchltimeData: (state, action: PayloadAction<RealtimeData>) => {
+    fetchltimeData: (state, action: PayloadAction<AppRealtimeData>) => {
       state.realtimeDataList = [action.payload];
       console.log(state.realtimeDataList);
     },
-    addRealtimeData: (state, action: PayloadAction<RealtimeData>) => {
+    addRealtimeData: (state, action: PayloadAction<AppRealtimeData>) => {
       state.realtimeDataList.push(action.payload);
     },
-    updateRealtimeData: (state, action: PayloadAction<RealtimeData>) => {
+    updateRealtimeData: (state, action: PayloadAction<AppRealtimeData>) => {
       const index = state.realtimeDataList.findIndex(
         (data) => data.id === action.payload.id.toString()
       );

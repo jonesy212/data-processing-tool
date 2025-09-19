@@ -1,9 +1,7 @@
 // responsetUtils.ts
 import { fetchSnapshotById } from '@/app/api/SnapshotApi';
-import { BaseData } from '@/app/components/models/data/Data';
 import { Snapshot, SnapshotData } from '@/app/components/snapshots';
 import { UnifiedMetadata } from '@/app/configs/database/MetaDataOptions';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { DataStore, InitializedState } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
@@ -13,8 +11,10 @@ import SnapshotStore from './SnapshotStore';
 import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 import { SnapshotStoreDataResponse } from './SnapshotStoreDataResponse';
 import { SnapshotStoreProps } from './useSnapshotStore';
+import { ExcludedFields } from '../../../data_analysis/frontend/buddease/src/app/components/routing/Fields';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig';
 
-function handleSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshot: Snapshot<any, any>) {
+function handleSnapshot<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshot: Snapshot<any, any>) {
     if ('snapshotMethods' in snapshot.data) {
       // Safely access SnapshotStore specific methods
       const methods = (snapshot.data as SnapshotStoreDataResponse<T,K>).snapshotMethods;
@@ -27,9 +27,9 @@ function handleSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends 
   }
 
 
-function mapResponseToSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function mapResponseToSnapshot<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   response: any
-): Snapshot<SnapshotStoreDataResponse<T, K>> {
+): Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>> {
     return {
       id: response.id,
       timestamp: new Date(response.timestamp),
@@ -205,14 +205,19 @@ function mapResponseToSnapshot<T extends  BaseData<any>, K extends T = T, Meta e
 
 
 
-const returnsSnapshotStore = async (
+const returnsSnapshotStore = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
   id: string,
-  snapshotData: SnapshotData<any, any>,
+  snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
   category: Category | undefined,
   categoryProperties: CategoryProperties | undefined,
-  dataStoreMethods: DataStore<any, any>
-): Promise<SnapshotStore<any, any> | null> => {
-  try {
+  dataStoreMethods: DataStore<T, K, Meta, ExcludedFields>
+): Promise<SnapshotStore<T, K, Meta, ExcludedFields> | null> => {
+  try { 
     // Fetch snapshot data from the API or use the provided snapshotData
     const fetchedData = await Promise.resolve(fetchSnapshotById(id)) || snapshotData;
 
@@ -229,7 +234,7 @@ const returnsSnapshotStore = async (
     const subscribers = snapshotData.subscribers || [];
     
     // Create a snapshot configuration object
-    const snapshotConfig: SnapshotStore<any, any> = {
+    const snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, ExcludedFields> = {
       id,
       category: category || "defaultCategory",
       initialState,
@@ -256,22 +261,22 @@ const returnsSnapshotStore = async (
       snapshot: async (
         id: string | number | undefined,
         snapshotId: string | null,
-        snapshotData: SnapshotData<any, any> | null,
+        snapshotData: SnapshotData<T, K, Meta, ExcludedFields> | null,
         category: Category,
         categoryProperties: CategoryProperties | undefined,
-        callback: (snapshot: Snapshot<any, any>) => void,
-        dataStoreMethods: DataStore<any, any>[],
-        metadata: UnifiedMetadata<any, any>,
-        subscriberId: string, // Add subscriberId here
-        endpointCategory: string | number,// Add endpointCategory here
-        storeProps: SnapshotStoreProps<any, any>,
-        snapshotConfigData: SnapshotConfig<any, any>,
-        snapshotStoreConfigData?: SnapshotStoreConfig<any, any>,
-        snapshotContainer?: SnapshotContainer<any, any> | undefined
+        callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void,
+        dataStore: DataStore<T, K, Meta, ExcludedFields>,
+        dataStoreMethods: DataStore<T, K, Meta, ExcludedFields>[],
+        metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
+        subscriberId: string,
+        endpointCategory: string | number,
+        storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+        snapshotConfigData?: SnapshotConfig<T, K, Meta, ExcludedFields>,
+        snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
+        snapshotContainer?: SnapshotContainer<T, K, Meta, ExcludedFields> | undefined
       ) => {
         // Implement the snapshot function here
-        // This is a placeholder implementation
-        const result = await Promise.resolve({} as Snapshot<any, any>);
+        const result = await Promise.resolve({} as Snapshot<T, K, Meta, ExcludedFields>);
         callback(result);
         return result;
       },
@@ -281,7 +286,7 @@ const returnsSnapshotStore = async (
       additionalData: {},
     };
     
-    return snapshotConfig;
+    return snapshotStoreConfig as unknown as SnapshotStore<T, K, Meta, ExcludedFields>;
   } catch (error) {
     console.error('Error in returnsSnapshotStore:', error);
     throw new Error('Failed to configure snapshot store');
@@ -290,9 +295,9 @@ const returnsSnapshotStore = async (
 
 
 export {
-  handleSnapshot,
-  mapResponseToSnapshot,
-  returnsSnapshotStore
+    handleSnapshot,
+    mapResponseToSnapshot,
+    returnsSnapshotStore
 };
 
 

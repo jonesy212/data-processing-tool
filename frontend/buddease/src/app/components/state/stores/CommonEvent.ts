@@ -1,28 +1,30 @@
 // CommonEvent.ts
 import { snapshotContainer } from '@/app/api/SnapshotApi';
 import { SnapshotContainer } from '@/app/components/snapshots/SnapshotContainer';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { StatusType } from '@/app/components/models/data/StatusType';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { Snapshot } from '@/app/components/snapshots/Snapshot';
+import { isSnapshot } from "@/app/components/utils/snapshotUtils";
+import { useMetadata } from '@/app/configs/useMetadata';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { UnsubscribeDetails } from '../../event/DynamicEventHandlerExample';
 import { EventStore } from '../../event/EventStore';
 import { Category } from '../../libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from "../../models/data/Data";
+import { K, T } from '../../models/data/dataStoreMethods';
 import { Member } from "../../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from '../../projects/DataAnalysisPhase/AnalysisType';
 import { SnapshotData, SnapshotStoreConfig } from '../../snapshots';
 import { FetchSnapshotPayload } from '../../snapshots/FetchSnapshotPayload';
 import { SnapshotsArray, SnapshotUnion } from '../../snapshots/LocalStorageSnapshotStore';
-import { Snapshot } from '@/app/components/snapshots/Snapshot';
 import SnapshotStore from '../../snapshots/SnapshotStore';
 import { snapshotStoreConfigInstance } from '../../snapshots/snapshotStoreConfigInstance';
 import { SnapshotWithCriteria, TagsRecord } from '../../snapshots/SnapshotWithCriteria';
 import { Callback } from '../../snapshots/subscribeToSnapshotsImplementation';
 import { convertToDataSnapshot } from '../../typings/YourSpecificSnapshotType';
-import { isSnapshot } from "@/app/components/utils/snapshotUtils";
 import { Subscriber } from '../../users/Subscriber';
 import { ExtendedVersionData } from '../../versions/VersionData';
 import { VideoData } from "../../video/Video";
@@ -30,8 +32,8 @@ import { VideoData } from "../../video/Video";
 interface CommonEvent<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > extends Data<T, K, Meta> {  // Fixed: Data requires T, K, Meta
   title: string;
 
@@ -41,7 +43,7 @@ interface CommonEvent<
   // Shared time properties
   startTime?: string;
   endTime?: string;
-  tags?: TagsRecord<T, K> | string[] | undefined;
+  tags?: TagsRecord<T, K, Meta, ExcludedFields> | string[] | undefined;
 
   // Recurrence properties
   recurring?: boolean;
@@ -57,16 +59,21 @@ interface CommonEvent<
   metadata?: UnifiedMetadata<T, K, Meta, ExcludedFields>;
   
   // Implement the `then` function using the reusable function
-  then?: <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  then?: <T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
     callback: (newData: Snapshot<BaseData, K>) => void
   ) => Snapshot<Data<T, K, Meta>, K> | undefined; // Fixed return type
 }
 
 // Define the function to implement the `then` functionality
-export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  callback: (newData: Snapshot<T, K>) => void
-): Snapshot<T, K> | undefined {
-  const snapshot: Snapshot<T, K> = {
+export function implementThen<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
+  callback: (newData: Snapshot<T, K, Meta, ExcludedFields>) => void
+): Snapshot<T, K, Meta, ExcludedFields> | undefined {
+  const snapshot: Snapshot<T, K, Meta, ExcludedFields> = {
     id: "someId",
     data: new Map([
       ["someId", {
@@ -82,7 +89,7 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
         getSnapshotItems: () => [],
         defaultSubscribeToSnapshots: () => { },
         versionInfo: {},
-      } as unknown as Snapshot<T, K>]
+      } as unknown as Snapshot<T, K, Meta, ExcludedFields>]
     ]),
     timestamp: new Date(),
     subscriberId: "someSubscriberId",
@@ -100,10 +107,10 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
       data: {} as T,
     },
     store: undefined,
-    events: {} as EventStore<T, K>,
+    events: {} as EventStore<T, K, Meta, ExcludedFields>,
     meta: {},
     // Corrected getSnapshotId implementation
-    getSnapshotId: function (key: string | SnapshotData<T, K>, snapshot: Snapshot<T, K>): unknown {
+    getSnapshotId: function (key: string | SnapshotData<T, K, Meta, ExcludedFields>, snapshot: Snapshot<T, K, Meta, ExcludedFields>): unknown {
       // If the key is a string, you can use it directly
       if (typeof key === 'string') {
         return snapshot.id; // or some logic to derive the ID
@@ -119,8 +126,8 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
       return null; // Return null or some default value if no ID can be determined
     },
     compareSnapshotState: function (
-      snapshot1: Snapshot<T, K> | null,
-      snapshot2: Snapshot<T, K>
+      snapshot1: Snapshot<T, K, Meta, ExcludedFields> | null,
+      snapshot2: Snapshot<T, K, Meta, ExcludedFields>
     ): boolean {
       // Check if snapshot1 exists and has a state property
       if (snapshot1 && snapshot1.state) {
@@ -146,7 +153,7 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
         unsubscribeReason: string;
         unsubscribeData: any;
       },
-      callback: Callback<Snapshot<T, K>> | null): void {
+      callback: Callback<Snapshot<T, K, Meta, ExcludedFields>> | null): void {
       // Remove reference to callback
       let callbackRef = callback;
       callbackRef = null;
@@ -164,8 +171,8 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
         timestamp: Date,
         data: T,
         delegate: SnapshotWithCriteria<T, K>[]
-      ) => Snapshot<T, K>
-    ): Promise<Snapshot<T, K> | undefined> {
+      ) => Snapshot<T, K, Meta, ExcludedFields>
+    ): Promise<Snapshot<T, K, Meta, ExcludedFields> | undefined> {
       if (callback) {
         
         const convertedSnapshot = convertToDataSnapshot(snapshot);
@@ -198,7 +205,7 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
     handleSnapshot: function (
       id: string,
       snapshotId: string,
-      snapshot: T extends SnapshotData<T, K> ? Snapshot<T, K> : null,  // Use conditional type to ensure properties exist
+      snapshot: T extends SnapshotData<T, K, Meta, ExcludedFields> ? Snapshot<T, K, Meta, ExcludedFields> : null,  // Use conditional type to ensure properties exist
       snapshotData: T,
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
@@ -208,10 +215,10 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
       event: Event,
       snapshotContainer?: T,
       snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null,
-    ): Promise<Snapshot<T, K> | null> {
+    ): Promise<Snapshot<T, K, Meta, ExcludedFields> | null> {
      
       if (snapshot && isSnapshot<T, K>(snapshot)) {
-        // Now TypeScript knows that `snapshot` is of type `Snapshot<T, K>`
+        // Now TypeScript knows that `snapshot` is of type `Snapshot<T, K, Meta, ExcludedFields>`
         snapshot.state = snapshots;
         snapshot.event = event;
         snapshot.type = type;
@@ -226,7 +233,7 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
       subscriber: Subscriber<T, K> | null,
       data: T,
       event: Event,
-      callback: Callback<Snapshot<T, K>>,
+      callback: Callback<Snapshot<T, K, Meta, ExcludedFields>>,
       value: T,
     ): SnapshotsArray<T, K, Meta> {
       const foundSubscriber = subscriber as Subscriber<T, K>;
@@ -236,14 +243,14 @@ export function implementThen <T extends  BaseData<any>,  K extends T = T,  Meta
       }
     
       // Create a new snapshot of type Snapshot<T, BaseData>
-      const newSnapshot: Snapshot<T, K> = {
+      const newSnapshot: Snapshot<T, K, Meta, ExcludedFields> = {
         ...snapshot,
         initialState: snapshot.initialState,
         mappedSnapshotData: snapshot.mappedSnapshotData
       };
     
       // Type assertion when passing to callback
-      callback(newSnapshot as unknown as Snapshot<T, K>);
+      callback(newSnapshot as unknown as Snapshot<T, K, Meta, ExcludedFields>);
     
       // Return an appropriate SnapshotsArray<T, K, Meta> value.
       return [newSnapshot as unknown as SnapshotUnion<T, K, Meta>];
@@ -278,7 +285,7 @@ const defaultCommonEvent: CommonEvent = {
   tags: { },
   phase: null,
   // Implement the `then` function using the reusable function
-  then: <T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  then: <T extends  BaseData<any>,  K extends T = T,  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
     callback: (newData: Snapshot<Data<T, K, Meta>, K>) => void) => implementThen(callback),
   analysisType: {} as AnalysisTypeEnum.COMPARATIVE,
   analysisResults: [],

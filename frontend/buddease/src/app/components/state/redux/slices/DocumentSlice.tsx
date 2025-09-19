@@ -47,7 +47,7 @@ const API_BASE_URL = getAppPath(versionNumber, appVersion);
 interface DocumentSliceState<
   T extends  BaseData<any>, 
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > {
   documentList: DocumentObject<T, K, Meta>[]; // Specify type arguments for DocumentObject
   selectedDocument: DocumentData<T, K, Meta> | null; // Specify type arguments for DocumentData
@@ -86,7 +86,7 @@ interface ArtworkItem {
 interface DocumentObject<
     T extends  BaseData,
     K extends T = T,
-    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
   >
   extends Document<T, K, Meta>, 
   DocumentData<T, K, Meta>, 
@@ -440,7 +440,7 @@ const initialState: DocumentObject<BaseData, BaseData> = {
 function createNewDocument<
   T extends BaseData,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   documentId: string
 ): DocumentObject<T, K, Meta> {
@@ -680,9 +680,9 @@ function createNewDocument<
           frontendVersions: [], 
           getStructureAsArray: async () => [],
           traverseDirectoryPublic: async () => [],
-          getStructure:  async () => ({} as Record<string, AppStructureItem>),
+          getStructure:  async () => ({} as Record<string, AppStructureItem<T, K, Meta, ExcludedFields>>),
           getStructureChecksum: async () => ""
-        } as FrontendStructure,
+        } as FrontendStructure<T, K, Meta, ExcludedFields>,
       },
     },
     URL: "",
@@ -1405,7 +1405,7 @@ export const exportDocumentsAsync = createAsyncThunk(
 const applyTransformation = <
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   document: WritableDraft<DocumentObject<T, K, Meta>>,
   documentTag: string,

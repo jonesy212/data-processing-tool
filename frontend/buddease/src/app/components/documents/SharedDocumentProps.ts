@@ -33,7 +33,7 @@ export interface DocumentBuilderProps<
   T extends BaseData<any>, 
   K extends T = T, 
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
   extends DocumentData<T, K, Meta, ExcludedFields>  {
   isDynamic: boolean;

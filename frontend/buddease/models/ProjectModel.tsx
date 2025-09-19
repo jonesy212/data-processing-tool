@@ -1,13 +1,44 @@
 import { Project, ProjectData } from '@/app/components/projects/Project';
 import DatabaseClient from '@/app/components/todos/tasks/DatabaseClient';
+import { Snapshot } from "@/app/components/snapshots";
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { DatabaseService } from '@/app/configs/DatabaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "../BaseConfig";
 
 
 
-// Define the generic types you need
-type ProjectDataType = ProjectData; // Replace with the actual type you intend to use
+type AppProject = Project<
+  ProjectEntity,
+  ProjectEntity,
+  DefaultMeta<ProjectEntity, ProjectEntity>,
+  Attachment,
+  DefaultExcludedFields<ProjectEntity>
+>;
 
-class ProjectModel {
+// Core App entity types
+type AppEntity = BaseDataEntity;
+type AppK = AppEntity;
+type AppMeta = DefaultMeta<AppEntity, AppK>;
+type AppExcludedFields = DefaultExcludedFields<AppEntity>;
+type AppIncludedFields = keyof AppEntity; // defaults to everything
+
+
+// Project-bound helpers
+type ProjectEntity = BaseDataEntity; // or your real Project shape
+type ProjectK = ProjectEntity;
+type ProjectMeta = DefaultMeta<ProjectEntity, ProjectK>;
+type ProjectExcludedFields = DefaultExcludedFields<ProjectEntity>;
+
+// Concrete aliases
+type ProjectSnapshot = Snapshot<ProjectEntity, ProjectK, ProjectMeta, ProjectExcludedFields>;
+type ProjectDataType = ProjectData<ProjectEntity, ProjectK, ProjectMeta, ProjectExcludedFields>;
+
+class ProjectModel <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>{
   // Remove the instance tableName property
   static tableName = "projects"; // Keep this as a static property
 
@@ -21,7 +52,7 @@ class ProjectModel {
   }
   
   // Update the method to accept an object with a `where` property
-  static findOne(criteria: { tableName?: string; where: { id: string } }): Promise<Project | null> {
+  static findOne(criteria: { tableName?: string; where: { id: string } }): Promise<Project<any, any, any, any> | null> {
     return new Promise(async (resolve, reject) => {
       try {
         // Ensure the tableName is provided in the criteria or fall back to the default
@@ -32,7 +63,7 @@ class ProjectModel {
           query: criteria.where  // Use the `where` condition from the criteria
         });
         
-        resolve(result ? (result as Project) : null);
+        resolve(result ? (result as Project<any, any, any, any>) : null);
       } catch (error) {
         console.error("Error finding project:", error);
         resolve(null);
@@ -40,16 +71,16 @@ class ProjectModel {
     });
   }
 
-  static async update(projectData: ProjectData, whereClause: any): Promise<void> {    // Use the database service to update the project with the provided whereClause
+  static async update(projectData: ProjectData<any, any, any, any>, whereClause: any): Promise<void> {    // Use the database service to update the project with the provided whereClause
     await ProjectModel.dbService.update(projectData, whereClause);
   }
 
-  static async create(projectData: ProjectData): Promise<void> {
+  static async create(projectData: ProjectData<any, any, any, any>): Promise<void> {
     // Use the database service to create the project
     await ProjectModel.dbService.create(projectData);
   }
 
-  static async findAll(): Promise<Project[]> {
+  static async findAll(): Promise<Project<any, any, any, any>[]> {
     return await ProjectModel.dbService.findAll(ProjectModel.tableName); // Use static tableName
   }
 
@@ -77,7 +108,7 @@ class ProjectModel {
     });
   }
 
-  static getProjectById(projectId: number): Promise<Project | null> {
+  static getProjectById(projectId: number): Promise<Project<any, any, any, any> | null> {
     return new Promise(async (resolve) => {
         try {
             const queryResult = await (this.dbClient.query as any)(

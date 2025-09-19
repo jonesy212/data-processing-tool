@@ -13,6 +13,8 @@ import {
 } from "@/app/configs/database/MetaDataOptions";
 import { useMeta } from "@/app/configs/useMeta";
 import { useMetadata } from "@/app/configs/useMetadata";
+import { Data } from "../models/data/Data";
+
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
@@ -54,17 +56,28 @@ import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { DocumentTypeEnum } from "@/server/DocumentGenerator";
 import { ActivityActionEnum, ActivityTypeEnum, BookmarkStatus, BorderStyle, CalendarStatus, CalendarViewType, ChatType, CollaborationOptionType, ComponentStatus, DataStatus, DocumentPhaseEnum, DocumentSize, IncludeType, Layout, MeetingStatus, NotificationPosition, NotificationStatus, Orientation, OutcomeType, PriorityTypeEnum, PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "../models/data/StatusType";
 import { ExcludedFields } from "../routing/Fields";
-import { BaseDataEntity, BaseDataRoot, DefaultMeta } from "@/app/configs/BaseConfig";
+import { BaseDataEntity, BaseDataRoot, DefaultMeta, DefaultExcludedFields } from "@/configs/BaseConfig";
+import { Permission } from "./Permission";
 
-export interface BaseUser extends User<
-  BaseData<any>, BaseData<any>,
-  StructuredMetadata<BaseData<any>, BaseData<any>>
-  >,
-  SharedIdentifiers<T, K, StructuredMetadata<T, K>
-  >,
-  SharedTimestamps,
-  SharedStatusFlags
-  {
+export type UserDataEntity = BaseDataEntity;
+export type UserDataK = UserDataEntity;
+export type UserDataMeta = DefaultMeta<UserDataEntity, UserDataK>;
+export type UserDataExcludedFields = DefaultExcludedFields<UserDataEntity>;
+
+export type AppUser = User<
+  UserData<UserDataEntity, UserDataK, UserDataMeta>,
+  UserDataMeta,
+  UserDataExcludedFields
+>;
+
+export interface BaseUser<
+  T extends UserData<any> = UserData<any>,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+> extends User<T, K, Meta>,
+    SharedIdentifiers<T, K>,  // Use T and K, not BaseDataEntity
+    SharedTimestamps,
+    SharedStatusFlags {
   // Base properties that all users share
   email: string;
 }
@@ -107,10 +120,10 @@ export const DataTypeEnums = {
 } as const;
 
 export interface User<
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends UserData<any> = UserData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-> extends UserData<T, K, Meta>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+> extends Data<T, K, Meta>
 {
   // Required fields
   username: string;
@@ -157,7 +170,7 @@ export interface User<
   followers?: User[];
   privacySettings?: PrivacySettings;
   notifications?: NotificationSettings;
-  projects?: Project[];
+  projects?: Project<T, K, StructuredMetadata<T, K>>[];
   socialLinks?: SocialLinks;
   relationshipStatus?: string | null;
   hobbies?: string[];
@@ -198,7 +211,7 @@ interface ExtendedUser<T extends BaseData = BaseData> extends BaseUser {
   workspaces?: any[]; // Optional to allow partial creation
   products?: Product[];
   roles?: UserRole[];
-  permissions?: any[];
+  permissions?: Permission[];
   status?: string;
   statusText?: string;
   activeProduct?: string;
@@ -243,12 +256,14 @@ interface Employment {
 const timeBasedCode: string = generateTimeBasedCode();
 
   export interface UserData<
-    T extends BaseDataEntity = BaseDataRoot,
+    T extends BaseDataEntity,
     K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-  > extends BaseData<T, K, Meta, Attachment>,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  > extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     SharedRelationshipData<K>,
-    
     SharedVersionData
   {
     datasets?: string;
@@ -257,7 +272,7 @@ const timeBasedCode: string = generateTimeBasedCode();
     tasks?: Task<T, K, Meta>[];
     questionnaireResponses?: any;
     chatSettings?: ChatSettings;
-    projects?: Project[];
+    projects?: Project<T, K, Meta, ExcludedFields>[];
     storeId: number;
     teams?: Team[];
     teamMembers?: TeamMember[];
@@ -630,6 +645,7 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
           value: user.value ? user.value.toString() : undefined,
           date: user.date,
           type: user.type ?? getDefaultType(),
+          phase: user.phase ?? {},
           analysisResults: user.analysisResults,
           label: label ? label.toString() : label,
           data: user.data as UserData<

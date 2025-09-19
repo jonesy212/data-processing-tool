@@ -15,7 +15,13 @@ interface DataNotificationMessages {
 }
 
 // Function to fetch exchange data
-export const fetchExchangeData = async (): Promise<ExchangeData[]> => {
+export const fetchExchangeData = async <
+  T extends BaseDataEntity = AppEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(): Promise<ExchangeData<T, K, Meta, AttachmentType, ExcludedFields>[]> => {
   try {
     
     const id = useSecureExchangeId(); // Use the newly created hook here
@@ -33,7 +39,7 @@ export const fetchExchangeData = async (): Promise<ExchangeData[]> => {
     }
 
     // Assuming YourResponseType needs to be transformed to ExchangeData[]
-    const exchangeDataArray: ExchangeData[] =
+    const exchangeDataArray: ExchangeData<T, K, Meta, AttachmentType, ExcludedFields>[] =
       transformYourResponseToExchangeData(response.data);
 
     return exchangeDataArray;
@@ -47,13 +53,17 @@ export const fetchExchangeData = async (): Promise<ExchangeData[]> => {
     throw error; // Re-throw the error after handling
   }
 };
-
-// Example transformation function (replace with actual logic)
-const transformYourResponseToExchangeData = (
-  yourResponse: YourResponseType
+// Using the full 5-parameter defaults
+const transformYourResponseToExchangeData = <
+  T extends BaseDataEntity = AppEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
+  yourResponse: YourResponseType<T, K, Meta, AttachmentType, ExcludedFields>
 ): ExchangeData[] => {
-  // Implement your transformation logic here based on your project's requirements
-  // Example:
+  // Example transformation logic
   const transformedData: ExchangeData[] = yourResponse.data!.exchangeData.map(
     (item) => ({
       id: item.id,

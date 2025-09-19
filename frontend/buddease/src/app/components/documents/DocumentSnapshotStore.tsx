@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Snapshot, Snapshots } from "../snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "../snapshots/Snapshot";
 import useDocumentStore, { Document } from "../state/stores/DocumentStore";
 import { BaseData } from "../models/data/Data";
 import { SnapshotItem } from "../snapshots";

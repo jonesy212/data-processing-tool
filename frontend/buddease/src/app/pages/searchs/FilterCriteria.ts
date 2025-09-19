@@ -1,6 +1,9 @@
 
 import { extractCriteria } from '@/app/api/SnapshotApi';
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/configs/BaseConfig";
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
+
 import {
   CodingLanguageEnum,
   LanguageEnum,
@@ -27,7 +30,7 @@ import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useMetadata } from '@/app/configs/useMetadata';
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { MessageType } from "@/app/generators/MessaageType";
-import { Filter } from "@/app/pages/searches/Filter";
+import { Filter } from "@/pages/searches/Filter";
 import { DocumentTypeEnum } from "@/server/DocumentGenerator";
 import { Pagination } from '@refinedev/core';
 import { FetchOptions, fetchUserAreaDimensions } from '../layouts/fetchUserAreaDimensions';
@@ -74,7 +77,7 @@ interface FilterCriteria extends Timestamped, StatusTrackable {
   developmentPhase?: DevelopmentPhaseEnum | null; // Filter by development phase
   subscriberType?: SubscriberTypeEnum | null; // Filter by subscriber type
   subscriptionType?: SubscriptionTypeEnum | null; // Filter by subscription type
-   analysisType?: AnalysisTypeEnum | null; // Filter by analysis type
+  analysisType?: AnalysisTypeEnum | null; // Filter by analysis type
   documentType?: DocumentTypeEnum | null; // Filter by document type
   fileType?: FileTypeEnum | null; // Filter by file type
   tenantType?: TenantManagementPhaseEnum | null;
@@ -92,10 +95,17 @@ interface FilterCriteria extends Timestamped, StatusTrackable {
   categoryCriteria?: CategoryIdentifier | CategoryProperties; // Add categoryCriteria here
 }
 
-const applyFilters = (
-  events: CalendarEvent[],
+const applyFilters = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  events: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
   criteria: FilterCriteria
-): CalendarEvent[] => {
+): CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] => {
   let filteredEvents = [...events];
 
   if (criteria.startDate !== undefined) {
@@ -295,8 +305,15 @@ const applyFilters = (
 
 
 // Utility function to check if a snapshot matches the provided criteria
-function matchesCriteria<T, K>(
-  snapshot: Snapshot<T, K>,
+function matchesCriteria<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   criteria: Partial<FilterState>
 ): boolean {
   // Extract criteria properties from the snapshot
@@ -374,7 +391,10 @@ const criteria: FilterCriteria = {
   });
 
 
-
+interface DateRannge {
+  to: Date,
+  from: Date
+}
 // 1. First define your base CalendarEvent type
 interface BaseCalendarEvent {
   description: string;
@@ -388,6 +408,7 @@ interface BaseCalendarEvent {
   teamStatus: TeamStatus;
   dataStatus: DataStatus;
   calendarStatus: CalendarStatus;
+  dateRange?: Range
 }
 
 // 2. Create a type that combines with Snapshot requirements
@@ -428,7 +449,11 @@ const events: CalendarEvent[] = [
     developmentPhase: "coding",
     subscriberType: "premium",
     subscriptionType: "monthly",
-    latestVersion, currentMeta, currentMetadata: currentMetadata, 
+    latestVersion: {},
+    currentMeta: {},
+    currentMetadata: {},
+    currentMetadata: {},
+    
     analysisType: AnalysisTypeEnum.STATISTICAL,
     documentType: "pdf",
     fileType: "document",
@@ -572,7 +597,7 @@ const events: CalendarEvent[] = [
             description: "This is a sample event",
             id: "event1",
             title: "Sample Event",
-            content: "This is a sample event content",
+            content: {},
             topics: [],
             highlights: [],
             files: [],
@@ -585,7 +610,7 @@ const events: CalendarEvent[] = [
             initialState: {},
             isCore: true,
             initialConfig: {},
-            metadata: {} as StructuredMetadata<BaseData, BaseData>,
+            metadata: {} as UnifiedMetadata<BaseData, BaseData>,
             createdAt: new Date(),
             updatedAt: new Date(),
             version: "1.0.0",
@@ -606,7 +631,7 @@ const events: CalendarEvent[] = [
             subscriberType: SubscriberTypeEnum.PREMIUM,
             subscriptionType: SubscriptionTypeEnum.Monthly,
             analysisType: AnalysisTypeEnum.STATISTICAL,
-            documentType: DocumentTypeEnum .PDF,
+            documentType: DocumentTypeEnum.PDF,
             fileType: FileTypeEnum.Document,
             tenantType: TenantManagementPhaseEnum.TenantA,
             ideaCreationPhaseType: IdeaCreationPhaseEnum.IDEATION,
@@ -632,140 +657,114 @@ const events: CalendarEvent[] = [
       })
     },
     
-    then: function <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-      callback: (newData: Snapshot<T, K>) => void
-    ): Snapshot<T, K> {
-     
-      // Simulate fetching data
-      const snapshot: Snapshot<T, K>  = {
-        description: "This is a sample event",
-        // startDate: new Date("2024-06-01"),
-        // endDate: new Date("2024-06-05"),
-        status: StatusType.Scheduled,
-        priority: "high",
-        assignedUser: "John Doe",
-        todoStatus: "completed",
-        taskStatus: "in progress",
-        teamStatus: "active",
-        dataStatus: "processed",
-        calendarStatus: "approved",
-        notificationStatus: "read",
-        bookmarkStatus: "saved",
-        priorityType: "urgent",
-        projectPhase: "planning",
-        developmentPhase: "coding",
-        subscriberType: "premium",
-        subscriptionType: "monthly",
-        analysisType: AnalysisTypeEnum.STATISTICAL,
-        documentType: "pdf",
-        fileType: "document",
-        tenantType: "tenantA",
-        ideaCreateionPhaseType: "ideation",
-        securityFeatureType: "encryption",
-        feedbackPhaseType: "review",
-        contentManagementType: "content",
-        taskPhaseType: "execution",
-        animationType: "2d",
-        languageType: "english",
-        codingLanguageType: "javascript",
-        formatType: "json",
-        privacySettingsType: "public",
-        messageType: "email",
-        id: "",
-        title: "",
-        content: "",
-        topics: [],
-        highlights: [],
-        files: [],
-        rsvpStatus: "yes",
-        getData: function (id: number | string, 
-          snapshotStore: SnapshotStore<T, K>
-        ): Data<T> | Map<string, Snapshot<T, K>> | null | undefined {
-          // Simulate fetching data
-          // Fetch or create the snapshot data
-          const snapshot: Snapshot<T, K> = {
-            description: "This is a sample event",
-            startDate: new Date("2024-06-01"),
-            endDate: new Date("2024-06-05"),
-            status: StatusType.Scheduled,
-            priority: "high",
-            assignedUser: "John Doe",
-            todoStatus: "completed",
-            taskStatus: "in progress",
-            teamStatus: "active",
-            dataStatus: "processed",
-            calendarStatus: "approved",
-            notificationStatus: "read",
-            bookmarkStatus: "saved",
-            priorityType: "urgent",
-            projectPhase: "planning",
-            developmentPhase: "coding",
-            subscriberType: "premium",
-            subscriptionType: "monthly",
-            analysisType: AnalysisTypeEnum.STATISTICAL,
-            documentType: "pdf",
-            fileType: "document",
-            tenantType: "tenantA",
-            ideaCreateionPhaseType: "ideation",
-            securityFeatureType: "encryption",
-            feedbackPhaseType: "review",
-            contentManagementType: "content",
-            taskPhaseType: "execution",
-            animationType: "2d",
-            languageType: "english",
-            codingLanguageType: "javascript",
-            formatType: "json",
-            privacySettingsType: "public",
-            messageType: "email",
-            id: "",
-            title: "",
-            content: "",
-            topics: [],
-            highlights: [],
-            files: [],
-            rsvpStatus: "yes",
-          } as Snapshot<T, K>;
+then: function <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  callback: (newData: Snapshot<T, K, Meta>) => void
+): Snapshot<T, K, Meta> {
+  
+  // Create base data with your calendar properties
+  const baseCalendarData: T = {
+    // Calendar properties
+    todoStatus: "completed",
+    taskStatus: "in progress",
+    teamStatus: "active",
+    dataStatus: "processed",
+    calendarStatus: "approved",
+    notificationStatus: "read",
+    bookmarkStatus: "saved",
+    priorityType: "urgent",
+    projectPhase: "planning",
+    developmentPhase: "coding",
+    subscriberType: "premium",
+    subscriptionType: "monthly",
+    analysisType: AnalysisTypeEnum.STATISTICAL,
+    documentType: "pdf",
+    fileType: "document",
+    tenantType: "tenantA",
+    ideaCreateionPhaseType: "ideation",
+    securityFeatureType: "encryption",
+    feedbackPhaseType: "review",
+    contentManagementType: "content",
+    taskPhaseType: "execution",
+    animationType: "2d",
+    languageType: "english",
+    codingLanguageType: "javascript",
+    formatType: "json",
+    privacySettingsType: "public",
+    messageType: "email",
+    id: "",
+    title: "",
+    content: "",
+    topics: [],
+    highlights: [],
+    files: [],
+    rsvpStatus: "yes",
+    // Add other required BaseDataEntity properties
+    snapshotId: undefined,
+    categoryProperties: undefined,
+    // ... any other required properties
+  } as T;
 
-          if (typeof callback === 'function') {
-            callback(snapshot);
-          }
+  // Create metadata
+  const baseMeta: Meta = {
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    version: 1,
+    // Add other metadata properties as needed
+  } as Meta;
 
-          // If you have specific logic for creating or fetching data based on the id, implement it here
-          if (snapshot) {
-            return snapshot; // Return the found snapshot or any data you wish to return
-          }
-          
-          return null; // Or some other default value
-      
-        },
-        createSnapshot(
-          id: string,
-          snapshotData: SnapshotData<T, K>,
-          additionalData: any,
-          category?:  Category,
-          callback?: (snapshot: Snapshot<T, K>) => void,
-          snapshotStore?: SnapshotStore<T, K>,
-          snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> ,
-        ): Snapshot<T, K> | null {
-          const newSnapshot: Snapshot<T, K> = {
-            id,
-            ...snapshotData,  // Assuming you want to include data from the existing snapshotData
-            additionalData,
-            category,
-            // Include any other necessary properties
-          };
-        
-          // Optionally call the callback with the new snapshot
-          if (callback) {
-            callback(newSnapshot);
-          }
-        
-          return newSnapshot; // Return the created snapshot
-        },
-        callback(snapshot: any) { },
-      }
-      return snapshot as unknown as Snapshot<T, K>
-    },
+  // Use createCompleteSnapshot to create a proper snapshot
+  const snapshotPromise = createCompleteSnapshot<T, K, Meta>(
+    baseCalendarData,
+    new Map(), // baseMeta map (empty for now)
+    "snapshot-id", // provide a proper ID
+    undefined, // category
+    null, // snapshotStore
+    null, // snapshotManager
+    null, // snapshotStoreConfig
+    false, // isSubscribed
+    {
+      prefix: "then",
+      name: "callback-snapshot",
+      type: "temporary"
+    } // storeProps
+  );
+
+  // Handle the promise and call the callback
+  snapshotPromise.then(snapshot => {
+    if (typeof callback === 'function') {
+      callback(snapshot);
+    }
+    return snapshot;
+  });
+
+  // Return a temporary snapshot that will be replaced by the real one
+  const temporarySnapshot: Snapshot<T, K, Meta> = {
+    id: "temp",
+    data: baseData,
+    metadata: baseMeta,
+    // Add minimal required properties
+    onInitialize: () => {},
+    taskIdToAssign: null,
+    schema: {},
+    currentCategory: undefined,
+    deleted: false,
+    status: 'active' as const,
+    meta: new Map(),
+    state: {} as any,
+    dataStores: [],
+    auditRecords: {} as any,
+    subscribed: false,
+    version: '1.0',
+    initialState: {},
+    isCore: false,
+    initialConfig: {},
+    // Calendar properties (these should really be in data, not on the snapshot itself)
+    description: "This is a sample event",
+    // ... other calendar properties if they must be on the snapshot
+  };
+
+  return temporarySnapshot;
+},
 
   },
   // Add more CalendarEvent data as needed
@@ -781,6 +780,9 @@ const filterCriteria: FilterCriteria = {
   priority: PriorityTypeEnum.High,
   assignedUser: "John Doe",
   description: "This is a sample event",
+  filters: [], 
+  sort:{}, 
+  date : new Date("2025-12-25"),
   todoStatus: TodoStatus.Completed,
   taskStatus: TaskStatus.InProgress, // Updated to enum value
   teamStatus: TeamStatus.Active, // Updated to enum value
@@ -808,6 +810,7 @@ const filterCriteria: FilterCriteria = {
   formatType: FormatEnum.JSON, // Updated to enum value
   privacySettingsType: PrivacySettingEnum.Public, // Updated to enum value
   messageType: MessageType.Email, // Updated to enum value
+  
   // Add more filter criteria as needed
 };
 

@@ -11,30 +11,30 @@ interface SnapshotStorePublicMethods<
   T extends BaseDataEntity,
   K extends T = T> {
   // Method to retrieve snapshot items
-  getSnapshotItems(): Snapshot<T, K>[];
+  getSnapshotItems(): Snapshot<T, K, Meta, ExcludedFields>[];
 
   // Method to find the index of a snapshot item
-  findIndex(predicate: (snapshot: SnapshotUnion<T, K>) => boolean): number;
+  findIndex(predicate: (snapshot: SnapshotUnion<T, K, Meta, ExcludedFields>) => boolean): number;
 
   // Method to splice items from the snapshot
-  splice(start: number, deleteCount: number): Snapshot<T, K>[];
+  splice(start: number, deleteCount: number): Snapshot<T, K, Meta, ExcludedFields>[];
 
   // Methods for snapshot store management
   saveSnapshotStore(): void;
   addSnapshotToStore(
     storeId: number,
-    snapshot: Snapshot<T, K>, 
-    snapshotStore: SnapshotStore<T, K>, 
-    snapshotStoreData: SnapshotStore<T, K>, 
+    snapshot: Snapshot<T, K, Meta, ExcludedFields>, 
+    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>, 
+    snapshotStoreData: SnapshotStore<T, K, Meta, ExcludedFields>, 
     category: Category, 
     categoryProperties: CategoryProperties | undefined, 
-    subscribers: SubscriberCollection<T, K>
+    subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>
   ): void;
-  determineSnapshotStoreCategory(storeId: number, snapshotStore: SnapshotStore<T, K>, configs: SnapshotStoreConfig<T, K>[]): string;
+  determineSnapshotStoreCategory(storeId: number, snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>, configs: SnapshotStoreConfig<T, K, Meta, ExcludedFields>[]): string;
   getSnapshotStoreData(): any; // Define a more specific type if possible
 
   // Additional methods as needed
-  addNestedStore(store: SnapshotStore<T, K>): void;
+  addNestedStore(store: SnapshotStore<T, K, Meta, ExcludedFields>): void;
   removeSnapshot(id: string): void;
   clearSnapshots(): void;
   // ...other methods

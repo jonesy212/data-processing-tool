@@ -1,24 +1,22 @@
-import { BaseData } from '@/app/components/models/data/Data';
 import { Snapshot } from "@/app/components/snapshots";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import SnapshotStore from "./SnapshotStore";
 
 // Ensure T and K are imported or defined if necessary
-const handleSnapshotStoreOperation = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+const handleSnapshotStoreOperation = async <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotId: string,
-  snapshotStore: SnapshotStore<T, K>,
-  snapshot: Snapshot<T, K>, 
-  operation: SnapshotOperation<T, K>,
+  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+  snapshot: Snapshot<T, K, Meta, ExcludedFields>, 
+  operation: SnapshotOperation<T, K, Meta, ExcludedFields>,
   operationType: SnapshotOperationType,
-  callback: (snapshotStore: SnapshotStore<T, K>) => void
-): Promise<SnapshotStoreConfig<T, K> | null> => {
+  callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void
+): Promise<SnapshotStoreConfig<T, K, Meta, ExcludedFields> | null> => {
   // Log the operation for debugging
   console.log("SnapshotStore operation handled:", snapshotStore, snapshotId);
 
   // Example logic to handle the snapshot store operation
   // You may want to update internal state, notify subscribers, etc.
-  SnapshotStoreActions<T, K>().handleSnapshotStoreSuccess({
+  SnapshotStoreActions<T, K, Meta, ExcludedFields>().handleSnapshotStoreSuccess({
     snapshotStore,
     snapshotId,
     snapshot,

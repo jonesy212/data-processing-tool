@@ -1,42 +1,34 @@
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
-import { BaseData } from '@/app/components/models/data/Data';
-import { Callback, Snapshot, SnapshotData, SnapshotsArray, SnapshotWithCriteria } from '@/app/components/snapshots';
+import { ExcludedFields } from '@/app/components/routing/Fields';
+import { Callback, Snapshot, SnapshotCoreBase, SnapshotData, SnapshotsArray, SnapshotWithCriteria } from '@/app/components/snapshots';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
-import { SnapshotSubscriberManagement } from "@/app/components/snapshots/SnapshotSubscriberManagement";
+import { SnapshotContext, SnapshotSubscriberManagement } from "@/app/components/snapshots/SnapshotSubscriberManagement";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { UpdateSnapshotPayload } from '../../../server/database/Payload';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import { EventRecord } from '../projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SubscriberCallbackType } from "../subscriptions/Subscription";
-import { SubscriberCollection } from '../users/SubscriberCollection';
 import { Subscriber } from '../users/Subscriber';
-import { SnapshotContext } from '@/app/components/snapshots/SnapshotSubscriberManagement'
-import { ExcludedFields } from '@/app/components/routing/Fields';
+import { SubscriberCollection } from '../users/SubscriberCollection';
 
 interface BaseEventCallbacks<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
   onInitialize?: () => void;
+
   on?: (
     event: string,
-    callback: (snapshot: Snapshot<T, K>) => void,
-    snapshotId: string,
-    subscribers: SubscriberCollection<T, K>,
-    type: string,
-    snapshotData: SnapshotData<T, K>
+    callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void,
+    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
   ) => void;
+
   off?: (
     event: string,
-    callback: (snapshot: Snapshot<T, K>) => void,
-    snapshotId: string,
-    subscribers: SubscriberCollection<T, K>,
-    type: string,
-    snapshotData: SnapshotData<T, K>,
+    callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void,
     unsubscribeDetails?: {
       userId: string;
       snapshotId: string;
@@ -45,17 +37,35 @@ interface BaseEventCallbacks<
       unsubscribeReason: string;
       unsubscribeData: any;
     },
+    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
   ) => void;
+
   trigger?: (
-    event: string | SnapshotEvents<T, K>,
-    snapshot: Snapshot<T, K>,
+    event: string | SnapshotEvents<T, K, Meta, ExcludedFields>,
     eventDate: Date,
-    snapshotId: string,
-    subscribers: SubscriberCollection<T, K>,
-    type: string,
-    snapshotData: SnapshotData<T, K>,
+    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
   ) => void;
 }
+
+
+
+type ExtractContextArgs<
+  T extends BaseDataEntity,
+  K extends T,
+  Meta extends DefaultMeta<T, K>,
+  ExcludedFields extends keyof T
+> =
+  | [
+      Snapshot<T, K, Meta, ExcludedFields>,
+      string,
+      SubscriberCollection<T, K, Meta, ExcludedFields>,
+      SnapshotStore<T, K, Meta, ExcludedFields>,
+      RealtimeDataItem<T, K, Meta, ExcludedFields>[],
+      Category?,
+      string?,
+      SnapshotData<T, K, Meta, ExcludedFields>? 
+    ];
+
 
 interface EventManagement<
   T extends BaseDataEntity,
@@ -67,53 +77,52 @@ interface EventManagement<
   subscribe: (
     snapshotId: string,
     unsubscribe: UnsubscribeDetails,
-    subscriber: Subscriber<T, K> | null,
+    subscriber: Subscriber<T, K, Meta, ExcludedFields> | null,
     data: T,
     event: string | Event,
-    callback: Callback<SnapshotContext<T, K, Meta, ExcludedFields>>
+    callback: Callback<SnapshotContext<T, K, Meta, ExcludedFields>>,
+    value: T
   ) => [] | SnapshotsArray<T, K, Meta>;
   
   
   unsubscribe: (
     snapshotId: string,
     unsubscribeDetails: UnsubscribeDetails,
-    callback: SubscriberCallbackType<T, K> | null,
+    callback: SubscriberCallbackType<T, K, Meta, ExcludedFields> | null,
     ctx?: SnapshotContext<T, K, Meta, ExcludedFields>
   ) => void;
 
-  emit: (
+   emit: (
     event: string,
-    ctx: SnapshotContext<T, K, Meta, ExcludedFields> & {
-      snapshotId: string;
-      type: string;
-      dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[];
-      criteria?: SnapshotWithCriteria<T, K>;
-    }
+    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
   ) => void;
 
-  once: (event: string, callback: (snapshot: Snapshot<T, K>) => void) => void;
+
+  once: (event: string, callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void) => void;
   removeAllListeners: (event?: string) => void,
 }
 
 export interface SnapshotEventHandlers<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
-  /** Mainstream / standard snapshot event hooks */
-  onSnapshotAdded: (event: string, ctx: SnapshotContext<T, K, Meta>) => void;
-  onSnapshotRemoved: (event: string, ctx: SnapshotContext<T, K, Meta> & { type: string }) => void;
-  onSnapshotUpdated: (event: string, ctx: SnapshotContext<T, K, Meta> & { snapshotId: string; data: Map<string, Snapshot<T, K>>; events: Record<string, CalendarManagerStoreClass<T, K>[]>; store: SnapshotStore<any, K> }) => void;
-  onError: (event: string, ctx: SnapshotContext<T, K, Meta> & { error: Error }) => void;
+  onSnapshotAdded: (event: string, ctx: SnapshotContext<T, K, Meta, ExcludedFields>) => void;
+  onSnapshotRemoved: (event: string, ctx: SnapshotContext<T, K, Meta, ExcludedFields> & { type: string }) => void;
+  onSnapshotUpdated: (event: string, ctx: SnapshotContext<T, K, Meta, ExcludedFields> & {
+    snapshotId: string;
+    data: Map<string, Snapshot<T, K, Meta, ExcludedFields>>;
+    events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>;
+    store: SnapshotStore<any, K>;
+  }) => void;
+  onError: (event: string, ctx: SnapshotContext<T, K, Meta, ExcludedFields> & { error: Error }) => void;
 
-  /** Optional / alternative event hooks */
-  beforeSnapshotAdd?: (event: string, ctx: SnapshotContext<T, K, Meta>) => void;
-  afterSnapshotRemove?: (event: string, ctx: SnapshotContext<T, K, Meta>) => void;
-
-  /** Primary sources / context */
-  logSnapshotEvent?: (event: string, ctx: SnapshotContext<T, K, Meta>) => void;
+  // Optional hooks
+  beforeSnapshotAdd?: (event: string, ctx: SnapshotContext<T, K, Meta, ExcludedFields>) => void;
+  afterSnapshotRemove?: (event: string, ctx: SnapshotContext<T, K, Meta, ExcludedFields>) => void;
+  logSnapshotEvent?: (event: string, ctx: SnapshotContext<T, K, Meta, ExcludedFields>) => void;
 }
-
 
 interface RecordManagement<
   T extends BaseDataEntity,
@@ -123,49 +132,106 @@ interface RecordManagement<
 > {
   addRecord: (
     event: string,
-    record: CalendarManagerStoreClass<T, K>,
-    callback: (snapshot: CalendarManagerStoreClass<T, K>) => void
+    record: CalendarManagerStoreClass<T, K, Meta, ExcludedFields>,
+    callback: (snapshot: CalendarManagerStoreClass<T, K, Meta, ExcludedFields>) => void
   ) => void;
   removeSubscriber: (
     event: string,
     snapshotId: string,
-    snapshot: Snapshot<T, K>,
-    snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
-    criteria: SnapshotWithCriteria<T, K>,
-    category: Category
+    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
   ) => void;
 }
 
 interface SharedProperties<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
   eventRecords: Record<string, EventRecord<T, K, Meta>[]> | null;
-  records: Record<string, CalendarManagerStoreClass<T, K>[]> | null;
+  records: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]> | null;
   eventIds: string[];
   eventsDetails?: Record<string, any>;
 }
 
- interface SnapshotEvents<
+interface SnapshotEventBase<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends SnapshotCoreBase<T, K, Meta, ExcludedFields> {
+  key?: string;
+  target?: EventTarget;
+  snapshotData?: SnapshotData<T, K, Meta, ExcludedFields>;
+  dataItems?: RealtimeDataItem<T, K, Meta, ExcludedFields>[];
+}
+
+
+interface SnapshotEvents<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-> extends
-  BaseEventCallbacks<T, K, Meta>,
-  EventManagement<T, K, Meta, ExcludedFields>,
-  SnapshotEventHandlers<T, K, Meta>,
-  RecordManagement<T, K, Meta>,
-  SharedProperties<T, K>,
-  SnapshotSubscriberManagement<T, K, Meta, ExcludedFields>
+> extends SnapshotEventBase<T, K, Meta, ExcludedFields>,
+    BaseEventCallbacks<T, K, Meta>,
+    EventManagement<T, K, Meta, ExcludedFields>,
+    SnapshotEventHandlers<T, K, Meta>,
+    RecordManagement<T, K, Meta>,
+    SharedProperties<T, K, Meta, ExcludedFields>,
+    SnapshotSubscriberManagement<T, K, Meta, ExcludedFields>
 {
-  key?: string;
-  target?: EventTarget; // Event target
-  snapshotData?: SnapshotData<T, K>;
-  dataItems?: RealtimeDataItem<T, K, Meta, ExcludedFields>[];
+  // Additional event-specific properties
+  eventType?: string;
+  eventName?: string;
+  eventData?: any;
+  eventTimestamp?: Date;
+  eventSource?: string;
+
+  // Event handlers
+  onEvent?: (event: Event, ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>) => void;
+  beforeEvent?: (event: Event, ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>) => boolean | void;
+  afterEvent?: (event: Event, ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>) => void;
+
+  // Trigger methods now share the same tuple
+  trigger?: (
+    event: string | SnapshotEvents<T, K, Meta, ExcludedFields>,
+    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
+  ) => void;
+
+  on?: (
+    event: string,
+    callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void,
+    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
+  ) => void;
+
+  off?: (
+    event: string,
+    callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void,
+    unsubscribeDetails?: {
+      userId: string;
+      snapshotId: string;
+      unsubscribeType: string;
+      unsubscribeDate: Date;
+      unsubscribeReason: string;
+      unsubscribeData: any;
+    },
+    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
+  ) => void;
+}
+
+
+
+function createContextArgs<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
+  ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
+) {
+  return args;
 }
 
 export type { SharedProperties, SnapshotEvents };
+
+export { createContextArgs }
 

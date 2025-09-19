@@ -1,5 +1,6 @@
 import apiNotificationsService from "@/app/api/NotificationsService";
 import * as snapshotApi from "@/app/api/SnapshotApi";
+import { AppEntity, AppK, AppMeta, AppExcludedFields, AppIncludedFields } from "./snapshotStoreConfigInstance";
 import { addSnapshot } from "@/app/api/SnapshotApi";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { TriggerIncentivesParams } from "@/app/components/utils/applicationUtils";
@@ -37,11 +38,11 @@ import {
 } from "../snapshots";
 import { FetchSnapshotPayload } from "../snapshots/FetchSnapshotPayload";
 import {
-    Snapshot,
     SnapshotsArray,
     createSnapshotOptions
 } from "../snapshots/LocalStorageSnapshotStore";
-import SnapshotStore from "../snapshots/SnapshotStore";
+import { Snapshot } from "../snapshots/Snapshot";
+import SnapshotStore from "../snapshots/Snapshot";
 import { SnapshotStorePublicMethods } from "../snapshots/SnapshotStorePublicMethods";
 import SnapshotStoreSubset from "../snapshots/SnapshotStoreSubset";
 import {
@@ -70,22 +71,36 @@ import {
 } from "../typings/YourSpecificSnapshotType";
 import { isSnapshotStoreConfig } from "../utils/snapshotUtils";
 import { sendNotification } from "./UserSlice";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/configs/BaseConfig';
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
 
-type SnapshotStoreDelegate<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = (
-  snapshot: Snapshot<T, K>,
-  initialState: Snapshot<T, K>,
+type SnapshotStoreDelegate<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  AttachmentType extends  Attachment = Attachment
+> = (
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  initialState: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotConfig: SnapshotStoreConfig<
     SnapshotWithCriteria<any, BaseData>,
-    SnapshotWithCriteria<any, BaseData<any, any, StructuredMetadata<any, any>, Attachment>
+    SnapshotWithCriteria<any, BaseData<any, any, StructuredMetadata<any, any>, AttachmentType>
   >
   >[]
 ) => void;
 
-type Subscribers = Subscriber<CustomSnapshotData<T, K>, Data>[];
+type Subscribers = Subscriber<CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Data>[];
 
-type SubscribeResult<T, K> = {
-  subscriber: Subscriber<T, K> | null;
-  snapshots: SnapshotsArray<T, K, Meta>;
+type SubscribeResult<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  AttachmentType extends  Attachment = Attachment
+> = {
+  subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 
 
@@ -98,26 +113,49 @@ interface AuditRecord {
 
 type SnapshotCallback<T> = (data: T) => void;
 
-const delegateFunction: SnapshotStoreDelegate<CustomSnapshotData<T, K>, Data> = (
-  snapshot: Snapshot<CustomSnapshotData<T, K>>,
-  initialState: Snapshot<CustomSnapshotData<T, K>>,
+// Use specific types instead of generics
+type MyDataEntity = CustomSnapshotData<AppEntity, AppK, AppMeta, AppExcludedFields, AppIncludedFields>;
+type MyMeta = DefaultMeta<MyDataEntity, MyDataEntity>;
+type MyExcludedFields = DefaultExcludedFields<MyDataEntity>;
+
+
+type AppSubscriber = Subscriber<AppEntity, AppK, AppMeta, AppExcludedFields, AppIncludedFields>;
+type AppSubscription = Subscription<AppEntity, AppK, AppMeta, AppExcludedFields, AppIncludedFields>;
+
+
+const delegateFunction: SnapshotStoreDelegate<
+  MyDataEntity, 
+  MyDataEntity,
+  MyMeta,
+  MyExcludedFields,
+  Attachment
+> = (
+  snapshot: Snapshot<MyDataEntity, MyDataEntity, MyMeta, MyExcludedFields>,
+  initialState: Snapshot<MyDataEntity, MyDataEntity, MyMeta, MyExcludedFields>,
   snapshotConfig: SnapshotStoreConfig<
-    SnapshotWithCriteria<any, BaseData>,
-    SnapshotWithCriteria<any, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>
+    SnapshotWithCriteria<MyDataEntity, MyDataEntity>,
+    SnapshotWithCriteria<MyDataEntity, MyDataEntity>,
+    DefaultMeta<SnapshotWithCriteria<MyDataEntity, MyDataEntity>, SnapshotWithCriteria<MyDataEntity, MyDataEntity>>,
+    DefaultExcludedFields<SnapshotWithCriteria<MyDataEntity, MyDataEntity>>
   >[]
 ) => {
   console.log("Delegate function called with snapshot:", snapshot);
   console.log("Initial state:", initialState);
   console.log("Snapshot config:", snapshotConfig);
-};
+  };
 
-function convertSnapshotToSpecificType <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  snapshot: Snapshot<T, K>
-): Snapshot<T, K> {
-  const newData = new Map<string, Snapshot<T, K>>();
+function convertSnapshotToSpecificType <
+T extends  BaseDataEntity, 
+K extends T = T, 
+Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+>(
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  const newData = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
 
   if (snapshot.data instanceof Map) {
-    snapshot.data.forEach((value: Snapshot<T, K>, key: string) => {
+    snapshot.data.forEach((value: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, key: string) => {
       if (typeof value === "object" && value !== null) {
         newData.set(key, value);
       }
@@ -125,11 +163,11 @@ function convertSnapshotToSpecificType <T extends  BaseData<any>, K extends T = 
   }
 
   const newStore = snapshot.store
-    ? convertSnapshotStore<T, K>(snapshot.store as SnapshotStore<T, K>)
+    ? convertSnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(snapshot.store as SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)
     : null;
 
   const snapshotItems = snapshot.snapshotItems ?? [];
-  const mappedSnapshotItems = snapshotItems.map((item: SnapshotItem<T, K>) => {
+  const mappedSnapshotItems = snapshotItems.map((item: SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     return convertSnapshotItem(item);
   });
 
@@ -141,9 +179,14 @@ function convertSnapshotToSpecificType <T extends  BaseData<any>, K extends T = 
   };
 }
 
-function convertSnapshotItem <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  item: SnapshotItem<T, K>
-): SnapshotItem<T, K> {
+function convertSnapshotItem <
+  T extends  BaseDataEntity, 
+  K extends T = T, 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, 
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
+  item: SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Ensure that `message` is a string and not undefined
   if (typeof item.message === "undefined") {
     throw new Error("Message is required and cannot be undefined");
@@ -327,15 +370,15 @@ function convertSnapshotItem <T extends  BaseData<any>, K extends T = T, Meta ex
     meta: item.meta,
     subscribers: item.subscribers,
     // Add additional properties or conversions if needed
-  } as Snapshot<T, K>;
+  } as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 
 
 
-function convertSnapshotStore<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  store: SnapshotStore<T, K>
-): SnapshotStorePublicMethods<T, K> {
+function convertSnapshotStore<T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): SnapshotStorePublicMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Get the snapshot items array using the public method
   const snapshotItems = store.getSnapshotItems();
 
@@ -344,10 +387,10 @@ function convertSnapshotStore<T extends  BaseData<any>, K extends T = T, Meta ex
     if (isSnapshotStoreConfig(item)) {
       // Use a type assertion here if you're sure about the types
       return convertSnapshotStoreConfig(
-          item as unknown as SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, StructuredMetadata<BaseData<any, any, StructuredMetadata<T, K>, Attachment>, K>, K>,
+          item as unknown as SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, StructuredMetadata<BaseData<any, any, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Attachment>, K>, K>,
       );
       } else {
-        return item as unknown as Snapshot<T, K>;
+        return item as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       }
     });
 
@@ -482,16 +525,16 @@ function convertSnapshotStore<T extends  BaseData<any>, K extends T = T, Meta ex
     getParentId: store.getParentId.bind(store),
     getChildIds: store.getChildIds.bind(store),
     snapshotItems: newSnapshotItems,
-  } as SnapshotStorePublicMethods<T, K>;
+  } as SnapshotStorePublicMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 const createSnapshotConfig = <
-  T extends BaseData<any>, 
+  T extends BaseDataEntity, 
   K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
-  snapshotStore: SnapshotStore<T, K, Meta>,
-  snapshotContent?: Snapshot<T, K, Meta>
-): SnapshotStoreConfig<SnapshotWithCriteria<T, K>, K, Meta> => {
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  snapshotContent?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): SnapshotStoreConfig<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, K, Meta> => {
   const content = snapshotContent
     ? convertSnapshotToContent(snapshotContent)
     : undefined;
@@ -519,7 +562,7 @@ const createSnapshotConfig = <
   };
 };
 
-function convertSnapshotStoreConfig <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertSnapshotStoreConfig <T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
   config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K, Meta>,
 ): SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K, Meta> {
   // Map or transform the fields as needed to match T and K types
@@ -531,11 +574,11 @@ function convertSnapshotStoreConfig <T extends  BaseData<any>, K extends T = T, 
   };
 }
 
-interface SubscriberCallback <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface SubscriberCallback <T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>> {
   id: string;
   _id: string;
-  handleCallback: (data: Snapshot<T, K>) => void;
-  snapshotCallback: (data: Snapshot<T, K>) => void; // Ensure this is a function type
+  handleCallback: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+  snapshotCallback: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void; // Ensure this is a function type
 }
 
 
@@ -546,36 +589,37 @@ function hasTriggerIncentives(
   return typeof subscriber.triggerIncentives === 'function';
 }
 
-
-class Subscriber<
-  T extends BaseData<any>,
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
+class Subscriber<  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   > {
-  public data: Partial<SnapshotStore<T, K>> | null = {};
-  // public callback: Callback<Snapshot<T, K>>,
+  public data: Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null = {};
+  // public callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+  protected triggerIncentives: (({ userId, incentiveType, params }: TriggerIncentivesParams) => void) | undefined;
   private _id: string | undefined;
   private readonly name: string;
-  private subscription: Subscription<T, K>;
+  private subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   private subscriptionLevel: SubscriptionLevel; // Updated to hold a subscription level
   private subscriberId: string;
-  private subscribersById: Map<string, Subscriber<T, K>> | undefined =
+  private subscribersById: Map<string, Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined =
   new Map();
-  private subscribers: SubscriberCallback<T, K>[] = []; // Use the SubscriberCallback type here
-  private onSnapshotCallbacks: SubscriberCallback<T, K>[] = []; // Updated to SubscriberCallback
-  private internalState: Map<string, Snapshot<T, K>> = new Map();
+  private subscribers: SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = []; // Use the SubscriberCallback type here
+  private onSnapshotCallbacks: SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = []; // Updated to SubscriberCallback
+  private internalState: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = new Map();
   private internalCache: Map<string, T>;
   
   private onErrorCallbacks: ((error: Error) => void)[] = [];
-  private onUnsubscribeCallbacks: ((data: Snapshot<T, K>) => void)[] = [];
+  private onUnsubscribeCallbacks: ((data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void)[] = [];
   private state?: T | null = null;
-  private callbackFunction?: (data: Snapshot<T, K>) => void;
+  private callbackFunction?: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
 
   private notifyEventSystem: Function | undefined;
   private updateProjectState: Function | undefined;
   private logActivity: Function | undefined;
-  private triggerIncentives: (({ userId, incentiveType, params }: TriggerIncentivesParams) => void) | undefined;
-  private optionalData: CustomSnapshotData<T, K> | null;
+  private optionalData: CustomSnapshotData<T, K, Meta, Attachment, ExcludedFields> | null;
   
   private email: string = "";
   private enabled = false;
@@ -596,7 +640,7 @@ class Subscriber<
     });
   }
 
-  private callback?: (data: Snapshot<T, K>) => void = (data: Snapshot<T, K>) => {
+  private callback?: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void = (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     if (data.data instanceof Map) {
       // Handle the case where data.data is a Map
       console.error("Unexpected data type: Map");
@@ -617,8 +661,9 @@ class Subscriber<
   };
   
 
+
   
-  public subscriber?: Subscriber<T, K>;
+  public subscriber?: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   public callTriggerIncentives(params: TriggerIncentivesParams) {
     if (hasTriggerIncentives(this)) {
       this.triggerIncentives(params);
@@ -626,26 +671,6 @@ class Subscriber<
       console.warn("triggerIncentives function is not defined");
     }
   }
-
-  public async fetchSnapshotIds(): Promise<string[]> {
-    // Simulate an asynchronous operation to fetch snapshot IDs
-    return new Promise<string[]>((resolve, reject) => {
-      setTimeout(async () => {
-        // Example: Fetching snapshot IDs from an API or database
-        const fetchedSnapshotIds = await snapshotApi.fetchSnapshotIds(this.getUniqueId!);
-        // Resolve with fetched snapshot IDs
-        resolve(fetchedSnapshotIds);
-        1000}); // Simulating a delay of 1 second (adjust as needed)
-        resolve(fetchedSnapshotIds);
-    
-        // Reject with an error if fetching snapshot IDs fails
-        reject(new Error("Failed to fetch snapshot IDs")
-      );
-      }, 1000); // Simulating a delay of 1 second (adjust as needed)
-    }
- 
-
-  // Define a method to subscribe to snapshots
 
   // Define a getter method to access the sendNotification method
   public get sentNotification(): (
@@ -690,7 +715,7 @@ class Subscriber<
    *
    * @param snapshot - The snapshot to update with.
    */
-  update(snapshot: Snapshot<T, K>): void {
+  update(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     // Log the snapshot details
     console.log("Subscriber updated with snapshot:", snapshot);
     console.log("Snapshot ID:", snapshot.id);
@@ -713,9 +738,9 @@ class Subscriber<
 
     // Notify about the update if notify method exists
     if (this.notify && snapshot.id) {
-      const callback = (data: Snapshot<T, K>) =>
+      const callback = (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) =>
         console.log("Callback invoked with data:", data);
-      const subscribers: Subscriber<T, K>[] = []; // Use actual subscribers if available
+      const subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = []; // Use actual subscribers if available
       this.notify(snapshot, callback, subscribers);
     } else {
       console.error(
@@ -731,7 +756,7 @@ class Subscriber<
    */
 
   private processData(
-    data: T | Map<string, Snapshot<T, K>> | null | undefined
+    data: T | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined
   ): void {
     // Log the start of data processing
     console.log("Starting data processing for:", data);
@@ -807,7 +832,7 @@ class Subscriber<
    * @param data - The data to validate.
    * @returns - True if data is valid, false otherwise.
    */
-  private validateData(data: T | Map<string, Snapshot<T, K>>): boolean {
+  private validateData(data: T | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): boolean {
     // Check if the data is not null or undefined
     if (!data) {
       console.error("Data is null or undefined.");
@@ -831,7 +856,7 @@ class Subscriber<
    * @returns - The transformed data.
    */
   
-  private transformData(data: Snapshot<T, K>): Snapshot<T, K> {
+  private transformData(data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     // Example transformation: Add a timestamp to the data if it doesn't exist
     if (!(data.data as any).timestamp) {
       (data.data as any).timestamp = new Date().toISOString();
@@ -867,17 +892,25 @@ class Subscriber<
     }
   }
 
+    public callTriggerIncentives(params: TriggerIncentivesParams) {
+    if (this.triggerIncentives) {
+      this.triggerIncentives(params);
+    } else {
+      console.warn("triggerIncentives function is not defined");
+    }
+  }
+
   constructor(
     id: string,
     name: string,
-    subscription: Subscription<T, K>,
+    subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscriberId: string,
     notifyEventSystem: Function,
     updateProjectState: Function,
     logActivity: Function,
-    triggerIncentives: Function,
-    optionalData: CustomSnapshotData<T, K> | null = null,
-    // data: Partial<SnapshotStore<T, K>>,
+    triggerIncentives?: ({ userId, incentiveType, params }: TriggerIncentivesParams) => void,
+    optionalData: CustomSnapshotData<T, K, Meta, Attachment, ExcludedFields> | null = null,
+    // data: Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     payload: T | null = null
   ) {
     this.id = id;
@@ -948,7 +981,7 @@ class Subscriber<
    *
    * @param data - The data to process.
    */
-  public getProcessData(data: T | Map<string, Snapshot<T, K>> | null | undefined): void {
+  public getProcessData(data: T | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined): void {
     this.processData(data);
   }
 
@@ -958,7 +991,7 @@ class Subscriber<
    * @param data - The data to validate.
    * @returns - True if data is valid, false otherwise.
    */
-  public getValidateData(data: T | Map<string, Snapshot<T, K>>): boolean {
+  public getValidateData(data: T | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): boolean {
     return this.validateData(data);
   }
 
@@ -968,7 +1001,7 @@ class Subscriber<
    * @param data - The **Snapshot** to transform (not just raw data `T`).
    * @returns - The transformed **Snapshot**.
    */
-  public getTransformData(data: Snapshot<T, K>): Snapshot<T, K> {
+  public getTransformData(data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     return this.transformData(data);
   }
 
@@ -1031,7 +1064,7 @@ class Subscriber<
     return data && typeof data === "object" && "id" in data;
   }
 
-  newData(data: Snapshot<T, K>): Snapshot<T, K> {
+  newData(data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     // Ensure data.data is of type T
     if (this.isDataType(data.data)) {
       this.state = data.data; // Safe to assign as T
@@ -1078,7 +1111,7 @@ class Subscriber<
     return this.tags;
   }
 
-  get getInternalState(): Map<string, Snapshot<T, K>> { 
+  get getInternalState(): Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> { 
     return this.internalState
   }
 
@@ -1087,7 +1120,7 @@ class Subscriber<
   }
     
 
-  get getCallback(): ((data: Snapshot<T, K>) => void) | undefined {
+  get getCallback(): ((data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) | undefined {
     return this.callbackFunction;
   }
 
@@ -1104,7 +1137,7 @@ class Subscriber<
     return this.snapshotIds;
   }
 
-  get getSubscribers(): SubscriberCallback<T, K>[] {
+  get getSubscribers(): SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     return this.subscribers;
   }
 
@@ -1113,8 +1146,8 @@ class Subscriber<
     return (
       event: string,
       snapshotId: string,
-      snapshot: Snapshot<T, K>,
-      snapshotStore: SnapshotStore<T, K>,
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       dataItems: T[],
       criteria: any,
       category: any
@@ -1134,20 +1167,20 @@ class Subscriber<
     };
   }
 
-  get transformSubscribers(): SubscriberCallback<T, K>[] {
+  get transformSubscribers(): SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     return this.subscribers;
   }
 
-  set setSubscribers(subscribers: SubscriberCallback<T, K>[]) {
+  set setSubscribers(subscribers: SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) {
     this.subscribers = subscribers;
   }
 
   // Corrected return type to match `onSnapshotCallbacks` type
-  get getOnSnapshotCallbacks(): SubscriberCallback<T, K>[] {
+  get getOnSnapshotCallbacks(): SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     return this.onSnapshotCallbacks;
   }
 
-  set setOnSnapshotCallbacks(callbacks: SubscriberCallback<T, K>[]) {
+  set setOnSnapshotCallbacks(callbacks: SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) {
     this.onSnapshotCallbacks = callbacks;
   }
 
@@ -1159,11 +1192,11 @@ class Subscriber<
     this.onErrorCallbacks = callbacks;
   }
 
-  get getOnUnsubscribeCallbacks(): ((data: Snapshot<T, K>) => void)[] {
+  get getOnUnsubscribeCallbacks(): ((data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void)[] {
     return this.onUnsubscribeCallbacks;
   }
 
-  set setOnUnsubscribeCallbacks(callbacks: ((data: Snapshot<T, K>) => void)[]) {
+  set setOnUnsubscribeCallbacks(callbacks: ((data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void)[]) {
     this.onUnsubscribeCallbacks = callbacks;
   }
 
@@ -1179,11 +1212,10 @@ class Subscriber<
     this.logActivity = func;
   }
 
-  set setTriggerIncentives(func: Function | undefined) {
+  set setTriggerIncentives(func: (({ userId, incentiveType, params }: TriggerIncentivesParams) => void) | undefined) {
     this.triggerIncentives = func;
   }
-
-  set setOptionalData(data: CustomSnapshotData<T, K> | null) {
+  set setOptionalData(data: CustomSnapshotData<T, K, Meta, Attachment, ExcludedFields> | null) {
     this.optionalData = data;
   }
 
@@ -1199,7 +1231,7 @@ class Subscriber<
     return this.payload;
   }
 
-  handleSnapshot(data: Snapshot<T, K>): void {
+  handleSnapshot(data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     if (typeof this.callbackFunction === "function") {
       this.callbackFunction(data);
     }
@@ -1220,7 +1252,7 @@ class Subscriber<
   }
 
   // Method to handle the callback
-  handleCallback(data: Snapshot<T, K>): void {
+  handleCallback(data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     if (this.callbackFunction) {
       this.callbackFunction(data);
     } else {
@@ -1229,8 +1261,8 @@ class Subscriber<
   }
 
   // Static method to transform Subscriber
-  static transformSubscriber <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-    sub: Subscriber<T, K>
+  static transformSubscriber <T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+    sub: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Subscriber<BaseData, BaseData> {
     const transformedSub = new Subscriber<BaseData, BaseData>(
       sub.getUniqueId!,
@@ -1241,7 +1273,7 @@ class Subscriber<
       sub.updateProjectState ? sub.updateProjectState : SubscriptionActions,
       sub.logActivity ? sub.logActivity : SubscriptionActions,
       sub.triggerIncentives ? sub.triggerIncentives : SubscriptionActions,
-      sub.optionalData as unknown as CustomSnapshotData<T, K>,
+      sub.optionalData as unknown as CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       sub.payload as unknown as BaseData
     );
 
@@ -1353,7 +1385,7 @@ class Subscriber<
     return transformedSub;
   }
 
-  snapshotCallback(data: Snapshot<T, K>): void {
+  snapshotCallback(data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     console.log("Snapshot callback called with data:", data);
 
     // Safely assign state
@@ -1392,7 +1424,7 @@ class Subscriber<
     return this.email;
   }
 
-  subscribe(callback: SubscriberCallback<T, K>) {
+  subscribe(callback: SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
     this.subscribers.push(callback);
   }
 
@@ -1408,7 +1440,7 @@ class Subscriber<
     }
   }
 
-  getOptionalData(): CustomSnapshotData<T, K> | null {
+  getOptionalData(): CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
     return this.optionalData;
   }
 
@@ -1420,16 +1452,16 @@ class Subscriber<
     return this.snapshotIds;
   }
 
-  getData(): Partial<Snapshot<T, K>> | null {
+  getData(): Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null {
     return this.data;
   }
 
-  getInitialData(): Partial<SnapshotStore<T, K>> | null {
+  getInitialData(): Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null {
     return this.initialData;
   }
 
   // New method to fetch and process new data
-  async getNewData(): Promise<Partial<SnapshotStore<T, K>> | null> {
+  async getNewData(): Promise<Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null> {
     try {
       // Fetch the latest snapshot IDs
       const newSnapshotIds = await this.fetchSnapshotIds();
@@ -1438,14 +1470,14 @@ class Subscriber<
       this.snapshotIds = newSnapshotIds;
 
       // Optionally, fetch and process the latest snapshots based on the new IDs
-      const newSnapshots: Snapshot<T, K>[] = await Promise.all(
-        newSnapshotIds.map((id): Promise<Snapshot<T, K>> => {
+      const newSnapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = await Promise.all(
+        newSnapshotIds.map((id): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
           return snapshotApi.fetchSnapshotById(id);
         })
       );
 
       // Update the subscriber's data with the new snapshots
-      const newData: Partial<SnapshotStore<T, K>> = {
+      const newData: Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
         ...this.data,
         snapshots: newSnapshots,
       };
@@ -1459,7 +1491,7 @@ class Subscriber<
   }
   async getDefaultSubscribeToSnapshots(
     snapshotIds: string[]
-  ): Promise<Partial<SnapshotStore<T, K>> | null> {
+  ): Promise<Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null> {
     try {
       // Fetch the latest snapshot IDs
       const newSnapshotIds = await this.fetchSnapshotIds();
@@ -1467,7 +1499,7 @@ class Subscriber<
       console.log("this.snapshotIds", this.snapshotIds);
 
       // Assuming you process newSnapshotIds and this.snapshotIds to form the result
-      const result: Partial<SnapshotStore<T, K>> = {
+      const result: Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
         snapshotIds: newSnapshotIds, // Example property
         // Add other properties as necessary
       };
@@ -1480,7 +1512,7 @@ class Subscriber<
   }
 
   async getSubscribeToSnapshots(): Promise<Partial<
-    SnapshotStore<T, K>
+    SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   > | null> {
     try {
       // Fetch the latest snapshot IDs
@@ -1490,13 +1522,13 @@ class Subscriber<
       // Process the new snapshot IDs (if needed)
       this.snapshotIds = newSnapshotIds;
       // Optionally, fetch and process the latest snapshots based on the new IDs
-      const newSnapshots: Snapshot<T, K>[] = await Promise.all(
-        newSnapshotIds.map((id): Promise<Snapshot<T, K>> => {
+      const newSnapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = await Promise.all(
+        newSnapshotIds.map((id): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
           return snapshotApi.fetchSnapshotById(id);
         })
       );
       // Update the subscriber's data with the new snapshots
-      const newData: Partial<SnapshotStore<T, K>> = {
+      const newData: Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
         ...this.data,
         snapshots: newSnapshots,
       };
@@ -1528,7 +1560,7 @@ class Subscriber<
   }
 
   // Get transform subscribers synchronously
-  getTransformSubscribers(): SubscriberCallback<T, K>[] {
+  getTransformSubscribers(): SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     if (Array.isArray(this.transformSubscribers)) {
       return this.transformSubscribers;
     } else {
@@ -1543,7 +1575,7 @@ class Subscriber<
 
   // Method to initialize or set transformSubscribers
   setTransformSubscribers(
-    subscribers: SubscriberCallback<T, K>[] | Promise<BaseDatabaseService>
+    subscribers: SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | Promise<BaseDatabaseService>
   ): void {
     (this as any).transformSubscribers = subscribers;
   }
@@ -1568,7 +1600,7 @@ class Subscriber<
     this.onSnapshotCallbacks.push(callback);
   }
 
-  initialData(data: Snapshot<T, K>) {
+  initialData(data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
     this.state = data.state as T | null | undefined;
     if (this.notifyEventSystem) {
       this.notifyEventSystem(NotificationTypeEnum.SUBSCRIBER_INITIAL_DATA, {
@@ -1582,7 +1614,7 @@ class Subscriber<
     return this.name;
   }
 
-  getDetermineCategory(data: Snapshot<T, K>): string | CategoryProperties | null {
+  getDetermineCategory(data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string | CategoryProperties | null {
     return this.subscription.determineCategory(data);
   }
 
@@ -1590,15 +1622,15 @@ class Subscriber<
   fetchSnapshotById(
     userId: string,
     snapshotId: string
-  ): Promise<Snapshot<T, K>> {
+  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     return new Promise((resolve, reject) => {
       if (
         this.subscription &&
         typeof this.subscription.fetchSnapshotById === "function"
       ) {
-        const callback: FetchSnapshotByIdCallback<T, K> = {
-          onSuccess: (snapshot: Snapshot<T, K>) => {
-            const specificSnapshot = convertSnapshotToSpecificType<T, K>(
+        const callback: FetchSnapshotByIdCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
+          onSuccess: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+            const specificSnapshot = convertSnapshotToSpecificType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
               snapshot
             );
             resolve(specificSnapshot);
@@ -1620,7 +1652,7 @@ class Subscriber<
     });
   }
 
-  // Type guard to check if snapshot is of type Snapshot<T, K>
+  // Type guard to check if snapshot is of type Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   private isSnapshotOfType<X extends Data, Y extends Data>(
     snapshot: Snapshot<any, any>
   ): snapshot is Snapshot<X, Y> {
@@ -1633,7 +1665,7 @@ class Subscriber<
     );
   }
 
-  async snapshots(): Promise<SnapshotConfig<T, K>[]> {
+  async snapshots(): Promise<SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     try {
       // Fetch snapshot IDs asynchronously
       const snapshotIds = await this.fetchSnapshotIds();
@@ -1643,7 +1675,7 @@ class Subscriber<
         snapshotIds.map(async (id: string) => {
           return new Promise((resolve, reject) => {
             // Define a way to handle the asynchronous behavior
-            const callback = (snapshot: Snapshot<T, K>) => resolve(snapshot);
+            const callback = (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => resolve(snapshot);
             const errorCallback = (error: any) => reject(error);
             // Ensure fetchSnapshotById method returns a valid promise
             const snapshot = this.fetchSnapshotById(this.email, id);
@@ -1669,7 +1701,7 @@ class Subscriber<
         snapshotIds.map(async (id: string) => {
           return new Promise((resolve, reject) => {
             // Define a way to handle the asynchronous behavior
-            const callback = (snapshot: Snapshot<T, K>) => resolve(snapshot);
+            const callback = (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => resolve(snapshot);
             const errorCallback = (error: any) => reject(error);
             // Ensure fetchSnapshotById method returns a valid promise
             const snapshot = this.fetchSnapshotById(this.email, id);
@@ -1686,10 +1718,10 @@ class Subscriber<
   }
 
   toSnapshotStore(
-    initialState: Snapshot<T, K> | undefined,
-    snapshotConfig: SnapshotStoreConfig <T, K>[],
-    delegate: SnapshotStoreDelegate<T, K>
-  ): SnapshotStore<T, K>[] | undefined {
+    initialState: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
+    snapshotConfig: SnapshotStoreConfig <T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    delegate: SnapshotStoreDelegate<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined {
     let snapshotString: string | undefined;
     if (initialState !== undefined) {
       snapshotString = initialState.id?.toString();
@@ -1699,15 +1731,15 @@ class Subscriber<
       const category = this.determineCategory(initialState);
 
       // Retrieve options for SnapshotStore initialization using the helper function
-      const options: SnapshotStoreOptions<T, K> = createSnapshotOptions(
+      const options: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = createSnapshotOptions(
         snapshotObj,
         snapshot
       );
 
-      const delegateFunction: SnapshotStoreSubset<T, K> = {
+      const delegateFunction: SnapshotStoreSubset<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         
         onSnapshot: (
-          snapshot: Snapshot<T, K>,
+          snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           config: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, K, Meta>[]
         ) => {
           delegate(snapshot, initialState, config);
@@ -1718,13 +1750,13 @@ class Subscriber<
         addSnapshotSuccess: addSnapshotSuccess,
         updateSnapshot: updateSnapshot as (
           snapshotId: string,
-          data: SnapshotStore<T, K>,
-          events: Record<string, CalendarManagerStoreClass<T, K>[]>,
-          snapshotStore: SnapshotStore<T, K>,
+          data: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+          events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
+          snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           dataItems: RealtimeDataItem[],
           newData: T | Data,
           payload: UpdateSnapshotPayload<any>
-        ) => Promise<{ snapshot: SnapshotStore<T, K>[] }>,
+        ) => Promise<{ snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }>,
         removeSnapshot: removeSnapshot,
         clearSnapshots: clearSnapshots,
         createInitSnapshot: createInitSnapshot,
@@ -1779,13 +1811,13 @@ class Subscriber<
         // batchTakeSnapshot: batchTakeSnapshot
       };
 
-      return [new SnapshotStore<T, K>(options, config)];
+      return [new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(options, config)];
     }
 
     return undefined;
   }
 
-  private determineCategory(initialState: Snapshot<T, K>): string {
+  private determineCategory(initialState: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
     if (initialState instanceof YourSpecificSnapshotType) {
       return "SpecificCategory";
     } else {
@@ -1793,7 +1825,7 @@ class Subscriber<
     }
   }
 
-  getDeterminedCategory(data: Snapshot<T, K>): string | CategoryProperties {
+  getDeterminedCategory(data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string | CategoryProperties {
     const category = this.subscription.determineCategory(data);
     if (category === undefined || category === null) {
       // Provide a fallback value in case category is undefined or null
@@ -1806,16 +1838,16 @@ class Subscriber<
   async processNotification(
     id: string,
     message: string,
-    snapshotContent: Map<string, Snapshot<T, K>> | null | undefined,
+    snapshotContent: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined,
     date: Date,
     type: NotificationType,
-    store: SnapshotStore<T, K>
+    store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<void> {
     const content = snapshotContent
       ? convertMapToSnapshot(snapshotContent, date)
       : null;
     return new Promise<void>((resolve, reject) => {
-      const snapshotData: SnapshotData<T, K> = {
+      const snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         id,
         message: message,
         initialState: content,
@@ -1825,8 +1857,8 @@ class Subscriber<
           ? (content.content as string | Content<T> | undefined)
           : undefined,
         data: content
-          ? (content.data as T | Map<string, Snapshot<T, K>> | null | undefined)
-          : new Map<string, Snapshot<T, K>>(),
+          ? (content.data as T | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined)
+          : new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(),
         type,
         store: store,
         unsubscribe: () => {
@@ -1836,7 +1868,7 @@ class Subscriber<
           callback: (
             snapshotId: string,
             payload: FetchSnapshotPayload<K>,
-            snapshotStore: SnapshotStore<T, K>,
+            snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
             payloadData: Data | T
           ) => void
         ) => {
@@ -1850,12 +1882,12 @@ class Subscriber<
           snapshotData: T,
           category: Category | undefined,
           callback: (snapshot: T) => void,
-          snapshots: SnapshotsArray<T, K, Meta>,
+          snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           type: string,
           event: Event,
           snapshotContainer?: T,
           snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null
-        ): Promise<Snapshot<T, K> | null> => {
+        ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
           console.log("handleSnapshot");
           return Promise.resolve(null);
         },
@@ -1868,12 +1900,12 @@ class Subscriber<
                 content.events as {
                   eventRecords: Record<
                     string,
-                    CalendarManagerStoreClass<T, K>[]
+                    CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
                   > | null;
                 }
               ).eventRecords,
-              callbacks: {}, // Initialize empty or based on your logic
-              subscribers: new SubscriberCollection<T, K>(), // Replace with actual logic or initialization
+              callbacks: {} as CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Initialize empty or based on your logic
+              subscribers: new SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), // Replace with actual logic or initialization
               eventIds: [], // Initialize or populate based on your logic
               onSnapshotAdded: () => {
                 /* Implement the function */
@@ -1881,7 +1913,7 @@ class Subscriber<
               onSnapshotRemoved: () => {
                 /* Implement the function */
               },
-              initialConfig: {} as SnapshotConfig<T, K>, // Replace with actual config
+              initialConfig: {} as SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Replace with actual config
               removeSubscriber: () => {
                 /* Implement the function */
               },
@@ -1922,7 +1954,7 @@ class Subscriber<
                 /* Implement the function */
               },
               eventsDetails: content.events as
-                | CalendarManagerStoreClass<T, K>[]
+                | CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
                 | undefined,
             }
           : undefined,
@@ -1978,7 +2010,7 @@ class Subscriber<
     return this.subscriberId;
   }
 
-  getSubscribersById(): Map<string, Subscriber<T, K>> | undefined {
+  getSubscribersById(): Map<string, Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined {
     return this.subscribersById;
   }
 
@@ -1991,7 +2023,7 @@ class Subscriber<
       : undefined;
   }
 
-  getSubscription(): Subscription<T, K> {
+  getSubscription(): Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     return this.subscription;
   }
 
@@ -2008,11 +2040,11 @@ class Subscriber<
       : undefined;
   }
 
-  onUnsubscribe(callback: (data: Snapshot<T, K>) => void) {
+  onUnsubscribe(callback: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) {
     this.onUnsubscribeCallbacks.push(callback);
   }
 
-  onSnapshot(callback: (snapshot: Snapshot<T, K>) => void | Promise<void>) {
+  onSnapshot(callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void | Promise<void>) {
     this.onSnapshotCallbacks.push(callback);
   }
 
@@ -2020,18 +2052,18 @@ class Subscriber<
     this.onErrorCallbacks.push(callback);
   }
 
-  onSnapshotUnsubscribe(callback: (data: Snapshot<T, K>) => Snapshot<T, K>) {
+  onSnapshotUnsubscribe(callback: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
     this.onUnsubscribeCallbacks.push(callback);
   }
 
-  triggerOnSnapshot(snapshot: Snapshot<T, K>) {
+  triggerOnSnapshot(snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
     this.onSnapshotCallbacks.forEach((callback) => callback(snapshot));
   }
 
   notify?(
-    data: Snapshot<T, K>,
-    callback: (data: Snapshot<T, K>) => void,
-    subscribers: Subscriber<T, K>[] = []
+    data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    callback: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = []
   ) {
     if (callback) { // Check if callback is provided
       callback(data);
@@ -2055,19 +2087,19 @@ class Subscriber<
   }
   
 
-  static createSubscriber<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  static createSubscriber<T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
     id: string,
     name: string,
-    subscription: Subscription<T, K>,
+    subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscriberId: string,
     notifyEventSystem: Function,
     updateProjectState: Function,
     logActivity: Function,
-    triggerIncentives: Function,
-    optionalData: CustomSnapshotData<T, K> | null = null,
+    triggerIncentives?: ({ userId, incentiveType, params }: TriggerIncentivesParams) => void,
+    optionalData: CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = null,
     data: T | null = null
   ) {
-    return new Subscriber<T, K>(
+    return new Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
       id,
       name,
       subscription,
@@ -2192,7 +2224,7 @@ result.snapshots.forEach(snapshot => {
   // Do something with each snapshot
 });
 
-const sampleSnapshot: CustomSnapshotData<T, K> = {
+const sampleSnapshot: CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   timestamp: new Date().toISOString(),
   value: "42",
 };
@@ -2202,5 +2234,6 @@ subscriber.receiveSnapshot(sampleSnapshot);
 console.log("Subscriber state:", subscriber.getState("state"));
 
 export { Subscriber, subscriber };
-export type { AuditRecord, SubscribeResult, SubscriberCallback, Subscribers };
+export type { AuditRecord, SubscribeResult, SubscriberCallback, Subscribers, AppSubscriber,
+AppSubscription };
 

@@ -1,13 +1,24 @@
 // subscribeToSnapshotsImplementation.ts
+import { ExcludedFields } from '@/app/components/routing/Fields';
+import { BaseDataEntity, DefaultMeta, IncludedFields } from '@/app/configs/BaseConfig';
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
 
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { BaseData } from "../models/data/Data";
+import { DefaultExcludedFields } from '@/configs/BaseConfig';
 import { Subscriber } from "../users/Subscriber";
-import { Snapshot, Snapshots, SnapshotsArray, SnapshotUnion } from "./LocalStorageSnapshotStore";
+import { Snapshots, SnapshotsArray, SnapshotUnion } from "./LocalStorageSnapshotStore";
+import { Snapshot } from "./Snapshot";
 
 type Callback<T> = (snapshot: T) => void;
-type UnifiedCallback<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> = (snapshot: Snapshot<T, K>) => Subscriber<T, K> | Snapshot<T, K> | null;
+type UnifiedCallback<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  > = (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 
 type SingleEventCallbacks<T> = {
   [event: string]: Callback<T>[];
@@ -20,10 +31,22 @@ type MultipleEventsCallbacks<T> = {
 
 
 
-type SimplifiedSnapshot<T extends BaseDataEntity<any, any>> = Snapshot<T, T, StructuredMetadata<T, T>, never>;
+type SimplifiedSnapshot<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> = Snapshot<T, K, StructuredMetadata<T, K>, DefaultExcludedFields<T>>;
 
-const handleSnapshot = <T extends BaseDataEntity<any, any>>(
-  snap: SnapshotUnion<T, K, Meta>, 
+const handleSnapshot = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  snap: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
   callback: (snapshot: SimplifiedSnapshot<T>) => void
 ) => {
   if (isSnapshotWithMetadata(snap)) {
@@ -33,36 +56,50 @@ const handleSnapshot = <T extends BaseDataEntity<any, any>>(
   }
 };
 
-function isSnapshotWithMetadata<T extends BaseDataEntity<any, any>>(
-  snap: SnapshotUnion<T, K, Meta>
+function isSnapshotWithMetadata<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  snap: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): snap is Snapshot<T, T, StructuredMetadata<T, T>, never> {
   return 'metadata' in snap; // Assuming metadata field is a discriminant
 }
 
 
 // Type guard to check if subscriber is a function
-const isFunction = <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(fn: any): fn is (snap: Snapshot<T, K>) => void => {
+const isFunction = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(fn: any): fn is (snap: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void => {
   return typeof fn === 'function';
 };
 
-const snapshotSubscribers: Map<string, Callback<Snapshot<any, any>>[]> =
+const snapshotSubscribers: Map<string, Callback<Snapshot<any, any, any, any, any, any>>[]> =
   new Map();
 
 
-const addSubscriptionMethods = <T extends Snapshot<any, any>>(callback: Callback<T>, snapshotId: string): Callback<T> & { subscribe: (cb: Callback<T>) => void; unsubscribe: (cb: Callback<T>) => void } => {
+const addSubscriptionMethods = <T extends Snapshot<any, any, any, any, any, any>>(callback: Callback<T>, snapshotId: string): Callback<T> & { subscribe: (cb: Callback<T>) => void; unsubscribe: (cb: Callback<T>) => void } => {
   const wrappedCallback = ((snapshot: T) => callback(snapshot)) as Callback<T> & { subscribe: (cb: Callback<T>) => void; unsubscribe: (cb: Callback<T>) => void };
 
   wrappedCallback.subscribe = (cb: Callback<T>) => {
     if (!snapshotSubscribers.has(snapshotId)) {
       snapshotSubscribers.set(snapshotId, []);
     }
-    snapshotSubscribers.get(snapshotId)?.push(cb as Callback<Snapshot<any, any>>);
+    snapshotSubscribers.get(snapshotId)?.push(cb as Callback<Snapshot<any, any, any, any, any, any>>);
   };
 
   wrappedCallback.unsubscribe = (cb: Callback<T>) => {
     const subscribers = snapshotSubscribers.get(snapshotId);
     if (subscribers) {
-      const index = subscribers.indexOf(cb as Callback<Snapshot<any, any>>);
+      const index = subscribers.indexOf(cb as Callback<Snapshot<any, any, any, any, any, any>>);
       if (index > -1) {
         subscribers.splice(index, 1);
       }
@@ -73,23 +110,30 @@ const addSubscriptionMethods = <T extends Snapshot<any, any>>(callback: Callback
 };
 
 
-const subscribeToSnapshotsImpl = <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+const subscribeToSnapshotsImpl = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshotId: string,
   snapshotCallback: (
-    snapshotStore: SnapshotStore<T, K>, 
-    snapshots: SnapshotsArray<T, K, Meta>
-  ) => Subscriber<T, K> | null,
-  snapshotStore: SnapshotStore<T, K>, 
-  snapshot: SnapshotsArray<T, K, Meta>
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+  snapshot: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) => {
   if (!snapshotSubscribers.has(snapshotId)) {
     snapshotSubscribers.set(snapshotId, []);
   }
   
-  const typedCallback = addSubscriptionMethods<SnapshotUnion<T, K, Meta>>((snapshot) => {
+  const typedCallback = addSubscriptionMethods<SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>((snapshot) => {
     snapshotCallback(
-      snapshot as unknown as SnapshotStore<T, K>,
-      snapshots as unknown as SnapshotsArray<T, K, Meta>
+      snapshot as unknown as SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      snapshots as unknown as SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     );
   }, snapshotId);
 
@@ -100,7 +144,7 @@ const subscribeToSnapshotsImpl = <T extends  BaseData<any>, K extends T = T, Met
     typedCallback(snap as unknown as Snapshot<T, K, Meta, never>);
   });
 
-  const snapshots: Snapshots<T, K> = [];
+  const snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [];
 
   snapshots.forEach(snap => {
     if (snap.type !== null && snap.type !== undefined && snap.timestamp !== undefined) {
@@ -113,26 +157,33 @@ const subscribeToSnapshotsImpl = <T extends  BaseData<any>, K extends T = T, Met
         events: snap.events ?? [],
         meta: snap.meta,
         data: snap.data ?? ({} as T)
-      } as SnapshotUnion<T, K, Meta>);
+      } as SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
     }
   });
 };
 
 
-const subscribeToSnapshotImpl = <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+const subscribeToSnapshotImpl = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshotId: string,
-  callback: (snapshot: Snapshot<T, K>) => Subscriber<T, K> | null,
-  snapshot: Snapshot<T, K> | Snapshots<T, K> | SnapshotsArray<T, K, Meta>
-): Subscriber<T, K> | null => {
+  callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null => {
   if (!snapshotSubscribers.has(snapshotId)) {
     snapshotSubscribers.set(snapshotId, []);
   }
 
-  const subscriber = callback(snapshot as Snapshot<T, K>);
+  const subscriber = callback(snapshot as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
   if (subscriber) {
-    const callbackWrapper: Callback<Snapshot<any, any>> = (snap) => {
+    const callbackWrapper: Callback<Snapshot<any, any, any, any, any, any>> = (snap) => {
       if (isFunction(subscriber)) {
-        subscriber(snap as Snapshot<T, K>);
+        subscriber(snap as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
       }
     };
     snapshotSubscribers.get(snapshotId)?.push(callbackWrapper);
@@ -141,11 +192,11 @@ const subscribeToSnapshotImpl = <T extends  BaseData<any>, K extends T = T, Meta
   // Process each snapshot in the array
   if (Array.isArray(snapshot)) {
     snapshot.forEach(snap => {
-      const subscriber = callback(snap as Snapshot<T, K>);
+      const subscriber = callback(snap as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
       if (subscriber) {
-        const callbackWrapper: Callback<Snapshot<any, any>> = (s) => {
+        const callbackWrapper: Callback<Snapshot<any, any, any, any, any, any>> = (s) => {
           if (isFunction(subscriber)) {
-            subscriber(snap as Snapshot<T, K>);
+            subscriber(snap as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
           }
         };
         snapshotSubscribers.get(snapshotId)?.push(callbackWrapper);
@@ -157,10 +208,10 @@ const subscribeToSnapshotImpl = <T extends  BaseData<any>, K extends T = T, Meta
 };
 
 // Function to trigger callbacks when a snapshot is updated
-const updateSnapshot = (snapshotId: string, snapshot: Snapshot<any, any>) => {
+const updateSnapshot = (snapshotId: string, snapshot: Snapshot<any, any, any, any, any, any>) => {
   const subscribers = snapshotSubscribers.get(snapshotId);
   if (subscribers) {
-    subscribers.forEach((callback: Callback<Snapshot<any, any>>) =>
+    subscribers.forEach((callback: Callback<Snapshot<any, any, any, any, any, any>>) =>
       callback(snapshot)
     );
   }

@@ -2,9 +2,9 @@
 // import { SnapshotStoreConfig } from '@/app/components/snapshots';
 // import { SnapshotUnion } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 
-// interface ConfigurationManagement<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
+// interface ConfigurationManagement<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
 //   applyStoreConfig(snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData, Meta>, T>): void;
-//   handleSnapshotConfig(config: SnapshotStoreConfig<T, K>): void;
+//   handleSnapshotConfig(config: SnapshotStoreConfig<T, K, Meta, ExcludedFields>): void;
 //   // other config-related methods
 // }
 

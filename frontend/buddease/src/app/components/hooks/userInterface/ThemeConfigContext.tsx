@@ -31,30 +31,39 @@ const ThemeConfigContext = createContext<ThemeConfigProps | undefined>(
   undefined
 );
 
-export const ThemeConfigProvider: React.FC<{ children: React.ReactNode }> = ({
+
+export const ThemeConfigProvider = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>({
   children,
+}: {
+  children: React.ReactNode;
 }) => {
   const [isDarkMode, setDarkMode] = useState(false);
   const [primaryColor, setPrimaryColor] = useState("#3498db");
   const [secondaryColor, setSecondaryColor] = useState("#e74c3c");
   const [fontSize, setFontSize] = useState("16px");
   const [fontFamily, setFontFamily] = useState("Arial, sans-serif");
-  const [fontColor, setFontColor] = useState("#000"); // Initialize fontColor with a default value
+  const [fontColor, setFontColor] = useState("#000");
   const [themeConfig, setThemeConfig] = useState<ThemeConfig>(
     {} as ThemeConfig | (() => ThemeConfig)
   );
 
   let yourClassInstance: YourClass;
 
-  const toggleDarkMode = () => {
-    setDarkMode((prevMode) => !prevMode);
-  };
-
+  const toggleDarkMode = () => setDarkMode((prev) => !prev);
 
   const applyThemeConfig = (config: ThemeConfig) => {
     setThemeConfig(config);
-    // Additional logic for theme customization
-    yourClassInstance.customizeTheme(config, {} as DappProps); // Assuming yourClassInstance is accessible here
+
+    // Fully generic-safe DappProps
+    yourClassInstance.customizeTheme(
+      config,
+      {} as DappProps<T, K, Meta, ExcludedFields>
+    );
   };
 
   const backgroundColor = isDarkMode ? "#1a1a1a" : "#fff";

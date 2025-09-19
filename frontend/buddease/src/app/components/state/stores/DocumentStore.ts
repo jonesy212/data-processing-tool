@@ -1,17 +1,18 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { BaseData } from '@/app/components/models/data/Data';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useMeta } from "@/app/configs/useMeta";
 import { useMetadata } from "@/app/configs/useMetadata";
 import { useNotification } from "@/app/context/NotificationContext";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { NotificationTypeEnum } from "@/context/NotificationContext";
+import { DocumentPath } from "@/server/DocumentPath";
 import { AxiosError } from "axios";
 import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";
-import { DocumentPath } from "@/server/DocumentPath";
 import { userService } from "../../../api/ApiUser";
-import { DocumentData } from "../../documents/DocumentBuilder";
 import { DocumentPhaseTypeEnum } from "../../documents/DocumentPhaseType";
 import { Content } from "../../models/content/AddContent";
 import { Comment } from "../../models/data/Comments";
@@ -22,9 +23,8 @@ import { TagsRecord } from "../../snapshots";
 import NOTIFICATION_MESSAGES from "../../support/NotificationMessages";
 import { AllTypes } from "../../typings/PropTypes";
 import { UserRoleEnum } from "../../users/UserRoles";
-import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { CustomComment } from "../redux/slices/BlogSlice";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import { Attachment } from '../../documents/Attachment/attachment';
 
 type PhaseTypeEnums = ProgressPhase | ProjectPhaseTypeEnum | DocumentPhaseTypeEnum | undefined;
 
@@ -51,7 +51,7 @@ interface DocumentContent<
   T extends  BaseData<any>, 
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
   eventId: string;
   content: Content<T, K, Meta>,
@@ -61,9 +61,12 @@ interface DocumentContent<
 }
 
 interface DocumentBase<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   > {
   id?: string | number | undefined;
   title: string;
@@ -151,43 +154,49 @@ interface DocumentAdditionalProps <T extends  BaseData<any>, K extends T = T, Me
 
 
 interface Document<
-  T extends  BaseData<any>, 
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> extends DocumentBase<T, K>, DocumentMetadata, DocumentStatus, DocumentAdditionalProps<T, K>  {
-  // name: string | undefined;
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends DocumentBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+          DocumentMetadata,
+          DocumentStatus,
+          DocumentAdditionalProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+{
   bgColor: string;
   documentURI: string;
   currentScript: string | null;
   defaultView: Window | undefined;
   phaseType: PhaseTypeEnums;
   doctype: DocumentType | null;
-  ownerDocument: Document<T, K, Meta> | null;
+  ownerDocument: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   scrollingElement: Element | null;
   requiredRole?: UserRoleEnum;
   timeline: DocumentTimeline | undefined;
-  filePath?: DocumentPath<T, K, Meta>;
-  documentData?: Document<T, K, Meta>;
+  filePath?: DocumentPath<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  documentData?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   isPrivate?: boolean;
-  _rev: string | undefined;
-  _attachments?: Record<string, any> | undefined;
-  _links?: Record<string, any> | undefined;
+  _rev?: string;
+  _attachments?: Record<string, any>;
+  _links?: Record<string, any>;
   _etag?: string;
   _local?: boolean;
   _revs?: string[];
-  _source?: Record<string, any> | undefined;
-  _shards?: Record<string, any> | undefined;
+  _source?: Record<string, any>;
+  _shards?: Record<string, any>;
   _size?: number;
   _version?: number;
-    _version_conflicts?: number;
+  _version_conflicts?: number;
   _seq_no?: number;
   _primary_term?: number;
   _routing?: string;
   _parent?: string;
   _parent_as_child?: boolean;
   _slices?: any[];
-  _highlight?: Record<string, any> | undefined;
-  _highlight_inner_hits?: Record<string, any> | undefined;
+  _highlight?: Record<string, any>;
+  _highlight_inner_hits?: Record<string, any>;
   _source_as_doc?: boolean;
   _source_includes?: string[];
   _routing_keys?: string[];
@@ -196,39 +205,47 @@ interface Document<
   _routing_values_as_array_of_objects?: Record<string, any>[];
   _routing_values_as_array_of_objects_with_key?: Record<string, any>[];
   _routing_values_as_array_of_objects_with_key_and_value?: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key_and_value_and_value?: Record<
-    string,
-    any
-  >[];
+  _routing_values_as_array_of_objects_with_key_and_value_and_value?: Record<string, any>[];
 }
 
+
   
-export interface DocumentStore <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
-  documents: Record<string, Document<T, K, Meta>>;
+export interface DocumentStore<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
+  AttachmentType extends Attachment = Attachment
+> {
+  documents: Record<string, Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   fetchDocuments: () => void;
   getSnapshotDataKey: (documentId: string, eventId: number, userId: string) => string;
   updateDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
-  getData: (id: string) => Document<T, K, Meta> | undefined;
-  addDocument: (document: Document<T, K, Meta>, content: Content<T, K, Meta>) => void;
+  getData: (id: string) => Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+  addDocument: (document: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   setDocumentReleaseStatus: (id: number, eventId: number, status: string, isReleased: boolean) => void;
-  updateDocument: (id: number, updatedDocument: Document<T, K, Meta>) => void;
-  deleteDocument: (id: number) => void;
-  updateDocumentTags: (id: number, newTags: string[]) => void;
-  selectedDocument: Document<T, K, Meta> | undefined;
-  selectedDocuments: Document<T, K, Meta>[] | undefined;
-  // Add more methods as needed
+  updateDocument: (id: string, updatedDocument: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+  deleteDocument: (id: string) => void;
+  updateDocumentTags: (id: string, newTags: string[]) => void;
+  selectedDocument?: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  selectedDocuments?: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
+
 const useDocumentStore = <
-  T extends  BaseData<any>, 
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
->(): DocumentStore<T, K> => {
-  const [documents, setDocuments] = useState<Record<string, Document<T, K, Meta>>>({});  const [isLoading, setIsLoading] = useState<boolean>(false);
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): DocumentStore<T, K, Meta, ExcludedFields, IncludedFields, AttachmentType> => {
+  const [documents, setDocuments] = useState<Record<string, Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>({});
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { notify } = useNotification();
   const selectedDocumentId = useMemo(() => "", []);
-
 
   const fetchDocuments = async () => {
     setIsLoading(true);
@@ -247,7 +264,7 @@ const useDocumentStore = <
     }
   };
 
-  const addDocument = (document: Document<T, K, Meta>) => {
+  const addDocument = (document: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     const documentId = String(document.id);
     setDocuments((prevDocuments) => ({
       ...prevDocuments,
@@ -268,89 +285,64 @@ const useDocumentStore = <
       delete updatedDocuments[id];
       return updatedDocuments;
     });
-    const documentId = await axiosInstance.delete(`${endpoints.documents.deleteDocument}/${id}`);
+    await axiosInstance.delete(`${endpoints.documents.deleteDocument}/${id}`);
     notify(
       "deletedDocumentSuccess",
-      `You have successfully deleted the document ${documentId}`,
+      `You have successfully deleted the document ${id}`,
       NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_SUCCESS,
       new Date(),
       NotificationTypeEnum.OperationSuccess
-    ); // Notify success
+    );
   };
 
-  // Function to load document content for calendar events
-  const loadCalendarEventsDocumentContent = async (eventId: string, area: string | undefined): Promise<DocumentContent<T, K, StructuredMetadata<T, K>>> => {
+  const loadCalendarEventsDocumentContent = async (
+    eventId: string,
+    area?: string
+  ): Promise<DocumentContent<T, K, StructuredMetadata<T, K>>> => {
     try {
-      // Fetch document content from the backend based on the event ID
       const response = await axiosInstance.get(`/api/calendar-events/${eventId}/document-content`);
-      const meta: StructuredMetadata<T, K> = useMeta<T, K>(area)
-      const metadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
-    // Extract the content from the response data
-    const content = response.data.content;
-    
-    // Return the document content along with the event ID
-    return {
-      eventId: eventId,
-      content: content,
-      meta: meta, 
-      metadata: metadata
-    };
-  } catch (error) {
-    // Handle errors
-    console.error("Error loading document content for calendar event:", error);
-    throw error;
-  }
-};
+      const meta: StructuredMetadata<T, K> = useMeta<T, K>(area);
+      const metadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area);
 
-
-const selectedDocument = useMemo(() => {
-  const doc = Object.values(documents).find((document) => document.id === selectedDocumentId);
-  return doc ? convertDocumentToDocumentData(doc) : undefined; // Convert to DocumentData or return null
-}, [documents, selectedDocumentId]);
-  
-const selectedDocuments = useMemo(() => {
-  return Object.values(documents).filter((document) => document.id === selectedDocumentId) as Document<T, K, Meta>[];
-}, [documents, selectedDocumentId]);
-
-  const getSnapshotDataKey = (documentId: string, eventId: number, userId: string): string => {
-    // Generate a unique key for snapshot data using documentId, eventId, and userId
-    return `documents.${userId}.${documentId}.event.${eventId}`;
-  };
-  
-  const getUserIdAndSnapshotDataKey = async (userId: string, documentId: string) => {
-    try {
-      const fetchedUserId = await userService.fetchUserById(userId);
-      if (!fetchedUserId) {
-        throw new Error('User ID not found');
-      }
-      const snapshotDataKey = UniqueIDGenerator.generateSnapshotDataKey(documentId, userId);
-      return { fetchedUserId, snapshotDataKey };
+      return {
+        eventId,
+        content: response.data.content,
+        meta,
+        metadata
+      };
     } catch (error) {
-      handleError(error as AxiosError, 'Failed to fetch user');
+      console.error("Error loading document content for calendar event:", error);
       throw error;
     }
   };
 
-  const updateDocument = (id: number, updatedDocument: Document<T, K, Meta>) => {
+  const selectedDocument = useMemo(() => {
+    const doc = Object.values(documents).find((document) => document.id === selectedDocumentId);
+    return doc ? convertDocumentToDocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(doc) : undefined;
+  }, [documents, selectedDocumentId]);
+
+  const selectedDocuments = useMemo(() => {
+    return Object.values(documents).filter((document) => document.id === selectedDocumentId) as Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  }, [documents, selectedDocumentId]);
+
+  const getSnapshotDataKey = (documentId: string, eventId: number, userId: string): string =>
+    `documents.${userId}.${documentId}.event.${eventId}`;
+
+  const getData = (id: string) => documents[id];
+
+  const updateDocument = (id: number, updatedDocument: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     setDocuments((prevDocuments) => ({
       ...prevDocuments,
       [id]: updatedDocument,
     }));
-
     notify(
       "updateDocumentSuccess",
       "Document updated successfully",
       NOTIFICATION_MESSAGES.Document.UPDATE_DOCUMENT_SUCCESS,
       new Date(),
       NotificationTypeEnum.OperationSuccess
-    ); // Notify success
+    );
   };
-
-
-  const getData = (id: string) => {
-    return documents[id];
-  }
-
 
   const handleError = (error: any, action: string) => {
     console.error(`Error ${action}:`, error);
@@ -368,17 +360,10 @@ const selectedDocuments = useMemo(() => {
     try {
       const response = await fetch(endpoints.documents.updateDocumentTags.toString(), {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id,
-          tags,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, tags }),
       });
-      if (!response.ok) {
-        throw new Error("Failed to update document tags");
-      }
+      if (!response.ok) throw new Error("Failed to update document tags");
       const data = await response.json();
       updateDocument(id, data);
     } catch (error) {
@@ -388,55 +373,14 @@ const selectedDocuments = useMemo(() => {
     }
   };
 
-
-
-  const updateDocumentReleaseStatus = async (
-    id: number, 
-    eventId: number,
-    status: string, 
-    isReleased: boolean
-  ) => {
+  const updateDocumentReleaseStatus = async (id: number, eventId: number, status: string, isReleased: boolean) => {
     try {
       const response = await fetch(endpoints.documents.updateDocumentReleaseStatus.toString(), {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id,
-          status,
-          isReleased,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status, isReleased }),
       });
-  
-      if (!response.ok) {
-        throw new Error("Failed to update document release status");
-      }
-  
-      const data = await response.json();
-      updateDocument(id, data); // Assuming updateDocument is a function that handles the updated data
-    } catch (error) {
-      handleError(error, "updating document release status");
-    } finally {
-      setIsLoading(false); // Assuming setIsLoading is a state setter to indicate loading status
-    }
-  };
-  
-  const setDocumentReleaseStatus = async (id: number, eventId: number, releaseStatus: string) => {
-    try {
-      const response = await fetch(endpoints.documents.updateDocumentReleaseStatus.toString(), {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          id,
-          releaseStatus,
-        }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to update document release status");
-      }
+      if (!response.ok) throw new Error("Failed to update document release status");
       const data = await response.json();
       updateDocument(id, data);
     } catch (error) {
@@ -446,14 +390,30 @@ const selectedDocuments = useMemo(() => {
     }
   };
 
-  const store: DocumentStore<T, K, Meta> = makeAutoObservable({
+  const setDocumentReleaseStatus = async (id: number, eventId: number, releaseStatus: string) => {
+    try {
+      const response = await fetch(endpoints.documents.updateDocumentReleaseStatus.toString(), {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, releaseStatus }),
+      });
+      if (!response.ok) throw new Error("Failed to update document release status");
+      const data = await response.json();
+      updateDocument(id, data);
+    } catch (error) {
+      handleError(error, "updating document release status");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const store: DocumentStore<T, K, Meta, ExcludedFields, IncludedFields, AttachmentType> = makeAutoObservable({
     documents,
     isLoading,
     error,
     fetchDocuments,
     addDocument,
     updateDocument,
-    
     deleteDocument,
     updateDocumentTags,
     loadCalendarEventsDocumentContent,
@@ -463,11 +423,11 @@ const selectedDocuments = useMemo(() => {
     getData,
     updateDocumentReleaseStatus,
     setDocumentReleaseStatus,
-    // Add more methods as needed
   });
 
   return store;
 };
+
 
 // Helper function to convert Document to DocumentData
 const convertDocumentToDocumentData = <T extends BaseData<any>,

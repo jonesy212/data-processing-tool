@@ -13,55 +13,108 @@ import { RealtimeUpdateCallback } from "../../hooks/commHooks/useUIRealtimeData"
 import { CalendarEvent } from '../../state/stores/CalendarEvent';
 import { RealtimeData, RealtimeDataItem } from "./RealtimeData";
 
-const RealTimeDataCollection: React.FC<{}> = () => {
-  const dispatch = useDispatch();
-  const [dexList, setDexList] = useState<DEX[]>([]);
-  const [exchangeList, setExchangeList] = useState<Exchange[]>([]);
-  const [snapshotList] = useState<SnapshotList<Data, Data>>(new SnapshotList<Data, Data>());
 
-  // Custom update callback function to process fetched data
-  const updateCallback: RealtimeUpdateCallback<RealtimeData> = async (
-    data: SnapshotStore<RealtimeData, K>,
-    events: Record<string, CalendarEvent<>[]>,
-    snapshotStore: SnapshotStore<RealtimeData>,
-    dataItems: RealtimeData[]
+
+// --- Type aliases to keep things readable
+type AnyData = Data<BaseDataEntity, BaseDataEntity>;
+type AnyRealtime = RealtimeData<BaseDataEntity, BaseDataEntity>;
+type AnyRealtimeItem = RealtimeDataItem<BaseDataEntity, BaseDataEntity>;
+type AnyCalendarEvent = CalendarEvent<BaseDataEntity, BaseDataEntity>;
+
+
+import {
+  BaseDataEntity
+} from "../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+  const [dexList, setDexList] = useState<DEX[]>([]);
+
+  // SnapshotList typed to hold AnyData
+  const [snapshotList] = useState<
+    SnapshotList<AnyData, AnyData>
+  >(new SnapshotList<AnyData, AnyData>());
+
+  // --- updateCallback now matches the RealtimeUpdateCallback signature:
+  // (id, events, snapshotStore, dataItems, data?)
+  const updateCallback: RealtimeUpdateCallback<AnyRealtime> = async (
+    id: string,
+    events: Record<string, AnyCalendarEvent[]>,
+    snapshotStore: SnapshotStore<AnyRealtime, AnyRealtime>,
+    dataItems: AnyRealtimeItem[],
+    data?: InitializedData<T>  // optional InitializedData<...> if your type includes it
   ): Promise<void> => {
     try {
-      // Example conversion of RealtimeData to RealtimeDataItem
-      const convertedDataItems: RealtimeDataItem[] = dataItems.map(
-        (realtimeData: RealtimeData) => ({
-          id: realtimeData.id,
-          date: new Date(),
-          userId: "user123",
-          dispatch: (action: any) => {},
-          value: realtimeData.value,
-          name: realtimeData.name,
-          eventId: realtimeData.eventId,
-          timestamp: new Date(realtimeData.timestamp!),
-          type: realtimeData.type,
-        })
-      );
+      // Convert RealtimeData (or RealtimeDataItem -> label/value) into UI items
+      const convertedDataItems: AnyRealtimeItem[] = dataItems.map((realtimeData) => ({
+        id: realtimeData.id,
+        date: realtimeData.date ?? new Date(),
+        userId: (realtimeData as any).userId ?? "user123",
+        dispatch: (action: any) => {},
+        value: realtimeData.value,
+        name: realtimeData.name,
+        eventId: (realtimeData as any).eventId ?? "",
+        timestamp: realtimeData.timestamp ? new Date(realtimeData.timestamp) : new Date(),
+        type: realtimeData.type as any,
+        blockNumber: realtimeData.blockNumber,
+        transactionHash: realtimeData.transactionHash,
+        event: realtimeData.event,
+        signature: realtimeData.signature,
+       
+      }));
 
-      // Example processing of events
+      // Process events (calendar)
       Object.keys(events).forEach((eventId: string) => {
         const calendarEvents = events[eventId];
-        calendarEvents.forEach((event: CalendarEvent) => {
+        calendarEvents.forEach((event: AnyCalendarEvent) => {
           console.log(`Updated event with ID ${eventId}:`, event);
         });
       });
 
-      // Process and add data items to snapshot list
+      // Add converted items to snapshotList
       convertedDataItems.forEach((item) => {
-        const snapshotItem: SnapshotItem<Data, Data> = {
-          message: item,
-          data: item.value,
-          user: item.userId,
-          id: UniqueIDGenerator.generateSnapshoItemID(item.id),
-          value: snapshotStore.get(item.id),
-          label: item.name,
-          category: item.type,
+        const snapshotItem: SnapshotItem<AnyData, AnyData> = {
+          message: (type, content, additionalData, userId, sender, channel) => ({
+            id: UniqueIDGenerator.generateID("msg", "system", NotificationTypeEnum.MessageID),
+            sender,
+            senderId: sender?.id,
+            channel,
+            channelId: channel?.id,
+            content,
+            additionalData,
+            tags: [],
+            userId,
+            timestamp: new Date(),
+            text: content,
+            isUserMessage: true,
+            receiver: undefined,
+            isOnline: false,
+            lastSeen: new Date(),
+            description: "",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            deletedAt: null,
+            imageUrl: "",
+            bio: null,
+            website: "",
+            location: "",
+            coverImageUrl: "",
+            following: [],
+            followers: [],
+            chatRooms: [],
+            blockedUsers: [],
+            blockedBy: [],
+            username: "system",
+            email: "system@example.com",
+            tier: "basic",
+            uploadQuota: 0,
+          }),
+          data: item.value as any,
+          user: item.useer,
+          id: UniqueIDGenerator.generateSnapshoItemID(String(item.id)),
+          value: snapshotStore.getFindSnapshotStoreById(item.id as any),
+          label: item.label,
+          category: item.type as any,
           timestamp: item.timestamp,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         };
         snapshotList.addSnapshot(snapshotItem);
       });
@@ -73,27 +126,34 @@ const RealTimeDataCollection: React.FC<{}> = () => {
     }
   };
 
-  // Fetch data hooks
-  useRealtimeDextData(initialData, updateCallback, (dexData: any[]) => {
-    console.log("DEX Data processed:", dexData);
-    return dexData;
-  }, [DEXEnum.SUSHISWAP, DEXEnum.PANCAKESWAP, DEXEnum.UNISWAP]);
+  // --- Hook integrations (use your existing hooks)
+  useRealtimeDextData(
+    /* initialData */ [],
+    updateCallback,
+    (dexData: any[]) => {
+      console.log("DEX Data processed:", dexData);
+      return dexData;
+    },
+    [DEXEnum.SUSHISWAP, DEXEnum.PANCAKESWAP, DEXEnum.UNISWAP]
+  );
 
-  useRealtimeExchangeData(initialData, updateCallback, (exchangeData: any[]) => {
-    console.log("Exchange Data processed:", exchangeData);
-    return exchangeData;
-  }, [ExchangeEnum.COINBASE_PRO, ExchangeEnum.KRAKEN, ExchangeEnum.BITFINEX]);
+  useRealtimeExchangeData(
+    /* initialData */ [],
+    updateCallback,
+    (exchangeData: any[]) => {
+      console.log("Exchange Data processed:", exchangeData);
+      return exchangeData;
+    },
+    [ExchangeEnum.COINBASE_PRO, ExchangeEnum.KRAKEN, ExchangeEnum.BITFINEX],
+    dispatch
+  );
 
   useEffect(() => {
-    // Fetch DEX list
-    const fetchedDexList: DEX[] = [
-      { name: "Uniswap", apiUrl: "https://api.uniswap.org" },
-      // Add other DEXs similarly
-    ];
+    // Fetch DEX list (example)
+    const fetchedDexList: DEX[] = [{ name: "Uniswap", apiUrl: "https://api.uniswap.org" }];
     setDexList(fetchedDexList);
-    console.log("DEXs fetched:", fetchedDexList);
 
-    // Fetch exchange list
+    // Fetch exchange list (example)
     const fetchedExchangeList: Exchange[] = [
       {
         name: "Coinbase Pro",
@@ -107,38 +167,28 @@ const RealTimeDataCollection: React.FC<{}> = () => {
         liquidity: 0,
         tokens: [],
         createdAt: undefined,
-        updatedAt: undefined
+        updatedAt: undefined,
       },
-      // Add other exchanges similarly
     ];
     setExchangeList(fetchedExchangeList);
-    console.log("Exchanges fetched:", fetchedExchangeList);
   }, []);
 
-  // Example function to convert SnapshotStore to desired data type
-  const convertSnapshotToDataType = <T extends unknown>(
-    snapshotStore: SnapshotStore<RealtimeData> | null | undefined
-  ): T[] => {
-    // Implement conversion logic
-    return [] as T[];
-  };
-
-  // Render the component
   return (
     <div>
-      {/* Render your component JSX here */}
       <h2>DEX List</h2>
       <ul>
         {dexList.map((dex) => (
           <li key={dex.apiUrl}>{dex.name}</li>
         ))}
       </ul>
+
       <h2>Exchange List</h2>
       <ul>
         {exchangeList.map((exchange) => (
           <li key={exchange.apiUrl}>{exchange.name}</li>
         ))}
       </ul>
+
       <h2>Snapshot List</h2>
       <ul>
         {snapshotList.toArray().map((snapshot) => (

@@ -83,7 +83,7 @@ export interface AssignBaseStore {
   unassignTeamMemberFromItem: (itemId: string, userId: string) => void;
 
   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
-  snapshotStore: SnapshotStore<Snapshot<Data, Data>>;
+  snapshotStore: SnapshotStore<Snapshot<Data<T, K, Meta, Attachment, ExcludedFields>, Data<T, K, Meta, Attachment, ExcludedFields>>>;
 
   reassignUsersToItems: Record<string, string[]>;
 
@@ -160,7 +160,7 @@ export interface AssignBaseStore {
   assignBoardCustomFieldToTeam: Record<string, string[]>,
 
 
-  setAssignedTaskStore: (store: SnapshotStore<Snapshot<Data, Data>>) => void;
+  setAssignedTaskStore: (store: SnapshotStore<Snapshot<Data<T, K, Meta, Attachment, ExcludedFields>, Data<T, K, Meta, Attachment, ExcludedFields>>>) => void;
   // Add more methods or properties as needed
 }
 
@@ -700,8 +700,8 @@ const useAssignBaseStore = (): AssignBaseStore => {
     });
   };
 
-  const snapshotStore: SnapshotStore<Snapshot<Data, Data>> = {} as SnapshotStore<
-    Snapshot<Data, Data>
+  const snapshotStore: SnapshotStore<Snapshot<Data<T, K, Meta, Attachment, ExcludedFields>, Data<T, K, Meta, Attachment, ExcludedFields>>> = {} as SnapshotStore<
+    Snapshot<Data<T, K, Meta, Attachment, ExcludedFields>, Data<T, K, Meta, Attachment, ExcludedFields>>
     >;
   
   const assignPresentationStore: PresentationStore = {} as PresentationStore

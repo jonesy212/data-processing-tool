@@ -2,10 +2,12 @@
 import React from 'react';
 import { Task } from '../models/tasks/Task';
 
+// Default alias for Task with all generics filled in
+type DefaultTask = Task<any, any, any, any>;
+
 interface TaskLoopProps {
-  task: Task;
+  task: DefaultTask; // Use the default alias here
   taskType: string;
-  // Define any additional props needed for tasks, such as URLs for attachments
   attachmentUrls?: string[];
 }
 
@@ -18,11 +20,10 @@ const TaskLoop: React.FC<TaskLoopProps> = ({
     <div>
       <h2>Task Loop</h2>
       <p>{task.toString()}</p>
-      {/* Render additional content based on task type or other properties */}
-      {taskType === "text" && (
-        <p>This is a text task</p>
-      )}
-      {taskType === "image" && attachmentUrls && attachmentUrls.length > 0 && (
+
+      {taskType === "text" && <p>This is a text task</p>}
+
+      {taskType === "image" && attachmentUrls?.length > 0 && (
         <div>
           <p>This is an image task with attachments:</p>
           <ul>
@@ -34,7 +35,6 @@ const TaskLoop: React.FC<TaskLoopProps> = ({
           </ul>
         </div>
       )}
-      {/* Add more conditions for different task types */}
     </div>
   );
 };

@@ -21,7 +21,7 @@ import { archiveSnapshot } from './ArchiveService'
 const { notify } = useNotification()
 
 export const triggerOnSnapshot = <T extends BaseDataEntity, K extends T = T>(
-  snapshot: Snapshot<T, K>
+  snapshot: Snapshot<T, K, Meta, ExcludedFields>
 ): void => {
   try {
     // 1. Log the snapshot trigger event

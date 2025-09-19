@@ -6,6 +6,9 @@ import TaskForm from "../models/tasks/TaskForm";
 import TaskService from "../tasks/TaskService";
 import TaskLoop from "./TaskLoop";
 
+// Default alias for Task
+type DefaultTask = Task<any, any, any, any>;
+
 enum TaskPhaseEnum {
     TASK_SELECTION = "TASK_SELECTION",
     TASK_CREATING = "TASK_CREATING",
@@ -17,30 +20,25 @@ enum TaskPhaseEnum {
 }
 
 const TaskProcess: React.FC = () => {
-  const [taskData, setTaskData] = useState<Task[]>([]);
-  const [taskType, setTaskType] = useState<string>("text"); // Default task type 
+  const [taskData, setTaskData] = useState<DefaultTask[]>([]); // use DefaultTask
+  const [taskType, setTaskType] = useState<string>("text"); 
   const [currentPhase, setCurrentPhase] = useState<TaskPhaseEnum>(
     TaskPhaseEnum.TASK_MANAGEMENT
   );
 
-  const handleSubmitTask = (task: Task) => {
-    // Add the submitted task to the data array
+  const handleSubmitTask = (task: DefaultTask) => { // use DefaultTask
     setTaskData([...taskData, task]);
   };
 
   const handleProcessTask = () => {
-    // Change phase to task processing
     setCurrentPhase(TaskPhaseEnum.TASK_PROCESSING);
 
-    // Process the task data
     const taskService = TaskService.getInstance();
     taskService.processTasks(taskData, taskType);
 
-    // Generate task report
     const taskReport: TaskReport = TaskReportGenerator.generateTaskReport(taskData);
-    console.log(taskReport); // Example: Log the task report
+    console.log(taskReport);
 
-    // Change phase to task reporting
     setCurrentPhase(TaskPhaseEnum.TASK_REPORTING);
   };
 
@@ -59,8 +57,8 @@ const TaskProcess: React.FC = () => {
           <hr />
         </>
       )}
+
       <h2>Task Loop</h2>
-      {/* Render individual tasks using TaskLoop */}
       {taskData.map((task, index) => (
         <TaskLoop
           key={index}

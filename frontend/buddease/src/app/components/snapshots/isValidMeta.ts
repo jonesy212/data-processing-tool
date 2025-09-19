@@ -8,7 +8,7 @@ import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
  * @param {Record<string, string>} schema - Schema to validate the metadata against, with key-value pairs specifying expected types.
  * @returns {boolean} - Returns true if the metadata is valid, otherwise false.
  */
-function isValidMeta<T, K>(
+function isValidMeta<T, K, Meta, ExcludedFields>(
   meta: StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, K>,
   schema: Record<string, string> = {}
 ): boolean {

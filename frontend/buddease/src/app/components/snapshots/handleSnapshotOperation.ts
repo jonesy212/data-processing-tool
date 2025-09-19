@@ -1,12 +1,13 @@
 // handleSnapshotOperation.ts
 import * as snapshotApi from "@/app/api/SnapshotApi";
-import { BaseData } from '@/app/components/models/data/Data';
 import { Snapshot } from "@/app/components/snapshots";
 import { SnapshotStoreActions } from "@/app/components/snapshots/SnapshotActions";
 import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "../../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig";
+import { ExcludedFields } from "../../../data_analysis/frontend/buddease/src/app/components/routing/Fields";
+import SnapshotStore from "./SnapshotStore";
 
 
 // First, extract the sorting logic to a shared utility function
@@ -28,7 +29,7 @@ function handleMapOperation<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
   >(
   snapshot: Snapshot<T, K, Meta, ExcludedFields>,
-  data: InitializedData<T, K> | undefined,
+  data: InitializedData<T, K, Meta, ExcludedFields> | undefined,
   operationType: SnapshotOperationType
 ): Snapshot<T, K, Meta, ExcludedFields> {
   // Create a new instance preserving the prototype chain
@@ -91,12 +92,12 @@ function handleMapOperation<
 
 // Define handleSnapshotOperation
 const handleSnapshotOperation = <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-  snapshot: Snapshot<T, K>,
-  config: SnapshotStoreConfig<T, K>,
-  mappedData: Map<string, SnapshotStoreConfig<T, K>>,
-  operation: SnapshotOperation<T, K>,
+  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+  config: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
+  mappedData: Map<string, SnapshotStoreConfig<T, K, Meta, ExcludedFields>>,
+  operation: SnapshotOperation<T, K, Meta, ExcludedFields>,
   operationType: SnapshotOperationType
-): Promise<Snapshot<T, K> | null> => {
+): Promise<Snapshot<T, K, Meta, ExcludedFields> | null> => {
   const snapshotId = snapshot.id;
 
   if (!snapshotId) {
@@ -105,7 +106,7 @@ const handleSnapshotOperation = <T extends BaseDataEntity, K extends T = T, Meta
 
   switch (operationType) {
     case SnapshotOperationType.CreateSnapshot:
-      return snapshotApi.createSnapshot<T, K>(config)
+      return snapshotApi.createSnapshot<T, K, Meta, ExcludedFields>(config)
         .then(newSnapshot => {
           if (newSnapshot?.id) {
             mappedData.set(newSnapshot.id, config);
@@ -118,7 +119,7 @@ const handleSnapshotOperation = <T extends BaseDataEntity, K extends T = T, Meta
       if (!mappedData.has(snapshotId)) {
         return Promise.reject(new Error(`Snapshot with ID ${snapshotId} does not exist for update.`));
       }
-      return snapshotApi.updateSnapshot<T, K>(snapshot, config)
+      return snapshotApi.updateSnapshot<T, K, Meta, ExcludedFields>(snapshot, config)
         .then(updatedSnapshot => {
           mappedData.set(updatedSnapshot.id, config);
           return updatedSnapshot;
@@ -146,11 +147,15 @@ const handleSnapshotOperation = <T extends BaseDataEntity, K extends T = T, Meta
 };
 
 
-function handleSnapshotStoreConfigOperation<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-  snapshot: Snapshot<T, K>,
-  data: SnapshotStoreConfig<T, K>,
+function handleSnapshotStoreConfigOperation< T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+>(
+  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+  data: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
   operationType: SnapshotOperationType
-): Snapshot<T, K> {
+): Snapshot<T, K, Meta, ExcludedFields> {
  // Create a new instance preserving the prototype chain
  const result = Object.assign(Object.create(Object.getPrototypeOf(snapshot)), snapshot);
  
@@ -195,32 +200,40 @@ function handleSnapshotStoreConfigOperation<T extends  BaseData<any>, K extends 
 
 
 // Define handleSnapshotStoreOperation
-const handleSnapshotStoreOperation = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+const handleSnapshotStoreOperation = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshotId: string,
-  snapshotStore: SnapshotStore<T, K>,
-  snapshot: Snapshot<T, K>,
-  operation: SnapshotOperation<T, K>,
+  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+  operation: SnapshotOperation<T, K, Meta, ExcludedFields>,
   operationType: SnapshotOperationType,
-  callback: (snapshotStore: SnapshotStore<T, K>) => void
-): Promise<SnapshotStoreConfig<T, K> | null> => {
+  callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void
+): Promise<SnapshotStoreConfig<T, K, Meta, ExcludedFields> | null> => {
   console.log("Handling SnapshotStore operation:", snapshotStore, snapshotId);
 
   // Ensure snapshot is handled within SnapshotStore
-  const config = snapshotStore.getConfig(snapshotId); // Assume getConfig retrieves the specific config for snapshotId
+  const config = snapshotStore.getSnapshotConfig(snapshotId);
 
   if (!config) {
     console.error(`No configuration found for snapshot with ID ${snapshotId}`);
     return null;
   }
 
-  const mappedData = snapshotStore.getMappedData(); // Fetch mapped data from snapshot store
+  // ✅ FIXED: Replace snapshotStore.() with the actual method you need
+  const mappedData = snapshotStore.getMappedData(); // or whatever method exists
 
   // Use handleSnapshotOperation within handleSnapshotStoreOperation
-  const resultSnapshot = handleSnapshotOperation (snapshot, config, mappedData, operation, operationType);
+  const resultSnapshot = await handleSnapshotOperation(snapshot, config, mappedData, operation, operationType);
 
   // Example update for SnapshotStore actions
   if (resultSnapshot) {
-    SnapshotStoreActions<T, K>().handleSnapshotStoreSuccess({
+    SnapshotStoreActions<T, K, Meta, ExcludedFields>().handleSnapshotStoreSuccess({
       snapshotStore,
       snapshotId,
       snapshot: resultSnapshot,
@@ -232,8 +245,8 @@ const handleSnapshotStoreOperation = async <T extends  BaseData<any>, K extends 
   // Callback with updated snapshot store
   callback(snapshotStore);
 
-  return config; // Return the updated configuration for further use if needed
+  return config;
 };
 
-  export { handleMapOperation, handleSnapshotOperation, handleSnapshotStoreConfigOperation, sortByTimestamp };
+  export { handleMapOperation, handleSnapshotOperation, handleSnapshotStoreConfigOperation, sortByTimestamp, handleSnapshotStoreOperation };
 

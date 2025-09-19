@@ -1,4 +1,6 @@
 import { FileType } from "@/app/components/documents/Attachment/attachment";
+import { SharedIdentifiers, SharedTimestamps } from '@/app/components/documents/RelatedProps';
+import { Content } from '@/app/components/models/content/AddContent';
 import { storeProps } from '@/app/components/snapshots/SnapshotStoreProps';
 import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 import getAppPath from '@/app/configs/appStructure/appPath';
@@ -10,7 +12,6 @@ import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { DataVersions } from "@/app/configs/DataVersionsConfig";
 import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { Content } from '@/app/components/models/content/AddContent';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { createBaseData } from "../hooks/useSnapshotManager";
 import { Comment } from '../models/data/Comments';
@@ -19,11 +20,11 @@ import { InitializedData } from "../snapshots/SnapshotStoreOptions";
 import { CustomComment } from '../state/redux/slices/BlogSlice';
 import { HistoryEntry } from '../state/stores/HistoryStore';
 import MobXEntityStore from '../state/stores/MobXEntityStore';
+import { DefaultExcludedFields, DefaultMeta } from './BaseConfig';
 import { BuildVersion, Version, version } from "./Version";
 import { getCurrentAppInfo } from "./VersionGenerator";
-import { SharedIdentifiers, SharedTimestamps } from '@/app/components/documents/RelatedProps';
 
-const { snapshotData } = storeProps 
+const { snapshotData } = storeProps
 
 const baseData: BaseDataEntity = createBaseData({ ...snapshotData });
 
@@ -52,26 +53,29 @@ interface SharedContent {
 interface CoreDataItem<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends SharedIdentifiers<T, K, Meta, ExcludedFields>, 
+> extends SharedIdentifiers<T, K>,
   SharedTimestamps {
-  type?: string | Promise<FileType>;
+  id?: string | number;
+  name?: string;
+
+  type?: SharedIdentifiers<T, K>['type'] | Promise<FileType>;
   path?: string;
   draft?: boolean;
   permissions?: AppStructurePermissions;
 }
 
-interface SharedUpdateHistory<T extends BaseDataEntity = BaseDataEntity, K extends T = T> {
+interface SharedUpdateHistory<T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T> {
   lastUpdated?: Date | VersionHistory<T, K>;
   changeLogSummary?: string;
 }
 
-export interface LastUpdated<T extends BaseDataEntity = BaseDataEntity, K extends T = T> 
+export interface LastUpdated<T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T>
   extends SharedUpdateHistory<T, K>, SharedTimestamps, SharedAuditInfo {
 }
 
-interface VersionHistory<T extends BaseDataEntity, K extends T = T> 
+interface VersionHistory<T extends BaseDataEntity, K extends T = T>
   extends SharedUpdateHistory {
   versionData: string | VersionData<T, K> | null | {};
   latestVersion?: MinimalVersion<T, K>;
@@ -83,20 +87,21 @@ interface VersionHistory<T extends BaseDataEntity, K extends T = T>
 interface VersionedDataItem<
   T extends BaseDataEntity,
   K extends T = T
-> 
-  extends CoreDataItem<T, K, Meta, ExcludedFields> {
+>
+  extends CoreDataItem<T, K> {
   versions?: DataVersions;
   versionData?: VersionData<T, K> | null;
   items?: Record<string, VersionedDataItem<T, K>>;
 }
+
 
 interface AppStructureDataItem<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  > extends CoreDataItem<T, K, Meta, ExcludedFields>,
-  SharedIdentifiers<T, K, Meta, ExcludedFields> {
+> extends CoreDataItem<T, K>,
+  SharedIdentifiers<T, K> {
   content?: string | Content<T, K>;
   versions?: DataVersions;
   versionData?: VersionData<BaseDataEntity, BaseDataEntity> | null;
@@ -108,12 +113,12 @@ interface ExtendedVersionData<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> 
+>
   extends VersionedDataItem<T, K>,
-          SharedVersioning,
-          SharedAuditInfo,
-          SharedTimestamps {
-  
+  SharedVersioning,
+  SharedAuditInfo,
+  SharedTimestamps {
+
   // Version-specific properties
   url?: string;
   appVersion?: string;
@@ -127,7 +132,7 @@ interface ExtendedVersionData<
   lastUpdated?: Date | VersionHistory<T, K>;
   buildVersions?: BuildVersion;
   currentHash: string;
-  
+
   // Publication info
   published?: boolean;
   checksum: string;
@@ -135,7 +140,7 @@ interface ExtendedVersionData<
 }
 
 
-interface SharedVersionData { 
+interface SharedVersionData {
   major?: number,
   minor?: number,
   patch?: number,
@@ -161,16 +166,21 @@ export function createLastUpdated<T extends BaseDataEntity = BaseDataEntity>(
 
 
 // A minimal version slice (use Pick to set the baseline)
-type MinimalVersion<T extends BaseDataEntity<any>, K extends T = T> = 
+type MinimalVersion<T extends BaseDataEntity, K extends T = T> =
   Partial<
     Pick<VersionData<T, K>, "versionNumber" | "timestamp" | "author" | "schema">> & {
-};
+  };
 
-interface VersionData<T extends BaseDataEntity, K extends T = T> 
+interface VersionData<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K>  = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>
   extends ExtendedVersionData<T, K>,
-          SharedVersioning,
-          Omit<SharedMetadata<T, K>, "permissions"> {
-  
+  SharedVersioning,
+  Omit<SharedMetadata<T, K>, "permissions"> {
+
   // Identity and core
   id: string | number;
   author?: string;
@@ -187,14 +197,14 @@ interface VersionData<T extends BaseDataEntity, K extends T = T>
   parentUrl?: string;
   parentChecksum?: string;
   parentMetadata?: {};
-  
+
   // Status
   isLatest: boolean;
   isActive: boolean;
   isPublished: boolean;
   publishedAt?: Date | null;
   status?: string;
-  
+
   // Workspace
   workspaceId: string;
   workspaceName: string;
@@ -203,23 +213,23 @@ interface VersionData<T extends BaseDataEntity, K extends T = T>
   workspaceViewers: string[];
   workspaceAdmins: string[];
   workspaceMembers: string[];
-  
+
   // Services
   setServices?: (services: Record<string, any>) => void;
   services?: Record<string, any>;
-  
+
   // App structure
   _structure?: Record<string, AppStructureItem[]>;
   frontendStructure?: Promise<AppStructureItem[]>;
   backendStructure?: Promise<AppStructureItem[]>;
-  
+
   // Backend/Frontend
   backend?: BackendStructure | undefined;
   frontend?: FrontendStructure<T, K> | undefined;
-  
+
   // Data
-  data?: InitializedData<T, K>;
-  
+  data?: InitializedData<T, K, Meta, ExcludedFields>;
+
   // Remove the duplicate 'user' since we have author/updatedBy/createdBy
 }
 
@@ -231,7 +241,11 @@ const revisionNotes = "Added new section and fixed typos.";
 
 
 
-const transformToStructureItems = (data: Record<string, AppStructureDataItem>): { [key: string]: AppStructureDataItem } => {
+const transformToStructureItems = (data: Record<string, AppStructureDataItem<T, K, DefaultMeta<T, K>,
+  DefaultExcludedFields<T>>>): {
+    [key: string]: AppStructureDataItem<T, K, DefaultMeta<T, K>,
+      DefaultExcludedFields<T>>
+  } => {
   // Validate input data
   if (!data || typeof data !== "object") {
     throw new Error("Invalid input data. Expected an object.");
@@ -337,7 +351,7 @@ const createDefaultVersionData = <
     workspaceViewers: [],
     workspaceAdmins: [],
     workspaceMembers: [],
-    setServices: () => {},
+    setServices: () => { },
     notes: [],
     changes: [],
     latestVersion: undefined,
@@ -346,8 +360,8 @@ const createDefaultVersionData = <
     transformToStructureItems: (data: any): AppStructureItem[] =>
       Object.values(transformToStructureItems(data)),
     getVersionNumber: () => "0.0.0",
-    updateStructureHash: async () => {},
-    setStructureData: () => {},
+    updateStructureHash: async () => { },
+    setStructureData: () => { },
     hash: (value: string) => value,
     calculateHash: () => "hash",
     getStructure: async () => {
@@ -372,9 +386,6 @@ const createDefaultVersionData = <
 };
 
 const versions: VersionHistory<BaseDataEntity, BaseDataEntity> = {
-  major: 1,
-  minor: 1, 
-  patch: 0,
   history: [],
   latestVersion: createDefaultVersionData({ id: "1", isLatest: true }),
   lastUpdated: new Date("2024-01-01T00:00:00Z"),
@@ -503,32 +514,32 @@ const versionData: Promise<VersionData<BaseDataEntity<any>>> = (async () => {
   if (!version) {
     throw new Error("Not able to find version")
   }
-  
 
-// Then create mockVersion and other dependencies
-const mockVersion: Version<BaseDataEntity<any>, BaseDataEntity<any>, StructuredMetadata<BaseDataEntity<any>, BaseDataEntity<any>>> = {
-  id: 0,
-  major: 1,
-  minor: 0,
-  patch: 0,
-  name: "Initial Version",
-  // ... all other required properties
-} as Version<BaseDataEntity<any>, BaseDataEntity<any>, StructuredMetadata<BaseDataEntity<any>, BaseDataEntity<any>>>;
 
-  
-const latestVersionData = createLatestVersion();
-const lastUpdatedData = createLastUpdated("Version history initialized.");
+  // Then create mockVersion and other dependencies
+  const mockVersion: Version<BaseDataEntity<any>, BaseDataEntity<any>, StructuredMetadata<BaseDataEntity<any>, BaseDataEntity<any>>> = {
+    id: 0,
+    major: 1,
+    minor: 0,
+    patch: 0,
+    name: "Initial Version",
+    // ... all other required properties
+  } as Version<BaseDataEntity<any>, BaseDataEntity<any>, StructuredMetadata<BaseDataEntity<any>, BaseDataEntity<any>>>;
 
-// Now update versionHistory with the actual data
-Object.assign(versionHistory, {
-  ...latestVersionData,
-  ...lastUpdatedData,
-  versions: [
-    ...(latestVersionData && 'versions' in latestVersionData && Array.isArray(latestVersionData.versions) ? latestVersionData.versions : []),
-    ...(lastUpdatedData && 'versions' in lastUpdatedData && Array.isArray(lastUpdatedData.versions) ? lastUpdatedData.versions : []),
-    mockVersion
-  ],
-});
+
+  const latestVersionData = createLatestVersion();
+  const lastUpdatedData = createLastUpdated("Version history initialized.");
+
+  // Now update versionHistory with the actual data
+  Object.assign(versionHistory, {
+    ...latestVersionData,
+    ...lastUpdatedData,
+    versions: [
+      ...(latestVersionData && 'versions' in latestVersionData && Array.isArray(latestVersionData.versions) ? latestVersionData.versions : []),
+      ...(lastUpdatedData && 'versions' in lastUpdatedData && Array.isArray(lastUpdatedData.versions) ? lastUpdatedData.versions : []),
+      mockVersion
+    ],
+  });
 
   // Define the resolved VersionData object
   const resolvedVersionData: VersionData<BaseDataEntity<any>> = {
@@ -675,7 +686,7 @@ const newServices = {
 async function updateServices() {
   try {
     const versionData = await createDefaultVersionData(); // Await the promise
-    
+
     // Add null check before calling setServices
     if (versionData.setServices) {
       versionData.setServices(newServices); // Now you can call methods safely

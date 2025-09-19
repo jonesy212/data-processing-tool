@@ -1,18 +1,18 @@
 import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
-import { BaseData } from '@/app/components/models/data/Data';
+import { SnapshotManager } from "@/app/components/hooks/useSnapshotManager";
 import { Label } from "@/app/components/projects/branding/BrandingSettings";
+import { ExcludedFields } from "@/app/components/routing/Fields";
 import { Snapshot } from "@/app/components/snapshots";
-import { createSnapshotInstance } from '@/app/components/snapshots/createSnapshotInstance';
+import { createSnapshot } from '@/app/components/snapshots/createSnapshot';
 import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
 import { User } from "@/app/components/users/User";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/configs/BaseConfig";
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { ChatRoom } from "../calendar/CalendarSlice";
 import { ContentItem } from "../cards/DummyCardLoader";
 import { Sender } from "../communications/chat/Communication";
-import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { createMessage, MessageProps } from "../utils/createMessage";
 import { useSecureUserId } from '../utils/useSecureUserId';
@@ -22,11 +22,12 @@ import { SnapshotStoreProps } from "./useSnapshotStore";
 
 
 interface SnapshotItem<
-  T extends  BaseData<any>, 
+  T extends BaseDataEntity, 
   K extends T = T,
  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends Snapshot<T, K, Meta, ExcludedFields>,   SharedIdentifiers<T, K, Meta, ExcludedFields> {
+  > extends Snapshot<T, K, Meta, ExcludedFields>,
+  SharedIdentifiers<T, K> {
   id: string;
   message?: (
     type: NotificationType, 
@@ -37,19 +38,28 @@ interface SnapshotItem<
     channel?: ChatRoom
   ) => Message
   itemContent?: ContentItem; 
-  data: InitializedData<T, K> | undefined;
+  data: InitializedData<T, K, Meta, ExcludedFields> | undefined;
   user?: User;
   categories?: Category[];
-  label: Label | undefined;
+  label?: string | Label | Record<string, string> | null
   key: string 
 }
 
 
+
+type LabelLike = string | Label | Record<string, string>;
+
+function isLabel(obj: LabelLike): obj is Label {
+  return typeof obj === "object" && obj !== null && "text" in obj;
+}
+
 class SnapshotList<
-  T extends  BaseData<any>, 
+  T extends BaseDataEntity, 
   K extends T = T, 
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
-  private snapshots: SnapshotItem<T, K>[];
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> {
+  private snapshots: SnapshotItem<T, K, Meta, ExcludedFields>[];
   private id: string;
   public category: string;
   constructor() {
@@ -58,37 +68,52 @@ class SnapshotList<
     this.category = "";
   }
 
-  private sortSnapshotsBy(attribute: keyof SnapshotItem<T, K>) {
+
+  private getTimestamp(snapshot: SnapshotItem<T, K, Meta, ExcludedFields>): number {
+    // Access timestamp from the snapshot itself, not from a 'value' property
+    if (snapshot.timestamp instanceof Date) {
+      return snapshot.timestamp.getTime();
+    } else if (typeof snapshot.timestamp === 'string') {
+      return new Date(snapshot.timestamp).getTime();
+    } else if (typeof snapshot.timestamp === 'number') {
+      return snapshot.timestamp;
+    }
+    return 0;
+  }
+
+  private getTags(snapshot: SnapshotItem<T, K, Meta, ExcludedFields>): string[] {
+    // Access tags directly from snapshot
+    if (Array.isArray(snapshot.tags)) {
+      return snapshot.tags;
+    } else if (snapshot.tags && typeof snapshot.tags === 'object') {
+      return Object.keys(snapshot.tags);
+    }
+    return [];
+  }
+
+  private sortSnapshotsBy(attribute: keyof SnapshotItem<T, K, Meta, ExcludedFields>) {
     this.snapshots.sort((a, b) => {
-      if (a[attribute] && b[attribute]) {
-        return a[attribute].localeCompare(b[attribute]); // Assuming the attribute is a string
+      const aValue = a[attribute];
+      const bValue = b[attribute];
+      
+      if (aValue && bValue && typeof aValue === 'string' && typeof bValue === 'string') {
+        return aValue.localeCompare(bValue);
       }
-      return 0; // Handle undefined values
+      return 0;
     });
   }
 
+  sort() {
+    this.sortSnapshotByDate();
+  }
+
+
   sortSnapshotByDate() {
     this.snapshots.sort((a, b) => {
-      const aTimestamp = a.value && typeof a.value === 'object' && 'timestamp' in a.value
-        ? a.value.timestamp instanceof Date ? a.value.timestamp.getTime() : 0
-        : 0;
-      const bTimestamp = b.value && typeof b.value === 'object' && 'timestamp' in b.value
-        ? b.value.timestamp instanceof Date ? b.value.timestamp.getTime() : 0
-        : 0;
-      return aTimestamp - bTimestamp;
+      return this.getTimestamp(a) - this.getTimestamp(b);
     });
   }
-  sort() {
-    this.snapshots.sort((a, b) => {
-      const aTimestamp = a.value && typeof a.value === 'object' && 'timestamp' in a.value
-      ? a.value.timestamp instanceof Date ? a.value.timestamp.getTime() : 0
-      : 0;
-    const bTimestamp = b.value && typeof b.value === 'object' && 'timestamp' in b.value
-      ? b.value.timestamp instanceof Date ? b.value.timestamp.getTime() : 0
-      : 0;
-    return aTimestamp - bTimestamp;
-    });
-  }
+
   sortByDate() {
     this.sortSnapshotByDate();
   }
@@ -102,29 +127,21 @@ class SnapshotList<
     });
   }
 
-  getSnapshotList(snapshots: SnapshotItem<T, K>[]) {
+  getSnapshotList(snapshots: SnapshotItem<T, K, Meta, ExcludedFields>[]) {
     return snapshots;
   }
 
 
-  getSnapshot(index: number): SnapshotItem<T, K> | undefined {
+  getSnapshot(index: number): SnapshotItem<T, K, Meta, ExcludedFields> | undefined {
     return this.snapshots[index];
   }
 
-  getSnapshots(): SnapshotItem<T, K>[] {
+  getSnapshots(): SnapshotItem<T, K, Meta, ExcludedFields>[] {
     return this.snapshots;
   }
 
   sortSnapshotItems() {
-    this.snapshots.sort((a, b) => {
-      const aTimestamp = a.value && typeof a.value === 'object' && 'timestamp' in a.value
-      ? a.value.timestamp instanceof Date ? a.value.timestamp.getTime() : 0
-      : 0;
-    const bTimestamp = b.value && typeof b.value === 'object' && 'timestamp' in b.value
-      ? b.value.timestamp instanceof Date ? b.value.timestamp.getTime() : 0
-      : 0;
-    return aTimestamp - bTimestamp;
-    });
+    this.sortSnapshotByDate(); // Reuse existing method
   }
 
   
@@ -137,30 +154,55 @@ class SnapshotList<
     });
   }
 
+
   sortSnapshotsByAlphabeticalOrder() {
     this.snapshots.sort((a, b) => {
-      if (a.label && b.label) {
-        return a.label.text.localeCompare(b.label.text);  // Use the string property for sorting
+      const labelA = a.label;
+      const labelB = b.label;
+
+      if (labelA && labelB) {
+        if (isLabel(labelA) && isLabel(labelB)) {
+          return labelA.text.localeCompare(labelB.text);
+        }
+
+        if (typeof labelA === "string" && typeof labelB === "string") {
+          return labelA.localeCompare(labelB);
+        }
+
+        // optional: handle Record<string, string>
+        if (
+          typeof labelA === "object" &&
+          typeof labelB === "object" &&
+          !Array.isArray(labelA) &&
+          !Array.isArray(labelB)
+        ) {
+          const firstA = Object.values(labelA)[0];
+          const firstB = Object.values(labelB)[0];
+          if (typeof firstA === "string" && typeof firstB === "string") {
+            return firstA.localeCompare(firstB);
+          }
+        }
       }
-      return 0;  // Handle cases where `label` might be undefined
+
+      return 0; // fallback
     });
   }
 
   sortSnapshotsByTags() {
     this.snapshots.sort((a, b) => {
-      const aTags = (a.value && typeof a.value === 'object' && 'tags' in a.value && Array.isArray(a.value.tags)) ? a.value.tags : [];
-      const bTags = (b.value && typeof b.value === 'object' && 'tags' in b.value && Array.isArray(b.value.tags)) ? b.value.tags : [];
+      const aTags = this.getTags(a);
+      const bTags = this.getTags(b);
       return aTags.join(",").localeCompare(bTags.join(","));
     });
   }
 
   // Methods to manipulate snapshot items
-  addSnapshot(snapshot: SnapshotItem<T, K>) {
+  addSnapshot(snapshot: SnapshotItem<T, K, Meta, ExcludedFields>) {
     snapshot.id = UniqueIDGenerator.generateSnapshoItemID(this.id);
     this.snapshots.push(snapshot);
   }
 
-  fetchSnaphostById(id: string): SnapshotItem<T, K> | undefined {
+  fetchSnaphostById(id: string): SnapshotItem<T, K, Meta, ExcludedFields> | undefined {
     return this.snapshots.find((snapshot) => snapshot.id === id);
   }
 
@@ -182,7 +224,7 @@ class SnapshotList<
     const snapshots = this.snapshots;
 
     return {
-      next(): IteratorResult<SnapshotItem<T, K>> {
+      next(): IteratorResult<SnapshotItem<T, K, Meta, ExcludedFields>> {
         if (index < snapshots.length) {
           const value = snapshots[index++];
           return { value, done: false };
@@ -193,7 +235,7 @@ class SnapshotList<
     };
   }
 
-  toArray(): SnapshotItem<T, K>[] {
+  toArray(): SnapshotItem<T, K, Meta, ExcludedFields>[] {
     return this.snapshots;
   }
   
@@ -202,19 +244,24 @@ class SnapshotList<
 
 
 
-const createSnapshotItem = <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+const createSnapshotItem = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
   snapshotId: string | null,
   data: T,
-  category: Category | undefined,  snapshotStore: SnapshotStore<T, K> | null,
-  snapshotStoreConfig: SnapshotStoreConfig<T, K> | null,
-  snapshotManager: SnapshotManager<T, K> | null,  // Add snapshotManager as a parameter
-  storeProps?: SnapshotStoreProps<T, K> & MessageProps // Combine store and message props
-): SnapshotItem<T, K> => {
+  category: Category | undefined,  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields> | null,
+  snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, ExcludedFields> | null,
+  snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields> | null,  // Add snapshotManager as a parameter
+  storeProps?: SnapshotStoreProps<T, K, Meta, ExcludedFields> & MessageProps // Combine store and message props
+): SnapshotItem<T, K, Meta, ExcludedFields> => {
   
-  const baseMeta = new Map<string, Snapshot<T, K>>();
+  const baseMeta = new Map<string, Snapshot<T, K, Meta, ExcludedFields>>();
 
   // Ensure that all arguments are passed
-  const baseSnapshot = createSnapshotInstance(
+  const baseSnapshot = createSnapshot(
     data,              // baseData
     baseMeta,          // baseMeta
     snapshotId,        // snapshotId
@@ -247,14 +294,28 @@ const createSnapshotItem = <T extends  BaseData<any>, K extends T = T, Meta exte
     channel,
  )
   
+ 
   // Extend baseSnapshot with additional properties for SnapshotItem
-  const snapshotItem: SnapshotItem<T, K> = {
-    ...baseSnapshot, // Spread the baseSnapshot properties
-    message: (type, content, additionalData, userId, sender, channel) => 
-      createMessage(type, content, additionalData, userId, sender, channel),
-      itemContent: undefined, // Add additional fields specific to SnapshotItem
-    data, // This could be adjusted based on specific requirements
-  };
+  const snapshotItem: SnapshotItem<T, K, Meta, ExcludedFields> = {
+    ...baseSnapshot, // must already have deleted, initialState, etc.
+    ...snapshotStoreConfig,
+    // required SnapshotItem props
+    // Provide proper required fields
+      id: baseSnapshot.id ?? UniqueIDGenerator.generateID("snapshot", "base", NotificationTypeEnum.Default),
+      key: baseSnapshot.key ?? `key-${Date.now()}`,
+
+    message: (type, content, additionalData, userId, sender, channel) =>
+    createMessage(type, content, additionalData, userId, sender, channel),
+
+    itemContent: undefined,
+    data, // ensure `data` matches InitializedData<T,K,Meta,ExcludedFields>
+
+    user: undefined,
+    categories: [],
+    label: undefined,
+    
+};
+
 
   return snapshotItem;
 };

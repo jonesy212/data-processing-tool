@@ -1,7 +1,7 @@
 // //SnapshohtDevConfigs.ts
 
 // import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-// import { SnapshotManager } from "../hooks/useSnapshotManager";
+// import { SnapshotManager } from "@/app/components/hooks/useSnapshotManager";
 // import { BaseData, Data } from "../models/data/Data";
 // import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
 // import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
@@ -23,7 +23,7 @@
 //     category: Category | undefined,//     callback: (snapshot: SnapshotWithCriteria<any, BaseData>) => void,
 //     snapshots: Snapshots<Data>,
 //     type: string,
-//     event: Event,
+//     event: SnapshotEvent<T, K, Meta, ExcludedFields>,
 //     snapshotContainer?: SnapshotWithCriteria<any, BaseData>,
 //     snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Data>,
 //   ): Promise<{ snapshot: SnapshotWithCriteria<any, BaseData> }> => {
@@ -142,8 +142,8 @@
 //   configureSnapshotStore: (snapshot) => {},
 //   createSnapshotSuccess: () => {},
 //   createSnapshotFailure: (    snapshotId: string,
-//     snapshotManager: SnapshotManager<T, K>,
-//     snapshot: Snapshot<T, K>,
+//     snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>,
+//     snapshot: Snapshot<T, K, Meta, ExcludedFields>,
 //     payload: { error: Error }
 //   ) => {
 //     console.log(error);

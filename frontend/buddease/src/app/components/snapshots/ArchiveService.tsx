@@ -1,9 +1,9 @@
-import { StorageService } from './storage-service';
-import { notify } from './notification-service';
-import { generateArchiveId, compressData, calculateChecksum } from './archive-utils';
-import { BaseDataEntity } from '../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig';
-import { Snapshot } from './Snapshot';
 import { NotificationType } from '@/app/context/NotificationContext';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig';
+import { calculateChecksum, compressData, generateArchiveId } from './archive-utils';
+import { notify } from './notification-service';
+import { Snapshot } from './Snapshot';
+import { StorageService } from './storage-service';
 
 // Archive types
 export interface ArchiveMetadata {
@@ -20,9 +20,14 @@ export interface ArchiveMetadata {
   description?: string;
 }
 
-export interface ArchivedSnapshot<T extends BaseDataEntity, K extends T = T> {
+export interface ArchivedSnapshot<
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+> {
   metadata: ArchiveMetadata;
-  snapshot: Snapshot<T, K>;
+  snapshot: Snapshot<T, K, Meta, ExcludedFields>;  
   versionInfo: {
     major: number;
     minor: number;
@@ -60,8 +65,13 @@ class ArchiveService {
     this.storage = new StorageService();
   }
 
-  async archiveSnapshot<T extends BaseDataEntity, K extends T = T>(
-    snapshot: Snapshot<T, K>,
+  async archiveSnapshot<
+    T extends BaseDataEntity, 
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  >(
+    snapshot: Snapshot<T, K, Meta, ExcludedFields>,  
     options?: {
       tags?: string[];
       description?: string;
@@ -83,7 +93,7 @@ class ArchiveService {
       const processedData = await this.processSnapshotData(snapshot, options);
 
       // 4. Create archive record
-      const archivedSnapshot: ArchivedSnapshot<T, K> = {
+      const archivedSnapshot: ArchivedSnapshot<T, K, Meta, ExcludedFields> = {
         metadata: {
           id: archiveId,
           originalId: snapshot.id?.toString(),
@@ -126,8 +136,13 @@ class ArchiveService {
     }
   }
 
-  private validateSnapshotForArchiving<T extends BaseDataEntity, K extends T = T>(
-    snapshot: Snapshot<T, K>
+private validateSnapshotForArchiving<
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+>(
+  snapshot: Snapshot<T, K, Meta, ExcludedFields> 
   ): boolean {
     // Check if snapshot is already archived
     if (snapshot.metadata?.isArchived) {
@@ -149,16 +164,21 @@ class ArchiveService {
     return true;
   }
 
-  private async processSnapshotData<T extends BaseDataEntity, K extends T = T>(
-    snapshot: Snapshot<T, K>,
-    options?: { compression?: boolean }
-  ): Promise<{
-    data: Snapshot<T, K>;
-    checksum: string;
-    size: number;
-    originalSize: number;
-    compressionRatio: number;
-  }> {
+private async processSnapshotData<
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+>(
+  snapshot: Snapshot<T, K, Meta, ExcludedFields>,  
+  options?: { compression?: boolean }
+): Promise<{
+  data: Snapshot<T, K, Meta, ExcludedFields>;  
+  checksum: string;
+  size: number;
+  originalSize: number;
+  compressionRatio: number;
+}> {
     const shouldCompress = options?.compression ?? this.config.compressionEnabled;
     const snapshotString = JSON.stringify(snapshot);
     const originalSize = new Blob([snapshotString]).size;
@@ -194,9 +214,14 @@ class ArchiveService {
     };
   }
 
-  private async storeArchivedSnapshot<T extends BaseDataEntity, K extends T = T>(
-    archivedSnapshot: ArchivedSnapshot<T, K>
-  ): Promise<void> {
+private async storeArchivedSnapshot<
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+>(
+  archivedSnapshot: ArchivedSnapshot<T, K, Meta, ExcludedFields>  
+): Promise<void> {
     const storageKey = `archives/${archivedSnapshot.metadata.id}.json`;
 
     // Store in selected locations
@@ -212,7 +237,12 @@ class ArchiveService {
     await this.updateArchiveIndex(archivedSnapshot);
   }
 
-  private async updateArchiveIndex(archivedSnapshot: ArchivedSnapshot<any, any>): Promise<void> {
+  private async updateArchiveIndex<
+  T extends BaseDataEntity = any,
+  K extends T = any,
+  Meta extends DefaultMeta<T, K> = any,
+  ExcludedFields extends keyof T = any
+>(archivedSnapshot:  ArchivedSnapshot<T, K, Meta, ExcludedFields>): Promise<void> {
     const index = await this.storage.get('archive-index') || [];
     index.push({
       id: archivedSnapshot.metadata.id,
@@ -230,8 +260,13 @@ class ArchiveService {
     console.log(`Snapshot ${snapshotId} archived as ${archiveId}`);
   }
 
-  private sendArchiveNotification<T extends BaseDataEntity, K extends T = T>(
-    archivedSnapshot: ArchivedSnapshot<T, K>
+private sendArchiveNotification<
+  T extends BaseDataEntity = any,  
+  K extends T = any,                 
+  Meta extends DefaultMeta<T, K> = any,  
+  ExcludedFields extends keyof T = any    
+>(
+    archivedSnapshot: ArchivedSnapshot<T, K, Meta, ExcludedFields>
   ): void {
     notify({
       id: `archive-${archivedSnapshot.metadata.id}`,
@@ -275,7 +310,7 @@ class ArchiveService {
 
 // Standalone function version
 export const archiveSnapshot = async <T extends BaseDataEntity, K extends T = T>(
-  snapshot: Snapshot<T, K>,
+  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
   options?: {
     tags?: string[];
     description?: string;
@@ -320,7 +355,6 @@ const calculateChecksum = (data: string): string => {
 
 
 
-export { generateArchiveId,
-  compressData,
-  calculateChecksum
-}
+export {
+    calculateChecksum, compressData, generateArchiveId
+};

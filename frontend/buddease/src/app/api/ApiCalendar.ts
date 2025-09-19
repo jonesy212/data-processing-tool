@@ -15,6 +15,7 @@ import clientApiService from "./ApiClient";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "../configs/BaseConfig";
 
 const API_BASE_URL = endpoints.calendar
 interface CalendarNotificationMessages {
@@ -40,7 +41,12 @@ const calendarNotificationMessages: CalendarNotificationMessages = {
   // Add more messages as needed
 };
 
-class CalendarApiService {
+class CalendarApiService <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>{
   notify: (
     id: string,
     message: string,
@@ -82,7 +88,7 @@ class CalendarApiService {
     }
   }
 
-  async fetchCalendarEvent(): Promise<CalendarEvent[]> {
+  async fetchCalendarEvent(): Promise<CalendarEvent<T, K, Meta, ExcludedFields>[]> {
     try {
       const response = await this.requestHandler(
         () => clientApiService.listClientCMessages(),
@@ -91,7 +97,7 @@ class CalendarApiService {
       );
 
       // Extract data from the AxiosResponse object
-      const calendarEvents: CalendarEvent[] = response.data;
+      const calendarEvents: CalendarEvent<T, K, Meta, ExcludedFields>[] = response.data;
       return calendarEvents;
     } catch (error) {
       console.error("Error fetching calendar events:", error);
@@ -99,7 +105,7 @@ class CalendarApiService {
     }
   }
 
-  async fetchCalendarEvents(): Promise<CalendarEvent[]> {
+  async fetchCalendarEvents(): Promise<CalendarEvent<T, K, Meta, ExcludedFields>[]> {
     try {
       const response = await this.requestHandler(
         () => clientApiService.listClientCMessages(),
@@ -108,7 +114,7 @@ class CalendarApiService {
       );
 
       // Extract data from the AxiosResponse object
-      const calendarEvents: CalendarEvent[] = response.data;
+      const calendarEvents: CalendarEvent<T, K, Meta, ExcludedFields>[] = response.data;
 
       return calendarEvents;
     } catch (error) {
@@ -206,10 +212,10 @@ class CalendarApiService {
 
 
   // Function to fetch calendar events from the database
-  async fetchCalendarEventsFromDatabase(documentId: number): Promise<CalendarEvent[]> {
+  async fetchCalendarEventsFromDatabase(documentId: number): Promise<CalendarEvent<T, K, Meta, ExcludedFields>[]> {
     try {
       // Make a GET request to the API endpoint with documentId
-      const response = await axiosInstance.get<CalendarEvent[]>(`${API_BASE_URL}/calendar/events/${documentId}`);
+      const response = await axiosInstance.get<CalendarEvent<T, K, Meta, ExcludedFields>[]>(`${API_BASE_URL}/calendar/events/${documentId}`);
 
       // Extract the data from the response
       const calendarEvents = response.data;
@@ -222,10 +228,10 @@ class CalendarApiService {
     }
   }
   // Function to fetch calendar events data from the database
-  async fetchCalendarEventsDataFromDB(): Promise<Record<string, CalendarEvent[]>> {
+  async fetchCalendarEventsDataFromDB(): Promise<Record<string, CalendarEvent<T, K, Meta, ExcludedFields>[]>> {
     try {
       // Make a GET request to the API endpoint
-      const response = await axiosInstance.get<Record<string, CalendarEvent[]>>(`${API_BASE_URL}/calendar/events/data`);
+      const response = await axiosInstance.get<Record<string, CalendarEvent<T, K, Meta, ExcludedFields>[]>>(`${API_BASE_URL}/calendar/events/data`);
 
       // Extract the data from the response
       const calendarEventsData = response.data;

@@ -44,7 +44,6 @@ const todoApiNotificationMessages: TodoNotificationMessages = {
 };
 
 // Function to handle API errors and notify for todos
-// Function to handle API errors and notify for todos
 const handleTodoApiErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessageId: keyof TodoNotificationMessages
@@ -55,7 +54,7 @@ const handleTodoApiErrorAndNotify = (
   useNotification().notify(
     errorMessageId,
     errorMessage,
-    NOTIFICATION_MESSAGES.Todo.Error,
+    NOTIFICATION_MESSAGES.Todos.Error,
     new Date(),
     NotificationTypeEnum.Error
   );

@@ -1,7 +1,8 @@
-import { BaseData } from '@/app/components/models/data/Data';
+import { ExcludedFields } from '@/app/components/routing/Fields';
 import { Snapshot } from "@/app/components/snapshots";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseDataEntity, DefaultMeta } from '@/app/configs/BaseConfig';
 import { simulateFetch } from "@/app/simulate/simulateFetch";
+import { DefaultExcludedFields } from '../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig';
 import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
 import { CalendarEvent } from "../calendar/CalendarEvent";
 import { Category } from "../libraries/categories/generateCategoryProperties";
@@ -11,8 +12,9 @@ import { Subscriber } from "../users/Subscriber";
 
 
 interface FetchSnapshotPayload<
-  T extends  BaseData<any>, 
+  T extends BaseDataEntity, 
   K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
   > {
     title?: string;
@@ -21,10 +23,10 @@ interface FetchSnapshotPayload<
     updatedAt: string | Date | undefined
     status: StatusType | undefined;
     category?:  Category; // Optional category properties related to the snapshot
-    data: T | Map<string, Snapshot<T, K>> | null | undefined;
-    events: Record<string, CalendarEvent<T, K>[]>;
-    dataItems: () => RealtimeDataItem[] | null;
-    newData: Snapshot<T, K> | null;
+    data: T | Map<string, Snapshot<T, K, Meta, ExcludedFields>> | null | undefined;
+    events: Record<string, CalendarEvent<T, K, Meta, ExcludedFields>[]>;
+    dataItems: () => RealtimeDataItem<T, K, Meta, ExcludedFields>[] | null;
+    newData: Snapshot<T, K, Meta, ExcludedFields> | null;
     metadata: any;
     id: string; // Adding id
     key: string; // Adding key
@@ -35,8 +37,8 @@ interface FetchSnapshotPayload<
     createdBy: string | undefined; // Adding createdBy
     eventRecords: Record<string, any>; // Adding eventRecords
     type: string; // Adding type
-    subscribers: Subscriber<T, K>[]; // Adding subscribers
-    snapshots: Map<string, Snapshot<T, K>>; // Adding snapshots
+    subscribers: Subscriber<T, K, Meta, ExcludedFields>[]; // Adding subscribers
+    snapshots: Map<string, Snapshot<T, K, Meta, ExcludedFields>>; // Adding snapshots
     requestTimestamp: Date; // Timestamp of when the fetch request was made
     requestContext: string; // Context or purpose of the fetch operation
     queryParams?: Record<string, any>; // Optional query parameters to customize the fetch
@@ -74,7 +76,7 @@ async function fetchSnapshotPayload<
     source?: 'remote' | 'local';
     requestContext?: string;
   }
-): Promise<FetchSnapshotPayload<T, K>> {
+): Promise<FetchSnapshotPayload<T, K, Meta, ExcludedFields>> {
   // Initialize defaults for options
   const {
     includeMetaData = true,
@@ -96,7 +98,7 @@ async function fetchSnapshotPayload<
   }
 
   // Map the fetched data to the FetchSnapshotPayload format
-  const payload: FetchSnapshotPayload<T, K> = {
+  const payload: FetchSnapshotPayload<T, K, Meta, ExcludedFields> = {
     id: snapshotId,
     key: `key-${snapshotId}`, // Simulate a key
     topic: fetchedData.topic || 'Default Topic',

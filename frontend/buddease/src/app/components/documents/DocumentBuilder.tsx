@@ -4,6 +4,7 @@ import {
   createContentStateFromText,
   fetchContentIdFromAPI
 } from "@/app/api/ApiContent";
+import { Attachment } from '@/components/documents/Attachment/attachment';
 import { ExcludedFields } from '@/app/components/routing/Fields';
 import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
@@ -102,36 +103,46 @@ function computeChecksum(data: string): string {
 const versionData = "content of version 1.0.0";
 const checksum = computeChecksum(versionData);
 
-type ContentStructuredMetadata<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = StructuredMetadata<T, K> & ContentState;// DocumentData.tsx
+type ContentStructuredMetadata<
+  T extends BaseData<any>,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  > = StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & ContentState;
 
 // Define a mapped type to convert TodoSubtasks to WritableDraft equivalent
 type WritableTodoSubtasks = WritableDraft<TodoSubtasks>;
 
-
 interface DocumentData<
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->
-  extends DocumentBase<T, K>, CommonData<T, K, Meta, ExcludedFields>, 
-DatasetModel<T, K, Meta> {
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> 
+  extends DocumentBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+          CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+          DatasetModel<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+{
   id: string | number;
   _id: string;
   title: string;
-  content: Content<T, K>
-  documents: WritableDraft<DocumentObject<T, K>>[];
+  content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  documents: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[];
   permissions: DocumentPermissions | undefined;
-  topics?: string[] | undefined;
-  highlights?: string[] | undefined;
-  keywords?: string[] | undefined;
+  topics?: string[];
+  highlights?: string[];
+  keywords?: string[];
   load?(content: any): void;
-  subtasks?: TodoSubtasks
-  file?: FileData<T>;
-  files?: FileData<T>[]; // Array of FileData associated with the document
-  folder?: FolderData;
-  folders: FolderData[]; // Array fof FolderData associated with the document
-  filePath?: DocumentPath<T, K, Meta>;
+  subtasks?: TodoSubtasks;
+  file?: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  files?: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  folder?: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  folders: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  filePath?: DocumentPath<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   status?: AllStatus;
   type?: AllTypes;
   locked?: boolean;
@@ -139,18 +150,17 @@ DatasetModel<T, K, Meta> {
   changes?: boolean | string | string[];
   timestamp?: Date;
   source?: string;
-  report?: FinancialReport | TechnicalReport | ResearchReport; // Union type for different reports
+  report?: FinancialReport | TechnicalReport | ResearchReport;
   options: DocumentOptions | undefined;
-  // documentPhase?: string | Phase;
   folderPath: string;
   previousContent?: string | ContentState;
   currentContent?: ContentState;
-  currentMeta: Meta
+  currentMeta: Meta;
   previousMeta?: Meta;
-  previousMetadata?: UnifiedMetadata<T, K> | undefined;
-  currentMetadata: UnifiedMetadata<T, K>
+  previousMetadata?: UnifiedMetadata<T, K, Meta, ExcludedFields>;
+  currentMetadata: UnifiedMetadata<T, K, Meta, ExcludedFields>;
   accessHistory: AccessHistory[];
-  documentPhase:
+  documentPhase?:
     | string
     | {
         name?: string;
@@ -166,18 +176,17 @@ DatasetModel<T, K, Meta> {
         copyright?: string;
         license?: string;
         links?: string[];
-        tags?: TagsRecord<T, K> | string[] | undefined; 
+        tags?: TagsRecord<T, K, Meta, ExcludedFields> | string[];
         phaseType: ProjectPhaseTypeEnum;
         customProp1: string;
         customProp2: number;
         onChange: (phase: ProjectPhaseTypeEnum) => void;
-      }
-    | undefined;
-  version: Version<T, K> | undefined | null;
-  versionData: VersionData<T, K> | undefined;
+      };
+  version: Version<T, K, Meta, ExcludedFields> | undefined | null;
+  versionData: VersionData<T, K, Meta, ExcludedFields> | undefined;
   visibility: AllTypes;
   url?: string;
-  updatedDocument?: DocumentData<T, K>;
+  updatedDocument?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   documentSize: DocumentSize;
   lastModifiedDate: ModifiedDate | undefined;
   lastModifiedBy: string;
@@ -186,18 +195,18 @@ DatasetModel<T, K, Meta> {
   name: string | undefined;
   descriptionRenamed?: string | null;
   createdByRenamed: string | undefined;
-  createdDate: string | Date | undefined
+  createdDate: string | Date | undefined;
   documentType: string | DocumentTypeEnum;
-  documentData?: DocumentData<T, K>;
-  document: DocumentObject<T, K> | undefined;
+  documentData?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  document: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   _rev: string | undefined;
-  _attachments?: Record<string, any> | undefined;
-  _links?: Record<string, any> | undefined;
+  _attachments?: Record<string, any>;
+  _links?: Record<string, any>;
   _etag?: string;
   _local?: boolean;
   _revs?: string[];
-  _source?: Record<string, any> | undefined;
-  _shards?: Record<string, any> | undefined;
+  _source?: Record<string, any>;
+  _shards?: Record<string, any>;
   _size?: number;
   _version?: number;
   _version_conflicts?: number;
@@ -207,8 +216,8 @@ DatasetModel<T, K, Meta> {
   _parent?: string;
   _parent_as_child?: boolean;
   _slices?: any[];
-  _highlight?: Record<string, any> | undefined;
-  _highlight_inner_hits?: Record<string, any> | undefined;
+  _highlight?: Record<string, any>;
+  _highlight_inner_hits?: Record<string, any>;
   _source_as_doc?: boolean;
   _source_includes?: string[];
   _routing_keys?: string[];
@@ -217,13 +226,9 @@ DatasetModel<T, K, Meta> {
   _routing_values_as_array_of_objects?: Record<string, any>[];
   _routing_values_as_array_of_objects_with_key?: Record<string, any>[];
   _routing_values_as_array_of_objects_with_key_and_value?: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key_and_value_and_value?: Record<
-    string,
-    any
-  >[];
-
-  // Add more properties if needed
+  _routing_values_as_array_of_objects_with_key_and_value_and_value?: Record<string, any>[];
 }
+
 
 interface RevisionOptions {
   enabled: boolean;

@@ -21,12 +21,12 @@ import { UserRole } from "../../users/UserRole";
 import UserRoles from "../../users/UserRoles";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
-import { BaseData, Data, DataDetailsProps } from "../data/Data";
+import { BaseData, Data, DataDetailsComponent, DataDetailsProps } from "../data/Data";
 import { PriorityTypeEnum, StatusType, TeamStatus } from "../data/StatusType";
 import generateTimeBasedCode from "../realtime/TimeBasedCodeGenerator";
 import { Task, TaskData } from "../tasks/Task";
 import { Progress } from "../tracker/ProgressBar";
-import TeamData from "./TeamData";
+import { TeamData } from "./TeamData";
 import { Member, TeamMember } from "./TeamMembers";
 
 import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
@@ -37,8 +37,44 @@ import {
 } from "../../communications/LanguageEnum";
 import { NotificationPreferenceEnum } from "../../notifications/Notification";
 import { SortCriteria } from "../../settings/SortCriteria";
-import { Snapshot } from "@/app/components/snapshots";
-// Assume 'options' is provided elsewhere
+import { data, Snapshot, SnapshotData, SnapshotsArray, SnapshotStoreConfig, SnapshotUnion, SnapshotWithCriteria } from "@/app/components/snapshots";
+import { DefaultMeta, DefaultExcludedFields } from "@/app/configs/BaseConfig";
+import { id } from "ethers";
+import next from "next";
+import { index } from "node_modules/cheerio/lib/esm/api/traversing";
+import { Attachment } from "../../documents/Attachment/attachment";
+import { ThemeEnum } from "../../libraries/ui/theme/Theme";
+import { SnapshotConfigParams } from "../../snapshots/SnapshotConfigBuilder";
+import { BaseDataEntity } from "../../snapshots/ValidationRule";
+import { SubscriberCollection } from "../../users/SubscriberCollection";
+import { RealtimeDataItem } from "../realtime/RealtimeData";
+
+type TeamEntity = BaseDataEntity;
+type TeamK = TeamEntity;
+type TeamMeta = DefaultMeta<TeamEntity, TeamK>;
+type TeamExcludedFields = DefaultExcludedFields<TeamEntity>;
+
+// Core snapshot types
+type TeamSnapshot = Snapshot<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
+type TeamSnapshotData = SnapshotData<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
+type TeamSnapshotStore = SnapshotStore<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
+type TeamSnapshotWithCriteria = SnapshotWithCriteria<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
+type TeamSubscriberCollection = SubscriberCollection<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
+type TeamRealtimeDataItem = RealtimeDataItem<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
+
+// Config
+type TeamSnapshotStoreConfig = SnapshotStoreConfig<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
+type TeamSnapshotsArray = SnapshotsArray<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
+
+// Params
+type TeamParams = SnapshotConfigParams<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
+
+type TeamSnapshotFromParams<Params extends SnapshotConfigParams<any, any, any, any>> =
+  Snapshot<Params[0], Params[1], Params[2], Params[3]>;
+
+type TeamSnapshotUnionFromParams<Params extends SnapshotConfigParams<any, any, any, any>> =
+  SnapshotUnion<Params[0], Params[1], Params[2], Params[3]>;
+
 const options: SearchOptions = {
   communicationMode: "email", // Example communication mode
   size: "medium",
@@ -116,8 +152,15 @@ interface ReassignedProject {
   reassignmentDate: Date;
 }
 
-interface Team extends Data {
-  team: {
+
+interface Team<
+  T extends BaseDataEntity = TeamEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = TeamMeta,
+  AttachmentType extends Attachment = FileAttachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends Data<T, K, Meta, AttachmentType, ExcludedFields> {
+  teamDetails: {
     id: string;
     current: number;
     name: string;
@@ -130,42 +173,27 @@ interface Team extends Data {
     description: string;
     done: boolean;
   };
-  _id: string;
-  id: string;
-  color: string | null
-  teamName: string;
-  description?: string;
-  projects: Project[];
-  creationDate: Date;
-  isActive: boolean;
-  leader: User | null;
-  progress: Progress | null;
-  percentage: number;
-  data?: TeamData;
-  members?: Member[];
-  then?: <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(callback: (newData: Snapshot<BaseData, K>) => void) => Snapshot<Data, K> | undefined;
-  pointOfContact?: TeamMember | null;
-  currentProject?: Project | null;
-  currentTeam?: Team | null;
-  collaborationTools?: TeamData["collaborationTools"];
-  globalCollaboration?: TeamData["globalCollaboration"];
-  collaborationPreferences?: TeamData["collaborationPreferences"];
 
-  assignedProjects: Project[];
+  // Optional callback for working with snapshots
+  then?: <
+    T extends BaseDataEntity, 
+    K extends T = T, 
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, 
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  >(
+    callback: (newData: Snapshot<T, K, Meta, ExcludedFields>) => void
+  ) => TeamSnapshot | undefined;
 
-  reassignedProjects: ReassignedProject[];
-  
+  members?: SnapshotsCollection<MemberEntity>;
+  projects?: SnapshotsCollection<ProjectEntity>;
+  assignedProjects?: SnapshotsCollection<ProjectEntity>;
+  // Domain methods
   assignProject(team: Team, project: Project, assignedDate: Date): void;
-  reassignProject(
-    team: Team,
-    project: Project,
-    previousTeam: Team,
-    reassignmentDate: Date
-  ): void;
+  reassignProject(team: Team, project: Project, previousTeam: Team, reassignmentDate: Date): void;
   unassignProject(team: Team, project: Project): void;
   updateProgress(team: Team, project: Project): void;
-  // Add other team-related fields as needed
 }
+
 
 const timeBasedCode = generateTimeBasedCode();
 // Example usage:
@@ -209,7 +237,7 @@ const team: Team = {
       memberName: "Sam Smith",
       teams: [] as Team[],
       persona: {} as Persona,
-      snapshots: [] as SnapshotStore<Snapshot<Data, Data>>[],
+      snapshots: [] as Snapshots<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>,
       token: null,
       avatarUrl: null,
       createdAt: new Date(),
@@ -240,12 +268,14 @@ const team: Team = {
           resetIdleTimeout: function (): Promise<void> {
             return Promise.resolve();
           },
+          idleTimeoutDuration: () => {},
           idleTimeoutId: null,
           startIdleTimeout: (
             timeoutDuration: number,
             onTimeout: () => void | undefined
           ) => {},
           toggleActivation: async () => false,
+          idleTimeoutDuration: 0
         },
         startIdleTimeout: function (
           timeoutDuration: number,
@@ -271,7 +301,7 @@ const team: Team = {
         taskManagementEnabled: false,
         loggingAndNotificationsEnabled: false,
         securityFeaturesEnabled: false,
-        theme: "",
+        theme: {} as ThemeEnum,
         language: "" as LanguageEnum | CodingLanguageEnum,
         fontSize: 0,
         darkMode: false,
@@ -473,7 +503,7 @@ const team: Team = {
       roleInTeam: "moderator",
       memberName: "Jane English",
       persona: {} as Persona,
-      snapshots: [] as SnapshotStore<Snapshot<Data, Data>>[],
+      members: [] as SnapshotStore<Snapshot<MemberEntity, MemberEntity, DefaultMeta<MemberEntity, MemberEntity>, never>, MemberEntity, DefaultMeta<MemberEntity, MemberEntity>, never>[],
       token: null,
       avatarUrl: null,
       createdAt: new Date(),
@@ -546,13 +576,13 @@ const team: Team = {
       phase: {} as Phase,
       then: implementThen,
       analysisType: AnalysisTypeEnum.IMAGE,
-      analysisResults: {} as DataAnalysisResult[],
+      analysisResults: {} as DataAnalysisResult<T, K>[],
       tags: [],
       name: "Project A",
       description: "Description of Project A",
       members: [],
       tasks: [],
-      videoData: {} as VideoData,
+      videoData: {} as VideoData<T, K>,
       videoUrl: "videoUrl",
       videoThumbnail: "videoThumbnail",
       videoDuration: 0,
@@ -576,7 +606,7 @@ const team: Team = {
       phase: {} as Phase,
       then: implementThen,
       analysisType: AnalysisTypeEnum.IMAGE,
-      analysisResults: {} as DataAnalysisResult[],
+      analysisResults: {} as DataAnalysisResult<T, K>[],
       tags: [],
       name: "Project B",
       description: "Description of Project B",
@@ -586,7 +616,7 @@ const team: Team = {
       videoUrl: "videoUrl",
       videoThumbnail: "videoThumbnail",
       videoDuration: 0,
-      videoData: {} as VideoData,
+      videoData: {} as VideoData<T, K>,
       ideas: {} as Idea[],
       type: ProjectType.Internal,
       tasks: [
@@ -701,7 +731,7 @@ const team: Team = {
           // data: {} as Data,
           source: "user",
           some: (
-            callbackfn: (value: Task, index: number, array: Task[]) => unknown,
+            callbackfn: (value: Task<T, K, Meta, ExcludedFields>, index: number, array: Task<T, K, Meta, ExcludedFields>[]) => unknown,
             thisArg?: any
           ) => {
             // Add more tasks as needed
@@ -734,7 +764,6 @@ const team: Team = {
     uploadQuota: 200,
     userType: "organization",
     fullName: "Baine Sanders",
-    fullName: "Baine Sanders",
     firstName: "Baine",
     lastName: "Sanders",
     token: null,
@@ -747,7 +776,8 @@ const team: Team = {
     role: UserRoles.Guest,
     timeBasedCode: timeBasedCode,
     persona: {} as Persona,
-    snapshots: [] as SnapshotStore<Snapshot<Data, Data>>[],
+    members: [] as SnapshotStore<Snapshot<MemberEntity, MemberEntity, DefaultMeta<MemberEntity, MemberEntity>, never>, MemberEntity, DefaultMeta<MemberEntity, MemberEntity>, never>[],
+
 
      // Required additional props
   createdAt: new Date(),
@@ -861,7 +891,7 @@ const team: Team = {
     // Update the progress object
     team.progress = {
       id: team._id,
-      name: team.name,
+      name: team.teamDetails.name, 
       value: progressValue,
       label: `${progressValue}% completed`, // Example label
       current: 0, // Update current progress value
@@ -881,7 +911,7 @@ const team: Team = {
   phase: null,
   analysisType: AnalysisTypeEnum.PROJECT,
   analysisResults: [],
-  videoData: {} as VideoData,
+  videoData: {} as VideoData<T, K>,
   percentage: 0,
   timestamp: undefined,
   category: "",
@@ -889,9 +919,8 @@ const team: Team = {
 
 const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
   // Check if team is not undefined before passing it to CommonDetails
-  const data: CommonData | undefined = team
-    ? { ...team, completed: true }
-    : undefined;
+  const data: CommonData<TeamEntity, TeamEntity, TeamMeta, never> | undefined =
+  team ? { ...team, completed: true } : undefined;
 
   const setCurrentProject = (project: Project) => {
     // Set the current project for the team
@@ -956,6 +985,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps<any>> = ({ data }) => (
       id: data.id,
       title: data.title,
       description: data.description,
+      date: data.date,
       status: data.status as StatusType | undefined,
       completed: false,
     }}
@@ -963,6 +993,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps<any>> = ({ data }) => (
       _id: data._id,
       id: data.id as string,
       phase: data.phase,
+      date: data.date,
       description: data.description,
       isActive: data.isActive,
       type: data.type,

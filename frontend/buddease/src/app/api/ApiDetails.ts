@@ -1,9 +1,8 @@
+import { BaseData } from '@/app/components/models/data/Data';
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError } from 'axios';
 import { Data } from '../components/models/data/Data';
 import { useDetailsContext } from '../components/models/data/DetailsContext';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { BaseData } from '@/app/components/models/data/Data';
 import { DetailsItem } from '../components/state/stores/DetailsListStore';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
 import { endpoints } from './ApiEndpoints';
@@ -61,9 +60,9 @@ const handleDetailsApiErrorAndNotify = (
 
 
 export const fetchDetails = async <
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
 >(): Promise<DetailsItem<T, K, Meta>[]> => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}`);
@@ -86,7 +85,13 @@ export const fetchDetails = async <
   return [];
 };
 
-export const createdDetails = async (newDetails: DetailsItem<Data>) => {
+export const createdDetails = async <
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(newDetails: DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields>>) => {
   try {
     const response = await axiosInstance.post(`${API_BASE_URL}`, newDetails);
     const createdDetails = response.data;
@@ -107,12 +112,18 @@ export const createdDetails = async (newDetails: DetailsItem<Data>) => {
   }
 };
 
-export const addDetails = async (newDetails: Omit<DetailsItem<Data>, 'id'>) => {
+export const addDetails = async <
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(newDetails: Omit<DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields>>, 'id'>) => {
   try {
     const response = await axiosInstance.post(`${API_BASE_URL}`, newDetails);
 
     if (response.status === 200 || response.status === 201) {
-      const createdDetails: DetailsItem<Data> = response.data;
+      const createdDetails: DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields>> = response.data;
       const { updateDetailsData } = useDetailsContext();
       updateDetailsData((prevData) => [...prevData, createdDetails]);
 
@@ -158,10 +169,16 @@ export const removeDetails = async (detailsId: string): Promise<void> => {
   }
 };
 
-export const updateDetails = async (
+export const updateDetails = async <
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
   detailsId: string,
   newData: any
-): Promise<DetailsItem<Data> | null> => {
+): Promise<DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields>> | null> => {
   try {
     // Directly access the endpoint path using optional chaining
     const endpoint = endpoints?.details?.single;

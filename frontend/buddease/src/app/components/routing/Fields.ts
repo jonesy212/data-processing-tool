@@ -1,6 +1,14 @@
+import { BaseDataEntity } from '@/app/configs/BaseConfig';
 import { Project } from "@/app/components/projects/Project";
 import { TaskMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
 import { ProjectMetadata, StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import {
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta,
+} from "@/app/configs/BaseConfig";
+import { BaseDataEntity } from '../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig';
+import { NotificationTypeEnum } from "@/context/NotificationContext";
 
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { BaseData } from '../models/data/Data';
@@ -42,7 +50,7 @@ type MapExcludedFieldsToMetaKeys<
   T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > = ExcludedFields extends keyof Meta ? ExcludedFields : never;
 
 // Example utility function to add source tracking for shared fields
@@ -112,7 +120,6 @@ const exampleTaskMeta: UnifiedMetadata<
   source: 'TaskMetadata',
   timestamp: new Date(),
   metadataEntries: {},
-  sharedMetadata: {},
   sharedBaseData: { childIds: [], relatedData: [] },
 };
 

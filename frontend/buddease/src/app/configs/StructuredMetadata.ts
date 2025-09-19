@@ -1,6 +1,7 @@
+import { category } from '@/app/components/utils/snapshotUtils';
 // StructuredMetadata.ts
-import { BaseDataEntity } from '@/app/configs/BaseConfig';
 import { Snapshot } from '@/app/components/snapshots';
+import { BaseDataEntity } from '@/app/configs/BaseConfig';
 let fs: any;
 if (typeof window === 'undefined') {
   fs = require('fs');
@@ -14,13 +15,15 @@ import { TagsRecord } from '@/app/components/snapshots/SnapshotWithCriteria';
 import { Permission } from "@/app/components/users/Permission";
 import { category } from "@/app/components/utils/snapshotUtils";
 import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/components/versions/createLatestVersion";
-import Version from '@/app/components/versions/Version';
+import { Version } from '@/app/components/versions/Version';
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SchemaField } from '@/server/database/SchemaField';
 import * as path from 'path';
 import { useState } from 'react';
 import { LanguageEnum } from '../components/communications/LanguageEnum';
+import { Attachment } from '../components/documents/Attachment/attachment';
 import { Comment } from '../components/models/data/Comments';
 import { Data } from '../components/models/data/Data';
 import { K, T } from '../components/models/data/dataStoreMethods';
@@ -32,17 +35,39 @@ import { VersionData, VersionHistory } from '../components/versions/VersionData'
 import { BaseConfig, DefaultExcludedFields, DefaultMeta } from './BaseConfig';
 import { MyDataType } from './database/MetaDataOptions';
 import { SharedMetadata } from './metadata/createMetadataState';
-import { Attachment } from '../components/documents/Attachment/attachment';
-import { ExcludedFields } from '../components/routing/Fields';
 
+// Full 4-argument version (recommended)
 interface SpecificMetadata<
-  T extends BaseData<any>,
-  K extends T = T
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
-  tags?: TagsRecord<T, K> | string[] | undefined;
+  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
+  categories?: CategoryProperties<T, K, Meta, ExcludedFields, IncludedFields>[];
+  priority?: number;
+  customFields?: Record<string, any>;
 }
 
-type TagsType<T extends BaseData<any>, K extends T = T> = TagsRecord<T, K> | string[] | undefined;
+// Usage example
+const metadata: SpecificMetadata<UserData, UserData> = {
+  tags: {
+    important: { name: "important", color: "red" },
+    archived: { name: "archived", color: "gray" }
+  },
+  priority: 1
+};
+
+type TagsType<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
 
 type MetaBase = {
   id?: string;                 // identifier
@@ -53,9 +78,15 @@ type MetaBase = {
   timestamp?: string | number | Date; // simple tracking
   version?: string | number | null;   // lightweight version ref
 };
+
 type MetadataEntriesType<
-  T extends BaseData<any>,
-  K extends T = T> = {
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = {
   [fileOrFolderId: string]: {
     originalPath: string;
     alternatePaths: string[];
@@ -71,7 +102,7 @@ type MetadataEntriesType<
     copyright: string;
     license: string;
     links: string[];
-    tags?: TagsType<T, K>;
+    tags?: TagsType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   };
 };
 
@@ -80,13 +111,15 @@ interface StructuredMetadata<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   > extends
   SharedTimestamps,
   SharedStatusFlags,
-  SharedIdentifiers<T, K, Meta, ExcludedFields>
+  SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedField>
 {
-  baseConfig: BaseConfig<T, K, StructuredMetadata<T, K>, ExcludedFields>;
+  baseConfig: BaseConfig<T, K, Meta, ExcludedFields>;
   sharedMetadata: SharedMetadata<T, K>;
   sharedBaseData: SharedRelationshipData<K>;
   taggable: Taggable<T, K>;
@@ -105,24 +138,23 @@ interface StructuredMetadata<
   config?: Record<string, any>;
   baseUrl?: string;
   versionData: string | VersionData<T, K> | null;
-  latestVersion?: Pick<VersionData<T, K>, "id" | "versionNumber" | "timestamp" | "author" | "schema">;
+  latestVersion?: Pick<VersionData<T, K>, "id" | "versionNumber" | "author" | "schema">;
   author?: string;
   timestamp: string | number | Date | undefined;
-
   schema?: Record<string, SchemaField>;
 }
-
 
 interface VideoMetadata<
   T extends BaseDataEntity, 
   K extends T = T,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  > extends
-  SharedTimestamps,
-  SharedIdentifiers<T, K, StructuredMetadata<T, K>>
-{
-  baseData: Omit<BaseData<T, K>, ExcludedFields>; // Include BaseData with excluded fields
-  meta: StructuredMetadata<T, K>; 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SharedTimestamps, 
+ SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  // baseData: Omit<BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ExcludedFields>; // Updated
+  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
   title: string;
   url: string;
   duration: number;
@@ -156,19 +188,19 @@ interface VideoMetadata<
   chapters: string[];
   thumbnailUrl: string;
   metadataSource: string;
-  data: Data<T>; // Assuming Data is a custom data type
-  metadata?: UnifiedMetadata<T, K>;
+  data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Assuming Data is a custom data type
+  metadata?: UnifiedMetadata<T, K, Meta, ExcludedFields>;
   childIds: K[]; // Add childIds
   relatedData: K[]; // Add relatedData
 }
 
 interface ProjectMetadata<
-  T extends  BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  > extends SharedTimestamps,
-  SharedIdentifiers<T, K, DefaultMeta<T, K>, ExcludedFields> {
+> extends SharedTimestamps,
+ SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   projectName: string;
   startDate: Date | undefined;
   endDate?: Date | undefined;
@@ -177,17 +209,17 @@ interface ProjectMetadata<
   description?: string | undefined;
   versionData?: string | VersionData<T, K> | null;
   teamMembers: string[];
-  tasks: Task<T, K, Meta>[];
+  tasks: Task<T, K, Meta, ExcludedFields>[];
   milestones: string[];
   videos: Video[]; // Removed generic parameters
   projectId: number | string | undefined;
   contributors: Contributor[]
   links: string[]
   customFields?: Record<string, any>
-  tags?: TagsRecord<T, K> | string[] | undefined
+  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined
   isActive: boolean;
   permissions: Permission[];
-  latestVersion?: Pick<VersionData<T, K>, "id" | "versionNumber" | "timestamp" | "author" | "schema">;
+  latestVersion?: Pick<VersionData<T, K, Meta, ExcludedFields>, "id" | "versionNumber" | "author" | "schema">;
   lastUpdated: Date | VersionHistory<T, K>; // Add this line
 }
 
@@ -209,7 +241,13 @@ function isValidMetadata<K>(entry: any): entry is K {
 }
 
 
-interface MetadataEntry<T extends BaseData<any>, K extends T> {
+interface MetadataEntry<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>{
   originalPath: string;
   alternatePaths: string[];
   author: string;
@@ -224,18 +262,25 @@ interface MetadataEntry<T extends BaseData<any>, K extends T> {
   copyright: string;
   license: string;
   links: string[];
-  tags?: TagsRecord<T, K> | string[] | undefined;
+  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields> | string[];
 }
 
 type StringKeys<T> = Extract<keyof T, string>;
 
-function convertTags<T extends BaseData<any>, K extends T>(
-  tags?: TagsRecord<T, K> | string[]
-): TagsRecord<T, K> | string[] {
+function convertTags<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[]
+): TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] {
   if (!tags) return [];
   if (Array.isArray(tags)) return tags;
 
-  const newTags: TagsRecord<T, K> = {} as TagsRecord<T, K>;
+  const newTags: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {} as TagsRecord<T, K>;
   for (const key in tags) {
     const stringKey = key as StringKeys<T>;
     newTags[stringKey] = tags[stringKey]; // K-compatible
@@ -246,12 +291,15 @@ function convertTags<T extends BaseData<any>, K extends T>(
 
 
 function transformProjectToStructured<
-  T extends  BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   projectMetadata: ProjectMetadata<T, K>
-): StructuredMetadata<T, K, DefaultMeta<T, K>, ExcludedFields> {
+): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   
   // Generate a project ID if it is undefined
   if (!projectMetadata.projectId) {
@@ -317,12 +365,12 @@ function transformProjectToStructured<
       retryAttempts: 0,
       name: projectMetadata.projectName,
       description: projectMetadata.description,
-      category, 
+      category: projectMetadata.category, 
       timestamp: new Date(),
       createdBy: projectMetadata.teamMembers[0] || "Unknown",
       metadata: {} as UnifiedMetadata<T, K, StructuredMetadata<T, K, DefaultMeta<T, K>, never>, ExcludedFields>,
       initialState: {} as InitializedState<T, K>,
-      meta: {} as StructuredMetadata<T, K, StructuredMetadata<T, K, DefaultMeta<T, K>, never>, never>,
+      meta: {} as StructuredMetadata<T, K, DefaultMeta<T, K>, Attachment, never, keyof T>,
       mappedSnapshot,
       events: {} as EventManager<T, K>,
       schema: {},
@@ -355,8 +403,8 @@ function transformProjectToStructured<
 
 
 const projectMetadata: ProjectMetadata<
-  BaseData<T, K, StructuredMetadata<T, K>, Attachment, ExcludedFields>,
-  BaseData<T, K, StructuredMetadata<T, K>, Attachment, ExcludedFields>
+  BaseData<T, K, StructuredMetadata<T, K>, Attachment,  DefaultExcludedFields<T>>,
+  BaseData<T, K, StructuredMetadata<T, K>, Attachment,  DefaultExcludedFields<T>>
 > = {
   projectName: "",
   startDate: new Date(),
@@ -456,7 +504,7 @@ function validateVideoMetadata<T extends BaseData<any>>(metadata: VideoMetadata<
 const videoMetadata: VideoMetadata<
   MyDataType,
   MyDataType,
-  keyof MyDataType 
+  DefaultMeta<MyDataType, MyDataType> 
 > = {
   title: "Example Video",
   url: "https://example.com/video",
@@ -501,7 +549,7 @@ const videoMetadata: VideoMetadata<
   metadataSource: '',
 
   baseData: [],
-  metadata: {} as UnifiedMetadata<MyDataType, MyDataType>,
+  metadata: {} as UnifiedMetadata<MyDataType,  MyDataType, DefaultMeta<MyDataType, MyDataType>, never>,
   meta: {} as StructuredMetadata<MyDataType, MyDataType>,
   childIds: [],
   relatedData: [],

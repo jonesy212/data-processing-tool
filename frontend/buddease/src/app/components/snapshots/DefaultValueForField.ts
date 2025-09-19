@@ -1,10 +1,8 @@
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { BaseData } from '../data/Data';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 // Assume you have a way to get default values based on type U
-function getDefaultValueForField<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-    field: keyof SnapshotStoreConfig<T, K>
+function getDefaultValueForField<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+    field: keyof SnapshotStoreConfig<T, K, Meta, ExcludedFields>
   ): T | K | string | number | boolean | null {
     switch (field) {
       case 'id':

@@ -1,5 +1,4 @@
 import { Taggable } from '@/app/components/models/CommonData';
-import { BaseData } from "@/app/components/models/data/Data";
 import { EventManager, InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from "@/app/components/snapshots";
 import { BaseConfig } from '@/app/configs/BaseConfig';

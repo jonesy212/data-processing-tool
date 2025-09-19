@@ -1,49 +1,76 @@
-import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
+import { BaseEntityProperties, SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import { SpecificMetadata, StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import React from 'react';
 import { ExcludedFields } from '../../routing/Fields';
 import { TagsRecord } from '../../snapshots';
 import { AllTypes } from '../../typings/PropTypes';
 import { BaseData } from '../data/Data';
+import { DefaultMeta, DefaultExcludedFields } from '@/app/configs/BaseConfig';
+import { Attachment } from '../../documents/Attachment/attachment';
+import { BaseDataEntity } from '../../snapshots/ValidationRule';
 
 
 
 // Define the Tag interface and TagOptions interface
 interface Tag<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends TagOptions<T, K, Meta, ExcludedFields>,
-  SharedTimestamps,
-  SharedStatusFlags {
-    relatedTags: string[];
-    attribs?: Record<string, any>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    SharedTimestamps,
+    SharedStatusFlags {
+  relatedTags: string[];
+  attribs?: Record<string, any>;
 }
 
-
 interface TagOptions<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, 
-  ExcludedFields extends keyof T = never
-> extends SharedIdentifiers<T, K, Meta, ExcludedFields>, SharedTimestamps {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SharedIdentifiers<T, K, Meta, ExcludedFields, IncludedFields>, 
+          BaseEntityProperties, 
+          SharedTimestamps {
   color: string;
   description: string;
   enabled: boolean;
   nulltype: AllTypes;
-  tags?: TagsRecord<T, K> | string[] | undefined;
+  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
   timestamp: number;
 }
+
 // TagProps for the TagComponent
-interface TagProps<T extends BaseData<any>, K extends T = T> {
-  tagOptions: TagOptions<T, K>; // This will allow flexibility for the tag options
-  excludedFields?: ExcludedFields<T, keyof T>;
-  meta?: StructuredMetadata<T, K>; // You could include a MetaData type for extra metadata
+interface TagProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  tagOptions: TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
+  excludedFields?: ExcludedFields;
+  meta?: Meta;
 }
 
 // Functional Component TagComponent
-const TagComponent: React.FC<TagProps<BaseData<any>>> = ({ tagOptions, excludedFields, meta  }) => {
+const TagComponent = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>({
+  tagOptions,
+  excludedFields,
+  meta
+}: TagProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
   // Function to display tag options
   const display = () => {
     console.log(`Tag Name: ${tagOptions.name}`);
@@ -51,29 +78,24 @@ const TagComponent: React.FC<TagProps<BaseData<any>>> = ({ tagOptions, excludedF
   };
 
   // Function to return tag options
-  const getOptions = () => {
-    return tagOptions;
-  };
+  const getOptions = () => tagOptions;
 
   // Function to get tag id
-  const getId = () => {
-    return tagOptions.id;
-  };
+  const getId = () => tagOptions.id;
 
-  // Render component
   return (
     <div>
       <p>Tag Name: {tagOptions.name}</p>
       <p>Tag Color: {tagOptions.color}</p>
-      {/* Render metadata if available */}
       {meta && <span>Created By: {meta.createdBy}</span>}
     </div>
   );
 };
+
 export default TagComponent;
 
 // Example usage of TagComponent
-const tagOptions1: TagOptions<BaseData> = {
+const tagOptions1: TagOptions<BaseDataEntity> = {
   id: "1",
   name: "Important",
   color: "red",
@@ -89,22 +111,22 @@ const tagOptions1: TagOptions<BaseData> = {
       enabled: false,
       type: '',
       relatedTags: [],
+      attribs: {},
       createdAt: undefined,
       updatedAt: undefined,
       createdBy: '',
       timestamp: 0,
       nulltype: {} as AllTypes
-    },
-    
-  },
+    }
+  } as TagsRecord<BaseDataEntity>, // explicit type
   createdAt: undefined,
   updatedAt: undefined,
   createdBy: '',
   timestamp: 0,
-  nulltype: ""
+  nulltype: {} as AllTypes
 };
 
-const tagOptions2: TagOptions<BaseData> = {
+const tagOptions2: TagOptions<BaseDataEntity> = {
   id: "2",
   name: "Less Important",
   color: "blue",
@@ -118,39 +140,52 @@ const tagOptions2: TagOptions<BaseData> = {
   timestamp: 0,
   nulltype: {} as AllTypes
 };
-
-// Create React elements
-const tag1: React.ReactElement = <TagComponent tagOptions={tagOptions1} />;
-const tag2: React.ReactElement = <TagComponent tagOptions={tagOptions2} />;
+const tag1: React.ReactElement = <TagComponent<BaseDataEntity> tagOptions={tagOptions1} />;
+const tag2: React.ReactElement = <TagComponent<BaseDataEntity> tagOptions={tagOptions2} />;
 
 // Example usage of functions
 tag1.props.children;
 tag2.props.children;
 
 // Sorting function for TagOptions
-const localeCompare = <T extends BaseData, K extends T = T>(
-  a: TagOptions<T, K>,
-  b: TagOptions<T, K>
+const localeCompare = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  a: TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  b: TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): number => {
   const nameA = a.name ?? '';
   const nameB = b.name ?? '';
   return nameA.localeCompare(nameB);
 };
 
-const sortTags =  <T extends BaseData, K extends T = T>(tags: TagOptions<T, K>[]) => {
+const sortTags = <T extends BaseDataEntity, K extends T = T>(tags: TagOptions<T, K>[]) => {
   tags.sort(localeCompare);
   return tags;
 };
 
-// Function to create a tag
-export const createTag =  <T extends BaseData, K extends T = T>(
+export const createTag = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   id: string, 
   name: string, 
   color: string,
   p0: {
-  tags: (string[] | Tag<any, any>[]) & TagsRecord<any>;
-  description: string; enabled: boolean;
-}): TagOptions<T, K> => ({
+    tags: (string[] | Tag<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) & TagsRecord<T, K, Meta, ExcludedFields>;
+    description: string; 
+    enabled: boolean;
+  }
+): TagOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => ({
   id,
   name,
   color,
@@ -166,8 +201,13 @@ export const createTag =  <T extends BaseData, K extends T = T>(
 });
 
 
-function processTags<T extends BaseData<any>, K extends T = T>(
-  tags: TagsRecord<T, K> | string[]
+function processTags<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
+  tags: TagsRecord<T, K, Meta, ExcludedFields> | string[]
 ): void {
   if (Array.isArray(tags)) {
     console.log("Simple tags:", tags);
@@ -177,16 +217,24 @@ function processTags<T extends BaseData<any>, K extends T = T>(
 }
 
 
-function processVideoMetadata<T extends BaseData<any>, K extends T = T>(
-  metadata: SpecificMetadata<T, K>
+function processVideoMetadata<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  meta: SpecificMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): void {
-  if (metadata.tags) {
-    if (Array.isArray(metadata.tags)) {
-      console.log("Simple tags:", metadata.tags);
+  if (meta.tags) {
+    if (Array.isArray(meta.tags)) {
+      console.log("Simple tags:", meta.tags);
     } else {
-      console.log("Complex tags:", metadata.tags);
+      console.log("Complex tags:", meta.tags);
     }
   }
 }
+
 
 export type { Tag, TagOptions };

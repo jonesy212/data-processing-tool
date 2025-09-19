@@ -1,19 +1,32 @@
 // chat/ChatSlice.ts
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { NotificationData } from "@/app/components/support/NofiticationsSlice";
+import { AllTypes } from "@/app/components/typings/PropTypes";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Channel } from "../../../interfaces/chat/Channel";
-import { User } from "../../../users/User";
+import { User, UserData , UserDataEntity,
+UserDataK,
+UserDataMeta,
+  UserDataExcludedFields, AppUser
+} from "../../../users/User";
 import { WritableDraft } from "../ReducerGenerator";
-import { AllTypes } from "@/app/components/typings/PropTypes";
 
-interface ChatState {
-  users: User[];
+
+
+interface ChatState<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> {
   messages: Message[];
   channels: Channel[];
   currentChannelId: string | null;
-  onlineUsers: User[];
-  notifications: NotificationData[];
+  onlineUsers: User<UserData<T, K, Meta>, Meta, ExcludedFields>[];
+  notifications: NotificationData<T, K, Meta, AttachmentType, ExcludedFields>[];
   // Additional communication properties
   audioEnabled: boolean;
   videoEnabled: boolean;
@@ -22,9 +35,10 @@ interface ChatState {
   // Additional project management properties
   phases: string[];
   activePhase: string | null;
+  users: User<UserData<T, K, Meta>, Meta, ExcludedFields>[];
 }
 
-const initialState: ChatState = {
+const initialState: ChatState<BaseDataEntity> = {
   users: [],
   messages: [],
   channels: [],
@@ -75,13 +89,16 @@ const chatManagerSlice = createSlice({
     addMessage: (state, action: PayloadAction<WritableDraft<Message>>) => {
       state.messages.push(action.payload);
     },
+
     // Define reducers for the new properties
-    setOnlineUsers: (state, action: PayloadAction<User[]>) => {
+    setOnlineUsers: (state, action: PayloadAction<WritableDraft<AppUser[]>>) => {
       state.onlineUsers = action.payload;
     },
+
     addNotification: (state, action: PayloadAction<WritableDraft<NotificationData>>) => {
       state.notifications.push(action.payload);
     },
+
     // Additional reducers for communication properties
     setAudioEnabled: (state, action: PayloadAction<boolean>) => {
       state.audioEnabled = action.payload;

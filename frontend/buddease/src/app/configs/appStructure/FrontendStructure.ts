@@ -13,6 +13,7 @@ import { hashString } from "@/app/generators/HashUtils";
 import * as path from "path";
 import { AppStructureItem } from "../appStructure/AppStructure";
 import { DataVersions } from "../DataVersionsConfig";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "../BaseConfig";
 
 
 interface MyData extends BaseData<any> {
@@ -39,7 +40,12 @@ const userConfigData: UserConfigData<MyData, MyExtendedData, MyMetadata> = {
   userSpecificData: { customField: "value", additionalField: 123 },
 };
 
-export default class FrontendStructure<T extends BaseData<any>, K extends T = T> implements AppStructureItem {
+export default class FrontendStructure<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K>  = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> implements AppStructureItem {
   [key: string]: any;
   
   versions: DataVersions = {
@@ -47,7 +53,7 @@ export default class FrontendStructure<T extends BaseData<any>, K extends T = T>
     frontend: undefined
   }
   
-  versionData: string | VersionData<T, K> | null; // Changed to VersionData[] to match AppStructureItem
+  versionData: string | VersionData<T, K, Meta, ExcludedFields> | null; // Changed to VersionData[] to match AppStructureItem
 
   id: string;
   name: string;

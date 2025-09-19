@@ -6,7 +6,7 @@
 // import { Subscription } from "../subscriptions/Subscription";
 // import { useParams } from "react-router-dom";
 // import { ModifiedDate } from "../documents/DocType";
-// import { SnapshotManager } from "../hooks/useSnapshotManager";
+// import { SnapshotManager } from "@/app/components/hooks/useSnapshotManager";
 // import { BaseData } from "../models/data/Data";
 // import { SubscriberTypeEnum, SubscriptionTypeEnum } from "../models/data/StatusType";
 // import { NotificationTypeEnum, NotificationType } from "@/context/NotificationContext";
@@ -64,21 +64,21 @@
 //               data: snapshot.data,
 //               compareSnapshotState: snapshot.compareSnapshotState,
 //               eventRecords: null,
-//               getParentId: (childSnapshot: Snapshot<T, K>) => snapshot.getParentId(childSnapshot),
-//               getChildIds: (id: string, childSnapshot: Snapshot<T, K>) => snapshot.getChildIds(childSnapshot),
-//               addChild: (snapshot: Snapshot<T, K>) => snapshot.addChild(snapshot),
-//               removeChild: (snapshot: Snapshot<T, K>) => snapshot.removeChild(snapshot),
+//               getParentId: (childSnapshot: Snapshot<T, K, Meta, ExcludedFields>) => snapshot.getParentId(childSnapshot),
+//               getChildIds: (id: string, childSnapshot: Snapshot<T, K, Meta, ExcludedFields>) => snapshot.getChildIds(childSnapshot),
+//               addChild: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => snapshot.addChild(snapshot),
+//               removeChild: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => snapshot.removeChild(snapshot),
 //               getChildren: () => { },
 //               hasChildren: () => false,
-//               isDescendantOf: (snapshot: Snapshot<T, K>, childSnapshot: Snapshot<T, K>) => snapshot.isDescendantOf(snapshot, childSnapshot),
+//               isDescendantOf: (snapshot: Snapshot<T, K, Meta, ExcludedFields>, childSnapshot: Snapshot<T, K, Meta, ExcludedFields>) => snapshot.isDescendantOf(snapshot, childSnapshot),
               
 //               dataItems: null,
 //               newData: undefined,
 //               stores: null,
 //               getStore: (  storeId: number,
-//                 snapshotStore: SnapshotStore<T, K>,
+//                 snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
 //                 snapshotId: string,
-//                 snapshot: Snapshot<T, K>,
+//                 snapshot: Snapshot<T, K, Meta, ExcludedFields>,
 //                 type: string,
 //                 event: Event
 //               ): SnapshotStore<BaseData, any> | null => {
@@ -270,16 +270,16 @@
 //             getSubscriberId: function (): string {
 //               throw new Error("Function not implemented.");
 //             },
-//             getSubscription: function (): Subscription<T, K> {
+//             getSubscription: function (): Subscription<T, K, Meta, ExcludedFields> {
 //               throw new Error("Function not implemented.");
 //             },
 //             onUnsubscribe: function (
-//               callback: (data: Snapshot<T, K>) => void
+//               callback: (data: Snapshot<T, K, Meta, ExcludedFields>) => void
 //             ): void {
 //               throw new Error("Function not implemented.");
 //             },
 //             onSnapshot: function (
-//               callback: (snapshot: Snapshot<T, K>) => void | Promise<void>
+//               callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void | Promise<void>
 //             ): void {
 //               throw new Error("Function not implemented.");
 //             },
@@ -290,7 +290,7 @@
 //               throw new Error("Function not implemented.");
 //             },
 //             onSnapshotUnsubscribe: function (
-//               callback: (data: Snapshot<T, K>) => void
+//               callback: (data: Snapshot<T, K, Meta, ExcludedFields>) => void
 //             ): void {
 //               throw new Error("Function not implemented.");
 //             },

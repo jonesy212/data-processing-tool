@@ -3,10 +3,16 @@
 import { DocumentData, } from "@/app/components/documents/DocumentBuilder";
 import DocumentGenerator, { DocumentTypeEnum } from "@/server/DocumentGenerator";
 import { DappProps } from "../DAppAdapterConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 
 const documentGenerator = new DocumentGenerator(); // Create an instance of DocumentGenerator
 
-export function manageDocuments(newDocument: DocumentData, dappProps: DappProps) {
+export function manageDocuments<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(newDocument: DocumentData, dappProps: DappProps<T, K, Meta, ExcludedFields>) {
   // Implement logic for document management
   console.log("Document management functionality enabled");
 

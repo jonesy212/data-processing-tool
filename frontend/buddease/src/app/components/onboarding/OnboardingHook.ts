@@ -1,3 +1,4 @@
+import { useSecureStoreId } from '@/app/components/utils/useSecureStoreId';
 // OnboardingHooks.ts
 
 import { makeAutoObservable } from 'mobx';
@@ -9,6 +10,7 @@ import { rootStores } from '../state/stores/RootStores';
 import TrackerStore from '../state/stores/TrackerStore';
 import { DocumentData } from '../documents/DocumentBuilder.jsx';
 import { User } from '../users/User.jsx';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig';
 
 class OnboardingPhase {
   id: string;
@@ -25,7 +27,12 @@ const onboardingPhases: OnboardingPhase[] = [
   // Add more phases as needed
 ];
 
-export const useDynamicOnboarding = (): void => {
+export const useDynamicOnboarding = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(): void => {
   const authContext = useAuth();
   const trackerStore = TrackerStore(rootStores);
 
@@ -34,17 +41,18 @@ export const useDynamicOnboarding = (): void => {
       const user = authContext.state.user;
 
       onboardingPhases.forEach((phase: OnboardingPhase) => {
+         const id = useSecureStoreId()
         // Use initializeUserData to ensure you have the required information
-        const userData = initializeUserData(user, id);
+        const userData = initializeUserData(this.user, id);
 
         const tracker: Tracker = {
           id: phase.id,
           name: phase.description,
           phases: [],
-          trackFileChanges: function (file: DocumentData): void {
+          trackFileChanges: function (file: DocumentData<T, K, Meta, ExcludedFields>): void {
             throw new Error('Function not implemented.');
           },
-          trackFolderChanges: function (fileLoader: DocumentData): void {
+          trackFolderChanges: function (fileLoader: DocumentData<T, K, Meta, ExcludedFields>): void {
             throw new Error('Function not implemented.');
           },
           getName: function (trackerName: string): string {

@@ -12,9 +12,10 @@ const SEARCH_BASE_URL = "/api/search"; // Adjust the base URL according to your 
 
 // Define the structure of the search response data
 interface SearchResponseData<
-  T extends  BaseData<any>,
-  K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
+  T extends BaseDataEntity, 
+  K extends T = T, 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
   > {
   results: Note<T, K>[]; // Assuming an array of Note objects in the response
   totalCount: number; // Total count of search results
@@ -23,10 +24,13 @@ interface SearchResponseData<
 
 // Define the searchAPI function
 export const searchAPI = async <
-  T extends  BaseData<any>,
-  K extends T = T>(
+  T extends BaseDataEntity, 
+  K extends T = T, 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
   query: string
-): Promise<SearchResult<T, K>[]> => {
+): Promise<SearchResult<T, K, Meta, ExcludedFields>[]> => {
   try {
     const searchEndpoint = `${SEARCH_BASE_URL}?query=${encodeURIComponent(
       query

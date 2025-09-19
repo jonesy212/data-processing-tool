@@ -1,45 +1,17 @@
+
 // BlogSlice.ts
-import { Data } from '@/app/components/models/data/Data';
-import { BlogPost } from '@/app/pages/blog/BlogPost';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-
-
-interface CustomComment extends BlogComment {
-  // Define properties specific to your custom comment type
-  // content: string;
-  data?: string | Data | undefined
-}
+import { BlogPost } from '@/app/pages/blog/BlogPost';
+import { VideoComment, BlogComment, CustomComment, EntityComments } from '@/app/components/models/data/Comments';
 
 interface BlogState {
   posts: BlogPost[];
-  comments: (BlogComment |VideoComment | CustomComment)[];
-  // Add more state properties as needed
+  comments: EntityComments<'blog'> | EntityComments<'custom'> | EntityComments<'video'>;
 }
 
-
-interface BlogComment {
-  id: string;
-  postId: string;
-  text: string;
-  pinned: boolean;
-  postedId: string;
-  author: string;
-  timestamp:  Date | string 
-}
-
-
-interface VideoComment {
-  id: string;
-  videoId: string;
-  text: string;
-  pinned: boolean;
-  postedId: string;
-}
 const initialState: BlogState = {
   posts: [],
   comments: [],
-  // Initialize other state properties
 };
 
 export const useBlogManagerSlice = createSlice({
@@ -49,14 +21,13 @@ export const useBlogManagerSlice = createSlice({
     addPost: (state, action: PayloadAction<BlogPost>) => {
       state.posts.push(action.payload);
     },
-    addComment: (state, action: PayloadAction<BlogComment>) => {
+    addComment: (state, action: PayloadAction<BlogComment | VideoComment | CustomComment>) => {
       state.comments.push(action.payload);
     },
-    // Add more reducers for updating and managing the blog state
+    // Add more reducers as needed
   },
 });
 
 export const { addPost, addComment } = useBlogManagerSlice.actions;
 export default useBlogManagerSlice.reducer;
-export type { BlogComment, BlogState, CustomComment };
-
+export type { BlogComment, CustomComment, BlogState };

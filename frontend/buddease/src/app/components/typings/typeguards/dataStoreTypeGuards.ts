@@ -8,7 +8,7 @@ function isDataStoreMethod<
   U extends BaseData,
   K extends Data,
   Key extends keyof DataStoreWithSnapshotMethods<U, any, K>,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   value: any
 ): value is DataStoreWithSnapshotMethods<U, any, K>[Key] {

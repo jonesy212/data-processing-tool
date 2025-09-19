@@ -13,6 +13,7 @@ import { handleApiError } from "./ApiLogs";
 import axiosInstance from "./axiosInstance";
 import { NotificationSettings } from "../components/support/NotificationSettings";
 import { T } from "@/app/components/models/data/dataStoreMethods";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 
 
 const API_BASE_URL = endpoints.projectOwner.base;
@@ -229,10 +230,15 @@ export const ApiProject = observable({
     }
   },
 
-  updateTaskDetailsAPI: async (
+  updateTaskDetailsAPI: async <
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  >(
     projectId: string,
     taskId: string,
-    updatedTaskData: Partial<Task>
+    updatedTaskData: Partial<Task<T, K, Meta, ExcludedFields>>
   ): Promise<void> => {
     try {
       await axiosInstance.put(
@@ -240,10 +246,7 @@ export const ApiProject = observable({
         updatedTaskData
       );
     } catch (error) {
-      handleApiError(
-        error as AxiosError<unknown>,
-        "Failed to update task details"
-      );
+      handleApiError(error as AxiosError<unknown>, "Failed to update task details");
       throw error;
     }
   },
@@ -415,7 +418,7 @@ export const ApiProject = observable({
 
   assignTaskToIdeationPhaseAPI: async (
     projectId: string,
-    taskId: Task,
+    taskId: string,
     phaseId: any
   ): Promise<void> => {
     try {

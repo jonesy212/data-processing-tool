@@ -4,6 +4,7 @@ import { User } from "../../users/User";
 import { UserRole } from "../../users/UserRole";
 import { Team } from './Team';
 import { Task } from '../tasks/Task';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 
 export interface Member extends User {
   teamId: string;
@@ -35,9 +36,14 @@ interface Contributor extends Member {
 }
 
 // Define the MemberData interface extending Member
-interface MemberData extends Member {
+interface MemberData<
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T> 
+> extends Member {
   datasets?: string;
-  tasks?: Task[];
+  tasks?: Task<T, K, Meta, ExcludedFields>[];
   questionnaireResponses?: any;
   userType: string
   // Add other fields specific to MemberData

@@ -1,8 +1,7 @@
 // CommonDetails.tsx
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
-import { Label } from "@/app/components/projects/branding/BrandingSettings";
 import { Snapshot } from "@/app/components/snapshots";
-import { VersionData } from "@/app/components/versions/VersionData";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
@@ -10,7 +9,6 @@ import { NotificationType } from '@/app/context/NotificationContext';
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
-import { SchemaField } from '../../../server/database/SchemaField';
 import { MeetingData } from "../calendar/MeetingData";
 import { ScheduledData } from "../calendar/ScheduledData";
 import { CryptoData } from "../crypto/parseData";
@@ -20,7 +18,6 @@ import { DocumentData } from "../documents/DocumentBuilder";
 import { FakeData } from "../intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "../interfaces/options/CollaborationOptions";
 import AnimationTypeEnum from "../libraries/animations/AnimationLibrary";
-import { Category } from "../libraries/categories/generateCategoryProperties";
 import { ProjectData } from "../projects/Project";
 import { TagsRecord } from "../snapshots";
 import { AllStatus, DetailsItem } from "../state/stores/DetailsListStore";
@@ -41,8 +38,7 @@ import { RealtimeDataComponent } from "./realtime/RealtimeData";
 import { Task } from "./tasks/Task";
 import { TeamData } from "./teams/TeamData";
 import { Member } from "./teams/TeamMembers";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
-
+ 
 interface Timestamped {
   timestamp?: string | number | Date | undefined;
   startDate?: string | Date;
@@ -81,17 +77,26 @@ interface UserOwned<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends SharedTimestamps, SharedIdentifiers<T, K, Meta, ExcludedFields> {
+> extends SharedTimestamps, SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields> {
   assignedUser?: string | null;
   documentOwner?: string;
 }
 
-interface Taggable<T extends BaseDataEntity, K extends T = T> {
-  tags?: TagsRecord<T, K> | string[] | undefined;
+
+interface Taggable<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> {
+  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields> | string[] | undefined;
   categories?: string[];
   keywords?: string[];
 }
+
 
 interface Describable {
   title?: string;
@@ -120,32 +125,34 @@ type ConditionalCommonData<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> = T extends DappProps
-  ? CommonData<T, K, Meta, never>  // If T extends DappProps, return CommonData with appropriate constraints
+> = T extends DappProps<T, K, Meta, AttachmentType, ExcludedFields>
+  ? CommonData<T, K, Meta, AttachmentType, never>  
   : T extends SupportedData<any>
-  ? CommonData<T, K, Meta, ExcludedFields> // If T extends SupportedData, return CommonData with specific exclusions
-  : CommonData<T>;
-
+  ? CommonData<T, K, Meta, AttachmentType, ExcludedFields> 
+  : CommonData<T, K, Meta, AttachmentType, ExcludedFields>;
 
 // Define a generic type for data
 interface CommonData<
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends Identifiable,
-    UserOwned<T, K, Meta, ExcludedFields>,
+    UserOwned<T, K, Meta, AttachmentType, ExcludedFields>,
     Describable,
     Timestamped,
-    Taggable<T, K>,
+    Taggable<T, K, Meta, AttachmentType, ExcludedFields>,
     DocumentContent,
     AccessControlled,
     CounterTrackable,
-    SharedMetadata<T, K, ExcludedFields>,
-    SharedIdentifiers<T, K, Meta, ExcludedFields>,
+    SharedMetadata<T, K, Meta>,
+    SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields>,
     SharedTimestamps,
-    SharedStatusFlags // Add SharedStatusFlags here
+    SharedStatusFlags
 {  
   // Keep only properties that are truly unique to CommonData
   blockNumber?: number | undefined;
@@ -160,6 +167,7 @@ interface CommonData<
   status?: AllStatus | null;
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[];
+  members?: Member[];
   metadata?: UnifiedMetadata<T, K>;
   details?: DetailsItem<T>;
   data?: DataWithOmittedFields<T, K, Meta, ExcludedFields>; 
@@ -193,7 +201,7 @@ interface CommonData<
   completed?: boolean;
   then?: <T extends BaseDataEntity,
     K extends T = T,
-    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
     >(callback: (newData: Snapshot<BaseDataEntity, K>) => void
     ) => Snapshot<T, K> | undefined;
 
@@ -214,9 +222,10 @@ export type TaskType = "addTask" | "removeTask" | "bug" | "feature" | "epic" | "
 
 // Group similar data types into unions for flexibility
 type CommonDataTypes<
-  T extends BaseData<any, any> = BaseData<any, any>,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > = 
   | UserData<T, K>
   | Todo<T, K, Meta>
@@ -228,12 +237,13 @@ type CommonDataTypes<
 
 // Group other types into their own union for flexibility
 type AdditionalDataTypes<
-  T extends BaseData<any, any> = BaseData<any, any>,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > = 
 | CommunityData
-| ProjectData
+| ProjectData<T, K, Meta, ExcludedFields>
 | TeamData<T, K, Meta>
 | ScheduledData<T>
 | MeetingData
@@ -245,12 +255,13 @@ type AdditionalDataTypes<
 
 // Combining common types and additional types using intersection
 type SupportedData<
-  T extends BaseData<any, any> = BaseData<any, any>,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > =
-  CommonDataTypes<T, K, Meta> & // Apply intersection to ensure core data is present
-  AdditionalDataTypes<T, K, Meta> & // Include additional data types with flexibility
+  CommonDataTypes<T, K, Meta, ExcludedFields> & // Apply intersection to ensure core data is present
+  AdditionalDataTypes<T, K, Meta, ExcludedFields> & // Include additional data types with flexibility
   DocumentData<T, K, Meta> & // DocumentData can be part of the intersection, ensuring it's always there
   {
     [key: string]: any; // Allow additional dynamic properties
@@ -363,7 +374,7 @@ const CommonDetails = <
         value={data?.value || ""} // Match `RealtimeDataItem.value: string`
         eventId={data?.eventId || ""} // Match `EventData.eventId: string`
         type={data?.type || {} as AllTypes} // Correct `AllTypes` type assignment
-        timestamp={data?.timestamp ? new Date(data.timestamp).toString() : new Date()} // Handles both `string` and `Date`
+        timestamp={data?.timestamp ? new Date(data.timestamp) : new Date()}  // Handles both `string` and `Date`
         blockNumber={data?.blockNumber != null ? data.blockNumber.toString() : ""} // Convert `string | number | bigint | undefined` to `string`
         transactionHash={data?.transactionHash || ""} // Add fallback value `""` if `transactionHash` is `undefined`
         event={data?.event || ""} // Add fallback value `""` if `event` is `undefined`

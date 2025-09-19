@@ -18,29 +18,34 @@ import { CommonData, Customizations } from "../CommonData";
 import ListGenerator from "./../../../../app/generators/ListGenerator";
 import { Comment } from "./Comments";
 import { BaseData, Data } from "./Data";
+import { SharedIdentifiers } from '@/app/components/documents/RelatedProps';
+import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/configs/BaseConfig';
 
 export type DataAndEventDetails = Data<any, any, any> | CommonEvent;
 
 interface SharedDetails<
-  T extends BaseData<any, any, any, Attachment>,
+  T extends BaseDataEntity, 
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> extends SharedMetadata<T, K>,   SharedIdentifiers<T, K, Meta, ExcludedFields> {
-  participants: Participant[]
-  uploadedAt: Date
-  phase: Phase
-  phaseName: string
-  fakeData?: FakeData
-  comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends SharedMetadata<T, K, ExcludedFields>,
+          SharedIdentifiers<T, K, Meta, ExcludedFields> {
+  participants: Participant[];
+  uploadedAt: Date;
+  phase: Phase<any, any>;
+  phaseName: string;
+  fakeData?: FakeData;
+  comments?: number | (Comment<T, K, Meta> | CustomComment)[];
   isCompleted: boolean;
   previousMeta?: StructuredMetadata<T, K>;
   label: Label;
 }
 
 interface DetailsProps<
-  T extends BaseData<any> = BaseData<any, any>,
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > {
   data?: CommonData<T, K, Meta>; // Accept both CommonData and specific data type
   details: DetailsItemExtended<T>;

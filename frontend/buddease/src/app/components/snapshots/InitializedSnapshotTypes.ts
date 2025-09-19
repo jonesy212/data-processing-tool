@@ -1,4 +1,3 @@
-import { BaseData } from '@/app/components/models/data/Data';
 import { Snapshot } from "@/app/components/snapshots";
 import { convertResponseToSnapshot, enrichSnapshotStore, isSnapshotStore, isYourResponseType, normalizeSnapshot, transformResponse } from "@/app/components/typings/YourSpecificSnapshotType";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
@@ -14,12 +13,12 @@ import { InitializedSnapshot } from './SnapshotStoreOptions';
  */
 function convertResponseToSnapshot<T extends BaseDataEntity, K extends T, Meta extends StructuredMetadata<T, K>>(
   data: unknown
-): InitializedSnapshot<T, K, Meta> {
+): InitializedSnapshot<T, K, Meta, ExcludedFields> {
   // First convert to the proper intermediate type
   const converted = convertToIntermediateType<T, K, Meta>(data);
   
   // Then enrich to create an InitializedSnapshot
-  return enrichAsInitializedSnapshot<T, K, Meta>(converted);
+  return enrichAsInitializedSnapshot<T, K, Meta, ExcludedFields>(converted);
 }
 
 /**
@@ -27,10 +26,10 @@ function convertResponseToSnapshot<T extends BaseDataEntity, K extends T, Meta e
  */
 function convertToIntermediateType<T extends BaseDataEntity, K extends T, Meta extends StructuredMetadata<T, K>>(
   data: unknown
-): YourResponseType<T, K, Meta> | Snapshot<T, K, Meta> | SnapshotStore<T, K, Meta> {
+): YourResponseType<T, K, Meta> | Snapshot<T, K, Meta, ExcludedFields> | SnapshotStore<T, K, Meta> {
   if (isSnapshotStore<T, K, Meta>(data)) {
     return enrichSnapshotStore(data);
-  } else if (isSnapshot<T, K, Meta>(data)) {
+  } else if (isSnapshot<T, K, Meta, ExcludedFields>(data)) {
     return normalizeSnapshot(data);
   } else if (isYourResponseType<T, K, Meta>(data)) {
     return transformResponse(data);
@@ -42,8 +41,8 @@ function convertToIntermediateType<T extends BaseDataEntity, K extends T, Meta e
  * Transforms intermediate types into an InitializedSnapshot
  */
 function enrichAsInitializedSnapshot<T extends BaseDataEntity, K extends T, Meta extends StructuredMetadata<T, K>>(
-  data: YourResponseType<T, K, Meta> | Snapshot<T, K, Meta> | SnapshotStore<T, K, Meta>
-): InitializedSnapshot<T, K, Meta> {
+  data: YourResponseType<T, K, Meta> | Snapshot<T, K, Meta, ExcludedFields> | SnapshotStore<T, K, Meta>
+): InitializedSnapshot<T, K, Meta, ExcludedFields> {
   const baseSnapshot = isSnapshotStore(data) 
     ? data.getLatestSnapshot() 
     : data;
@@ -66,7 +65,7 @@ function enrichAsInitializedSnapshot<T extends BaseDataEntity, K extends T, Meta
 }
 
 export {
-  convertResponseToSnapshot, convertToIntermediateType,
-  enrichAsInitializedSnapshot
+    convertResponseToSnapshot, convertToIntermediateType,
+    enrichAsInitializedSnapshot
 };
 

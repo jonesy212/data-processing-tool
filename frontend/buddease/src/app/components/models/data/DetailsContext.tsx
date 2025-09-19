@@ -4,83 +4,89 @@ import { Data, BaseData } from './Data';
 import { DocumentMetadata } from '@/app/components/state/stores/DocumentStore'
 import { DocumentData } from '../../documents/DocumentBuilder';
 import { DocumentContent } from '../CommonData';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import { Attachment } from '@/components/documents/Attachment/attachment';
 
 // Define the shape of your context data
-interface DetailsContextData {
-  detailsData: DetailsItem<BaseData<DocumentData<T, K, Meta>, DocumentMetadata>>[]; // Use concrete types
-  updateDetailsData: Dispatch<SetStateAction<DetailsItem<BaseData<DocumentData, DocumentMetadata>>[]>>;
 
+// Updated context type with full generics
+interface DetailsContextData<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
+  AttachmentType extends Attachment = Attachment
+> {
+  detailsData: DetailsItem<
+    Data<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, DocumentMetadata>
+  >[];
+  updateDetailsData: Dispatch<
+    SetStateAction<
+      DetailsItem<Data<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, DocumentMetadata>>[]
+    >
+  >;
 }
 
 // Create the context
 const DetailsContext = createContext<DetailsContextData | undefined>(undefined);
 
-// Create a provider component to wrap your application with
+// Provider props
 interface DetailsProviderProps {
   children: ReactNode;
 }
 
-export const DetailsProvider: React.FC<DetailsProviderProps> = ({ children }: DetailsProviderProps) => {
-  // State to manage detailsData
-  const [detailsData, setDetailsData] = useState<DetailsItem<Data<DocumentData, DocumentMetadata>>[]>([]);
+export const DetailsProvider: React.FC<DetailsProviderProps> = ({ children }) => {
+  const [detailsData, setDetailsData] = useState<
+    DetailsItem<Data<DocumentData, DocumentMetadata>>[]
+  >([]);
 
-  // Function to update detailsData
-  const updateDetailsData: Dispatch<SetStateAction<DetailsItem<Data<DocumentData, DocumentMetadata>>[]>> = (callback) => {
-    setDetailsData((prevData) => {
-      if (typeof callback === 'function') {
-        return callback([...prevData]);
-      } else {
-        return callback;
-      }
-    });
+  const updateDetailsData: Dispatch<
+    SetStateAction<DetailsItem<Data<DocumentData, DocumentMetadata>>[]>
+  > = (callback) => {
+    setDetailsData((prevData) =>
+      typeof callback === 'function' ? callback([...prevData]) : callback
+    );
   };
 
-  // Value object to be provided to consumers
   const value: DetailsContextData = {
     detailsData,
     updateDetailsData,
   };
 
-  // Provide the context value to the entire application
   return <DetailsContext.Provider value={value}>{children}</DetailsContext.Provider>;
 };
 
-
-// Custom hook to consume the context
+// Custom hook
 export const useDetailsContext = (): DetailsContextData => {
   const context = useContext(DetailsContext);
-
-  if (!context) {
-    throw new Error('useDetailsContext must be used within a DetailsProvider');
-  }
-
+  if (!context) throw new Error('useDetailsContext must be used within a DetailsProvider');
   return context;
 };
 
-
-
-
-
-const exampleDocument: DocumentContent<Data<DocumentData, DocumentMetadata>> = {
-  eventId: "event123",
+// Example usage
+const exampleDocument: DocumentContent<
+  Data<DocumentData<BaseDataEntity>, DocumentMetadata>
+> = {
+  eventId: 'event123',
   content: {
     /* content structure here */
   },
   meta: {
     documentMetadata: {
-      characterSet: "UTF-8",
-      charset: "UTF-8",
-      compatMode: "on",
-      contentType: "text/html",
-      cookie: "cookieString",
-      designMode: "design",
-      dir: "ltr",
-      domain: "example.com",
-      inputEncoding: "UTF-8",
-      lastModified: "2024-11-06",
-      linkColor: "#0000FF",
-      referrer: "referrerInfo",
-      vlinkColor: "#8A2BE2",
+      characterSet: 'UTF-8',
+      charset: 'UTF-8',
+      compatMode: 'on',
+      contentType: 'text/html',
+      cookie: 'cookieString',
+      designMode: 'design',
+      dir: 'ltr',
+      domain: 'example.com',
+      inputEncoding: 'UTF-8',
+      lastModified: '2024-11-06',
+      linkColor: '#0000FF',
+      referrer: 'referrerInfo',
+      vlinkColor: '#8A2BE2',
     },
   },
 };

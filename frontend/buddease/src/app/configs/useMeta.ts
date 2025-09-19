@@ -1,16 +1,24 @@
 import { Snapshot } from "@/app/components/snapshots";
 import { useMemo } from "react";
 import { BaseData } from "../components/models/data/Data";
+import { BaseConfig } from '@/app/configs/BaseConfig';
 import { PhaseData } from "../components/phases/Phase";
 import { EventManager } from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { default as Version, default as VersionImpl } from "../components/versions/Version";
 import { StructuredMetadata } from "./StructuredMetadata";
 import { backendStructure } from "./appStructure/BackendStructure";
 import { frontendStructure } from "./appStructure/FrontendStructure";
+import { BaseDataEntity, BaseDataRoot, DefaultMeta } from '@/app/configs/BaseConfig';
+import { DefaultExcludedFields } from '../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig';
+import { Attachment } from "../../../data_analysis/frontend/buddease/src/app/components/documents/Attachment/attachment";
 
 function useMeta<
-    T extends BaseData<any>,
-    K extends T = T
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   area: string | undefined, 
   relatedData?: K[],
@@ -55,7 +63,7 @@ function useMeta<
       description: `Description for ${fileOrFolderId}`,
       keywords: ["keyword1", "keyword2"],
       authors: ["Author 1"],
-      contributors: ["Contributor 1"],
+      contributors: [{}],
       publisher: "Default Publisher",
       copyright: "© 2024 Default",
       license: "MIT",
@@ -96,6 +104,11 @@ function useMeta<
       latestVersion: {},
       version: dynamicVersion,
       mappedSnapshot: undefined,
+      baseConfig: {} as BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      sharedMetadata: {} as SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      sharedBaseData: {} as SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      taggable: {} as Taggable<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+     
     };
   }, [description, childIds, relatedData]);
 

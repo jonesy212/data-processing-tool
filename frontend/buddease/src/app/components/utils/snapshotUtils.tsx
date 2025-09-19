@@ -3,6 +3,7 @@ import * as snapshotApi from '@/app/api/SnapshotApi';
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
 import { SnapshotContainer, SnapshotData } from '@/app/components/snapshots';
 import { SnapshotEvents } from '@/app/components/snapshots/SnapshotEvents';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -27,7 +28,6 @@ import { SubscriberCallbackType, Subscription } from "../subscriptions/Subscript
 import { getSubscriptionLevel } from "../subscriptions/SubscriptionLevel";
 import { Subscriber, SubscriberCallback } from "../users/Subscriber";
 import useSecureSnapshotId from './useSecureSnapshotId';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 import useSecureStoreId from './useSecureStoreId';
 
 function isHydrateResult<T>(result: any): result is IHydrateResult<T> {
@@ -375,7 +375,11 @@ function isSnapshotWithCriteria <T extends  BaseDataEntity, K extends T = T, Met
 
 
 
-function isSnapshotStoreConfig<T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isSnapshotStoreConfig<T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
   item: any
 ): item is SnapshotStoreConfig<T, K>[] {
   return (
@@ -387,18 +391,23 @@ function isSnapshotStoreConfig<T extends  BaseDataEntity, K extends T = T, Meta 
 }
 
 
-export const addToSnapshotList = async  <T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  snapshot: Snapshot<T, K>,
-  subscribers: Subscriber<T, K>[],
-  storeProps?: SnapshotStoreProps<T, K>
-): Promise<Subscription<T, K> | null> => {
+export const addToSnapshotList = async  <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  >(
+  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+  subscribers: Subscriber<T, K, Meta, ExcludedFields>[],
+  storeProps?: SnapshotStoreProps<T, K, Meta, ExcludedFields>
+): Promise<Subscription<T, K, Meta, ExcludedFields> | null> => {
   console.log("Snapshot added to snapshot list: ", snapshot);
   if (!storeProps) {
     throw new Error("Snapshot properties not available")
   }
   const snapshotStore = await useSnapshotStore(addToSnapshotList, storeProps);
 
-  const subscriptionData: Subscription<T, K> | null = snapshot.data
+  const subscriptionData: Subscription<T, K, Meta, ExcludedFields> | null = snapshot.data
     ? {
         name: snapshot.name ? snapshot.name : undefined,
         subscribers: [],
@@ -410,7 +419,7 @@ export const addToSnapshotList = async  <T extends  BaseDataEntity, K extends T 
         triggerIncentives: (): void => {},
         communityEngagement: (): void => {},
         determineCategory: (
-          data: string | Snapshot<T, K> | null | undefined
+          data: string | Snapshot<T, K, Meta, ExcludedFields> | null | undefined
         ): string | CategoryProperties => {
           // Adjusted return type
           if (data === undefined || data === null) {
@@ -436,7 +445,7 @@ export const getSnapshotsBySubscriber = async <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   subscriber: Subscriber<T, K, Meta>,
   storeProps?: SnapshotStoreProps<T, K>
@@ -535,9 +544,14 @@ export const addSnapshotHandler = (
 };
 
 
-function isSnapshotDataType<T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isSnapshotDataType<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
   data: any
-): data is SnapshotDataType<T, K> {
+): data is SnapshotDataType<T, K, Meta, ExcludedFields>  {
   // Check if the data is a Map
   if (data instanceof Map) {
     // Verify the structure of each entry in the Map
@@ -562,10 +576,11 @@ function isSnapshotDataType<T extends  BaseDataEntity, K extends T = T, Meta ext
 function isSnapshot<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   obj: any
-): obj is Snapshot<T, K, Meta> {
+): obj is Snapshot<T, K, Meta, ExcludedFields> {
   return (
     obj &&
     typeof obj === "object" &&
@@ -579,9 +594,30 @@ function isSnapshot<
 }
 
 
+function isSnapshotData<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(data: any): data is SnapshotData<T, K, Meta, ExcludedFields> {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
 
-function isSnapshotData<T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(data: any): data is SnapshotData<T, K> {
-  return data && typeof data === 'object' && 'storeId' in data && 'config' in data && (data as SnapshotData<T, K>).storeId !== undefined;
+  // Check required methods
+  const hasRequiredMethods = 
+    typeof data.validate === 'function' &&
+    typeof data.serialize === 'function' &&
+    typeof data.get === 'function' &&
+    typeof data.set === 'function';
+
+  // Check required properties
+  const hasRequiredProperties = 
+    'storeId' in data &&
+    'config' in data &&
+    'timestamp' in data;
+
+  return hasRequiredMethods && hasRequiredProperties;
 }
 
 const isArrayOfTypeT = <T extends  BaseDataEntity>(array: any[]): array is T[] => {

@@ -1,31 +1,28 @@
 // getCurrentSnapshotConfigOptions.ts
 
 import { DataStoreMethods } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import { SnapshotsArray } from '@/app/components/snapshots/LocalStorageSnapshotStore';
 import { createSnapshotStoreConfig } from '@/app/components/snapshots/snapshotStoreConfigInstance';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { Subscription } from '@/app/components/subscriptions/Subscription';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { CategoryProperties } from "../../../app/pages/personas/ScenarioBuilder";
 import { Category } from '../libraries/categories/generateCategoryProperties';
-import { BaseData } from "../models/data/Data";
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { InitializedDelegate } from '../snapshots/SnapshotStoreOptions';
 import { DataWithPriority, DataWithTimestamp, DataWithVersion } from "../utils/versionUtils";
+import { SnapshotContainerType } from './SnapshotContainer';
 import SnapshotStore from "./SnapshotStore";
-import { ExcludedFields } from '@/app/components/routing/Fields';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotsArray } from '@/app/components/snapshots/LocalStorageSnapshotStore';
-import { InitializedDelegate, SnapshotStoreOptions } from '../snapshots/SnapshotStoreOptions';
-import { getSnapshotContainer } from "./snapshotOperations";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 
 import {
-  ConfigureSnapshotStorePayload,
-  Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData,
-  Snapshots,
-  SnapshotStoreProps,
-  SnapshotWithCriteria
+    ConfigureSnapshotStorePayload,
+    Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData,
+    SnapshotStoreProps,
+    SnapshotWithCriteria
 } from './index';
 
 
@@ -79,34 +76,34 @@ export const getCurrentSnapshotConfigOptions = <
   snapshot: (
     id: string | number | undefined,
     snapshotId: string | null,
-    snapshotData: SnapshotData<T, K>,
+    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
     category: Category | undefined,
     categoryProperties: CategoryProperties | undefined,
-    callback: (snapshotStore: SnapshotStore<T, K> | null) => void,
-    dataStore: DataStore<T, K>,
-    dataStoreMethods: DataStoreMethods<T, K>,
-    // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
+    callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields> | null) => void,
+    dataStore: DataStore<T, K, Meta, ExcludedFields>,
+    dataStoreMethods: DataStoreMethods<T, K, Meta, ExcludedFields>,
+    // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>,
     metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
     subscriberId: string, // Add subscriberId here
     endpointCategory: string | number,// Add endpointCategory here
-    storeProps: SnapshotStoreProps<T, K>,
-    snapshotConfigData: SnapshotConfig<T, K>,
-    subscription: Subscription<T, K>,
+    storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+    snapshotConfigData: SnapshotConfig<T, K, Meta, ExcludedFields>,
+    subscription: Subscription<T, K, Meta, ExcludedFields>,
 
-    snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
-    snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null,
-  ) => Promise<Snapshot<T, K>>,
-  data: Map<string, Snapshot<T, K>>,
-  events: Record<string, CalendarManagerStoreClass<T, K>[]>, // Added prop
-  dataItems: RealtimeDataItem[], // Added prop
-  newData: Snapshot<T, K>, // Added prop
-  payload: ConfigureSnapshotStorePayload<T, K>, // Added prop
-  store: SnapshotStore<T, K>, // Added prop
-  callback: (snapshot: SnapshotStore<T, K>) => void, // Added prop
-  storeProps: SnapshotStoreProps<T, K>,
+    snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
+    snapshotContainer?: SnapshotContainerType<T, K, Meta, ExcludedFields>,
+  ) => Promise<Snapshot<T, K, Meta, ExcludedFields>>,
+  data: Map<string, Snapshot<T, K, Meta, ExcludedFields>>,
+  events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>, // Added prop
+  dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[], // Added prop
+  newData: Snapshot<T, K, Meta, ExcludedFields>, // Added prop
+  payload: ConfigureSnapshotStorePayload<T, K, Meta, ExcludedFields>, // Added prop
+  store: SnapshotStore<T, K, Meta, ExcludedFields>, // Added prop
+  callback: (snapshot: SnapshotStore<T, K, Meta, ExcludedFields>) => void, // Added prop
+  storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
   endpointCategory: string | number,
-  snapshotContainer: Promise<SnapshotContainer<T, K>>
-): SnapshotStoreConfig<T, K> => {
+  snapshotContainer: Promise<SnapshotContainer<T, K, Meta, ExcludedFields>>
+): SnapshotStoreConfig<T, K, Meta, ExcludedFields> => {
 
   if (!snapshotId) {
     throw new Error('Snapshot ID is required');
@@ -125,7 +122,7 @@ export const getCurrentSnapshotConfigOptions = <
     categoryProperties,
     delegate: delegateInstance,
     snapshotData: (snapshotStore: SnapshotStore<T, K, Meta>) => {
-      const snapshotsArray: SnapshotsArray<T, K> = [];
+      const snapshotsArray: SnapshotsArray<T, K, Meta, ExcludedFields> = [];
       if (snapshotData && Array.isArray(snapshotData)) {
         snapshotsArray.push(...snapshotData);
       }
@@ -135,7 +132,7 @@ export const getCurrentSnapshotConfigOptions = <
     updatedAt: new Date(),
     metadata: {} as Meta,
     snapshots: [],      // Correct type: SnapshotsArray<T, K, Meta>
-    subscribers: [],    // Correct type: SubscriberCollection<T, K>[]  
+    subscribers: [],    // Correct type: SubscriberCollection<T, K, Meta, ExcludedFields>[]  
   });
 
   // Type guards for conditional properties in the configuration
@@ -171,14 +168,14 @@ export const getCurrentSnapshotConfigOptions = <
       id: string,
       storeId: number,
       snapshotId: string,
-      snapshotData: SnapshotData<T, K>,
-      dataStoreMethods: DataStore<T, K>,
+      snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+      dataStoreMethods: DataStore<T, K, Meta, ExcludedFields>,
       category?: Category,
       categoryProperties?: CategoryProperties | undefined,
-      callback?: (snapshot: Snapshot<T, K>) => void,
-      snapshotStore?: SnapshotStore<T, K>,
-      snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> 
-    ): { snapshot: Snapshot<T, K>, config: SnapshotConfig<T, K> } | null => {
+      callback?: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void,
+      snapshotStore?: SnapshotStore<T, K, Meta, ExcludedFields>,
+      snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, ExcludedFields>
+    ): { snapshot: Snapshot<T, K, Meta, ExcludedFields>, config: SnapshotConfig<T, K, Meta, ExcludedFields> } | null => {
       // Ensure snapshotStore exists within snapshotData
       if (!snapshotData.snapshotStore) {
         throw new Error("snapshotStore cannot be null");

@@ -11,7 +11,7 @@ import { addLog } from '../components/state/redux/slices/LogSlice';
 import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
 import { notificationStore } from '../components/support/NotificationProvider';
 import { YourResponseType } from '../components/typings/types';
-import Version from '../components/versions/Version';
+import { Version } from '../components/versions/Version';
 import { StructuredMetadata } from "../configs/StructuredMetadata";
 import { handleApiError } from './ApiLogs';
 import axiosInstance from './axiosInstance';
@@ -74,24 +74,25 @@ handleApiErrorAndNotify(
 );
 
 
-const fetchData = async (endpoint: string, id: number): Promise<{ data: YourResponseType<T, K, StructuredMetadata<T, K>> } | null> => {
+const fetchData = async (
+  endpoint: string,
+  id?: number
+): Promise<{ data: YourResponseType<T, K, StructuredMetadata<T, K>> } | null> => {
   try {
-    const response = await fetch(endpoint);
+    let url = endpoint;
+    if (id !== undefined) url += `/${id}`; // append id only if provided
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Network response was not ok");
 
     const data = await response.json();
-
-    // Return the data wrapped in an object with a 'data' property
     return { data };
   } catch (error) {
-    // Handle any errors that occur during the fetch operation
     console.error("Failed to fetch data:", error);
     return null;
   }
 };
+
 
 
 const getBackendVersion = async (): Promise<string> => {

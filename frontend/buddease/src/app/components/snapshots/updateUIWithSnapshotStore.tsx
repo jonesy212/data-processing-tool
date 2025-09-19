@@ -1,11 +1,9 @@
-import { BaseData } from '@/app/components/models/data/Data';
 import { Snapshot } from "@/app/components/snapshots";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useDispatch } from 'react-redux';
 
 const dispatch = useDispatch()
 // updateUIWithSnapshotStore.ts
-const updateUIWithSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshotStore: Snapshot<T, K>) => {
+const updateUIWithSnapshotStore = <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshotStore: Snapshot<T, K, Meta, ExcludedFields>) => {
     try {
       // Perform a UI update with the snapshotStore data
       const snapshotContent = snapshotStore.getData(); // Retrieve the data from snapshotStore

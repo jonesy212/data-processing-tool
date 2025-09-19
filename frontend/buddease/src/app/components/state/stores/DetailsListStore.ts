@@ -38,12 +38,12 @@ import { Member, TeamMember } from "../../models/teams/TeamMembers";
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import { Project } from "../../projects/Project";
-import { SnapshotConfig, SnapshotDataType, TagsRecord } from "../../snapshots";
+import { data, SnapshotConfig, SnapshotDataType, TagsRecord } from "../../snapshots";
 
 import { Snapshot } from "@/app/components/snapshots";
 import { InitializedConfig, } from "../../snapshots/SnapshotStoreConfig";
 
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
 import { Label } from '@/app/components/projects/branding/BrandingSettings';
 import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
@@ -53,6 +53,9 @@ import { useMetadata } from "@/app/configs/useMetadata";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { AllTypes } from "../../typings/PropTypes";
 import { createSnapshotStoreOptions } from "../../typings/YourSpecificSnapshotType";
+import { DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import { ExcludedFields } from '../../routing/Fields';
+import { BaseDataEntity } from '../../snapshots/ValidationRule';
 
 const { notify } = useNotification();
 const { latestVersion = createLatestVersion<T, K>(), ...rest } = data;
@@ -76,9 +79,9 @@ export type AllStatus =
 
 // Define a generic interface for details
 interface DetailsItem<
-  T extends BaseData<any>,
+    T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   > {
   _id?: string;
   id: string | number;
@@ -91,7 +94,7 @@ interface DetailsItem<
   startDate: Date;
   endDate?: Date;
   updatedAt?: Date;
-  phase?: Phase<PhaseData<BaseData<T, K, Meta, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, K> | null;
+  phase?: Phase<PhaseData<BaseData<any>>, PhaseData<BaseData<any>>> | null;
   subtitle: string;
   author?: string;
   date?: Date;
@@ -106,9 +109,12 @@ interface DetailsItem<
 }
 
 interface DetailsItemExtended<
-  T extends  BaseData<any>,
-  K extends T = T
-> extends DataDetails<T, K> {
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends DataDetails<T, K, Meta, ExcludedFields> {
   id: string | number;
   _id?: string;
   title?: string;
@@ -117,13 +123,14 @@ interface DetailsItemExtended<
   type?: AllTypes; //todo verif we match types
   status?: AllStatus | null; // Use enums for status property
   participants?: Participant[];
+  members?: Member[];
   description?: string | null | undefined;
-  assignedProjects?: Project[];
+  assignedProjects?: Project<T, K, Meta, ExcludedFields>[];
   analysisType?: AnalysisTypeEnum | null;
   isVisible?: boolean;
   query?: string;
   reassignedProjects?: {
-    project: Project;
+    project: Project<T, K, Meta, ExcludedFields>;
     previousTeam: Team;
     reassignmentDate: Date;
   }[];
@@ -135,7 +142,7 @@ interface DetailsItemExtended<
 
 
   analysisResults: string | DataAnalysisResult<T>[] | undefined;
-  phase?: Phase<T, K> | null;
+  phase?: Phase<PhaseData<BaseData<any>>, PhaseData<BaseData<any>>> | null;
   isActive?: boolean;
   tags?: TagsRecord<T, K> | string[] | undefined
   subtitle?: string;
@@ -158,7 +165,12 @@ interface DetailsItemExtended<
 }
 
 
-export interface DetailsListStore<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+export interface DetailsListStore<
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> {
   details: Record<string, DetailsItemExtended<T, K>[]>;
   detailsTitle: string;
   detailsDescription: string;
@@ -171,11 +183,11 @@ export interface DetailsListStore<T extends BaseData<any>, K extends T = T, Meta
     | TaskStatus.Canceled
     | TaskStatus.Scheduled
     | undefined;
-  snapshotStore: SnapshotStore<T, K>;
+  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   updateDetailsTitle: (title: string, newTitle: string) => void;
-  subscribe(callback: (snapshot: Snapshot<T, K>) => void): void;
+  subscribe(callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void): void;
 
   toggleDetails: (detailsId: string) => void;
 
@@ -199,9 +211,9 @@ export interface DetailsListStore<T extends BaseData<any>, K extends T = T, Meta
 }
 
 class DetailsListStoreClass <
-  T extends  BaseData<any>, 
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > implements DetailsListStore<T, K>
 {
 
@@ -225,13 +237,13 @@ class DetailsListStoreClass <
     | undefined = undefined;
   snapshotStore!: SnapshotStore<T, K>;
 
-  subscribe = (callback: (snapshot: Snapshot<T, K>) => void) => {};
+  subscribe = (callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void) => {};
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
 
   constructor( 
-    storeProps: SnapshotStoreProps<T, K>,
-    snapConfig: SnapshotConfig<T, K>
+    storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+    snapConfig: SnapshotConfig<T, K, Meta, ExcludedFields>
   ) {
     makeAutoObservable(this);
     this.initSnapshotStore(storeProps, snapConfig);
@@ -265,8 +277,8 @@ class DetailsListStoreClass <
   }
 
   private async initSnapshotStore(
-    storeProps: SnapshotStoreProps<T, K>,
-    snapConfig: SnapshotConfig<T, K>
+    storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+    snapConfig: SnapshotConfig<T, K, Meta, ExcludedFields>
   ) {
     const {
       storeId,
@@ -288,7 +300,7 @@ class DetailsListStoreClass <
       endpointCategory,
     } = storeProps;
   
-    const snapshotStoreProps: SnapshotStoreProps<T, K> = {
+    const snapshotStoreProps: SnapshotStoreProps<T, K, Meta, ExcludedFields> = {
       initialState,
       id: storeId.toString(),
       storeId,
@@ -311,7 +323,7 @@ class DetailsListStoreClass <
     };
     
     // Initialize the snapshot store using snapshotStoreProps
-    this.snapshotStore = new SnapshotStore<T, K>({
+    this.snapshotStore = new SnapshotStore<T, K, Meta, ExcludedFields>({
       storeId: snapshotStoreProps.storeId,
       name: snapshotStoreProps.name,
       version: snapshotStoreProps.version,
@@ -328,7 +340,7 @@ class DetailsListStoreClass <
 
     });
 
-    const snapshotConfig: SnapshotConfig<T, K> = {
+    const snapshotConfig: SnapshotConfig<T, K, Meta, ExcludedFields> = {
       
 
         id: snapConfig?.id || 'default-id', // Default or generate an ID
@@ -355,7 +367,7 @@ class DetailsListStoreClass <
         setCategory: snapConfig?.setCategory || (() => {}),
         applyStoreConfig: snapConfig?.applyStoreConfig || (() => {}),
         generateId: snapConfig?.generateId || (() => 'default-generated-id'),
-        snapshotData: snapConfig?.snapshotData || (() => ({} as SnapshotDataType<T, K>)),
+        snapshotData: snapConfig?.snapshotData || (() => ({} as SnapshotDataType<T, K, Meta, ExcludedFields>)),
         getSnapshotItems: snapConfig?.getSnapshotItems || (() => []),
 
 
@@ -1185,11 +1197,13 @@ class DetailsListStoreClass <
 }
 
 const useDetailsListStore = <
-  T extends BaseData<any>,
-  K extends T = T
+  T extends BaseDataEntity, 
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
-    storeProps: SnapshotStoreProps<T, K>,
-    snapConfig: SnapshotConfig<T, K>
+    storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+    snapConfig: SnapshotConfig<T, K, Meta, ExcludedFields>
   ): DetailsListStore<T, K> => {
   return new DetailsListStoreClass(storeProps, snapConfig);
 };

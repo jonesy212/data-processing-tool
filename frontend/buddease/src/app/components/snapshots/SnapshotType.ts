@@ -4,10 +4,21 @@ import {
     SnapshotContainer,
     SnapshotDataType,
   } from "./SnapshotContainer";
-  import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import * as snapshotApi from '@/app/api/SnapshotApi'
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { Snapshot } from "@/app/components/snapshots";
+import { SnapshotStoreConfig, snapshotFunction } from ".";
+import { Category } from "../../../data_analysis/frontend/buddease/src/app/components/libraries/categories/generateCategoryProperties";
+import { BaseData } from "../../../data_analysis/frontend/buddease/src/app/components/models/data/Data";
+import { isSnapshot, snapshotId, isSnapshotDataType } from "../../../data_analysis/frontend/buddease/src/app/components/utils/snapshotUtils";
+import useSecureStoreId from "../../../data_analysis/frontend/buddease/src/app/components/utils/useSecureStoreId";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig";
+import { SnapshotData } from "./SnapshotData";
+import snapshotDelegate from "./snapshotDelegate";
+import SnapshotStore from "./SnapshotStore";
+import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
+import { SnapshotContainerType } from './SnapshotContainer';
 
 const snapshotType = <
   T extends BaseDataEntity,
@@ -15,17 +26,17 @@ const snapshotType = <
  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
-  snapshotObj: Snapshot<T, K>,
+  snapshotObj: Snapshot<T, K, Meta, ExcludedFields>,
   snapshot: (
     id: string | number | undefined,
-    snapshotData: SnapshotData<T, K>,
-    category: Category | undefined,    callback: (snapshot: Snapshot<T, K>) => void,
+    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+    category: Category | undefined,    callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void,
     criteria: CriteriaType,
     snapshotId?: string | number | null,
-    snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
-    snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null
-  ) => Promise<Snapshot<T, K>>
-): Promise<Snapshot<T, K>> => {
+    snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
+    snapshotContainer?: SnapshotContainerType<T, K, Meta, ExcludedFields>
+  ) => Promise<Snapshot<T, K, Meta, ExcludedFields>>
+): Promise<Snapshot<T, K, Meta, ExcludedFields>> => {
   const newSnapshot = { ...snapshotObj }; // Shallow copy of the snapshot
 
   // Handle SnapshotStore<BaseData> or Snapshot<BaseData>
@@ -41,22 +52,22 @@ const snapshotType = <
 
   // Async function to get criteria and snapshot data
   const getCriteriaAndData = async (): Promise<{
-    snapshotContainer: SnapshotContainer<T, K>;
+    snapshotContainer: SnapshotContainer<T, K, Meta, ExcludedFields>;
     snapshotId?: string | number | null;
-    snapshotData: SnapshotData<T, K>;
+    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>;
     snapshot?: (
       id: string | number | null | undefined,
       snapshotId: string | null,
-      snapshotData: SnapshotData<T, K>,
-      category: Category | undefined,      callback: (snapshot: Snapshot<T, K>) => void,
+      snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+      category: Category | undefined,      callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void,
       criteria: CriteriaType,
       snapshotStoreConfigData?: SnapshotStoreConfig<
         SnapshotWithCriteria<any, BaseData>,
         SnapshotWithCriteria<any, BaseData<any, any>>
       >,
-      snapshotContainerData?: SnapshotStore<T, K> | Snapshot<T, K> | null
-    ) => Promise<SnapshotData<T, K>>;
-    snapshotObj?: Snapshot<T, K> | undefined;
+      snapshotContainerData?: SnapshotStore<T, K, Meta, ExcludedFields> | Snapshot<T, K, Meta, ExcludedFields> | null
+    ) => Promise<SnapshotData<T, K, Meta, ExcludedFields>>;
+    snapshotObj?: Snapshot<T, K, Meta, ExcludedFields> | undefined;
   }> => {
     if (newSnapshot.snapshotId === undefined) {
       throw new Error("can't find snapshotId");
@@ -69,10 +80,10 @@ const snapshotType = <
     }
 
     // Retrieve snapshot data here; assuming you have a function to fetch it
-    let snapshotData: SnapshotDataType<T, K> | undefined;
+    let snapshotData: SnapshotDataType<T, K, Meta, ExcludedFields> | undefined;
 
     if (!snapshotData && isSnapshot(snapshotData)) {
-      // snapshotData is guaranteed to be of type Snapshot<T, K> here
+      // snapshotData is guaranteed to be of type Snapshot<T, K, Meta, ExcludedFields> here
     } else {
       throw new Error(
         "Failed to get snapshot data or data is not in the expected format"
@@ -85,13 +96,13 @@ const snapshotType = <
 
     // Mock of a cached data check (replace with your actual caching mechanism)
     const cachedData = getCachedSnapshotData(String(snapshotId)) as
-      | SnapshotData<T, K>
+      | SnapshotData<T, K, Meta, ExcludedFields>
       | undefined;
 
     const storeId = useSecureStoreId();
     const snapshotStoreConfig = snapshotApi.getSnapshotStoreConfig(
       null,
-      {} as SnapshotContainer<T, K>,
+      {} as SnapshotContainer<T, K, Meta, ExcludedFields>,
       {},
       Number(storeId),
       snapshotFunction
@@ -114,15 +125,15 @@ const snapshotType = <
           // Use the first configuration to fetch the data
           const fetchedData = configs[0].fetchSnapshotData(endpoint, id);
 
-          // Assuming `fetchSnapshotData` returns data in the format `SnapshotStore<T, K>`
+          // Assuming `fetchSnapshotData` returns data in the format `SnapshotStore<T, K, Meta, ExcludedFields>`
           if (
-            isSnapshotDataType<T, K>(fetchedData) &&
+            isSnapshotDataType<T, K, Meta, ExcludedFields>(fetchedData) &&
             snapshotData !== undefined
           ) {
             snapshotData = fetchedData; // Safe to assign now
           } else {
             throw new Error(
-              "Fetched data is not of type SnapshotDataType<T, K>."
+              "Fetched data is not of type SnapshotDataType<T, K, Meta, ExcludedFields>."
             );
           }
         } else {
@@ -135,7 +146,7 @@ const snapshotType = <
         "Failed to fetch data, falling back to default value",
         error
       );
-      snapshotData = new Map<string, Snapshot<T, K>>();
+      snapshotData = new Map<string, Snapshot<T, K, Meta, ExcludedFields>>();
     }
 
     if (snapshotData === undefined) {
@@ -153,7 +164,7 @@ const snapshotType = <
     await getCriteriaAndData();
 
   // Ensure snapshotContainerData has all required properties for SnapshotContainer
-  const completeSnapshotContainerData: SnapshotContainer<T, K> = {
+  const completeSnapshotContainerData: SnapshotContainer<T, K, Meta, ExcludedFields> = {
     getSnapshot: newSnapshot.getSnapshot
       ? newSnapshot.getSnapshot
       : async (
@@ -201,7 +212,7 @@ const snapshotType = <
     snapshot: newSnapshot.snapshot,
     snapshotsArray: [],
     snapshotsObject: {},
-    snapshotStore: newSnapshot.snapshotStore || ({} as SnapshotStore<T, K>), // Provide a default empty object if null
+    snapshotStore: newSnapshot.snapshotStore || ({} as SnapshotStore<T, K, Meta, ExcludedFields>), // Provide a default empty object if null
     mappedSnapshotData: newSnapshot.mappedSnapshotData || undefined,
     timestamp: newSnapshot.timestamp,
     snapshotData: newSnapshot.snapshotData || undefined,
@@ -335,7 +346,7 @@ const snapshotType = <
     // Add any other required properties here
   };
 
-  // Return the newSnapshot as a Promise<Snapshot<T, K>>
+  // Return the newSnapshot as a Promise<Snapshot<T, K, Meta, ExcludedFields>>
   return Promise.resolve({
     ...newSnapshot,
     ...completeSnapshotContainerData,

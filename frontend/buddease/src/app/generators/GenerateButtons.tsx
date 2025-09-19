@@ -9,16 +9,16 @@ import { useDispatch } from "react-redux";
 import userService from "../api/ApiUser";
 import { useDynamicComponents } from "../components/DynamicComponentsContext";
 import {
-  startVoiceRecognition,
-  stopVoiceRecognition,
+    startVoiceRecognition,
+    stopVoiceRecognition,
 } from "../components/intelligence/VoiceControl";
 import ReusableButton from "../components/libraries/ui/buttons/ReusableButton";
 import { RealtimeDataComponent } from "../components/models/realtime/RealtimeData";
 import useNotificationManagerService from "../components/notifications/NotificationService";
 import { Phase } from "../components/phases/Phase";
 import {
-  nextPhase,
-  previousPhase,
+    nextPhase,
+    previousPhase,
 } from "../components/phases/PhaseTransitions";
 import { brandingSettings } from "../libraries/theme/BrandingService";
 import { ExtendedRouter } from "../pages/MyAppWrapper";
@@ -79,7 +79,7 @@ interface ButtonGeneratorProps<
   T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > extends SharedIdentifiers<T, K, Meta, ExcludedFields> {
   variant?: Record<string, string>; // Keep this as is for variant options
   date?: Date | string;

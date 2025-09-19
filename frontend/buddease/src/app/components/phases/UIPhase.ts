@@ -1,3 +1,4 @@
+// DefaultNotification.ts
 // UIPhase.tsx
 // UIPhase.ts
 import { fetchData } from "@/app/api/ApiData";
@@ -17,9 +18,23 @@ import { NotificationData } from "../support/NofiticationsSlice";
 import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import NotificationMessagesFactory from "../support/NotificationMessagesFactory";
 
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '../models/data/BaseConfig';
+import { FileAttachment } from '../models/data/Attachment';
+
+// Default alias for generic NotificationData
+export type DefaultNotificationData = NotificationData<
+  BaseDataEntity,      // T
+  BaseDataEntity,      // K
+  DefaultMeta<BaseDataEntity, BaseDataEntity>, // Meta
+  FileAttachment,      // AttachmentType
+  keyof BaseDataEntity // ExcludedFields
+>;
+
+
+
 const createDarkModeTogglePhaseHook = () => {
   return createPhaseHook(
-    idleTimeoutId,
+    idleTimeoutId: 30000,
     {
     name: 'Dark Mode Toggle Phase',
     condition: async () => true,
@@ -37,6 +52,7 @@ const createDarkModeTogglePhaseHook = () => {
       });
       return () => console.log('Cleanup for Dark Mode Toggle Phase');
     },
+    startIdleTimeout: ( timeoutDuration: 0, onTimeout: () => {}) => {},
     phaseType: 'UI',
   });
 }
@@ -44,7 +60,9 @@ const createDarkModeTogglePhaseHook = () => {
 export const darkModeTogglePhaseHook = createDarkModeTogglePhaseHook();
 
 const createNotificationBarPhaseHook = () => {
-  return createPhaseHook({
+  return createPhaseHook(
+    idleTimeoutDuration: 30000,
+    {
     condition: isLoggedIn,
     duration: '10000',
     asyncEffect: async () => {
@@ -63,33 +81,49 @@ const isLoggedIn = () => true;
 export const notificationBarPhaseHook = createNotificationBarPhaseHook();
 
 // Custom hook to fetch and display notifications
-const fetchAndDisplayNotifications = async (addNotification: Function, clearNotifications: Function) => {
+const fetchAndDisplayNotifications = async (
+  addNotification: Function,
+  clearNotifications: Function
+) => {
   try {
-    const notifications = await fetchData('notifications');
+    const id 
+    const notificationsResponse = await fetchData('notifications');
+
+    // Safely access the data array
+    const notifications = notificationsResponse?.data ?? [];
+
     if (notifications.length > 0) {
-      notifications.forEach((notification: NotificationData) => {
+      notifications.forEach((notification: DefaultNotificationData) => {
         displayNotification(notification, addNotification);
       });
     } else {
-      displayNotification({
-        data: { message: '' },
-        id: '',
-        message: '',
-        content: '',
-        type: NotificationTypeEnum.AccountCreated,
-        sendStatus: 'Error',
-        completionMessageLog: logData,
-        date: new Date(),
-        notificationType: ''
-      }, addNotification);
+      displayNotification(
+        {
+          data: { message: '' },
+          id: '',
+          message: '',
+          content: '',
+          type: NotificationTypeEnum.AccountCreated,
+          sendStatus: 'Error',
+          completionMessageLog: logData,
+          date: new Date(),
+          notificationType: '',
+        },
+        addNotification
+      );
     }
   } catch (error: any) {
     console.error('Error fetching notifications:', error.message);
-    addNotification(NotificationMessagesFactory.createErrorMessage('Failed to fetch notifications'), 'UIError' as NotificationType);
+    addNotification(
+      NotificationMessagesFactory.createErrorMessage(
+        'Failed to fetch notifications'
+      ),
+      'UIError' as NotificationType
+    );
   }
 };
 
-const displayNotification = (notification: NotificationData, addNotification: Function) => {
+const displayNotification = (notification: DefaultNotificationData, addNotification: Function) => {
   const message = notification.data?.message;
   const type = message ? 'info' : 'error';
 const defaultMessage = message || NOTIFICATION_MESSAGES.UI.NO_NOTIFICATIONS_DEFAULT;

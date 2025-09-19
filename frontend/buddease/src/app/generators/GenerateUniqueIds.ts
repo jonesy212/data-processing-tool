@@ -6,8 +6,8 @@ import { useMeta } from "@/app/configs/useMeta";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import {
-    NotificationType,
-    useNotification,
+  NotificationType,
+  useNotification,
 } from "@/context/NotificationContext";
 import { DataDetails } from "../components/models/data/Data";
 import { K, Meta, T } from "../components/models/data/dataStoreMethods";
@@ -37,10 +37,83 @@ export function generateUserID(userName: string) {
 }
 
 class UniqueIDGenerator {
+
+
+  static generateId(prefix: string = 'snapshot'): string {
+    return this.generateID(
+      prefix.toUpperCase(),
+      "auto_generated",
+      NotificationTypeEnum.System
+    );
+  }
   static generateSnapshoItemID(arg0: string): string {
     return `${arg0}_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
   }
-  
+
+  static generateEnhancedID(
+    prefix: string,
+    entityName: string,
+    notificationType: NotificationTypeEnum,
+    options?: {
+      customId?: string;
+      timestamp?: Date;
+      includeRandom?: boolean;
+      metadata?: Record<string, any>;
+      // Your existing parameters
+      id?: string;
+      title?: string;
+      chatThreadName?: string;
+      chatMessageId?: string;
+      chatThreadId?: string;
+      dataDetails?: DataDetails<T, K>;
+      generatorType?: string;
+    }
+  ): string {
+    const timestamp = options?.timestamp || new Date();
+
+    // Generate the ID using your existing logic
+    const generatedId = this.generateID(
+      prefix,
+      entityName,
+      notificationType,
+      options?.customId || options?.id,
+      options?.title,
+      options?.chatThreadName,
+      options?.chatMessageId,
+      options?.chatThreadId,
+      options?.dataDetails,
+      options?.generatorType
+    );
+
+
+    // Notify the system about the ID generation
+    this.notifyFormatted(
+      generatedId,
+      `Generated ID: ${generatedId}`,
+      {
+        prefix,
+        entityName,
+        notificationType,
+        timestamp,
+        metadata: options?.metadata,
+        // Include all options for debugging
+        generationOptions: options
+      },
+      timestamp,
+      NotificationTypeEnum.GeneratedID,
+      notificationType,
+      options?.metadata ? {
+        additionalOptions: [JSON.stringify({
+          metadata: options.metadata,
+          options: options
+        })]
+      } : undefined
+    );
+    return generatedId;
+  }
+
+
+
   private static notifyFormatted(
     id: string,
     message: string,
@@ -67,7 +140,6 @@ class UniqueIDGenerator {
     );
   }
 
-
   static generateVersionID(versionNumber: string): string {
     return this.generateID(
       "VER",
@@ -76,7 +148,7 @@ class UniqueIDGenerator {
     );
   }
 
-  
+
   static generateSnapshotID(): string {
     return UniqueIDGenerator.generateID(
       "SNP",
@@ -109,8 +181,8 @@ class UniqueIDGenerator {
   static generateSnapshotIDWithCategory(category: string): string {
     const timestamp = Date.now(); // Get the current timestamp
     const uniqueID = UniqueIDGenerator.generateID(
-      "SNP", 
-      category, 
+      "SNP",
+      category,
       NotificationTypeEnum.GeneratedID
     );
 
@@ -125,7 +197,7 @@ class UniqueIDGenerator {
     callback?: () => void
   ): string {
     const notificationID = `${notificationType}_${notification.message.id}_${date.getTime()}`;
-    
+
     notify(
       notificationID,                        // id: string
       `Generated notification ID: ${notificationID}`, // content: string
@@ -140,9 +212,9 @@ class UniqueIDGenerator {
           version: notification.version
         }
       },
-      notification.userName                
+      notification.userName
     );
-    
+
     if (callback) callback();
     return notificationID;
   }
@@ -459,7 +531,7 @@ class UniqueIDGenerator {
     const randomSuffix = Math.floor(Math.random() * 1000); // Optional random suffix
     return `ver_${timestamp}_${randomSuffix}`;
   }
-  
+
   static generateIDForCache(categoryName?: string, userName?: string): string {
     // Use category name if provided; otherwise, fallback to userName
     const baseID = categoryName ? `category_${categoryName}` : userName ? `user_${userName}` : `default_id`;
@@ -472,19 +544,19 @@ const { latestVersion = createLatestVersion(), ...rest } = (data as Record<strin
 
 
 // Dynamically set the FetchOptions using properties from the `area` object
-    const options: FetchOptions = {
-      elementId: area.id, // Use `area.id` as the `elementId`
-      listenForResize: true, // Set to true to listen for resize
-      onChange: (dimensions) => {
-        console.log(`Updated dimensions for area "${area.name}":`, dimensions);
-      }
-    };
-  // Call the fetchUserAreaDimensions function using the dynamically created options
-  const areaDimensions = fetchUserAreaDimensions(options);
+const options: FetchOptions = {
+  elementId: area.id, // Use `area.id` as the `elementId`
+  listenForResize: true, // Set to true to listen for resize
+  onChange: (dimensions) => {
+    console.log(`Updated dimensions for area "${area.name}":`, dimensions);
+  }
+};
+// Call the fetchUserAreaDimensions function using the dynamically created options
+const areaDimensions = fetchUserAreaDimensions(options);
 
-  // Use `useMetadata` with appropriate type arguments for UnifiedMetaDataOptions
-  const currentMetadata: UnifiedMetadata<T, K, StructuredMetadata<T, K>> = 
-    useMetadata<T, K, Meta>({ area: 'phase-area' });
+// Use `useMetadata` with appropriate type arguments for UnifiedMetaDataOptions
+const currentMetadata: UnifiedMetadata<T, K, StructuredMetadata<T, K>> =
+  useMetadata<T, K, Meta>({ area: 'phase-area' });
 
 
 
@@ -508,7 +580,7 @@ const videoDataDetails: DataDetails<T, K> = {
   currentMeta: currentMeta,
   currentMetadata: currentMetadata,
   date: new Date()
-};export default UniqueIDGenerator;
+}; export default UniqueIDGenerator;
 
 const videoDetailsString = JSON.stringify(videoDataDetails);
 

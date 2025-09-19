@@ -1,6 +1,6 @@
 // TrackerService.ts
 import { DocumentData } from "../../documents/DocumentBuilder";
-import { Tracker } from "./Tracker";
+import  Tracker from "./Tracker";
 
 class TrackerService {
   private trackers: Tracker[] = [];
@@ -17,10 +17,9 @@ class TrackerService {
     return this.trackers.find((tracker) => tracker.getName() === name);
   }
 
-  // Add more methods as needed
-
+  
   // Method to initiate tracking for all trackers
-  startTrackingAll(file: DocumentData): void {
+  startTrackingAll(file: DocumentData<T, K, Meta, ExcludedFields>): void {
     this.trackers.forEach((tracker: Tracker) => {
       tracker.trackFileChanges(file);
       tracker.trackFolderChanges();

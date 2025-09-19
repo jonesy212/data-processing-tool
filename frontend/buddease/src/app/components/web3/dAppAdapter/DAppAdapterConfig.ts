@@ -11,6 +11,7 @@ import { Project } from "../../projects/Project";
 import { UserRole } from "./UserRole";
 import { Meta } from "@/app/components/models/data/dataStoreMethods";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/configs/BaseConfig";
+import { Attachment } from '@/components/documents/Attachment/attachment';
 
 // FLUENCE_API_KEY EXPORT
 export const fluenceApiKey = process.env.FLUENCE_API_KEY;
@@ -19,8 +20,9 @@ export interface DappProps<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  > {
+> {
   // General props
   appName: string;
   appVersion: string;
@@ -139,11 +141,22 @@ export interface DappProps<
   // Additional props as needed
 }
 
+
 export interface DAppAdapterConfig<
-  T extends DappProps<BaseDataEntity> = DappProps<BaseDataEntity>,  // Use your default
+  T extends DappProps<
+    BaseDataEntity,                            // T
+    BaseDataEntity,                            // K
+    DefaultMeta<BaseDataEntity, BaseDataEntity>, // Meta
+    Attachment,                                // AttachmentType
+    DefaultExcludedFields<BaseDataEntity>      // ExcludedFields
+  > = DappProps<
+    BaseDataEntity,
+    BaseDataEntity,
+    DefaultMeta<BaseDataEntity, BaseDataEntity>,
+    Attachment,
+    DefaultExcludedFields<BaseDataEntity>
+  >,
   K = Extract<T, BaseData<any>>
-  // Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  // ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
   // Common properties for DAppAdapter configuration
   appName: string;

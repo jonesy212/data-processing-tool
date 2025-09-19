@@ -23,13 +23,27 @@ import { Attendee } from "./Attendee";
 import { data } from '@/app/components/snapshots/SnapshotWithCriteria';
 import { T, K } from "@/app/components/models/data/dataStoreMethods";
 import { Attachment } from '../documents/Attachment/attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/configs/BaseConfig';
 
+
+type CalendarEventEntity = CalendarEvent<
+  BaseDataEntity,                              // T
+  BaseDataEntity,                              // K
+  DefaultMeta<BaseDataEntity, BaseDataEntity>, // Meta
+  DefaultExcludedFields<BaseDataEntity>        // ExcludedFields
+>;
 
 interface CalendarEvent<
-  T extends  BaseData<any> = BaseData,
-  K extends T = T>
-  extends CommonEvent<T, K, Meta, ExcludedFields>,
-    CommonData<T, K> {
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+>
+  extends CommonEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+  {
   id: string;
   title: string;
   content: string;
@@ -75,17 +89,16 @@ interface CalendarEvent<
   metadata?: UnifiedMetadata<T, K>
   getSnapshotStoreData?: () => Promise<CalendarEventWithCriteria[]> ;
 
-  
-  getData?: () => Promise<
-    Snapshot<T, K>
-  >;
+  getData?: () => Promise<Snapshot<T, K, Meta, ExcludedFields>>;
 
-  then?: <
-    T extends BaseData<any>,
+  then?: <  
+    T extends BaseDataEntity, 
     K extends T = T,
-    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-    callback: (newData: Snapshot<T, K>) => void
-  ) => Snapshot<T, K> | undefined;
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  >(
+    callback: (newData: Snapshot<T, K, Meta, ExcludedFields>) => void
+  ) => Snapshot<T, K, Meta, ExcludedFields> | undefined;
 }
 
 // Destructure `latestVersion` with a default value
@@ -94,7 +107,8 @@ const area = fetchUserAreaDimensions().toString()
 const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
 const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
 
-const calendarEvent: CalendarEvent = {
+
+const calendarEvent: CalendarEventEntity = {
   date: undefined,
   meta: undefined,
   rsvpStatus: "notResponded",

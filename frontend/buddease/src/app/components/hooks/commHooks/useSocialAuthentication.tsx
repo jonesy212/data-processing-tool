@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
-import { useNotification } from './useNotification';
+import { useNotification } from '@/context/NotificationContext';
 
 const useSocialAuthentication = () => {
   const [socialAuthProviders, setSocialAuthProviders] = useState<string[]>([]);

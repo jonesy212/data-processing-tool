@@ -1,6 +1,13 @@
 // Permission.ts
 
+// Base interface WITHOUT index signature
 interface BasePermissions {
+  userId: string;
+  permissions: UserPermissions;
+  rolePermissions?: Permissions; 
+  permissionType: 'read' | 'write';
+  share?: boolean;
+  execute?: boolean;
   canView?: boolean;
   canEdit?: boolean;
   canDelete?: boolean;
@@ -9,14 +16,9 @@ interface BasePermissions {
   delete?: boolean;
 }
 
-interface Permission {
-  userId: string;
-  permissions: UserPermissions; // Category-based
-  rolePermissions?: Permissions; 
-  permissionType: 'read' | 'write';
-  share?: boolean;
-  execute?: boolean;
-  [key: string]: any;
+// Extended interface WITH index signature
+interface Permission extends BasePermissions {
+  [key: string]: any; // Flexible additional properties
 }
 
 interface EncryptionSetting {
@@ -170,17 +172,29 @@ interface UserPermissions {
 
 
 const userBoardPermissions: BoardPermissions = {
+  // REQUIRED properties from BasePermission
+  userId: 'current-user-id', // Add actual user ID
+  permissions: {}, // Add actual UserPermissions object
+  permissionType: 'read', // or 'write'
+  
+  // Your existing optional properties
   canView: true,
   canEdit: true,
   canDelete: false,
   canAddItems: true,
   assignedBoardItems: true,
   assignedBoardColumns: false,
-  // Add more properties as needed
+  
+  // Other optional properties from BasePermission
+  share: false,
+  execute: false,
+  read: true,
+  write: true,
+  delete: false
 };
 
 
 
 
+export type { BasePermissions, DocumentEditingPermissions, EncryptionSetting, Permission, PrivacyCompliance, UserPermissions };
 
-export type { EncryptionSetting, Permission, PrivacyCompliance, UserPermissions, BasePermissions, DocumentEditingPermissions };

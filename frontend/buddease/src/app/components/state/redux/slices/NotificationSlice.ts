@@ -4,12 +4,39 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import { WritableDraft } from "../ReducerGenerator";
 import { RootState } from "./RootSlice";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
+
+
+interface NotificationEntity extends BaseDataEntity {
+  id: string;
+  message: string;
+  read?: boolean;
+  timestamp?: Date;
+  type?: string;
+}
+
+type NotificationK = NotificationEntity;
+type NotificationMeta = DefaultMeta<NotificationEntity, NotificationK>;
+type NotificationExcludedFields = DefaultExcludedFields<NotificationEntity>;
+type AppNotification = NotificationData<
+  NotificationEntity,
+  NotificationK,
+  NotificationMeta,
+  Attachment,
+  NotificationExcludedFields
+>;
 
 export interface NotificationState {
-  notifications: NotificationData[];
+  notifications: NotificationData<
+    NotificationEntity,
+    NotificationK,
+    NotificationMeta,
+    Attachment,
+    NotificationExcludedFields
+  >[];
   loading: boolean;
   error: string | null;
-  
 }
 
 const initialState: NotificationState = {
@@ -30,14 +57,18 @@ const initialNotificationState: NotificationState = {
 
 export const useNotificationManagerSlice = createSlice({
   name: "notification",
-  initialState,
+  initialState: {
+    notifications: [] as AppNotification[],
+    loading: false,
+    error: null as string | null,
+  },
   reducers: {
     fetchNotificationsStart(state) {
       state.loading = true;
       state.error = null;
     },
 
-    fetchNotificationsSuccess(state, action: PayloadAction<WritableDraft<NotificationData>[]>) {
+    fetchNotificationsSuccess(state, action: PayloadAction<WritableDraft<AppNotification>[]>) {
       state.loading = false;
       state.notifications = action.payload;
     },
@@ -47,13 +78,14 @@ export const useNotificationManagerSlice = createSlice({
       state.error = action.payload;
     },
 
-    addNotification(state, action: PayloadAction<WritableDraft<NotificationData>>) {
+    addNotification(state, action: PayloadAction<WritableDraft<AppNotification>>
+) {
       state.notifications.push(action.payload);
     },
 
     removeNotification(state, action: PayloadAction<string>) {
       state.notifications = state.notifications.filter(
-        (notification) => notification.id !== action.payload
+       (notification: AppNotification) => notification.id !== action.payload
       );
     },
 

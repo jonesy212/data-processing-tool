@@ -30,8 +30,6 @@ import { Todo } from "../todos/Todo";
 import { User } from "../users/User";
 
 
-
-
 export interface TodoType {
   id: string;                  // Unique identifier for the todo
   title: string;               // Title of the todo
@@ -89,26 +87,24 @@ export interface SnapshotStoreType<T> {
 
 
 
-interface BaseResponseType<
-  T extends BaseData<any>,
+interface YourSettingsResponseType<
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> {
-  calendarEvents: CalendarEvent[];
-  todos: Todo<T, K, Meta>[]; // Assuming Todo is a type/interface for todos
-  tasks: Task<T, K, Meta>[];
-  snapshotStores: SnapshotStore<SnapshotStoreUnion<T>, K>[];
-  currentPhase: Phase | null;
-  comment: string;
-  securityStamp?: string | null | undefined;
-  // Add any other shared properties
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends Settings, YourResponseType<T, K, Meta, AttachmentType, ExcludedFields> {
+  calendarEventTypes: CalendarEventType[];
+  todoTypes: TodoType[];
+  taskTypes: TaskType[];
+  snapshotStoreTypes: SnapshotStoreType<T, K, Meta, AttachmentType, ExcludedFields>[];
 }
 
 
 interface YourSettingsResponseType<
-T extends BaseData<any>, 
+T extends BaseDataEntity, 
 K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > extends Settings, YourResponseType<T, K, Meta>
     //, 
 // Omit<YourResponseType, 'calendarEvents' | 'todos' | 'tasks' | 'snapshotStores'> 
@@ -123,48 +119,57 @@ K extends T = T,
 
 
 type UserDataResponseType<
-  T extends BaseData<any>, 
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> = User & BaseResponseType<T, K, Meta> & YourSettingsResponseType<T, K, Meta>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> = User &
+  BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields> &
+  YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields>;
 
 
 // Define the structure of YourResponseType based on the actual response from the backend
 interface YourResponseType<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> extends Partial<Snapshot<T, K, Meta, never>>, 
-  BaseResponseType<T, K, Meta>,
-  DataWithComment<T>,
-  SearchNotesResponse {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields>>,
+          BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields>,
+          DataWithComment<T, K, Meta, AttachmentType, ExcludedFields>,
+          SearchNotesResponse {
   id?: string;
-  forEach?: (arg0: (notification: import("../support/NofiticationsSlice").NotificationData<T, K, Meta>) => void) => void;
+  forEach?: (arg0: (notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields>) => void) => void;
   length?: number;
-  // pageNumber: number
-  calendarEvents: CalendarEvent[]; // Assuming CalendarEvent is a type/interface for calendar events
-  todos: Todo<T, K, Meta>[]; // Assuming Todo is a type/interface for todos
-  tasks: Task<T, K, Meta>[]; // Assuming Task is a type/interface for tasks
-  snapshotStores: SnapshotStore<SnapshotStoreUnion<T>, K>[]
-  currentPhase: Phase | null; // Assuming a string representing the current project phase
-  comment: string; // Additional comment field
-  excludedData?: ExcludedFields<T, keyof T>; 
-  // Add field from RootStores
+  calendarEvents: CalendarEvent[];
+  todos: Todo<T, K, Meta, AttachmentType, ExcludedFields>[];
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields>[];
+  snapshotStores: SnapshotStore<SnapshotStoreUnion<T, K, Meta, AttachmentType, ExcludedFields>, K, Meta, AttachmentType, ExcludedFields>[];
+  currentPhase: Phase | null;
+  comment: string;
+  excludedData?: ExcludedFields;
+  
+  // Root stores
   browserCheckStore: BrowserCheckStore;
   trackerStore: TrackerStore;
-  todoStore: TodoManagerStore<T, K>;
-  taskManagerStore: TaskManagerStore;
+  todoStore: TodoManagerStore<T, K, Meta, AttachmentType, ExcludedFields>;
+  taskManagerStore: TaskManagerStore<T, K, Meta, AttachmentType, ExcludedFields>;
   iconStore: IconStore;
   calendarStore: CalendarManagerStore;
+
   prototype?: any;
   browsers?: any;
   endpoints: NestedEndpoints;
   highlights: HighlightEvent[];
-  data: InitializedData<T, K>;
+
+  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields>;
+
   projectInfo?: {
     id: number;
-    projectName: Project["name"];
-    description: Project["description"];
+    projectName: Project<T, K, Meta, AttachmentType, ExcludedFields>["name"];
+    description: Project<T, K, Meta, AttachmentType, ExcludedFields>["description"];
     teamMembers: Team["members"];
     exchange: Exchange;
     communication: {
@@ -177,7 +182,6 @@ interface YourResponseType<
       fileSharing: boolean;
       realTimeEditing: boolean;
     };
-    // Additional properties
     metadata: {
       createdBy: string;
       createdAt: Date;
@@ -186,11 +190,9 @@ interface YourResponseType<
     };
     exchangeData: ExchangeData[];
     averagePrice: number;
-    
   };
-  analysisResults?: string | DataAnalysisResult<T>[];
-  // Add other properties if necessary
-}
 
+  analysisResults?: string | DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields>[];
+}
 export type { BaseResponseType, UserDataResponseType, YourResponseType, YourSettingsResponseType };
 

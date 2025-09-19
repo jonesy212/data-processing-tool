@@ -5,6 +5,7 @@ import { Action, Dispatch, ThunkAction } from "@reduxjs/toolkit";
 import React from "react";
 import { useDispatch } from "react-redux";
 import { TaskActions } from "../actions/TaskActions";
+import { NotificationType, NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
 import CryptoTransaction from "../crypto/CryptoTransaction";
 import { ContentPost } from "../models/content/ContentPost";
 import { NotificationPosition } from '../models/data/StatusType';
@@ -26,16 +27,17 @@ import { TaskState } from "../state/redux/slices/TaskSlice";
 import { YearInfo } from "./CalendarYear";
 import { MonthInfo } from "./Month";
 
-import useNotification from "@/context/NotificationContext";
+import { useNotification } from "@/context/NotificationContext";
 import { updateTaskDetails } from "../state/redux/slices/ContentSlice";
-
+import { TaskCollection } from "@/app/components/snapshots/SnapshotActions"
 const {notify} = useNotification;
+
 interface MonthViewProps extends CommonCalendarProps {
   selectedProject: (state: RootState, projectId: string) => Project | null;
   month: MonthInfo[]; // Add month prop
   year: YearInfo[]; // Add year prop
 
-  tasks: Task[];
+  tasks: TaskCollection; 
   events: any[];
   milestones: any[];
   projectId: string; // Add projectId prop
@@ -62,33 +64,33 @@ const MonthView: React.FC<MonthViewProps> = ({
     ? selectedProject(state, projectId)
     : null; // Call the function to get the Project object if selectedProject is not null
 
-  const handleTaskClick = (task: Task) => {
+  const handleTaskClick = (task: TaskEntity) => {
     // Handle task click
     alert(`Task Clicked: ${task.title}`);
     console.log("Task clicked:", task);
   };
 
-  const handleTaskDoubleClick = (task: Task) => {
+  const handleTaskDoubleClick = (task: TaskEntity) => {
     // Handle task double click
     alert(`Task Double Clicked: ${task.title}`);
     console.log("Task double-clicked:", task);
   };
 
-  const handleonTaskContextMenu = (task: Task, event: React.MouseEvent) => {
+  const handleonTaskContextMenu = (task: TaskEntity, event: React.MouseEvent) => {
     // Handle task context menu
     event.preventDefault(); // Prevent the default context menu
     alert(`Task Context Menu: ${task.title}`);
     console.log("Task context menu:", task);
   };
 
-  const handleTaskContextMenu = (task: Task, event: React.MouseEvent) => {
+  const handleTaskContextMenu = (task: TaskEntity, event: React.MouseEvent) => {
     // Handle task context menu
     event.preventDefault(); // Prevent the default context menu
     alert(`Task Context Menu: ${task.title}`);
     console.log("Task context menu:", task);
   };
 
-  const handleTaskDragStart = (task: Task) => {
+  const handleTaskDragStart = (task: TaskEntity) => {
     // Handle task drag start
     console.log(task);
   };
@@ -147,14 +149,14 @@ const updateTaskPosition = (
     payload: { taskId, newPosition },
   });
 
-  const onTaskResize = (task: Task, newSize: number) => {
+  const onTaskResize = (task: TaskEntity, newSize: number) => {
     // Handle task resize
     console.log(task, newSize);
     dispatch(resizeTask({ task, newSize }));
   };
 
   // handleOnTaskChange function logic
-  const handleOnTaskChange = (task: Task, updatedDetails: Task) => {
+  const handleOnTaskChange = (task: TaskEntity, updatedDetails: Task) => {
     // Implement logic for handling task change
     console.log("Task changed:", task);
     console.log("Updated details:", updatedDetails);
@@ -168,7 +170,7 @@ const updateTaskPosition = (
 
 
 
-  const handleOnTaskDrop = (task: Task, newPosition: { [key: string]: number }) => {
+  const handleOnTaskDrop = (task: TaskEntity, newPosition: { [key: string]: number }) => {
     const dispatch = useDispatch();
   
     // Implement logic for handling task drop
@@ -194,14 +196,14 @@ const updateTaskPosition = (
     console.log("Project clicked:", project);
   };
 
-  const handleTaskCreate = (task: Task) => {
+  const handleTaskCreate = (task: TaskEntity) => {
     alert(`Task Created: ${task.title}`);
     console.log("Task created:", task);
     dispatch(TaskActions.add(task)); // Dispatch an action to add the task to the store
   };
 
   const handleTaskResize = (
-    task: Task,
+    task: TaskEntity,
     newSize: number,
     startDate: Date,
     endDate: Date
@@ -226,7 +228,7 @@ const updateTaskPosition = (
   };
   
   // Example of updateTaskDates action creator and reducer
-  const updateTaskDates = (payload: { task: Task; startDate: Date; endDate: Date }) => ({
+  const updateTaskDates = (payload: { task: TaskEntity; startDate: Date; endDate: Date }) => ({
     type: 'UPDATE_TASK_DATES',
     payload
   });
@@ -277,7 +279,7 @@ const tasksReducer = (state: TaskState = initialState, action: { type: string; p
 };
   
   const handleTaskDrop = (
-    task: Task,
+    task: TaskEntity,
     newPosition: { startDate: Date; endDate: Date }
   ) => {
     console.log(`Task Dropped: ${task.title}`, newPosition);
@@ -290,60 +292,60 @@ const tasksReducer = (state: TaskState = initialState, action: { type: string; p
     );
   };
 
-  const handleTaskChange = (task: Task, updatedProperties: Partial<Task>) => {
+  const handleTaskChange = (task: TaskEntity, updatedProperties: Partial<Task>) => {
     console.log(`Task Changed: ${task.title}`, updatedProperties);
     dispatch(updateTask({ ...task, ...updatedProperties }));
   };
 
-  const handleOnTaskCreate = (task: Task) => {
+  const handleOnTaskCreate = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskDelete = (task: Task) => {
+  const handleOnTaskDelete = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskTitleChange = (task: Task) => {
+  const handleOnTaskTitleChange = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskStatusChange = (task: Task) => {
+  const handleOnTaskStatusChange = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskProgressChange = (task: Task) => {
+  const handleOnTaskProgressChange = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskDependencyChange = (task: Task) => {
+  const handleOnTaskDependencyChange = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskFilterChange = (task: Task) => {
+  const handleOnTaskFilterChange = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskLabelChange = (task: Task) => {
+  const handleOnTaskLabelChange = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskParentChange = (task: Task) => {
+  const handleOnTaskParentChange = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskExpandedChange = (task: Task) => {
+  const handleOnTaskExpandedChange = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskLinkAdd = (task: Task) => {
+  const handleOnTaskLinkAdd = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskLinkRemove = (task: Task) => {
+  const handleOnTaskLinkRemove = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskDependencyAdd = (task: Task) => {
+  const handleOnTaskDependencyAdd = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskDependencyRemove = (task: Task) => {
+  const handleOnTaskDependencyRemove = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskProgressAdd = (task: Task) => {
+  const handleOnTaskProgressAdd = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskProgressRemove = (task: Task) => {
+  const handleOnTaskProgressRemove = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
-  const handleOnTaskLabelAdd = (task: Task) => {
+  const handleOnTaskLabelAdd = (task: TaskEntity) => {
     throw new Error("Function not implemented.");
   };
 

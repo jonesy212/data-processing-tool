@@ -14,33 +14,39 @@ import { Project } from "../../projects/Project";
 import { StateType } from "../../typings/StateType";
 import { User, VisualizationData } from "../../users/User";
 import { WritableDraft } from "../redux/ReducerGenerator";
+import { DefaultMeta, DefaultExcludedFields } from "@/app/configs/BaseConfig";
+import { BaseDataEntity } from "../../snapshots/ValidationRule";
 // Define the interface for ProjectManagerStore
 
 const dispatch = useDispatch();
-export interface ProjectManagerStore {
-  project: Project | null;
-  projects: Project[];
-  currentProject: Project | null;
+export interface ProjectManagerStore<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> {
+  project: Project<T, K, Meta, ExcludedFields> | null;
+  projects: Project<T, K, Meta, ExcludedFields>[];
+  currentProject: Project<T, K, Meta, ExcludedFields> | null;
   loading: boolean;
   error: string | null;
 
-  // Add methods and properties as needed for managing projects
   fetchProjects: () => void;
-  addProject: (project: Project) => void;
-  updateProject: (projectId: string, updatedProject: Project) => void;
+  addProject: (project: Project<T, K, Meta, ExcludedFields>) => void;
+  updateProject: (projectId: string, updatedProject: Project<T, K, Meta, ExcludedFields>) => void;
   deleteProject: (projectId: string) => void;
-  assignTaskToProjectInAPI: (projectId: string, taskId: Task) => void;
+
+  assignTaskToProjectInAPI: (projectId: string, task: Task<T, K, Meta, ExcludedFields>) => void;
   assignTaskToIdeationPhaseAPI: (
     projectId: string,
-    taskId: Task,
+    task: Task<T, K, Meta, ExcludedFields>,
     phaseId: string
   ) => void;
   assignTaskToCurrentUser: (
     projectId: string,
-    taskId: Task,
+    task: Task<T, K, Meta, ExcludedFields>,
     assignedTo: WritableDraft<User>
   ) => void;
-  
 }
 
 

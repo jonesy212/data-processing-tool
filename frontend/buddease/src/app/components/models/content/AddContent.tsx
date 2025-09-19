@@ -1,39 +1,58 @@
 // AddContent.tsx
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from "@/app/components/models/data/Data";
 
-import ContentItemComponent, { ContentItem } from '@/app/components/models/content/ContentItem';
-import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
+import ContentItemComponent, {
+  ContentItem,
+} from "@/app/components/models/content/ContentItem";
+import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { TaskMetadata } from '@/app/configs/database/MetaDataOptions';
+import { TaskMetadata } from "@/app/configs/database/MetaDataOptions";
 import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
 import { Persona } from "@/app/pages/personas/Persona";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import React, { FormEvent, useState } from "react";
-import { Category } from '../../libraries/categories/generateCategoryProperties';
-import { CustomSnapshotData, ItemUnion, SnapshotWithCriteria } from '../../snapshots';
+import { Category } from "../../libraries/categories/generateCategoryProperties";
+import {
+  CustomSnapshotData,
+  ItemUnion,
+  SnapshotWithCriteria,
+} from "../../snapshots";
 import UserRoles from "../../users/UserRoles";
-import { StatusType } from '../data/StatusType';
-import { TaskData } from '../tasks/Task';
+import { StatusType } from "../data/StatusType";
+import { TaskData } from "../tasks/Task";
 import ContentDetailsListItem from "./ContentDetailsListItem";
 import ContentToolbar from "./ContentToolbar";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import {
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta,
+} from "@/app/configs/BaseConfig";
 
 interface Content<
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
- > extends SharedMetadata<T, K> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string | number | undefined;
   title: string;
   description: string;
-  subscriberId: string,
-  category:  Category | undefined,
-  categoryProperties: string | CategoryProperties | undefined,
-  timestamp: string | number | Date,
-  length: number,
-  items: ItemUnion[],
-  data: T | SnapshotWithCriteria<T, K> | CustomSnapshotData<T, K, Meta> | null | undefined,
-  contentItems?: ContentItem[]
+  subscriberId: string;
+  category: Category | undefined;
+  categoryProperties: string | CategoryProperties | undefined;
+  timestamp: string | number | Date;
+  length: number;
+  items: ItemUnion[];
+  data:
+    | T
+    | SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    | CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    | null
+    | undefined;
+  contentItems?: ContentItem[];
 }
 
 interface ContentProps {
@@ -44,13 +63,11 @@ interface ContentProps {
   onComplete: () => void;
 }
 
-
 type DefaultContent = Content<BaseData<any>, BaseData<any>>;
 
-
-const AddContent: React.FC<{ onComplete: (content: DefaultContent) => void }> = ({ 
-  onComplete 
-}) => {
+const AddContent: React.FC<{
+  onComplete: (content: DefaultContent) => void;
+}> = ({ onComplete }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -77,7 +94,7 @@ const AddContent: React.FC<{ onComplete: (content: DefaultContent) => void }> = 
       items: [],
       contentItems: [],
       latestVersion: createLatestVersion<BaseData<any>, BaseData<any>>(),
-      schema: {}
+      schema: {},
     };
 
     // Send new content to server or perform other actions
@@ -91,137 +108,124 @@ const AddContent: React.FC<{ onComplete: (content: DefaultContent) => void }> = 
     // Get the selection range
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) return;
-  
+
     // Create a <strong> element to represent bold text
-    const boldElement = document.createElement('strong');
-  
+    const boldElement = document.createElement("strong");
+
     // Surround the selected content with the <strong> element
     const range = selection.getRangeAt(0);
     range.surroundContents(boldElement);
   };
-  
-
-
 
   const handleItalicClick = () => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) return;
-  
+
     // Create an <i> element to represent italic text
-    const italicElement = document.createElement('i');
-  
+    const italicElement = document.createElement("i");
+
     // Surround the selected content with the <i> element
     const range = selection.getRangeAt(0);
     range.surroundContents(italicElement);
   };
-  
+
   const handleUnderlineClick = () => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) return;
-  
+
     // Create a <u> element to represent underline
-    const underlineElement = document.createElement('u');
-  
+    const underlineElement = document.createElement("u");
+
     // Surround the selected content with the <u> element
     const range = selection.getRangeAt(0);
     range.surroundContents(underlineElement);
   };
-  
+
   const handleStrikeThroughClick = () => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) return;
-  
+
     // Create a <strike> element to represent strike-through
-    const strikeThroughElement = document.createElement('strike');
-  
+    const strikeThroughElement = document.createElement("strike");
+
     // Surround the selected content with the <strike> element
     const range = selection.getRangeAt(0);
     range.surroundContents(strikeThroughElement);
   };
-  
-
-
-
 
   const handleHighlightClick = () => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) return;
-  
+
     // Create a <span> element to represent the highlight
-    const highlightSpan = document.createElement('span');
-    highlightSpan.style.backgroundColor = 'yellow';
-  
+    const highlightSpan = document.createElement("span");
+    highlightSpan.style.backgroundColor = "yellow";
+
     // Surround the selected content with the <span> element
     const range = selection.getRangeAt(0);
     range.surroundContents(highlightSpan);
   };
-  
+
   const handleAlignLeftClick = () => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection) return;
-  
+
     // Create a <div> element to represent left alignment
-    const alignmentDiv = document.createElement('div');
-    alignmentDiv.style.textAlign = 'left';
-  
+    const alignmentDiv = document.createElement("div");
+    alignmentDiv.style.textAlign = "left";
+
     // Surround the selected content with the <div> element
     const range = selection.getRangeAt(0);
     range.surroundContents(alignmentDiv);
   };
-  
+
   const handleAlignCenterClick = () => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection) return;
-  
+
     // Create a <div> element to represent center alignment
-    const alignmentDiv = document.createElement('div');
-    alignmentDiv.style.textAlign = 'center';
-  
+    const alignmentDiv = document.createElement("div");
+    alignmentDiv.style.textAlign = "center";
+
     // Surround the selected content with the <div> element
     const range = selection.getRangeAt(0);
     range.surroundContents(alignmentDiv);
   };
-  
-
-
-
-
-
 
   const handleAlignRightClick = () => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection) return;
-  
+
     // Create a <div> element to represent the right alignment
-    const alignmentDiv = document.createElement('div');
-    alignmentDiv.style.textAlign = 'right';
-  
+    const alignmentDiv = document.createElement("div");
+    alignmentDiv.style.textAlign = "right";
+
     // Surround the selected content with the <div> element
     const range = selection.getRangeAt(0);
     range.surroundContents(alignmentDiv);
   };
-  
+
   const handleJustifyClick = () => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection) return;
-  
+
     // Create a <div> element to represent full justification
-    const justificationDiv = document.createElement('div');
-    justificationDiv.style.textAlign = 'justify';
-  
+    const justificationDiv = document.createElement("div");
+    justificationDiv.style.textAlign = "justify";
+
     // Surround the selected content with the <div> element
     const range = selection.getRangeAt(0);
     range.surroundContents(justificationDiv);
   };
-  
+
   const handleBulletListClick = () => {
     // Get the selection range
     const selection = window.getSelection();
@@ -247,59 +251,54 @@ const AddContent: React.FC<{ onComplete: (content: DefaultContent) => void }> = 
     parentNode.innerHTML = unorderedList.outerHTML;
   };
 
-  
-  
-
-
-
   const handleNumberedListClick = () => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection) return;
-  
+
     // Create a new <ol> element
-    const orderedList = document.createElement('ol');
-  
+    const orderedList = document.createElement("ol");
+
     // Get the parent node of the selected range
     const parentNode = selection.anchorNode?.parentNode as HTMLElement;
     if (!parentNode) return;
-  
+
     // Create a new <li> element
-    const listItem = document.createElement('li');
-  
+    const listItem = document.createElement("li");
+
     // Append the selected range to the <li> element
     listItem.appendChild(selection.getRangeAt(0).cloneContents());
-  
+
     // Append the <li> element to the <ol> element
     orderedList.appendChild(listItem);
-  
+
     // Replace the parent node's content with the <ol> element
     parentNode.innerHTML = orderedList.outerHTML;
   };
-  
+
   const handleIndentClick = () => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection) return;
-  
+
     // Create a <div> element to represent the indentation
-    const indentation = document.createElement('div');
-    indentation.style.marginLeft = '20px'; // Adjust the indentation as needed
-  
+    const indentation = document.createElement("div");
+    indentation.style.marginLeft = "20px"; // Adjust the indentation as needed
+
     // Surround the selected content with the <div> element
     const range = selection.getRangeAt(0);
     range.surroundContents(indentation);
   };
-  
+
   const handleOutdentClick = () => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection) return;
-  
+
     // Get the parent node of the selected range
     const parentNode = selection.anchorNode?.parentNode;
     if (!parentNode || !(parentNode instanceof HTMLDivElement)) return;
-  
+
     // Replace the parent node with its content
     const range = document.createRange();
     range.selectNodeContents(parentNode);
@@ -307,49 +306,49 @@ const AddContent: React.FC<{ onComplete: (content: DefaultContent) => void }> = 
     selection.addRange(range);
     parentNode.parentNode?.replaceChild(parentNode.firstChild!, parentNode);
   };
-  
+
   const handleFontColorChange = (color: string) => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) return;
-  
+
     // Create a span element to wrap the selected text
-    const span = document.createElement('span');
+    const span = document.createElement("span");
     span.style.color = color;
-  
+
     // Surround the selected text with the span element
     const range = selection.getRangeAt(0);
     range.surroundContents(span);
   };
-  
+
   const handleHighlightColorChange = (color: string) => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) return;
-  
+
     // Create a span element to wrap the selected text
-    const span = document.createElement('span');
+    const span = document.createElement("span");
     span.style.backgroundColor = color;
-  
+
     // Surround the selected text with the span element
     const range = selection.getRangeAt(0);
     range.surroundContents(span);
   };
-  
+
   const handleFontSizeChange = (fontSize: number) => {
     // Get the selection range
     const selection = window.getSelection();
     if (!selection || selection.isCollapsed) return;
-  
+
     // Create a span element to wrap the selected text
-    const span = document.createElement('span');
+    const span = document.createElement("span");
     span.style.fontSize = `${fontSize}px`;
-  
+
     // Surround the selected text with the span element
     const range = selection.getRangeAt(0);
     range.surroundContents(span);
   };
-  
+
   const handleFontFamilyChange = (fontFamily: string) => {
     // Change the font family of the selected text
     document.execCommand("fontName", false, fontFamily);
@@ -435,13 +434,10 @@ const AddContent: React.FC<{ onComplete: (content: DefaultContent) => void }> = 
               role: UserRoles.Member,
               persona: {} as Persona,
               snapshots: [],
-              token: null
+              token: null,
               // other properties
-              ,
-
-
               avatarUrl: null,
-              createdAt: new Date,
+              createdAt: new Date(),
               updatedAt: undefined,
               isVerified: false,
               isAdmin: false,
@@ -463,7 +459,7 @@ const AddContent: React.FC<{ onComplete: (content: DefaultContent) => void }> = 
               profileVisibility: "",
               profileAccessControl: undefined,
               activityStatus: "",
-              isAuthorized: false
+              isAuthorized: false,
             },
           ],
           analysisResults: [],
@@ -510,11 +506,11 @@ const AddContent: React.FC<{ onComplete: (content: DefaultContent) => void }> = 
               token: null,
               followers: [],
               preferences: {
-                refreshUI: () => {}
+                refreshUI: () => {},
               },
-              
+
               avatarUrl: null,
-              createdAt: new Date,
+              createdAt: new Date(),
               updatedAt: undefined,
               isVerified: false,
               isAdmin: false,
@@ -538,7 +534,7 @@ const AddContent: React.FC<{ onComplete: (content: DefaultContent) => void }> = 
               activityStatus: "",
               isAuthorized: false,
               childIds: [],
-              relatedData: []
+              relatedData: [],
             },
           ],
           analysisResults: [],
@@ -576,9 +572,6 @@ const AddContent: React.FC<{ onComplete: (content: DefaultContent) => void }> = 
 export default AddContent;
 export { taskContent };
 export type { Content, ContentProps };
-
-
-
 
 const taskContent: Content<TaskData, TaskMetadata<T, K, Sub>> = {
   id: "task-001",

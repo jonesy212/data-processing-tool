@@ -17,7 +17,7 @@ const fetchInitialSnapshotData = async  <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
->(): Promise<Snapshot<T, K>[]> => {
+>(): Promise<Snapshot<T, K, Meta, ExcludedFields>[]> => {
   await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate delay of 1 second
 
   const category = "someCategory"; // Define your category
@@ -28,7 +28,7 @@ const fetchInitialSnapshotData = async  <
     {
       id: "1",
       data: null, // or appropriate data
-      initialState: {} as InitializedState<T, K>, // Initialize with an empty object or appropriate state
+      initialState: {} as InitializedState<T, K, Meta, ExcludedFields>, // Initialize with an empty object or appropriate state
       isCore: true,
       initialConfig: {}, // Initialize with your configuration
       removeSubscriber: () => {},
@@ -46,30 +46,30 @@ const fetchInitialSnapshotData = async  <
         snapshotData: T, 
         category: Category, 
         categoryProperties: CategoryProperties | undefined,
-        dataStoreMethods: DataStore<T, K>
-      ): Promise<SnapshotStore<T, K>> => {
+        dataStoreMethods: DataStore<T, K, Meta, ExcludedFields>
+      ): Promise<SnapshotStore<T, K, Meta, ExcludedFields>> => {
         // Implement the logic here
-        return {} as SnapshotStore<T, K>; // Return a Promise that resolves to SnapshotStore<T, K>
+        return {} as SnapshotStore<T, K, Meta, ExcludedFields>; // Return a Promise that resolves to SnapshotStore<T, K, Meta, ExcludedFields>
       },
       getSnapshotItems: () => [],
       defaultSubscribeToSnapshots: () => {},
       notify: () => {},
       notifySubscribers: (
         message: string, 
-        subscribers: Subscriber<T, K>[], 
-        callback: (data: Snapshot<T, BaseData>) => Subscriber<T, K>[],
-        data: Partial<SnapshotStoreConfig<T, any>>
-      ): Subscriber<T, K>[] => {
+        subscribers: Subscriber<T, K, Meta, ExcludedFields>[], 
+        callback: (data: Snapshot<T, BaseData>) => Subscriber<T, K, Meta, ExcludedFields>[],
+        data: Partial<SnapshotStoreConfig<T, K, Meta, ExcludedFields>>
+      ): Subscriber<T, K, Meta, ExcludedFields>[] => {
         // Implement the logic here
-        return []; // Return an array of Subscriber<T, K>
+        return []; // Return an array of Subscriber<T, K, Meta, ExcludedFields>
       },
-      getAllSnapshots: (): Promise<Snapshot<T, K>[]> => {
+      getAllSnapshots: (): Promise<Snapshot<T, K, Meta, ExcludedFields>[]> => {
         // Implement the logic here
-        return Promise.resolve([]); // Return an array of Snapshot<T, K>
+        return Promise.resolve([]); // Return an array of Snapshot<T, K, Meta, ExcludedFields>
       },
       getSubscribers: (): Promise<{
-        subscribers: Subscriber<T, K>[];
-        snapshots: Snapshots<T, K>;
+        subscribers: Subscriber<T, K, Meta, ExcludedFields>[];
+        snapshots: Snapshots<T, K, Meta, ExcludedFields>;
       }> => {
         // Implement the logic here
         return Promise.resolve({ subscribers: [], snapshots: {} }); // Return an object with subscribers and snapshots
@@ -98,21 +98,21 @@ const fetchInitialSnapshotData = async  <
         versionData: [],
         checksum: ""
       },
-      transformSubscriber: (subscriberId: string, sub: Subscriber<T, K>): Subscriber<T, K> => {
+      transformSubscriber: (subscriberId: string, sub: Subscriber<T, K, Meta, ExcludedFields>): Subscriber<T, K, Meta, ExcludedFields> => {
         // Implement the logic here
         return sub; // Return the transformed subscriber
       },
-      transformDelegate: (): Promise<SnapshotStoreConfig<T, K>[]> => {
+      transformDelegate: (): Promise<SnapshotStoreConfig<T, K, Meta, ExcludedFields>[]> => {
         // Implement the logic here
-        return Promise.resolve([]); // Return an array of SnapshotStoreConfig<T, K>
+        return Promise.resolve([]); // Return an array of SnapshotStoreConfig<T, K, Meta, ExcludedFields>
       },
-      initializedState: {} as InitializedState<T, K>,
+      initializedState: {} as InitializedState<T, K, Meta, ExcludedFields>,
       getAllKeys: (): Promise<string[] | undefined> => {
         // Implement the logic here
         return Promise.resolve(undefined); // Return a Promise that resolves to an array of strings or undefined
       },
       getAllValues: () => [],
-      getAllItems: (): Promise<Snapshot<T, K>[] | undefined> | => {},
+      getAllItems: (): Promise<Snapshot<T, K, Meta, ExcludedFields>[] | undefined> | => {},
       getSnapshotEntries: () => [],
       getAllSnapshotEntries: () => [],
       addDataStatus: () => {},
@@ -124,7 +124,7 @@ const fetchInitialSnapshotData = async  <
       addDataSuccess: () => {},
       getDataVersions: async (): Promise<Snapshot<T, K, Meta, never>[] | undefined> => {
         // Implement the logic here
-        return Promise.resolve([]); // Return a Promise that resolves to an array of Snapshot<T, K> or undefined
+        return Promise.resolve([]); // Return a Promise that resolves to an array of Snapshot<T, K, Meta, ExcludedFields> or undefined
       },
       updateDataVersions: () => {},
       getBackendVersion: () => "1.0.0",
@@ -132,7 +132,7 @@ const fetchInitialSnapshotData = async  <
       fetchData: (
          endpoint: string,
          id: number
-      ): Promise<SnapshotStore<T, K>> => {
+      ): Promise<SnapshotStore<T, K, Meta, ExcludedFields>> => {
         
         },
       defaultSubscribeToSnapshot: () => {},
@@ -190,11 +190,11 @@ const fetchInitialSnapshotData = async  <
       takeLatestSnapshot: () => {},
       updateSnapshot: (
         snapshotId: string,
-        data: Map<string, Snapshot<T, K>>,
-        events: Record<string, CalendarManagerStoreClass<T, K>[]>,
-        snapshotStore: SnapshotStore<T, K>,
-        dataItems: RealtimeDataItem[],
-        newData: Snapshot<T, K>,
+        data: Map<string, Snapshot<T, K, Meta, ExcludedFields>>,
+        events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>,
+        snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+        dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
+        newData: Snapshot<T, K, Meta, ExcludedFields>,
         payload: UpdateSnapshotPayload<T>,
         store: SnapshotStore<any, K>
       ) => {},
@@ -245,7 +245,7 @@ const fetchInitialSnapshotData = async  <
       batchUpdateSnapshotsFailure: () => {},
       handleSnapshotSuccess: () => {},
       getSnapshotId: () => "snapshotId",
-      compareSnapshotState: (snapshot1: Snapshot<T, K>| null, snapshot2: Snapshot<T, K>) => true,
+      compareSnapshotState: (snapshot1: Snapshot<T, K, Meta, ExcludedFields>| null, snapshot2: Snapshot<T, K, Meta, ExcludedFields>) => true,
       payload: {},
       dataItems: [],
       newData: {},
@@ -259,10 +259,10 @@ const fetchInitialSnapshotData = async  <
       stores: [],
       getStore: (
         storeId: number,
-        snapshotStore: SnapshotStore<T, K>,
+        snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
         snapshotId: string | null,
-        snapshot: Snapshot<T, K>,
-        snapshotStoreConfig: SnapshotStoreConfig<T, K>,
+        snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+        snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
         type: string,
         event: Event
       ) => {},
@@ -294,4 +294,7 @@ const fetchInitialSnapshotData = async  <
       isDescendantOf: () => false,
     },
     // ... rest of the array elements remain unchanged
-  ];};
+  ];
+};
+
+export { fetchInitialSnapshotData }

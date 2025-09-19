@@ -13,9 +13,9 @@
 
 // // Define the type for the response data
 // interface SnapshotDataResponse<
-//   T extends  BaseData<any>, 
+//   T extends BaseDataEntity, 
 //   K extends T = T> 
-// extends Snapshot<T, K>  {
+// extends Snapshot<T, K, Meta, ExcludedFields>  {
 //   // Define the structure of the response data
 //   // This should match the structure of your snapshot data
 //   // Adjust it according to your actual data structure
@@ -30,11 +30,11 @@
 //   T extends BaseDataEntity,
 //   K extends T = T,
 //   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-//   ): Promise<Snapshot<SnapshotDataResponse<T, K>> | null> => {
+//   ): Promise<Snapshot<SnapshotDataResponse<T, K, Meta, ExcludedFields>> | null> => {
 //   return new Promise(async (resolve, reject) => {
 //     // Define a function to convert RetrievedSnapshot<SnapshotDataResponse> to SnapshotStore<Snapshot<Data, Data>>
-//     const convertToSnapshotStore =  (retrievedSnapshot: RetrievedSnapshot<SnapshotDataResponse<T, K>, any>) => {
-//       const response = await axiosInstance.get<SnapshotDataResponse<T, K>>(SNAPSHOT_DATA_API_URL);
+//     const convertToSnapshotStore =  (retrievedSnapshot: RetrievedSnapshot<SnapshotDataResponse<T, K, Meta, ExcludedFields>, any>) => {
+//       const response = await axiosInstance.get<SnapshotDataResponse<T, K, Meta, ExcludedFields>>(SNAPSHOT_DATA_API_URL);
 //       // Create a new SnapshotStore instance
 //       const snapshotStore = new SnapshotStoreComponent(retrievedSnapshot.id, retrievedSnapshot.timestamp, retrievedSnapshot.category, retrievedSnapshot.data, retrievedSnapshot.callbacks);
 
@@ -42,7 +42,7 @@
 //         // Fetch snapshot data from the API endpoint
 
 //         // Extract the snapshot data from the response
-//         const snapshotData: SnapshotData<SnapshotDataResponse<T, K>> = {
+//         const snapshotData: SnapshotData<SnapshotDataResponse<T, K, Meta, ExcludedFields>> = {
 //           id: response.data.id.toString(), // Ensure id is a string
 //           timestamp: new Date(response.data.timestamp), // Convert timestamp to Date
 //           category: response.data.category,
@@ -213,7 +213,7 @@
 //           batchUpdateSnapshotsFailure: response.data.batchUpdateSnapshotsFailure,
 //           batchTakeSnapshot: response.data.batchTakeSnapshot,
 //           handleSnapshotSuccess: response.data.handleSnapshotSuccess,
-//           [Symbol.iterator]: function* (): IterableIterator<Snapshot<SnapshotDataResponse<T, K>>> {
+//           [Symbol.iterator]: function* (): IterableIterator<Snapshot<SnapshotDataResponse<T, K, Meta, ExcludedFields>>> {
 //             yield this;
 //           },
 //         };
@@ -232,11 +232,11 @@
 
 
 
-const retrievedSnapshot: RetrievedSnapshot<T, K> = {
+const retrievedSnapshot: RetrievedSnapshot<T, K, Meta, ExcludedFields> = {
     id: "snapshot-id", // Example data
     parentId: "parent-id",
     label: "Example Label",
-    responseData: {} as SnapshotDataResponse<T, K>,
+    responseData: {} as SnapshotDataResponse<T, K, Meta, ExcludedFields>,
     // Add other properties as needed
   };
 

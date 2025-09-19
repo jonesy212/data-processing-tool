@@ -19,7 +19,6 @@ const initialState: SecurityEventState = {
 };
 
 
-
 // Async thunk to create a new security event
 export const createEvent = createAsyncThunk(
   'securityEvents/createEvent',

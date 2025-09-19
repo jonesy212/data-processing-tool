@@ -5,10 +5,16 @@ import { SnapshotStoreReference } from '@/app/components/snapshots/SnapshotStore
 import { PriorityTypeEnum } from '../../models/data/StatusType';
 import { AllStatus } from "../../state/stores/DetailsListStore";
 import { AnalysisTypeEnum } from "./AnalysisType";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import { Attachment } from "../../../data_analysis/frontend/buddease/src/app/components/documents/Attachment/attachment";
 
 export interface DataAnalysisResult<
-  T extends  BaseData<any>,
-  K extends T = T
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 > {
   id: string | number; // Unique identifier for the data analysis result
   title: string; // Title of the data analysis result
@@ -24,9 +30,9 @@ export interface DataAnalysisResult<
   sentiment: number,
   recommendations: string[]; // Array of recommendations based on the analysis
   sentimentAnalysis: boolean;
-  phase: Phase<T, K>;
+  phase: Phase<PhaseData<T>, K>;
   priority: PriorityTypeEnum;
-  snapshotStores?: SnapshotStoreReference<T, K>[] | Map<number, SnapshotStore<T, K, Meta>>
+  snapshotStores?: SnapshotStoreReference<T, K>[] | Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   metrics: {
     // Object containing various metrics related to the analysis
     accuracy: number; // Accuracy metric

@@ -70,18 +70,19 @@ export interface AuditEntry<
 
 
 interface AppMetadata<
-  T extends  BaseDataEntity, 
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-> extends SharedTimestamps,
-  SharedStatusFlags,
-  SharedMetadata<T, K> {
-  version?: string | number | Version<T, K> | null;
-  lastModifiedBy?: string;
-  auditLog?: AuditEntry<T, K, Meta>[];
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  createdBy?: string;
+  updatedBy?: string;
+  version?: number;
   tags?: string[];
-  isSyncedWithBlockchain?: boolean;
-  associatedPhase?: string;
+  relatedEntities?: Array<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  customData?: Record<string, any>;
 }
 
 // Version-related properties
@@ -223,46 +224,49 @@ type UnifiedMetadata<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> = UnifiedMetaDataOptions<T, K, Meta, ExcludedFields> & {
-  fileMetadata?: FileMetadata; // Optional file-specific metadata
-  customMetadata?: Record<string, any>; // Optional custom metadata
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & {
+  fileMetadata?: FileMetadata;
+  customMetadata?: Record<string, any>;
   schema?: Record<string, SchemaField>;
   latestVersion?: Pick<VersionData<T, K>, "id" | "versionNumber" | "timestamp" | "author" | "schema">;
   author?: string;
   timestamp?: string | number | Date;
   revisionNotes?: string;
-  transformed?: boolean
+  transformed?: boolean;
 };
 
-// Unified metadata interface with two required type arguments T and K
 interface UnifiedMetaDataOptions<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends
   BaseMetadata<K>,
-  SharedMetadata<T, K, ExcludedFields>,
+  SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   SharedRelationshipData<K>
 {
   timestamp?: string | number | Date | undefined;
   revisionNotes?: string;
-  area: string | undefined; // Area of the app (e.g., 'dashboard', 'profile')
+  area: string | undefined;
   projectId?: number;
-  initialState?: InitializedState<T, K>
-  overrides?: Partial<Omit<Meta, ExcludedFields>>; // Overrides excluding specific keys
-  relatedKeys?: Array<keyof K>; // Optional keys from T related to this metadata
-  metadataEntries: Meta['metadataEntries']; // Include Meta properties directly
-  videoMetadata?: VideoMetadata<T, K>;
+  initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  overrides?: Partial<Omit<Meta, ExcludedFields>>;
+  relatedKeys?: Array<keyof K>;
+  metadataEntries: Meta['metadataEntries'];
+  videoMetadata?: VideoMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   mediaMetadata?: MediaMetadata;
-  projectMetadata?: ProjectMetadata<T, K>;
-  taskMetadata?: TaskMetadata<T, K>;
-  meetingMetadata?: MeetingMetadata;
+  projectMetadata?: ProjectMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  taskMetadata?: TaskMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  meetingMetadata?: MeetingMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   customMediaSession?: CustomMediaSession;
-  phaseMetadata?: PhaseMeta<T, K>;
-  structuredMetadata?: StructuredMetadata<T, K>;
-  mappedSnapshot?: Map<string, Snapshot<T, K, StructuredMetadata<T, K>, ExcludedFields>>;
+  phaseMetadata?: PhaseMeta<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  structuredMetadata?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  mappedSnapshot?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 }
 
 
@@ -417,7 +421,7 @@ function transformProjectToUnifiedMetadata<
       publishedAt: new Date(),
       source: "Generated",
       status: "Active",
-      comments: [{ id: "1", text: "First comment", timestamp: new Date() }], // Assuming a Comment type
+      comments: [{ id: "1", text: "First comment", timestamp: new Date(), author: "author", content: [] }], // Assuming a Comment type
       workspaceName: "Main Workspace",
     }),
     metadataEntries: {
@@ -431,7 +435,7 @@ function transformProjectToUnifiedMetadata<
         description: "A detailed report covering the quarterly performance of the organization.",
         keywords: ["quarterly", "report", "performance", "organization"],
         authors: ["John Doe", "Jane Smith"],
-        contributors: {},
+        contributors: [],
         publisher: "ABC Publishing",
         copyright: "© 2024 ABC Corporation",
         license: "Creative Commons Attribution 4.0 International",
@@ -484,7 +488,9 @@ function transformProjectToUnifiedMetadata<
         versionData: {},
         latestVersion: createLatestVersion<T, K>(),
         history: [],
-        timestamp: new Date()
+        timestamp: new Date(),
+        versions: [], 
+        currentVersionIndex: 0
       },
       getVersionNumber: () => "",
       updateStructureHash: function (): Promise<void> {
@@ -886,7 +892,7 @@ const task: Task<MyDataType, MyDataType> = {
   permissions: [],
   customFields: {},
 
-  timestamp: "",
+  timestamp: new Date(),
   initialState: {} as InitializedState<MyDataType, MyDataType>,
   category: "",
   meta: {} as StructuredMetadata<MyDataType, MyDataType>,
@@ -976,7 +982,7 @@ const { latestVersion = createLatestVersion<T, K>(), ...rest } = data;
 
 // console.log(area);  // Output: "1920x1080"
 // const currentMeta = useMeta<MyDataType, MyDataType>(area)
-const myMetaData: UnifiedMetadata<BaseDataEntity<MyDataType>> = {
+const myMetaData: UnifiedMetadata<BaseDataEntity> = {
   area: '',
   tags: [],
   videoMetadata: dynamicVideoMetadata,

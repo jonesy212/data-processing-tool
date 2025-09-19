@@ -1,18 +1,26 @@
+import { ScheduledData } from "@/app/components/calendar/ScheduledData";
 import { BaseData, Data } from "@/app/components/models/data/Data";
+import { Task } from '@/app/components/models/tasks/Task';
+import { Collaborator } from '@/app/components/models/teams/TeamMembers';
+import { DataAnalysisResult } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisResult";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { NotificationType } from '@/app/context/context/NotificationContext';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { IHydrateResult } from "mobx-persist";
+import operation from "antd/es/transfer/operation";
+import { config } from "process";
 import { FC } from "react";
+import { options } from "sanitize-html";
+import { CreateSnapshotsPayload, Payload } from "../../../server/database/Payload";
 import { DayOfWeekProps } from "../calendar/DayOfWeek";
 import { Month } from "../calendar/Month";
-import { DataAnalysisResult } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisResult";
-import { CreateSnapshotsPayload, Payload } from "../../../server/database/Payload";
 import { Attachment } from "../documents/Attachment/attachment";
 import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
 import { SnapshotManager } from "../hooks/useSnapshotManager";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { Content } from "../models/content/AddContent";
 import ChecklistItem, { ChecklistItemProps } from "../models/data/ChecklistItem";
+import { Comment } from "../models/data/Comments";
 import { NotificationPosition, PriorityTypeEnum, StatusType } from "../models/data/StatusType";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { Progress } from "../models/tracker/ProgressBar";
@@ -21,25 +29,16 @@ import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Callback, SnapshotConfig, SnapshotData, SnapshotItem, SnapshotStoreConfig, SnapshotWithCriteria, SubscriberCollection, TagsRecord } from "../snapshots";
+import { FetchSnapshotPayload } from "../snapshots/FetchSnapshotPayload";
 import { LocalStorageSnapshotStore, Result, Snapshot, Snapshots, SnapshotsArray, UpdateSnapshotPayload } from "../snapshots/LocalStorageSnapshotStore";
 import { ConfigureSnapshotStorePayload } from "../snapshots/SnapshotConfig";
 import SnapshotStore, { initialState } from "../snapshots/SnapshotStore";
+import { InitializedData, InitializedDataStore } from "../snapshots/SnapshotStoreOptions";
 import { CustomComment } from "../state/redux/slices/BlogSlice";
-import { NotificationType } from '@/app/context/context/NotificationContext';
-import { Task } from '@/app/components/models/tasks/Task';
 import { Idea } from "../users/Ideas";
 import { Subscriber } from "../users/Subscriber";
 import { User } from "../users/User";
 import { VideoData } from "../video/Video";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { Comment } from "../models/data/Comments";
-import { InitializedData, InitializedDataStore } from "../snapshots/SnapshotStoreOptions";
-import operation from "antd/es/transfer/operation";
-import { config } from "process";
-import { options } from "sanitize-html";
-import { FetchSnapshotPayload } from "../snapshots/FetchSnapshotPayload";
-import { ScheduledData } from "@/app/components/calendar/ScheduledData";
-import { Collaborator } from '@/app/components/models/teams/TeamMembers'
 
 export type UserAssignee = Pick<User, '_id' | 'id' | 'username' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'avatarUrl'>;
 
@@ -169,7 +168,7 @@ class TodoImpl<
   T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Add constraint for Meta
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > implements Todo<T, K, Meta> {
   _id: string = "";
   id: string = "";

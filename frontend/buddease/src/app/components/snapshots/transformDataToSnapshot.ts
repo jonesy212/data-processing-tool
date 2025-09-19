@@ -1,24 +1,22 @@
 // transformDataToSnapshot.ts
-import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from "@/app/components/snapshots";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { SnapshotConfig, SnapshotStoreConfig } from ".";
 import { CombinedEvents } from "../hooks/useSnapshotManager";
 import { CoreSnapshot } from "./LocalStorageSnapshotStore";
-import { Snapshot } from "@/app/components/snapshots";
 import { SnapshotEvents } from "./SnapshotEvents";
 import { InitializedData } from "./SnapshotStoreOptions";
 
-const transformDataToSnapshot =  <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-  item: CoreSnapshot<T, K>,
-  snapshotConfig: SnapshotConfig<T, K>,
-  snapshotStoreConfig: SnapshotStoreConfig<T, K>
-): Snapshot<T, K> => {
-  const snapshotItem: Snapshot<T, K> = {
+const transformDataToSnapshot =  <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  item: CoreSnapshot<T, K, Meta, ExcludedFields>,
+  snapshotConfig: SnapshotConfig<T, K, Meta, ExcludedFields>,
+  snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, ExcludedFields>
+): Snapshot<T, K, Meta, ExcludedFields> => {
+  const snapshotItem: Snapshot<T, K, Meta, ExcludedFields> = {
     // Core Properties
     id: item.id?.toString() ?? '',
     data: item.data as InitializedData | undefined,
-    initialState: item.initialState as unknown as Snapshot<T, K> | null,
+    initialState: item.initialState as unknown as Snapshot<T, K, Meta, ExcludedFields> | null,
     timestamp: item.timestamp ? new Date(item.timestamp) : new Date(),
     meta: item.meta,
     label: item.label,
@@ -55,7 +53,7 @@ const transformDataToSnapshot =  <T extends  BaseData<any>, K extends T = T, Met
       onSnapshotAdded: item.events?.onSnapshotAdded ?? (() => { }),
       onSnapshotRemoved: item.events?.onSnapshotRemoved ?? (() => { }),
       onSnapshotUpdated: item.events?.onSnapshotUpdated ?? (() => { }),
-      initialConfig: item.events?.initialConfig ?? {} as SnapshotConfig<T, K>,
+      initialConfig: item.events?.initialConfig ?? {} as SnapshotConfig<T, K, Meta, ExcludedFields>,
       removeSubscriber: item.events?.removeSubscriber ?? (() => { }),
       onInitialize: item.events?.onInitialize ?? (() => { }),
       onError: item.events?.onError ?? (() => { }),
@@ -267,21 +265,21 @@ const transformDataToSnapshot =  <T extends  BaseData<any>, K extends T = T, Met
 
 export default transformDataToSnapshot;
 
-function transformToCalendarManagerStoreClassMap<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-  events: (SnapshotEvents<T, K> & CombinedEvents<T, K>) | {}
-): Record<string, CalendarManagerStoreClass<T, K>[]> {
-  const result: Record<string, CalendarManagerStoreClass<T, K>[]> = {};
+function transformToCalendarManagerStoreClassMap<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  events: (SnapshotEvents<T, K, Meta, ExcludedFields> & CombinedEvents<T, K, Meta, ExcludedFields>) | {}
+): Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]> {
+  const result: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]> = {};
 
   // Iterate over each key in the `events` object if it's not an empty object
   if (events && typeof events === 'object' && Object.keys(events).length > 0) {
     Object.keys(events).forEach((key) => {
       const value = events[key as keyof typeof events];
       
-      // Perform a type check to ensure value is of type `CalendarManagerStoreClass<T, K>[]`
+      // Perform a type check to ensure value is of type `CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]`
       if (Array.isArray(value) && value.every(item => item instanceof CalendarManagerStoreClass)) {
-        result[key] = value as CalendarManagerStoreClass<T, K>[];
+        result[key] = value as CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[];
       } else {
-        // Handle cases where the value is not a `CalendarManagerStoreClass<T, K>[]`
+        // Handle cases where the value is not a `CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]`
         result[key] = []; // or handle differently if needed
       }
     });

@@ -1,14 +1,14 @@
 
 // // Sample function to convert snapshotMethods
-// function convertSnapshotMethods<T, K>(
-//   snapshotMethods: SnapshotStoreMethod<T, K>[] | undefined,
-//   snapshot: Snapshot<T, K>,
+// function convertSnapshotMethods<T, K, Meta, ExcludedFields>(
+//   snapshotMethods: SnapshotStoreMethod<T, K, Meta, ExcludedFields>[] | undefined,
+//   snapshot: Snapshot<T, K, Meta, ExcludedFields>,
 //   snapshotId: string,
-//   snapshotData: SnapshotData<T, K>,
-//   snapshotConfig: SnapshotStoreConfig<T, K>,
-//   callback: (snapshotStore: SnapshotStore<T, K>) => Promise<Snapshot<T, K>>,
+//   snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+//   snapshotConfig: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
+//   callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => Promise<Snapshot<T, K, Meta, ExcludedFields>>,
 //   versionHistory: VersionHistory
-// ): Promise<Snapshot<T, K>> {
+// ): Promise<Snapshot<T, K, Meta, ExcludedFields>> {
 //   return new Promise(async (resolve, reject) => {
 //     try {
 //       if (!snapshotMethods) {

@@ -1,10 +1,8 @@
-import { BaseData } from '@/app/components/models/data/Data';
 import { Snapshot } from "@/app/components/snapshots";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { StatusType } from "../models/data/StatusType";
 
 // snapshotDefaults.ts
-function defaultTransformDelegate<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshot: Snapshot<T, K>): Snapshot<T, K> {
+function defaultTransformDelegate<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshot: Snapshot<T, K, Meta, ExcludedFields>): Snapshot<T, K, Meta, ExcludedFields> {
     // Example transformation logic
     // You can modify the snapshot data here, e.g., adding metadata or modifying existing fields.
     snapshot.metadata = {
@@ -14,10 +12,10 @@ function defaultTransformDelegate<T extends  BaseData<any>, K extends T = T, Met
   
     return snapshot;
   }
-  function defaultAddDataStatus<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  function defaultAddDataStatus<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
     id: number,
     status: StatusType | undefined,
-    snapshot: Snapshot<T, K>
+    snapshot: Snapshot<T, K, Meta, ExcludedFields>
   ): void {
     if (!status) {
       console.error(`Status is undefined for ID ${id}.`);
@@ -43,9 +41,9 @@ function defaultTransformDelegate<T extends  BaseData<any>, K extends T = T, Met
 
   
 
-  function defaultRemoveData<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  function defaultRemoveData<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
     id: number,
-    snapshot: Snapshot<T, K>
+    snapshot: Snapshot<T, K, Meta, ExcludedFields>
   ): void {
     if (snapshot.data && snapshot.data instanceof Map) {
       if (snapshot.data.delete(id.toString())) {
@@ -58,10 +56,10 @@ function defaultTransformDelegate<T extends  BaseData<any>, K extends T = T, Met
     }
   }
     
-  function defaultUpdateData<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  function defaultUpdateData<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
     id: number,
-    newData: Snapshot<T, K>,
-    snapshot: Snapshot<T, K>
+    newData: Snapshot<T, K, Meta, ExcludedFields>,
+    snapshot: Snapshot<T, K, Meta, ExcludedFields>
   ): void {
     if (snapshot.data && snapshot.data instanceof Map) {
       if (snapshot.data.has(id.toString())) {
@@ -75,10 +73,10 @@ function defaultTransformDelegate<T extends  BaseData<any>, K extends T = T, Met
     }
   }
 
-  function defaultUpdateDataTitle<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  function defaultUpdateDataTitle<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   id: number,
   title: string,
-  snapshot: Snapshot<T, K>
+  snapshot: Snapshot<T, K, Meta, ExcludedFields>
 ): void {
   if (snapshot.data && snapshot.data instanceof Map) {
     const item = snapshot.data.get(id.toString());
@@ -94,10 +92,10 @@ function defaultTransformDelegate<T extends  BaseData<any>, K extends T = T, Met
 }
 
   
-function defaultUpdateDataDescription<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function defaultUpdateDataDescription<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
     id: number,
     description: string,
-    snapshot: Snapshot<T, K>
+    snapshot: Snapshot<T, K, Meta, ExcludedFields>
   ): void {
     if (snapshot.data && snapshot.data instanceof Map) {
       const item = snapshot.data.get(id.toString());
@@ -114,10 +112,10 @@ function defaultUpdateDataDescription<T extends  BaseData<any>, K extends T = T,
 
   
 
-  function defaultUpdateDataStatus<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  function defaultUpdateDataStatus<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
     id: number,
     status: StatusType | undefined,
-    snapshot: Snapshot<T, K>
+    snapshot: Snapshot<T, K, Meta, ExcludedFields>
   ): void {
     if (!status) {
       console.error(`Status is undefined for ID ${id}.`);
@@ -141,9 +139,9 @@ function defaultUpdateDataDescription<T extends  BaseData<any>, K extends T = T,
   }
 
   
-  function defaultAddDataSuccess<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-    payload: { data: Snapshot<T, K>[] },
-    snapshot: Snapshot<T, K>
+  function defaultAddDataSuccess<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+    payload: { data: Snapshot<T, K, Meta, ExcludedFields>[] },
+    snapshot: Snapshot<T, K, Meta, ExcludedFields>
   ): void {
     if (snapshot.data && snapshot.data instanceof Map) {
       payload.data.forEach(item => {
@@ -162,7 +160,7 @@ function defaultUpdateDataDescription<T extends  BaseData<any>, K extends T = T,
   }
   
   export {
-  defaultAddDataStatus, defaultAddDataSuccess, defaultRemoveData, defaultTransformDelegate, defaultUpdateData, defaultUpdateDataDescription,
-  defaultUpdateDataStatus, defaultUpdateDataTitle
+    defaultAddDataStatus, defaultAddDataSuccess, defaultRemoveData, defaultTransformDelegate, defaultUpdateData, defaultUpdateDataDescription,
+    defaultUpdateDataStatus, defaultUpdateDataTitle
 };
 

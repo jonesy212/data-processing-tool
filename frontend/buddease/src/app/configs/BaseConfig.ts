@@ -16,12 +16,16 @@ import { useMeta } from "./useMeta";
 import { useMetadata } from "./useMetadata";
 import { SharedIdentifiers } from '../components/documents/RelatedProps';
 
-interface BaseDataRoot extends SharedIdentifiers<BaseDataRoot> {
+type BaseDataEntity = BaseDataRoot;
+
+interface BaseDataRoot {
   [key: string]: any;
+  snapshotId?: string | number | null;
+  categoryProperties?: CategoryProperties;
 }
 
-type BaseDataEntity = BaseDataRoot;
-type DefaultMeta<T extends BaseDataEntity, K extends T = T> = StructuredMetadata<T, K, Meta<T, K>, ExcludedFields<T, K>>;
+type DefaultMeta<T extends BaseDataEntity, K extends T = T> = 
+  StructuredMetadata<T, K>;
 type DefaultExcludedFields<T extends BaseDataEntity> = never;
 
 // Utility type for excluding fields
@@ -60,10 +64,8 @@ interface BaseConfig<
   timestamp: string | number | Date | undefined;
   createdBy?: string | undefined;
   tags?: string[] | TagsRecord<T, K> | undefined
-  metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>;
   initialState: InitializedState<T, K>;
   meta: StructuredMetadata<T, K, Meta>;
-  mappedSnapshot: Map<string, Snapshot<T, K, Meta, ExcludedFields>>;
   events: EventManager<T, K>;
 }
 

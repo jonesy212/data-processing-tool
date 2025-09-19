@@ -11,9 +11,9 @@
 // import { Subscriber } from "../users/Subscriber";
 
 // // addToSnapshotList.ts
-// const addToSnapshotList = async  <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-//   snapshotStore: SnapshotStore<T, K>,
-//   subscribers: Subscriber<T, K>[]
+// const addToSnapshotList = async  <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+//   snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+//   subscribers: Subscriber<T, K, Meta, ExcludedFields>[]
 // ) => {
 //   // Logic to handle adding snapshot to the list in your UI
 //   console.log("SnapshotStore:", snapshotStore);
@@ -50,8 +50,8 @@
 //         getAllItems: snapshotStore.getAllItems,
 //         getDelegate: function (context: {
 //           useSimulatedDataSource: boolean;
-//           simulatedDataSource: SnapshotStoreConfig<SnapshotWithCriteria<T, K>, K>[];
-//         }): Promise<SnapshotStoreConfig<SnapshotWithCriteria<T, K>, K>[]> {
+//           simulatedDataSource: SnapshotStoreConfig<SnapshotWithCriteria<T, K, Meta, ExcludedFields>, K>[];
+//         }): Promise<SnapshotStoreConfig<SnapshotWithCriteria<T, K, Meta, ExcludedFields>, K>[]> {
 //           return new Promise((resolve, reject) => {
 //             try {
 //               // Example logic to handle context and simulate data retrieval
@@ -67,41 +67,41 @@
 //             }
 //           });
 //         },
-//         updateDelegate: function (config: SnapshotStoreConfig<T, K>[]): Promise<SnapshotStoreConfig<T, K>[]> {
+//         updateDelegate: function (config: SnapshotStoreConfig<T, K, Meta, ExcludedFields>[]): Promise<SnapshotStoreConfig<T, K, Meta, ExcludedFields>[]> {
 //           throw new Error("Function not implemented.");
 //         },
 
 //         getSnapshot: function (
 //           category: Category | undefined,//           timestamp: any,
 //           id: number,
-//           snapshot: Snapshot<T, K>,
-//           snapshotStore: SnapshotStore<T, K>,
+//           snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+//           snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
 //           data: T)
-//           : Promise<Snapshot<T, K> | undefined> {
+//           : Promise<Snapshot<T, K, Meta, ExcludedFields> | undefined> {
 //           throw new Error("Function not implemented.");
 //         },
 //         getSnapshotContainer: function (
 //           category: Category | undefined,//           timestamp: any,
 //           id: number,
 //           snapshot: Snapshot<BaseData, K>,
-//           snapshotStore: SnapshotStore<T, K>,
-//           data: T): Promise<Snapshot<T, K>[] | undefined> {
+//           snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+//           data: T): Promise<Snapshot<T, K, Meta, ExcludedFields>[] | undefined> {
 //           throw new Error("Function not implemented.");
 //         },
-//         getSnapshotVersions: function (category: symbol | string | Category | undefined, timestamp: any, id: number, snapshot: Snapshot<BaseData, K>, snapshotStore: SnapshotStore<T, K>, data: T): Promise<Snapshot<T, K>[] | undefined> {
+//         getSnapshotVersions: function (category: symbol | string | Category | undefined, timestamp: any, id: number, snapshot: Snapshot<BaseData, K>, snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>, data: T): Promise<Snapshot<T, K, Meta, ExcludedFields>[] | undefined> {
 //           throw new Error("Function not implemented.");
 //         }
 //       } // Provide actual DataStoreMethods
 //     );
 
-//     const snapshot = snapshotResult.snapshot as Snapshot<T, K>; // Type assertion
+//     const snapshot = snapshotResult.snapshot as Snapshot<T, K, Meta, ExcludedFields>; // Type assertion
 
 //     console.log("Snapshot added to list:", snapshot);
 
 //     // Add the snapshot to the list in your UI
 //     // You can use a state management library like React Context or Redux to manage the list
 //     // For example, using React Context:
-//     const [snapshotList, setSnapshotList] = useState<Snapshot<T, K>[]>([]);
+//     const [snapshotList, setSnapshotList] = useState<Snapshot<T, K, Meta, ExcludedFields>[]>([]);
 
 //     setSnapshotList((prevList) => [...prevList, snapshot]);
 //     console.log("Snapshot added to list:", snapshotList);

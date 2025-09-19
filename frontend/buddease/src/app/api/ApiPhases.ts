@@ -1,6 +1,6 @@
 import axios, { AxiosError } from 'axios';
 import { Phase } from '../components/phases/Phase';
-import { NotificationType, useNotification } from '@/context/NotificationContext';
+import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
 import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
 import headersConfig from './headers/HeadersConfig';
@@ -39,7 +39,7 @@ const handleApiErrorAndNotify= (
       errorMessageText,
       null,
       new Date(),
-      "PhaseApiError"  as NotificationType
+      "PhaseApiError"  as NotificationTypeEnum
     );
   }
 }

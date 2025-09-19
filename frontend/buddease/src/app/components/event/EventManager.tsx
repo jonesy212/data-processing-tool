@@ -16,7 +16,10 @@ import {
 } from "../state/redux/slices/EventSlice";
 import { CustomEventExtension } from "./BaseCustomEvent";
 import { defaultEventStore, EventStore } from "./EventStore";
+import { BaseDataEntity, DefaultMeta } from '@/app/configs/BaseConfig';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 
+import { useSecureStoreId } from '@/app/components/utils/useSecureStoreId';
 
 
 // Define the thunk actions
@@ -34,11 +37,15 @@ const fetchEvents = createAsyncThunk<CustomEventExtension[]>(
 );
 
 // Define the type for the callback function
-type SnapshotCallback<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = (snapshot: Snapshot<T, K>) => void;
+type SnapshotCallback<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+> = (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void;
 
 // Define the type for the subscribers
-interface Subscribers<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
-  [event: string]: SnapshotCallback<T, K>[]; // Keys are event names, values are arrays of callback functions
+interface Subscribers<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
+  [event: string]: SnapshotCallback<T, K, Meta, ExcludedFields>[]; // Keys are event names, values are arrays of callback functions
 }
 
 interface EventManagerProps {
@@ -54,26 +61,41 @@ const EventManager: React.FC<EventManagerProps> = ({
   const events = useSelector(selectEvents);
   const loading = useSelector(selectEventLoading);
   const error = useSelector(selectEventError);
- 
+  const snapshotId = UniqueIDGenerator.generateEventID();
+  const storeId = useSecureStoreId()
+
   const [eventStore, setEventStore] = useState<
-    EventStore<CustomEventExtension, any>
-  >(defaultEventStore());
+    EventStore<CustomEventExtension, any> | undefined
+  >(undefined);
 
-  // Effect to fetch events on mount
   useEffect(() => {
-    dispatch(fetchEvents() as any);
-  }, [dispatch]);
+    let isMounted = true;
 
-  // Function to handle adding a new event
-  const handleAddEvent = useCallback(
-    (newEvent: CustomEventExtension) => {
-      dispatch(addEvent(newEvent));
-      if (onEventAdded) {
-        onEventAdded(newEvent);
+    const initStore = async () => {
+      try {
+        const store = await defaultEventStore(snapshotId, storeId);
+        if (isMounted) {
+          setEventStore(store);
+
+          // Example hook into your event lifecycle
+          if (onEventAdded) {
+            onEventAdded(store);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to initialize event store:", err);
       }
-    },
-    [dispatch, onEventAdded]
-  );
+    };
+
+    initStore();
+
+    return () => {
+      isMounted = false;
+      if (onEventRemoved && eventStore) {
+        onEventRemoved(eventStore);
+      }
+    };
+  }, [snapshotId, storeId, onEventAdded, onEventRemoved, eventStore]);
 
   // Function to handle removing an event
   const handleRemoveEvent = useCallback(

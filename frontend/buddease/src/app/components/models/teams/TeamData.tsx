@@ -10,12 +10,13 @@ import { Data } from "../data/Data";
 import { Progress } from "../tracker/ProgressBar";
 import { Member } from "./TeamMembers";
 import { CommonData } from "@/app/components/models/CommonData";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 
 interface TeamData<
-  T extends  BaseData<any>,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-  > extends CommonData<T, K>, Partial< BaseData<any>> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+> extends CommonData<T, K>, Partial< BaseData<any>> {
   id: number | string;
   teamName: string
   description?: string;

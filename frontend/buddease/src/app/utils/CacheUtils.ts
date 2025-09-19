@@ -3,16 +3,18 @@ import { create } from 'mobx-persist';
 import { generateInterfaces } from '../generators/GenerateInterfaces';
 import { readCache, writeCache } from './ReadAndWriteCache';
 import { writeAndUpdateCache } from './CacheManager';
+import { useSecureUserId } from '@/app/components/utils/useSecureUserId';
 
 const backendModelPaths = ['path/to/backend/models']; // Update this with the actual path
 
 // Generate interfaces
 generateInterfaces(backendModelPaths);
 
+const userId = useSecureUserId()
 // Read cache data
 export const readAndLogCache = async () => {
   try {
-    const cache = await readCache();
+    const cache = await readCache(userId);
     console.log('Current Cache:', cache);
     return cache;
   } catch (error) {

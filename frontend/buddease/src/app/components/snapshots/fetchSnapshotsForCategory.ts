@@ -13,7 +13,7 @@ import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
  * @param {string} snapshotId - The unique identifier for the snapshot//+
  * @param {string} type - The type of snapshot to fetch//+
  * @param {Category} [category] - Optional category to filter snapshots//+
- * @returns {Promise<SnapshotsArray<T, K>>} A promise that resolves to an array of snapshots//+
+ * @returns {Promise<SnapshotsArray<T, K, Meta, ExcludedFields>>} A promise that resolves to an array of snapshots//+
  */
 async function fetchSnapshotsForCategory<
   T extends BaseDataEntity,

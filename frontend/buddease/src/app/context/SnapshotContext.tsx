@@ -55,7 +55,7 @@ export const SnapshotProvider = <
   T extends BaseData<any>,
   K extends T = T, 
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >({
   children,
 }: {
@@ -202,7 +202,7 @@ export const useSnapshot = <
   T extends BaseData<any> = BaseData<any, any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(): { snapshotMap: Map<string, Snapshot<T, K, Meta, ExcludedFields>> } => {
   const context = useContext(SnapshotContext);
 

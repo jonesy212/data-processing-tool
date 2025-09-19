@@ -1,10 +1,21 @@
-import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
-import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
-import { Phase, PhaseData } from '@/app/components/phases/Phase';
+import {
+  SharedIdentifiers,
+  SharedStatusFlags,
+  SharedTimestamps,
+} from "@/app/components/documents/RelatedProps";
+import { Phase, PhaseData } from "@/app/components/phases/Phase";
 import { CoreSnapshot } from "@/app/components/snapshots/CoreSnapshot";
-import { SnapshotStoreConfig } from '@/app/components/snapshots/SnapshotStoreConfig';
-import { createLatestVersion } from '@/app/components/versions/createLatestVersion';
-import { fetchUserAreaDimensions, UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { SnapshotStoreConfig } from "@/app/components/snapshots/SnapshotStoreConfig";
+import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
+import {
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta,
+} from "@/app/configs/BaseConfig";
+import {
+  fetchUserAreaDimensions,
+  UnifiedMetadata,
+} from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { useMeta } from "@/app/configs/useMeta";
 import { useMetadata } from "@/app/configs/useMetadata";
@@ -25,8 +36,14 @@ import { Category } from "../../libraries/categories/generateCategoryProperties"
 import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
 import { InitializedState } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Snapshots, SnapshotsArray } from "../../snapshots/LocalStorageSnapshotStore";
-import SnapshotStore, { SnapshotStoreReference } from "../../snapshots/SnapshotStore";
+import { Snapshot } from "../../snapshots";
+import {
+  Snapshots,
+  SnapshotsArray,
+} from "../../snapshots/LocalStorageSnapshotStore";
+import SnapshotStore, {
+  SnapshotStoreReference,
+} from "../../snapshots/SnapshotStore";
 import {
   SnapshotWithCriteria,
   TagsRecord,
@@ -38,7 +55,7 @@ import { ReassignEventResponse } from "../../state/stores/AssignEventStore";
 import { AuthStore } from "../../state/stores/AuthStore";
 import BrowserCheckStore from "../../state/stores/BrowserCheckStore";
 import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
-import { HighlightColor } from '../../styling/Palette';
+import { HighlightColor } from "../../styling/Palette";
 import { NotificationSettings } from "../../support/NotificationSettings";
 import { taskService } from "../../tasks/TaskService";
 import TodoImpl, { Todo, UserAssignee } from "../../todos/Todo";
@@ -49,6 +66,7 @@ import UserRoles from "../../users/UserRoles";
 import { cleanEmptyStrings } from "../../utils/cleanEmptyStrings";
 import { VideoData } from "../../video/Video";
 import CommonDetails, { CommonData } from "../CommonData";
+import { Content } from "../content/AddContent";
 import { Task } from "../tasks/Task";
 import { Team } from "../teams/Team";
 import { Collaborator, Member } from "../teams/TeamMembers";
@@ -62,71 +80,77 @@ import {
   StatusType,
   SubscriptionTypeEnum,
 } from "./StatusType";
-import { Snapshot } from '../../snapshots';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
-import { Content } from '../content/AddContent';
- 
+
 interface SharedRelationshipData<K> {
   childIds?: K[] | undefined;
-  relatedData?: K[] | undefined,
+  relatedData?: K[] | undefined;
 }
 
-type CommonRelationship<
-  T extends BaseData<any, any> = any,
-  K extends T = T
-> = {
-  sharedRelationships: SharedRelationshipData<K>
-}
+type CommonRelationship<T extends BaseData<any, any> = any, K extends T = T> = {
+  sharedRelationships: SharedRelationshipData<K>;
+};
 
 interface SharedPhaseData {
   phase: Phase<any, any> | null;
-  priority: PriorityTypeEnum
+  priority: PriorityTypeEnum;
 }
- 
+
+interface DataEntity extends BaseDataEntity {
+  id: string;
+  name?: string;
+  description?: string;
+  // Add other fields your app’s Data will have
+  children?: any[];
+  tags?: string[];
+}
+
+type DataK = DataEntity;
+type DataMeta = DefaultMeta<DataEntity, DataK>;
+type DataExcludedFields = DefaultExcludedFields<DataEntity>;
+
 type DataWithOmittedFields<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = never
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
 > = Omit<Data<T, K, Meta>, ExcludedFields>;
- 
+
 // Define the interface for DataDetails
 interface DataDetails<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > extends CommonData<T, K, Meta> {
   _id?: string;
   title?: string;
   description?: string | null;
   details?: DetailsItem<T>;
-  completed?: boolean | undefined;
+  completed?: boolean;
   startDate?: string | Date;
   endDate?: string | Date;
   createdAt?: string | Date;
   updatedAt?: string | Date;
   type?: AllTypes;
-  tags?: TagsRecord<T, K> | string[] | undefined; 
+  tags?: TagsRecord<T, K> | string[];
   isActive?: boolean;
   status?: AllStatus | null;
-  uploadedAt?: Date | undefined; //
+  uploadedAt?: Date;
   phase?: Phase<PhaseData<BaseData<any>>, PhaseData<BaseData<any>>> | null;
   fakeData?: FakeData;
-  comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
+  comments?: number | (Comment<T, K, Meta> | CustomComment)[];
   todos?: Todo<T, K>[];
   analysisData?: {
     snapshots?: SnapshotStore<T, K>[];
     analysisResults?: DataAnalysisResult<T>[];
   };
-
-  data?: DataWithOmittedFields<T, K, Meta, ExcludedFields>;
   snapshots?: Snapshots<T, K>;
-  snapshotArray?: SnapshotsArray<T, K, Meta>;
+  snapshotArray?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   analysisType?: AnalysisTypeEnum | null;
-  analysisResults?: string | DataAnalysisResult<T>[] | undefined;
+  analysisResults?: string | DataAnalysisResult<T>[];
   todo?: Todo<T, K>;
-  // Add other properties as needed
 }
 
 // Define the props for the DataDetails component
@@ -135,31 +159,39 @@ interface DataDetailsProps<T> {
 }
 
 type TodoSubtasks = Array<
-  | Todo<BaseData<any>, BaseData<any>, StructuredMetadata<BaseData<any>, BaseData<any>>>
+  | Todo<
+      BaseData<any>,
+      BaseData<any>,
+      StructuredMetadata<BaseData<any>, BaseData<any>>
+    >
   | Task<any, any>
-  >;
+>;
 
-  type ChildRelationship<
+type ChildRelationship<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > =
-  | { type: 'metadata'; ids: Meta extends { childIds: (infer C)[] } ? C[] : never }
-  | { type: 'direct'; ids: K[] };
+  | {
+      type: "metadata";
+      ids: Meta extends { childIds: (infer C)[] } ? C[] : never;
+    }
+  | { type: "direct"; ids: K[] };
 
-  
 interface BaseData<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends SharedTimestamps,
-  SharedStatusFlags,
-  SharedIdentifiers<T, K, Meta, ExcludedFields>
-{
+    SharedStatusFlags,
+   SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   sharedData?: SharedRelationshipData<K>;
-  children?: ChildRelationship<T, K, Meta> | CoreSnapshot<T, K, Meta>[];
+  children?:
+    | ChildRelationship<T, K, Meta>
+    | CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   data?: any;
   size?: string | number;
   description?: string | null;
@@ -168,10 +200,16 @@ interface BaseData<
   isScheduled?: boolean;
   status?: AllStatus | null;
   timestamp?: string | number | Date | undefined;
-  tags?: TagsRecord<T, K> | string[] | undefined;
-  phase?: Phase<PhaseData<BaseData<any>>, PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>> | null;
+  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
+  phase?: Phase<
+    PhaseData<BaseData<any>>,
+    PhaseData<
+      BaseData<any, any, StructuredMetadata<any, any>, Attachment>,
+      BaseData<any, any, StructuredMetadata<any, any>, Attachment>
+    >
+  > | null;
   phaseType?: ProjectPhaseTypeEnum;
-  initialState?: InitializedState<T, K>;
+  initialState?: InitializedState<T, K, Meta, ExcludedFields>;
   dueDate?: Date | null;
   priority?: string | AllStatus | null;
   assignee?: UserAssignee | null;
@@ -193,12 +231,12 @@ interface BaseData<
   members?: number[] | string[] | Member[];
   leader?: User | null;
   snapshotStores?: SnapshotStoreReference<T, K>[];
-  snapshots?: Snapshots<T, K>; // Simplify snapshots type
+  snapshots?: SnapshotStore<Snapshots<T, K, Meta, ExcludedFields, IncludedFields>>; // Simplify snapshots type
   text?: string | Content<T, K, Meta>;
   category?: symbol | string | Category | undefined;
   notificationTypes?: NotificationSettings;
   categoryProperties?: CategoryProperties;
-  userConfig?: UserConfigData<T, K, Meta>; // Use UserConfigData<T, K, Meta>
+  userConfig?: any; // Use UserConfigData<T, K, Meta>
   scheduled?: ScheduledData<T>;
   [key: string]: any;
   // getData?: (id: number) => Promise<Snapshot<
@@ -210,19 +248,21 @@ interface BaseData<
 }
 
 interface Data<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  > extends BaseData<T, K, Meta>,
-  SharedIdentifiers<T, K, Meta> {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   category?: symbol | string | Category | undefined;
   categoryProperties?: CategoryProperties;
   subtasks?: TodoImpl<any, any>[];
-  actions?: SnapshotStoreConfig<T, K>[];
-  snapshotWithCriteria?: SnapshotWithCriteria<T, K>;
-  value?: string | number | Snapshot<T, K, Meta> | null;
+  actions?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  snapshotWithCriteria?: SnapshotWithCriteria<T, K, Meta, ExcludedFields>;
+  value?: string | number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   label?: any;
-  metadata?: UnifiedMetadata<T, K, StructuredMetadata<T, K>, keyof T> | {};
+  metadata?: UnifiedMetadata<T, K, Meta, ExcludedFields> | {};
   major?: number;
   minor?: number;
   patch?: number;
@@ -232,19 +272,17 @@ interface Data<
 
 // Define the UserDetails component
 const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
-  
   const getTagNames = (tags: TagsRecord<T, K> | string[]): string[] => {
     if (Array.isArray(tags)) {
-      return tags.filter((tag): tag is string => typeof tag === 'string'); // Ensure all elements are strings
+      return tags.filter((tag): tag is string => typeof tag === "string"); // Ensure all elements are strings
     }
-  
-    return Object.values(tags)
-      .reduce<string[]>((acc, tag) => {
-        if (tag.name && typeof tag.name === 'string') {
-          acc.push(tag.name);
-        }
-        return acc;
-      }, []);
+
+    return Object.values(tags).reduce<string[]>((acc, tag) => {
+      if (tag.name && typeof tag.name === "string") {
+        acc.push(tag.name);
+      }
+      return acc;
+    }, []);
   };
   return (
     <CommonDetails
@@ -254,12 +292,15 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
         description: "Data descriptions",
         details: data.details,
         completed: !!data.completed,
-        label: typeof data.label === 'string' ? { text: data.label, color: "" } : (data.label || { text: "", color: "" }),
+        label:
+          typeof data.label === "string"
+            ? { text: data.label, color: "" }
+            : data.label || { text: "", color: "" },
         currentMetadata: data.currentMetadata,
         date: data.date,
         createdBy: data.createdBy,
         currentMeta: data.currentMeta,
-        latestVersion: data.latestVersion
+        latestVersion: data.latestVersion,
       }}
       details={{
         _id: data._id,
@@ -272,22 +313,21 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
         isActive: data.isActive,
         tags: data.tags ? getTagNames(data.tags) : [], // Now tags is a string array
         status: data.status,
-        type: data.type ?? 'DefaultType',
+        type: data.type ?? "DefaultType",
         analysisType: data.analysisType,
         analysisResults: data.analysisResults,
         updatedAt: data.updatedAt ? new Date(data.updatedAt) : new Date(),
         currentMetadata: data.currentMetadata,
         currentMeta: data.currentMeta,
-        latestVersion: data.latestVersion
+        latestVersion: data.latestVersion,
       }}
     />
   );
 };
 
-
-const area = fetchUserAreaDimensions().toString()
-const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
-const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+const area = fetchUserAreaDimensions().toString();
+const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area);
+const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area);
 
 const coreData: Data<T, K, StructuredMetadata<T, K>> = {
   _id: "1",
@@ -306,7 +346,7 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
   status: StatusType.Pending,
   isActive: true,
   tags: {
-    "tag1": {
+    tag1: {
       id: "tag1",
       name: "Tag 1",
       color: "#000000",
@@ -318,8 +358,8 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
       updatedAt: new Date(),
       createdBy: "creator1",
       timestamp: new Date().getTime(),
-      nulltype: ""
-    }
+      nulltype: "",
+    },
   },
   phase: {
     label: {
@@ -349,7 +389,7 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
         updatedAt: new Date(),
         createdBy: "creator1",
         timestamp: new Date().getTime(),
-        nulltype: ""
+        nulltype: "",
       },
     }, // This should match the type defined in Tag
     subPhases: [],
@@ -384,8 +424,8 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
   collaborationOptions: [],
   videoData: {
     label: {
-      text: '',
-      color: ''
+      text: "",
+      color: "",
     },
     content: "",
     watchLater: false,
@@ -462,9 +502,9 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
       category: "Sample Category",
     },
     currentMetadata: currentMetadata,
-    currentMeta: currentMeta, 
-  }, 
-  additionalData: {},  
+    currentMeta: currentMeta,
+  },
+  additionalData: {},
   ideas: [],
   members: [],
   leader: {
@@ -519,9 +559,9 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
           createdBy: file.createdBy,
           childIds: file.childIds,
           relatedData: file.relatedData,
-          major:  file.major,
-          minor:  file.minor,
-          patch:  file.patch,
+          major: file.major,
+          minor: file.minor,
+          patch: file.patch,
         };
       },
       stroke: {
@@ -536,7 +576,7 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
       y: 0,
       // Update the method signature to match the expected type
       updateAppearance: (
-        newStroke: { width: number; color: string; },
+        newStroke: { width: number; color: string },
         newFillColor: string,
         updates: {
           stroke?: Stroke;
@@ -556,7 +596,7 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
         (this as typeof coreData.preferences).stroke = newStroke;
         (this as typeof coreData.preferences).fillColor = newFillColor;
       },
-      refreshUI: () => { },
+      refreshUI: () => {},
     },
 
     settings: {
@@ -572,13 +612,13 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
         description: "",
         startDate: new Date(),
         endDate: new Date(),
-        subPhases: []
+        subPhases: [],
       },
       comment: "",
       browserCheckStore: {} as BrowserCheckStore,
       trackerStore: {
         trackers: {},
-        addTracker: (newTracker: TrackerProps) => { },
+        addTracker: (newTracker: TrackerProps) => {},
         getTracker: (id: string): TrackerProps => {
           // Ensure you return a valid TrackerProps object
           const tracker = coreData.settings.trackerStore.trackers[id];
@@ -587,17 +627,21 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
           }
           return tracker; // Return the tracker found
         },
-        getTrackers: (filter?: { id?: string | undefined; name?: string | undefined; } | undefined) => [],
+        getTrackers: (
+          filter?:
+            | { id?: string | undefined; name?: string | undefined }
+            | undefined
+        ) => [],
 
-        removeTracker: (trackerToRemove: TrackerProps) => { },
-        dispatch: (action: any) => { },
+        removeTracker: (trackerToRemove: TrackerProps) => {},
+        dispatch: (action: any) => {},
       },
 
       todoStore: {
-        dispatch: (action: any) => { },
+        dispatch: (action: any) => {},
         todos: {},
         todoList: [],
-        toggleTodo: (id: string) => { },
+        toggleTodo: (id: string) => {},
 
         assignedTaskStore: "",
         updateTaskTitle: "",
@@ -610,26 +654,30 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
         taskDescription: "",
         taskStatus: {},
 
+        fetchTasksSuccess: (payload: { tasks: Task<T, K>[] }) => {},
+        fetchTasksFailure: (payload: { error: string }) => {},
+        fetchTasksRequest: () => {},
+        completeAllTasksSuccess: (success: string) => {},
 
-        fetchTasksSuccess: (payload: { tasks: Task<T, K>[]; }) => { },
-        fetchTasksFailure: (payload: { error: string; }) => { },
-        fetchTasksRequest: () => { },
-        completeAllTasksSuccess: (success: string) => { },
-
-        completeAllTasks: (payload: { task: Task<T, K>[]; }) => { },
-        completeAllTasksFailure: (payload: { error: string; }) => { },
+        completeAllTasks: (payload: { task: Task<T, K>[] }) => {},
+        completeAllTasksFailure: (payload: { error: string }) => {},
         NOTIFICATION_MESSAGE: "",
         NOTIFICATION_MESSAGES: {},
 
-        setDynamicNotificationMessage: (message: string) => { },
-        takeTaskSnapshot: (taskId: string) => { },
-        markTaskAsComplete: (taskId: string) => { },
-        updateTaskPositionSuccess: (payload: { task: Task<T, K>; }) => { },
+        setDynamicNotificationMessage: (message: string) => {},
+        takeTaskSnapshot: (taskId: string) => {},
+        markTaskAsComplete: (taskId: string) => {},
+        updateTaskPositionSuccess: (payload: { task: Task<T, K> }) => {},
 
-        batchFetchTaskSnapshotsRequest: (snapshotData: Record<string, Task<T, K>[]>) => { },
-        batchFetchTaskSnapshotsSuccess: (taskId: Record<string, Task<T, K>[]>) => { },
-        batchFetchUserSnapshotsRequest: (snapshotData: Record<string, User[]>) => { },
-
+        batchFetchTaskSnapshotsRequest: (
+          snapshotData: Record<string, Task<T, K>[]>
+        ) => {},
+        batchFetchTaskSnapshotsSuccess: (
+          taskId: Record<string, Task<T, K>[]>
+        ) => {},
+        batchFetchUserSnapshotsRequest: (
+          snapshotData: Record<string, User[]>
+        ) => {},
 
         assignedTaskStore: {
           snapshotStore: undefined,
@@ -686,25 +734,46 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
             // Logic to set notification message
           },
 
-          reassignUsersToTasks: function (taskIds: string[], oldUserId: string, newUserId: string): void {
+          reassignUsersToTasks: function (
+            taskIds: string[],
+            oldUserId: string,
+            newUserId: string
+          ): void {
             throw new Error("Function not implemented.");
           },
           assignUserToTodo: function (todoId: string, userId: string): void {
             throw new Error("Function not implemented.");
           },
-          unassignUserFromTodo: function (todoId: string, userId: string): void {
+          unassignUserFromTodo: function (
+            todoId: string,
+            userId: string
+          ): void {
             throw new Error("Function not implemented.");
           },
-          reassignUserInTodo: function (todoId: string, oldUserId: string, newUserId: string): void {
+          reassignUserInTodo: function (
+            todoId: string,
+            oldUserId: string,
+            newUserId: string
+          ): void {
             throw new Error("Function not implemented.");
           },
-          assignUsersToTodos: function (todoIds: string[], userId: string): void {
+          assignUsersToTodos: function (
+            todoIds: string[],
+            userId: string
+          ): void {
             throw new Error("Function not implemented.");
           },
-          unassignUsersFromTodos: function (todoIds: string[], userId: string): void {
+          unassignUsersFromTodos: function (
+            todoIds: string[],
+            userId: string
+          ): void {
             throw new Error("Function not implemented.");
           },
-          reassignUsersInTodos: function (todoIds: string[], oldUserId: string, newUserId: string): void {
+          reassignUsersInTodos: function (
+            todoIds: string[],
+            oldUserId: string,
+            newUserId: string
+          ): void {
             throw new Error("Function not implemented.");
           },
           assignUserSuccess: function (): void {
@@ -714,32 +783,63 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
             throw new Error("Function not implemented.");
           },
 
-          assignMeetingToTeam: function (meetingId: string, teamId: string): Promise<AxiosResponse> {
+          assignMeetingToTeam: function (
+            meetingId: string,
+            teamId: string
+          ): Promise<AxiosResponse> {
             throw new Error("Function not implemented.");
           },
-          assignProjectToTeam: function (projectId: string, teamId: string): Promise<AxiosResponse> {
+          assignProjectToTeam: function (
+            projectId: string,
+            teamId: string
+          ): Promise<AxiosResponse> {
             throw new Error("Function not implemented.");
           },
-          connectResponsesToTodos: function (todoIds: string[], assignees: string[], todos: ExtendedTodo[], eventId: string, responses: ReassignEventResponse[]): void {
+          connectResponsesToTodos: function (
+            todoIds: string[],
+            assignees: string[],
+            todos: ExtendedTodo[],
+            eventId: string,
+            responses: ReassignEventResponse[]
+          ): void {
             throw new Error("Function not implemented.");
           },
-          reassignTeamsInTodos: function (todoIds: string[], oldTeamId: string, newTeamId: string): Promise<AxiosResponse> {
+          reassignTeamsInTodos: function (
+            todoIds: string[],
+            oldTeamId: string,
+            newTeamId: string
+          ): Promise<AxiosResponse> {
             throw new Error("Function not implemented.");
           },
 
-          assignTaskToTeam: function (taskId: string, userId: string): Promise<void> {
+          assignTaskToTeam: function (
+            taskId: string,
+            userId: string
+          ): Promise<void> {
             throw new Error("Function not implemented.");
           },
-          assignTodoToTeam: function (todoId: string, teamId: string): Promise<void> {
+          assignTodoToTeam: function (
+            todoId: string,
+            teamId: string
+          ): Promise<void> {
             throw new Error("Function not implemented.");
           },
-          assignTodosToUsersOrTeams: function (todoIds: string[], assignees: string[]): Promise<void> {
+          assignTodosToUsersOrTeams: function (
+            todoIds: string[],
+            assignees: string[]
+          ): Promise<void> {
             throw new Error("Function not implemented.");
           },
-          assignTeamMemberToTeam: function (teamId: string, userId: string): void {
+          assignTeamMemberToTeam: function (
+            teamId: string,
+            userId: string
+          ): void {
             throw new Error("Function not implemented.");
           },
-          unassignTeamMemberFromItem: function (itemId: string, userId: string): void {
+          unassignTeamMemberFromItem: function (
+            itemId: string,
+            userId: string
+          ): void {
             throw new Error("Function not implemented.");
           },
           getAuthStore: function (): AuthStore {
@@ -751,76 +851,109 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
           unassignTeamToTodo: function (todoId: string, teamId: string): void {
             throw new Error("Function not implemented.");
           },
-          reassignTeamToTodo: function (todoId: string, oldTeamId: string, newTeamId: string): void {
+          reassignTeamToTodo: function (
+            todoId: string,
+            oldTeamId: string,
+            newTeamId: string
+          ): void {
             throw new Error("Function not implemented.");
           },
           assignTeamToTodos: function (todoIds: Team[], teamId: string): void {
             throw new Error("Function not implemented.");
           },
-          unassignTeamFromTodos: function (todoIds: string[], teamId: string): void {
+          unassignTeamFromTodos: function (
+            todoIds: string[],
+            teamId: string
+          ): void {
             throw new Error("Function not implemented.");
           },
-          reassignTeamToTodos: function (teamIds: string[], teamId: string, newTeamId: string): void {
+          reassignTeamToTodos: function (
+            teamIds: string[],
+            teamId: string,
+            newTeamId: string
+          ): void {
             throw new Error("Function not implemented.");
           },
-          unassignNoteFromTeam: function (noteId: string, teamId: string): Promise<void> {
+          unassignNoteFromTeam: function (
+            noteId: string,
+            teamId: string
+          ): Promise<void> {
             throw new Error("Function not implemented.");
           },
-          setAssignedTaskStore: function (store: SnapshotStore<BaseData<any>>): void {
+          setAssignedTaskStore: function (
+            store: SnapshotStore<BaseData<any>>
+          ): void {
             throw new Error("Function not implemented.");
-          },  
+          },
         },
-        updateTaskTitle: (title: string, taskId: string) => { },
-        updateTaskDescription: (description: string, taskId: string) => { },
-        updateTaskStatus: (description: string, taskId: string) => { },
+        updateTaskTitle: (title: string, taskId: string) => {},
+        updateTaskDescription: (description: string, taskId: string) => {},
+        updateTaskStatus: (description: string, taskId: string) => {},
 
-        updateTaskDueDate: (taskId: string, dueDate: Date) => { },
-        updateTaskPriority: (taskId: string, priority: PriorityTypeEnum) => { },
+        updateTaskDueDate: (taskId: string, dueDate: Date) => {},
+        updateTaskPriority: (taskId: string, priority: PriorityTypeEnum) => {},
         filterTasksByStatus: (status: AllStatus): Task<T, K>[] => {
           // Implement logic to filter tasks by their status
-          return coreData.tasks.filter((task: Task<T, K>) => task.status === status);
+          return coreData.tasks.filter(
+            (task: Task<T, K>) => task.status === status
+          );
         },
 
         getTaskCountByStatus: (status: AllStatus): number => {
           // Implement logic to count tasks by status
-          return coreData.tasks.filter((task: Task<T, K>) => task.status === status).length;
+          return coreData.tasks.filter(
+            (task: Task<T, K>) => task.status === status
+          ).length;
         },
 
-        clearAllTasks: () => { },
-        archiveCompletedTasks: () => { },
-        updateTaskAssignee: (taskId: string, assignee: User) => async (dispatch: any): Promise<void> => {
-          // Implement logic to update the assignee of a task
-          const taskIndex = coreData.tasks.findIndex((task: Task<T, K>) => task._id === taskId);
-          if (taskIndex !== -1) {
-            coreData.tasks[taskIndex].assignee = assignee;
-            // Dispatch an action to update the state (assuming Redux or similar)
-            dispatch({ type: 'UPDATE_TASK_ASSIGNEE', payload: { taskId, assignee } });
-          }
-        },
+        clearAllTasks: () => {},
+        archiveCompletedTasks: () => {},
+        updateTaskAssignee:
+          (taskId: string, assignee: User) =>
+          async (dispatch: any): Promise<void> => {
+            // Implement logic to update the assignee of a task
+            const taskIndex = coreData.tasks.findIndex(
+              (task: Task<T, K>) => task._id === taskId
+            );
+            if (taskIndex !== -1) {
+              coreData.tasks[taskIndex].assignee = assignee;
+              // Dispatch an action to update the state (assuming Redux or similar)
+              dispatch({
+                type: "UPDATE_TASK_ASSIGNEE",
+                payload: { taskId, assignee },
+              });
+            }
+          },
 
-        getTasksByAssignee: async (tasks: Task<T, K>[], assignee: User): Promise<Task<T, K>[]> => {
+        getTasksByAssignee: async (
+          tasks: Task<T, K>[],
+          assignee: User
+        ): Promise<Task<T, K>[]> => {
           // Implement logic to get tasks assigned to a specific user
-          return tasks.filter(task => task.assigneeId === assignee._id);
+          return tasks.filter((task) => task.assigneeId === assignee._id);
         },
-
 
         getTaskById: (taskId: string): Task<T, K> | null => {
           // Implement logic to find a task by its ID
-          return coreData.tasks.find((task: Task<T, K>) => task._id === taskId) || null;
+          return (
+            coreData.tasks.find((task: Task<T, K>) => task._id === taskId) ||
+            null
+          );
         },
 
+        sortByDueDate: () => {},
+        exportTasksToCSV: () => {},
+        dispatch: (action: any) => {},
+        addTaskSuccess: (payload: { task: Task<T, K> }) => {},
+        addTask: (task: Task<T, K>) => {},
+        addTasks: (tasks: Task<T, K>[]) => {},
+        assignTaskToUser: (taskId: string, userId: string) => {},
 
-        sortByDueDate: () => { },
-        exportTasksToCSV: () => { },
-        dispatch: (action: any) => { },
-        addTaskSuccess: (payload: { task: Task<T, K>; }) => { },
-        addTask: (task: Task<T, K>) => { },
-        addTasks: (tasks: Task<T, K>[]) => { },
-        assignTaskToUser: (taskId: string, userId: string) => { },
-
-        removeTask: (taskId: string) => { },
-        removeTasks: (taskIds: string[]) => { },
-        fetchTasksByTaskId: async (taskId: string): Promise<Task<T, K> | null> => {
+        removeTask: (taskId: string) => {},
+        removeTasks: (taskIds: string[]) => {},
+        fetchTasksByTaskId: async (
+          taskId: string
+        ): Promise<Task<T, K> | null> => {
           try {
             const response = await taskService.getTaskById(taskId);
             if (response?.data) {
@@ -831,8 +964,8 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
             console.error("Failed to fetch task", error);
             throw new Error("Failed to fetch task");
           }
-        }
-      }
+        },
+      },
       // fetchTasksSuccess: (payload: { tasks: Task[]; }) => { },
       // fetchTasksFailure: (payload: { error: string; }) => {},
       // fetchTasksRequest: () => {},
@@ -879,7 +1012,7 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
     // enableGroupManagement: true,
     // enableTeamManagement: false,
     // idleTimeout: undefined,
-    
+
     bannerUrl: "",
     interests: [],
     privacySettings: {
@@ -906,7 +1039,8 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
         isAllowingSharingWithPublicAndTeamsAndGroups: [],
         isAllowingingSharingWithPublicAndTeams: [],
         isAllowingSharingWithPublicAndTeamsAndGroupsAndPublic: [],
-        isAllowingSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: [],
+        isAllowingSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups:
+          [],
         isAllowingSharingWithTeamsAndGroups: [],
         isAllowingSharingingWithPublicAndTeamsAndGroups: [],
         isAllowingSharingWithPublicAndTeams: [],
@@ -924,15 +1058,16 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
           blockchainCommunication: false,
           decentralizedStorage: false,
           databaseEncryption: false,
-          databaseVersion: '',
-          appVersion: '',
-          enableDatabaseEncryption: false
+          databaseVersion: "",
+          appVersion: "",
+          enableDatabaseEncryption: false,
         }, // Add the corresponding sharing preferences
         allowSharingWithPublicAndTeams: false,
         allowSharingWithPublicAndGroups: false,
         allowSharingWithPublicAndTeamsAndGroups: false,
         allowSharingWithPublicAndTeamsAndGroupsAndPublic: false,
-        allowSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: false,
+        allowSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups:
+          false,
       },
       thirdPartyTracking: true,
     },
@@ -970,7 +1105,7 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
         bookmark: false,
       },
       enabled: true,
-      notificationType: "all"
+      notificationType: "all",
     },
     activityLog: [],
     socialLinks: {},
@@ -995,11 +1130,10 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
       isAuthorized: false,
     },
     currentMetadata: {
-      area: 'coreData', 
+      area: "coreData",
       currentMeta: currentMeta,
       metadataEntries: {},
       latestVersion: createLatestVersion<T, K>(),
-
     },
     currentMeta: currentMeta,
     // startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {},
@@ -1122,7 +1256,8 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
       allowSharingWithPublicAndTeamsAndGroups: true,
       allowSharingWithPublicAndTeamsAndGroupsAndPublic: true,
       isAllowingSharingWithPublicAndTeamsAndGroupsAndPublic: [""],
-      isAllowingSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: [],
+      isAllowingSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups:
+        [],
       allowSharingWithPublicAndTeamsAndGroupsAndPublicAndTeamsAndGroups: true,
       isAllowingSharingWithPublic: [],
       isAllowingingSharingWithTeamsAndGroups: [],
@@ -1297,14 +1432,19 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
       fromPublicKey: null,
 
       isSigned(): boolean {
-        return !!(this.transactionType && this.typeName && this.from && this.signature);
+        return !!(
+          this.transactionType &&
+          this.typeName &&
+          this.from &&
+          this.signature
+        );
       },
       serialized: "",
       unsignedSerialized: "",
       inferType(): number {
         return this.transactionType ?? 0;
       },
-      
+
       inferTypes(): number[] {
         return [this.transactionType ?? 0];
       },
@@ -1314,8 +1454,8 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
       },
       isBerlin() {
         return (
-          this.transactionType === 1 && 
-          this.gasPrice !== null && 
+          this.transactionType === 1 &&
+          this.gasPrice !== null &&
           this.accessList !== null
         );
       },
@@ -1348,9 +1488,10 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
           description: this.description || "",
           startDate: this.startDate ? new Date(this.startDate) : undefined,
           endDate: this.endDate ? new Date(this.endDate) : undefined,
-          isSigned: typeof this.isSigned === "function"
-            ? this.isSigned.bind(this)
-            : this.isSigned,
+          isSigned:
+            typeof this.isSigned === "function"
+              ? this.isSigned.bind(this)
+              : this.isSigned,
           serialized: this.serialized || "",
           unsignedSerialized: this.unsignedSerialized || "",
           inferType: this.inferType?.bind(this),
@@ -1433,7 +1574,6 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
         return clonedData;
       },
       toJSON(): CustomTransaction {
-
         let myBigInt: bigint = this.value as bigint;
         const customTransaction: CustomTransaction = {
           id: this.id ?? null,
@@ -1457,7 +1597,7 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
           value: myBigInt,
           currency: this.currency ?? "USD", // Default currency
           timestamp: this.timestamp ?? new Date(), // Default to now
-          status: this.status ?? "completed", // Default status    
+          status: this.status ?? "completed", // Default status
           unsignedHash: this.unsignedHash ?? null,
           notificationsEnabled: this.notificationsEnabled ?? false,
           amount: 0,
@@ -1471,8 +1611,16 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
       },
     }),
   ],
-  getData: function (): Promise<SnapshotStore<BaseData<any>, BaseData<any>, StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>>,
-    BaseData<any, any, StructuredMetadata<any, any>>>>[]> {
+  getData: function (): Promise<
+    SnapshotStore<
+      BaseData<any>,
+      BaseData<any>,
+      StructuredMetadata<
+        BaseData<any, any, StructuredMetadata<any, any>>,
+        BaseData<any, any, StructuredMetadata<any, any>>
+      >
+    >[]
+  > {
     return Promise.resolve([]);
   },
   metadata: {
@@ -1485,19 +1633,23 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
   configuration: {
     timeout: 0,
     retryAttempts: 0,
-    apiEndpoint: '',
+    apiEndpoint: "",
     apiKey: undefined,
   },
-
 };
 
 export type {
-  BaseData, ChildRelationship, CommonRelationship, Data,
+  BaseData,
+  ChildRelationship,
+  CommonRelationship,
+  Data,
   DataDetails,
   DataDetailsComponent,
-  DataDetailsProps, DataWithOmittedFields, SharedRelationshipData, TodoSubtasks
+  DataDetailsProps, DataEntity, DataExcludedFields, DataK,
+  DataMeta, DataWithOmittedFields,
+  SharedRelationshipData,
+  TodoSubtasks
 };
-
 
 // Clean the coreData to replace empty strings with null
 const cleanedCoreData = cleanEmptyStrings(coreData);

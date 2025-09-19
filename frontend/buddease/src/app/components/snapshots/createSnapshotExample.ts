@@ -13,12 +13,12 @@
 //   id: string,
 //   snapshotData: SnapshotData<any, T>,
 //   category: string
-// ): Promise<{ snapshot: Snapshot<T, any> }> => {
+// ): Promise<{ snapshot: Snapshot<T, K, Meta, ExcludedFields> }> => {
 //   const currentConfig = snapshotStoreConfigInstance.find(
 //     (snapshotId: string, config: SnapshotStoreConfig<any, Data>) => config.snapshotId === id
 //   );
 
-//   return new Promise<{ snapshot: Snapshot<T, K> }>(
+//   return new Promise<{ snapshot: Snapshot<T, K, Meta, ExcludedFields> }>(
 //     (resolve, reject) => {
 //       if (currentConfig && typeof currentConfig.createSnapshot === "function") {
 //         // Ensure currentConfig.createSnapshot is called with correct arguments
@@ -26,7 +26,7 @@
 //           id,
 //           snapshotData,
 //           category,
-//           (snapshot: Snapshot<T, K>) => {
+//           (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => {
 //             // Check if snapshot returned is valid
 //             if (snapshot instanceof SnapshotStore) {
 //               resolve({ snapshot });

@@ -18,6 +18,7 @@ import {
     StatusType,
     TeamStatus
 } from "../models/data/StatusType";
+
 import { K, Meta, T } from "../models/data/dataStoreMethods";
 import {
     ProgressBarAnimationType,
@@ -52,6 +53,7 @@ type AllTypes =
   | VisibilityType // Add TextType to AllTypes
   | TextType
   | CalendarStatus
+  | FileType
   
 interface BaseProps {
   id: string;

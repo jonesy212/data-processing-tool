@@ -9,12 +9,12 @@
 // import { Snapshot, SnapshotsArray } from "./LocalStorageSnapshotStore";
 // import SnapshotStore from "./SnapshotStore";
 
-// // Utility function to convert Snapshot<BaseData, T>[] to Snapshots<T, K>
-// function convertSnapshotsArray<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-//   snapshotsArray: Snapshot<T, K>[]
+// // Utility function to convert Snapshot<BaseData, T>[] to Snapshots<T, K, Meta, ExcludedFields>
+// function convertSnapshotsArray<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+//   snapshotsArray: Snapshot<T, K, Meta, ExcludedFields>[]
 // ): SnapshotsArray<T, K, Meta> {
 //     return snapshotsArray.map((snapshot) => {
-//       const convertedSnapshot: Snapshot<T, K> = {
+//       const convertedSnapshot: Snapshot<T, K, Meta, ExcludedFields> = {
 //         ...snapshot,
 //         data: snapshot.data as T,
 //         snapshots: snapshot.snapshots as SnapshotsArray<T, K, Meta>,
@@ -26,7 +26,7 @@
 //   }
   
 //   // Example usage of the conversion function
-//   const filteredSnapshots: Snapshot<T, K>[] = [/* your snapshots array */];
+//   const filteredSnapshots: Snapshot<T, K, Meta, ExcludedFields>[] = [/* your snapshots array */];
 //   const convertedSnapshots: SnapshotsArray<T, K, Meta> = convertSnapshotsArray<T, BaseData>(filteredSnapshots);
   
 //   const storeId = useSecureStoreId()
@@ -43,13 +43,13 @@
 //   // Assuming that you want to use snapshotManager or snapshotStore to derive config
 //   const config = snapshotManager ? snapshotManager.config : snapshotStore.getConfig();
 
-//   const convertMapToSnapshotData = (map: Map<string, Snapshot<T, K>>): SnapshotData<T, K> => {
+//   const convertMapToSnapshotData = (map: Map<string, Snapshot<T, K, Meta, ExcludedFields>>): SnapshotData<T, K, Meta, ExcludedFields> => {
     
 //     const configPromise = config instanceof Promise
 //     ? config // If config is already a promise, use it directly
 //     : Promise.resolve(config ? config : null); // Otherwise, wrap it in a Promise
     
-//     // Convert the map to a format that satisfies the SnapshotData<T, K> type
+//     // Convert the map to a format that satisfies the SnapshotData<T, K, Meta, ExcludedFields> type
 //     return {
 //       storeId: storeId,
 //       config: configPromise,

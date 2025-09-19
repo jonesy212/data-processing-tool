@@ -1,28 +1,31 @@
+import { SnapshotEvent } from '@/app/typings/eventTypes';
 import { SnapshotData } from '@/app/components/snapshots';
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 
 import { NotificationType } from '@/app/context/NotificationContext';
+import {
+    UpdateSnapshotPayload,
+    Payload
+} from "../../../server/database/Payload";
 import { Category } from "../libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from "../models/data/Data";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
 import { Subscriber } from "../users/Subscriber";
-import { Payload, Snapshots, SnapshotUnion } from "./LocalStorageSnapshotStore";
-import {
-  UpdateSnapshotPayload
-} from "../../../server/database/Payload";
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import {  Snapshots, SnapshotUnion } from "./LocalStorageSnapshotStore";
 import { Snapshot } from "./Snapshot";
 import { SnapshotOperation } from "./SnapshotActions";
 import { CustomSnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 
+import { DataStore } from '@/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { DataStore } from '../../../data_analysis/frontend/buddease/src/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore';
 
-import { CategoryProperties } from '../../../data_analysis/frontend/buddease/src/app/pages/personas/ScenarioBuilder';
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/configs/BaseConfig';
+import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
 import { SnapshotContext } from './SnapshotSubscriberManagement';
-import { Attachment } from '../../../data_analysis/frontend/buddease/src/app/components/documents/Attachment/attachment';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig';
 
 // SnapshotStoreSubset.ts
 interface SnapshotStoreSubset<
@@ -32,33 +35,34 @@ interface SnapshotStoreSubset<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
   snapshotId: string | null;
-  taskIdToAssign: Snapshot<T, K> | undefined;
+  taskIdToAssign: Snapshot<T, K, Meta, ExcludedFields> | undefined;
 
   // Adds a snapshot, handling a new snapshot and a list of subscribers.
-  addSnapshot: (snapshot: Omit<Snapshot<T, K>, "id">, subscribers: Subscriber<T, K>[]) => void;
+  addSnapshot: (snapshot: Omit<Snapshot<T, K, Meta, ExcludedFields>, "id">, subscribers: Subscriber<T, K, Meta, ExcludedFields>[]) => void;
 
   // Handles snapshot configuration with a snapshot and a list of configurations.
-  onSnapshot: (snapshot: Snapshot<T, K>,
+  onSnapshot: (snapshot: Snapshot<T, K, Meta, ExcludedFields>,
   config: SnapshotStoreConfig<
         SnapshotWithCriteria<T, K, Meta, ExcludedFields>,
         SnapshotWithCriteria<T, K, Meta, ExcludedFields>,
-        Meta
+        DefaultMeta<SnapshotWithCriteria<T, K, Meta, ExcludedFields>, 
+        SnapshotWithCriteria<T, K, Meta, ExcludedFields>>
       >[]      
     ) => void;
 
   // Called when a snapshot is successfully added.
-  addSnapshotSuccess: (snapshot: Snapshot<T, K>, subscribers: Subscriber<T, K>[]) => void;
+  addSnapshotSuccess: (snapshot: Snapshot<T, K, Meta, ExcludedFields>, subscribers: Subscriber<T, K, Meta, ExcludedFields>[]) => void;
 
   // Updates a snapshot and handles various data and event parameters.
   updateSnapshot: (
     snapshotId: string,
-    data: SnapshotStore<T, K>,
-    events: Record<string, CalendarManagerStoreClass<T, K>[]>,
-    snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
-    newData: T | Data,
+    data: SnapshotStore<T, K, Meta, ExcludedFields>,
+    events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>,
+    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
+    newData: T | Data<T, K, Meta, Attachment, ExcludedFields>
     payload: UpdateSnapshotPayload<T>
-  ) => Promise<{ snapshot: SnapshotStore<T, K>[] }>;
+  ) => Promise<{ snapshot: SnapshotStore<T, K, Meta, ExcludedFields>[] }>;
 
   // Removes a snapshot by ID.
   removeSnapshot: (snapshotId: string) => void;
@@ -67,20 +71,20 @@ interface SnapshotStoreSubset<
   clearSnapshots: () => void;
 
   // Initializes a snapshot with various possible data types.
-  createInitSnapshot: (snapshotData: SnapshotData<T, K> | Snapshot<BaseData> | null | undefined) => void;
+  createInitSnapshot: (snapshotData: SnapshotData<T, K, Meta, ExcludedFields> | Snapshot<BaseData> | null | undefined) => void;
 
   // Called when a snapshot creation is successful.
-  createSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
+  createSnapshotSuccess: (snapshot: Snapshot<T, K, Meta, ExcludedFields>, storeId: number) => void;
 
   // Called when a snapshot creation fails.
-  createSnapshotFailure: (snapshot: Snapshot<T, K>, error: any) => Promise<void>;
+  createSnapshotFailure: (snapshot: Snapshot<T, K, Meta, ExcludedFields>, error: any) => Promise<void>;
 
   // Updates multiple snapshots and returns a result.
-  updateSnapshots: (snapshots: Snapshots<T, K>) => Promise<any>;
+  updateSnapshots: (snapshots: Snapshots<T, K, Meta, ExcludedFields>) => Promise<any>;
 
   // Called when a snapshot update is successful.
   updateSnapshotSuccess: (
-    snapshot: Snapshot<T, K>
+    snapshot: Snapshot<T, K, Meta, ExcludedFields>
   ) => Promise<{
     id: string;
     data: {
@@ -108,16 +112,16 @@ interface SnapshotStoreSubset<
   initSnapshot: (snapshotStore: SnapshotStoreConfig<BaseData, BaseData>, snapshotData: SnapshotData<BaseData>) => void;
 
   // Takes a snapshot and returns a list of BaseData or null.
-  takeSnapshot: (updatedSnapshots: Snapshot<T, K>) => Promise<BaseData[] | null>;
+  takeSnapshot: (updatedSnapshots: Snapshot<T, K, Meta, ExcludedFields>) => Promise<BaseData[] | null>;
 
   // Called when a snapshot is successfully taken.
-  takeSnapshotSuccess: (snapshot: Snapshot<T, K>) => void;
+  takeSnapshotSuccess: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void;
 
   // Called when multiple snapshots are successfully taken.
-  takeSnapshotsSuccess: (snapshots: Snapshot<T, K>[]) => void;
+  takeSnapshotsSuccess: (snapshots: Snapshot<T, K, Meta, ExcludedFields>[]) => void;
 
   // Configures the snapshot store with a specific configuration.
-  configureSnapshotStore: (snapshotConfigStore: SnapshotStoreConfig<T, Data>) => void;
+  configureSnapshotStore: (snapshotConfigStore: SnapshotStoreConfig<T, Data<T, K, Meta, Attachment, ExcludedFields>,  Meta, ExcludedFields>) => void;
 
   // Gets the current data.
   getData: () => T | null;
@@ -141,40 +145,40 @@ interface SnapshotStoreSubset<
   handleActions: (action: any) => void;
 
   // Sets a snapshot.
-  setSnapshot: (snapshot: Snapshot<T, K>) => void;
+  setSnapshot: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void;
 
   // Sets multiple snapshots.
-  setSnapshots: (snapshots: Snapshots<T, K>) => void;
+  setSnapshots: (snapshots: Snapshots<T, K, Meta, ExcludedFields>) => void;
 
   // Clears a snapshot by ID.
   clearSnapshot: (snapshotId: string) => void;
 
   // Merges multiple snapshots into one.
-  mergeSnapshots: (snapshots: Snapshots<T, K>,  category: string) => void;
+  mergeSnapshots: (snapshots: Snapshots<T, K, Meta, ExcludedFields>,  category: string) => void;
 
   // Reduces a collection of snapshots to a single value.
-  reduceSnapshots: <U>(callback: (acc: U, snapshot: Snapshot<T, K>) => U, initialValue: U) => U;
+  reduceSnapshots: <U>(callback: (acc: U, snapshot: Snapshot<T, K, Meta, ExcludedFields>) => U, initialValue: U) => U;
 
   // Sorts snapshots using a comparison function.
-  sortSnapshots: (compareFn: (a: Snapshot<T, K>, b: Snapshot<T, K>) => number) => void;
+  sortSnapshots: (compareFn: (a: Snapshot<T, K, Meta, ExcludedFields>, b: Snapshot<T, K, Meta, ExcludedFields>) => number) => void;
 
   // Filters snapshots based on a predicate.
-  filterSnapshots: (predicate: (snapshot: Snapshot<T, K>) => boolean) => Snapshot<T, K>[];
+  filterSnapshots: (predicate: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => boolean) => Snapshot<T, K, Meta, ExcludedFields>[];
 
   // Maps snapshots to a new form using a callback function.
-  mapSnapshots: <U>(callback: (snapshot: Snapshot<T, K>) => U) => U[];
+  mapSnapshots: <U>(callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => U) => U[];
 
   // Finds a snapshot that matches a predicate.
-  findSnapshot: (predicate: (snapshot: Snapshot<T, K>) => boolean) => Snapshot<T, K> | undefined;
+  findSnapshot: (predicate: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => boolean) => Snapshot<T, K, Meta, ExcludedFields> | undefined;
 
   // Gets subscribers related to a snapshot.
-  getSubscribers: (subscribers: Subscriber<T, K>[], snapshots: Snapshot<T, K>) => void;
+  getSubscribers: (subscribers: Subscriber<T, K, Meta, ExcludedFields>[], snapshots: Snapshot<T, K, Meta, ExcludedFields>) => void;
 
   // Sends a notification.
   notify: (id: string, message: string, content: any, date: Date, type: NotificationType) => void;
 
   // Notifies subscribers with specific data.
-  notifySubscribers: (subscribers: Subscriber<T, K>[], data: CustomSnapshotData<T, K, Meta, Attachment, keyof T> | Snapshot<BaseData>) => Promise<T>;
+  notifySubscribers: (subscribers: Subscriber<T, K, Meta, ExcludedFields>[], data: CustomSnapshotData<T, K, Meta, Attachment, keyof T> | Snapshot<BaseData>) => Promise<T>;
 
   // Subscribes to snapshot updates.
   subscribe: () => void;
@@ -183,7 +187,7 @@ interface SnapshotStoreSubset<
   unsubscribe: () => void;
 
   // Fetches a snapshot by ID.
-  fetchSnapshot: (id: string) => Promise<Snapshot<T, any>>;
+  fetchSnapshot: (id: string) => Promise<Snapshot<T, K, Meta, ExcludedFields>>;
 
   // Called when a snapshot is successfully fetched.
   fetchSnapshotSuccess: (snapshot: Snapshot<T> | null, snapshotId: string) => void;
@@ -192,26 +196,26 @@ interface SnapshotStoreSubset<
   fetchSnapshotFailure: () => void;
 
   // Gets a snapshot by ID.
-  getSnapshot: (id: string) => Snapshot<T, K> | undefined;
+  getSnapshot: (id: string) => Snapshot<T, K, Meta, ExcludedFields> | undefined;
 
   // Gets snapshots with optional category and filter.
-  getSnapshots: (category?: string, filter?: (snapshot: Snapshot<T, K>) => boolean) => Promise<Snapshots<T, K>>;
+  getSnapshots: (category?: string, filter?: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => boolean) => Promise<Snapshots<T, K, Meta, ExcludedFields>>;
 
   // Gets all snapshots with optional filter.
     getAllSnapshots: (
       storeId: number,
-      event: Event,
+      event: SnapshotEvent<T, K, Meta, ExcludedFields>,
       ctx: SnapshotContext<T, K, Meta, ExcludedFields> & {
         timestamp: string;
         type: string;
         id: number;
         categoryProperties?: CategoryProperties;
-        dataStoreMethods: DataStore<T, K>;
+        dataStoreMethods: DataStore<T, K, Meta, ExcludedFields>;
         data: T;
       },
       filter?: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => boolean,
       dataCallback?: (
-        subscribers: Subscriber<T, K>[],
+        subscribers: Subscriber<T, K, Meta, ExcludedFields>[],
         snapshots: Snapshots<T, K, Meta, ExcludedFields>
       ) => Promise<SnapshotUnion<T, K, Meta, ExcludedFields>[]>
     ) => Promise<Snapshot<T, K, Meta, ExcludedFields>[]>;
@@ -220,7 +224,7 @@ interface SnapshotStoreSubset<
   generateId: () => string;
 
   // Batch fetches snapshots.
-  batchFetchSnapshots: () => Promise<Snapshots<T, K>>;
+  batchFetchSnapshots: () => Promise<Snapshots<T, K, Meta, ExcludedFields>>;
 
   // Requests to batch take snapshots.
   batchTakeSnapshotsRequest: () => Promise<void>;
@@ -229,13 +233,13 @@ interface SnapshotStoreSubset<
   batchUpdateSnapshotsRequest: () => Promise<void>;
 
   // Called when batch fetching snapshots succeeds.
-  batchFetchSnapshotsSuccess: (snapshots: Snapshots<T, K>) => void;
+  batchFetchSnapshotsSuccess: (snapshots: Snapshots<T, K, Meta, ExcludedFields>) => void;
 
   // Called when batch fetching snapshots fails.
   batchFetchSnapshotsFailure: (error: any) => void;
 
   // Called when batch updating snapshots succeeds.
-  batchUpdateSnapshotsSuccess: (snapshots: Snapshots<T, K>) => void;
+  batchUpdateSnapshotsSuccess: (snapshots: Snapshots<T, K, Meta, ExcludedFields>) => void;
 
   // Called when batch updating snapshots fails.
   batchUpdateSnapshotsFailure: (error: any) => void;
@@ -244,10 +248,10 @@ interface SnapshotStoreSubset<
   batchTakeSnapshot: () => Promise<void>;
 
   // Handles snapshot operations.
-  handleSnapshotOperation: (action: SnapshotOperation<T, K>) => void;
+  handleSnapshotOperation: (action: SnapshotOperation<T, K, Meta, ExcludedFields>) => void;
 
   // Gets a custom store for snapshots.
-  getCustomStore: () => SnapshotStore<T, K>;
+  getCustomStore: () => SnapshotStore<T, K, Meta, ExcludedFields>;
 }
 
 

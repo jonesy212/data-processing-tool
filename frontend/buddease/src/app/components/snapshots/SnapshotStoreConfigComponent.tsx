@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import { SnapshotOperation, SnapshotOperationType } from "../snapshots/SnapshotActions";
 
 interface SnapshotStoreConfigComponentProps<T extends Data, K extends Data> {
-  config: SnapshotStoreConfig<T, K>;
-  onUpdate?: (config: SnapshotStoreConfig<T, K>) => void;
+  config: SnapshotStoreConfig<T, K, Meta, ExcludedFields>;
+  onUpdate?: (config: SnapshotStoreConfig<T, K, Meta, ExcludedFields>) => void;
   onError?: (error: Error) => void;
 }
 
@@ -14,8 +14,8 @@ const SnapshotStoreConfigComponent = <T extends Data, K extends Data>({
   config,
   onUpdate,
   onError,
-}: SnapshotStoreConfigComponentProps<T, K>) => {
-  const [currentConfig, setCurrentConfig] = useState<SnapshotStoreConfig<T, K>>(config);
+}: SnapshotStoreConfigComponentProps<T, K, Meta, ExcludedFields>) => {
+  const [currentConfig, setCurrentConfig] = useState<SnapshotStoreConfig<T, K, Meta, ExcludedFields>>(config);
 
   useEffect(() => {
     // This effect could be used for initializing the component or handling config changes.
@@ -24,7 +24,7 @@ const SnapshotStoreConfigComponent = <T extends Data, K extends Data>({
     }
   }, [currentConfig, onUpdate]);
 
-  const handleUpdateConfig = (newConfig: Partial<SnapshotStoreConfig<T, K>>) => {
+  const handleUpdateConfig = (newConfig: Partial<SnapshotStoreConfig<T, K, Meta, ExcludedFields>>) => {
     setCurrentConfig((prevConfig) => ({
       ...prevConfig,
       ...newConfig,
@@ -36,7 +36,7 @@ const SnapshotStoreConfigComponent = <T extends Data, K extends Data>({
   };
 
   const handleSnapshotOperation = async (
-    snapshot: Snapshot<T, K>,
+    snapshot: Snapshot<T, K, Meta, ExcludedFields>,
     operation: SnapshotOperation,
     operationType: SnapshotOperationType
   ) => {
@@ -74,7 +74,7 @@ const SnapshotStoreConfigComponent = <T extends Data, K extends Data>({
       <button
         onClick={() =>
           handleSnapshotOperation(
-            { /* snapshot data */ } as Snapshot<T, K>,
+            { /* snapshot data */ } as Snapshot<T, K, Meta, ExcludedFields>,
             'Update' as SnapshotOperation,
             'update' as SnapshotOperationType
           )

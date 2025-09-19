@@ -1,21 +1,19 @@
 // defaultSnapshotSubscribeFunctions.ts
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { Snapshot } from "@/app/components/snapshots";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { BaseData } from "../models/data/Data";
 import { CoreSnapshot } from "./CoreSnapshot";
 import { Callback } from "./subscribeToSnapshotsImplementation";
-
+import { DefaultMeta, BaseDataEntity, DefaultExcludedFields } from '@/app/configs/BaseConfig';
 // Function to unsubscribe from snapshots
-export const defaultUnsubscribeFromSnapshots = <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+export const defaultUnsubscribeFromSnapshots = <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotId: string,
-  callback: Callback<Snapshot<T, K>>,
-  snapshot: Snapshot<T, K> // Ensure this matches the expected type
+  callback: Callback<Snapshot<T, K, Meta, ExcludedFields>>,
+  snapshot: Snapshot<T, K, Meta, ExcludedFields> // Ensure this matches the expected type
 ): void => {
   console.warn('Default unsubscription from snapshots is being used.');
   console.log(`Unsubscribed from snapshot with ID: ${snapshotId}`);
 
-  // Ensure `snapshot` is of type `Snapshot<T, K>`
+  // Ensure `snapshot` is of type `Snapshot<T, K, Meta, ExcludedFields>`
   callback(snapshot);
 
   // Simulate a delay before receiving the update
@@ -25,9 +23,9 @@ export const defaultUnsubscribeFromSnapshots = <T extends  BaseData<any>, K exte
 };
 
 
-function convertCoreToSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-  coreSnapshot: CoreSnapshot<T, K>
-): Snapshot<T, K> {
+function convertCoreToSnapshot<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+  coreSnapshot: CoreSnapshot<T, K, Meta, ExcludedFields>
+): Snapshot<T, K, Meta, ExcludedFields> {
   return {
     ...coreSnapshot, // Spread existing properties from CoreSnapshot
     deleted: false, // Default or calculated value
@@ -42,17 +40,22 @@ function convertCoreToSnapshot<T extends  BaseData<any>, K extends T = T, Meta e
   };
 }
 
-export const fetchAndCreateSnapshot = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+export const fetchAndCreateSnapshot = async <
+T extends BaseDataEntity, 
+K extends T = T, 
+Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+>(
   snapshotId: string,
   storeId: number,
   additionalHeaders?: Record<string, string>
-): Promise<CoreSnapshot<T, K>> => {
+): Promise<CoreSnapshot<T, K, Meta, ExcludedFields>> => {
   try {
     // Fetch the snapshot from the API
     const snapshot =  snapshotApi.getSnapshot(String(snapshotId), Number(storeId), additionalHeaders);
     
     // Create CoreSnapshot using fetched data
-    const coreSnapshot: CoreSnapshot<T, K> = {
+    const coreSnapshot: CoreSnapshot<T, K, Meta, ExcludedFields> = {
       manageSubscription, subscribeToSnapshotList, subscribeToSnapshot, unsubscribeFromSnapshot,
       
       subscribers: snapshot.subscribers,
@@ -130,16 +133,16 @@ export const fetchAndCreateSnapshot = async <T extends  BaseData<any>, K extends
 }
 
 
-export const defaultSubscribeToSnapshot = async <T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+export const defaultSubscribeToSnapshot = async <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshotId: string,
   storeId: number, // Added storeId parameter
-  callback: (snapshot: Snapshot<T, K>) => void,
+  callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void,
   additionalHeaders?: Record<string, string> // Optional headers
 ): Promise<void> => {
   console.log(`Subscribed to single snapshot with ID: ${snapshotId}`);
 
   // Fetch the snapshot and create CoreSnapshot
-  const coreSnapshot = await fetchAndCreateSnapshot<T, K>(snapshotId, storeId, additionalHeaders);
+  const coreSnapshot = await fetchAndCreateSnapshot<T, K, Meta, ExcludedFields>(snapshotId, storeId, additionalHeaders);
 
    // Convert CoreSnapshot to Snapshot
    const fullSnapshot = convertCoreToSnapshot(coreSnapshot);

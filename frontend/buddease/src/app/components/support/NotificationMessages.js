@@ -669,6 +669,7 @@ const NOTIFICATION_MESSAGES = {
     },
     Todos: {
         DEFAULT: "Error in Tasks (".concat(typeof errorType, "): ").concat(typeof details),
+        Error: "Error",
         TODO_ADDED: "Todo added successfully",
         TODO_DELETED: "Todo deleted successfully",
         TODO_UPDATED: "Todo updated successfully",

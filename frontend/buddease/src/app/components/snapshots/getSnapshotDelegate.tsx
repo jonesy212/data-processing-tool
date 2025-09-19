@@ -1,23 +1,21 @@
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { BaseData } from '@/app/components/models/data/Data';
 import { Snapshot } from "@/app/components/snapshots";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { SnapshotContainer } from './SnapshotContainer';
 
-interface DelegateType<T, K> {
-    processSnapshot: (snapshot: Snapshot<T, K>) => void;
+interface DelegateType<T, K, Meta, ExcludedFields> {
+    processSnapshot: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void;
     anotherTask: () => void;
   }
   
 
 // Define the delegate function that retrieves the delegate based on the snapshot ID and store ID
-async function getSnapshotDelegate<T, K>(
+async function getSnapshotDelegate<T, K, Meta, ExcludedFields>(
   snapshotId: string,
   storeId: number
-): Promise<DelegateType<T, K> | null> {
+): Promise<DelegateType<T, K, Meta, ExcludedFields> | null> {
   try {
     // You may need to fetch the snapshot container first
-    const snapshotContainer = await snapshotApi.getSnapshotContainer<T, K>(snapshotId, storeId);
+    const snapshotContainer = await snapshotApi.getSnapshotContainer<T, K, Meta, ExcludedFields>(snapshotId, storeId);
 
     if (!snapshotContainer) {
       console.error("Snapshot container not found for snapshotId:", snapshotId);
@@ -41,9 +39,9 @@ async function getSnapshotDelegate<T, K>(
 }
 
 // Helper function to create a delegate from a container if needed
-function createDelegateFromContainer<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(container: SnapshotContainer<T, K>): DelegateType<T, K> {
+function createDelegateFromContainer<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(container: SnapshotContainer<T, K, Meta, ExcludedFields>): DelegateType<T, K, Meta, ExcludedFields> {
   return {
-    processSnapshot: (snapshot: Snapshot<T, K>) => {
+    processSnapshot: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => {
       try {
         const snapshotId = snapshot.id;
 
@@ -90,4 +88,4 @@ function createDelegateFromContainer<T extends  BaseData<any>, K extends T = T, 
 
 
 export { getSnapshotDelegate };
-export type { DelegateType }
+export type { DelegateType };

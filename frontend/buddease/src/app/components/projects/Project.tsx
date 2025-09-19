@@ -1,4 +1,4 @@
-//projects/Project.ts
+// projects/Project.ts
 import { BaseData } from '@/app/components/models/data/Data';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { AllStatus } from '@/app/components/state/stores/DetailsListStore';
@@ -16,7 +16,12 @@ import { StatusType } from "../models/data/StatusType";
 import { Task } from "../models/tasks/Task";
 import { Team } from "../models/teams/Team";
 import { Member } from "../models/teams/TeamMembers";
-import { CustomPhaseHooks, Phase } from "../phases/Phase";
+import { CustomPhaseHooks, Phase, PhaseEntity
+  PhaseK,
+  PhaseMetaType,
+  PhaseExcluded,,  
+  PhaseData
+  PhaseMeta} from "../phases/Phase";
 import { CustomComment } from "../state/redux/slices/BlogSlice";
 import { implementThen } from '../state/stores/CommonEvent';
 import { default as Comment, default as TodoImpl } from "../todos/Todo";
@@ -27,7 +32,27 @@ import { AnalysisTypeEnum } from "./DataAnalysisPhase/AnalysisType";
 import { DataAnalysisResult } from "./DataAnalysisPhase/DataAnalysisResult";
 import { UpdatedProjectDetailsProps } from "./UpdateProjectDetails";
 import { Tag } from "../models/tracker/Tag";
- 
+import { SharedTimestamps } from '@/RelatedProps'
+import { DefaultMeta, DefaultExcludedFields, baseConfig } from '@/app/configs/BaseConfig';
+import { sharedMetadata, sharedBaseData } from '@/app/configs/metadata/createMetadataState';
+import { T, K, Meta } from '../models/data/dataStoreMethods';
+import { ExcludedFields } from '../routing/Fields';
+import { BaseDataEntity } from '../snapshots/ValidationRule';
+
+
+// A project’s raw entity shape
+type ProjectEntity = BaseDataEntity & {
+  title: string;
+  description?: string;
+  budget?: number;
+};
+
+type ProjectK = ProjectEntity;
+type ProjectMeta = DefaultMeta<ProjectEntity, ProjectK>;
+type ProjectExcludedFields = DefaultExcludedFields<ProjectEntity>;
+
+
+type TypedProject = Project<ProjectEntity, ProjectK, ProjectMeta, ProjectExcludedFields>;
 
 export enum ProjectType {
   Internal = "Internal",
@@ -40,12 +65,19 @@ export enum ProjectType {
 } 
 
 
-interface Project extends BaseData<any> {
+interface Project<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment, 
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields> {
   id: string;
   name: string;
   description: string; // Updated this line
   members: Member[];
-  tasks: Task[];
+  tasks: Task<T, K, Meta, ExcludedFields>[];
+  comments?: (Comment<T, K, Meta> | CustomComment)[] | undefined;
   startDate: Date | undefined
   endDate: Date | undefined
   isActive: boolean;
@@ -56,10 +88,14 @@ interface Project extends BaseData<any> {
   type: ProjectType;
   status: AllStatus;
   currentPhase: Phase | null; // Provide a default value or mark as optional
-  comments?: (Comment<any, any, any> | CustomComment)[] | undefined  // Add other project-related fields as needed
+  
+  
+  currentTeam?: Team<T, K, Meta, ExcludedFields>; // <-- Add this
+  reassignedProjects?: Project<T, K, Meta, ExcludedFields>[]; // <-- Add this
+
   commnetBy?: User | Member;
   then?: typeof implementThen;
-  data?: ProjectData;
+  data?: ProjectData<T, K, Meta, ExcludedFields>;
   customProperty?: string;
   projectProgress?: Progress
   // tags?: string[] | Tag[];
@@ -74,13 +110,6 @@ type ReassignProject = (
 
 
 
-
-
-
-
-
-
-
 export interface ProjectDetails {
   _id?: string  | undefined;
   id?: string;
@@ -88,7 +117,7 @@ export interface ProjectDetails {
   name: string;
   description: string;
   status: StatusType;
-  tasks: Task[];
+  tasks: Task<T, K, Meta, ExcludedFields>[];
   projectDetails?: Partial<ProjectDetails>;
 
   // Add other properties as needed
@@ -149,7 +178,12 @@ export function isProjectInSpecialPhase(project: Project): boolean {
   return false;
 }
 
-class ProjectImpl implements Project {
+class ProjectImpl<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> implements Project {
   [key: string]: any;
   scheduled?: ScheduledData<any>;
   isScheduled?: boolean;
@@ -178,7 +212,7 @@ class ProjectImpl implements Project {
   id: string = "0"; // Initialize id property to avoid error
   name: string = "projectName";
   members: Member[] = []; // Provide a default value or mark as optional
-  tasks: Task[] = []; // Provide a default value or mark as optional
+  tasks: Task<T, K, Meta, ExcludedFields>[] = []; // Provide a default value or mark as optional
   startDate: Date= new Date(); // Provide a default value or mark as optional
   endDate: Date= new Date(); // Provide a default value or mark as optional // Provide a default value or mark as optional
   isActive: boolean = false; // Provide a default value or mark as optional
@@ -229,24 +263,49 @@ class ProjectImpl implements Project {
   get formattedVideoDuration(): string {
     return this.formatDuration(this.videoDuration);
   }
+  constructor(init?: Partial<Project<T, K, Meta, ExcludedFields>>) {
+    this.id = init?.id ?? "";
+    this.name = init?.name ?? "";
+    this.description = init?.description;
+    this.members = init?.members ?? [];
+    this.tasks = init?.tasks ?? [];
+    this.comments = init?.comments;
+  }
   // project implementation
 }
 
-const currentProject = new ProjectImpl();
-const currentPhase: Phase = {
+const currentProject = new ProjectImpl<ProjectEntity, ProjectK, ProjectMeta, ProjectExcludedFields>({
+  id: "p1",
+  name: "AI Research",
+  description: "Exploring AI-powered project management",
+  members: [],
+  tasks: [],
+  isActive: true,
+  leader: null,
+  budget: 50000,
+  phase: null,
+  phases: [],
+  type: "Research" as ProjectType,
+  status: "active" as AllStatus,
+  currentPhase: null,
+});
+
+
+
+const currentPhase: PhaseData<PhaseEntity, PhaseK, PhaseMetaType, Attachment, PhaseExcluded> = {
   id: "0",
   name: "name",
   startDate: new Date(),
   endDate: new Date(),
   subPhases: [],
-  data: {} as Data<T, K, Meta>,
+  data: {} as BaseData<PhaseEntity, PhaseK, PhaseMetaType, Attachment, PhaseExcluded>,
   hooks: {} as CustomPhaseHooks,
   description: "", 
   label: {
     text: "",
     color: "",
   },
-  currentMeta: {} as PhaseMeta<any, any>, 
+  currentMeta: {} as PhaseMeta<PhaseEntity, PhaseK, PhaseMetaType, PhaseExcluded>, 
   currentMetadata: {
     baseConfig, sharedMetadata, sharedBaseData, taggable,
   },
@@ -266,7 +325,12 @@ const currentPhase: Phase = {
   tasks: []
 };
 
-export interface ProjectData extends Project {
+export interface ProjectData<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> extends Project, SharedTimestamps {
   project: Project;
   projects: Project[];
   phases: Phase[];

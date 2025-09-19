@@ -1,102 +1,126 @@
-// userScenarioCreation.ts
-
-import { DocumentData } from '@/app/components/documents/DocumentBuilder'; // Corrected import without using 'new'
-import PersonaTypeEnum, { PersonaBuilder } from "@/app/pages/personas/PersonaBuilder";
 import { useState } from "react";
 import { getDefaultDocumentOptions } from "../documents/DocumentOptions";
 import { DocumentBuilderProps } from "../documents/SharedDocumentProps";
 import { Phase } from "../phases/Phase";
 import PhaseManager from "../phases/PhaseManager";
 import useDocumentManagerSlice from "../state/redux/slices/DocumentSlice";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/models/BaseTypes";
+import PersonaTypeEnum, { PersonaBuilder } from "@/app/pages/personas/PersonaBuilder";
 
-// Define function to create user scenarios and map out user journey
-export function createUserScenarios() {
-  const [options, setOptions] = useState(getDefaultDocumentOptions());
+// ---------------------------
+// Helper types for DocumentData
+// ---------------------------
+type DocEntity = BaseDataEntity;
+type DocK = DocEntity;
+type DocMeta = DefaultMeta<DocEntity, DocK>;
+type DocExcludedFields = DefaultExcludedFields<DocEntity>;
 
-  // Create instances of UserPersonaBuilder, PhaseManager, and DocumentBuilder
-  const userPersonaBuilder = new PersonaBuilder();
-  const phaseManager = PhaseManager({ phases: [], }) as typeof PhaseManager | null;
+// ---------------------------
+// DocumentData with generics
+// ---------------------------
+export interface DocumentData<
+  T extends BaseDataEntity = DocEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DocMeta,
+  ExcludedFields extends keyof T = DocExcludedFields
+> {
+  id: number | string;
+  title: string;
+  content: string;
+  topics: string[];
+  highlights: string[];
+  files: string[];
+  documentType?: string;
+  documentOptions?: DocumentWithBuilderProps<T, K, Meta, ExcludedFields>;
+}
 
-  // Use the modules to create detailed user scenarios and map out user journey
-  // Example:
-  const userPersona = PersonaBuilder.buildPersona(PersonaTypeEnum.CasualUser);
-  // Check if phaseManager is not null or undefined before accessing its properties
-  if (phaseManager) {
-    // Call the createPhases method if it exists
-    const phases = phaseManager.createPhases(/* parameters */);
-  }
+// ---------------------------
+// DocumentWithBuilderProps interface
+// ---------------------------
+export interface DocumentWithBuilderProps<
+  T extends BaseDataEntity = DocEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DocMeta,
+  ExcludedFields extends keyof T = DocExcludedFields
+> extends DocumentData<T, K, Meta, ExcludedFields>,
+        DocumentBuilderProps<T, K, Meta, ExcludedFields> {}
 
-
-// Define a new interface that extends both DocumentData and DocumentBuilderProps
-interface DocumentWithBuilderProps extends DocumentData, DocumentBuilderProps {}
-
-
-// Define documentOptions according to DocumentBuilderProps
-// Now you can use this new interface for documentOptions
+// ---------------------------
+// Module-level document options
+// ---------------------------
 const documentOptions: DocumentWithBuilderProps = {
   isDynamic: true,
   options: getDefaultDocumentOptions(),
-  documentPhase: "YourDocumentPhase", // Add appropriate value
-  version: "YourDocumentVersion", // Add appropriate value
+  documentPhase: "YourDocumentPhase",
+  version: "YourDocumentVersion",
   onOptionsChange: (
-    newOptions: DocumentData,
+    newOptions: DocumentData<DocEntity, DocK, DocMeta, DocExcludedFields>,
     id: number,
     topics: string[],
     highlights: string[],
-    files: string[],
+    files: string[]
   ) => {
-    
-      options
-    // Implement the function as needed
-    setOptions(newOptions);
-     }, // Implement the function as needed
+    console.log("Options changed:", newOptions);
+  },
 };
-  
-  
-// Instead of using 'documentOptions' directly in the documents array,
-// you can use it as a separate object and then include it in each document item
-const documentsData: DocumentData[] = [
-  {
-    ...getDefaultDocumentOptions(),
-    id: 1,
-    title: "Document 1",
-    content: "Content for Document 1",
-    topics: [],
-    highlights: [],
-    files: [],
-    documentType: "DocumentType",
-    documentOptions: documentOptions as DocumentData, // Include documentOptions
-  },
-  {
-    ...getDefaultDocumentOptions(),
-    id: 2,
-    title: "Document 2",
-    content: "Content for Document 2",
-    topics: [],
-    highlights: [],
-    files: [],
-    documentType: "DocumentType",
-    documentOptions: documentOptions, // Include documentOptions
-  },
-];
 
-// Now you can pass documentsData to your hook
-const documents = useDocumentManagerSlice().documentBuilder({
-  documents: documentsData,
-});
+// ---------------------------
+// Function to create user scenarios
+// ---------------------------
+export function createUserScenarios() {
+  const [options, setOptions] = useState(getDefaultDocumentOptions());
 
+  // Create instances
+  const userPersonaBuilder = new PersonaBuilder();
+  const phaseManager = PhaseManager({ phases: [] }) as typeof PhaseManager | null;
 
+  // Create a user persona
+  const userPersona = PersonaBuilder.buildPersona(PersonaTypeEnum.CasualUser);
+
+  // Create phases if PhaseManager exists
   let phases: Phase[] = [];
+  if (phaseManager && typeof phaseManager.createPhases === "function") {
+    phases = phaseManager.createPhases();
+  }
 
-  // Output or utilize the created user scenarios and mapped user journey
+  // Define documents array
+  const documentsData: DocumentData<DocEntity, DocK, DocMeta, DocExcludedFields>[] = [
+    {
+      ...getDefaultDocumentOptions(),
+      id: 1,
+      title: "Document 1",
+      content: "Content for Document 1",
+      topics: [],
+      highlights: [],
+      files: [],
+      documentType: "DocumentType",
+      documentOptions: documentOptions,
+    },
+    {
+      ...getDefaultDocumentOptions(),
+      id: 2,
+      title: "Document 2",
+      content: "Content for Document 2",
+      topics: [],
+      highlights: [],
+      files: [],
+      documentType: "DocumentType",
+      documentOptions: documentOptions,
+    },
+  ];
+
+  // Initialize documents using the DocumentManagerSlice
+  const documents = useDocumentManagerSlice().documentBuilder({
+    documents: documentsData,
+  });
+
+  // Debug logs
+  console.log("User Persona:", userPersona);
+  console.log("Created Phases:", phases);
+  console.log("Documents:", documents);
   console.log("User scenarios and user journey mapped successfully.");
-    // Output or utilize the created user scenarios and mapped user journey
-    console.log("User Persona:", userPersona);
-    console.log("Created Phases:", phases); // Assuming 'phases' variable is defined somewhere
-    console.log("Documents:", documents);
-    console.log("User scenarios and user journey mapped successfully.");
-  
-}
 
+  return { userPersona, phases, documents, documentOptions };
+}
 
 export { documentOptions };

@@ -34,7 +34,14 @@ import PersonaTypeEnum, { PersonaBuilder } from "./PersonaBuilder";
 type NestedCategoryKeys = 'UserInterface' | 'DataVisualization' | 'Forms' | 'Analysis' | 'Communication' | 'TaskManagement' | 'Crypto';
 
 // Define categories and their associated properties
-interface CategoryProperties {
+// Updated CategoryProperties with generics
+interface CategoryProperties<
+  T extends BaseData<any> = BaseData<any>,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   id: string;
   type: string;
   name: string;
@@ -61,8 +68,8 @@ interface CategoryProperties {
   brandColor: string;
   brandMessage: string;
   chartType: string;
-  dataProperties: string[];
-  formFields: string[];
+  dataProperties: (keyof T | keyof K | string)[];
+  formFields: (keyof T | keyof K | string)[];
 }
 
 

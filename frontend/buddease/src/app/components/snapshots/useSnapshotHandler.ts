@@ -7,8 +7,8 @@
 // import { SnapshotStoreConfig } from './SnapshotStoreConfig';
 
 // const useSnapshotHandler = <T extends BaseDataEntity, K extends CustomSnapshotData>() => {
-//   const [snapshotStoreConfig, setSnapshotStoreConfig] = useState<SnapshotStoreConfig<T, K> | undefined>(undefined);
-//   const [snapshots, setSnapshots] = useState<Map<string, Snapshot<T, K>>>(new Map());
+//   const [snapshotStoreConfig, setSnapshotStoreConfig] = useState<SnapshotStoreConfig<T, K, Meta, ExcludedFields> | undefined>(undefined);
+//   const [snapshots, setSnapshots] = useState<Map<string, Snapshot<T, K, Meta, ExcludedFields>>>(new Map());
 
 //   const handleSnapshot =  (
 //     id: string,
@@ -17,9 +17,9 @@
 //     snapshotData: T,
 //     category: Category | undefined,//     callback: (snapshot: T) => void,
 //     type: string,
-//     event: Event,
+//     event: SnapshotEvent<T, K, Meta, ExcludedFields>,
 //     snapshotContainer?: T
-//   ): Promise<Snapshot<T, K> | null> => {
+//   ): Promise<Snapshot<T, K, Meta, ExcludedFields> | null> => {
 //     // Your logic for handling snapshot
 //     if (snapshotStoreConfig?.delegate?.length) {
 //       return snapshotStoreConfig.delegate[0].handleSnapshot(

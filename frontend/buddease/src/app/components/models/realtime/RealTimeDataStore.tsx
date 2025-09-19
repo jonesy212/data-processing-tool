@@ -1,20 +1,33 @@
+import { DefaultMeta, DefaultExcludedFields } from "@/app/configs/BaseConfig";
+import { BaseDataEntity } from "../../snapshots/ValidationRule";
 import { RealtimeData } from "./RealtimeData";
+import { AppEntity, AppK, AppMeta, AppExcludedFields } from "./snapshotStoreConfigInstance";
+
+
+// Use these defaults for the generic
+type AppRealtimeData = RealtimeData<
+  AppEntity,       // T
+  AppK,            // K
+  AppMeta,         // Meta
+  AppExcludedFields // ExcludedFields
+>;
+
 
 // RealTimeDataStore.ts
 interface RealTimeDataStore {
-  realTimeDataList: RealtimeData[];
+  realTimeDataList: AppRealtimeData[];
   currentRealTimeDataId: string;
 
-  addRealTimeData(data: RealtimeData): void;
+  addRealTimeData(data: AppRealtimeData): void;
   removeRealTimeData(dataId: string): void;
   setCurrentRealTimeData(dataId: string): void;
 }
 
 class RealTimeDataStoreClass implements RealTimeDataStore {
-  realTimeDataList: RealtimeData[] = [];
+  realTimeDataList: AppRealtimeData[] = [];
   currentRealTimeDataId: string = "";
 
-  addRealTimeData(data: RealtimeData): void {
+  addRealTimeData(data: AppRealtimeData): void {
     this.realTimeDataList.push(data);
   }
 
@@ -33,4 +46,8 @@ const useRealTimeDataStore = (): RealTimeDataStore => {
   return new RealTimeDataStoreClass();
 };
 
-export { useRealTimeDataStore, RealTimeDataStoreClass, RealTimeDataStore}
+export {
+  useRealTimeDataStore, RealTimeDataStoreClass,
+};
+
+export type { RealTimeDataStore }

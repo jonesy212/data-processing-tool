@@ -50,7 +50,7 @@ interface RetrievedSnapshot<
   T extends  BaseData<any> =BaseData<any, any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-  // ExcludedFields extends keyof T = never
+  // ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
   extends Snapshot<T, K>{
   id: string;

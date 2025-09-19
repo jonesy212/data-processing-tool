@@ -23,10 +23,14 @@ export type DataStatus = "processing" | "completed" | "failed"; // Define DataSt
 
 
 interface NotificationData<
-  T extends BaseData<any, any, any, Attachment>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> extends Data<T, K, Meta>, CalendarEvent<T, K> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+CalendarEvent<T, K, Meta, ExcludedFields> {
   id: string | null;
   message: string;
 
@@ -44,15 +48,16 @@ interface NotificationData<
   options?: {
     additionalOptions: readonly string[] | string | number | any[] | undefined;
     additionalDocumentOptions: DocumentOptions
-    additionalOptionsLabel: string;  }
+    additionalOptionsLabel: string;
+  }
 }
 
 interface NotificationsState {
-  notifications: NotificationData<T, K, StructuredMetadata<<T, K>>[];
+  notifications: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 const initialState: NotificationsState = {
-  notifications: [],
+  notifications: [{} as NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>] 
 };
 
 
@@ -72,7 +77,7 @@ export const dispatchNotification = (
         // createdAt: new Date(),
         date: new Date(),
         content: successMessage,
-        completionMessageLog: {} as WritableDraft<LogData<T, K, StructuredMetadata<<T, K>>>,
+        completionMessageLog: {} as WritableDraft<LogData<T, K, StructuredMetadata<T, K>>>,
         type: NotificationTypeEnum.Info,
         message: successMessage,
         status: "tentative",
@@ -104,7 +109,7 @@ export const dispatchNotification = (
         id: actionType,
         createdAt: new Date(),
         content: errorMessage + ". Payload received: " + JSON.stringify(payload),
-        completionMessageLog: {} as WritableDraft<LogData<T, K, StructuredMetadata<<T, K>>>>,
+        completionMessageLog: {} as WritableDraft<LogData<T, K, StructuredMetadata<T, K>>>,
         type: NotificationTypeEnum.Error,
         message: errorMessage + ": " + error,
         status: "tentative",

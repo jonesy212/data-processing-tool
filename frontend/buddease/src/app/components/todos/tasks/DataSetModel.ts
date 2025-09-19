@@ -12,13 +12,17 @@ import { WritableDraft } from "../../state/redux/ReducerGenerator";
 import { DocumentObject } from "../../state/redux/slices/DocumentSlice";
 import { DocumentBase, PhaseTypeEnums } from "../../state/stores/DocumentStore";
 import { AllTypes } from "../../typings/PropTypes";
-import { BaseDataEntity, DefaultMeta } from '@/app/configs/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import { Attachment } from '../../documents/Attachment/attachment';
 
 
 interface DatasetModel<
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends BaseEntity, DocumentBase<T, K> {
   filePathOrUrl?: string;
   uploadedBy: string; // Assuming this is the user ID

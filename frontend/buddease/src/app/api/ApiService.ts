@@ -1,15 +1,14 @@
 import { handleApiError } from "@/app/api/ApiLogs";
 import { createSnapshot, snapshotContainer } from '@/app/api/SnapshotApi';
-import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
 import { BaseData } from '@/app/components/models/data/Data';
-import { version } from "@/app/components/versions/Version";
-import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/components/versions/createLatestVersion";
 import { CustomApp } from "@/app/components/web3/dAppAdapter/DApp";
+import { UnifiedMetaDataOptions } from "@/app/configs/database/MetaDataOptions";
 import { useNotification } from '@/app/context/NotificationContext';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import metadata from '@/app/layout';
 import { getAuthToken } from '@/server/auth/getAuthToken';
+import { createDefaultVersionData } from '@/versions/VersionData';
 import { AxiosError, AxiosRequestConfig } from "axios";
 import { Style as DocxStyle } from 'docx';
 import { ContentState } from 'draft-js';
@@ -37,7 +36,7 @@ import UserRoles from '../components/users/UserRoles';
 import { generateSnapshotId } from '../components/utils/snapshotUtils';
 import useSecureStoreId from '../components/utils/useSecureStoreId';
 import { currentAppName } from "../components/versions/AppVersion";
-import { VersionData, versionHistory } from "../components/versions/VersionData";
+import { versionHistory } from "../components/versions/VersionData";
 import { backendConfig } from "../configs/BackendConfig";
 import { ConfigurationService } from "../configs/ConfigurationService";
 import { DataVersions, dataVersions } from '../configs/DataVersionsConfig';
@@ -45,8 +44,8 @@ import { determineFileType } from '../configs/DetermineFileType';
 import { frontendConfig } from "../configs/FrontendConfig";
 import { StructuredMetadata } from '../configs/StructuredMetadata';
 import userSettings, { UserSettings } from "../configs/UserSettings";
-import BackendStructure, { backendStructure } from "../configs/appStructure/BackendStructure";
-import FrontendStructure, { frontendStructure } from "../configs/appStructure/FrontendStructure";
+import { backendStructure } from "../configs/appStructure/BackendStructure";
+import { frontendStructure } from "../configs/appStructure/FrontendStructure";
 import { CacheData, realtimeData } from "../generators/GenerateCache";
 import { determineType } from '../typings/determineType';
 import { getBackendStructureFilePath, STORE_KEYS, writeAndUpdateCache } from "../utils/CacheManager";
@@ -55,7 +54,6 @@ import { endpoints } from "./ApiEndpoints";
 import { getSnapshotConfig, getSnapshotsAndCategory } from "./SnapshotApi";
 import axiosInstance from "./axiosInstance";
 import headersConfig from "./headers/HeadersConfig";
-import { createDefaultVersionData } from '@/versions/VersionData';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.data; // Assuming 'endpoints' has a property 'data' for the base URL
@@ -73,7 +71,7 @@ interface CacheResponse<
   T extends  BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Metadata type
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
   id?: string | number | undefined;
   data: SupportedData<T, K, Meta>;

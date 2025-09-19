@@ -1,8 +1,7 @@
-import { BaseData } from '@/app/components/models/data/Data';
 import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { SnapshotDataResponse } from "../../../app/utils/retrieveSnapshotData";
 import { UpdateSnapshotPayload } from '../../../server/database/Payload';
+import { SharedIdentifiers } from '../documents/RelatedProps';
 import { Category } from '../libraries/categories/generateCategoryProperties';
 import { Data } from "../models/data/Data";
 import { RealtimeDataItem } from '../models/realtime/RealtimeData';
@@ -12,8 +11,6 @@ import { Subscriber } from "../users/Subscriber";
 import { Snapshot, Snapshots, SnapshotsArray } from "./LocalStorageSnapshotStore";
 import { SnapshotItem } from "./SnapshotList";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { Meta } from '../models/data/dataStoreMethods';
-import { SharedIdentifiers } from '../documents/RelatedProps';
 
 
 type OptionalSnapshotProps<
@@ -132,16 +129,16 @@ type OptionalSnapshotProps<
   | 'getSnapshotStoreConfigSuccess'
   | 'getSnapshotStoreConfigFailure'
 > & {
-  transformDelegate?: (delegate: any) => Promise<SnapshotStoreConfig<T, K>[]>;
-  getSnapshotsBySubscriber?: () => Snapshot<SnapshotStoreDataResponse<T, K>>[];
+  transformDelegate?: (delegate: any) => Promise<SnapshotStoreConfig<T, K, Meta, ExcludedFields>[]>;
+  getSnapshotsBySubscriber?: () => Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>[];
   getSnapshotsBySubscriberSuccess?: boolean;
-  getSnapshotsByTopic?: () => Snapshot<SnapshotStoreDataResponse<T, K>>[];
+  getSnapshotsByTopic?: () => Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>[];
   getSnapshotsByTopicSuccess?: boolean;
-  getSnapshotsByCategory?: () => Snapshot<SnapshotStoreDataResponse<T, K>>[];
+  getSnapshotsByCategory?: () => Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>[];
   getSnapshotsByCategorySuccess?: boolean;
-  getSnapshotsByKey?: () => Snapshot<SnapshotStoreDataResponse<T, K>>[];
+  getSnapshotsByKey?: () => Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>[];
   getSnapshotsByKeySuccess?: boolean;
-  getSnapshotsByPriority?: () => Snapshot<SnapshotStoreDataResponse<T, K>>[];
+  getSnapshotsByPriority?: () => Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>[];
   getSnapshotsByPrioritySuccess?: boolean;
   getStoreData?: () => any; // Adjust to specific type if known
   updateStoreData?: (data: any) => void; // Adjust to specific type if known
@@ -152,40 +149,40 @@ type OptionalSnapshotProps<
       id: string,
     additionalData: any,
     category?:  Category,
-    callback?: (snapshot: Snapshot<T, K>) => void,
-    snapshotData?: SnapshotStore<T, K>,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> 
-  ) => Snapshot<T, K> | null;
+    callback?: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void,
+    snapshotData?: SnapshotStore<T, K, Meta, ExcludedFields>,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, ExcludedFields>
+  ) => Snapshot<T, K, Meta, ExcludedFields> | null;
 
   updateSnapshot?: (snapshotId: string,
-    data: Map<string, Snapshot<T, K>>,
-    events: Record<string, CalendarManagerStoreClass<T, K>[]>,
-    snapshotStore: SnapshotStore<T, K>,
-    dataItems: RealtimeDataItem[],
-    newData: Snapshot<T, K>,
+    data: Map<string, Snapshot<T, K, Meta, ExcludedFields>>,
+    events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>,
+    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
+    newData: Snapshot<T, K, Meta, ExcludedFields>,
     payload: UpdateSnapshotPayload<T>,
     store: SnapshotStore<any, K>
-  ) => Snapshot<T, K>; // Adjust as needed
+  ) => Snapshot<T, K, Meta, ExcludedFields>; // Adjust as needed
   deleteSnapshot?: (id: string) => void;
   getSnapshotItems?: (
     category: symbol | string | Category | undefined, 
     snapshots: SnapshotsArray<T, K, Meta>,
     snapshotId?: string,                     // Optional: If you need to fetch a specific snapshot by ID
-    callback?: (snapshots: Snapshots<T, K>) => Subscriber<T, K> | null, // Optional: Callback to process snapshots
-    snapshot?: Snapshot<T, K> | null        // Optional: Current snapshot to process or filter by
+    callback?: (snapshots: Snapshots<T, K, Meta, ExcludedFields>) => Subscriber<T, K, Meta, ExcludedFields> | null, // Optional: Callback to process snapshots
+    snapshot?: Snapshot<T, K, Meta, ExcludedFields> | null        // Optional: Current snapshot to process or filter by
   ) => (
     | SnapshotItem<Data<T, K, Meta>, any>
-    | SnapshotStoreConfig<T, K>
+    | SnapshotStoreConfig<T, K, Meta, ExcludedFields>
     | undefined
   )[] | undefined;
-  findSnapshot?: (id: string) => Snapshot<SnapshotStoreDataResponse<T, K>> | null;
+  findSnapshot?: (id: string) => Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>> | null;
   defaultSubscribeToSnapshots?: (
     snapshotId: string,
-    callback: (snapshots: Snapshots<T, K>) => Subscriber<T, K> | null,
-    snapshot: Snapshot<T, K> | null
+    callback: (snapshots: Snapshots<T, K, Meta, ExcludedFields>) => Subscriber<T, K, Meta, ExcludedFields> | null,
+    snapshot: Snapshot<T, K, Meta, ExcludedFields> | null
   ) => void;
   getAllKeys?: () => string[];
-  mapSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => any; // Adjust type if known
+  mapSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => any; // Adjust type if known
   getAllItems?: () => any[]; // Adjust to specific type if known
   addData?: (data: any) => void; // Adjust type if known
   addDataStatus?: string;
@@ -201,9 +198,9 @@ type OptionalSnapshotProps<
   getFrontendVersion?: () => string;
   fetchData?: () => any; // Adjust to specific type if known
   defaultSubscribeToSnapshot?: (id: string) => void;
-  handleSubscribeToSnapshot?: (id: string, callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void) => void;
+  handleSubscribeToSnapshot?: (id: string, callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => void) => void;
   removeItem?: (id: string) => void;
-  getSnapshot?: (id: string) => Snapshot<SnapshotStoreDataResponse<T, K>> | null;
+  getSnapshot?: (id: string) => Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>> | null;
   getSnapshotSuccess?: boolean;
   getSnapshotId?: (id: string) => string;
   getItem?: (id: string) => any; // Adjust to specific type if known
@@ -223,7 +220,7 @@ type OptionalSnapshotProps<
   updateSnapshotFailure?: boolean;
   removeSnapshot?: (id: string) => void;
   clearSnapshots?: () => void;
-  addSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void;
+  addSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => void;
   createInitSnapshot?: () => void;
   createSnapshotSuccess?: boolean;
   clearSnapshotSuccess?: boolean;
@@ -231,7 +228,7 @@ type OptionalSnapshotProps<
   createSnapshotFailure?: boolean;
   setSnapshotSuccess?: boolean;
   setSnapshotFailure?: boolean;
-  updateSnapshots?: (snapshots: Snapshot<SnapshotStoreDataResponse<T, K>>[]) => void;
+  updateSnapshots?: (snapshots: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>[]) => void;
   updateSnapshotsSuccess?: boolean;
   updateSnapshotsFailure?: boolean;
   initSnapshot?: () => void;
@@ -244,11 +241,11 @@ type OptionalSnapshotProps<
   getState?: () => any; // Adjust type if known
   setState?: (state: any) => void; // Adjust type if known
   validateSnapshot?: () => boolean;
-  handleSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void;
+  handleSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => void;
   handleActions?: (actions: any) => void; // Adjust type if known
-  setSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void;
+  setSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => void;
   transformSnapshotConfig?: (config: any) => any; // Adjust type if known
-  getSnapshotCategory?: (category: string) => Snapshot<SnapshotStoreDataResponse<T, K>>[];
+  getSnapshotCategory?: (category: string) => Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>[];
   getSnapshotCategorySuccess?: boolean;
   getSnapshotCategoryFailure?: boolean;
   transformSnapshotStore?: (store: any) => any; // Adjust type if known
@@ -293,7 +290,7 @@ interface SnapshotStoreDataResponse<
   id: string | number;
   timestamp: Date;
   category: string;
-  initializedState: InitializedState<T, K> | {};
+  initializedState: InitializedState<T, K, Meta, ExcludedFields> | {};
   topic?: string;
   date?: string;
   config?: any; // Adjust to specific type if known
@@ -334,7 +331,7 @@ interface SnapshotStoreDataResponse<
   getCustomStore?: () => any; // Adjust to specific type if known
   addSCustomStore?: (store: any) => void; // Adjust type if known
   removeStore?: (storeId: string) => void;
-  onSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void;
+  onSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => void;
   getData?: () => any; // Adjust to specific type if known
   getDataStore?: () => any; // Adjust to specific type if known
   addSnapshotItem?: (item: any) => void; // Adjust type if known
@@ -342,19 +339,19 @@ interface SnapshotStoreDataResponse<
   
   defaultCreateSnapshotStores?: () => void;
   createSnapshotStores?: () => void;
-  subscribeToSnapshots?: (callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void) => void;
-  subscribeToSnapshot?: (id: string, callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void) => void;
+  subscribeToSnapshots?: (callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => void) => void;
+  subscribeToSnapshot?: (id: string, callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => void) => void;
   defaultOnSnapshots?: () => void;
-  onSnapshots?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void;
+  onSnapshots?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => void;
   transformSubscriber?: (subscriber: any) => any; // Adjust type if known
   isSnapshotStoreConfig?: () => boolean;
-  transformDelegate?: (delegate: any) => Promise<SnapshotStoreConfig<T, K>[]>; // Adjust type if known
-  transformSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => any; // Adjust type if known
+  transformDelegate?: (delegate: any) => Promise<SnapshotStoreConfig<T, K, Meta, ExcludedFields>[]>; // Adjust type if known
+  transformSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => any; // Adjust type if known
   transformedDelegate?: any[]; // Adjust to specific type if known
   getSnapshotIds?: string[];
   
   getAllKeys?: () => string[];
-  mapSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => any; // Adjust type if known
+  mapSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => any; // Adjust type if known
   getAllItems?: () => any[]; // Adjust to specific type if known
   addData?: (data: any) => void; // Adjust type if known
   addDataStatus?: string;
@@ -370,9 +367,9 @@ interface SnapshotStoreDataResponse<
   getFrontendVersion?: () => string;
   fetchData?: () => any; // Adjust to specific type if known
   defaultSubscribeToSnapshot?: (id: string) => void;
-  handleSubscribeToSnapshot?: (id: string, callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void) => void;
+  handleSubscribeToSnapshot?: (id: string, callback: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => void) => void;
   removeItem?: (id: string) => void;
-  getSnapshot?: (id: string) => Snapshot<SnapshotStoreDataResponse<T, K>> | null;
+  getSnapshot?: (id: string) => Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>> | null;
   getSnapshotSuccess?: boolean;
   getSnapshotId?: (id: string) => string;
   getItem?: (id: string) => any; // Adjust to specific type if known
@@ -392,7 +389,7 @@ interface SnapshotStoreDataResponse<
   updateSnapshotFailure?: boolean;
   removeSnapshot?: (id: string) => void;
   clearSnapshots?: () => void;
-  addSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void;
+  addSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => void;
   createInitSnapshot?: () => void;
   createSnapshotSuccess?: boolean;
   clearSnapshotSuccess?: boolean;
@@ -400,7 +397,7 @@ interface SnapshotStoreDataResponse<
   createSnapshotFailure?: boolean;
   setSnapshotSuccess?: boolean;
   setSnapshotFailure?: boolean;
-  updateSnapshots?: (snapshots: Snapshot<SnapshotStoreDataResponse<T, K>>[]) => void;
+  updateSnapshots?: (snapshots: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>[]) => void;
   updateSnapshotsSuccess?: boolean;
   updateSnapshotsFailure?: boolean;
   initSnapshot?: () => void;
@@ -413,11 +410,11 @@ interface SnapshotStoreDataResponse<
   getState?: () => any; // Adjust type if known
   setState?: (state: any) => void; // Adjust type if known
   validateSnapshot?: () => boolean;
-  handleSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void;
+  handleSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => void;
   handleActions?: (actions: any) => void; // Adjust type if known
-  setSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K>>) => void;
+  setSnapshot?: (snapshot: Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>) => void;
   transformSnapshotConfig?: (config: any) => any; // Adjust type if known
-  getSnapshotCategory?: (category: string) => Snapshot<SnapshotStoreDataResponse<T, K>>[];
+  getSnapshotCategory?: (category: string) => Snapshot<SnapshotStoreDataResponse<T, K, Meta, ExcludedFields>>[];
   getSnapshotCategorySuccess?: boolean;
   getSnapshotCategoryFailure?: boolean;
   transformSnapshotStore?: (store: any) => any; // Adjust type if known

@@ -68,19 +68,18 @@ class ApiNotificationsService {
     return errorMessage as string;
   }
 
-  async fetchNotifications(): Promise<NotificationData[]> {
+  async fetchNotifications(): Promise<NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     try {
       const response = await fetch(`${API_BASE_URL}/notifications`);
       if (!response.ok) {
         throw new Error("Failed to fetch notifications");
       }
-      const data: NotificationData[] = await response.json();
-      data.forEach((notification: NotificationData) => {
+      const data: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = await response.json();
+      data.forEach((notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         this.notify(
           notification.id,
           this.notificationMessages.FETCH_NOTIFICATIONS_SUCCESS,
-          NOTIFICATION_MESSAGES.Fetch_Notification_Defaults
-            .FETCH_NOTIFICATIONS_SUCCESS,
+          NOTIFICATION_MESSAGES.Fetch_Notification_Defaults,
           new Date(),
           NotificationTypeEnum.Info
         );
@@ -90,8 +89,7 @@ class ApiNotificationsService {
       this.notify(
         "fetchNotificationsError",
         this.notificationMessages.FETCH_NOTIFICATIONS_ERROR,
-        NOTIFICATION_MESSAGES.Fetch_Notification_Defaults
-          .FETCH_NOTIFICATIONS_ERROR,
+        NOTIFICATION_MESSAGES.Fetch_Notification_Defaults,
         new Date(),
         NotificationTypeEnum.Error
       );

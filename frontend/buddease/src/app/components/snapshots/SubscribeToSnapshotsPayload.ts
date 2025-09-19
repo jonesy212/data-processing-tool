@@ -1,3 +1,4 @@
+import { BaseDataEntity } from '@/app/configs/BaseConfig';
 // SubscribeToSnapshotsPayload.ts
 import { Snapshot } from "@/app/components/snapshots";
 import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";

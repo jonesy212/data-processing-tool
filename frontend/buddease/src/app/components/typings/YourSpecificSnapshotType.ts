@@ -1,4 +1,4 @@
-import { createSnapshot, getSnapshotContainer, getSnapshotId } from "@/app/api/SnapshotApi";
+import { getSnapshotId } from "@/app/api/SnapshotApi";
 import { InitializedData } from '@/app/components/snapshots/SnapshotStoreOptions';
 import { Subscriber } from '@/app/components/users/Subscriber';
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
@@ -11,8 +11,8 @@ import { BaseData, Data, DataDetails } from "../models/data/Data";
 import { StatusType } from "../models/data/StatusType";
 import { DataStoreMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { DataStore, InitializedState } from "../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { CustomSnapshotData, getAllSnapshots, InitializedConfig, snapshot, snapshotConfig, SnapshotContainer, SnapshotData, SnapshotDataType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteria } from '../snapshots';
-import { CoreSnapshot, Snapshot, snapshots, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "../snapshots/LocalStorageSnapshotStore";
+import { CustomSnapshotData, InitializedConfig, snapshot, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteria } from '../snapshots';
+import { CoreSnapshot, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "../snapshots/LocalStorageSnapshotStore";
 import { SnapshotConfig } from "../snapshots/SnapshotConfig";
 import { default as SnapshotStore } from "../snapshots/SnapshotStore";
 import { createSnapshotStoreOptions } from '../snapshots/createSnapshotStoreOptions';
@@ -22,30 +22,21 @@ import { CalendarEvent } from "../calendar/CalendarEvent";
 import { SnapshotContent } from "../snapshots/SnapshotContent";
 import { convertBaseDataToK } from "../snapshots/convertSnapshot";
 import {
-  Callback
+    Callback
 } from "../snapshots/subscribeToSnapshotsImplementation";
-import { addToSnapshotList, generateSnapshotId, getSnapshotsBySubscriber, isSnapshot } from "../utils/snapshotUtils";
+import { generateSnapshotId, isSnapshot } from "../utils/snapshotUtils";
 
-import { store } from "../state/stores/useAppDispatch";
 
 import { T } from "../models/data/dataStoreMethods";
 
 import { additionalHeaders } from "@/app/api/headers/generateAllHeaders";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { criteria } from "@/app/pages/searchs/FilterCriteria";
-import { message } from "antd";
-import { id } from "ethers";
-import { get } from "http";
-import { keys } from "mobx";
-import { type } from "os";
-import { emit, title } from "process";
 import { Subscription } from "react-redux";
 import { SchemaField } from "../../../server/database/SchemaField";
 import { ExcludedFields } from "../routing/Fields";
 import { createSnapshotInstance } from "../snapshots/createSnapshotInstance";
 import { createSnapshotStoreConfig } from "../snapshots/snapshotStoreConfigInstance";
-import { eventRecords } from "../state/stores/CalendarManagerStore";
 import Version from "../versions/Version";
 import { ExtendedVersionData } from "../versions/VersionData";
 import { YourResponseType } from "./types";
@@ -57,7 +48,7 @@ class YourSpecificSnapshotType <
  T extends  BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, 
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
   implements Snapshot<T, K> {
   id: string;
@@ -2066,10 +2057,10 @@ function isCoreSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends 
 
 
 export {
-  convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
-  convertSnapshotData, convertSnapshotMap, convertSnapshotStoreConfig,
-  convertSnapshotStoreItemToT,
-  convertSnapshotStoreToMap, convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
-  createSnapshotStoreConfig, createSnapshotStoreOptions, enrichSnapshotStore, isCoreSnapshot, isSnapshotStore, isYourResponseType, normalizeSnapshot, snapshotType, transformResponse
+    convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
+    convertSnapshotData, convertSnapshotMap, convertSnapshotStoreConfig,
+    convertSnapshotStoreItemToT,
+    convertSnapshotStoreToMap, convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
+    createSnapshotStoreConfig, createSnapshotStoreOptions, enrichSnapshotStore, isCoreSnapshot, isSnapshotStore, isYourResponseType, normalizeSnapshot, snapshotType, transformResponse
 };
 

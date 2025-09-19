@@ -1,10 +1,9 @@
 // createMetadataState.ts
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { SharedIdentifiers } from '@/app/components/documents/RelatedProps';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { Taggable } from '@/app/components/models/CommonData';
 import { SharedRelationshipData } from "@/app/components/models/data/Data";
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { FileMetadata } from "@/app/components/models/file/FileManager";
 import { createEventManager, EventManager, InitializedState } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from "@/app/components/snapshots";
@@ -14,15 +13,16 @@ import { HistoryEntry } from '@/app/components/state/stores/HistoryStore';
 import { Permission } from "@/app/components/users/Permission";
 import { UserData } from "@/app/components/users/User";
 import { createLatestVersion } from "@/app/components/versions/createLatestVersion";
-import Version from "@/app/components/versions/Version";
+import { Version } from "@/app/components/versions/Version";
 import { VersionData, VersionHistory } from "@/app/components/versions/VersionData";
 import { AppStructureItem, AppStructurePermissions } from "@/app/configs/appStructure/AppStructure";
 import { ConfigMetadata, StatusMetadata, UnifiedMetadata, UnifiedMetaDataOptions, VersionMetadata } from "@/app/configs/database/MetaDataOptions";
 import { MetadataEntriesType, StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { BaseDataRoot } from "@/configs/BaseConfig";
 import { SchemaField } from '@/server/database/SchemaField';
 import { useState } from 'react';
 import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '../BaseConfig';
-import { SharedIdentifiers } from '@/app/components/documents/RelatedProps';
 
 // 1. First, define a core metadata interface that all others will extend
 interface CoreMetadata<
@@ -30,7 +30,7 @@ interface CoreMetadata<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends SharedIdentifiers<T, K, Meta, ExcludedFields> {
+> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields> {
   schema: Record<string, SchemaField>;
   // id and timestamp are now inherited from SharedIdentifiers
 }
@@ -45,45 +45,44 @@ type MetaBase = {
   version?: string | number | null;   // lightweight version ref
 };
 
+interface WithValue<T = any> {
+  value?: string | number | Snapshot<T> | null;
+}
+
 interface SharedMetadata<
   T extends BaseDataEntity,
   K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends Omit<CoreMetadata<T, K>, "schema">,
+> extends Omit<CoreMetadata<T, K, Meta, ExcludedFields>, "schema">,
     Partial<VersionMetadata<T, K>>,
     Partial<StatusMetadata>,
     Partial<ConfigMetadata>,
     SharedRelationshipData<K> {
 
-  // Versioning
   version?: string | number | Version<T, K> | null;  
   lastUpdated?: Date | VersionHistory<T, K>; 
-  latestVersion?: Pick<VersionData<T, K>, "id" | "versionNumber" | "timestamp" | "author" | "schema">;
+  latestVersion?: Pick<VersionData<T, K, Meta, ExcludedFields>, "id" | "versionNumber" | "author" | "schema">;
 
-  // Metadata state
   isActive?: boolean; 
   metadataConfig?: Record<string, any>; 
   permissions?: AppStructurePermissions[]; 
   customFields?: Record<string, any>; 
 
-  // Misc
   baseUrl?: string; 
   category?: Category;
 
-  // Unified metadata tracking
-  currentMetadata?: UnifiedMetadata<T, K, DefaultMeta<T, K>, ExcludedFields>;
-  previousMetadata?: UnifiedMetadata<T, K, DefaultMeta<T, K>, ExcludedFields>;  
-  currentMeta?: StructuredMetadata<T, K>;
-  previousMeta?: StructuredMetadata<T, K>;
-
-  // Schema definition
+  currentMetadata?: UnifiedMetadata<T, K, Meta, ExcludedFields>;
+  previousMetadata?: UnifiedMetadata<T, K, Meta, ExcludedFields>;  
+  currentMeta?: Meta;
+  previousMeta?: Meta;
   schema?: Record<string, SchemaField>;
 }
 
 function createMetaState<
   T extends BaseDataEntity,
   K extends T = T,
-  ExcludedFields extends keyof T = never
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   id: string,
   apiEndpoint: string,
@@ -125,7 +124,6 @@ function createMetaState<
     createdBy,
     tags,
     isActive,
-    metadata, // unified metadata has same ExcludedFields
     initialState,
     mappedSnapshot,
     events,
@@ -162,7 +160,7 @@ function createMetaState<
     ...unifiedMetadata,
     baseConfig,
     timestamp: new Date(),
-    sharedMetadata: unifiedMetadata.sharedMetadata ?? ({} as SharedMetadata<T, K, DefaultMeta<T, K>, ExcludedFields>),
+    sharedMetadata: unifiedMetadata.sharedMetadata ?? ({} as SharedMetadata<T, K, ExcludedFields>),
     sharedBaseData: unifiedMetadata.sharedBaseData ?? ({} as SharedRelationshipData<K>),
     taggable: unifiedMetadata.taggable ?? ({} as Taggable<T, K>),
     metadataEntries: unifiedMetadata.metadataEntries ?? ({} as MetadataEntriesType<T, K>),
@@ -183,13 +181,18 @@ function createMetaState<
 
 const { latestVersion = createLatestVersion(), ...rest } = (data as Record<string, any>) || {};
 
-interface MetaState<T extends BaseDataEntity, K extends T> {
-  _structure: Record<string, AppStructureItem[]>;
-  transformToStructureItems: (data: any) => AppStructureItem[];
-  getStructure: () => Promise<Record<string, AppStructureItem> | undefined>;
+interface MetaState<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  > {
+  _structure: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>[]>;
+  transformToStructureItems: (data: any) => AppStructureItem<T, K, Meta, ExcludedFields>[];
+  getStructure: () => Promise<Record<string, AppStructureItem<T, K, Meta, ExcludedFields>> | undefined>;
   // Include other VersionHistory properties if needed
   versionData?: string | VersionData<T, K> | null;
-   latestVersion?: Pick<VersionData<T, K>, "id" | "versionNumber" | "timestamp" | "author" | "schema">;
+   latestVersion?: Pick<VersionData<T, K>, "id" | "versionNumber" | "author" | "schema">;
   history?: HistoryEntry[];
 }
 
@@ -197,10 +200,12 @@ interface MetaState<T extends BaseDataEntity, K extends T> {
 // Defining the MyMetaState interface
 interface MyMetaState<
   T extends BaseDataEntity,
-  K extends T = T
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > extends VersionHistory<T, K> {
-  _structure: Record<string, AppStructureItem[]>;
-  latestVersion?: Pick<VersionData<T, K>, "id" | "versionNumber" | "timestamp" | "author" | "schema">; // A reference to the most recent version
+  _structure: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>[]>;
+  latestVersion?: Pick<VersionData<T, K>, "id" | "versionNumber" | "author" | "schema">; // A reference to the most recent version
   timestamp: string | number | Date | undefined,
   
 }
@@ -268,7 +273,7 @@ const metaState = createMetaState<BaseType, ExtendedType>(
 export const useMeta = <
   T extends BaseDataEntity, 
   K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   initialMetadata: Meta
 ) => {
@@ -427,5 +432,5 @@ export const sharedMetadata: SharedMetadata<any> = {
 
 
 export { createMetaState };
-export type { CoreMetadata, SharedMetadata, MetaBase, MetaState};
+export type { CoreMetadata, MetaBase, MetaState, SharedMetadata };
 

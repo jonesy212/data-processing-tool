@@ -1,4 +1,5 @@
 import { fetchSnapshotById } from "@/app/api/SnapshotApi";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
@@ -6,7 +7,7 @@ import { endpoints } from "../../api/endpointConfigurations";
 import { CategoryProperties } from "../../pages/personas/ScenarioBuilder";
 import { UnsubscribeDetails } from "../event/DynamicEventHandlerExample";
 import { Category } from "../libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from "../models/data/Data";
+import { Data } from "../models/data/Data";
 import { StatusType } from "../models/data/StatusType";
 import { displayToast } from "../models/display/ShowToast";
 import { RealtimeDataItem } from "../models/realtime/RealtimeData";
@@ -16,22 +17,24 @@ import axiosInstance from "../security/csrfToken";
 import CalendarManagerStoreClass from "../state/stores/CalendarManagerStore";
 import { Subscription } from "../subscriptions/Subscription";
 import { Subscriber } from "../users/Subscriber";
-import { addToSnapshotList } from "../utils/snapshotUtils";
 import { convertSnapshotsObjectToArray } from './createSnapshotStoreOptions';
 import { handleSnapshotOperation } from "./handleSnapshotOperation";
-import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject } from "./LocalStorageSnapshotStore";
+import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "./LocalStorageSnapshotStore";
+
+import { Snapshot } from "./Snapshhot";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotContainer } from "./SnapshotContainer";
+import { SnapshotContainer, SnapshotContainerType } from './SnapshotContainer';
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreMethod } from "./SnapshotStoreMethod";
 import {
-	InitializedDelegate,
-	MetaDataOptions,
-	SnapshotStoreOptions
+    InitializedDelegate,
+    MetaDataOptions,
+    SnapshotStoreOptions
 } from "./SnapshotStoreOptions";
+import { addToSnapshotList } from "./snapshotUtils";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback, MultipleEventsCallbacks } from "./subscribeToSnapshotsImplementation";
 import { SnapshotStoreProps } from "./useSnapshotStore";
@@ -41,7 +44,7 @@ import { SnapshotStoreProps } from "./useSnapshotStore";
 
 // createOptions.ts
 function createOptions<
-  T extends  BaseData<any>, 
+  T extends BaseDataEntity, 
   K extends T = T, 
  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
@@ -57,72 +60,71 @@ function createOptions<
 	metadata: MetaDataOptions<T>
 	criteria: CriteriaType;
 	cacheKey: string;
-	callbacks: MultipleEventsCallbacks<Snapshot<T, K>>;
-	
-  delegate: InitializedDelegate<T, K> | null 
-  eventRecords: Record<string, EventRecord<T, K>[]> | null; // Store events and their callbacks
-	initialState: SnapshotStore<T, K> | null;
+	multipleCallbacks: MultipleEventsCallbacks<Snapshot<T, K, Meta, ExcludedFields>>;
+	delegate: InitializedDelegate<T, K, Meta, ExcludedFields> | null 
+	eventRecords: Record<string, EventRecord<T, K, Meta, ExcludedFields>[]> | null; // Store events and their callbacks
+	initialState: SnapshotStore<T, K, Meta, ExcludedFields> | null;
 	date: string | Date;
 	snapshotId: string;
 	category: CategoryProperties;
-	dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K>>;
-	snapshotMethods?: SnapshotStoreMethod<T, K>[]; // Make this optional
+	dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>>;
+	snapshotMethods?: SnapshotStoreMethod<T, K, Meta, ExcludedFields>[]; // Make this optional
 	type?: string; // Optional, adjust as needed
 	snapshotConfig?: any; // Optional, adjust as needed
 	subscribeToSnapshots: (
-    snapshotStore: SnapshotStore<T, K>,
+    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
     snapshotId: string,
-    snapshotData: SnapshotData<T, K>,
+    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
     category: symbol | string | Category | undefined,    
-    snapshotConfig: SnapshotStoreConfig<T, K>,
+    snapshotConfig: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
 	callback: (
-		snapshotStore: SnapshotStore<T, K>, 
+		snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>, 
 		snapshots: SnapshotsArray<T, K, Meta>
-	) => Subscriber<T, K> | null,
+	) => Subscriber<T, K, Meta, ExcludedFields> | null,
 	snapshots: SnapshotsArray<T, K, Meta>,
     unsubscribe?: UnsubscribeDetails, 
   ) => SnapshotsArray<T, K, Meta> | []
   
 	subscribeToSnapshot: (
 		snapshotId: string,
-		callback: Callback<Snapshot<T, K>>,
-		snapshot: Snapshot<T, K>
-  ) => Subscriber<T, K> | null;
+		callback: Callback<Snapshot<T, K, Meta, ExcludedFields>>,
+		snapshot: Snapshot<T, K, Meta, ExcludedFields>
+  ) => Subscriber<T, K, Meta, ExcludedFields> | null;
   
 	handleSnapshotStoreOperation: (
 		snapshotId: string,
-		snapshotStore: SnapshotStore<T, K>,
-		snapshot: Snapshot<T, K>,
-		operation: SnapshotOperation<T, K>,
+		snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+		snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+		operation: SnapshotOperation<T, K, Meta, ExcludedFields>,
 		operationType: SnapshotOperationType,
-		callback: (snapshotStore: SnapshotStore<T, K>) => void,
-	) => Promise<SnapshotStoreConfig<T, K> | null>;
+		callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void,
+	) => Promise<SnapshotStoreConfig<T, K, Meta, ExcludedFields> | null>;
 	
 	getCategory: (
 		snapshotId: string,
-		snapshot: Snapshot<T, K>,
+		snapshot: Snapshot<T, K, Meta, ExcludedFields>,
 		type: string,
-		event: Event,
-		snapshotConfig: SnapshotConfig<T, K>,
+		event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+		snapshotConfig: SnapshotConfig<T, K, Meta, ExcludedFields>,
 		additionalHeaders?: Record<string, string>
-	  ) => Promise<{ snapshots: Snapshot<T, K>[]; categoryProperties?: CategoryProperties }>;
+	  ) => Promise<{ snapshots: Snapshot<T, K, Meta, ExcludedFields>[]; categoryProperties?: CategoryProperties }>;
 	
 	useSimulatedDataSource: boolean;
-	simulatedDataSource: SnapshotStoreConfig<T, K>[];
-	snapshotStoreConfig: SnapshotStoreConfig<T, K>;
+	simulatedDataSource: SnapshotStoreConfig<T, K, Meta, ExcludedFields>[];
+	snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, ExcludedFields>;
 	unsubscribeToSnapshots: (
 		snapshotId: string,
-		snapshot: Snapshot<T, K>,
+		snapshot: Snapshot<T, K, Meta, ExcludedFields>,
 		type: string,
-		event: Event,
-		callback: (snapshot: Snapshot<T, K>) => void
+		event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+		callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void
 	) => void;
 	unsubscribeToSnapshot: (
 		snapshotId: string,
-		snapshot: Snapshot<T, K>,
+		snapshot: Snapshot<T, K, Meta, ExcludedFields>,
 		type: string,
-		event: Event,
-		callback: (snapshot: Snapshot<T, K>) => void
+		event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+		callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void
 	) => void;
 
 	getSnapshotConfig: (
@@ -132,91 +134,90 @@ function createOptions<
 		category: symbol | string | Category | undefined,
 		categoryProperties: CategoryProperties | undefined,
     	subscriberId: string | undefined,
-		delegate: SnapshotWithCriteria<T, K>[],
-		snapshotData: SnapshotData<T, K>,
+		delegate: SnapshotWithCriteria<T, K, Meta, ExcludedFields>[],
+		snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
 		snapshot: (
 			id: string | number | undefined,
 			snapshotId: string | null,
-			snapshotData: SnapshotData<T, K>,
+			snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
 			category: symbol | string | Category | undefined,
 			categoryProperties: CategoryProperties,
-			callback: (snapshotStore: SnapshotStore<T, K> | null) => void,
-			dataStore: DataStore<T, K>,
-			dataStoreMethods: DataStoreMethods<T, K>,
-			// dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
+			callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields> | null) => void,
+			dataStore: DataStore<T, K, Meta, ExcludedFields>,
+			dataStoreMethods: DataStoreMethods<T, K, Meta, ExcludedFields>,
+			// dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>,
 			metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
 			subscriberId: string, // Add subscriberId here
 			endpointCategory: string | number,// Add endpointCategory here
-			storeProps: SnapshotStoreProps<T, K>,
-			snapshotConfigData: SnapshotConfig<T, K>,
-			subscription: Subscription<T, K>,
-			snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
-			snapshotContainer?: SnapshotStore<T, K> | Snapshot<T, K> | null,
-		) => Promise<Snapshot<T, K>>,
-		data: Map<string, Snapshot<T, K>>,
-		events: Record<string, CalendarManagerStoreClass<T, K>[]>, // Added prop
-		dataItems: RealtimeDataItem[], // Added prop
-		newData: Snapshot<T, K>, // Added prop
-		payload: ConfigureSnapshotStorePayload<T, K>, // Added prop
-		store: SnapshotStore<T, K>, // Added prop
-		callback: (snapshot: SnapshotStore<T, K>) => void, // Added prop
-		storeProps: SnapshotStoreProps<T, K>,
+			storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+			snapshotConfigData: SnapshotConfig<T, K, Meta, ExcludedFields>,
+			subscription: Subscription<T, K, Meta, ExcludedFields>,
+			snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
+			snapshotContainer?: SnapshotContainerType<T, K, Meta, ExcludedFields>,
+		) => Promise<Snapshot<T, K, Meta, ExcludedFields>>,
+		data: Map<string, Snapshot<T, K, Meta, ExcludedFields>>,
+		events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>, // Added prop
+		dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[], // Added prop
+		newData: Snapshot<T, K, Meta, ExcludedFields>, // Added prop
+		payload: ConfigureSnapshotStorePayload<T, K, Meta, ExcludedFields>, // Added prop
+		store: SnapshotStore<T, K, Meta, ExcludedFields>, // Added prop
+		callback: (snapshot: SnapshotStore<T, K, Meta, ExcludedFields>) => void, // Added prop
+		storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
 		endpointCategory: string | number,
-		snapshotContainer: Promise<SnapshotContainer<T, K>>,
-	) => SnapshotConfig<T, K> 
+		snapshotContainer: Promise<SnapshotContainer<T, K, Meta, ExcludedFields>>,
+	) => SnapshotConfig<T, K, Meta, ExcludedFields> 
 	
 	initSnapshot: (
-		snapshot: SnapshotStore<T, K> | Snapshot<T, K> | null,
+		snapshot: SnapshotStore<T, K, Meta, ExcludedFields> | Snapshot<T, K, Meta, ExcludedFields> | null,
 		snapshotId: string | null,
-		snapshotData: SnapshotData<T, K>,
+		snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
 		category: symbol | string | Category | undefined,
-		snapshotConfig: SnapshotStoreConfig<T, K>,
-		callback: (snapshotStore: SnapshotStore<T, K>) => void
+		snapshotConfig: SnapshotStoreConfig<T, K, Meta, ExcludedFields>,
+		callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void
 	) => void,
 
 
 	createSnapshot: (
 		id: string,
-		snapshotData: SnapshotData<T, K>,
 		category?:  Category,
-		callback?: (snapshot: Snapshot<T, K>) => void,
-		snapshotData?: SnapshotStore<T, K>,
-		snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> 
-	) => Snapshot<T, K> | null,
+		callback?: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void,
+		snapshotData?: SnapshotStore<T, K, Meta, ExcludedFields>,
+		snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, ExcludedFields>
+	) => Snapshot<T, K, Meta, ExcludedFields> | null,
 
 	createSnapshotStore: (
 		id: string,
 		snapshotId: number,
-		snapshotStoreData: Snapshots<T, K>,
+		snapshotStoreData: Snapshots<T, K, Meta, ExcludedFields>,
 		category?:  Category,
-		callback?: (snapshotStore: SnapshotStore<T, K>) => void,
-		snapshotDataConfig?: SnapshotStoreConfig<T, K>[]
-	) => SnapshotStore<T, K> | null,
+		callback?: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void,
+		snapshotDataConfig?: SnapshotStoreConfig<T, K, Meta, ExcludedFields>[]
+	) => SnapshotStore<T, K, Meta, ExcludedFields> | null,
 
 	configureSnapshot: (
 		id: string,
 		storeId: number,
 		snapshotId: string,
-		dataStoreMethods: DataStore<T, K>,
+		dataStoreMethods: DataStore<T, K, Meta, ExcludedFields>,
 		category?:  Category,
 		categoryProperties?: CategoryProperties | undefined,
-		callback?: (snapshot: Snapshot<T, K>) => void,
-		snapshotData?: SnapshotStore<T, K>,
-		snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> 
-	) => SnapshotConfig<T, K> | undefined,
+		callback?: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void,
+		snapshotData?: SnapshotStore<T, K, Meta, ExcludedFields>,
+		snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, ExcludedFields> 
+	) => SnapshotConfig<T, K, Meta, ExcludedFields> | undefined,
 
 	getDelegate: (
 		context: {
 			useSimulatedDataSource: boolean;
-			simulatedDataSource: SnapshotStoreConfig<T, K>[];
-		}) => DataStore<T, K>[];
+			simulatedDataSource: SnapshotStoreConfig<T, K, Meta, ExcludedFields>[];
+		}) => DataStore<T, K, Meta, ExcludedFields>[];
 
 	getDataStoreMethods: (
-		snapshotStoreConfig: SnapshotStoreConfig<T, K>[],
-		dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K>>
-		) => Partial<DataStoreWithSnapshotMethods<T, K>>;
-	}): Promise<SnapshotStoreOptions<T, K>> {
-	return new Promise<SnapshotStoreOptions<T, K>>((resolve, reject) => {
+		snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, ExcludedFields>[],
+		dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>>
+		) => Partial<DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>>;
+	}): Promise<SnapshotStoreOptions<T, K, Meta, ExcludedFields>> {
+	return new Promise<SnapshotStoreOptions<T, K, Meta, ExcludedFields>>((resolve, reject) => {
 		const {
 			id,
 			storeId,
@@ -274,7 +275,7 @@ function createOptions<
 			configureSnapshotStore
 		} = snapshotConfig || {};
 
-		const options: SnapshotStoreOptions<T, K> = {
+		const options: SnapshotStoreOptions<T, K, Meta, ExcludedFields> = {
 			id,
 			storeId,
 			baseURL,
@@ -315,12 +316,12 @@ function createOptions<
 			unsubscribeToSnapshots,
 			unsubscribeToSnapshot,
 			getSnapshotConfig,
-      getDelegate: (context: {
-        useSimulatedDataSource: boolean;
-        simulatedDataSource: SnapshotStoreConfig<T, K>[];
-      }): Promise<DataStore<T, K, StructuredMetadata<T, K>>[]> => {
-        return Promise.resolve(getDelegate(context));
-      },
+			getDelegate: (context: {
+				useSimulatedDataSource: boolean;
+				simulatedDataSource: SnapshotStoreConfig<T, K, Meta, ExcludedFields>[];
+			}): Promise<DataStore<T, K, StructuredMetadata<T, K>>[]> => {
+				return Promise.resolve(getDelegate(context));
+			},
 			getDataStoreMethods,
 			handleSnapshotOperation,
 			handleSnapshotStoreOperation,
@@ -335,22 +336,22 @@ function createOptions<
 
     const dataStore = useDataStore()
 		// Ensure default implementations for dataStoreMethods
-    const defaultDataStoreMethods: DataStore<T, K> = {
+    const defaultDataStoreMethods: DataStore<T, K, Meta, ExcludedFields> = {
       ...options, 
       ...params,
       ...dataStore,
 			id: Math.floor(Math.random() * 100000000000000000).toString(), // Provide a default id
 			metadata: {},
-			data: new Map<string, Snapshot<T, K>>(),
+			data: new Map<string, Snapshot<T, K, Meta, ExcludedFields>>(),
 			addData: async (
-				data: Snapshot<T, K>,
+				data: Snapshot<T, K, Meta, ExcludedFields>,
 				options?: {
 					title?: string;
 					description?: string;
 					status?: StatusType | undefined;
 				}
 			) => {
-        const newSnapshot: Snapshot<T, K> = createSnapshot({
+        const newSnapshot: Snapshot<T, K, Meta, ExcludedFields> = createSnapshot({
           ...data,
           id: Math.floor(Math.random() * 100000000000000000).toString(),
           title: options?.title,
@@ -370,7 +371,7 @@ function createOptions<
 			},
 			getData: async (
 				id: number,
-				data: Snapshot<T, K> | Snapshot<T, CustomSnapshotData<T, K, Meta> & T>
+				data: Snapshot<T, K, Meta, ExcludedFields> | Snapshot<T, CustomSnapshotData<T, K, Meta> & T>
 			) => {
 				// Default implementation
 				return defaultDataStoreMethods.data?.get(id.toString());
@@ -395,12 +396,12 @@ function createOptions<
 				defaultDataStoreMethods.data?.delete(id.toString());
 			},
 
-			updateData: (id: number, data: Snapshot<T, K>) => {
+			updateData: (id: number, data: Snapshot<T, K, Meta, ExcludedFields>) => {
 				const snapshot = defaultDataStoreMethods.data?.get(id.toString());
 				if (!snapshot) {
 					throw new Error("Snapshot not found");
 				}
-				const updatedSnapshot: Snapshot<T, K> = {
+				const updatedSnapshot: Snapshot<T, K, Meta, ExcludedFields> = {
 					...snapshot,
 					...data,
 					updatedAt: new Date(),
@@ -409,8 +410,8 @@ function createOptions<
 				return updatedSnapshot;
       },
       
-      updateStoreData: (data: Data<T>, id: number, newData: SnapshotStore<T, K>) => {
-        let snapshot: SnapshotStore<T, K> | null = null;
+      updateStoreData: (data: Data<T>, id: number, newData: SnapshotStore<T, K, Meta, ExcludedFields>) => {
+        let snapshot: SnapshotStore<T, K, Meta, ExcludedFields> | null = null;
     
         // Check if dataStore is a Map
         if (defaultDataStoreMethods.dataStore instanceof Map) {
@@ -431,7 +432,7 @@ function createOptions<
         }
     
         // Update the snapshot
-        const updatedSnapshotStore: SnapshotStore<T, K> = {
+        const updatedSnapshotStore: SnapshotStore<T, K, Meta, ExcludedFields> = {
           id: snapshot.id,
           title: snapshot.title,
           description: snapshot.description,
@@ -466,7 +467,7 @@ function createOptions<
 			) => {
 				const snapshot = defaultDataStoreMethods.data?.get(id.toString());
 				if (snapshot) {
-					const updatedSnapshot: Snapshot<T, K> = {
+					const updatedSnapshot: Snapshot<T, K, Meta, ExcludedFields> = {
 						...snapshot,
 						status,
 					};
@@ -479,7 +480,7 @@ function createOptions<
 			) => {
 				const snapshot = defaultDataStoreMethods.data?.get(id.toString());
 				if (snapshot) {
-					const updatedSnapshot: Snapshot<T, K> = {
+					const updatedSnapshot: Snapshot<T, K, Meta, ExcludedFields> = {
 						...snapshot,
 						status,
 					};
@@ -489,7 +490,7 @@ function createOptions<
 			updateDataTitle: async (id: number, title: string) => {
 				const snapshot = defaultDataStoreMethods.data?.get(id.toString());
 				if (snapshot) {
-					const updatedSnapshot: Snapshot<T, K> = {
+					const updatedSnapshot: Snapshot<T, K, Meta, ExcludedFields> = {
 						...snapshot,
 						title,
 					};
@@ -499,7 +500,7 @@ function createOptions<
 			updateDataDescription: async (id: number, description: string) => {
 				const snapshot = defaultDataStoreMethods.data?.get(id.toString());
 				if (snapshot) {
-					const updatedSnapshot: Snapshot<T, K> = {
+					const updatedSnapshot: Snapshot<T, K, Meta, ExcludedFields> = {
 						...snapshot,
 						description,
 					};
@@ -510,7 +511,7 @@ function createOptions<
 			getItem: async (key: T, id: number) => {
 				return defaultDataStoreMethods.data?.get(key, id);
 			},
-			setItem: async (id: string, item: Snapshot<T, K>) => {
+			setItem: async (id: string, item: Snapshot<T, K, Meta, ExcludedFields>) => {
 				defaultDataStoreMethods.data?.set(id, item);
 			},
 			removeItem: async (key: string) => {
@@ -519,14 +520,14 @@ function createOptions<
 			getAllKeys: async () => Array.from(defaultDataStoreMethods.data?.keys() || []),
 			getAllItems: async () => Array.from(defaultDataStoreMethods.data?.values() || []),
 			getDataVersions: async (id: number) => undefined,
-			updateDataVersions: async (id: number, versions: Snapshot<T, K>[]) => { },
+			updateDataVersions: async (id: number, versions: Snapshot<T, K, Meta, ExcludedFields>[]) => { },
 			getBackendVersion: async () => "0.0.0",
 			getFrontendVersion: async () => "0.0.0",
-			addDataSuccess: async (payload: { data: Snapshot<T, K>[]; }) => { },
+			addDataSuccess: async (payload: { data: Snapshot<T, K, Meta, ExcludedFields>[]; }) => { },
 			getDelegate: async (context: {
 				useSimulatedDataSource: boolean;
-				simulatedDataSource: SnapshotStoreConfig<T, K>[];
-			}): Promise<SnapshotStoreConfig<T, K>[]> => {
+				simulatedDataSource: SnapshotStoreConfig<T, K, Meta, ExcludedFields>[];
+			}): Promise<SnapshotStoreConfig<T, K, Meta, ExcludedFields>[]> => {
 				if (context.useSimulatedDataSource) {
 					return context.simulatedDataSource;
 				}
@@ -535,7 +536,7 @@ function createOptions<
 					if (typeof API_URL !== "string") {
 						throw new Error("Invalid API URL");
 					}
-					const response = await axiosInstance.get<SnapshotStoreConfig<T, K>[]>(
+					const response = await axiosInstance.get<SnapshotStoreConfig<T, K, Meta, ExcludedFields>[]>(
 						API_URL
 					);
 					if (response.status === 200) {
@@ -551,7 +552,7 @@ function createOptions<
 				}
 			},
 			updateDelegate: async (
-				delegate: SnapshotStoreConfig<T, K>[]) => {
+				delegate: SnapshotStoreConfig<T, K, Meta, ExcludedFields>[]) => {
 				try {
 					const updatedDelegates = await Promise.all(
 						delegate.map(async (item) => {
@@ -572,12 +573,12 @@ function createOptions<
 					  categoryProperties: CategoryProperties;
 					  timestamp: string | number | Date | undefined;
 					  id: string | number | undefined;
-					  snapshot: Snapshot<T, K>;
-					  snapshotStore: SnapshotStore<T, K>;
+					  snapshot: Snapshot<T, K, Meta, ExcludedFields>;
+					  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>;
 					  data: T;
 					  }>
 					| undefined
-			): Promise<Snapshot<T, K> | undefined> => {
+			): Promise<Snapshot<T, K, Meta, ExcludedFields> | undefined> => {
 				return new Promise((resolve, reject) => {
 					try {
 						// Your logic for retrieving the snapshot, if any
@@ -594,12 +595,12 @@ function createOptions<
 				category: symbol | string | Category | undefined,
 				timestamp: any,
 				id: number
-			): Promise<SnapshotContainer<T, K> | undefined> => {
-				return new Promise<SnapshotContainer<T, K> | undefined>((resolve, reject) => {
+			): Promise<SnapshotContainer<T, K, Meta, ExcludedFields> | undefined> => {
+				return new Promise<SnapshotContainer<T, K, Meta, ExcludedFields> | undefined>((resolve, reject) => {
 				  console.log("Fetching snapshot container for ID:", id);
 			
 				try {
-					fetchSnapshotById<T, K>(id.toString()) // Call the API function
+					fetchSnapshotById<T, K, Meta, ExcludedFields>(id.toString()) // Call the API function
 					.then((snapshot) => {
 						if (snapshot) {
 							resolve(snapshot);
@@ -620,7 +621,7 @@ function createOptions<
 
 			mapSnapshot: (
 				id: number
-			): Promise<Snapshot<T, K> | null> => {
+			): Promise<Snapshot<T, K, Meta, ExcludedFields> | null> => {
 				return new Promise((resolve, reject) => {
 
 					console.log("Mapping snapshot for ID:", id);
@@ -629,7 +630,7 @@ function createOptions<
 						if (typeof API_URL !== "string") {
 							throw new Error("Invalid API URL");
 						}
-						return new Promise<Snapshot<T, K> | undefined>((resolve) => {
+						return new Promise<Snapshot<T, K, Meta, ExcludedFields> | undefined>((resolve) => {
 							setTimeout(() => resolve(undefined), 1000);
 						});
 					} catch (error) {
@@ -645,38 +646,38 @@ function createOptions<
 				snapshotId: string,
 				category: symbol | string | Category | undefined,
 				categoryProperties: CategoryProperties | undefined,
-				snapshot: Snapshot<T, K>,
+				snapshot: Snapshot<T, K, Meta, ExcludedFields>,
 				timestamp: string | number | Date | undefined,
 				type: string,
-				event: Event,
+				event: SnapshotEvent<T, K, Meta, ExcludedFields>,
 				id: number,
-				snapshotStore: SnapshotStore<T, K>,
+				snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
 				data: T,
 				callback: (
 					storeIds: number[],
 					snapshotId: string,
 					category: symbol | string | Category | undefined,
 					categoryProperties: CategoryProperties | undefined,
-					snapshot: Snapshot<T, K>,
+					snapshot: Snapshot<T, K, Meta, ExcludedFields>,
 					timestamp: string | number | Date | undefined,
 					type: string,
-					event: Event,
+					event: SnapshotEvent<T, K, Meta, ExcludedFields>,
 					id: number,
-					snapshotStore: SnapshotStore<T, K>,
+					snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
 					data: K,
 					index: number
-				) => SnapshotsObject<T, K>
+				) => SnapshotsObject<T, K, Meta, ExcludedFields>
 			): Promise<SnapshotsArray<T, K, Meta>> => {
 				console.log("Mapping snapshots with category:", category, "timestamp:", timestamp, "ID:", id);
 
 				// Create a promise that will resolve with the mapped snapshots
 				return new Promise((resolve, reject) => {
-					const snapshotsResult: SnapshotsObject<T, K> = {};
+					const snapshotsResult: SnapshotsObject<T, K, Meta, ExcludedFields> = {};
 			
 					try {
 						// Use Promise.all to handle multiple asynchronous callbacks if necessary
 						const promises = storeIds.map((storeId, index) => {
-							return new Promise<SnapshotsObject<T, K>>((innerResolve) => {
+							return new Promise<SnapshotsObject<T, K, Meta, ExcludedFields>((innerResolve) => {
 								// Call the provided callback with the parameters
 								const snapshots = callback(
 									storeIds,
@@ -721,9 +722,9 @@ function createOptions<
 				category: Category, 
 				timestamp: any, 
 				id: number,
-				snapshot: Snapshot<T, K>, 
-				snapshotStore: SnapshotStore<T, K>, data: T
-			): Promise<Snapshot<T, K>[] | undefined> => undefined,
+				snapshot: Snapshot<T, K, Meta, ExcludedFields>, 
+				snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>, data: T
+			): Promise<Snapshot<T, K, Meta, ExcludedFields>[] | undefined> => undefined,
 			
       fetchData: async (): Promise<SnapshotStore<T, K, StructuredMetadata<T, K>>> => {
 				const API_URL = endpoints.snapshots.fetch;
@@ -745,18 +746,18 @@ function createOptions<
 				snapshot: Snapshot<any, any>,
 				timestamp: string | number | Date | undefined,
 				type: string,
-				event: Event,
+				event: SnapshotEvent<T, K, Meta, ExcludedFields>,
 				id: number,
 				snapshotStore: SnapshotStore<any, any>,
 				data: any,
 				// snapshotsArray: SnapshotsArray<any>,
 				// snapshotsObject: SnapshotsObject<any>
-			): Promise<SnapshotContainer<T, K> | undefined> {
+			): Promise<SnapshotContainer<T, K, Meta, ExcludedFields> | undefined> {
 				const API_URL = endpoints.snapshots.fetch;
 				if (typeof API_URL !== "string") {
 					throw new Error("Invalid API URL");
 				}
-				return new Promise<SnapshotContainer<T, K> | undefined>((resolve) => {
+				return new Promise<SnapshotContainer<T, K, Meta, ExcludedFields> | undefined>((resolve) => {
 					setTimeout(() => resolve(undefined), 1000);
 				});
 			},
@@ -765,17 +766,17 @@ function createOptions<
 				category: symbol | string | Category | undefined,
 				timestamp: any,
 				id: number,
-				snapshot: Snapshot<T, K>,
-				snapshotStore: SnapshotStore<T, K>,
+				snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+				snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
 				data: T
-			): Promise<SnapshotWithCriteria<T, K> | undefined> => {
+			): Promise<SnapshotWithCriteria<T, K, Meta, ExcludedFields> | undefined> => {
 				return new Promise((resolve, reject) => {
 					try {
 						const API_URL = endpoints.snapshots.fetch;
 						if (typeof API_URL !== "string") {
 							throw new Error("Invalid API URL");
 						}
-						return new Promise<SnapshotWithCriteria<T, K> | undefined>((resolve) => {
+						return new Promise<SnapshotWithCriteria<T, K, Meta, ExcludedFields> | undefined>((resolve) => {
 							setTimeout(() => resolve(undefined), 1000);
 						});
 					} catch (error) {
@@ -789,17 +790,17 @@ function createOptions<
 				category: symbol | string | Category | undefined,
 				timestamp: any,
 				id: number,
-				snapshot: Snapshot<T, K>,
-				snapshotStore: SnapshotStore<T, K>,
+				snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+				snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
 				data: T
-			): Promise<SnapshotWithCriteria<T, K>[] | undefined> => {
+			): Promise<SnapshotWithCriteria<T, K, Meta, ExcludedFields>[] | undefined> => {
 				return new Promise((resolve, reject) => {
 					try {
 						const API_URL = endpoints.snapshots.fetch;
 						if (typeof API_URL !== "string") {
 							throw new Error("Invalid API URL");
 						}
-						return new Promise<SnapshotWithCriteria<T, K> | undefined>((resolve) => {
+						return new Promise<SnapshotWithCriteria<T, K, Meta, ExcludedFields> | undefined>((resolve) => {
 							setTimeout(() => resolve(undefined), 1000);
 						});
 					} catch (error) {

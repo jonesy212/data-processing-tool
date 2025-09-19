@@ -21,28 +21,40 @@ import { TagsRecord } from "../snapshots";
 import { DetailsItem } from "../state/stores/DetailsListStore";
 import { VersionData } from "../versions/VersionData";
 
+
+type PhaseEntity = BaseDataEntity;
+type PhaseK = PhaseEntity;
+type PhaseMetaType = DefaultMeta<PhaseEntity, PhaseK>;
+type PhaseExcluded = DefaultExcludedFields<PhaseEntity>;
+
+
+
+
 interface PhaseData<
-  T extends BaseDataEntity = BaseDataEntity,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         SharedProperties<T, K, Meta> {
  // Define any properties specific to phase-related data
   phaseName?: string;
   startDate?: Date;
   endDate?: Date;
-  subPhases?: PhaseData<T, K>[];
-
+  subPhases?: PhaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
-export interface PhaseMeta<
-  T extends BaseDataEntity = BaseDataEntity,
+interface PhaseMeta<
+  T extends BaseDataEntity,
   K extends T = T,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends StructuredMetadata<T, K, ExcludedFields> {
-  baseConfig: BaseConfig<T, K, StructuredMetadata<T, K>, ExcludedFields>;
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends StructuredMetadata<T, K> {
+  baseConfig: BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   createdBy?: string;
   updatedBy?: string;
   archived?: boolean;
@@ -54,14 +66,16 @@ export interface PhaseMeta<
 }
 
 type DataWithOmittedFields<
-  T extends BaseDataEntity = BaseDataEntity,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = Omit<Data<T, K, Meta>, ExcludedFields>;
 
 
-export interface PhaseLite {
+interface PhaseLite {
   id?: string;               // Identifier for the phase
   name?: string;             // Human-readable name
   description?: string;      // Short description
@@ -93,7 +107,7 @@ export interface Phase<
   data?: any;
   lessons?: Lesson[];
   duration?: number;
-  tasks?: Task[];
+  tasks?: Task<T, K, Meta, ExcludedFields>[];
   members?: Member[];
   color?: string;
   status?: string;
@@ -128,7 +142,7 @@ export class PhaseImpl<
   data: any;
   duration: number = 0;
   lessons: Lesson[] = [];
-  tasks?: Task[];
+  tasks?: Task<T, K, Meta, ExcludedFields>[];
   members?: Member[];
   color?: string;
   status?: string;
@@ -180,7 +194,7 @@ export class PhaseImpl<
     data?: any;
     duration?: number;
     lessons?: Lesson[];
-    tasks?: Task[];
+    tasks?: Task<T, K, Meta, ExcludedFields>[];
     members?: Member[];
     color?: string;
     status?: string;
@@ -296,5 +310,9 @@ const notifyTransition = (nextPhase: Phase<PhaseData<T, K>>): void => {
   console.log(`Now in phase: ${nextPhase.name}`);
 };
 
-export type { PhaseData, PhaseLite, PhaseMeta };
+export type { PhaseData, PhaseLite, PhaseMeta, PhaseEntity,
+  PhaseK,
+  PhaseMetaType,
+  PhaseExcluded 
+};
 

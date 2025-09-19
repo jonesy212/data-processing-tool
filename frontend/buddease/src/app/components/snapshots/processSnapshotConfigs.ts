@@ -19,14 +19,14 @@ const processSnapshotConfigs = async () => {
     const snapshotStore = await config.fetchSnapshot(
       async (
         snapshotId: string,
-        payload: FetchSnapshotPayload<T, K>,
-        snapshotStore: SnapshotStore<T, K>,
+        payload: FetchSnapshotPayload<T, K, Meta, ExcludedFields>,
+        snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
         payloadData: Data<T> | T,
         category: Category | undefined, 
         categoryProperties: CategoryProperties | undefined, 
         timestamp: Date, 
         data: T,
-        delegate: SnapshotWithCriteria<T, K>[]
+        delegate: SnapshotWithCriteria<T, K, Meta, ExcludedFields>[]
       ) => {
         // Handle the callback logic here
         return {
@@ -82,14 +82,14 @@ const handleTags = (config: SnapshotStoreConfig<Data<T>, BaseData>) => {
     // Example of invoking the fetchSnapshot
     const snapshotStore = await config.fetchSnapshot(
       async (snapshotId: string,
-        payload: FetchSnapshotPayload<T, K>,
-        snapshotStore: SnapshotStore<T, K>,
+        payload: FetchSnapshotPayload<T, K, Meta, ExcludedFields>,
+        snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
         payloadData: Data<T> | T,
         category: Category | undefined, 
         categoryProperties: CategoryProperties | undefined, 
         timestamp: Date, 
         data: T,
-        delegate: SnapshotWithCriteria<T, K>[]
+        delegate: SnapshotWithCriteria<T, K, Meta, ExcludedFields>[]
       ) => {
         // Handle snapshot data fetching logic
         return {

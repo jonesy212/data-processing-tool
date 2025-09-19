@@ -1,16 +1,19 @@
-import { BaseData } from '@/app/components/models/data/Data';
 import { Snapshot } from "@/app/components/snapshots";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import { DataStoreWithSnapshotMethods } from "../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
 import { subscribeToSnapshot, subscribeToSnapshots } from "./snapshotHandlers";
 import { SnapshotStoreOptions } from "./SnapshotStoreOptions";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig";
 
-class SnapshotManagerOptions<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
-  private options: SnapshotStoreOptions<T, K> | undefined;
+class SnapshotManagerOptions<T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+> {
+  private options: SnapshotStoreOptions<T, K, Meta, ExcludedFields> | undefined;
 
-  constructor(initialOptions: Partial<SnapshotStoreOptions<T, K>> = {}) {
+  constructor(initialOptions: Partial<SnapshotStoreOptions<T, K, Meta, ExcludedFields>> = {}) {
       this.options = {
-          data: new Map<string, Snapshot<T, K>>(),
+          data: new Map<string, Snapshot<T, K, Meta, ExcludedFields>>(),
           initialState: null,
           snapshotId: "",
           category: {
@@ -43,27 +46,27 @@ class SnapshotManagerOptions<T extends  BaseData<any>, K extends T = T, Meta ext
           subscribeToSnapshots: subscribeToSnapshots,
           subscribeToSnapshot: subscribeToSnapshot,
           delegate: [],
-          dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K>,
+          dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>,
           getDelegate: [],
-          getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K> {
+          getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields> {
               throw new Error("Function not implemented.");
           },
           snapshotMethods: [],
           eventRecords: null,
           ...initialOptions, // Overwrite defaults with provided options
-      } as SnapshotStoreOptions<T, K>;
+      } as SnapshotStoreOptions<T, K, Meta, ExcludedFields>;
   }
 
-  get(): SnapshotStoreOptions<T, K> {
+  get(): SnapshotStoreOptions<T, K, Meta, ExcludedFields> {
       if (this.options === undefined) {
           throw new Error("Options have not been initialized");
       }
       return this.options;
   }
 
-  set(options: Partial<SnapshotStoreOptions<T, K>>) {
+  set(options: Partial<SnapshotStoreOptions<T, K, Meta, ExcludedFields>>) {
       if (this.options) {
-          this.options = { ...this.options, ...options } as SnapshotStoreOptions<T, K>;
+          this.options = { ...this.options, ...options } as SnapshotStoreOptions<T, K, Meta, ExcludedFields>;
       } else {
           throw new Error("Options have not been initialized");
       }

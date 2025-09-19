@@ -13,7 +13,7 @@ import { Subscriber } from "../users/Subscriber";
 import { TriggerIncentivesParams } from '../utils/applicationUtils';
  
 interface SubscriptionPayload<
-  // ExcludedFields extends keyof T = never,
+  // ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   T extends  BaseData<any> = BaseData<any, any>, 
   K extends T = T,
   ExcludedFields extends Data<T> = never,
