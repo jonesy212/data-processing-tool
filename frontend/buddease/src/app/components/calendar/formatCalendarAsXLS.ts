@@ -1,7 +1,7 @@
 // formatCalendarAsXLS.ts
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { WritableDraft } from "../state/redux/ReducerGenerator";
-import { SimpleCalendarEvent } from "./CalendarContext";
+import { SimpleCalendarEvent } from "@/app/calendar/CalendarContext";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 
 // Function to format calendar data as XLS string
 export const formatCalendarAsXLS = (

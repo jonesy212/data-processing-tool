@@ -1,7 +1,7 @@
 // ProfileSetupPhase.tsx
 import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
 import React, { useState } from 'react';
-import useErrorHandling from '../../hooks/useErrorHandling';
+import useErrorHandling from '@/app/hooks/useErrorHandling';
 
 interface ProfileSetupPhaseProps {
   onSubmit: (profileData: any, personaType: PersonaTypeEnum) => void; // Pass personaType to onSubmit callback

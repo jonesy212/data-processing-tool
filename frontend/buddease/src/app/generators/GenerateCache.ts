@@ -1,40 +1,38 @@
 // generateCache.ts
- import { FileTypeEnum } from "../components/documents/FileType";
-import FileApiService from "../components/event/FileApiService";
+ import { FileTypeEnum } from "@/app/components/documents/FileType";
 import { BaseData } from '@/app/components/models/data/Data';
 
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { Data } from "@/app/components/models/data/Data";
+import { RealtimeData } from "@/app/components/models/realtime/RealtimeData";
 import {
-  useBrainstormingPhase,
-  useMeetingsPhase,
-  useProjectManagementPhase,
-  useTeamBuildingPhase,
-} from "../components/hooks/phaseHooks/CollaborationPhaseHooks";
+    useBrainstormingPhase,
+    useMeetingsPhase,
+    useProjectManagementPhase,
+    useTeamBuildingPhase,
+} from "@/app/hooks/phaseHooks/CollaborationPhaseHooks";
 import {
-  authenticationPhaseHook,
-  dataAnalysisPhaseHook,
-  generalCommunicationFeaturesPhaseHook,
-  ideationPhaseHook,
-  jobSearchPhaseHook,
-  productBrainstormingPhaseHook,
-  productLaunchPhaseHook,
-  recruiterDashboardPhaseHook,
-  teamCreationPhaseHook,
-} from "../components/hooks/phaseHooks/PhaseHooks";
+    authenticationPhaseHook,
+    dataAnalysisPhaseHook,
+    generalCommunicationFeaturesPhaseHook,
+    ideationPhaseHook,
+    jobSearchPhaseHook,
+    productBrainstormingPhaseHook,
+    productLaunchPhaseHook,
+    recruiterDashboardPhaseHook,
+    teamCreationPhaseHook,
+} from "@/app/hooks/phaseHooks/PhaseHooks";
 import {
-  darkModeTogglePhaseHook,
-  notificationBarPhaseHook,
-} from "../components/hooks/userInterface/UIPhaseHooks";
-import { Data } from "../components/models/data/Data";
-import { RealtimeData } from "../components/models/realtime/RealtimeData";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { VersionHistory } from "../components/versions/VersionData";
-import { backendConfig } from "../configs/BackendConfig";
-import { DataVersions } from "../configs/DataVersionsConfig";
-import { frontendConfig } from "../configs/FrontendConfig";
-import userSettings from "../configs/UserSettings";
-import BackendStructure from "../configs/appStructure/BackendStructure";
-import FrontendStructure from "../configs/appStructure/FrontendStructure";
-import { FileType } from "@/app/components/documents/Attachment/attachment";
+    darkModeTogglePhaseHook,
+    notificationBarPhaseHook,
+} from "@/app/hooks/userInterface/UIPhaseHooks";
+import { VersionHistory } from "@/app/versions/VersionData";
+import FrontendStructure from "@/config/appStructure/FrontendStructure";
+import { backendConfig } from "@/config/BackendConfig";
+import { frontendConfig } from "@/config/FrontendConfig";
+import userSettings from "@/config/UserSettings";
+import BackendStructure from "@/configs/appStructure/BackendStructure";
+import { DataVersions } from "@/configs/DataVersionsConfig";
 
 const initialData: any = {}; 
 

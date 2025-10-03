@@ -1,7 +1,7 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import InstagramAPI from "@/app/api/InstagramAPI";
-import { authToken } from "../auth/authToken";
-import axiosInstance from "../security/csrfToken";
+import { authToken } from "@/app/auth/authToken";
+import axiosInstance from "@/server/security/axiosInstance";
 
 
 const INSTAGRAM_API_BASE_URL = endpoints.details.instagram

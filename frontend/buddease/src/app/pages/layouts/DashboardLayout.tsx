@@ -1,32 +1,79 @@
+// DashboardLayout.tsx
+
 import React from 'react';
 import CommonLayout from './CommonLayout';
-import CollaborationToolsToolbar from '../community/CollaborationToolsToolbar';
+import CollaborationToolsToolbar from '@/app/pages/community/CollaborationToolsToolbar';
 import ProjectManagementToolbar from '@/app/components/documents/ProjectManagementToolbar';
 import { useDashboard } from '@/app/context/DashboardContext';
-import { AnalysisTypeEnum } from '@/app/components/projects/DataAnalysisPhase/AnalysisType';
+import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
 import { Data } from '@/app/components/models/data/Data';
 import DashboardLoader from '@/app/components/dashboards/DashboardLoader';
 import CryptoSectionToolbar from '@/app/components/libraries/toolbar/CryptoSectionToolbar';
+import { useAuth } from '@/context/AuthContext'; // Import auth context
+import { DashboardConfig } from '@/app/typings/authTypes'
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
-  dashboardConfig: {
+  dashboardConfig?: { // Make it optional since it might come from auth context
     title: string;
     content: React.ReactNode;
-    sidebarContent?: React.ReactNode; // Optionally include a dynamic sidebar
-
+    sidebarContent?: React.ReactNode;
+    redirectPath?: string;
+    userRole?: string;
+    permissions?: string[];
+    // Add more dashboard config properties as needed
   };
 };
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
   dashboardConfig,
-  
 }) => {
   const { currentDashboard } = useDashboard();
+  const { user, dashboardConfig: authDashboardConfig } = useAuth(); // Get dashboard config from auth
 
-  // Render toolbar based on current dashboard
+  // Priority: props config > auth context config > default config
+  const effectiveDashboardConfig = dashboardConfig || authDashboardConfig || getDefaultDashboardConfig(user);
+
+  // Get default dashboard config based on user role
+  function getDefaultDashboardConfig(user: any) {
+    const userRole = user?.roles?.[0] || 'user';
+    
+    const defaultConfigs = {
+      admin: {
+        title: 'Admin Dashboard',
+        content: <div>Admin Dashboard Content</div>,
+        sidebarContent: <div>Admin Sidebar</div>,
+        redirectPath: '/admin-dashboard',
+        userRole: 'admin'
+      },
+      manager: {
+        title: 'Manager Dashboard',
+        content: <div>Manager Dashboard Content</div>,
+        sidebarContent: <div>Manager Sidebar</div>,
+        redirectPath: '/manager-dashboard',
+        userRole: 'manager'
+      },
+      user: {
+        title: 'User Dashboard',
+        content: <div>User Dashboard Content</div>,
+        sidebarContent: <div>User Sidebar</div>,
+        redirectPath: '/dashboard',
+        userRole: 'user'
+      }
+    };
+
+    return defaultConfigs[userRole] || defaultConfigs.user;
+  }
+
+  // Enhanced toolbar rendering that considers dashboard config
   const renderToolbar = () => {
+    // Priority: dashboardConfig toolbar > currentDashboard fallback
+    if (effectiveDashboardConfig?.toolbar) {
+      return effectiveDashboardConfig.toolbar;
+    }
+
+    // Fallback to existing dashboard-based toolbar
     switch (currentDashboard) {
       case "projectManagement":
         return (
@@ -94,21 +141,51 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     }
   };
 
+  // Render sidebar with priority: config sidebar > default sidebar
+  const renderSidebar = () => {
+    if (effectiveDashboardConfig?.sidebarContent) {
+      return <aside className="dashboard-sidebar">{effectiveDashboardConfig.sidebarContent}</aside>;
+    }
+    
+    // Default sidebar fallback
+    return <aside className="dashboard-sidebar">Dashboard-specific sidebar</aside>;
+  };
+
+  // Update document title based on dashboard config
+  React.useEffect(() => {
+    if (effectiveDashboardConfig?.title) {
+      document.title = `${effectiveDashboardConfig.title} - My App`;
+    }
+  }, [effectiveDashboardConfig?.title]);
+
   return (
     <CommonLayout>
-      {/* Additional dashboard-specific layout elements */}
-      <aside>Dashboard-specific sidebar</aside>
+      {/* Render dynamic sidebar */}
+      {renderSidebar()}
 
-       {/* Render dynamic sidebar if provided */}
-       {dashboardConfig.sidebarContent && (
-        <aside>{dashboardConfig.sidebarContent}</aside>
-      )}
       {/* Render dynamic toolbar */}
       {renderToolbar()}
 
+      {/* Dashboard header with config-based title */}
+      <header className="dashboard-header">
+        <h1>{effectiveDashboardConfig?.title || 'Dashboard'}</h1>
+        {effectiveDashboardConfig?.userRole && (
+          <span className="user-role-badge">{effectiveDashboardConfig.userRole}</span>
+        )}
+      </header>
+
       {/* Render common layout content and the DashboardLoader */}
       {children}
-      <DashboardLoader dashboardConfig={dashboardConfig} />
+      
+      {/* Pass the effective dashboard config to DashboardLoader */}
+      <DashboardLoader dashboardConfig={effectiveDashboardConfig} />
+
+      {/* Optional: Render dashboard config content if provided */}
+      {effectiveDashboardConfig?.content && (
+        <div className="dashboard-config-content">
+          {effectiveDashboardConfig.content}
+        </div>
+      )}
     </CommonLayout>
   );
 };

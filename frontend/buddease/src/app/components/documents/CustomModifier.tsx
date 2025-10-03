@@ -1,5 +1,5 @@
 import { ContentBlock, ContentState, DraftInlineStyle, EditorState, Modifier, SelectionState } from "draft-js";
-import { ThemeConfigProps } from "../hooks/userInterface/ThemeConfigContext";
+import { ThemeConfigProps } from "@/app/hooks/userInterface/ThemeConfigContext";
 
 class CustomModifier extends Modifier {
   static setInlineStyle(

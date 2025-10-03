@@ -2,9 +2,9 @@
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
 import { MyPropertiesOptions } from '@/app/configs/declarations/global';
 import * as docx from 'docx';
+import { SimpleCalendarEvent } from "@/app/calendar/CalendarContext";
 import { CustomDocument } from '../documents/DocumentOptions';
-import { WritableDraft } from "../state/redux/ReducerGenerator";
-import { SimpleCalendarEvent } from "./CalendarContext";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 
 
 

@@ -7,54 +7,54 @@ import React, { SetStateAction, useState } from "react";
 import { Navigator, Routes } from "react-router-dom";
 import { v4 as uuidVFour } from "uuid"; // Import the uuid library or use your preferred UUID generator
 
+import { AuthProvider } from "@/app/components/auth/AuthContext";
+import BlogComponent from "@/app/components/blogs/BlogComponent";
+import ChartComponent from "@/app/components/charts/ChartComponent";
+import ConfirmationModal from "@/app/components/communications/ConfirmationModal";
+import { Lesson } from "@/app/components/documents/CourseBuilder";
+import EditorWithPrompt from "@/app/components/documents/EditorWithPrompt";
+import Toolbar from "@/app/components/documents/Toolbar";
+import { LogData } from "@/app/components/models/LogData";
+import ContentItemComponent from "@/app/components/models/content/ContentItem";
+import { BaseData, Data } from "@/app/components/models/data/Data";
+import OnboardingComponent from "@/app/components/onboarding/OnboardingComponent";
+import { CustomPhaseHooks, Phase } from "@/app/components/phases/Phase";
+import undoLastAction from "@/app/projects/projectManagement/ProjectManager";
+import { DynamicPromptProvider } from "@/app/components/prompts/DynamicPromptContext";
+import NotificationManager from "@/app/features/support/NotificationManager";
+import { ButtonGenerator } from "@/app/generators/GenerateButtons";
+import { generateUtilityFunctions } from "@/app/generators/GenerateUtilityFunctions";
+import generateAppTree, { AppTree } from "@/app/generators/generateAppTree";
+import ChildComponent from "@/app/hooks/ChildComponent";
+import { handleLogin } from "@/app/hooks/dynamicHooks/dynamicHooks";
+import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
 import {
-  NotificationProvider,
-  NotificationTypeEnum,
+    ThemeConfigProvider,
+    useThemeConfig,
+} from "@/app/hooks/userInterface/ThemeConfigContext";
+import {
+    default as ThemeCustomization,
+    default as defaultThemeConfig,
+} from "@/app/hooks/userInterface/ThemeCustomization";
+import BrandingSettings from "@/app/libraries/theme/BrandingService";
+import DynamicErrorBoundary from "@/app/shared/DynamicErrorBoundary";
+import ErrorBoundaryProvider from "@/app/shared/ErrorBoundaryProvider";
+import ErrorHandler from "@/app/shared/ErrorHandler";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
+import { StoreProvider } from "@/app/state/stores/StoreProvider";
+import { NotificationData } from "@/app/support/NofiticationsSlice";
+import { DocumentTree } from "@/app/users/User";
+import {
+    NotificationProvider,
+    NotificationTypeEnum,
 } from "@/context/NotificationContext";
 import {
-  Route,
-  Router,
-  useLocation,
-  useNavigate,
-  useSearchParams,
+    Route,
+    Router,
+    useLocation,
+    useNavigate,
+    useSearchParams,
 } from "react-router-dom";
-import { AuthProvider } from "../components/auth/AuthContext";
-import BlogComponent from "../components/blogs/BlogComponent";
-import ChartComponent from "../components/charts/ChartComponent";
-import ConfirmationModal from "../components/communications/ConfirmationModal";
-import { Lesson } from "../components/documents/CourseBuilder";
-import EditorWithPrompt from "../components/documents/EditorWithPrompt";
-import Toolbar from "../components/documents/Toolbar";
-import ChildComponent from "../components/hooks/ChildComponent";
-import { handleLogin } from "../components/hooks/dynamicHooks/dynamicHooks";
-import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
-import {
-  ThemeConfigProvider,
-  useThemeConfig,
-} from "../components/hooks/userInterface/ThemeConfigContext";
-import {
-  default as ThemeCustomization,
-  default as defaultThemeConfig,
-} from "../components/hooks/userInterface/ThemeCustomization";
-import { LogData } from "../components/models/LogData";
-import ContentItemComponent from "../components/models/content/ContentItem";
-import { BaseData, Data } from "../components/models/data/Data";
-import OnboardingComponent from "../components/onboarding/OnboardingComponent";
-import { CustomPhaseHooks, Phase } from "../components/phases/Phase";
-import undoLastAction from "../components/projects/projectManagement/ProjectManager";
-import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContext";
-import { DetailsItem } from "../components/state/stores/DetailsListStore";
-import { StoreProvider } from "../components/state/stores/StoreProvider";
-import { NotificationData } from "../components/support/NofiticationsSlice";
-import NotificationManager from "../components/support/NotificationManager";
-import { DocumentTree } from "../components/users/User";
-import { ButtonGenerator } from "../generators/GenerateButtons";
-import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
-import generateAppTree, { AppTree } from "../generators/generateAppTree";
-import BrandingSettings from "../libraries/theme/BrandingService";
-import DynamicErrorBoundary from "../shared/DynamicErrorBoundary";
-import ErrorBoundaryProvider from "../shared/ErrorBoundaryProvider";
-import ErrorHandler from "../shared/ErrorHandler";
 import CollaborationDashboard from "./dashboards/CollaborationDashboard";
 import TreeView from "./dashboards/TreeView";
 import ChangePasswordForm from "./forms/ChangePasswordForm";
@@ -66,25 +66,25 @@ import Layout from "./layouts/Layouts";
 import PersonaTypeEnum from "./personas/PersonaBuilder";
 import SearchComponent from "./searchs/SearchComponent";
 
+import { ChatSidebarProvider } from "@/app/api/ChatSidebarProvider";
+import DetermineFileType from "@/app/components/configs/DetermineFileType";
+import FilePreview from "@/app/components/documents/FilePreview";
+import { ToolbarOptions } from "@/app/components/documents/ToolbarOptions";
+import { authProvider } from "@/app/components/interfaces/provider/authProviderInstance";
+import ToolbarItemsContext from "@/app/components/libraries/toolbar/ToolbarItemsProvider";
+import useNotificationManagerService from "@/app/services/NotificationService";
+import StepComponent from "@/app/components/phases/steps/StepComponent";
+import steps from "@/app/components/phases/steps/steps";
+import RouteGuard from "@/app/components/routing/RouteGuard";
 import { NotificationType } from "@/app/context/NotificationContext";
+import StepProvider, { useStepContext } from "@/app/context/StepContext";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
+import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";
+import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/versions/createLatestVersion";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { EditorState } from "draft-js";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { ChatSidebarProvider } from "../api/ChatSidebarProvider";
-import FilePreview from "../components/documents/FilePreview";
-import { ToolbarOptions } from "../components/documents/ToolbarOptions";
-import { PhaseHookConfig } from "../components/hooks/phaseHooks/PhaseHooks";
-import { authProvider } from "../components/interfaces/provider/authProviderInstance";
-import ToolbarItemsContext from "../components/libraries/toolbar/ToolbarItemsProvider";
-import useNotificationManagerService from "../components/notifications/NotificationService";
-import StepComponent from "../components/phases/steps/StepComponent";
-import steps from "../components/phases/steps/steps";
-import ProtectedRoute from "../components/routing/ProtectedRoute";
-import { ThemeState } from "../components/state/redux/slices/ThemeSlice";
-import { createLastUpdatedWithVersion, createLatestVersion } from "../components/versions/createLatestVersion";
-import DetermineFileType from "../configs/DetermineFileType";
-import { StructuredMetadata } from "../configs/StructuredMetadata";
-import StepProvider, { useStepContext } from "../context/StepContext";
-import UniqueIDGenerator from "../generators/GenerateUniqueIds";
 import FormBuilder from "./forms/formBuilder/FormBuilder";
 import LogViewer from "./logs/LogViewer";
 
@@ -386,7 +386,7 @@ async function MyApp({
         config: undefined,
         initialState: undefined,
         operation: {
-          operationType: "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/snapshots/SnapshotActions".CreateSnapshot,
+          operationType: "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/SnapshotActions".CreateSnapshot,
           query: undefined,
           action: undefined,
           criteria: undefined,
@@ -713,11 +713,11 @@ async function MyApp({
                                   onRoutesLayout={handleButtonClick}
                                   onOpenDashboard={handleButtonClick}
                                 />
-                                <ProtectedRoute
+                                <RouteGuard
                                   path="/logs"
                                   component={LogViewer}
                                 />
-                                <ProtectedRoute
+                                <RouteGuard
                                   path="/"
                                   component={OtherComponent}
                                 />

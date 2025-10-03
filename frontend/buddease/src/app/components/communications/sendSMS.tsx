@@ -1,23 +1,23 @@
 import { useState } from 'react';
 import React from "react";
+import { sendSMS } from "@/components/communication/sendSMS"; // 👈 clean import
 
-// Function to send the SMS
-export const sendSMS = (phoneNumber: string, message: string) => {
-  // Replace this with your actual logic for sending SMS messages
-  alert(`SMS sent to ${phoneNumber} with message: "${message}"`);
-  // Additional logic such as API calls can be added here
-};
+'use client';
 
-// Send SMS Component
+
 const SendSMS = () => {
-  // State to track SMS details
   const [phoneNumber, setPhoneNumber] = useState('');
   const [message, setMessage] = useState('');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
 
-  // Function to handle sending the SMS
-  const handleSendSMS = () => {
-    // Call the globally defined sendSMS function
-    sendSMS(phoneNumber, message);
+  const handleSendSMS = async () => {
+    setStatus('sending');
+    try {
+      await sendSMS(phoneNumber, message);
+      setStatus('sent');
+    } catch {
+      setStatus('error');
+    }
   };
 
   return (
@@ -25,20 +25,29 @@ const SendSMS = () => {
       <h3>Send SMS</h3>
       <p>Compose and send an SMS to a phone number.</p>
 
-      {/* Phone Number Input */}
       <label>
         Phone Number:
-        <input type="text" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+        <input
+          type="text"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
+        />
       </label>
 
-      {/* Message Textarea */}
       <label>
         Message:
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} />
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
       </label>
 
-      {/* Send Button */}
-      <button onClick={handleSendSMS}>Send SMS</button>
+      <button onClick={handleSendSMS} disabled={status === 'sending'}>
+        {status === 'sending' ? 'Sending...' : 'Send SMS'}
+      </button>
+
+      {status === 'sent' && <p>SMS sent successfully!</p>}
+      {status === 'error' && <p>Failed to send SMS.</p>}
     </div>
   );
 };

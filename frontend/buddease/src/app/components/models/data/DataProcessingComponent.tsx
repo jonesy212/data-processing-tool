@@ -1,7 +1,7 @@
 // DataProcessingComponent.tsx
 
 import React, { useEffect, useState } from "react";
-import LoadingIndicator from "../tracker/LoadingIndicator";
+import LoadingIndicator from "@/app/tracker/LoadingIndicator";
 
 interface DataProcessingProps {
   datasetPath: string;

@@ -1,0 +1,556 @@
+// app/features/prompts/FeatureFiles.tsx
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { 
+  Tag, 
+  Input, 
+  Button, 
+  Card, 
+  List, 
+  Switch, 
+  Modal, 
+  Upload,
+  Tree,
+  Select,
+  Space,
+  Badge
+} from 'antd';
+import { 
+  SearchOutlined, 
+  LinkOutlined, 
+  FolderOutlined, 
+  LockOutlined,
+  TeamOutlined,
+  UploadOutlined
+} from '@ant-design/icons';
+import { RootState } from '@/app/state/store';
+import { useNotification } from "@/app/context/NotificationContext";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { FeaturePrompt } from '@/app/typings/promptTypes'
+// Types
+export interface Subject {
+  id: string;
+  name: string;
+  description?: string;
+  color: string;
+}
+
+export interface Conversation {
+  id: string;
+  title: string;
+  subjectId: string;
+  prompts: string[]; // FeaturePrompt IDs in order
+  participants: string[]; // User IDs
+  accessLevel: 'private' | 'team' | 'public' | 'community';
+  createdAt: Date;
+}
+
+export interface DocumentFile {
+  id: string;
+  name: string;
+  type: string;
+  url: string;
+  size: number;
+  subjectIds: string[];
+  conversationIds: string[];
+  accessLevel: 'private' | 'team' | 'public' | 'community';
+  uploadedBy: string;
+  uploadedAt: Date;
+}
+
+interface FeatureFilesState {
+  subjects: Subject[];
+  prompts: FeaturePrompt[];
+  conversations: Conversation[];
+  documents: DocumentFile[];
+  searchQuery: string;
+  selectedSubject: string | null;
+  selectedAccessLevel: string | null;
+}
+
+const FeatureFiles: React.FC = () => {
+  const dispatch = useDispatch();
+  const { notify } = useNotification();
+  
+  const [state, setState] = useState<FeatureFilesState>({
+    subjects: [],
+    prompts: [],
+    conversations: [],
+    documents: [],
+    searchQuery: '',
+    selectedSubject: null,
+    selectedAccessLevel: null
+  });
+
+  const [isLinkModalVisible, setIsLinkModalVisible] = useState(false);
+  const [selectedPrompt, setSelectedPrompt] = useState<FeaturePrompt | null>(null);
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
+
+  // Sample data - replace with actual API calls
+// app/features/prompts/FeatureFiles.tsx - Updated sample subjects
+const sampleSubjects: Subject[] = [
+  // Project Management & Collaboration
+  { id: '1', name: 'Project Planning', color: '#1890ff' },
+  { id: '2', name: 'Team Collaboration', color: '#52c41a' },
+  { id: '3', name: 'Task Management', color: '#faad14' },
+  { id: '4', name: 'Communication Tools', color: '#13c2c2' },
+  
+  // Product Development Phases
+  { id: '5', name: 'Ideation & Brainstorming', color: '#722ed1' },
+  { id: '6', name: 'Product Design', color: '#eb2f96' },
+  { id: '7', name: 'Development', color: '#fa541c' },
+  { id: '8', name: 'Testing & QA', color: '#a0d911' },
+  { id: '9', name: 'Launch & Deployment', color: '#2f54eb' },
+  
+  // Data & Analytics
+  { id: '10', name: 'Data Analysis', color: '#f759ab' },
+  { id: '11', name: 'Market Research', color: '#9254de' },
+  { id: '12', name: 'User Analytics', color: '#36cfc9' },
+  { id: '13', name: 'Performance Metrics', color: '#ff7a45' },
+  
+  // Crypto & Blockchain
+  { id: '14', name: 'Cryptocurrency Trading', color: '#ff4d4f' },
+  { id: '15', name: 'Portfolio Management', color: '#597ef7' },
+  { id: '16', name: 'Market Analysis', color: '#ffa940' },
+  { id: '17', name: 'Blockchain Technology', color: '#73d13d' },
+  { id: '18', name: 'Crypto Community', color: '#ffec3d' },
+  
+  // Communication Features
+  { id: '19', name: 'Audio Communication', color: '#4096ff' },
+  { id: '20', name: 'Video Conferencing', color: '#ff4d4f' },
+  { id: '21', name: 'Real-time Chat', color: '#36cfc9' },
+  { id: '22', name: 'File Sharing', color: '#ff7a45' },
+  
+  // Innovation & Strategy
+  { id: '23', name: 'Innovation Strategy', color: '#722ed1' },
+  { id: '24', name: 'Product Roadmap', color: '#eb2f96' },
+  { id: '25', name: 'Competitive Analysis', color: '#faad14' },
+  
+  // Global Collaboration
+  { id: '26', name: 'International Teams', color: '#389e0d' },
+  { id: '27', name: 'Cross-cultural Communication', color: '#d48806' },
+  { id: '28', name: 'Remote Work Tools', color: '#0958d9' },
+  
+  // Business & Growth
+  { id: '29', name: 'Business Development', color: '#c41d7f' },
+  { id: '30', name: 'Marketing Strategy', color: '#d46b08' },
+  { id: '31', name: 'Customer Engagement', color: '#08979c' },
+  { id: '32', name: 'Revenue Growth', color: '#d4380d' }
+];
+
+  // Load initial data
+  useEffect(() => {
+    setState(prev => ({
+      ...prev,
+      subjects: sampleSubjects,
+      prompts: [],
+      conversations: [],
+      documents: []
+    }));
+  }, []);
+
+  // Filtered data based on search and filters
+  const filteredPrompts = state.prompts.filter(prompt => {
+    const matchesSearch = prompt.title.toLowerCase().includes(state.searchQuery.toLowerCase()) ||
+                         prompt.content.toLowerCase().includes(state.searchQuery.toLowerCase());
+    const matchesSubject = !state.selectedSubject || prompt.subjects.includes(state.selectedSubject);
+    const matchesAccess = !state.selectedAccessLevel || prompt.accessLevel === state.selectedAccessLevel;
+    
+    return matchesSearch && matchesSubject && matchesAccess;
+  });
+
+  const filteredDocuments = state.documents.filter(doc => {
+    const matchesSearch = doc.name.toLowerCase().includes(state.searchQuery.toLowerCase());
+    const matchesSubject = !state.selectedSubject || doc.subjectIds.includes(state.selectedSubject);
+    const matchesAccess = !state.selectedAccessLevel || doc.accessLevel === state.selectedAccessLevel;
+    
+    return matchesSearch && matchesSubject && matchesAccess;
+  });
+
+  // Subject Management
+  const handleCreateSubject = (name: string, color: string) => {
+    const newSubject: Subject = {
+      id: Date.now().toString(),
+      name,
+      color
+    };
+    setState(prev => ({
+      ...prev,
+      subjects: [...prev.subjects, newSubject]
+    }));
+  };
+
+  // FeaturePrompt Management
+  const handleCreatePrompt = (promptData: Omit<FeaturePrompt, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const newPrompt: FeaturePrompt = {
+      ...promptData,
+      id: Date.now().toString(),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    setState(prev => ({
+      ...prev,
+      prompts: [...prev.prompts, newPrompt]
+    }));
+    
+    notify(
+      "FeaturePrompt Created",
+      `"${promptData.title}" created successfully`,
+      "PROMPT_CREATE_SUCCESS",
+      new Date(),
+      NotificationTypeEnum.SUCCESS
+    );
+  };
+
+  // Conversation Linking
+  const handleLinkToConversation = (promptId: string, conversationId: string) => {
+    setState(prev => ({
+      ...prev,
+      prompts: prev.prompts.map(prompt => 
+        prompt.id === promptId 
+          ? { ...prompt, conversationId }
+          : prompt
+      )
+    }));
+  };
+
+  const handleCreateConversation = (subjectId: string, title: string) => {
+    const newConversation: Conversation = {
+      id: Date.now().toString(),
+      title,
+      subjectId,
+      prompts: [],
+      participants: [],
+      accessLevel: 'private',
+      createdAt: new Date()
+    };
+    setState(prev => ({
+      ...prev,
+      conversations: [...prev.conversations, newConversation]
+    }));
+  };
+
+  // Document Management
+  const handleUploadDocument = (file: File, subjectIds: string[], accessLevel: string) => {
+    const newDocument: DocumentFile = {
+      id: Date.now().toString(),
+      name: file.name,
+      type: file.type,
+      url: URL.createObjectURL(file),
+      size: file.size,
+      subjectIds,
+      conversationIds: [],
+      accessLevel: accessLevel as any,
+      uploadedBy: 'current-user', // Replace with actual user
+      uploadedAt: new Date()
+    };
+    setState(prev => ({
+      ...prev,
+      documents: [...prev.documents, newDocument]
+    }));
+    
+    notify(
+      "Document Uploaded",
+      `"${file.name}" uploaded successfully`,
+      "DOCUMENT_UPLOAD_SUCCESS",
+      new Date(),
+      NotificationTypeEnum.SUCCESS
+    );
+  };
+
+  // Access Control
+  const handleUpdateAccess = (itemId: string, type: 'prompt' | 'conversation' | 'document', accessLevel: string) => {
+    const updateState = (prev: FeatureFilesState) => {
+      if (type === 'prompt') {
+        return {
+          ...prev,
+          prompts: prev.prompts.map(p => 
+            p.id === itemId ? { ...p, accessLevel: accessLevel as any } : p
+          )
+        };
+      } else if (type === 'conversation') {
+        return {
+          ...prev,
+          conversations: prev.conversations.map(c => 
+            c.id === itemId ? { ...c, accessLevel: accessLevel as any } : c
+          )
+        };
+      } else {
+        return {
+          ...prev,
+          documents: prev.documents.map(d => 
+            d.id === itemId ? { ...d, accessLevel: accessLevel as any } : d
+          )
+        };
+      }
+    };
+    
+    setState(updateState);
+  };
+
+  // Search and Filter
+  const handleSearch = (query: string) => {
+    setState(prev => ({ ...prev, searchQuery: query }));
+  };
+
+  const handleSubjectFilter = (subjectId: string | null) => {
+    setState(prev => ({ ...prev, selectedSubject: subjectId }));
+  };
+
+  const handleAccessFilter = (accessLevel: string | null) => {
+    setState(prev => ({ ...prev, selectedAccessLevel: accessLevel }));
+  };
+
+  // Automation - Auto-tagging suggestion (simplified)
+  const suggestTags = (content: string): string[] => {
+    // Simple keyword extraction - replace with NLP service
+    const keywords = content.toLowerCase().match(/\b(\w+)\b/g) || [];
+    return [...new Set(keywords)].slice(0, 5);
+  };
+
+  const getAccessLevelIcon = (level: string) => {
+    switch (level) {
+      case 'private': return <LockOutlined style={{ color: '#ff4d4f' }} />;
+      case 'team': return <TeamOutlined style={{ color: '#1890ff' }} />;
+      case 'public': return <LockOutlined style={{ color: '#52c41a' }} />;
+      case 'community': return <TeamOutlined style={{ color: '#faad14' }} />;
+      default: return <LockOutlined />;
+    }
+  };
+
+  return (
+    <div className="feature-files-container p-6">
+      {/* Header with Search and Filters */}
+      <div className="filters-section mb-6">
+        <Space size="large" wrap>
+          <Input
+            placeholder="Search prompts, conversations, documents..."
+            prefix={<SearchOutlined />}
+            value={state.searchQuery}
+            onChange={(e) => handleSearch(e.target.value)}
+            style={{ width: 300 }}
+          />
+          
+          <Select
+            placeholder="Filter by Subject"
+            value={state.selectedSubject}
+            onChange={handleSubjectFilter}
+            style={{ width: 200 }}
+            allowClear
+          >
+            {state.subjects.map(subject => (
+              <Select.Option key={subject.id} value={subject.id}>
+                <Tag color={subject.color}>{subject.name}</Tag>
+              </Select.Option>
+            ))}
+          </Select>
+          
+          <Select
+            placeholder="Filter by Access"
+            value={state.selectedAccessLevel}
+            onChange={handleAccessFilter}
+            style={{ width: 150 }}
+            allowClear
+          >
+            <Select.Option value="private">Private</Select.Option>
+            <Select.Option value="team">Team</Select.Option>
+            <Select.Option value="public">Public</Select.Option>
+            <Select.Option value="community">Community</Select.Option>
+          </Select>
+          
+          <Button 
+            type="primary" 
+            icon={<UploadOutlined />}
+            onClick={() => setUploadModalVisible(true)}
+          >
+            Upload Document
+          </Button>
+        </Space>
+      </div>
+
+      {/* Main Content Grid */}
+      <div className="content-grid grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Prompts Section */}
+        <Card title="Prompts" extra={<Button type="link">Create New</Button>}>
+          <List
+            dataSource={filteredPrompts}
+            renderItem={prompt => (
+              <List.Item
+                actions={[
+                  <Button 
+                    type="link" 
+                    icon={<LinkOutlined />}
+                    onClick={() => {
+                      setSelectedPrompt(prompt);
+                      setIsLinkModalVisible(true);
+                    }}
+                  >
+                    Link
+                  </Button>,
+                  <Select
+                    defaultValue={prompt.accessLevel}
+                    onChange={(value) => handleUpdateAccess(prompt.id, 'prompt', value)}
+                    style={{ width: 100 }}
+                  >
+                    <Select.Option value="private">Private</Select.Option>
+                    <Select.Option value="team">Team</Select.Option>
+                    <Select.Option value="public">Public</Select.Option>
+                    <Select.Option value="community">Community</Select.Option>
+                  </Select>
+                ]}
+              >
+                <List.Item.Meta
+                  avatar={getAccessLevelIcon(prompt.accessLevel)}
+                  title={prompt.title}
+                  description={
+                    <div>
+                      <div>{prompt.content.substring(0, 100)}...</div>
+                      <div className="mt-2">
+                        {prompt.subjects.map(subjectId => {
+                          const subject = state.subjects.find(s => s.id === subjectId);
+                          return subject ? (
+                            <Tag key={subjectId} color={subject.color}>
+                              {subject.name}
+                            </Tag>
+                          ) : null;
+                        })}
+                      </div>
+                    </div>
+                  }
+                />
+              </List.Item>
+            )}
+          />
+        </Card>
+
+        {/* Documents Section */}
+        <Card title="Documents" extra={<span>Total: {filteredDocuments.length}</span>}>
+          <List
+            dataSource={filteredDocuments}
+            renderItem={doc => (
+              <List.Item
+                actions={[
+                  <Select
+                    defaultValue={doc.accessLevel}
+                    onChange={(value) => handleUpdateAccess(doc.id, 'document', value)}
+                    style={{ width: 100 }}
+                  >
+                    <Select.Option value="private">Private</Select.Option>
+                    <Select.Option value="team">Team</Select.Option>
+                    <Select.Option value="public">Public</Select.Option>
+                    <Select.Option value="community">Community</Select.Option>
+                  </Select>
+                ]}
+              >
+                <List.Item.Meta
+                  avatar={<FolderOutlined />}
+                  title={
+                    <Space>
+                      {doc.name}
+                      {getAccessLevelIcon(doc.accessLevel)}
+                    </Space>
+                  }
+                  description={
+                    <div>
+                      <div>Size: {(doc.size / 1024 / 1024).toFixed(2)} MB</div>
+                      <div className="mt-1">
+                        {doc.subjectIds.map(subjectId => {
+                          const subject = state.subjects.find(s => s.id === subjectId);
+                          return subject ? (
+                            <Tag key={subjectId} color={subject.color}>
+                              {subject.name}
+                            </Tag>
+                          ) : null;
+                        })}
+                      </div>
+                    </div>
+                  }
+                />
+              </List.Item>
+            )}
+          />
+        </Card>
+      </div>
+
+      {/* Subjects Overview */}
+      <Card title="Subjects" className="mt-6">
+        <div className="subjects-grid grid grid-cols-2 md:grid-cols-4 gap-4">
+          {state.subjects.map(subject => (
+            <Card 
+              key={subject.id} 
+              size="small"
+              style={{ borderLeft: `4px solid ${subject.color}` }}
+            >
+              <div className="text-center">
+                <div className="font-semibold">{subject.name}</div>
+                <div className="text-gray-500 text-sm">
+                  {state.prompts.filter(p => p.subjects.includes(subject.id)).length} prompts
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </Card>
+
+      {/* Link FeaturePrompt Modal */}
+      <Modal
+        title="Link FeaturePrompt to Conversation"
+        visible={isLinkModalVisible}
+        onCancel={() => setIsLinkModalVisible(false)}
+        footer={null}
+      >
+        {selectedPrompt && (
+          <div>
+            <p>Link "{selectedPrompt.title}" to:</p>
+            <Select style={{ width: '100%' }} placeholder="Select conversation">
+              {state.conversations.map(conv => (
+                <Select.Option key={conv.id} value={conv.id}>
+                  {conv.title}
+                </Select.Option>
+              ))}
+            </Select>
+            <div className="mt-4 text-right">
+              <Button type="primary">Link</Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Upload Document Modal */}
+      <Modal
+        title="Upload Document"
+        visible={uploadModalVisible}
+        onCancel={() => setUploadModalVisible(false)}
+        footer={null}
+      >
+        <Upload.Dragger
+          multiple
+          beforeUpload={(file) => {
+            // Handle file upload
+            handleUploadDocument(file, [], 'private');
+            setUploadModalVisible(false);
+            return false; // Prevent automatic upload
+          }}
+        >
+          <p className="ant-upload-drag-icon">
+            <UploadOutlined />
+          </p>
+          <p className="ant-upload-text">Click or drag file to upload</p>
+        </Upload.Dragger>
+        
+        <div className="mt-4">
+          <div>Assign to Subjects:</div>
+          <Select mode="multiple" style={{ width: '100%' }} placeholder="Select subjects">
+            {state.subjects.map(subject => (
+              <Select.Option key={subject.id} value={subject.id}>
+                <Tag color={subject.color}>{subject.name}</Tag>
+              </Select.Option>
+            ))}
+          </Select>
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
+export default FeatureFiles;

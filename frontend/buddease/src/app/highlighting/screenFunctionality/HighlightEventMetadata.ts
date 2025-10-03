@@ -1,0 +1,33 @@
+// HighlightEventMetadata.ts
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { Attachment } from "@/app/components/documents/Attachment";
+
+interface HighlightEventMetadata<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  structureMetadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  highlightId: string;
+  documentVersion: string;
+  selectionContext: {
+    startOffset: number;
+    endOffset: number;
+    xPath: string;
+    surroundingText: string;
+  };
+  annotationData?: {
+    tags: string[];
+    notes: string;
+    color: string;
+    priority: 'low' | 'medium' | 'high';
+  };
+  // Add more properties as needed
+}
+
+
+export default HighlightEventMetadata;

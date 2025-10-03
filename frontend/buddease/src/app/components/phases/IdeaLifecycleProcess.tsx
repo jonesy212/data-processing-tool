@@ -5,10 +5,10 @@ import {
     NotificationTypeEnum,
     useNotification,
 } from "@/context/NotificationContext";
-import axiosInstance from "../security/csrfToken";
-import IdeaValidation from "../users/userJourney/IdeaValidation";
-import ProofOfConcept from "../users/userJourney/ProofOfConcept";
-import * as IdeaLifecycleAPI from "./../../api/ApiIdeaLifecycle";
+import axiosInstance from '@/app/api/csrfToken';
+import IdeaValidation from "@/app/users/userJourney/IdeaValidation";
+import ProofOfConcept from "@/app/users/userJourney/ProofOfConcept";
+import * as IdeaLifecycleAPI from "@/api/IdeaLifecycleAPI";
 import { IdeaLifecyclePhase } from "./ideaPhase/IdeaLifecyclePhase";
 
 const IdeaLifecycleProcess: React.FC = () => {

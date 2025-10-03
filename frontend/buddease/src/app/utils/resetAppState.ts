@@ -1,13 +1,13 @@
 // resetAppState.ts
 
 import { useDispatch } from "react-redux";
-import UserService from "../api/ApiUser";
-import { useThemeConfig } from "../components/hooks/userInterface/ThemeConfigContext";
-import { ThemeEnum } from "../components/libraries/ui/theme/Theme";
-import { ThemeConfig } from "../components/libraries/ui/theme/ThemeConfig";
-import { resetState } from "../components/state/redux/slices/AppSlice";
-import useSettingManagerStore from "../components/state/stores/SettingsStore";
-import { isUserLoggedIn } from "../pages/forms/utils/CommonLoginLogic";
+import UserService from "@/app/api/ApiUser";
+import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
+import { ThemeEnum } from "@/app/components/libraries/ui/theme/Theme";
+import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
+import { resetState } from "@/app/state/redux/slices/AppSlice";
+import useSettingManagerStore from "@/app/state/stores/SettingsStore";
+import { isUserLoggedIn } from "@/app/pages/forms/utils/CommonLoginLogic";
 
 
 const dispatch = useDispatch()

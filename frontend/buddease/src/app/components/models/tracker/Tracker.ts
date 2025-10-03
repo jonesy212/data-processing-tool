@@ -1,25 +1,25 @@
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 //Tracker.ts
 import { HighlightColor } from "@/app/components/styling/Palette";
-import { detectMetadataChanges } from "@/app/configs/metadata/detectMetadataChanges";
-import { useAuth } from "@/server/auth/AuthContext";
+import { detectMetadataChanges } from "@/configs/metadata/detectMetadataChanges";
+import { useAuth } from "@/context/AuthContext";
 import path from "path";
-import { Phase } from "../../phases/Phase";
-import { Stroke } from "../../state/redux/slices/DrawingSlice";
-import { Payment } from "../../subscriptions/SubscriptionPlan";
-import { NotificationData } from "../../support/NofiticationsSlice";
-import { User } from "../../users/User";
+import { Phase } from "@/app/phases/Phase";
+import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
+import { Payment } from "@/app/subscriptions/SubscriptionPlan";
+import { NotificationData } from "@/app/support/NofiticationsSlice";
+import { User } from "@/app/users/User";
 import {
   fetchUsersSuccess,
   updateBio,
   updateFullName,
   updateProfilePicture,
   updateQuota,
-} from "../../users/UserSlice";
-import { BaseData } from "../data/Data";
-import { K, T } from "../data/dataStoreMethods";
-import FileData from "../data/FileData";
-import FolderData from "../data/FolderData";
+} from "@/app/users/UserSlice";
+import { BaseData } from "@/app/data/Data";
+import { K, T } from "@/app/data/dataStoreMethods";
+import FileData from "@/app/data/FileData";
+import FolderData from "@/app/data/FolderData";
 
 
 export interface SharedFormattingOptions {

@@ -1,11 +1,11 @@
 // ApiTrade.ts
+import axiosInstance from "@/app/api/csrfToken";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/context/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { observable } from "mobx";
-import UniqueIDGenerator from "../generators/GenerateUniqueIds";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
-import axiosInstance from "./axiosInstance";
 
 const API_BASE_URL = endpoints.apiConfig
 
@@ -32,10 +32,10 @@ export const tradeApi = observable({
                         notificationType = NotificationTypeEnum.ApiError;
                         break;
                     case "info":
-                        notificationType = NotificationTypeEnum.Info;
+                        notificationType = NotificationTypeEnum.INFO;
                         break;
                     default:
-                        notificationType = NotificationTypeEnum.Info; // Default to Info type if type is not recognized
+                        notificationType = NotificationTypeEnum.INFO; // Default to Info type if type is not recognized
                         break;
                 }
           

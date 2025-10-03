@@ -1,10 +1,10 @@
 // dataAnalysisSagas.ts
 import axios, { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
-import { DataAnalysis } from "../components/projects/DataAnalysisPhase/DataAnalysis";
-import { DataAnalysisActions } from "../components/projects/DataAnalysisPhase/DataAnalysisActions";
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { dataAnalysisService } from "../components/typings/dataAnalysisTypes";
+import { DataAnalysis } from "@/app/components/projects/DataAnalysisPhase/DataAnalysis";
+import { DataAnalysisActions } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisActions";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { dataAnalysisService } from "@/app/components/typings/dataAnalysisTypes";
 
 // Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchDataAnalysisAPI = () => axios.get('/api/data-analysis');

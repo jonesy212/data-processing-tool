@@ -1,21 +1,23 @@
-import { LanguageEnum } from "@/app/components/communications/LanguageEnum";
-import { BorderStyle, DocumentSize } from "@/app/components/models/data/StatusType";
+import { LanguageEnum } from "@/app/communications/LanguageEnum";
+import CommunityProjectsPage from "@/app/pages/community/CommunityProjectsPage";
 import { Team } from "@/app/components/models/teams/Team";
 import ProgressBar, {
   Progress,
   ProgressPhase,
 } from "@/app/components/models/tracker/ProgressBar";
-import TeamProgressBar from "@/app/components/projects/projectManagement/TeamProgressBar";
+import TeamProgressBar from "@/app/projects/projectManagement/TeamProgressBar";
 import { default as SearchResult, default as SearchResultComponent, SearchResultWithQuery } from "@/app/components/routing/SearchResult";
-import { AlignmentOptions } from "@/app/components/state/redux/slices/toolbarSlice";
-import { Settings } from "@/app/components/state/stores/SettingsStore";
-import Version from "@/app/components/versions/Version";
-import { AppStructureItem } from "@/app/configs/appStructure/AppStructure";
-import { DocumentTypeEnum } from "@/server/DocumentGenerator";
+import Version from "@/app/versions/Version";
+import { AppStructureItem } from "@/configs/appStructure/AppStructure";
+import { BorderStyle, DocumentSize } from "@/app/models/data/StatusType";
+import { useSearch } from "@/app/context/SearchContext";
+import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
+import { Settings } from "@/app/state/stores/SettingsStore";
+import {
+  DocumentTypeEnum
+} from "@/app/typings/documents";
 import { ContentState } from "draft-js";
 import React, { useState } from "react";
-import CommunityProjectsPage from "../community/CommunityProjectsPage";
-import { useSearch } from "../searchs/SearchContext";
 
 
 

@@ -1,8 +1,8 @@
-import { StatusType } from "@/app/components/models/data/StatusType";
+import { StatusType } from "@/app/models/data/StatusType";
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { UnifiedMetadata } from '../../configs/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/app/components/configs/database/MetaDataOptions';
 // Assume selectedmetadata is derived based on your logic (e.g., API call, user action, etc.)
 // Usage Example
 

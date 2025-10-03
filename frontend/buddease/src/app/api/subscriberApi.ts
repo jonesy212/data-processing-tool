@@ -1,11 +1,29 @@
 // subscriberApi.ts 
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { Subscriber } from "../components/users/Subscriber";
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "@/app/api/csrfToken";
+import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { Subscriber } from "@/app/users/Subscriber";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 
-export const getSubscriberId = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(subscriber: Subscriber<T, K>) => subscriber.id
-export const getSubscribersAPI = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<Subscriber<T, K>[]> => {
+// Server-side API with ALL 6 generic parameters
+export const getSubscriberId = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): string | undefined => subscriber.id;
+
+export const getSubscribersAPI = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): Promise<Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
     const response = await axiosInstance.get("/subscribers");
     return response.data;
@@ -15,9 +33,14 @@ export const getSubscribersAPI = async <T extends  BaseData<any>, K extends T = 
   }
 };
 
-
-
-export const getSubscriberById = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(subscriberId: string): Promise<Subscriber<T, K>> => {
+export const getSubscriberById = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(subscriberId: string): Promise<Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     const response = await axiosInstance.get("/subscribers/" + subscriberId);
     return response.data;

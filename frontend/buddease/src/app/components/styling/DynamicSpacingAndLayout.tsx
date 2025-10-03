@@ -2,7 +2,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { Platform } from 'react-native'; // Import Platform from react-native
 
-import useDocumentStore from '../state/stores/DocumentStore';
+import useDocumentStore from '@/app/state/stores/DocumentStore';
 
 interface SpacingAndLayoutProps {
   margin?: string;

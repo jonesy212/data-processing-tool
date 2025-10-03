@@ -3,11 +3,11 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import RootLayout from "@/app/RootLayout";
-import createDynamicHook, { DynamicHookParams } from "@/app/components/hooks/dynamicHooks/dynamicHookGenerator";
+import createDynamicHook, { DynamicHookParams } from "@/app/hooks/dynamicHooks/dynamicHookGenerator";
 import { BlogActions } from "@/app/components/models/blogs/BlogAction";
-import { RootState } from "@/app/components/state/redux/slices/RootSlice";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
 import BlogPostComponent, { BlogPost } from "./BlogPost";
-import { AsyncHook } from "@/app/components/hooks/useAsyncHookLinker";
+import { AsyncHook } from "@/app/hooks/useAsyncHookLinker";
 
 // Define a typed version of useSelector using the root state type
 const useSelectorTyped = (selector: (state: RootState) => any) => useSelector(selector);

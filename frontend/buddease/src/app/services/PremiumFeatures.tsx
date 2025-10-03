@@ -1,5 +1,5 @@
+import DraggableAnimation from "@/app/libraries/animations/DraggableAnimation";
 import React, { useEffect, useState } from "react";
-import DraggableAnimation from "../components/libraries/animations/DraggableAnimation";
 
 const PremiumFeatures: React.FC = () => {
   const [kpm, setKpm] = useState<number>(0);

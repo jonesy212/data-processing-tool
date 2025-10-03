@@ -1,5 +1,5 @@
 // DocType.ts
-import { ParsedData } from "../crypto/parseData";
+import { ParsedData } from "@/app/crypto/parseData";
 import { PDFData } from "./parsePDF";
 
 interface ModifiedDate extends Date {

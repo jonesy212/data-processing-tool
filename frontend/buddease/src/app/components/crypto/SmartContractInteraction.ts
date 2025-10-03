@@ -1,6 +1,6 @@
 import { Signature } from "ethers";
-import { SubscriptionTypeEnum } from "../models/data/StatusType";
-import { Transaction, BaseTransaction } from "../payment/Transaction";
+import { SubscriptionTypeEnum } from "@/app/models/data/StatusType";
+import { Transaction, BaseTransaction } from "@/app/payment/Transaction";
 
 interface SmartContractInteraction {
   id: string | null;
@@ -23,7 +23,6 @@ interface CustomTransactionProps extends SmartContractInteraction,  BaseTransact
   gasPrice: bigint | null;
   maxPriorityFeePerGas: bigint | null;
   maxFeePerGas: bigint | null;
-  type: number | null;
   data: "";
   value: bigint;
   chainId?: bigint;
@@ -120,6 +119,11 @@ type CustomTransaction = Transaction & {
   subscriptionType?: SubscriptionTypeEnum;
 };
 
+// Helper function for null-safe transaction type checking
+function isTransactionType(transaction: { transactionType: number | null }, type: number): boolean {
+  return transaction.transactionType !== null && transaction.transactionType === type;
+}
+
 function createCustomTransaction(
   transaction: Transaction,
   props: CustomTransactionProps
@@ -128,16 +132,18 @@ function createCustomTransaction(
     ...(transaction as CustomTransaction),
     ...props,
     isLegacy() {
-      return this.type === 0 && this.gasPrice !== null;
+      return isTransactionType(this, 0) && this.gasPrice !== null;
     },
     isBerlin() {
       return (
-        this.type === 1 && this.gasPrice !== null && this.accessList !== null
+        isTransactionType(this, 1) && 
+        this.gasPrice !== null && 
+        this.accessList !== null
       );
     },
     isLondon() {
       return (
-        this.type === 2 &&
+        isTransactionType(this, 2) &&
         this.accessList !== null &&
         this.maxFeePerGas !== null &&
         this.maxPriorityFeePerGas !== null
@@ -145,7 +151,7 @@ function createCustomTransaction(
     },
     isCancun() {
       return (
-        this.type === 3 &&
+        isTransactionType(this, 3) &&
         this.to !== null &&
         this.accessList !== null &&
         this.maxFeePerGas !== null &&
@@ -175,8 +181,9 @@ function createCustomTransaction(
         chainId: this.chainId !== null && this.chainId !== undefined ? BigInt(this.chainId) : BigInt(0),
         getSubscriptionLevel: () => "",
         unsignedHash: this.unsignedHash ?? "",
-
-
+        // Ensure type compatibility
+        type: this.type, // This will be string literal
+        transactionType: this.transactionType // This will be number | null
       });
     },
     equals(other) {

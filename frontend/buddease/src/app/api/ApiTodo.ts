@@ -1,12 +1,14 @@
 // TodoApi.ts
+"use client";
+
+import axiosInstance from '@/app/api/csrfToken';
 import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { AxiosError } from 'axios';
-import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
 import { Todo } from '../components/todos/Todo';
 import { endpoints } from './ApiEndpoints';
-import axiosInstance from './axiosInstance';
 
 // Define the API base URL for todos
 const API_BASE_URL = endpoints.todos.list
@@ -56,7 +58,7 @@ const handleTodoApiErrorAndNotify = (
     errorMessage,
     NOTIFICATION_MESSAGES.Todos.Error,
     new Date(),
-    NotificationTypeEnum.Error
+    NotificationTypeEnum.ERROR
   );
   throw error;
 };
@@ -76,10 +78,6 @@ export const fetchTodos = async (): Promise<any> => {
 };
 
   
-
-
-
-
 
 
 export const toggleTodo = async (
@@ -111,11 +109,6 @@ export const toggleTodo = async (
   };
   
 
-
-
-
-
-  
   export const uncompleteTodo = async (todoId: number): Promise<void> => {
     try {
       const response = await axiosInstance.put(`${API_BASE_URL}/api/todos/${todoId}/uncomplete`);
@@ -170,7 +163,7 @@ export const updateTodo = async <T extends  BaseData<any>, K extends T = T, Meta
       successMessage,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error) {
     console.error('Error updating todo:', error);
@@ -181,8 +174,6 @@ export const updateTodo = async <T extends  BaseData<any>, K extends T = T, Meta
     throw error;
   }
 };
-
-
 
 
 // Check todo completion
@@ -237,16 +228,12 @@ export const fetchTodosSuccess = async <T extends  BaseData<any>, K extends T = 
 }
 
 
-
 export const fetchTodosFailure = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   req: Request,
   res: Response
 ): Promise<Todo<T,K>[]> => {
   return [];
 }
-
-
-
 
 export const completeAllTodosRequest = async (
   req: Request,

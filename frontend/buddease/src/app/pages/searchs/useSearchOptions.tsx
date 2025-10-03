@@ -1,6 +1,6 @@
 // useSearchOptions.ts
-import {FilterActions} from '@/app/components/actions/FilterActions';
-import { sortTasks } from '@/app/components/state/redux/slices/TaskSlice';
+import {FilterActions} from '@/app/actions/FilterActions';
+import { sortTasks } from '@/app/state/redux/slices/TaskSlice';
 import {searchOptions} from '@/app/pages/searchs/SearchOptions';
 import { useDispatch } from 'react-redux';
 

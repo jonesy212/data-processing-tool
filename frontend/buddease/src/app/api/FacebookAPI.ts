@@ -4,7 +4,7 @@ import { socialMediaIntegrationService } from './../components/socialMedia/Socia
 // Import necessary modules and types
 import axios, { AxiosError } from 'axios';
 import { Note, handleNoteApiErrorAndNotify } from './ApiNote';
-import axiosInstance from './axiosInstance';
+import axiosInstance from '@/app/api/csrfToken'
 import { headersConfig } from '../components/shared/SharedHeaders';
 import { authToken } from '../components/auth/authToken';
 import { endpoints } from './ApiEndpoints';

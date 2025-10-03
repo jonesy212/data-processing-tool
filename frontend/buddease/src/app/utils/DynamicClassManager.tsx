@@ -1,4 +1,4 @@
-import { CustomDAppAdapter } from "../components/web3/dAppAdapter/DApp";
+import { CustomDAppAdapter } from "@/app/utils/web3/dAppAdapter/DApp";
 import YourClass from "./YourClass";
 
 class DynamicClassManager<T extends YourClass> {

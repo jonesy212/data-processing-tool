@@ -1,17 +1,17 @@
 import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
-import { data } from '@/app/components/snapshots/SnapshotWithCriteria';
-import { getCurrentAppInfo } from "@/app/components/versions/VersionGenerator";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { useMeta } from "@/app/configs/useMeta";
+import { DataDetails } from "@/app/components/models/data/Data";
+import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { data } from '@/app/snapshots/SnapshotWithCriteria';
+import { NotificationData } from "@/app/support/NofiticationsSlice";
+import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { useMeta } from "@/config/useMeta";
 import {
-  NotificationType,
-  useNotification,
+    NotificationType,
+    useNotification,
 } from "@/context/NotificationContext";
-import { DataDetails } from "../components/models/data/Data";
-import { K, Meta, T } from "../components/models/data/dataStoreMethods";
-import { NotificationData } from "../components/support/NofiticationsSlice";
 
 const area = fetchUserAreaDimensions().toString()
 

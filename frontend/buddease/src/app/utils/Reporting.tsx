@@ -1,9 +1,9 @@
 // Reporting.ts
 // Generate reports summarizing the findings and insights from the data analysis, allowing users to make informed decisions.
 
+import { generateReportFilename, validateReport } from "@/app/utils/reportUtils";
 import React from "react";
 import { Report } from "./report/Report";
-import { generateReportFilename, validateReport } from "../../../utils/reportUtils";
 
 interface ReportingProps {
   reports: Report[];

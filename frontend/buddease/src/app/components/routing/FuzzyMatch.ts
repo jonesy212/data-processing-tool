@@ -1,14 +1,15 @@
 // FuzzyMatch.ts
-import { SharedIdentifiers, SharedTimestamps, BaseEntityProperties } from "@/app/components/documents/RelatedProps";
-import { AppMetadata } from '@/app/configs/database/MetaDataOptions';
-import AppTreeService from "@/app/services/AppTreeService";
-import { useAuth } from "@/server/auth/AuthContext";
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { BaseEntityProperties, SharedIdentifiers, SharedTimestamps } from "@/app/components/documents/RelatedProps";
+import AppTreeService from "@/app/services/AppTreeService";
+import { useAuth } from "@/context/AuthContext";
+import { AppMetadata } from "@/server/database/MetaDataOptions";
 
+import { processTextWithSpaCy } from "@/app/components/intelligence/AutoGPTSpaCyIntegration";
+import { AllTypes } from "@/app/typings/PropTypes";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import fuzzysort from "fuzzysort";
-import { processTextWithSpaCy } from "../intelligence/AutoGPTSpaCyIntegration";
-import { AllTypes } from "../typings/PropTypes";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/app/configs/BaseConfig";
+
 interface BaseEntity<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
@@ -16,7 +17,7 @@ interface BaseEntity<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, ExcludedFields, IncludedFields>,
+> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           SharedTimestamps
 {
   description?: string | null;

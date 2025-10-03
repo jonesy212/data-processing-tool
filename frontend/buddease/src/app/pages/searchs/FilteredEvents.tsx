@@ -1,6 +1,6 @@
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { initialState } from "@/app/components/state/redux/slices/FilteredEventsSlice";
-import { RootState } from "@/app/components/state/redux/slices/RootSlice";
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { initialState } from "@/app/state/redux/slices/FilteredEventsSlice";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { FilterState } from "./FilterState";
 

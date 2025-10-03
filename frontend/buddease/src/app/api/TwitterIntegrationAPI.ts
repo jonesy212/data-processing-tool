@@ -2,7 +2,7 @@
 
 // Import necessary modules and types
 import { headersConfig } from '../components/shared/SharedHeaders'; // Assuming you have shared headers configuration
-import axiosInstance from './axiosInstance';
+import axiosInstance from '@/app/api/csrfToken'
 
 // Define the base URL for Twitter API
 const TWITTER_API_BASE_URL = 'https://api.twitter.com/1.1';

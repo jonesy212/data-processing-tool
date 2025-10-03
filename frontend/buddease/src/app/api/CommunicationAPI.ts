@@ -2,7 +2,7 @@
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError } from 'axios';
 import { handleApiError } from './ApiLogs';
-import axiosInstance from './axiosInstance';
+import axiosInstance from '@/app/api/csrfToken'
 
 
 

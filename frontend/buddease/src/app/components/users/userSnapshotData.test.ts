@@ -1,8 +1,8 @@
 // userSnapshotData.test.ts
-import useUserProfile from "../hooks/useUserProfile";
-import { myInitUserSnapshotData } from "../snapshots/userSnapshotData";
+import useUserProfile from "@/app/hooks/useUserProfile";
+import { myInitUserSnapshotData } from "@/app/snapshots/userSnapshotData";
 
-jest.mock("../hooks/useUserProfile");
+jest.mock("@/app/hooks/useUserProfile");
 
 const mockUseUserProfile = useUserProfile as jest.Mock;
 

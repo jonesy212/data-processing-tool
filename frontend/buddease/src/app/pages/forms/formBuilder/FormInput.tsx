@@ -2,8 +2,8 @@
 // FormInput.tsx
 
 import React from 'react';
-import { sanitizeInput } from '@/app/components/security/SanitizationFunctions';
-import InputLabel from '@/app/components/hooks/userInterface/InputFields';
+import { sanitizeInput } from '@/app/components/crypto/SanitizationFunctions';
+import InputLabel from '@/app/hooks/userInterface/InputFields';
 
 interface FormInputProps {
   label: string;

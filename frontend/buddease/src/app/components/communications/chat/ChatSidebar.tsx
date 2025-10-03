@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux'; // Import useDispatch to dispatch actions
-import { setChatSidebarOpen } from '../../state/redux/slices/SidebarSlice';
+import { setChatSidebarOpen } from '@/app/components/state/redux/slices/SidebarSlice';
 
 // Define a functional component that renders the chat sidebar
 const ChatSidebar = () => {

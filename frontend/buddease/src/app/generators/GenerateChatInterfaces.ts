@@ -1,8 +1,8 @@
 // GenerateChatInterfaces.ts
 
-import { ChatRoom } from "../components/calendar/CalendarSlice";
-import { Tag } from "../components/models/tracker/Tag";
-import { User, UserData } from "../components/users/User";
+import { ChatRoom } from "@/app/components/calendar/CalendarSlice";
+import { Tag } from "@/app/components/models/tracker/Tag";
+import { User, UserData } from "@/app/users/User";
 
   interface Message extends User, UserData {
     id: string;

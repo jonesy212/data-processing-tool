@@ -1,7 +1,7 @@
 // GroupChatMessage.tsx
 import axios, { AxiosResponse } from 'axios';
 import React, { useEffect, useState } from 'react';
-import ChatCard from '../../cards/ChatCard';
+import ChatCard from '@/app/components/cards/ChatCard';
 
 interface GroupChatMessage {
   id: number;

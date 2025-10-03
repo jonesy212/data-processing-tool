@@ -1,6 +1,6 @@
 // generateExecutiveSummaryContent.tsx
 
-import { DocumentOptions } from "../components/documents/DocumentOptions";
+import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 
 /**
  * Generates executive summary content based on the provided cache data.

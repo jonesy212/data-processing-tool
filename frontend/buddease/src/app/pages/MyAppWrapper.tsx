@@ -1,22 +1,22 @@
 // MyAppWrapper.tsx
 import { AppProps } from "next/app";
 import { NextRouter, Router, useRouter } from "next/router";
-import CaptionManagementPageComponent from "../components/CaptionManagementComponent";
+import CaptionManagementPageComponent from "@/app/components/CaptionManagementComponent";
 import {
   PhaseHookConfig,
   createPhaseHook,
-} from "../components/hooks/phaseHooks/PhaseHooks";
-import { generateUtilityFunctions } from "../generators/GenerateUtilityFunctions";
-import BrandingSettings from "../libraries/theme/BrandingService";
+} from "@/app/hooks/phaseHooks/PhaseHooks";
+import { generateUtilityFunctions } from "@/app/generators/GenerateUtilityFunctions";
+import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import MyApp from "./_app";
 import CaptionManagementPage from "./content/CaptionManagementPage";
 import contentManagementPage from "./content/contentManagementPage";
  import { AsyncHook } from "async_hooks";
 import { brandingSettings } from '@/app/libraries/theme/BrandingService';
-import { ContentItem } from "../components/cards/DummyCardLoader";
-import useIdleTimeout from "../components/hooks/idleTimeoutHooks";
-import { Phase } from "../components/phases/Phase";
-import { useThemeCustomization } from "../components/hooks/useThemeCustomization";
+import { ContentItem } from "@/app/components/cards/DummyCardLoader";
+import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
+import { Phase } from "@/app/components/phases/Phase";
+import { useThemeCustomization } from "@/app/hooks/useThemeCustomization";
 import React from "react";
 
 // Extend NextRouter with additional properties

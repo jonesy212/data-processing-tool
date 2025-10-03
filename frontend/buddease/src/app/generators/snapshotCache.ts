@@ -1,5 +1,5 @@
-import { K, T } from "../components/models/data/dataStoreMethods";
-import { SnapshotData } from "../components/snapshots";
+import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { SnapshotData } from "@/app/snapshots";
 
 const snapshotCache: Map<string, SnapshotData<T, K>> = new Map();
 const getCachedSnapshotData = (snapshotId: string): SnapshotData<T, K> | undefined => {

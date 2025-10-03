@@ -1,8 +1,8 @@
 // SocialMediaIntegrationService.ts
 
 // Import necessary modules and types
-import { useSecureAccountId } from '../utils/useSecureAccountId';
-import { useSecureUserId } from '../utils/useSecureUserId';
+import { useSecureAccountId } from '@/app/hooks/useSecureAccountId';
+import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { FacebookIntegration } from './FacebookIntegration';
 import { InstagramIntegration } from './InstagramIntegration';
 import { TikTokIntegration } from './TikTokIntegration';

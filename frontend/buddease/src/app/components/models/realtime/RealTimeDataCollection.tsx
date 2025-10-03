@@ -1,18 +1,23 @@
 import { Exchange } from "@/app/components/crypto/Exchange";
 import { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from "@/app/components/crypto/exchangeIntegration";
-import useRealtimeDextData from "@/app/components/hooks/commHooks/useRealtimeDextData";
-import useRealtimeExchangeData from "@/app/components/hooks/commHooks/useRealtimeExchangeData";
+import useRealtimeDextData from "@/app/hooks/commHooks/useRealtimeDextData";
+import useRealtimeExchangeData from "@/app/hooks/commHooks/useRealtimeExchangeData";
 import { Data } from "@/app/components/models/data/Data";
-import SnapshotList, { SnapshotItem } from '@/app/components/snapshots/SnapshotList';
-import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
+import SnapshotList, { SnapshotItem } from '@/app/snapshots/SnapshotList';
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from "react-redux";
-import { DEX } from "../../crypto/DEX";
-import { RealtimeUpdateCallback } from "../../hooks/commHooks/useUIRealtimeData";
-import { CalendarEvent } from '../../state/stores/CalendarEvent';
+import { DEX } from "@/app/crypto/DEX";
+import { RealtimeUpdateCallback } from "@/app/hooks/commHooks/useUIRealtimeData";
+import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
 import { RealtimeData, RealtimeDataItem } from "./RealtimeData";
 
+import {
+  BaseDataEntity
+} from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+  
 
 
 // --- Type aliases to keep things readable
@@ -22,12 +27,10 @@ type AnyRealtimeItem = RealtimeDataItem<BaseDataEntity, BaseDataEntity>;
 type AnyCalendarEvent = CalendarEvent<BaseDataEntity, BaseDataEntity>;
 
 
-import {
-  BaseDataEntity
-} from "../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig";
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+const RealTimeDataCollection: React.FC<{}> = () => {
+  const dispatch = useDispatch();
   const [dexList, setDexList] = useState<DEX[]>([]);
-
+  const [exchangeList, setExchangeList] = useState<Exchange[]>([]);
   // SnapshotList typed to hold AnyData
   const [snapshotList] = useState<
     SnapshotList<AnyData, AnyData>

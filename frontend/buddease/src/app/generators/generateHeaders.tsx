@@ -1,6 +1,6 @@
 // generateHeaders.tsx
 
-import { HeadersConfig } from "../api/headers/HeadersConfig";
+import { HeadersConfig } from "@/app/api/headers/HeadersConfig";
 
 const generateHeaders = (): Headers => {
   const headers: Headers = new Headers();

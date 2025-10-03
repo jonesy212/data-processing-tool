@@ -1,9 +1,9 @@
 // TaskProcess.tsx
 import TaskReportGenerator, { TaskReport } from "@/app/generators/TaskReportGenerator";
 import React, { useState } from "react";
-import { Task } from "../models/tasks/Task";
-import TaskForm from "../models/tasks/TaskForm";
-import TaskService from "../tasks/TaskService";
+import { Task } from "@/app/models/tasks/Task";
+import TaskForm from "@/app/models/tasks/TaskForm";
+import TaskService from "@/app/services/TaskService";
 import TaskLoop from "./TaskLoop";
 
 // Default alias for Task

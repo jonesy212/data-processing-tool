@@ -1,8 +1,8 @@
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import useRealtimeData from "@/app/components/hooks/commHooks/useRealtimeData";
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
 import { Data } from "@/app/components/models/data/Data";
-import { Snapshot } from "@/app/components/snapshots";
-import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
+import { Snapshot } from "@/app/snapshots";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { useEffect, useState } from "react";
 
 export const PersonaBuilderUtils = () => {

@@ -17,7 +17,7 @@ enum UserRoleEnum {
   Guest = 'Guest',
   UXUIDesigner = 'UXUIDesigner',
   Member = 'Member',
-  Verified_User = 'Verified_User',
+  VerifiedUser = 'VerifiedUser',
   System = 'System',
   Editor = 'Editor',
    // New roles added due to app growth
@@ -189,8 +189,8 @@ const UserRoles: { [key in UserRoleEnum]: UserRole } = {
     positions: [],
     includes: []
   },
-  Verified_User: {
-    roleType: UserRoleEnum.Verified_User,
+  VerifiedUser: {
+    roleType: UserRoleEnum.VerifiedUser,
     responsibilities: ['Same as regular member with verification status'],
     permissions: ['Same permissions as regular member'],
     positions: [],
@@ -444,7 +444,7 @@ type AdminRoleKey = CheckRoleExists<'Administrator'>; // This would resolve to '
 type ModeratorRoleKey = CheckRoleExists<'Moderator'>; // This would resolve to 'Moderator'
 
 export default UserRoles;
-export {UserRoleEnum}
+export { UserRoleEnum };
 
 // Use the AdminRoleKey and ModeratorRoleKey types to define variables
 

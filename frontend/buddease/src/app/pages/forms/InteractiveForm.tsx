@@ -7,7 +7,7 @@ import TeamBuildingPhase from '@/app/components/projects/TeamBuildingPhase';
 import PromptComponent from '@/app/components/prompts/PromptComponent';
 import IdeationPhase from '@/app/components/users/userJourney/IdeationPhase';
 import React from 'react';
-import { AppDevelopmentPhase } from '../../components/phases/AppDevelopmentPhase';
+import { AppDevelopmentPhase } from '@/app/components/phases/AppDevelopmentPhase';
 import FormInputComponent from './FormInputComponent';
 const InteractiveForm: React.FC = () => {
   return (

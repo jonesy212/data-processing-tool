@@ -1,8 +1,8 @@
+import { ParsedData } from "@/app/crypto/parseData";
+import getAppPath from "@/config/appStructure/appPath";
 import { load } from 'cheerio';
 import mammoth from "mammoth";
 import path from "path";
-import getAppPath from "../../configs/appStructure/appPath";
-import { ParsedData } from "../crypto/parseData";
 import { DocData, YourDocxType } from "./DocType";
 
 

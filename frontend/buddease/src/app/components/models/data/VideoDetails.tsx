@@ -1,7 +1,7 @@
 // VideoDetails.tsx
-import { Todo } from "../../todos/Todo";
+import { Todo } from "@/app/todos/Todo";
 import * as React from 'react'
-import { VideoData } from "../../video/Video";
+import { VideoData } from "@/app/video/Video";
 
 interface VideoDetailsProps {
   videoData: VideoData

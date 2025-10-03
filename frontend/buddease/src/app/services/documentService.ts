@@ -1,8 +1,8 @@
 
 // documentService.ts
-import { DocumentTypeEnum } from "../../server/DocumentGenerator";
-import { DocumentData } from "../components/documents/DocumentBuilder";
-import { DocumentObject } from "../components/state/redux/slices/DocumentSlice";
+import { DocumentTypeEnum } from "@/app/typings/documents";
+import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
+import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { saveDocumentToDatabase } from "./../configs/database/updateDocumentInDatabase";
 
 

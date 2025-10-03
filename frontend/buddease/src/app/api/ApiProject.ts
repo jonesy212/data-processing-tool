@@ -1,19 +1,19 @@
 // ApiProject.ts
+import axiosInstance from "@/app/api/csrfToken";
+import { MeetingData } from "@/app/components/calendar/MeetingData";
+import { Meeting } from "@/app/components/communications/scheduler/Meeting";
+import { T } from "@/app/components/models/data/dataStoreMethods";
+import FileData from "@/app/components/models/data/FileData";
+import { Task } from "@/app/components/models/tasks/Task";
+import { Project, ProjectData } from "@/app/components/projects/Project";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { NotificationSettings } from "@/app/features/support/NotificationSettings";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { User } from "@/app/users/User";
 import { AxiosError } from "axios";
 import { observable } from "mobx";
-import { MeetingData } from "../components/calendar/MeetingData";
-import { Meeting } from "../components/communications/scheduler/Meeting";
-import FileData from "../components/models/data/FileData";
-import { Task } from "../components/models/tasks/Task";
-import { Project, ProjectData } from "../components/projects/Project";
-import { WritableDraft } from "../components/state/redux/ReducerGenerator";
-import { User } from "../components/users/User";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
-import axiosInstance from "./axiosInstance";
-import { NotificationSettings } from "../components/support/NotificationSettings";
-import { T } from "@/app/components/models/data/dataStoreMethods";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
 
 
 const API_BASE_URL = endpoints.projectOwner.base;
@@ -238,7 +238,7 @@ export const ApiProject = observable({
   >(
     projectId: string,
     taskId: string,
-    updatedTaskData: Partial<Task<T, K, Meta, ExcludedFields>>
+    updatedTaskData: Partial<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ): Promise<void> => {
     try {
       await axiosInstance.put(

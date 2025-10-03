@@ -1,7 +1,7 @@
 import { TextProps } from "@/app/libraries/animations/DraggableAnimation/useText";
 import crypto from "crypto";
-import * as ApiDataAnalysis from "../../api/ApiDataAnalysis";
-import generateSecretKey from "../../utils/generateSecretKey";
+import * as ApiDataAnalysis from "@/app/api/ApiDataAnalysis";
+import generateSecretKey from "@/app/utils/generateSecretKey";
 
 class TextType {
   private text: string;

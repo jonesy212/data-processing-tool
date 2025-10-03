@@ -1,6 +1,6 @@
 // AIoSBlogPosts.tsx
 
-import axiosInstance from '@/app/api/axiosInstance';
+import axiosInstance from '@/app/api/csrfToken';
 import React, { useEffect, useState } from 'react';
 import BlogGenerator from './BlogGenerator'; // Assuming BlogGenerator is located in the same directory
  import BlogPostList from './BlogPosts';

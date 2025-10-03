@@ -3,10 +3,10 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import ProjectService from "@/app/api/ProjectService";
 import { Project } from "@/app/components/projects/Project"; // Import ProjectDetails component
 import UpdatedProjectDetails from "@/app/components/projects/UpdateProjectDetails";
-import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
 import {
     useNotification
 } from "@/app/context/NotificationContext";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { ButtonGenerator } from '@/app/generators/GenerateButtons';
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";

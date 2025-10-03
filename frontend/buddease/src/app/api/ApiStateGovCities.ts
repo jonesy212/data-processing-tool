@@ -1,10 +1,10 @@
+import axiosInstance from "@/app/api/csrfToken";
+import { Data } from "@/app/components/models/data/Data";
+import { useDetailsContext } from "@/app/components/models/data/DetailsContext";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { NotificationTypeEnum, useNotification } from "@/context/NotificationContext"; // Import the notification context
-import { Data } from "../components/models/data/Data";
-import { useDetailsContext } from "../components/models/data/DetailsContext";
-import { DetailsItem } from "../components/state/stores/DetailsListStore";
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 import { endpoints } from "./ApiEndpoints";
-import axiosInstance from "./axiosInstance";
 
 const API_BASE_URL = endpoints.stateGovCities.list;
 

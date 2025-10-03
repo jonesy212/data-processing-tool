@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { useTaskManagerStore } from '../state/stores/TaskStore';
+import { useTaskManagerStore } from '@/app/state/stores/TaskStore';
 import { transformTasksToEvents, transformTodosToEvents } from './CalendarEvents';
  // Create a context to manage shared state
 const CalendarContext = React.createContext<any>(null);

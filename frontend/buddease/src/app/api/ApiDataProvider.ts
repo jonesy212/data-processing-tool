@@ -1,13 +1,13 @@
 // ApiDataProvider.ts
+import axiosInstance from "@/app/api/csrfToken";
+import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import {
     NotificationTypeEnum,
     useNotification,
 } from "@/app/context/NotificationContext";
 import { AxiosError } from "axios";
-import { handleApiError } from "./ApiLogs";
-import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { endpoints } from "./ApiEndpoints";
-import axiosInstance from "./axiosInstance";
+import { handleApiError } from "./ApiLogs";
 
 const API_BASE_URL = endpoints.dataProviders;
 
@@ -78,7 +78,7 @@ export const updateProviderRecord = async (id: number, data: any, token: string)
       "Provider record updated successfully",
       { id },
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
 
     return;
@@ -102,7 +102,7 @@ export const deleteProviderRecord = async (id: number, token: string) => {
       "Provider record deleted successfully",
       { id },
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
 
     return id;

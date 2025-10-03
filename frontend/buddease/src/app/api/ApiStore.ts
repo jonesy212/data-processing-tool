@@ -1,6 +1,6 @@
 // ApiStore.ts
+import { ApiConfig } from "@/config/ConfigurationService";
 import { makeAutoObservable } from 'mobx'; // or any state management library like Redux
-import { ApiConfig } from "@/app/configs/ConfigurationService";
 
 export interface ApiState {
   apiConfigs: ApiConfig[];

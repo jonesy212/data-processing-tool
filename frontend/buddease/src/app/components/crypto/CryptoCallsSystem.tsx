@@ -1,7 +1,7 @@
 // CryptoCallsSystem.tsx
 import ProfessionalTraderCalls from "@/app/pages/personas/ProfessionalTraderCalls";
 import React, { useEffect, useState } from "react";
-import CryptoEnthusiastCalls from "../phases/crypto/CryptoEnthusiastCalls";
+import CryptoEnthusiastCalls from "@/app/phases/crypto/CryptoEnthusiastCalls";
 import { TradingPlatform } from "./TradingPlatform";
 
 interface CrpytoCallsSystemProps {

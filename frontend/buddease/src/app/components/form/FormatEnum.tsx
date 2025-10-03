@@ -1,17 +1,17 @@
 // FormatEnum.ts
 
 import {
-  fetchJsonDocumentByIdAPI,
-  fetchXmlDocumentByIdAPI,
+    fetchJsonDocumentByIdAPI,
+    fetchXmlDocumentByIdAPI,
 } from "@/app/api/ApiDocument";
-import { DatabaseConfig } from "@/app/configs/DatabaseConfig";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseData } from "@/app/models/data/Data";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import {
-  CustomDocxtemplater,
-  DocumentPath,
-} from "../../../server/DocumentGenerator";
-import { BaseData } from "../models/data/Data";
-import { WritableDraft } from "../state/redux/ReducerGenerator";
+    CustomDocxtemplater,
+    DocumentPath,
+} from "@/app/typings/documents";
+import { DatabaseConfig } from "@/config/DatabaseConfig";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 enum FormatEnum {
   JSON = "json",

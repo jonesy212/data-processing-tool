@@ -1,6 +1,6 @@
 import { BaseData } from '@/app/components/models/data/Data';
-import { DocumentData } from "../../DocumentBuilder";
-import { DocumentOptions } from "../../DocumentOptions";
+import { DocumentData } from "@/app/DocumentBuilder";
+import { DocumentOptions } from "@/app/DocumentOptions";
 
 const generateFinancialReportContent = (
   options: DocumentOptions,

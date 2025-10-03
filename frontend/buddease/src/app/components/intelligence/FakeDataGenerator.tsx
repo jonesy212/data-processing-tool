@@ -1,6 +1,6 @@
 // src/app/generators/GenerateFakeData.ts
 import { faker } from '@faker-js/faker';
-import { Data } from '../models/data/Data';
+import { Data } from '@/app/models/data/Data';
 
 
 interface FakeDataPartial {

@@ -1,11 +1,11 @@
 // generateText.ts
 
-import { DocumentGenerator } from '@/server/DocumentGenerator';
+import { DocumentGenerator } from '@/server/ServerDocumentGenerator';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import fs from 'fs';
 import path from 'path';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function generateHandler(req: NextApiRequest, res: NextApiResponse) {
   const filePath = path.join(process.cwd(), 'templates', 'textTemplate.docx');
   const fileContent = await fs.promises.readFile(filePath);
 

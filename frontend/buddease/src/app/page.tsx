@@ -1,11 +1,13 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, lazy, Suspense } from "react";
 import RootLayout from "./RootLayout";
-import LazyLoadedImage from "./components/LazyLoadedImage";
+import LazyLoadedImage from "@/app/components/LazyLoadedImage";
 import styles from "./page.module.css";
-import Layout from "./pages/layouts/Layouts";
-import YourComponent from "./components/YourComponent";
+import Layout from "@/app/pages/layouts/Layouts";
+
+// Dynamically import YourComponent with SSR disabled
+const YourComponent = lazy(() => import("@/app/hooks/YourComponent"));
 
 interface ComponentMethods {
   updateSnapshot: (
@@ -62,40 +64,42 @@ export default function Home() {
   return (
     <RootLayout>
       <Layout>
-        <YourComponent
-          ref={componentRef}
-          apiConfig={apiConfig}
-        >
-          <main className={styles.main}>
-            <div className={styles.description}>
-              <p>
-                Get started by editing&nbsp;
-                <code className={styles.code}>src/app/page.tsx</code>
-              </p>
-              <div>
-                <a
-                  href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  By <LazyLoadedImage 
-                    src={String("/vercel.svg")} 
-                    alt={String("Vercel Logo")} 
-                  />
-                </a>
+        <Suspense fallback={<div>Loading...</div>}>
+          <YourComponent
+            ref={componentRef}
+            apiConfig={apiConfig}
+          >
+            <main className={styles.main}>
+              <div className={styles.description}>
+                <p>
+                  Get started by editing&nbsp;
+                  <code className={styles.code}>src/app/page.tsx</code>
+                </p>
+                <div>
+                  <a
+                    href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    By <LazyLoadedImage 
+                      src={String("/vercel.svg")} 
+                      alt={String("Vercel Logo")} 
+                    />
+                  </a>
+                </div>
               </div>
-            </div>
 
-            <div className={styles.center}>
-              <LazyLoadedImage 
-                src={String("/next.svg")} 
-                alt={String("Next.js Logo")} 
-              />
-            </div>
+              <div className={styles.center}>
+                <LazyLoadedImage 
+                  src={String("/next.svg")} 
+                  alt={String("Next.js Logo")} 
+                />
+              </div>
 
-            <button onClick={handleUpdate}>Update Snapshot</button>
-          </main>
-        </YourComponent>
+              <button onClick={handleUpdate}>Update Snapshot</button>
+            </main>
+          </YourComponent>
+        </Suspense>
       </Layout>
     </RootLayout>
   );

@@ -1,56 +1,56 @@
 
 import { extractCriteria } from '@/app/api/SnapshotApi';
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/configs/BaseConfig";
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 
 import {
-  CodingLanguageEnum,
-  LanguageEnum,
-} from "@/app/components/communications/LanguageEnum";
+    CodingLanguageEnum,
+    LanguageEnum,
+} from "@/app/communications/LanguageEnum";
 import { FileTypeEnum } from "@/app/components/documents/FileType";
 import FormatEnum from "@/app/components/form/FormatEnum";
-import AnimationTypeEnum from "@/app/components/libraries/animations/AnimationLibrary";
-import { Category, CategoryIdentifier } from "@/app/components/libraries/categories/generateCategoryProperties";
-import { StatusTrackable, Timestamped } from "@/app/components/models/CommonData";
+import { CategoryIdentifier } from "@/app/libraries/categories/generateCategoryProperties";
+import { StatusTrackable, Timestamped } from "@/app/models/CommonData";
 import { BaseData, Data } from "@/app/components/models/data/Data";
 import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
 import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
 import { TenantManagementPhaseEnum } from "@/app/components/phases/TenantManagementPhase";
-import { AnalysisTypeEnum } from "@/app/components/projects/DataAnalysisPhase/AnalysisType";
-import { SecurityFeatureEnum } from "@/app/components/security/SecurityFeatureEnum";
-import { Snapshot, SnapshotData, SnapshotStoreConfig, SnapshotWithCriteria } from '@/app/components/snapshots';
-import SnapshotStore from "@/app/components/snapshots/SnapshotStore";
-import { FilterState } from "@/app/components/state/redux/slices/FilterSlice";
-import UserRoles from "@/app/components/users/UserRoles";
-import { IdeaCreationPhaseEnum } from "@/app/components/users/userJourney/IdeaCreationPhase";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { useMetadata } from '@/app/configs/useMetadata';
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { useMetadata } from '@/config/useMetadata';
 import { MessageType } from "@/app/generators/MessaageType";
+import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
+import {
+    BookmarkStatus,
+    CalendarStatus,
+    DataStatus,
+    DevelopmentPhaseEnum,
+    NotificationStatus,
+    PriorityTypeEnum,
+    PrivacySettingEnum,
+    ProjectPhaseTypeEnum,
+    StatusType,
+    SubscriberTypeEnum,
+    SubscriptionTypeEnum,
+    TaskStatus,
+    TeamStatus,
+    TodoStatus,
+} from "@/app/models/data/StatusType";
+import { CategoryProperties } from "@/app/personas/ScenarioBuilder";
+import { Snapshot, SnapshotWithCriteria } from '@/app/snapshots';
+import { FilterState } from "@/app/state/redux/slices/FilterSlice";
+import {
+    DocumentTypeEnum
+} from "@/app/typings/documents";
+import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Filter } from "@/pages/searches/Filter";
-import { DocumentTypeEnum } from "@/server/DocumentGenerator";
+import { SecurityFeatureEnum } from "@/server/security/SecurityFeatureEnum";
+import UserRoles from "@/users/UserRoles";
 import { Pagination } from '@refinedev/core';
 import { FetchOptions, fetchUserAreaDimensions } from '../layouts/fetchUserAreaDimensions';
-import { CategoryProperties } from "../personas/ScenarioBuilder";
-import {
-  BookmarkStatus,
-  CalendarStatus,
-  DataStatus,
-  DevelopmentPhaseEnum,
-  NotificationStatus,
-  PriorityTypeEnum,
-  PrivacySettingEnum,
-  ProjectPhaseTypeEnum,
-  StatusType,
-  SubscriberTypeEnum,
-  SubscriptionTypeEnum,
-  TaskStatus,
-  TeamStatus,
-  TodoStatus,
-} from "./../../components/models/data/StatusType";
 
 
 

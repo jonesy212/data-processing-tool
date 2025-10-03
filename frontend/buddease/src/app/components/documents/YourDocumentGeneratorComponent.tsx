@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { createPdfDocument } from './DocumentCreationUtils';
 
-import ResizablePanels from '../hooks/userInterface/ResizablePanels';
+import ResizablePanels from '@/app/hooks/userInterface/ResizablePanels';
 import DocumentFormattingOptionsComponent, { DocumentFormattingOptions } from './ DocumentFormattingOptionsComponent';
 
 const YourDocumentGeneratorComponent: React.FC = () => { 

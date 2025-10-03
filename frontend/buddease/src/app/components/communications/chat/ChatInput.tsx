@@ -1,6 +1,6 @@
 // ChatInput.tsx
 import React, { useState } from "react";
-import { sanitizeInput } from "../../security/SanitizationFunctions";
+import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions";
 
 interface ChatInputProps {
   controlled?: boolean; // Add a controlled prop to determine the mode

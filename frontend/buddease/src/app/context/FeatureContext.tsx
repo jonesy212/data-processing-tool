@@ -1,5 +1,5 @@
 import React, { ReactNode, createContext, useContext } from "react";
-import FeatureStore from "../components/state/stores/FeatureStore";
+import FeatureStore from "@/app/state/stores/FeatureStore";
 // Define the interface for the feature context value
 interface FeatureContextValue {
   featureStore: FeatureStore;

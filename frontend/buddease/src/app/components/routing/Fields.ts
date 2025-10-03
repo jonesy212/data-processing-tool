@@ -1,17 +1,13 @@
-import { BaseDataEntity } from '@/app/configs/BaseConfig';
 import { Project } from "@/app/components/projects/Project";
-import { TaskMetadata, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
-import { ProjectMetadata, StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseDataEntity } from '@/config/BaseConfig';
 import {
-  BaseDataEntity,
-  DefaultExcludedFields,
-  DefaultMeta,
-} from "@/app/configs/BaseConfig";
-import { BaseDataEntity } from '../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig';
-import { NotificationTypeEnum } from "@/context/NotificationContext";
+    DefaultExcludedFields
+} from "@/config/BaseConfig";
+import { ProjectMetadata, StructuredMetadata } from "@/config/StructuredMetadata";
+import { TaskMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
-import { BaseData } from '../models/data/Data';
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { BaseData } from '@/app/models/data/Data';
 import { Task, TaskData } from '../models/tasks/Task';
 
 // Pick specific keys from T

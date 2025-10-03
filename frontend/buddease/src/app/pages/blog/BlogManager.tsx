@@ -1,4 +1,4 @@
-import { logData } from '@/app/components/notifications/NotificationService';
+import { logData } from '@/app/services/NotificationService';
 import { addNotification } from '@/app/components/support/NofiticationsSlice';
 import { NotificationContext, NotificationType } from "@/app/context/NotificationContext";
 import React, { useContext } from 'react';

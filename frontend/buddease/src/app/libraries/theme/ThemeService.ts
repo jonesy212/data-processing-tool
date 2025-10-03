@@ -2,12 +2,12 @@
 
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { DocumentFormattingOptions } from "@/app/components/documents/ DocumentFormattingOptionsComponent";
-import { useStore } from "@/app/components/hooks/useStore";
+import { useStore } from "@/app/hooks/useStore";
 import { BrandingSettings } from "@/app/components/projects/branding/BrandingSettings";
-import { rootStores } from "@/app/components/state/stores/RootStores";
+import { rootStores } from "@/app/state/stores/RootStores";
 import { ColorSwatchProps } from "@/app/components/styling/ColorPalette";
 import { action, observable, runInAction } from "mobx";
-import { themeChangeAction } from "../actions/themeChangeAction";
+import { themeChangeAction } from "@/app/actions/themeChangeAction";
 
 
 

@@ -1,22 +1,30 @@
+//app/Rootayout
+
 "use client";
 // @ts-nocheck
 
+import useLayoutGenerator, { DocumentGenerationResult } from "@/app/hooks/GenerateUserLayout";
+import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
+import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from "react";
 import { AppProviders } from "./Provider";
 import { useDynamicComponents } from "./components/DynamicComponentsContext";
-import useLayoutGenerator, { DocumentGenerationResult } from "./components/hooks/GenerateUserLayout";
-import { useThemeConfig } from "./components/hooks/userInterface/ThemeConfigContext";
-import { AnimatedComponent, AnimatedComponentRef } from "./components/libraries/animations/AnimationComponent";
-import { Data } from "./components/models/data/Data";
 import responsiveDesignStore from "./components/styling/ResponsiveDesign";
-import { User } from "./components/users/User";
-import { layoutConfig } from "./configs/LayoutConfig";
-import { DocxGeneratorOptions } from "./generators/docxGenerator";
-import DesignDashboard from "./pages/dashboards/DesignDashboard";
+import { AnimatedComponent, AnimatedComponentRef } from "./libraries/animations/AnimationComponent";
 import { useLayout } from "./pages/layouts/LayoutContext";
 
 type RootLayoutProps = { children: React.ReactNode };
 interface DynamicComponentConfig { RootLayout?: React.ComponentType<{ children: React.ReactNode }>; }
+
+
+
+
+// Dynamically import DesignDashboard
+const DesignDashboard = dynamic(
+  () => import("./pages/dashboards/DesignDashboard"),
+  { ssr: false, loading: () => <div>Loading dashboard...</div> }
+);
+
 
 const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
   const [isComponentLoaded, setComponentLoaded] = useState(false);
@@ -42,8 +50,6 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
       setFontFamily("Arial, sans-serif");
       setLayout({ backgroundColor: isDarkMode ? "#1a1a1a" : "#fff" });
 
-      const configResult = await layoutConfig();
-      console.log("Layout config result:", configResult);
     } catch (error) {
       console.error("Error in layout effect:", error);
     }
@@ -73,7 +79,7 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
   useLayoutGenerator({
     condition: () => true,
     layoutEffect,
-    documentGeneratorOptions: { templatePath: "", outputPath: "", data: {} as Data, user: {} as User },
+    documentGeneratorOptions: { templatePath: "", outputPath: "", data: {} as any, user: {} as any },
     generateDocument: async (): Promise<DocumentGenerationResult> => {
       try {
         await documentGenerator.generateDocument({} as DocxGeneratorOptions);
@@ -101,8 +107,8 @@ const RootLayout: React.FC<RootLayoutProps> = ({ children }) => {
                     await documentGenerator.generateDocument({
                       templatePath: "",
                       outputPath: "",
-                      data: {} as Data,
-                      user: {} as User,
+                      data: {} as any,
+                      user: {} as any,
                     });
                   };
                   reader.readAsText(file[0]);

@@ -1,6 +1,6 @@
 // JwtPayload.ts
 import * as jwt from 'jsonwebtoken';
-import { Scope } from '../../app/components/state/stores/Scopes';
+import { Scope } from '@/app/components/app/components/state/stores/Scopes';
 
 
 interface JwtPayload extends jwt.JwtPayload {

@@ -1,10 +1,10 @@
 import { useNotification } from "@/app/context/NotificationContext";
 import React, { useState } from "react";
-import FeatureImplementationSubPhase from "../../pages/onboarding/FeatureImplementationSubPhase";
-import InitialSetupSubPhase from "../../pages/onboarding/InitialSetupSubPhase";
-import TempUserData from "../../pages/onboarding/OnboardingPhase";
-import { useAuth } from "../auth/AuthContext";
-import generateTimeBasedCode from "../models/realtime/TimeBasedCodeGenerator";
+import FeatureImplementationSubPhase from "@/app/pages/onboarding/FeatureImplementationSubPhase";
+import InitialSetupSubPhase from "@/app/pages/onboarding/InitialSetupSubPhase";
+import TempUserData from "@/app/pages/onboarding/OnboardingPhase";
+import { useAuth } from "@/app/auth/AuthContext";
+import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 // Import other sub-phase components as needed
 
 const { notify } = useNotification(); // Destructure notify from useNotification

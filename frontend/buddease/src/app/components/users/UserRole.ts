@@ -1,5 +1,5 @@
 // UserRole.ts
-import { UserRoleEnum } from "@/app/components/users/UserRoles";
+import { UserRoleEnum } from "@/users/UserRoles";
 
 // Assuming this is your UserRole interface and enum
 export interface UserRole {

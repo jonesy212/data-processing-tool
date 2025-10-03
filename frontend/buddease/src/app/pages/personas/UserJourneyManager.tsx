@@ -1,49 +1,48 @@
 // UserJourneyManager.tsx
-import {IdeaLifecycleProcess} from '@app/components/phases/IdeaLifecycleProcess'
-import { TaskPhase } from '@/app/components/phases/TaskPhaseEnum'
-import { useAuth } from "@/server/auth/AuthContext";
 import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
+import { UserSupportPhase } from "@/app/features/support/UserSupportPhaseComponent";
 import {
-  DevelopmentPhaseEnum,
-  ProjectPhaseTypeEnum,
-} from "@/app/components/models/data/StatusType";
-import {UserSupportPhase} from "@/app/components/libraries/ui/components/UserSupportPhaseComponent";
-import { DataAnalysisSubPhase } from "@/app/components/projects/DataAnalysisPhase";
-import { PhaseActions } from "@/app/components/phases/PhaseActions";
-import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
-import { User, UserData } from "@/app/components/users/User";
-import IdeaCreationPhase from "@/app/components/users/userJourney/IdeaCreationPhase";
-import IdeationPhase from "@/app/components/users/userJourney/IdeationPhase";
-import axios from "axios";
-import React, { useState } from "react";
-import  PlanningPhase, {
-  DevelopmentPhase
-} from "../development/DevelopmentPhase";
-import OfferPage from "../onboarding/OfferPage";
-import onboardingQuestionnaireData from "../onboarding/OnboardingQuestionnaireData";
-import WelcomePage from "../onboarding/WelcomePage";
-import UserQuestionnaire from "./UserQuestionnaire";
-import ContentManagementPhase from "@/app/components/phases/ContentManagementPhase";
-import { TeamCreationPhase } from "@/app/components/phases/actions/TeamCreation";
+    ContentCreation,
+    ContentEditing,
+    ContentItemSelection,
+    ContentOrganization,
+    ContentPublishing,
+} from "@/app/content/ContentMaintenance";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import FeedbackProcess, {
-  FeedbackPhaseEnum,
+    FeedbackPhaseEnum,
 } from "@/app/components/phases/FeedbackPhase";
-import { TaskManagementPhase } from "@/app/components/projects/TaskManagementPhase";
-import PostLaunchActivitiesPhase from "@/app/components/phases/postLaunchPhase/PostLaunchActivitiesPhase";
+import { IdeaLifecycleProcess } from '@/app/components/phases/IdeaLifecycleProcess';
+import { PhaseActions } from "@/app/actions/phases/PhaseActions";
+import { TaskPhase } from '@/app/components/phases/TaskPhaseEnum';
 import TaskProcess from "@/app/components/phases/TaskProcess";
-import UserRoles from "@/app/components/users/UserRoles";
-import {
-  ContentItemSelection,
-  ContentEditing,
-  ContentCreation,
-  ContentOrganization,
-  ContentPublishing,
-} from "@/app/components/phases/ContentMaintenance";
-import TeamCreationProcess from "@/app/components/phases/actions/TeamCreationManager";
-import { TradingPhase } from "@/app/components/phases/crypto/CryptoTradingPhase";
 import TradingProcess from "@/app/components/phases/TradingProcess";
+import { TeamCreationPhase } from "@/app/actions/phases/TeamCreation";
+import TeamCreationProcess from "@/app/actions/phases/TeamCreationManager";
+import { TradingPhase } from "@/app/components/phases/crypto/CryptoTradingPhase";
 import { IdeaLifecyclePhase } from "@/app/components/phases/ideaPhase/IdeaLifecyclePhase";
+import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
+import PostLaunchActivitiesPhase from "@/app/components/phases/postLaunchPhase/PostLaunchActivitiesPhase";
+import { DataAnalysisSubPhase } from "@/app/projects/DataAnalysisPhase/DataAnalysisPhase";
+import { TaskManagementPhase } from "@/app/projects/TaskManagementPhase";
+import PlanningPhase, {
+    DevelopmentPhase
+} from "@/app/components/phases/DevelopmentPhase";
+import {
+    DevelopmentPhaseEnum,
+    ProjectPhaseTypeEnum,
+} from "@/app/models/data/StatusType";
+import OfferPage from "@/app/pages/onboarding/OfferPage";
+import onboardingQuestionnaireData from "@/app/pages/onboarding/OnboardingQuestionnaireData";
+import WelcomePage from "@/app/pages/onboarding/WelcomePage";
+import { User, UserData } from "@/app/users/User";
+import IdeaCreationPhase from "@/app/users/userJourney/IdeaCreationPhase";
+import IdeationPhase from "@/app/users/userJourney/IdeationPhase";
+import { useAuth } from "@/context/AuthContext";
+import UserRoles from "@/users/UserRoles";
+import axios from "axios";
+import React, { useState } from "react";
+import UserQuestionnaire from "./UserQuestionnaire";
 
 export enum OnboardingPhase {
   REGISTER,
@@ -63,6 +62,7 @@ type PhaseOptions =
   | OnboardingPhase
   | DevelopmentPhaseEnum
   | ContentManagementPhaseEnum;
+
 interface UserJourneyManagerProps {
   user: User;
   phaseName: PhaseOptions;

@@ -1,11 +1,11 @@
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import axiosInstance from '@/app/api/csrfToken';
+import { NotificationType, useNotification } from "@/app/context/NotificationContext";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from 'axios';
 import { DocumentData } from '../components/documents/DocumentBuilder';
 import { WritableDraft } from '../components/state/redux/ReducerGenerator';
 import { endpoints } from './ApiEndpoints';
 import { handleApiError } from './ApiLogs';
-import axiosInstance from './axiosInstance';
 import headersConfig from './headers/HeadersConfig';
 
 // Define the API base URL for trading operations

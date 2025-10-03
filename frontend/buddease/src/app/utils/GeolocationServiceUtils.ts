@@ -1,5 +1,5 @@
-import ChatSettings from "../components/communications/chat/ChatSettingsPanel";
-import GeolocationService from "../services/GeolocationService";
+import ChatSettings from "@/app/components/communications/chat/ChatSettingsPanel";
+import GeolocationService from "@/app/services/GeolocationService";
 
 
 

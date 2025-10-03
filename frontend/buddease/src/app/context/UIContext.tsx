@@ -2,7 +2,7 @@
 // stores/StoreProvider.tsx
 import * as React from 'react';
 import { createContext, ReactNode, useContext } from 'react';
-import UIStore from '../components/state/stores/UIStore';
+import UIStore from '@/app/state/stores/UIStore';
 import { displayToast } from '../components/models/display/ShowToast';
  
 

@@ -1,6 +1,6 @@
 // FileLoadOptions.ts
 import { isBrowser } from './../utils/isBrowser';
-import axiosInstance from "@/app/components/security/csrfToken";
+import axiosInstance from '@/app/api/csrfToken';
 
 type FileLoadOptions = {
   filePath: string; // The path to the file (could be a URL or local path)

@@ -1,8 +1,8 @@
+import axiosInstance from '@/app/api/csrfToken';
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';
 import { endpoints } from './ApiEndpoints';
-import axiosInstance from './axiosInstance';
 
 // Define the base URL for user roles API
 const API_BASE_URL = endpoints.userRoles.list;
@@ -47,7 +47,7 @@ const handleUserRoleApiErrorAndNotify = (
     errorMessage,
     null,
     new Date(),
-    NotificationTypeEnum.Error
+    NotificationTypeEnum.ERROR
   );
   throw error;
 };
@@ -64,7 +64,7 @@ export const fetchUserRoles = async (): Promise<any[]> => {
       successMessage,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
 
     return userRoles;
@@ -85,7 +85,7 @@ export const createUserRole = async (newRole: any): Promise<void> => {
       successMessage,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error) {
     handleUserRoleApiErrorAndNotify(error as AxiosError<unknown>, 'CREATE_USER_ROLE_ERROR');
@@ -111,7 +111,7 @@ export const updateUserRole = async (roleId: number, updatedRole: any): Promise<
       successMessage,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error) {
     handleUserRoleApiErrorAndNotify(error as AxiosError<unknown>, 'UPDATE_USER_ROLE_ERROR');
@@ -136,7 +136,7 @@ export const deleteUserRole = async (roleId: number): Promise<void> => {
       successMessage,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error) {
     handleUserRoleApiErrorAndNotify(error as AxiosError<unknown>, 'DELETE_USER_ROLE_ERROR');

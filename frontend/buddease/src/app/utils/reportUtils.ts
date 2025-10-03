@@ -1,7 +1,7 @@
 // reportUtils.ts
 // Define utility functions related to reports
 
-import { Report } from "../components/documents/documentation/report/Report";
+import { Report } from "@/app/components/documents/documentation/report/Report";
 
 // Function to generate a report filename
 export const generateReportFilename = (report: Report): string => {

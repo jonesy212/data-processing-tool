@@ -1,15 +1,15 @@
 // ApiVersion.ts
 
-import { Snapshot } from "@/app/components/snapshots";
+import axiosInstance from "@/app/api/csrfToken"; // Ensure this is set up correctly for API calls
+import { BaseData } from "@/app/components/models/data/Data";
+import { YourResponseType } from "@/app/components/typings/types";
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { Snapshot } from "@/app/snapshots";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from "axios";
-import { BaseData } from "../components/models/data/Data";
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { YourResponseType } from "../components/typings/types";
-import { StructuredMetadata } from "../configs/StructuredMetadata";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
-import axiosInstance from "./axiosInstance"; // Ensure this is set up correctly for API calls
 
 // Define the API base URL for version data
 const VERSION_DATA_BASE_URL = endpoints.versionData;
@@ -42,12 +42,12 @@ const handleVersionDataApiErrorAndNotify = (
 const fetchVersionData = <
   T extends BaseData, 
   K extends T = T,
->(snapshotId: string): Promise<Snapshot<T, K>> => {
+>(snapshotId: string): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   const fetchVersionDataEndpoint = `${VERSION_DATA_BASE_URL}/${snapshotId}`;
 
-  return new Promise<Snapshot<T, K>>(async (resolve, reject) => {
+  return new Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(async (resolve, reject) => {
     try {
-      const response = await axiosInstance.get<Snapshot<T, K>>(fetchVersionDataEndpoint);
+      const response = await axiosInstance.get<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(fetchVersionDataEndpoint);
       resolve(response.data);  // Resolve the promise with the response data
     } catch (error) {
       console.error("Error fetching version data:", error);
@@ -95,5 +95,6 @@ const storeVersionedAnalyticsData = async (analyticsData: any): Promise<void> =>
 
 
 export {
-  fetchAnalyticsData, fetchVersionData, storeVersionedAnalyticsData
+    fetchAnalyticsData, fetchVersionData, storeVersionedAnalyticsData
 };
+

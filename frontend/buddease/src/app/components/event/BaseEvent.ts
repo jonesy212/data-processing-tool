@@ -1,5 +1,5 @@
 import { BaseData } from '@/app/components/models/data/Data';
-import { SharedSnapshotEvent } from "@/app/typings/eventTypes";
+import { SharedSnapshotEvent } from "@/app/typings/appEventTypes";
 
 interface BaseEvent {
   eventId: string;

@@ -1,12 +1,12 @@
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { Snapshot } from "@/app/components/snapshots";
+import { Snapshot } from "@/app/snapshots";
 import { Subscription } from "react-redux";
-import { Post } from "../components/community/DiscussionForumComponent";
+import { Post } from "@/app/components/community/DiscussionForumComponent";
 import { BaseData } from '../components/models/data/Data';
-import { Task } from "../components/models/tasks/Task";
-import { Member } from "../components/models/teams/TeamMembers";
-import { SnapshotStoreConfig } from "../components/snapshots/SnapshotConfig";
-import SnapshotStore from "../components/snapshots/SnapshotStore";
+import { Task } from "@/app/components/models/tasks/Task";
+import { Member } from "@/app/components/models/teams/TeamMembers";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotConfig";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { StructuredMetadata } from '../configs/StructuredMetadata';
 
 interface CommunicationType {

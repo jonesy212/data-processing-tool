@@ -1,5 +1,5 @@
 // UserProfileManagement.ts
-import uiStore from "../state/stores/UIStore";
+import uiStore from "@/app/state/stores/UIStore";
 import { User } from "./User";
 import UserManagement from "./UserManagement";
 

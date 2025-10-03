@@ -1,25 +1,23 @@
+import axiosInstance from '@/app/api/csrfToken';
 import { BaseData } from '@/app/components/models/data/Data';
-import { Snapshot } from "@/app/components/snapshots";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { Snapshot } from "@/app/snapshots";
+import {
+    removeAllEvents,
+    removeEvent,
+    selectEventError,
+    selectEventLoading,
+    selectEvents
+} from "@/app/state/redux/slices/EventSlice";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import * as React from "react";
 import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import axiosInstance from "../security/csrfToken";
-import {
-  addEvent,
-  removeAllEvents,
-  removeEvent,
-  selectEventError,
-  selectEventLoading,
-  selectEvents,
-} from "../state/redux/slices/EventSlice";
 import { CustomEventExtension } from "./BaseCustomEvent";
 import { defaultEventStore, EventStore } from "./EventStore";
-import { BaseDataEntity, DefaultMeta } from '@/app/configs/BaseConfig';
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 
-import { useSecureStoreId } from '@/app/components/utils/useSecureStoreId';
+import { useSecureStoreId } from '@/app/hooks/useSecureStoreId';
 
 
 // Define the thunk actions
@@ -41,7 +39,7 @@ type SnapshotCallback<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-> = (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void;
+> = (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
 
 // Define the type for the subscribers
 interface Subscribers<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {

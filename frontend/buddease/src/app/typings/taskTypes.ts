@@ -1,7 +1,7 @@
 import { UserRole } from './../components/users/UserRole';
-import { BaseData } from "../components/models/data/Data";
-import { Task } from "../components/models/tasks/Task";
-import { StructuredMetadata } from "../configs/StructuredMetadata";
+import { BaseData } from "@/app/components/models/data/Data";
+import { Task } from "@/app/components/models/tasks/Task";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { CreationPhase } from "./appTypes";
 
 // Define TaskUnion similar to SnapshotUnion

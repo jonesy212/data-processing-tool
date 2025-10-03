@@ -1,4 +1,4 @@
-import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
+import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { BaseData } from '@/app/components/models/data/Data';
 import { UserData } from '@/app/components/users/User';
 import { StructuredMetadata, VideoMetadata } from '@/app/configs/StructuredMetadata';

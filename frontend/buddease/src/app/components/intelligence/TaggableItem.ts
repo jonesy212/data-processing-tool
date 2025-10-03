@@ -1,6 +1,6 @@
 // Tag.ts
 
-import { Tag } from "../models/tracker/Tag";
+import { Tag } from "@/app/models/tracker/Tag";
 
 export interface TaggableItem {
   id: string;

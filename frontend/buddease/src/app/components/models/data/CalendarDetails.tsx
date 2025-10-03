@@ -2,11 +2,11 @@
 import ListGenerator from "@/app/generators/ListGenerator";
 import { observer } from "mobx-react-lite";
 import React from "react";
-import CommonEvent from "../../state/stores/CommonEvent";
-import { DetailsItem } from "../../state/stores/DetailsListStore";
-import { CommonData, Customizations } from "../CommonData";
+import CommonEvent from "@/app/state/stores/CommonEvent";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
+import { CommonData, Customizations } from "@/app/models/CommonData";
 import { Data } from "./Data";
-import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
+import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 type CalendarDataAndEventDetails = Data | CommonEvent;
 
 interface CalendarDetailsProps<T> {

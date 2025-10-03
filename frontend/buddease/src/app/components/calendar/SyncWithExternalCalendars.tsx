@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import authService from "../auth/AuthService";
+import authService from "@/app/auth/AuthService";
 
 interface SyncWithExternalCalendarsProps {
   // Props for connecting to Google Calendar

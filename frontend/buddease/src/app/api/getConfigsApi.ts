@@ -1,12 +1,12 @@
 import { configServiceInstance } from '../configs/ConfigurationService';
-import axiosInstance from './axiosInstance';
+import axiosInstance from '@/app/api/csrfToken'
 import { SystemConfigs } from './systemConfigs';
 import { UserConfigs } from './userConfigs';
 import { ExtendedDappProps } from '../components/web3/dAppAdapter/IPFS';
 import { ipfsConfig } from '../configs/ipfsConfig';
-import { DocumentSize } from '../components/models/data/StatusType';
+import { DocumentSize } from '@/app/models/data/StatusType';
 import { DocumentOptions } from '../components/documents/DocumentOptions';
-import { fluenceApiKey } from '../components/web3/dAppAdapter/DAppAdapterConfig';
+import { fluenceApiKey } from '@/app/utils/web3/dAppAdapter/DApp';
 import { PoolConfig } from 'mysql';
 
 export const getConfigsData = async (): Promise<ExtendedDappProps | undefined> => {

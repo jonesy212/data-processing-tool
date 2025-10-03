@@ -1,10 +1,8 @@
 // ApiSearch.ts
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { SearchResult } from "../components/routing/SearchResult";
+import axiosInstance from "@/app/api/csrfToken";
+import { SearchResult } from "@/app/components/routing/SearchResult";
 import { handleApiError } from "./ApiLogs";
 import { Note } from "./ApiNote";
-import axiosInstance from "./axiosInstance";
 
 
 // Define the base URL for your search endpoint

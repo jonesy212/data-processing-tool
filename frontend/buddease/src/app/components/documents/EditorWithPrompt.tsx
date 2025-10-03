@@ -1,11 +1,11 @@
 import React, { ReactNode, useState } from "react";
 
-import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
-import { Prompt } from "../prompts/PromptPage";
-import PromptSystem from "../prompts/PromptSystem";
-import { generatePrompt } from "../prompts/promptGenerator";
+import { DocumentTypeEnum } from "@/app/typings/documents";
+import { Prompt } from "@/app/prompts/PromptPage";
+import PromptSystem from "@/app/prompts/PromptSystem";
+import { generatePrompt } from "@/app/prompts/promptGenerator";
 import TextEditor from "./TextEditor"; // Assuming the correct path
-import { ToolbarOptionsProps } from "./ToolbarOptions";
+import { ToolbarOptionsProps } from "@/app/components/documents/ToolbarOptions";
 
 interface EditorWithPromptProps {
   userId: string; // Add other necessary identifiers

@@ -7,20 +7,20 @@ import ColorPalette, {
 } from "@/app/components/styling/ColorPalette";
 import NavigationGenerator, {
   NavigationItem,
-} from "@/app/components/hooks/userInterface/NavigationGenerator";
+} from "@/app/hooks/userInterface/NavigationGenerator";
 import AdapterContent from "@/app/components/web3/dAppAdapter/AdapterContent";
-import ContentRenderer from "@/app/components/libraries/ui/ContentRenderer";
-import ContentDetailsListItem from "@/app/components/models/content/ContentDetailsListItem";
+import ContentRenderer from "@/app/libraries/ui/ContentRenderer";
+import ContentDetailsListItem from "@/app/models/content/ContentDetailsListItem";
 import { Project } from "@/app/components/projects/Project";
 import { Task } from "@/app/components/models/tasks/Task";
 import { Todo } from "@/app/components/todos/Todo";
 import { AnimatedComponentProps } from "@/app/components/styling/AnimationsAndTansitions";
 import { useNavigate, useNavigation } from "react-router-dom";
 import { isProject, isTask, isTodo } from "@/app/components/libraries/ui/ContentHelpers";
-import { ChildComponentProps } from "../../hooks/ChildComponent";
+import { ChildComponentProps } from "@/app/hooks/ChildComponent";
 import useDeviceDimensions, { DeviceDimensions } from "./DeviceDimensions";
 import { brandingSettings } from "@/app/libraries/theme/BrandingService";
-import ReusableButton from "../../libraries/ui/buttons/ReusableButton";
+import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
 
 interface MultimediaContentCustomizationProps extends ChildComponentProps{
   // Add any necessary props here

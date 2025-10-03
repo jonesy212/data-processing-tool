@@ -1,4 +1,4 @@
-import FeatureStore from "@/app/components/state/stores/FeatureStore";
+import FeatureStore from "@/app/state/stores/FeatureStore";
 import { CategoryProperties } from "./ScenarioBuilder";
 
 

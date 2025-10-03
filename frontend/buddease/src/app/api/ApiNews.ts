@@ -1,5 +1,5 @@
 // ApiNews.ts
-import axiosInstance from './axiosInstance';
+import axiosInstance from '@/app/api/csrfToken'
 import { AxiosError, AxiosResponse } from 'axios';
 import { endpoints } from './endpointConfigurations';
 

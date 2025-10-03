@@ -1,7 +1,7 @@
 // TwitterIntegration.ts
 
 import TwitterIntegrationAPI from "@/app/api/TwitterIntegrationAPI";
-import { User } from "../users/User";
+import { User } from "@/app/users/User";
 
 // TwitterData.ts
 export interface TwitterData {

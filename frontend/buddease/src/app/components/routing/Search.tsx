@@ -3,11 +3,11 @@ import SearchComponent, {
   SearchComponentProps,
 } from "@/app/pages/searchs/SearchComponent";
 import React, { useEffect, useState } from "react";
-import { userId } from "../../api/ApiUser";
-import useErrorHandling from "../hooks/useErrorHandling";
-import { SearchLogger } from "../logging/Logger";
-import LoadingSpinner from "../models/tracker/LoadingSpinner";
-import { sanitizeInput } from "../security/SanitizationFunctions";
+import { userId } from "@/app/api/ApiUser";
+import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { SearchLogger } from "@/app/libraries/logging/Logger";
+import LoadingSpinner from "@/app/models/tracker/LoadingSpinner";
+import { sanitizeInput } from "@/app/security/SanitizationFunctions";
 import { Entity } from "./FuzzyMatch";
 import SearchResult from "./SearchResult";
 

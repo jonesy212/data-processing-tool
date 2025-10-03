@@ -1,10 +1,10 @@
 import { observer } from 'mobx-react-lite';
 import React from 'react';
-import { useStore } from '../../hooks/useStore';
+import { useStore } from '@/app/hooks/useStore';
 
 import ListGenerator, { DetailsItemCommon } from '@/app/generators/ListGenerator';
-import { NotificationData } from '../../support/NofiticationsSlice';
-import { UserData } from '../../users/User';
+import { NotificationData } from '@/app/components/support/NofiticationsSlice';
+import { UserData } from '@/app/components/users/User';
 import { Data } from '../data/Data';
 import FileData from '../data/FileData';
 import FolderData from '../data/FolderData';

@@ -1,7 +1,7 @@
 // ProductLaunchDetails.tsx
 import React from "react";
-import CommonDetails from "../models/CommonData";
-import Project from "../projects/Project";
+import CommonDetails from "@/app/models/CommonData";
+import Project from "@/app/models/projects/Project";
 
 // Define the type for product launch data
 export interface ProductLaunchData {

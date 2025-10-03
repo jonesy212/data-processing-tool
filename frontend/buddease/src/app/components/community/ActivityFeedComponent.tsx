@@ -1,16 +1,16 @@
 import apiNotificationsService from "@/app/api/NotificationsService";
 import { initializeUserData } from "@/app/pages/onboarding/PersonaBuilderData";
 import React, { useEffect, useState } from "react";
-import { useAuth } from "../auth/AuthContext";
-import { addFilteredEvent, sortFilteredEvents } from "../state/redux/slices/FilteredEventsSlice";
-import { NotificationData } from "../support/NofiticationsSlice";
-import { User, UserData } from "../users/User";
-import { subscribeToRealtimeUpdates } from "../web3/dAppAdapter/functionality/RealtimeUpdates";
-import useFilteredEventsSlice from "../state/redux/slices/FilteredEventsSlice";
-import useSorting from "../hooks/useSorting";
+import { useAuth } from "@/app/auth/AuthContext";
+import { addFilteredEvent, sortFilteredEvents } from "@/app/state/redux/slices/FilteredEventsSlice";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+import { User, UserData } from "@/app/users/User";
+import { subscribeToRealtimeUpdates } from "@/app/web3/dAppAdapter/functionality/RealtimeUpdates";
+import useFilteredEventsSlice from "@/app/state/redux/slices/FilteredEventsSlice";
+import useSorting from "@/app/hooks/useSorting";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../state/redux/slices/RootSlice";
-import { useFilterStore } from "../state/stores/FilterStore";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
+import { useFilterStore } from "@/app/state/stores/FilterStore";
 
 export interface RealtimeUpdates {
   id: string;

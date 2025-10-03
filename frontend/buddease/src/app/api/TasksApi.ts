@@ -3,15 +3,15 @@ import { Dispatch } from '@reduxjs/toolkit';
 import { handleApiError } from '@/app/api/ApiLogs';
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 import { NotificationType, useNotification } from '@/app/context/NotificationContext';
 import { TaskHistoryEntry } from '../components/interfaces/history/TaskHistoryEntry';
 import { Task } from '../components/models/tasks/Task';
-import { historyManagerStore } from '../components/state/stores/HistoryStore';
-import { useTaskManagerStore } from '../components/state/stores/TaskStore ';
+import { historyManagerStore } from '@/app/state/stores/HistoryStore';
+import { useTaskManagerStore } from '@/app/state/stores/TaskStore ';
 import { endpoints } from './ApiEndpoints';
-import axiosInstance from './axiosInstance';
+import axiosInstance from '@/app/api/csrfToken'
 
 // Define the API base URL
 const API_BASE_URL = endpoints.tasks.list;
@@ -103,7 +103,7 @@ const handleTaskApiErrorAndNotify = (
 
 
 
-const fetchTasks = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<Task<T, K>[]> => {
+const fetchTasks = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}`);
     return response.data.tasks;
@@ -119,7 +119,14 @@ const fetchTasks = async <T extends  BaseData<any>, K extends T = T, Meta extend
 };
 
 
-const updateTaskPositionSuccess = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(task: Task<T, K>) => {
+const updateTaskPositionSuccess = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
   return {
     type: 'UPDATE_TASK_POSITION_SUCCESS',
     payload: {
@@ -129,9 +136,12 @@ const updateTaskPositionSuccess = <T extends  BaseData<any>, K extends T = T, Me
 };
 
 const updateTaskPosition = async <
-  T extends BaseData<any, any, any, Attachment>, // Simplified BaseData with all four type arguments
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends { childIds?: any; } & Partial<StructuredMetadata<T, K>> = { childIds?: any; } & Partial<StructuredMetadata<T, K>>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   taskId: string,
   newPosition: { x: number; y: number }, // Update to accept an object
@@ -143,10 +153,8 @@ const updateTaskPosition = async <
 
     // Define the Task type explicitly to match the expected type
     type ExpectedTask = Task<
-    BaseData<T, K, Meta, Attachment>, // Provide all four type arguments for BaseData
-    BaseData<T, K, Meta, Attachment>, // Provide all four type arguments for BaseData
-    StructuredMetadata<BaseData<T, K, Meta, Attachment>, BaseData<T, K, Meta, Attachment>>
-  >;
+      T, K, Meta, AttachmentType, ExcludedFields, IncludedFields
+    >;
 
     const response: AxiosResponse<ExpectedTask> = await axiosInstance.post(updateTaskEndpoint, {
       task: taskId,
@@ -184,7 +192,7 @@ const updateTaskPosition = async <
   }
 };
 
-const addTask = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(newTask: Omit<Task<T, K>, 'id'>): Promise<void> => {
+const addTask = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(newTask: Omit<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 'id'>): Promise<void> => {
   try {
     const addTaskEndpoint = `${API_BASE_URL}.add`;
     const response = await axiosInstance.post(addTaskEndpoint, newTask);
@@ -226,8 +234,8 @@ const removeTask = async (taskId: number): Promise<void> => {
   }
 };
 
-const toggleTask = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(taskId: number): Promise<Task<T, K> | void> => {
-  return new Promise<Task<T, K> | void>(async (resolve, reject) => {
+const toggleTask = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(taskId: number): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void> => {
+  return new Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void>(async (resolve, reject) => {
     try {
       const toggleTaskEndpoint = `${API_BASE_URL}.toggle.${taskId}`;
       const response = await axiosInstance.put(toggleTaskEndpoint);
@@ -247,8 +255,8 @@ const toggleTask = <T extends  BaseData<any>, K extends T = T, Meta extends Stru
   })
 };
 
-const updateTask = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(taskId: number, newTitle: string): Promise<Task<T, K> | void> => {
-  return new Promise<Task<T, K> | void>(async (resolve, reject) => {
+const updateTask = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(taskId: number, newTitle: string): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void> => {
+  return new Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void>(async (resolve, reject) => {
     try {
       const updateTaskEndpoint = `${API_BASE_URL}.update.${taskId}`;
       const response = await axiosInstance.put(updateTaskEndpoint, { title: newTitle });
@@ -335,13 +343,17 @@ const unassignTask = async (taskId: number): Promise<void> => {
 
 
 const fetchTaskData = <
-  T extends  BaseData<any>, 
-  K extends T = T
->(taskId: number): Promise<Task<T, K> | void> => {
-  return new Promise<Task<T, K> | void>(async (resolve, reject) => {
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(taskId: number): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void> => {
+  return new Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void>(async (resolve, reject) => {
     try {
       const fetchTaskEndpoint = `${API_BASE_URL}.get.${taskId}`;
-      const response = await axiosInstance.get<Task<T, K>>(fetchTaskEndpoint); // Added type annotation for response
+      const response = await axiosInstance.get<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(fetchTaskEndpoint); // Added type annotation for response
 
       // Perform any necessary processing here
 
@@ -359,8 +371,15 @@ const fetchTaskData = <
 };
 
 
-const createTask = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(newTask: Task<T, K>): Promise<Task<T, K> | void> => {
-  return new Promise<Task<T, K> | void>(async (resolve, reject) => {
+const createTask = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(newTask: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void> => {
+  return new Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void>(async (resolve, reject) => {
 
     try {
       const createTaskEndpoint = `${API_BASE_URL}.add`;
@@ -460,10 +479,17 @@ const bulkUnassignTodos = async (todoIds: number[]): Promise<void> => {
   }
 };
 
-const getTasksByUserId = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(userId: number): Promise<Task<T, K>[]> => {
+const getTasksByUserId = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(userId: number): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
     const getTasksByUserIdEndpoint = `${API_BASE_URL}.getByUser.${userId}`;
-    const response = await axiosInstance.get<Task<T, K>[]>(getTasksByUserIdEndpoint);
+    const response = await axiosInstance.get<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>(getTasksByUserIdEndpoint);
     return response.data;
   } catch (error) {
     console.error('Error fetching tasks by user:', error);

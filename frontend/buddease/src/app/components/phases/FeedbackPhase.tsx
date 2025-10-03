@@ -1,10 +1,10 @@
+import FeedbackService from "@/app/api/service/FeedbackService";
+import FeedbackLoop from '@/app/features/feedback/FeedbackLoop';
+import { Feedback } from "@/app/features/support/Feedback";
 import FeedbackReportGenerator, { FeedbackReport } from "@/app/generators/FeedbackReportGenerator";
+import { Channel, ChannelType } from "@/app/interfaces/chat/Channel";
 import FeedbackForm from "@/app/pages/forms/FeedbackForm";
 import React, { useState } from "react";
-import FeedbackLoop from "../FeedbackLoop";
-import { Feedback } from "../support/Feedback";
-import FeedbackService from "../support/FeedbackService";
-import { Channel, ChannelType } from "../interfaces/chat/Channel";
 
 enum FeedbackPhaseEnum {
     FEEDBACK_SELECTION = "FEEDBACK_SELECTION",

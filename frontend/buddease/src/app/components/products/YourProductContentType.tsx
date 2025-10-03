@@ -1,6 +1,6 @@
-import { TeamMember } from "../models/teams/TeamMembers";
-import {Project} from "../projects/Project";
-import FeedbackService from "../support/FeedbackService";
+import { TeamMember } from "@/app/models/teams/TeamMembers";
+import {Project} from "@/app/models/projects/Project";
+import FeedbackService from "@/app/api/service/FeedbackService";
 
 // YourProductContentType definition
 interface YourProductContentType {

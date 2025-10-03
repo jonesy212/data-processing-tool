@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Snapshot, Snapshots } from "../snapshots/LocalStorageSnapshotStore";
-import { Snapshot } from "../snapshots/Snapshot";
-import useDocumentStore, { Document } from "../state/stores/DocumentStore";
-import { BaseData } from "../models/data/Data";
-import { SnapshotItem } from "../snapshots";
+import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import useDocumentStore, { Document } from "@/app/state/stores/DocumentStore";
+import { BaseData } from "@/app/models/data/Data";
+import { SnapshotItem } from "@/app/snapshots";
 
 interface DocumentSnapshotStoreProps {
   initialState?: Snapshot<Document, any> | null;

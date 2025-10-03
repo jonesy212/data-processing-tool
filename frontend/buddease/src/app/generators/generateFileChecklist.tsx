@@ -1,6 +1,6 @@
 // generateFileChecklist.ts
-import FeatureStore from "../components/state/stores/FeatureStore";
-import FeatureStructure from "../pages/personas/FeatureStructure";
+import FeatureStore from "@/app/state/stores/FeatureStore";
+import FeatureStructure from "@/app/pages/personas/FeatureStructure";
 
 function generateFileChecklist(featureStructure: FeatureStructure): string {
   const { componentName, category, properties, validationRules, featureStore } = featureStructure;

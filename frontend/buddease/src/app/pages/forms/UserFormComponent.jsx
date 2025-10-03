@@ -1,7 +1,7 @@
 import { useDynamicComponents } from "@/app/components/DynamicComponentsContext";
-import useDynamicPromptPhaseHook from "@/app/components/hooks/phaseHooks/DynamicPromptPhaseHook";
-import YourComponentUI from "@/app/components/interfaces/UserIdeaComponentUI";
+import YourComponentUI from "@/app/interfaces/UserIdeaComponentUI";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import useDynamicPromptPhaseHook from "@/app/hooks/phaseHooks/DynamicPromptPhaseHook";
 import { useEffect, useSession, useState } from "react";
 
 const UserFormComponent = ({ onSubmit }) => {
@@ -17,7 +17,7 @@ const UserFormComponent = ({ onSubmit }) => {
       "An error occurred",
       error.errorMessage,
       new Date(),
-      NotificationTypeEnum.LoggingError
+      NotificationTypeEnum.LOGGING_ERROR
     ); // Notify about the error
   };
 

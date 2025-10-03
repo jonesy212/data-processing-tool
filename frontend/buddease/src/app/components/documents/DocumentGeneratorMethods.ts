@@ -1,47 +1,45 @@
 // DocumentGeneratorMethods.t
 // // Add the namespace declaration for DXT if it's not already imported
-// declare namespace DXT {import { fs } from 'fs';
 import calendarApiService from "@/app/api/ApiCalendar";
 import {
-  fetchDocumentByIdAPI,
-  getDocument,
-  loadPresentationFromDatabase,
+    fetchDocumentByIdAPI,
+    getDocument,
+    loadPresentationFromDatabase,
 } from "@/app/api/ApiDocument";
 import { BaseData } from '@/app/components/models/data/Data';
-import { DatabaseConfig } from "@/app/configs/DatabaseConfig";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { loadDrawingFromDatabase } from "@/app/configs/database/updateDocumentInDatabase";
+import { loadCryptoWatchlistFromDatabase } from "@/app/crypto/CryptoWatchlist";
+import { generateCryptoWatchlistJSON } from "@/app/crypto/generateCryptoWatchlistJSON";
+import { allowedDiagramFormats } from "@/app/form/FormatEnum";
 import generateDraftJSON from "@/app/generators/generateDraftJSON";
-import fs from "fs";
+import {
+    Drawing,
+    generateDrawingJSON,
+} from "@/app/libraries/drawing/generateDrawingJSON";
+import { generatePresentationJSON } from "@/app/libraries/presentations/generatePresentationJSON";
+import {
+    DocumentSize
+} from "@/app/models/data/StatusType";
+import { sanitizeInput } from "@/app/security/SanitizationFunctions";
+import { fetchTextContentFromDatabase } from "@/app/server/database/DataBaseMethods";
+import loadDraftFromDatabase from "@/app/server/database/loadDraftFromDatabase";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
+import {
+    CustomDocxtemplater,
+    CustomPDFPage,
+    CustomPDFProxyPage,
+    DocumentPath,
+    DocumentTypeEnum,
+} from "@/app/typings/documents";
+import { DatabaseConfig } from "@/config/DatabaseConfig";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { loadDrawingFromDatabase } from "@/config/database/updateDocumentInDatabase";
 import Papa from "papaparse";
 import { PDFDocument } from "pdf-lib";
 import { AppType } from "vite";
-import {
-  CustomDocxtemplater,
-  CustomPDFPage,
-  CustomPDFProxyPage,
-  DocumentPath,
-  DocumentTypeEnum,
-} from "../../../server/DocumentGenerator";
-import { fetchTextContentFromDatabase } from "../../../server/database/DataBaseMethods";
-import loadDraftFromDatabase from "../../../server/database/loadDraftFromDatabase";
-import { loadCryptoWatchlistFromDatabase } from "../crypto/CryptoWatchlist";
-import { generateCryptoWatchlistJSON } from "../crypto/generateCryptoWatchlistJSON";
-import { allowedDiagramFormats } from "../form/FormatEnum";
-import {
-  Drawing,
-  generateDrawingJSON,
-} from "../libraries/drawing/generateDrawingJSON";
-import { generatePresentationJSON } from "../libraries/presentations/generatePresentationJSON";
-import {
-  DocumentSize
-} from "../models/data/StatusType";
-import { sanitizeInput } from "../security/SanitizationFunctions";
-import { WritableDraft } from "../state/redux/ReducerGenerator";
-import { DocumentObject } from "../state/redux/slices/DocumentSlice";
 import { extractTextFromPage } from "./CustomPDFPage";
 import { ModifiedDate, ParsedData, YourPDFType } from "./DocType";
-import { DocumentData } from "./DocumentBuilder";
+import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
 import { parseCSV } from "./parseCSV";
 import { parseDocx } from "./parseDocx";
@@ -374,28 +372,6 @@ async function loadPDFDocumentContent<T extends  BaseData<any>, K extends T = T,
   }
 }
 
-async function loadMarkdownDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  document: DocumentPath,
-  dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
-): Promise<string> {
-  try {
-    // Assuming the Markdown file path is stored in the document's filePathOrUrl property
-    const filePath = document.filePathOrUrl;
-
-    // Read the Markdown file
-    const markdownContent = await fs.promises.readFile(filePath, "utf-8");
-
-    // Call dataCallback with the modified document
-    const updatedDocument = { ...document, content: markdownContent };
-    dataCallback(updatedDocument as WritableDraft<DocumentObject<T, K>>);
-
-    // Return the Markdown content
-    return markdownContent;
-  } catch (error) {
-    console.error("Error loading Markdown document content:", error);
-    throw error;
-  }
-}
 
 async function loadCalendarEventsDocumentContent(documentId: number) {
   // Logic to load content for a calendar events document
@@ -932,7 +908,7 @@ function loadSpreadsheetDocumentContent(document: DocumentData<T, K>): string {
 //   ]; // Updated list of allowed diagram formats
 
 export {
-  extractTextFromPDF, loadCalendarEventsDocumentContent, loadClientPortfolioDocumentContent, loadCryptoWatchDocumentContent, loadDiagramDocumentContent, loadDocumentContent, loadDraftDocumentContent, loadDrawingDocumentContent, loadFinancialReportDocumentContent, loadGenericDocumentContent, loadMarkdownDocumentContent, loadMarketAnalysisDocumentContent, loadOtherDocumentContent, loadPDFDocumentContent, loadPresentationDocumentContent,
-  loadSpreadsheetDocumentContent, loadSQLDocumentContent, loadTextDocumentContent
+    extractTextFromPDF, loadCalendarEventsDocumentContent, loadClientPortfolioDocumentContent, loadCryptoWatchDocumentContent, loadDiagramDocumentContent, loadDocumentContent, loadDraftDocumentContent, loadDrawingDocumentContent, loadFinancialReportDocumentContent, loadGenericDocumentContent, loadMarkdownDocumentContent, loadMarketAnalysisDocumentContent, loadOtherDocumentContent, loadPDFDocumentContent, loadPresentationDocumentContent,
+    loadSpreadsheetDocumentContent, loadSQLDocumentContent, loadTextDocumentContent
 };
 

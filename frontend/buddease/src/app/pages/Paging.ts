@@ -1,4 +1,4 @@
-import { PromptPageProps } from "../components/prompts/PromptPage";
+import { PromptPageProps } from "@/app/components/prompts/PromptPage";
 
 export interface PagingState {
     currentPage: PromptPageProps;

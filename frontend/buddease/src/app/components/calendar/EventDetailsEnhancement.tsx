@@ -1,7 +1,7 @@
 // Assuming EventDetails is already defined as interface EventDetails
 
 import React from "react";
-import { WritableDraft } from "../state/redux/ReducerGenerator";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import CalendarEventViewingDetails, { CalendarEventViewingDetailsProps, EventDetails } from "./CalendarEventViewingDetails";
 import { CalendarManagerState } from "./CalendarSlice";
 

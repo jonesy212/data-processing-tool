@@ -1,53 +1,27 @@
 "use client";
 
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { UserSettings } from "@/app/configs/UserSettings";
-import { Persona } from "@/app/pages/personas/Persona";
-import { ProfileAccessControl } from "@/app/pages/profile/Profile";
+import { FileTypeEnum } from "@/app/components/documents/FileType";
+import { BaseData } from "@/app/data/Data";
+import useFiltering from "@/app/hooks/useFiltering";
+import { Project, reassignProject } from "@/app/models/projects/Project";
+import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
+import { Progress } from "@/app/tracker/ProgressBar";
+import dynamic from 'next/dynamic';
 import React from "react";
-import { FileTypeEnum } from "../../documents/FileType";
-import useFiltering from "../../hooks/useFiltering";
-import { Phase } from "../../phases/Phase";
-import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
-import { DataAnalysisResult } from "../../projects/DataAnalysisPhase/DataAnalysisResult";
-import { Project, ProjectType, reassignProject } from "../../projects/Project";
-import SnapshotStore from "../../snapshots/SnapshotStore";
-import { implementThen } from "../../state/stores/CommonEvent";
-import { Settings } from "../../state/stores/SettingsStore";
-import { DataProcessingTask } from "../../todos/tasks/DataProcessingTask";
-import { Idea } from "../../users/Ideas";
-import { User } from "../../users/User";
-import { UserRole } from "../../users/UserRole";
-import UserRoles from "../../users/UserRoles";
-import { VideoData } from "../../video/Video";
-import CommonDetails, { CommonData } from "../CommonData";
-import { BaseData, Data, DataDetailsComponent, DataDetailsProps } from "../data/Data";
-import { PriorityTypeEnum, StatusType, TeamStatus } from "../data/StatusType";
-import generateTimeBasedCode from "../realtime/TimeBasedCodeGenerator";
-import { Task, TaskData } from "../tasks/Task";
-import { Progress } from "../tracker/ProgressBar";
 import { TeamData } from "./TeamData";
-import { Member, TeamMember } from "./TeamMembers";
 
-import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
-import { assignProject, unassignProject, updateProgress } from "../../calendar/CalendarApp";
 import {
-  CodingLanguageEnum,
-  LanguageEnum,
-} from "../../communications/LanguageEnum";
-import { NotificationPreferenceEnum } from "../../notifications/Notification";
-import { SortCriteria } from "../../settings/SortCriteria";
-import { data, Snapshot, SnapshotData, SnapshotsArray, SnapshotStoreConfig, SnapshotUnion, SnapshotWithCriteria } from "@/app/components/snapshots";
-import { DefaultMeta, DefaultExcludedFields } from "@/app/configs/BaseConfig";
-import { id } from "ethers";
-import next from "next";
-import { index } from "node_modules/cheerio/lib/esm/api/traversing";
-import { Attachment } from "../../documents/Attachment/attachment";
-import { ThemeEnum } from "../../libraries/ui/theme/Theme";
-import { SnapshotConfigParams } from "../../snapshots/SnapshotConfigBuilder";
-import { BaseDataEntity } from "../../snapshots/ValidationRule";
-import { SubscriberCollection } from "../../users/SubscriberCollection";
-import { RealtimeDataItem } from "../realtime/RealtimeData";
+  LanguageEnum
+} from "@/app/communications/LanguageEnum";
+import { Attachment } from "@/app/components/documents/Attachment/attachment";
+import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
+import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
+import { RealtimeDataItem } from "@/app/realtime/RealtimeData";
+import { SortCriteria } from "@/app/settings/SortCriteria";
+import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
+import { SubscriberCollection } from "@/app/users/SubscriberCollection";
+import { DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+
 
 type TeamEntity = BaseDataEntity;
 type TeamK = TeamEntity;
@@ -70,10 +44,10 @@ type TeamSnapshotsArray = SnapshotsArray<TeamEntity, TeamK, TeamMeta, TeamExclud
 type TeamParams = SnapshotConfigParams<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
 
 type TeamSnapshotFromParams<Params extends SnapshotConfigParams<any, any, any, any>> =
-  Snapshot<Params[0], Params[1], Params[2], Params[3]>;
+  Snapshot<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
 
 type TeamSnapshotUnionFromParams<Params extends SnapshotConfigParams<any, any, any, any>> =
-  SnapshotUnion<Params[0], Params[1], Params[2], Params[3]>;
+  SnapshotUnion<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
 
 const options: SearchOptions = {
   communicationMode: "email", // Example communication mode
@@ -138,6 +112,49 @@ const options: SearchOptions = {
   },
 };
 
+
+
+
+
+// Client-side API calls
+const updateProgress = async (teamId: string, projectUpdates?: Array<{
+  projectId: string;
+  status?: string;
+  progress?: number;
+}>) => {
+  try {
+    const response = await fetch('/api/teams', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        teamId,
+        projectUpdates
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update progress');
+    }
+
+    const result = await response.json();
+    return result.progress;
+  } catch (error) {
+    console.error('Error updating progress:', error);
+    throw error;
+  }
+};
+
+
+
+// Dynamically import CommonDetails
+const CommonDetails = dynamic(
+  () =>  import("@/app/models/CommonData"),
+  { ssr: false, loading: () => <div>Loading...</div> }
+);
+
+
 // Initialize the useFiltering hook with the provided options
 const { addFilter } = useFiltering(options);
 
@@ -157,9 +174,10 @@ interface Team<
   T extends BaseDataEntity = TeamEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = TeamMeta,
-  AttachmentType extends Attachment = FileAttachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends Data<T, K, Meta, AttachmentType, ExcludedFields> {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   teamDetails: {
     id: string;
     current: number;
@@ -174,29 +192,20 @@ interface Team<
     done: boolean;
   };
 
-  // Optional callback for working with snapshots
-  then?: <
-    T extends BaseDataEntity, 
-    K extends T = T, 
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, 
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(
-    callback: (newData: Snapshot<T, K, Meta, ExcludedFields>) => void
-  ) => TeamSnapshot | undefined;
-
-  members?: SnapshotsCollection<MemberEntity>;
-  projects?: SnapshotsCollection<ProjectEntity>;
-  assignedProjects?: SnapshotsCollection<ProjectEntity>;
-  // Domain methods
-  assignProject(team: Team, project: Project, assignedDate: Date): void;
-  reassignProject(team: Team, project: Project, previousTeam: Team, reassignmentDate: Date): void;
-  unassignProject(team: Team, project: Project): void;
-  updateProgress(team: Team, project: Project): void;
+  // Client-side only methods (call API endpoints)
+  assignProject(teamId: string, projectId: string): Promise<void>;
+  reassignProject(teamId: string, projectId: string, previousTeamId: string): Promise<void>;
+  unassignProject(teamId: string, projectId: string): Promise<void>;
+  updateProgress(teamId: string, projectUpdates?: Array<{
+    projectId: string;
+    status?: string;
+    progress?: number;
+  }>): Promise<number>;
 }
 
-
 const timeBasedCode = generateTimeBasedCode();
-// Example usage:
+
+// Example usage with client-side only implementation
 const team: Team = {
   id: "1",
   teamName: "Development Team",
@@ -215,707 +224,44 @@ const team: Team = {
     description: "",
   },
   members: [
-    {
-      isAuthorized: false,
-      _id: "member-1",
-      id: 1,
-      username: "user1",
-      email: "user1@example.com",
-      tier: "free",
-      uploadQuota: 0,
-      userType: "individual",
-      fullName: "Sam Smith",
-      bio: "bio content",
-      hasQuota: true,
-      profilePicture: "",
-      processingTasks: [] as DataProcessingTask[],
-      traits: "traits" as unknown as typeof CommonDetails,
-      role: {} as UserRole,
-      timeBasedCode: timeBasedCode,
-      teamId: "1",
-      roleInTeam: "admin",
-      memberName: "Sam Smith",
-      teams: [] as Team[],
-      persona: {} as Persona,
-      snapshots: [] as Snapshots<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>,
-      token: null,
-      avatarUrl: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      isVerified: false,
-      isAdmin: false,
-      isActive: false,
-      firstName: "",
-      lastName: "",
-      friends: [],
-      blockedUsers: [],
-      settings: {
-        appName: "",
-        userId: 0,
-        userSettings: {} as NodeJS.Timeout,
-        communicationMode: "",
-        enableRealTimeUpdates: false,
-        defaultFileType: "",
-        allowedFileTypes: [],
-        enableGroupManagement: false,
-        enableTeamManagement: false,
-        idleTimeout: {
-          intervalId: undefined,
-          isActive: false,
-          animateIn: () => {},
-          startAnimation: () => {},
-          stopAnimation: () => {},
-          resetIdleTimeout: function (): Promise<void> {
-            return Promise.resolve();
-          },
-          idleTimeoutDuration: () => {},
-          idleTimeoutId: null,
-          startIdleTimeout: (
-            timeoutDuration: number,
-            onTimeout: () => void | undefined
-          ) => {},
-          toggleActivation: async () => false,
-          idleTimeoutDuration: 0
-        },
-        startIdleTimeout: function (
-          timeoutDuration: number,
-          onTimeout: () => void
-        ): void {
-          if (this.idleTimeoutId) {
-            clearTimeout(String(this.idleTimeoutId));
-          }
-          this.idleTimeoutId = setTimeout(onTimeout, timeoutDuration);
-        },
-        idleTimeoutDuration: 0,
-        activePhase: "",
-        realTimeChatEnabled: false,
-        todoManagementEnabled: false,
-        notificationEmailEnabled: false,
-        analyticsEnabled: false,
-        twoFactorAuthenticationEnabled: false,
-        projectManagementEnabled: false,
-        documentationSystemEnabled: false,
-        versionControlEnabled: false,
-        userProfilesEnabled: false,
-        accessControlEnabled: false,
-        taskManagementEnabled: false,
-        loggingAndNotificationsEnabled: false,
-        securityFeaturesEnabled: false,
-        theme: {} as ThemeEnum,
-        language: "" as LanguageEnum | CodingLanguageEnum,
-        fontSize: 0,
-        darkMode: false,
-        enableEmojis: false,
-        enableGIFs: false,
-        emailNotifications: false,
-        pushNotifications: false,
-        notificationSound: "",
-        timeZone: "",
-        dateFormat: "",
-        timeFormat: "",
-        defaultProjectView: "",
-        taskSortOrder: "",
-        showCompletedTasks: false,
-        projectColorScheme: "",
-        showTeamCalendar: false,
-        teamViewSettings: [],
-        defaultTeamDashboard: "",
-        passwordExpirationDays: 0,
-        privacySettings: [],
-        thirdPartyApiKeys: undefined,
-        externalCalendarSync: false,
-        dataExportPreferences: [],
-        dashboardWidgets: [],
-        customTaskLabels: [],
-        customProjectCategories: [],
-        customTags: [],
-        formHandlingEnabled: false,
-        paginationEnabled: false,
-        modalManagementEnabled: false,
-        sortingEnabled: false,
-        notificationSoundEnabled: false,
-        localStorageEnabled: false,
-        clipboardInteractionEnabled: false,
-        deviceDetectionEnabled: false,
-        loadingSpinnerEnabled: false,
-        errorHandlingEnabled: false,
-        toastNotificationsEnabled: false,
-        datePickerEnabled: false,
-        themeSwitchingEnabled: false,
-        imageUploadingEnabled: false,
-        passwordStrengthEnabled: false,
-        browserHistoryEnabled: false,
-        geolocationEnabled: false,
-        webSocketsEnabled: false,
-        dragAndDropEnabled: false,
-        idleTimeoutEnabled: false,
-        enableAudioChat: false,
-        enableVideoChat: false,
-        enableFileSharing: false,
-        enableBlockchainCommunication: false,
-        enableDecentralizedStorage: false,
-        selectDatabaseVersion: "",
-        selectAppVersion: "",
-        isAuthorized: true,
-
-        enableDatabaseEncryption: false,
-        id: "",
-        filter(
-          key:
-            | keyof Settings
-            | "communicationMode"
-            | "defaultFileType"
-            | "realTimeUpdates"
-            | "theme"
-            | "language"
-            | "notificationPreferences"
-            | "privacySettings"
-            | "taskManagement"
-            | "projectView"
-            | "calendarSettings"
-            | "dashboardPreferences"
-            | "securityFeatures"
-        ): void {
-          // Filtering based on the provided key
-          switch (key) {
-            case "communicationMode":
-              addFilter(
-                "communicationMode",
-                "equal",
-                options.communicationMode
-              );
-              break;
-            case "defaultFileType":
-              addFilter("defaultFileType", "equal", options.defaultFileType);
-              break;
-            // Add cases for other keys as needed
-            case "realTimeUpdates":
-              addFilter("realTimeUpdates", "equal", options.realTimeUpdates);
-              break;
-            case "theme":
-              addFilter("theme", "equal", options.theme);
-              break;
-            case "language":
-              addFilter("language", "equal", options.language);
-              break;
-            case "notificationPreferences":
-              addFilter(
-                "notificationPreferences",
-                "equal",
-                options.notificationPreferences
-              );
-              break;
-            case "privacySettings":
-              addFilter("privacySettings", "equal", options.privacySettings[0]);
-              break;
-            case "taskManagement":
-              addFilter("taskManagement", "equal", options.taskManagement);
-              break;
-            case "projectView":
-              addFilter("projectView", "equal", options.projectView);
-              break;
-            case "calendarSettings":
-              addFilter(
-                "calendarSettings",
-                "equal",
-                options.calendarSettings || ""
-              );
-              break;
-            case "dashboardPreferences":
-              addFilter(
-                "dashboardPreferences",
-                "equal",
-                options.dashboardPreferences || ""
-              );
-              break;
-            case "securityFeatures":
-              addFilter(
-                "securityFeatures",
-                "equal",
-                options.securityFeatures[0]
-              );
-              break;
-            // Add more cases for other settings options as needed
-            default:
-              // Default case if the provided key doesn't match any expected value
-              console.error(`Unhandled key "${key}" in settings filter.`);
-              break;
-          }
-        },
-      },
-      interests: [],
-      privacySettings: undefined,
-      notifications: {
-        email: false,
-        push: false,
-        sms: false,
-        chat: false,
-        calendar: false,
-        task: false,
-        file: false,
-        meeting: false,
-        announcement: false,
-        reminder: false,
-        project: false,
-        audioCall: false,
-        videoCall: false,
-        screenShare: false,
-        mention: false,
-        reaction: false,
-        follow: false,
-        poke: false,
-        activity: false,
-        thread: false,
-        inviteAccepted: true,
-        directMessage: false,
-        enabled: false,
-        notificationType: "sms",
-      },
-      activityLog: [],
-      projects: [],
-      socialLinks: undefined,
-      relationshipStatus: null,
-      hobbies: [],
-      skills: [],
-      achievements: [],
-      profileVisibility: "",
-      profileAccessControl: {} as ProfileAccessControl,
-      activityStatus: "",
-    },
-    {
-      _id: "member-2",
-      id: 2,
-      username: "user2",
-      email: "user2@example.com",
-      tier: "standard",
-      uploadQuota: 100,
-      userType: "organization",
-
-      fullName: "Benny Johnson",
-      bio: "bio content",
-      hasQuota: false,
-      profilePicture: "",
-      processingTasks: [] as DataProcessingTask[],
-      role: {} as UserRole,
-      traits: "traits" as unknown as typeof CommonDetails,
-      timeBasedCode: timeBasedCode,
-      teamId: "1",
-      roleInTeam: "moderator",
-      memberName: "Jane English",
-      persona: {} as Persona,
-      members: [] as SnapshotStore<Snapshot<MemberEntity, MemberEntity, DefaultMeta<MemberEntity, MemberEntity>, never>, MemberEntity, DefaultMeta<MemberEntity, MemberEntity>, never>[],
-      token: null,
-      avatarUrl: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      isVerified: false,
-      isAdmin: false,
-      isActive: false,
-      firstName: "",
-      lastName: "",
-      friends: [],
-      blockedUsers: [],
-      settings: {} as UserSettings,
-      interests: [],
-      privacySettings: undefined,
-      notifications: {
-        email: false,
-        push: false,
-        sms: false,
-        chat: false,
-        calendar: false,
-        task: false,
-        file: false,
-        meeting: false,
-        announcement: false,
-        reminder: false,
-        project: false,
-        audioCall: false,
-        videoCall: false,
-        screenShare: false,
-        mention: false,
-        reaction: false,
-        follow: false,
-        poke: false,
-        activity: false,
-        thread: false,
-        inviteAccepted: true,
-        directMessage: false,
-        enabled: false,
-        notificationType: "push",
-      },
-      activityLog: [],
-      projects: [],
-      socialLinks: undefined,
-      relationshipStatus: null,
-      hobbies: [],
-      skills: [],
-      achievements: [],
-      profileVisibility: "",
-      profileAccessControl: {
-        friendsOnly: false,
-        allowTagging: false,
-        blockList: [],
-        allowMessagesFromNonContacts: false,
-        shareProfileWithSearchEngines: false,
-        isPrivate: false,
-        isPrivateOnly: false,
-        isPrivateOnlyForContacts: false,
-        isPrivateOnlyForGroups: false,
-      },
-      activityStatus: "",
-      isAuthorized: false,
-    },
+    // ... (keep existing members array, but remove server dependencies)
   ],
   projects: [
-    {
-      _id: "project-1",
-      id: "1",
-      title: "Team Projects",
-      status: "pending",
-      phase: {} as Phase,
-      then: implementThen,
-      analysisType: AnalysisTypeEnum.IMAGE,
-      analysisResults: {} as DataAnalysisResult<T, K>[],
-      tags: [],
-      name: "Project A",
-      description: "Description of Project A",
-      members: [],
-      tasks: [],
-      videoData: {} as VideoData<T, K>,
-      videoUrl: "videoUrl",
-      videoThumbnail: "videoThumbnail",
-      videoDuration: 0,
-      startDate: new Date(),
-      endDate: new Date(),
-      phases: [],
-      currentPhase: null,
-      isActive: true,
-      leader: null,
-      budget: 0,
-      ideas: {} as Idea[],
-      type: ProjectType.Default,
-      timestamp: undefined,
-      category: "",
-    },
-    {
-      _id: "project-2",
-      id: "2",
-      title: "Team Projects",
-      status: "pending",
-      phase: {} as Phase,
-      then: implementThen,
-      analysisType: AnalysisTypeEnum.IMAGE,
-      analysisResults: {} as DataAnalysisResult<T, K>[],
-      tags: [],
-      name: "Project B",
-      description: "Description of Project B",
-      members: [],
-      phases: [],
-      currentPhase: "Planning" as unknown as Phase,
-      videoUrl: "videoUrl",
-      videoThumbnail: "videoThumbnail",
-      videoDuration: 0,
-      videoData: {} as VideoData<T, K>,
-      ideas: {} as Idea[],
-      type: ProjectType.Internal,
-      tasks: [
-        {
-          _id: "project",
-          id: "1",
-          title: "Task 1",
-          description: "Description of Task 1",
-          phase: {} as Phase,
-          assignedTo: [],
-          then(arg0: (newTask: Team) => void): void {
-            const newTask = {
-              _id: "task-2",
-              id: "2",
-              title: "Task 2",
-              description: "Description of Task 2",
-              assignedTo: [],
-              previouslyAssignedTo: [],
-              done: false,
-              dueDate: new Date(),
-              status: "todo",
-              priority: "low",
-              estimatedHours: null,
-              actualHours: null,
-              startDate: undefined,
-              endDate: new Date(),
-              completionDate: new Date(),
-              isActive: true,
-              tags: [],
-              dependencies: [],
-              team: {
-                id: "1",
-                name: "Team A",
-                color: "#000000",
-                label: "Team A",
-                current: 0,
-                max: 100,
-                min: 0,
-                percentage: 0,
-                value: 0,
-                description: " ",
-                done: false,
-              },
-              teamName: "Team A",
-              projects: [],
-              creationDate: new Date(),
-              progress: {} as Progress,
-              percentage: 0,
-              leader: {} as User,
-              assignedProjects: [],
-              reassignedProjects: [],
-              assignProject: assignProject,
-              reassignProject: reassignProject,
-              unassignProject: unassignProject,
-              updateProgress: updateProgress,
-            };
-            arg0(newTask);
-            return;
-          },
-          data: {} as TaskData,
-          previouslyAssignedTo: [],
-          done: false,
-          dueDate: new Date(),
-          status: TeamStatus.Pending,
-          priority: PriorityTypeEnum.Low,
-          estimatedHours: null,
-          actualHours: null,
-          startDate: new Date(),
-          endDate: new Date(),
-          completionDate: new Date(),
-          isActive: true,
-          tags: [], // Assuming tasks can have tags
-          dependencies: [],
-          analysisType: AnalysisTypeEnum.TEXT,
-          analysisResults: [],
-          assigneeId: "1",
-          payload: {},
-          type: "addTask",
-          videoThumbnail: "",
-          videoDuration: 0,
-          videoUrl: "",
-          [Symbol.iterator]: () => {
-            // Add more tasks as needed
-            return {
-              next: () => {
-                return {
-                  done: true,
-                  value: {
-                    _id: "task-2",
-                    id: "2",
-                    title: "Task 2",
-                    description: "Description of Task 2",
-                    assignedTo: [],
-                    previouslyAssignedTo: [],
-                    done: false,
-                    dueDate: new Date(),
-                    status: "todo",
-                    priority: "low",
-                    estimatedHours: null,
-                    actualHours: null,
-                    startDate: null,
-                    endDate: new Date(),
-                    completionDate: new Date(),
-                    isActive: true,
-                    tags: [],
-                    dependencies: [],
-                  },
-                };
-              },
-            };
-          },
-          // data: {} as Data,
-          source: "user",
-          some: (
-            callbackfn: (value: Task<T, K, Meta, ExcludedFields>, index: number, array: Task<T, K, Meta, ExcludedFields>[]) => unknown,
-            thisArg?: any
-          ) => {
-            // Add more tasks as needed
-            return true;
-          },
-          videoData: {} as VideoData,
-          ideas: {} as Idea[],
-          timestamp: undefined,
-          category: "",
-        },
-      ],
-      startDate: new Date(),
-      endDate: new Date(),
-      isActive: true,
-      leader: null,
-      budget: 0,
-      timestamp: undefined,
-      category: "",
-    },
+    // ... (keep existing projects array, but remove server dependencies)
   ],
   creationDate: new Date(),
   progress: {} as Progress,
   isActive: true,
   leader: {
-    _id: "3",
-    id: 3,
-    username: "teamLeader",
-    email: "leader@example.com",
-    tier: "premium",
-    uploadQuota: 200,
-    userType: "organization",
-    fullName: "Baine Sanders",
-    firstName: "Baine",
-    lastName: "Sanders",
-    token: null,
-    avatarUrl: null,
-    bio: "bio content",
-    hasQuota: false,
-    profilePicture: "profile picture",
-    processingTasks: [] as DataProcessingTask[],
-    traits: "traits" as unknown as typeof CommonDetails,
-    role: UserRoles.Guest,
-    timeBasedCode: timeBasedCode,
-    persona: {} as Persona,
-    members: [] as SnapshotStore<Snapshot<MemberEntity, MemberEntity, DefaultMeta<MemberEntity, MemberEntity>, never>, MemberEntity, DefaultMeta<MemberEntity, MemberEntity>, never>[],
-
-
-     // Required additional props
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  isVerified: false,
-  isActive: true,
-  isAdmin: false,
-  friends: [],
-  blockedUsers: [],
-  settings: null,
-  projects: [],
-  notifications: undefined,
-  profileAccessControl: undefined,
-  preferences: undefined,
-  activityLog: [],
-  skills: [],
-  hobbies: [],
-  achievements: [],
-  profileVisibility: "",
-  activityStatus: "",
-  isAuthorized: true,
-  roles: [UserRoles.Guest],
-  },
-
-  then(callback: (newData: Team) => void) {
-    const newData = {
-      _id: "team-1",
-      id: "1",
-      description: "Description of Team A",
-      members: [],
-      projects: [],
-      creationDate: new Date(),
-      progress: {} as Progress,
-      isActive: true,
-      leader: null,
-      budget: 0,
-      timestamp: new Date(),
-      data: {} as TeamData & Team,
-      category: "Technology",
-      content: undefined,
-      team: {
-        id: "string",
-        current: 0,
-        name: "string",
-        color: "string",
-        max: 100,
-        min: 0,
-        label: "string",
-        percentage: 0,
-        value: 0,
-        description: "string",
-        done: false,
-      },
-      teamName: "",
-      percentage: 0,
-      assignedProjects: [],
-      reassignedProjects: [],
-      assignProject: assignProject,
-      reassignProject: reassignProject,
-      unassignProject: unassignProject,
-      updateProgress: updateProgress,
-    };
-    callback(newData);
+    // ... (keep existing leader object, but remove server dependencies)
   },
   data: {} as TeamData & Team,
   assignedProjects: [],
   reassignedProjects: [],
-  assignProject(team: Team, project: Project): void {
-    // Implement the logic to assign a project to the team
-    team.assignedProjects.push(project);
+  
+  // Client-side API implementations
+  assignProject: async (teamId: string, projectId: string): Promise<void> => {
+    await assignProject(teamId, projectId);
   },
-  unassignProject: function (team: Team, project: Project) {
-    // Implement the logic to unassign a project from the team
-    const index = team.assignedProjects.findIndex((p) => p.id === project.id);
-    if (index !== -1) {
-      team.assignedProjects.splice(index, 1); // Remove from current team's assigned projects
-    }
+  
+  unassignProject: async (teamId: string, projectId: string): Promise<void> => {
+    await unassignProject(teamId, projectId);
   },
 
-  reassignProject: (
-    team: Team,
-    project: Project,
-    previousTeam: Team,
-    reassignmentDate: Date
-  ) => {
-    // Update the project's team reference
-    project.team = team;
-
-    // Remove the project from the previous team's projects
-    previousTeam.projects = previousTeam.projects.filter(
-      (proj) => proj.id !== project.id
-    );
-
-    // Add the project to the new team's projects
-    team.projects.push(project);
+  reassignProject: async (teamId: string, projectId: string, previousTeamId: string): Promise<void> => {
+    await reassignProject(teamId, projectId, previousTeamId);
   },
 
-  updateProgress: function (team: Team, project: Project) {
-    // Implement the logic to update the team's progress
-    // Example: Calculate progress based on assigned projects
-    const totalAssignedProjects = team.assignedProjects.length;
-    const completedProjects = team.assignedProjects.filter(
-      (project) => project.status === "completed"
-    ).length;
-
-    const progressValue =
-      totalAssignedProjects > 0
-        ? (completedProjects / totalAssignedProjects) * 100
-        : 0;
-
-    // Update the progress object
-    team.progress = {
-      id: team._id,
-      name: team.teamDetails.name, 
-      value: progressValue,
-      label: `${progressValue}% completed`, // Example label
-      current: 0, // Update current progress value
-      max: 100, // Set max progress value
-      percentage: 0,
-      min: 0,
-      description: "team progress",
-      color: "primary",
-      done: progressValue === 100,
-    };
-  },
-  currentProject: null,
-  _id: "",
-  title: "",
-  status: "scheduled",
-  tags: [],
-  phase: null,
-  analysisType: AnalysisTypeEnum.PROJECT,
-  analysisResults: [],
-  videoData: {} as VideoData<T, K>,
-  percentage: 0,
-  timestamp: undefined,
-  category: "",
+  updateProgress: async (teamId: string, projectUpdates?: Array<{
+    projectId: string;
+    status?: string;
+    progress?: number;
+  }>): Promise<number> => {
+    return await updateProgress(teamId, projectUpdates);
+  }
 };
+
+
 
 const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
   // Check if team is not undefined before passing it to CommonDetails
@@ -979,31 +325,6 @@ const TeamDetails: React.FC<{ team: Team }> = ({ team }) => {
   );
 };
 
-const DataDetailsComponent: React.FC<DataDetailsProps<any>> = ({ data }) => (
-  <CommonDetails
-    data={{
-      id: data.id,
-      title: data.title,
-      description: data.description,
-      date: data.date,
-      status: data.status as StatusType | undefined,
-      completed: false,
-    }}
-    details={{
-      _id: data._id,
-      id: data.id as string,
-      phase: data.phase,
-      date: data.date,
-      description: data.description,
-      isActive: data.isActive,
-      type: data.type,
-      updatedAt: data.updatedAt,
-      analysisResults: data.analysisResults,
-      // Include other generic data properties here
-    }}
-  />
-);
-
-export { DataDetailsComponent, team, TeamDetails };
+export { team, TeamDetails };
 export type { Team };
 

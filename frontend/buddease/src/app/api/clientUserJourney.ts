@@ -1,7 +1,7 @@
 // clientUserJourney.ts
 // User Journey Process
 
-import { useTenantStore } from "../components/users/TenantStore";
+import { useTenantStore } from "@/app/components/users/TenantStore";
 
 
 export const clientUserJourney = async () => {

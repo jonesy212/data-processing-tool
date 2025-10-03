@@ -1,6 +1,6 @@
 // ScenarioBuilderPhase.tsx
 import React, { useEffect } from 'react';
-import { useTeamBuildingPhase } from '../hooks/phaseHooks/CollaborationPhaseHooks';
+import { useTeamBuildingPhase } from '@/app/hooks/phaseHooks/CollaborationPhaseHooks';
 import TeamBuildingPhase from '../projects/TeamBuildingPhase';
 
 interface ScenarioBuilderPhaseProps {

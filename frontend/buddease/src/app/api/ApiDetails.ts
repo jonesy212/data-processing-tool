@@ -1,19 +1,12 @@
-import { BaseData } from '@/app/components/models/data/Data';
+//ApiDetails.ts
+
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
-import { AxiosError } from 'axios';
-import { Data } from '../components/models/data/Data';
-import { useDetailsContext } from '../components/models/data/DetailsContext';
-import { DetailsItem } from '../components/state/stores/DetailsListStore';
-import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
-import { endpoints } from './ApiEndpoints';
-import ApiService from './ApiService';
-import axiosInstance from './axiosInstance';
-
-// Define the base URL for details API
-const API_BASE_URL = endpoints.details.list;
-
-// Initialize ApiService with the base URL
-export const apiService = new ApiService(`${API_BASE_URL}`);
+import { useDetailsContext } from '@/app/models/data/DetailsContext';
+import { DetailsItem } from '@/app/state/stores/DetailsListStore';
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { Attachment } from '../components/models/data/Attachment';
+import { detailsApiService } from './service/DetailsApiService';
 
 // Define notification messages for details API
 interface DetailsNotificationMessages {
@@ -25,7 +18,6 @@ interface DetailsNotificationMessages {
   UPDATE_DETAILS_ERROR: string;
   REMOVE_DETAILS_SUCCESS: string;
   REMOVE_DETAILS_ERROR: string;
-  // Add more keys as needed
 }
 
 const detailsNotificationMessages: DetailsNotificationMessages = {
@@ -37,12 +29,11 @@ const detailsNotificationMessages: DetailsNotificationMessages = {
   UPDATE_DETAILS_ERROR: 'Failed to update details',
   REMOVE_DETAILS_SUCCESS: 'Details removed successfully',
   REMOVE_DETAILS_ERROR: 'Failed to remove details',
-  // Add more properties as needed
 };
 
 // Function to handle API errors and notify
 const handleDetailsApiErrorAndNotify = (
-  error: AxiosError<unknown>,
+  error: unknown,
   errorMessageId: keyof DetailsNotificationMessages
 ) => {
   console.error("Error:", error);
@@ -53,20 +44,21 @@ const handleDetailsApiErrorAndNotify = (
     errorMessage,
     NOTIFICATION_MESSAGES.Details.ERROR,
     new Date(),
-    NotificationTypeEnum.Error
+    NotificationTypeEnum.ERROR
   );
   throw error;
 };
-
 
 export const fetchDetails = async <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
->(): Promise<DetailsItem<T, K, Meta>[]> => {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): Promise<DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
-    const response = await axiosInstance.get(`${API_BASE_URL}`);
-    const details = response.data;
+    const details = await detailsApiService.fetchDetails<T, K, Meta>();
     
     // Notify success
     const successMessage = detailsNotificationMessages.FETCH_DETAILS_SUCCESS;
@@ -75,26 +67,26 @@ export const fetchDetails = async <
       successMessage,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
 
     return details;
   } catch (error) {
-    handleDetailsApiErrorAndNotify(error as AxiosError<unknown>, 'FETCH_DETAILS_ERROR');
+    handleDetailsApiErrorAndNotify(error, 'FETCH_DETAILS_ERROR');
+    return [];
   }
-  return [];
 };
 
 export const createdDetails = async <
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(newDetails: DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields>>) => {
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(newDetails: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
   try {
-    const response = await axiosInstance.post(`${API_BASE_URL}`, newDetails);
-    const createdDetails = response.data;
+    const createdDetails = await detailsApiService.createDetails(newDetails);
     
     // Notify success
     const successMessage = detailsNotificationMessages.ADD_DETAILS_SUCCESS;
@@ -103,12 +95,12 @@ export const createdDetails = async <
       successMessage,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
 
     return createdDetails;
   } catch (error) {
-    handleDetailsApiErrorAndNotify(error as AxiosError<unknown>, 'ADD_DETAILS_ERROR');
+    handleDetailsApiErrorAndNotify(error, 'ADD_DETAILS_ERROR');
   }
 };
 
@@ -117,43 +109,34 @@ export const addDetails = async <
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(newDetails: Omit<DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields>>, 'id'>) => {
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(newDetails: Omit<DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 'id'>) => {
   try {
-    const response = await axiosInstance.post(`${API_BASE_URL}`, newDetails);
+    const createdDetails = await detailsApiService.addDetails(newDetails);
+    const { updateDetailsData } = useDetailsContext();
+    
+    updateDetailsData((prevData) => [...prevData, createdDetails]);
 
-    if (response.status === 200 || response.status === 201) {
-      const createdDetails: DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields>> = response.data;
-      const { updateDetailsData } = useDetailsContext();
-      updateDetailsData((prevData) => [...prevData, createdDetails]);
+    // Notify success
+    const successMessage = detailsNotificationMessages.ADD_DETAILS_SUCCESS;
+    useNotification().notify(
+      'ADD_DETAILS_SUCCESS',
+      successMessage,
+      null,
+      new Date(),
+      NotificationTypeEnum.SUCCESS
+    );
 
-      // Notify success
-      const successMessage = detailsNotificationMessages.ADD_DETAILS_SUCCESS;
-      useNotification().notify(
-        'ADD_DETAILS_SUCCESS',
-        successMessage,
-        null,
-        new Date(),
-        NotificationTypeEnum.Success
-      );
-    } else {
-      console.error('Failed to add details:', response.statusText);
-    }
+    return createdDetails;
   } catch (error) {
-    handleDetailsApiErrorAndNotify(error as AxiosError<unknown>, 'ADD_DETAILS_ERROR');
+    handleDetailsApiErrorAndNotify(error, 'ADD_DETAILS_ERROR');
   }
 };
 
 export const removeDetails = async (detailsId: string): Promise<void> => {
   try {
-    // Directly access the endpoint path using optional chaining
-    const endpoint = endpoints?.details?.single;
-
-    if (!endpoint) {
-      throw new Error(`endpoints.details.single endpoint not found`);
-    }
-
-    await apiService.callApi(endpoint, { detailsId });
+    await detailsApiService.removeDetails(detailsId);
 
     // Notify success
     const successMessage = detailsNotificationMessages.REMOVE_DETAILS_SUCCESS;
@@ -162,10 +145,10 @@ export const removeDetails = async (detailsId: string): Promise<void> => {
       successMessage,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error) {
-    handleDetailsApiErrorAndNotify(error as AxiosError<unknown>, 'REMOVE_DETAILS_ERROR');
+    handleDetailsApiErrorAndNotify(error, 'REMOVE_DETAILS_ERROR');
   }
 };
 
@@ -174,20 +157,14 @@ export const updateDetails = async <
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   detailsId: string,
   newData: any
-): Promise<DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields>> | null> => {
+): Promise<DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
   try {
-    // Directly access the endpoint path using optional chaining
-    const endpoint = endpoints?.details?.single;
-
-    if (!endpoint) {
-      throw new Error(`endpoints.details.single endpoint not found`);
-    }
-
-    const response = await apiService.callApi(endpoint, { detailsId, newData });
+    const updatedDetails = await detailsApiService.updateDetails(detailsId, newData);
 
     // Notify success
     const successMessage = detailsNotificationMessages.UPDATE_DETAILS_SUCCESS;
@@ -196,15 +173,12 @@ export const updateDetails = async <
       successMessage,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
 
-    return response.data;
+    return updatedDetails;
   } catch (error) {
-    handleDetailsApiErrorAndNotify(error as AxiosError<unknown>, 'UPDATE_DETAILS_ERROR');
+    handleDetailsApiErrorAndNotify(error, 'UPDATE_DETAILS_ERROR');
+    return null;
   }
-  return null;
 };
-
-
-// Add other details-related actions as needed

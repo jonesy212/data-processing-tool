@@ -1,7 +1,7 @@
 // CategoryApi.ts
 import { AxiosError } from 'axios';
 import { endpoints } from './ApiEndpoints';
-import axiosInstance from './axiosInstance';
+import axiosInstance from '@/app/api/csrfToken'
 import { handleApiError } from './ApiLogs';
 import { CategoryProperties } from '../pages/personas/ScenarioBuilder';
 

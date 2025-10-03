@@ -1,4 +1,4 @@
-import { FileLogger } from '@/app/components/logging/Logger';
+import { FileLogger } from '@/app/libraries/logging/Logger';
 import ErrorHandler from '@/app/shared/ErrorHandler';
 import { ParsedData } from '../components/documents/DocType';
 import safeParseData from '../components/crypto/SafeParseData';

@@ -1,8 +1,8 @@
-import axiosInstance from "@/app/api/axiosInstance";
+import axiosInstance from '@/app/api/csrfToken'
 import { HeadersConfig } from "@/app/api/headers/HeadersConfig";
 import { AxiosError, AxiosResponse } from "axios";
-import { headersConfig } from "../components/shared/SharedHeaders";
-import { UserSettings } from "../configs/UserSettings";
+import { headersConfig } from "@/app/components/shared/SharedHeaders";
+import { UserSettings } from "@/config/UserSettings";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 

@@ -2,7 +2,7 @@
 import React from 'react';
 import ListGenerator from '@/app/generators/ListGenerator';
 import { Data } from '@/app/components/models/data/Data';
-import { DetailsItem } from '@/app/components/state/stores/DetailsListStore';
+import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 
 interface BugListProps {
   bugs: DetailsItem<Data>[]; // Assuming 'bugs' contain DetailsItem with Data type

@@ -1,8 +1,8 @@
 // CalendarActionPayload.ts
 import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { CalendarEvent } from "../../app/components/calendar/CalendarEvent";
-import { AllStatus } from "../../app/components/state/stores/DetailsListStore";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { CalendarEvent } from "@/app/app/calendar/CalendarEvent";
+import { AllStatus } from "@/app/app/components/state/stores/DetailsListStore";
 
 // Define possible actions for the CalendarManager
 type CalendarActionType =

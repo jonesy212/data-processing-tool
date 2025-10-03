@@ -1,15 +1,16 @@
 // CriteriaOptions.ts
-import { LanguageEnum } from "@/app/components/communications/LanguageEnum";
+import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import { FileTypeEnum } from "@/app/components/documents/FileType";
-import AnimationTypeEnum from "@/app/components/libraries/animations/AnimationLibrary";
-import { DataStatus, NotificationStatus, PriorityTypeEnum, ProjectPhaseTypeEnum, StatusType, TaskStatus, TeamStatus } from "@/app/components/models/data/StatusType";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
 import { SearchCriteria } from "@/app/components/routing/SearchCriteria";
-import { UserRoleEnum } from "@/app/components/users/UserRoles";
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { MessageType } from "@/app/generators/MessaageType";
-import { DocumentTypeEnum } from "@/server/DocumentGenerator";
+import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
+import { DataStatus, NotificationStatus, PriorityTypeEnum, ProjectPhaseTypeEnum, StatusType, TaskStatus, TeamStatus } from "@/app/models/data/StatusType";
+import {
+  DocumentTypeEnum
+} from "@/app/typings/documents";
+import { UserRoleEnum } from "@/users/UserRoles";
 import {
   ActivityLevelEnum,
   CollaborationPhaseEnum,

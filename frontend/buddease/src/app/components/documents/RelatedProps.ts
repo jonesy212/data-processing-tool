@@ -1,14 +1,14 @@
 // RelatedProps.ts
-import { SnapshotContainer } from '@/app/components/snapshots';
+import { SnapshotContainer } from '@/app/snapshots';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { Label } from '@/app/components/projects/branding/BrandingSettings';
 import { AllTypes } from '@/app/components/typings/PropTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { Attachment, FileType } from './Attachment/attachment';
 import { ExternalReference } from '../calendar/ExternalReference';
-import { Data } from "../models/data/Data";
+import { Data } from "@/app/models/data/Data";
 
 
 interface BaseEntityProperties { 
@@ -39,10 +39,13 @@ interface SharedIdentifiers<
 }
 
 interface SharedSnapshotProperties<
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,>
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>
   extends BaseEntityProperties {
   version?: number;
   previousVersionId?: string | null;
@@ -68,7 +71,7 @@ interface SharedSnapshotProperties<
   validationStatus?: ValidationStatus;
   lastValidatedAt?: Date | string;
   delegate?: any;
-  snapshotContainer?: SnapshotContainer<T, K, Meta, ExcludedFields>
+  snapshotContainer?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 }
 
 interface SharedTimestamps {

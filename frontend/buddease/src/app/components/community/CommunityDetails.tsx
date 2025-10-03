@@ -1,6 +1,6 @@
 // CommunityDetails.tsx
 import React, { useState } from 'react';
-import CommonDetails, { CommonData } from '../models/CommonData'; // Import CommonData and its type
+import CommonDetails, { CommonData } from '@/app/models/CommonData'; // Import CommonData and its type
 import { CommunityData } from '../models/CommunityData';
 import { Team } from '../models/teams/Team';
 import { TeamMember } from '../models/teams/TeamMembers';

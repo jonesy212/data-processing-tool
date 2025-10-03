@@ -1,6 +1,6 @@
 // CourseLearningPhase.tsx
 import { Data } from '@/app/components/models/data/Data';
-import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import React, { useState } from 'react';
 import { CourseDevelopmentPhase } from './CourseDevelopmentPhaseManager';
 

@@ -1,18 +1,20 @@
 // ApiClient.ts
-import axiosInstance from "@/app/api/axiosInstance";
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import {
-    useNotification,
-} from "@/app/context/NotificationContext";
+//  External API calls (HTTP/REST APIs, external services)
+
+import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from "@/app/api/endpointConfigurations";
+import HeadersConfig from "@/app/api/headers/HeadersConfig";
+import FileImportData from '@/app/components/documents/FileImportData';
+import { headersConfig } from '@/app/components/shared/SharedHeaders';
+import { useNotification } from "@/app/context/NotificationContext";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { Attachment } from '@/app/models/data/Attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import FileImportData from '../components/documents/FileImportData';
-import { headersConfig } from '../components/shared/SharedHeaders';
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { VersionData } from '../components/versions/VersionData';
-import { endpoints } from "./ApiEndpoints";
+import { VersionData } from '../versions/VersionData';
 import { handleApiError } from "./ApiLogs";
-import HeadersConfig from "./headers/HeadersConfig";
+
 
 const API_BASE_URL = endpoints.client;
 // Define a function to create headers using the provided configuration
@@ -176,7 +178,7 @@ class ClientApiService {
         NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_SUCCESS,
         { clientId },
         new Date(),
-        NotificationTypeEnum.Success
+        NotificationTypeEnum.SUCCESS
       );
 
       return clientDetails;
@@ -189,7 +191,7 @@ class ClientApiService {
         NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_ERROR,
         { clientId, error: errorMessage },
         new Date(),
-        NotificationTypeEnum.Error
+        NotificationTypeEnum.ERROR
       );
 
       throw error;
@@ -218,7 +220,7 @@ class ClientApiService {
         NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_SUCCESS,
         { clientId },
         new Date(),
-        NotificationTypeEnum.Success
+        NotificationTypeEnum.SUCCESS
       );
   
       return updatedClientDetails;
@@ -231,7 +233,7 @@ class ClientApiService {
         NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_ERROR,
         { clientId, error: errorMessage },
         new Date(),
-        NotificationTypeEnum.Error
+        NotificationTypeEnum.ERROR
       );
   
       throw error;
@@ -380,9 +382,16 @@ class ClientApiService {
     )
   }
 
-  async createFileVersion(
+  async createFileVersion<
+    T extends BaseDataEntity,
+    K extends T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends DefaultExcludedFields<T> = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     fileId: string,
-    versionData: VersionData<T, K>
+    versionData: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/versions`, versionData),
@@ -508,15 +517,15 @@ const updateCalendarEvent = async (
   eventId: number,
   updatedEvent: any
 ): Promise<AxiosResponse> => {
-  return await clientApiService.updateCalendarEvent(eventId, updatedEvent);
+  return await internalApiService.updateCalendarEvent(eventId, updatedEvent);
 };
 
 
 
 
-const clientApiService = new ClientApiService(useNotification, updateCalendarEvent, getFileContent);
+const internalApiService = new ClientApiService(useNotification, updateCalendarEvent, getFileContent);
 
-export default clientApiService;
+export default internalApiService;
 export { clientNotificationMessages };
 export type { ClientNotificationMessages };
 

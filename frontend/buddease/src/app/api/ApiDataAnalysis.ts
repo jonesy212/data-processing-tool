@@ -1,31 +1,31 @@
 // ApiDataAnalysis.ts
+import axiosInstance from "@/app/api/csrfToken";
+import headersConfig from "@/app/api/headers/HeadersConfig";
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { Snapshot } from "@/app/components/snapshots";
-import { data } from '@/app/components/snapshots/SnapshotWithCriteria';
+import { BaseData } from "@/app/components/models/data/Data";
+import { DataAnalysisResult } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisResult";
 import { YourResponseType } from "@/app/components/typings/types";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification
 } from "@/app/context/NotificationContext";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { PriorityTypeEnum } from "@/app/models/data/StatusType";
+import { Snapshot } from "@/app/snapshots";
+import { convertResponseToSnapshot } from "@/app/snapshots/InitializedSnapshotTypes";
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { InitializedSnapshot } from "@/app/snapshots/SnapshotStoreOptions";
+import { data } from '@/app/snapshots/SnapshotWithCriteria';
+import { createSnapshot } from '@/app/snapshots/createSnapshot';
+import { isSnapshotStore, isYourResponseType } from "@/app/typings/YourSpecificSnapshotType";
+import { isSnapshot } from "@/app/utils/snapshotUtils";
 import { AxiosError, AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
-import { BaseData } from "../components/models/data/Data";
-import { PriorityTypeEnum } from "../components/models/data/StatusType";
 import { T } from '../components/models/data/dataStoreMethods';
-import { DataAnalysisResult } from "../components/projects/DataAnalysisPhase/DataAnalysisResult";
-import SnapshotStore from '../components/snapshots/SnapshotStore';
-import { InitializedSnapshot } from "../components/snapshots/SnapshotStoreOptions";
-import { createSnapshot } from '../components/snapshots/createSnapshot';
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { isSnapshotStore, isYourResponseType } from "../components/typings/YourSpecificSnapshotType";
-import { convertResponseToSnapshot } from "../components/snapshots/InitializedSnapshotTypes";
-import { isSnapshot } from "../components/utils/snapshotUtils";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
-import axiosInstance from "./axiosInstance";
-import headersConfig from "./headers/HeadersConfig";
 
 const dispatch = useDispatch();
 // Define the API base URL for data analysis
@@ -167,7 +167,7 @@ export const fetchAnalysisResults = <
         // Handle SnapshotStore case
         const snapshotStore = response;
         
-        return createSnapshot<T, K>({
+        return createSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
           ...rest,
           status: snapshotStore.status,
           // Core Data

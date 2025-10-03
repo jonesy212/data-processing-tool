@@ -1,18 +1,18 @@
 // ApiVideo.ts
+import { VideoActions } from "@/app/actions/VideoActions";
+import axiosInstance from "@/app/api/csrfToken";
+import { Attachment } from "@/app/components/documents/Attachment/attachment";
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
+import { ExcludedFields } from '@/app/components/routing/Fields';
+import { VideoData } from "@/app/components/video/Video";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import useVideoStore, { Video } from "@/app/state/stores/VideoStore";
+import { VideoMetadata } from "@/config/StructuredMetadata";
 import axios, { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
 import { Partial } from "react-spring";
-import { Attachment } from "../components/documents/Attachment/attachment";
-import useVideoStore, { Video } from "../components/state/stores/VideoStore";
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { VideoActions } from "../components/users/VideoActions";
-import { VideoData } from "../components/video/Video";
-import { VideoMetadata } from "../configs/StructuredMetadata";
 import { endpoints } from "./ApiEndpoints";
-import axiosInstance from "./axiosInstance";
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
-import { ExcludedFields } from '@/app/components/routing/Fields';
 
 const API_BASE_URL = endpoints.videos.list;
 
@@ -384,7 +384,7 @@ export const videoService = observable({
       isFamilyFriendly: false,
       isEmbeddable: false,
       isDownloadable: false,
-      videoData: {} as VideoData<T, K>,
+      videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       title: "",
       description: "",
       videoDislikes: 0,

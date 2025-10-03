@@ -1,19 +1,18 @@
-import { FilterState } from "@/app/components/state/redux/slices/FilterSlice";
+import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
+import { FileTypeEnum } from "@/app/components/documents/FileType";
+import FormatEnum from "@/app/components/form/FormatEnum";
+import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
+import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
+import { TaskPhaseEnum } from "@/app/components/phases/TaskProcess";
+import { TenantManagementPhaseEnum } from "@/app/components/phases/TenantManagementPhase";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { SecurityFeatureEnum } from "@/app/components/security/SecurityFeatureEnum";
+import { IdeaCreationPhaseEnum } from "@/app/components/users/userJourney/IdeaCreationPhase";
 import { MessageType } from "@/app/generators/MessaageType";
-import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
-import { CodingLanguageEnum, LanguageEnum } from "../../components/communications/LanguageEnum";
-import { FileTypeEnum } from "../../components/documents/FileType";
-import FormatEnum from "../../components/form/FormatEnum";
-import AnimationTypeEnum from "../../components/libraries/animations/AnimationLibrary";
-import { BookmarkStatus, CalendarStatus, DataStatus, DevelopmentPhaseEnum, NotificationStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "../../components/models/data/StatusType";
-import { ContentManagementPhaseEnum } from "../../components/phases/ContentManagementPhase";
-import { FeedbackPhaseEnum } from "../../components/phases/FeedbackPhase";
-import { TaskPhaseEnum } from "../../components/phases/TaskProcess";
-import { TenantManagementPhaseEnum } from "../../components/phases/TenantManagementPhase";
-import { AnalysisTypeEnum } from "../../components/projects/DataAnalysisPhase/AnalysisType";
-import { SecurityFeatureEnum } from "../../components/security/SecurityFeatureEnum";
-import { IdeaCreationPhaseEnum } from "../../components/users/userJourney/IdeaCreationPhase";
-import { NotificationTypeEnum } from "@/context/NotificationContext";
+import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
+import { BookmarkStatus, CalendarStatus, DataStatus, DevelopmentPhaseEnum, NotificationStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from '@/app/models/data/StatusType';
+import { FilterState } from "@/app/state/redux/slices/FilterSlice";
+import { DocumentTypeEnum } from "@/app/typings/documents";
 
 // CriteriaType.ts
 // Define CriteriaType incorporating FilterCriteria

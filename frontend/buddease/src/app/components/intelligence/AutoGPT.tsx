@@ -1,6 +1,6 @@
 // src/app/components/AutoGPTPrompt.tsx
 import React, { useState } from 'react';
-import useAutoGPT from '../hooks/useAutoGPT';
+import useAutoGPT from '@/app/hooks/useAutoGPT';
 
 const AutoGPTPrompt: React.FC = () => {
   const [enhancedPrompt, setEnhancedPrompt] = useState<string | null>(null);

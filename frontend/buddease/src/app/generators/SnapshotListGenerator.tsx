@@ -1,4 +1,4 @@
-import SnapshotList, { SnapshotItem } from "../components/snapshots/SnapshotList";
+import SnapshotList, { SnapshotItem } from "@/app/snapshots/SnapshotList";
 
 // SnapshotListGenerator.tsx
 class SnapshotListGenerator {

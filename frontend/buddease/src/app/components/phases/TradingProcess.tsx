@@ -1,5 +1,5 @@
 // TradingProcess.tsx
-import axiosInstance from "@/app/api/axiosInstance";
+import axiosInstance from '@/app/api/csrfToken'
 import React, { useState } from "react";
 
 import { useStepContext } from "@/app/context/StepContext";
@@ -14,14 +14,14 @@ import {
     NotificationTypeEnum,
     useNotification,
 } from "@/context/NotificationContext";
-import TradingReviewStep from "../trading/TradingReviewStep";
-import * as TradingAPI from "./../../api/ApiTrading";
+import TradingReviewStep from "@/app/phases/steps/trading/TradingReviewStep";
+import * as TradingAPI from "@/api/ApiTrading";
 import TradingPreferencesStep from "./TradingPreferencesStep";
 import { TradingPhase } from "./crypto/CryptoTradingPhase";
 import TraderTypesSelection from "./crypto/TraderTypesSelection";
-import TradingAssetsStep from "./steps/TradingAssetsStep";
-import TradingBasicInfoStep from "./steps/TradingBasicInfoStep";
-import TradingSummaryStep from "./steps/TradingSummaryStep";
+import TradingAssetsStep from "@/app/phases/steps/trading/TradingAssetsStep";
+import TradingBasicInfoStep from "@/app/phases/steps/trading/TradingBasicInfoStep";
+import TradingSummaryStep from "@/app/phases/steps/trading/TradingSummaryStep";
 
 const TradingProcess: React.FC = () => {
   const { notify } = useNotification();

@@ -1,6 +1,6 @@
 // TextContainer.tsx
 import React from 'react';
-import TextCard from '../cards/TextCard';
+import TextCard from '@/app/cards/TextCard';
 
 const TextContainer: React.FC = () => {
   const handleSaveText = async (text: string) => {

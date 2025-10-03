@@ -1,5 +1,5 @@
 import { getCurrentPrice } from "@/app/api/ApiCrypto";
-import { automatedDecisionMaking } from "../utils/automatedDecisionMakingUtils";
+import { automatedDecisionMaking } from "@/app/utils/automatedDecisionMakingUtils";
 import { MarketData } from "./TradingStrategy";
 import MachineLearningModel from "./machineLearning";
 
@@ -313,7 +313,7 @@ export {
   // historicalDataVisualization,
   
   // Data Integration and Management
-  adaptToRegulatoryChanges,
+  // adaptToRegulatoryChanges,
   // notificationSystem,
   // transactionHistory,
   // walletIntegration,

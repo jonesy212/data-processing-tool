@@ -1,8 +1,7 @@
 // Communication.tsx
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { User } from "@/app/users/User";
 import React from "react";
-import { UserRoleEnum } from "../../users/UserRoles";
-import { User } from "@/app/components/users/User";
 
 
 // Fix the Sender type with the correct role type

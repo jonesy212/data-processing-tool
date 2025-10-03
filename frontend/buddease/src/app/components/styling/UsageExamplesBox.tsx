@@ -1,6 +1,6 @@
 import React from "react";
 
-import RefactoringRebrandingPhase from "../projects/RefactoringRebrandingPhase";
+import RefactoringRebrandingPhase from "@/app/projects/RefactoringRebrandingPhase";
 import ColorPalette from "./ColorPalette";
 import DynamicSpacingAndLayout from "./DynamicSpacingAndLayout";
 
@@ -8,14 +8,14 @@ import { DocxGeneratorOptions } from "@/app/generators/docxGenerator";
 import AnimatedDashboard from "@/app/pages/layouts/AnimatedDashboard";
 import CommonLayout from "@/app/pages/layouts/CommonLayout";
 import { DashboardLayout } from "@/app/pages/layouts/DashboardLayout";
-import useLayoutGenerator, { DocumentGenerationResult } from "../hooks/GenerateUserLayout";
-import { AsyncHook } from "../hooks/useAsyncHookLinker";
-import DynamicInputFields from "../hooks/userInterface/DynamicInputFieldsProps";
-import { AnimatedComponentRef } from "../libraries/animations/AnimationComponent";
-import AnimationControls from "../libraries/animations/AnimationControls";
-import DynamicSelectionControls from "../libraries/animations/DynamicSelectionControls";
+import useLayoutGenerator, { DocumentGenerationResult } from "@/app/hooks/GenerateUserLayout";
+import { AsyncHook } from "@/app/hooks/useAsyncHookLinker";
+import DynamicInputFields from "@/app/hooks/userInterface/DynamicInputFieldsProps";
+import { AnimatedComponentRef } from "@/app/libraries/animations/AnimationComponent";
+import AnimationControls from "@/app/libraries/animations/AnimationControls";
+import DynamicSelectionControls from "@/app/libraries/animations/DynamicSelectionControls";
 import responsiveDesignStore from "./ResponsiveDesign";
-import { Data } from "../models/data/Data";
+import { Data } from "@/app/models/data/Data";
 
 interface UsageExamplesBoxProps {
   // Add any specific props needed for the UsageExamplesBox

@@ -1,15 +1,14 @@
-import {
-  DocumentBuilderConfig,
-  getDefaultDocumentBuilderConfig,
-} from "@/app/configs/DocumentBuilderConfig";
+import { getToolbarOptions } from "@/app/components/documents/ToolbarOptions";
 import DynamicTextArea from "@/app/ts/DynamicTextArea";
+import { DocumentTypeEnum } from "@/app/typings/documents";
+import {
+    DocumentBuilderConfig,
+    getDefaultDocumentBuilderConfig,
+} from "@/config/DocumentBuilderConfig";
 import "quill/dist/quill.snow.css";
 import { useEffect, useState } from "react";
 import Quill from "react-quill";
-import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
-import { ToolbarOptions, ToolbarOptionsProps } from "./ToolbarOptions";
-import { getToolbarOptions } from "@/app/components/documents/ToolbarOptions";
-import { ToolbarOptionsComponent } from "./ToolbarOptions";
+import { ToolbarOptions, ToolbarOptionsComponent, ToolbarOptionsProps } from "@/app/components/documents/ToolbarOptions";
 
 export interface TextEditorProps extends ToolbarOptionsProps {
   id: string;

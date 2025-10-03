@@ -1,6 +1,6 @@
 // calculatePriceDifferences.ts
 
-import { ExchangeData } from "../models/data/ExchangeData";
+import { ExchangeData } from "@/app/models/data/ExchangeData";
 
 interface PriceDifference {
   pair: string;

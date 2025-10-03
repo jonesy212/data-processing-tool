@@ -3,9 +3,9 @@ import { DocumentOptions } from '@/app/components/documents/DocumentOptions';
 import { Team } from '@/app/components/models/teams/Team';
 import { TeamMember } from '@/app/components/models/teams/TeamMembers';
 import {Project} from '@/app/components/projects/Project';
-import { DappProps as DAppAdapterDappProps } from "@/app/components/web3/dAppAdapter/DAppAdapterConfig";
-import { AquaConfig } from '@/app/components/web3/web_configs/AquaConfig';
-import { DocumentSize } from '@/app/components/models/data/StatusType';
+import { DappProps as DAppAdapterDappProps } from '@/app/utils/web3/dAppAdapter/DApp';
+import { AquaConfig } from '@/app/components/web3/webConfigs/AquaConfig';
+import { DocumentSize } from "@/app/models/data/StatusType";
 import React from 'react';
 
 interface ChatDashboardProps {

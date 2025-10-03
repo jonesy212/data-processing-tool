@@ -1,6 +1,6 @@
 import ListGenerator from "@/app/generators/ListGenerator";
 import React from "react";
-import { DetailsItem } from "../../state/stores/DetailsListStore";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 
 interface ChecklistItemProps {
   item: DetailsItem<any>; // Adjust the type of item to DetailsItem<any>

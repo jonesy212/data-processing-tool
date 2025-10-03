@@ -1,5 +1,5 @@
 // Import necessary libraries
-import axiosInstance from "@/app/components/security/csrfToken";
+import axiosInstance from '@/app/api/csrfToken';
 import React, { useEffect, useState } from "react";
 
 const UserActivityLogComponent = () => {

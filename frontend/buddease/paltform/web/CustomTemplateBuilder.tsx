@@ -3,6 +3,7 @@ import { Editor, EditorState, Modifier, RichUtils } from "draft-js";
 import React, { useState } from "react";
 
 import { endpoints } from "@/app/api/ApiEndpoints";
+import axiosInstance from '@/app/api/csrfToken';
 import { ChatSettingsPanel } from "@/app/components/communications/chat/ChatSettingsPanel";
 import RichTextEditor from "@/app/components/documents/RichTextEditor";
 import {
@@ -10,13 +11,14 @@ import {
   ToolbarOptionsProps
 } from "@/app/components/documents/ToolbarOptions";
 import { getTextBetweenOffsets } from "@/app/components/documents/getTextBetweenOffsets";
-import ResizablePanels from "@/app/components/hooks/userInterface/ResizablePanels";
-import useResizablePanels from "@/app/components/hooks/userInterface/useResizablePanels";
-import { useMovementAnimations } from "@/app/components/libraries/animations/movementAnimations/MovementAnimationActions";
-import axiosInstance from "@/app/components/security/csrfToken";
 import { usePanelContents } from "@/app/generators/usePanelContents";
+import ResizablePanels from "@/app/hooks/userInterface/ResizablePanels";
+import useResizablePanels from "@/app/hooks/userInterface/useResizablePanels";
+import { useMovementAnimations } from "@/app/libraries/animations/movementAnimations/MovementAnimationActions";
 import Clipboard from "@/app/ts/clipboard";
-import { DocumentTypeEnum } from "@/server/DocumentGenerator";
+import {
+  DocumentTypeEnum
+} from "@/app/typings/documents";
 
 interface TemplateDataProps {
   id: number;

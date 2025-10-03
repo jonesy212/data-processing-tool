@@ -1,9 +1,10 @@
 // components/DashboardLoader.tsx
-import ResizablePanels from '@/app/components/hooks/userInterface/ResizablePanels';
-import useResizablePanels from '@/app/components/hooks/userInterface/useResizablePanels';
+import ResizablePanels from '@/app/hooks/userInterface/ResizablePanels';
+import useResizablePanels from '@/app/hooks/userInterface/useResizablePanels';
 import React, { lazy, Suspense, useMemo } from 'react';
+import { DashboardLoaderProps } from '@/app/typings/authTypes'
 
-const DynamicDashboard = lazy(() => import('./DashboardLoader'));
+const DynamicDashboard = lazy(() => import('@/app/pages/dashboards/DashboardLoader'));
 
 interface DashboardLoaderProps {
   dashboardConfig: {

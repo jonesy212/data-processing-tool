@@ -6,12 +6,12 @@ import { useEffect, useState } from 'react';
 import * as React from 'react';
 import { DocumentOptions } from '../documents/DocumentOptions';
 import FolderData from '../models/data/FolderData';
-import SearchHistory from '../versions/SearchHistory';
-import Version from '../versions/Version';
+import SearchHistory from '@/app/components/versions/SearchHistory';
+import Version from '@/app/components/versions/Version';
 import { Entity } from './FuzzyMatch';
 import { DocumentData } from '../documents/DocumentBuilder';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { BaseData } from '../models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 
 
 // Define the SearchResultWithQuery interface that extends SearchResult
@@ -28,7 +28,7 @@ interface SearchResultProps<T> {
 
 
 interface SearchResult<
-  T extends BaseData<any> = BaseData<any>,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > extends Entity, DocumentData<T, K, Meta> {

@@ -3,8 +3,8 @@
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import ListGenerator from "@/app/generators/ListGenerator";
 import React, { useState } from "react";
-import { Comment } from "../models/data/Data";
-import { DetailsItem } from "../state/stores/DetailsListStore";
+import { Comment } from "@/app/models/data/Data";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 // Define different types of posts
 
 

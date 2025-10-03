@@ -1,5 +1,5 @@
 import { BaseData, Data } from '@/app/components/models/data/Data';
-import { DetailsItem } from "../../state/stores/DetailsListStore";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Label } from '@/app/components/projects/branding/BrandingSettings';
 import React from 'react';
 

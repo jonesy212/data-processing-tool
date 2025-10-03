@@ -1,4 +1,4 @@
-import { Feedback } from "../components/support/Feedback";
+import { Feedback } from "@/app/features/support/Feedback";
 
 // FeedbackReportGenerator.ts
 export interface FeedbackReport {

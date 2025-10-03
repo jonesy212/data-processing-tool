@@ -1,5 +1,5 @@
-import { PriorityTypeEnum } from './../components/models/data/StatusType';
-import { Task } from "../components/models/tasks/Task";
+import { PriorityTypeEnum } from '@/app/models/data/StatusType';
+import { Task } from "@/app/components/models/tasks/Task";
 
 let currentTaskId = 1;
 

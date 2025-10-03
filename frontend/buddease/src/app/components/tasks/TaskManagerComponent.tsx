@@ -2,36 +2,36 @@
 import { checkTodoCompletion, updateTodo } from "@/app/api/ApiTodo";
 import { handleTaskApiErrorAndNotify, updateTask } from "@/app/api/TasksApi";
 import { ProjectDetails } from "@/app/components/projects/Project";
-import { Snapshot } from "@/app/components/snapshots";
+import { Snapshot } from "@/app/snapshots";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import { AxiosError } from "axios";
 import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
-import { ProjectActions } from "../actions/ProjectActions";
-import TaskAssignmentSnapshot from "../actions/TaskAssignmentSnapshot";
-import { UIActions } from "../actions/UIActions";
-import updateUI from "../documents/editing/updateUI";
-import ContentRenderer from "../libraries/ui/ContentRenderer";
-import ReusableButton from "../libraries/ui/buttons/ReusableButton";
-import { Data } from "../models/data/Data";
-import { PriorityTypeEnum, StatusType } from "../models/data/StatusType";
-import { Task, TaskData } from "../models/tasks/Task";
-import { Member } from "../models/teams/TeamMembers";
-import { Phase } from "../phases/Phase";
-import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
-import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
-import { Project } from "../projects/Project";
-import { brandingSettings } from "../projects/branding/BrandingSettings";
-import TaskProgress from "../projects/projectManagement/TaskProgress";
-import TeamProgress from "../projects/projectManagement/TeamProgress";
-import TodoProgress from "../projects/projectManagement/TodoProgress";
-import { createMilestone } from "../state/redux/slices/TrackerSlice";
-import { rootStores } from "../state/stores/RootStores";
-import { useTaskManagerStore } from "../state/stores/TaskStore ";
-import useTrackerStore from "../state/stores/TrackerStore";
-import { Todo } from "../todos/Todo";
-import { todoService } from "../todos/TodoService";
-import { VideoData } from "../video/Video";
+import { ProjectActions } from "@/app/actions/ProjectActions";
+import TaskAssignmentSnapshot from "@/app/actions/TaskAssignmentSnapshot";
+import { UIActions } from "@/app/actions/UIActions";
+import updateUI from "@/app/documents/editing/updateUI";
+import ContentRenderer from "@/app/libraries/ui/ContentRenderer";
+import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
+import { Data } from "@/app/models/data/Data";
+import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
+import { Task, TaskData } from "@/app/models/tasks/Task";
+import { Member } from "@/app/models/teams/TeamMembers";
+import { Phase } from "@/app/phases/Phase";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
+import { Project } from "@/app/models/projects/Project";
+import { brandingSettings } from "@/app/branding/BrandingSettings";
+import TaskProgress from "@/app/projects/projectManagement/TaskProgress";
+import TeamProgress from "@/app/projects/projectManagement/TeamProgress";
+import TodoProgress from "@/app/projects/projectManagement/TodoProgress";
+import { createMilestone } from "@/app/state/redux/slices/TrackerSlice";
+import { rootStores } from "@/app/state/stores/RootStores";
+import { useTaskManagerStore } from "@/app/state/stores/TaskStore ";
+import useTrackerStore from "@/app/state/stores/TrackerStore";
+import { Todo } from "@/app/todos/Todo";
+import { todoService } from "@/app/todos/TodoService";
+import { VideoData } from "@/app/video/Video";
 
 interface TaskAssignmentProps {
   taskId: () => string;
@@ -93,7 +93,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       snapshot: {} as Snapshot<Data, Data>,
       analysisType: AnalysisTypeEnum.DEFAULT,
       analysisResults: {} as DataAnalysisResult<T, K>[],
-      videoData: {} as VideoData<T, K>,
+      videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       save: () => Promise.resolve(),
     },
   ]);
@@ -136,13 +136,13 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
               value: {
                 _id: "taskData", // Example value
                 phase: {} as Phase,
-                videoData: {} as VideoData<T, K>,
+                videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
               },
             };
           },
         };
       },
-      videoData: {} as VideoData<T, K>,
+      videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     },
     {
       _id: "taskData", // Example value
@@ -181,13 +181,13 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
               value: {
                 _id: "taskData", // Example value
                 phase: {} as Phase,
-                videoData: {} as VideoData<T, K>,
+                videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
               },
             };
           },
         };
       },
-      videoData: {} as VideoData<T, K>,
+      videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     },
     {
       _id: "taskData", // Example value
@@ -225,13 +225,13 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
               value: {
                 _id: "taskData", // Example value
                 phase: {} as Phase,
-                videoData: {} as VideoData<T, K>,
+                videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
               },
             };
           },
         };
       },
-      videoData: {} as VideoData<T, K>,
+      videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     },
   ]);
 

@@ -1,8 +1,8 @@
 // syncEndpointsWithExternalServicesUtils.ts
 import axios from 'axios'; // Assuming you are using axios for making HTTP requests
 import { endpoints } from '../api/ApiEndpoints';
-import axiosInstance from '../api/axiosInstance';
-import { socialMediaActions } from '../components/actions/socialMediaActions';
+import axiosInstance from '@/app/api/csrfToken'
+import { socialMediaActions } from '../actions/socialMediaActions';
 
 // Define a function to fetch and synchronize endpoints with external services
 const syncEndpointsWithExternalServices = async () => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Platform, StyleSheet, Text, View, ViewStyle } from 'react-native';
-import { AnimationType, useAnimationHook } from '../libraries/animations/AnimationLibrary';
-import { useShakeAnimation } from '../libraries/animations/useShakeAnimation';
+import { AnimationType, useAnimationHook } from '@/app/components/libraries/animations/AnimationLibrary';
+import { useShakeAnimation } from '@/app/components/libraries/animations/useShakeAnimation';
 
 interface FormElementStylesProps {
   animationType: AnimationType;

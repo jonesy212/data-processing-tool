@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import io, { Socket as SocketIOClientSocket } from "socket.io-client";
-import { DrawingActions } from "../actions/DrawingActions";
-import { setIsDrawing } from "../state/redux/slices/DrawingSlice";
-import { RootState } from "../state/redux/slices/RootSlice";
+import { DrawingActions } from "@/app/actions/DrawingActions";
+import { setIsDrawing } from "@/app/state/redux/slices/DrawingSlice";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
 
 
 

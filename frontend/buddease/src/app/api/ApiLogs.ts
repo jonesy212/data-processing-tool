@@ -1,19 +1,20 @@
 //Apilogs.ts
+import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
-import DefaultNotificationContext, {
-  NotificationTypeEnum,
+import {
+    NotificationTypeEnum,
+    useNotification
 } from "@/app/context/NotificationContext";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { addLog } from "@/app/state/redux/slices/LogSlice";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
-import { addLog } from "../components/state/redux/slices/LogSlice";
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import axiosInstance from "./axiosInstance";
 // Other imports remain unchanged
 
 // #todo
 const API_BASE_URL = endpoints.logging; // Direct access to the logging endpoint
 
-const { notify } = DefaultNotificationContext;
+const { notify } = useNotification();
 
 export const handleApiError = (
   error: AxiosError<unknown> | Error,
@@ -30,7 +31,7 @@ export const handleApiError = (
         NOTIFICATION_MESSAGES.Generic.ERROR,
         { errorMessage, responseData: error.response.data },
         new Date(),
-        NotificationTypeEnum.Error
+        NotificationTypeEnum.ERROR
       );
     } else if (error.request) {
       console.error("No response received. Request details:", error.request);
@@ -39,7 +40,7 @@ export const handleApiError = (
         NOTIFICATION_MESSAGES.Generic.ERROR,
         { errorMessage, requestDetails: error.request },
         new Date(),
-        NotificationTypeEnum.Error
+        NotificationTypeEnum.ERROR
       );
     } else {
       console.error("Error details:", error.message);
@@ -48,7 +49,7 @@ export const handleApiError = (
         NOTIFICATION_MESSAGES.Generic.ERROR,
         { errorMessage, errorDetails: error.message },
         new Date(),
-        NotificationTypeEnum.Error
+        NotificationTypeEnum.ERROR
       );
     }
   } else {
@@ -58,7 +59,7 @@ export const handleApiError = (
       NOTIFICATION_MESSAGES.Generic.ERROR,
       { errorMessage, errorDetails: error },
       new Date(),
-      NotificationTypeEnum.Error
+      NotificationTypeEnum.ERROR
     );
   }
 };
@@ -87,7 +88,7 @@ export const logsApiService = observable({
         NOTIFICATION_MESSAGES.Logger.LOG_INFO_SUCCESS,
         { message },
         new Date(),
-        NotificationTypeEnum.Info
+        NotificationTypeEnum.INFO
       );
       return response;
     } catch (error) {
@@ -100,7 +101,7 @@ export const logsApiService = observable({
         NOTIFICATION_MESSAGES.Logger.LOG_INFO_ERROR,
         { message },
         new Date(),
-        NotificationTypeEnum.Error
+        NotificationTypeEnum.ERROR
       );
       throw error;
     }
@@ -114,7 +115,7 @@ export const logsApiService = observable({
         "ApiRequestSuccessId",
         `API Request to ${endpoint} successful.`,
         new Date(),
-        NotificationTypeEnum.Info
+        NotificationTypeEnum.INFO
       );
     } catch (error) {
       handleApiError(
@@ -146,7 +147,7 @@ export const logsApiService = observable({
         NOTIFICATION_MESSAGES.Logger.LOG_SUCCESS,
         { message },
         new Date(),
-        NotificationTypeEnum.Success
+        NotificationTypeEnum.SUCCESS
       );
       return response;
     } catch (error) {
@@ -159,7 +160,7 @@ export const logsApiService = observable({
         NOTIFICATION_MESSAGES.Logger.LOG_ERROR,
         { message },
         new Date(),
-        NotificationTypeEnum.Error
+        NotificationTypeEnum.ERROR
       );
       throw error;
     }
@@ -187,7 +188,7 @@ export const logsApiService = observable({
         NOTIFICATION_MESSAGES.Logger.LOG_FAILURE_ERROR,
         { message },
         new Date(),
-        NotificationTypeEnum.LoggingError
+        NotificationTypeEnum.LOGGING_ERROR
       );
       return response;
     } catch (error) {
@@ -200,7 +201,7 @@ export const logsApiService = observable({
         NOTIFICATION_MESSAGES.Logger.LOG_FAILURE_ERROR,
         { message },
         new Date(),
-        NotificationTypeEnum.Error
+        NotificationTypeEnum.ERROR
       );
       throw error;
     }

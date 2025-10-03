@@ -1,6 +1,6 @@
-import useFiltering from "../components/hooks/useFiltering";
-import { searchOptions } from "../pages/searchs/SearchOptions";
-import useSearchOptions from "../pages/searchs/useSearchOptions";
+import useFiltering from "@/app/hooks/useFiltering";
+import { searchOptions } from "@/app/pages/searchs/SearchOptions";
+import useSearchOptions from "@/app/pages/searchs/useSearchOptions";
 import { BASE_URL } from "./baseUrl";
 import mergeConfigurations from "./mergeConfigurations";
 
@@ -954,6 +954,7 @@ const updatedEndpoints = {
 };
 
 export const endpoints = updatedEndpoints;
+
 export default endpointConfigurations;
 export { updatedEndpoints };
 export type {EndpointConfig}

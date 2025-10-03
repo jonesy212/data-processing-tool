@@ -1,6 +1,6 @@
-import { FinancialReport } from "../../server/DocumentGenerator";
-import { AddReportType } from "../api/ApiReport";
-import { ResearchReport, TechnicalReport } from "../components/documents/documentation/report/Report";
+import { FinancialReport } from "@/app/server/ServerDocumentGenerator";
+import { AddReportType } from "@/app/api/ApiReport";
+import { ResearchReport, TechnicalReport } from "@/app/components/documents/documentation/report/Report";
 
 function isFinancialReport(report: AddReportType): report is FinancialReport {
   return report.reportType === "financial";

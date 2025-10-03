@@ -2,7 +2,7 @@
 import RootLayout from "@/app/RootLayout";
 import UserSupportPhaseComponent, {
   UserSupportPhase,
-} from "@/app/components/libraries/ui/components/UserSupportPhaseComponent";
+} from "@/app/features/support/UserSupportPhaseComponent";
 import React from "react";
 
 const UserSupportPage: React.FC = () => {

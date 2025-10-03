@@ -1,20 +1,20 @@
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import ProjectEventEmitter from "@/app/ts/EventEmitter";
 import React from "react";
-import { Task } from "../models/tasks/Task";
+import { Task } from "@/app/models/tasks/Task";
 import {
   CalendarEvent,
   useCalendarManagerStore,
-} from "@/app/components/calendar/CalendarEvent";
-import { rootStores } from "@/app/components/state/stores/RootStores";
-import { useTaskManagerStore } from "@/app/components/state/stores/TaskStore ";
-import { useTeamManagerStore } from "@/app/components/state/stores/TeamStore";
-import useTodoManagerStore, { TodoManagerStoreProps } from "@/app/components/state/stores/TodoStore";
-import useTrackerStore from "@/app/components/state/stores/TrackerStore";
+} from "@/app/calendar/CalendarEvent";
+import { rootStores } from "@/app/state/stores/RootStores";
+import { useTaskManagerStore } from "@/app/state/stores/TaskStore ";
+import { useTeamManagerStore } from "@/app/state/stores/TeamStore";
+import useTodoManagerStore, { TodoManagerStoreProps } from "@/app/state/stores/TodoStore";
+import useTrackerStore from "@/app/state/stores/TrackerStore";
 import TodoImpl, { Todo } from "@/app/components/todos/Todo";
 import ToolbarItem from "./ToolbarItem";
-import { showModalOrNotification } from "../hooks/commHooks/idleTimeoutUtils";
-import useSecureStoreId from '../utils/useSecureStoreId';
+import { showModalOrNotification } from "@/app/hooks/commHooks/idleTimeoutUtils";
+import useSecureStoreId from '@/app/hooks/useSecureStoreId';
 
 const ProjectManagementToolbar: React.FC<{ task: Task }> = ({ task }) => {
   const toolbarOptions = {

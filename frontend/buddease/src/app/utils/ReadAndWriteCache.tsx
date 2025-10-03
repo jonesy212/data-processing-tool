@@ -1,24 +1,24 @@
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import UserService, { userId, userService } from "@/app/api/ApiUser";
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import UserService, { userId, userService } from "../api/ApiUser";
-import { authToken } from "../server/authToken";
-import { AsyncHook } from "../components/hooks/useAsyncHookLinker";
-import { RealtimeData } from "../components/models/realtime/RealtimeData";
-import { CustomPhaseHooks } from "../components/phases/Phase";
-import { AnalysisTypeEnum } from "../components/projects/DataAnalysisPhase/AnalysisType";
-import { VersionHistory, versionHistory } from "../components/versions/VersionData";
-import { VideoData } from "../components/video/Video";
-import { BackendConfig, backendConfig } from "../configs/BackendConfig";
-import { DataVersions, dataVersions } from "../configs/DataVersionsConfig";
-import { FrontendConfig, frontendConfig } from "../configs/FrontendConfig";
-import userSettings, { UserSettings } from "../configs/UserSettings";
-import BackendStructure, {
-  backendStructure,
-} from "../configs/appStructure/BackendStructure";
+import { RealtimeData } from "@/app/components/models/realtime/RealtimeData";
+import { CustomPhaseHooks } from "@/app/components/phases/Phase";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { VideoData } from "@/app/components/video/Video";
+import { CacheData, realtimeData } from "@/app/generators/GenerateCache";
+import { AsyncHook } from "@/app/hooks/useAsyncHookLinker";
+import { authToken } from "@/app/server/authToken";
+import { VersionHistory, versionHistory } from "@/app/versions/VersionData";
 import {
-  frontendStructure,
-} from "../configs/appStructure/FrontendStructure";
-import { CacheData, realtimeData } from "../generators/GenerateCache";
+    frontendStructure,
+} from "@/config/appStructure/FrontendStructure";
+import { BackendConfig, backendConfig } from "@/config/BackendConfig";
+import { FrontendConfig, frontendConfig } from "@/config/FrontendConfig";
+import userSettings, { UserSettings } from "@/config/UserSettings";
+import BackendStructure, {
+    backendStructure,
+} from "@/configs/appStructure/BackendStructure";
+import { DataVersions, dataVersions } from "@/configs/DataVersionsConfig";
 
 // Define the structure of the response data
 interface CacheResponse {
@@ -84,7 +84,7 @@ const constructCacheData = (
     phase: null,
     analysisResults: [],
     analysisType: {} as AnalysisTypeEnum,
-    videoData: {} as VideoData<T, K>,
+    videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     // Construct other properties here
   };
   return constructedData;
@@ -106,21 +106,82 @@ export function readCache(userId: string): CacheData | null {
   }
 }
 
-// Assuming userService.fetchUser and userService.fetchUserById return promises
-export const writeCache = async (userId: string, userData: Promise<CacheData>) => {
+
+// Combined writeCache function
+export const writeCache = async <T extends Data>(
+  userId: string,
+  userDataPromise: Promise<CacheData>,
+  options: {
+    filePath?: string;
+    notifyOnSuccess?: boolean;
+    notifyOnError?: boolean;
+    delay?: number;
+  } = {}
+): Promise<void> => {
+  const { handleError } = useErrorHandling();
+  const {
+    filePath = `cache/user_${userId}.json`,
+    notifyOnSuccess = true,
+    notifyOnError = true,
+    delay = 1000
+  } = options;
+
   try {
-    // Fetch user data
-    const user = await userService.fetchUserData(req, res);
+    // Fetch user data if it's a promise
+    const userData = await userDataPromise;
+    
+    // Optional delay for simulation
+    if (delay > 0) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
 
-    // Fetch user ID
-    const userId = await userService.fetchUserById(user);
+    // Transform data if needed (using your existing transformation function)
+    const exchangeData = transformYourResponseToExchangeData(userData as any);
+    
+    // Extract criteria if needed
+    const criteria = extractCriteria(userData?.snapshot, ['someProperty'] as Array<keyof FilterState>);
 
-    // Write cache
-    await writeCache(userId, userData); // Assuming userData is defined elsewhere
+    // Here you would write the actual cache logic
+    // For example: localStorage, IndexedDB, or server-side file system
+    console.log(`Writing data to cache at path: ${filePath}`, {
+      userId,
+      userData,
+      exchangeData,
+      criteria
+    });
+
+    // Success notification
+    if (notifyOnSuccess) {
+      await notify(
+        'write-cache-success',
+        `Cache Write Successful`,
+        `Cache was successfully written for user ${userId} at ${filePath}`,
+        new Date(),
+        'success' as NotificationType
+      );
+    }
+
     console.log("Cached data successfully written.");
-  } catch (error) {
-    // If an error occurs during cache writing, log the error
+
+  } catch (error: any) {
     console.error("Error writing cache:", error);
+    
+    // Error handling
+    const errorMessage = `Error writing cache data for user ${userId}`;
+    handleError(errorMessage, { componentStack: error.stack });
+
+    // Error notification
+    if (notifyOnError) {
+      await notify(
+        'write-cache-failure',
+        `Cache Write Failed`,
+        `Failed to write cache for user ${userId}: ${error.message}`,
+        new Date(),
+        'CacheError' as NotificationType
+      );
+    }
+
+    throw error;
   }
 };
 

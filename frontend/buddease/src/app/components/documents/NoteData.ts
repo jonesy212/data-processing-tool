@@ -1,13 +1,13 @@
 // NoteData.ts
 
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { DocumentSize } from "../models/data/StatusType";
-import { Collaborator } from "../models/teams/TeamMembers";
-import { Progress } from "../models/tracker/ProgressBar";
-import Version from "../versions/Version";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { DocumentSize } from "@/app/models/data/StatusType";
+import { Collaborator } from "@/app/models/teams/TeamMembers";
+import { Progress } from "@/app/models/tracker/ProgressBar";
+import Version from "@/app/versions/Version";
 
 import {CommonAnimationOptions} from './SharedDocumentProps'
-import { BaseData } from "../models/data/Data";
+import { BaseData } from "@/app/models/data/Data";
 import { Attachment } from '@/app/components/documents/Attachment/attachment'
 
 export interface Change {

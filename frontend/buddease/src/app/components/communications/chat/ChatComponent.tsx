@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { DappProps } from "../../web3/dAppAdapter/DAppAdapterConfig";
-import { AquaConfig } from "../../web3/web_configs/AquaConfig";
+import { DappProps } from "@/app/..@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
+import { AquaConfig } from "@/app/web3/webConfigs/AquaConfig";
 import { AquaChat } from "./AquaChat";
 import ChatInput from "./ChatInput";
 import ChatNotification from "./ChatNotification";

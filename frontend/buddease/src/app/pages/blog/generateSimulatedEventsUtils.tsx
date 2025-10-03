@@ -3,7 +3,7 @@
 
 import React from "react";
 import { setCalendarEvents } from "./CalendarUtils";
-import { CalendarEvent } from "@/app/components/calendar/CalendarEvent";
+import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 
 // Function to inject simulated events into the calendar system
 const injectSimulatedEvents =  (events:CalendarEvent) => {

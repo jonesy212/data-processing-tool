@@ -1,41 +1,40 @@
 // Payload.ts
-import { CalendarEvent } from "@/app/components/calendar/CalendarEvent";
-import { CustomSnapshotData } from "@/app/components/snapshots/SnapshotData";
-import { Snapshot } from "@/app/components/snapshots";
-import { SnapshotActions } from "@/app/components/snapshots/SnapshotActions";
-import {
-  addToSnapshotList,
-  category,
-} from "@/app/components/utils/snapshotUtils";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { useNotification } from "@/app/context/NotificationContext";
-import { NotificationTypeEnum } from "@/context/NotificationContext";
-import { LiveEvent } from "@refinedev/core";
-import { useDispatch, useSelector } from "react-redux";
-import * as subscriptionApi from "../../app/api/subscriberApi";
-import { SubscriptionPayload } from "../../app/components/actions/SubscriptionActions";
-import useSubscription from "../../app/components/hooks/useSubscription";
-import { Category } from "../../app/components/libraries/categories/generateCategoryProperties";
-import { SnapshotLogger } from "../../app/components/logging/Logger";
-import { BaseData, Data } from "../../app/components/models/data/Data";
-import { K, T } from "../../app/components/models/data/dataStoreMethods";
-import { StatusType } from "../../app/components/models/data/StatusType";
-import { RealtimeDataItem } from "../../app/components/models/realtime/RealtimeData";
-import { AllStatus } from "../../app/components/state/stores/DetailsListStore";
-import { Subscriber } from "../../app/components/users/Subscriber";
-import {
-  logActivity,
-  notifyEventSystem,
-  triggerIncentives,
-  updateProjectState,
-} from "../../app/components/utils/applicationUtils";
 import { addSnapshot } from "@/app/api/SnapshotApi";
+import { SubscriptionPayload } from "@/app/app/actions/SubscriptionActions";
+import * as subscriptionApi from "@/app/app/api/subscriberApi";
+import { Category } from "@/app/app/components/libraries/categories/generateCategoryProperties";
+import { BaseData } from "@/app/app/components/models/data/Data";
+import { K, T } from "@/app/app/components/models/data/dataStoreMethods";
+import { StatusType } from "@/app/app/components/models/data/StatusType";
+import { RealtimeDataItem } from "@/app/app/components/models/realtime/RealtimeData";
+import { AllStatus } from "@/app/app/components/state/stores/DetailsListStore";
+import useSubscription from "@/app/app/hooks/useSubscription";
+import { CalendarEvent } from "@/app/calendar/CalendarEvent";
+import { useNotification } from "@/app/context/NotificationContext";
+import { SnapshotLogger } from "@/app/libraries/logging/Logger";
+import { Snapshot } from "@/app/snapshots";
+import { SnapshotActions } from "@/app/snapshots/SnapshotActions";
+import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { Subscriber } from "@/app/users/Subscriber";
 import {
-  BaseDataEntity,
-  DefaultMeta,
-  DefaultExcludedFields,
-} from "@/app/configs/BaseConfig";
+    addToSnapshotList,
+    category,
+} from "@/app/utils/snapshotUtils";
+import {
+    logActivity,
+    notifyEventSystem,
+    triggerIncentives,
+    updateProjectState,
+} from "@/app/utils/web3/applicationUtils";
+import {
+    BaseDataEntity,
+    DefaultExcludedFields,
+    DefaultMeta,
+} from "@/config/BaseConfig";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { LiveEvent } from "@refinedev/core";
 import { AppState } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 
 interface ExtendedBaseDataPayload<
   T extends BaseData<any>,
@@ -102,10 +101,10 @@ interface CreateSnapshotsPayload<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
-  data: Map<string, Snapshot<T, K>>;
+  data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   events: Record<string, CalendarEvent<T, K>[]>;
   dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[];
-  newData: Snapshot<T, K>;
+  newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   category?: Category;
 }
 
@@ -122,10 +121,10 @@ interface CreateSnapshotStoresPayload<
   updatedAt: Date | undefined;
   status: "active" | "inactive" | "archived";
   category: string;
-  data: T | Map<string, Snapshot<T, K>> | null | undefined;
+  data: T | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined;
   events: Record<string, CalendarEvent<T, K>[]>;
   dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[];
-  newData: Snapshot<T, K>;
+  newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   metadata: any;
   id: string; // Adding id
   key: string; // Adding key
@@ -137,7 +136,7 @@ interface CreateSnapshotStoresPayload<
   eventRecords: Record<string, any>; // Adding eventRecords
   type: string; // Adding type
   subscribers: Subscriber<T, K>[]; // Adding subscribers
-  snapshots: Map<string, Snapshot<T, K>>; // Adding snapshots
+  snapshots: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>; // Adding snapshots
 }
 
 interface UpdateSnapshotPayload<T> extends Payload {
@@ -226,11 +225,12 @@ const payload: Partial<
 };
 
 export type {
-  CreateSnapshotsPayload,
-  CreateSnapshotStoresPayload,
-  ExtendedBaseDataPayload,
-  Payload,
-  UpdateSnapshotPayload,
+    CreateSnapshotsPayload,
+    CreateSnapshotStoresPayload,
+    ExtendedBaseDataPayload,
+    Payload,
+    UpdateSnapshotPayload
 };
 
-export { payload };
+  export { payload };
+

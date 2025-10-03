@@ -1,11 +1,11 @@
-import BackendStructure from "@/app/configs/appStructure/BackendStructure";
-import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
 import DesignDashboard from "@/app/pages/dashboards/DesignDashboard";
+import { BoardItem, CollaborationBoardStore } from "@/app/state/stores/CollaborationBoardStore";
 import DynamicComponentWrapper from "@/app/utils/DynamicComponentWrapper";
+import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import FrontendStructure from "@/config/appStructure/FrontendStructure";
+import getAppPath from "@/config/appStructure/appPath";
+import BackendStructure from '@/server/database/BackendStructure';
 import React, { useState } from "react";
-import getAppPath from "../../configs/appStructure/appPath";
-import { BoardItem, CollaborationBoardStore } from "../state/stores/CollaborationBoardStore";
-import { getCurrentAppInfo } from "../versions/VersionGenerator";
 import { ResponsiveDesign } from "./ResponsiveDesign"; // Import the ResponsiveDesign component
 
 const EnhancedDesignDashboard: React.FC = () => {

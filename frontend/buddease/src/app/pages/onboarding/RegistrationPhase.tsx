@@ -1,19 +1,18 @@
-import React from 'react'
 import { endpoints } from "@/app/api/ApiEndpoints";
-import authService from "@/app/components/auth/AuthService";
 import EmailSetupForm from "@/app/components/communications/email/EmailSetUpForm";
-import { enhancedPhaseHook, setCurrentPhase } from "@/app/components/hooks/phaseHooks/EnhancePhase";
-import { PhaseHookConfig } from "@/app/components/hooks/phaseHooks/PhaseHooks";
-import { sanitizeInput } from "@/app/components/security/SanitizationFunctions"; // Import sanitizeInput function
-import { UserData } from "@/app/components/users/User";
+import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions"; // Import sanitizeInput function
+import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
+import { enhancedPhaseHook, setCurrentPhase } from "@/app/hooks/phaseHooks/EnhancePhase";
+import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
+import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
+import { setError, setLoading } from "@/app/state/stores/UISlice";
+import { UserData } from "@/app/users/User";
+import authService from "@/server/auth//AuthService";
 import axios from "axios";
-import { useId, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/app/components/state/redux/slices/RootSlice";
-import { setError, setLoading } from "@/app/components/state/stores/UISlice";
-import { ProjectPhaseTypeEnum } from "@/app/components/models/data/StatusType";
-import useIdleTimeout from "@/app/components/hooks/idleTimeoutHooks";
+import { Link, useNavigate } from "react-router-dom";
 
 interface RegistrationPhaseProps {
   onSuccess: (userData: UserData) => void;

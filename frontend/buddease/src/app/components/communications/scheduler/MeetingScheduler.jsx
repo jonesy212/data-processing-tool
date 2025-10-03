@@ -1,7 +1,7 @@
 // MeetingScheduler.jsx
 import { CalendarComponent } from '@/app/components/calendar/CalendarComponent';
-import { useStore } from "../../hooks/useStore";
-import { useCalendarManagerStore } from '../../state/stores/CalendarStore';
+import { useStore } from "@/app/hooks/useStore";
+import { useCalendarManagerStore } from '@/app/components/state/stores/CalendarStore';
 
 
 const MeetingScheduler = () => {

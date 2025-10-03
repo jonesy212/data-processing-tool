@@ -1,4 +1,4 @@
-import { MovementAnimationActions, useMovementAnimations } from "@/app/components/libraries/animations/movementAnimations/MovementAnimationActions";
+import { MovementAnimationActions, useMovementAnimations } from "@/app/libraries/animations/movementAnimations/MovementAnimationActions";
 import { useEffect, useRef } from "react";
 
 interface DragEventHandlers extends MovementAnimationActions {

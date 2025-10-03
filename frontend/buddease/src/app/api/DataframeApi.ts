@@ -1,4 +1,4 @@
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "@/app/api/csrfToken";
 
 const API_BASE_URL = "/api/data-frame";
 

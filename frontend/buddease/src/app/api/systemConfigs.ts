@@ -1,12 +1,12 @@
-import { AquaConfig } from "../components/web3/web_configs/AquaConfig";
-import { BackendConfig } from "../configs/BackendConfig";
-import { DataVersions } from "../configs/DataVersionsConfig";
-import { FrontendConfig } from "../configs/FrontendConfig";
-import LazyLoadScriptConfig from "../configs/LazyLoadScriptConfig";
-import BackendStructure from "../configs/appStructure/BackendStructure";
+import BackendStructure from "@/@/config/FrontendConfigkendStructure";
+import LazyLoadScriptConfig from "@/app/components/configs/LazyLoadScriptConfig";
+import { AquaConfig } from "@/app/components/web3/webConfigs/AquaConfig";
+import { BackendConfig } from "@/config/BackendConfig";
+import { DataVersions } from "@/configs/DataVersionsConfig";
+import { FrontendConfig } from "@/configs/FrontendConfig";
 
-import  FrontendStructure  from "../configs/appStructure/FrontendStructureComponent";
-import ShoppingCenterConfig from "../shoppingCenter/ShoppingCenterConfig";
+import ShoppingCenterConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
+import FrontendStructure from "@/configs/appStructure/FrontendStructureComponent";
 
 // systemConfigs.ts
 export const SystemConfigs = {

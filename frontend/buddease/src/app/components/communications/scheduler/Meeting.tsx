@@ -1,7 +1,7 @@
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import { Todo } from "../../todos/Todo";
-import { UserData } from "../../users/User";
+import { Todo } from "@/app/todos/Todo";
+import { UserData } from "@/app/users/User";
 
 export interface Meeting extends UserData {
   id: number;

@@ -1,11 +1,11 @@
 import { userService } from '@/app/api/ApiUser';
-import { SearchActions } from '@/app/components/actions/SearchActions';
-import { DocumentData } from '@/app/components/documents/DocumentBuilder';
-import useErrorHandling from '@/app/components/hooks/useErrorHandling';
+import { SearchActions } from '@/app/actions/SearchActions';
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import useErrorHandling from '@/app/hooks/useErrorHandling';
 import SearchBar from '@/app/components/routing/SearchBar';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { SearchLogger } from '../../components/logging/Logger';
+import { SearchLogger } from '@/app/libraries/logging/Logger';
 import SearchComponent from './SearchComponent';
 import { SearchProvider } from './SearchContext';
 import SearchItems from './SearchItems';

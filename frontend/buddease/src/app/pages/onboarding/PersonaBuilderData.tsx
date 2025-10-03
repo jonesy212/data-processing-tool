@@ -1,16 +1,16 @@
 // PersonaBuilderData.ts
 import ChatSettings from "@/app/components/communications/chat/ChatSettingsPanel";
 import { RealtimeUpdates } from "@/app/components/community/ActivityFeedComponent";
+import { Task } from "@/app/components/models/tasks/Task";
 import { Team } from "@/app/components/models/teams/Team";
 import { TeamMember } from "@/app/components/models/teams/TeamMembers";
 import { Project } from "@/app/components/projects/Project";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
-import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import { DocumentTree, User, UserData, VisualizationData } from "@/app/components/users/User";
-import { CommonDetails } from '../../components/models/CommonDetails';
-import generateTimeBasedCode from "../../components/models/realtime/TimeBasedCodeGenerator";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
+import { DocumentTree, User, UserData, VisualizationData } from "@/app/users/User";
+import { CommonDetails } from '@/app/components/models/CommonDetails';
 import { Question } from "./Question";
-import { Task } from "@/app/components/models/tasks/Task";
 
 const { notify } = useNotification(); 
 
@@ -54,7 +54,7 @@ export async function initializeUserData(id: string | number, user: User): Promi
       "Persona Builder Error",
       NOTIFICATION_MESSAGES.Persona.BUILDER_CREATION_ERROR,
       new Date(),
-      NotificationTypeEnum.Error
+      NotificationTypeEnum.ERROR
     );
     return null;
   }

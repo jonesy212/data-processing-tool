@@ -1,8 +1,8 @@
-import { Snapshot } from "@/app/components/snapshots"; // Removed snapshotStore import as it's not used
-import useSnapshotManager from '../hooks/useSnapshotManager';
-import { Data } from '../models/data/Data';
+import { Snapshot } from "@/app/snapshots"; // Removed snapshotStore import as it's not used
+import useSnapshotManager from '@/app/hooks/useSnapshotManager';
+import { Data } from '@/app/models/data/Data';
 import { Team } from '../models/teams/Team';
-import { useAssignTeamMemberStore } from '../state/stores/AssignTeamMemberStore';
+import { useAssignTeamMemberStore } from '@/app/state/stores/AssignTeamMemberStore';
 
 interface TeamSnapshot extends Snapshot<Team[]> {
   // Remove the 'data' property as it conflicts with the index signature

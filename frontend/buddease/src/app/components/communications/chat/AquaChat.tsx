@@ -1,5 +1,7 @@
+'use client';
+
 import { useEffect, useState } from 'react';
-import { AquaConfig } from '../../web3/web_configs/AquaConfig';
+import { AquaConfig } from '@/app/utils/web3/webConfigs/aqua/AquaConfig'
 
 export class AquaChat {
   aquaConfig: AquaConfig;
@@ -17,7 +19,7 @@ export class AquaChat {
     this.isConnected = true; // Replace with your actual connection logic
   }
 
-  sendMessage(onmessage: string) {
+  sendMessage(message: string) {
     if (!this.isConnected) {
       console.error('AquaChat is not connected. Cannot send message.');
       return;
@@ -25,9 +27,9 @@ export class AquaChat {
 
     try {
       // Add logic to send a message through AquaChat
-      console.log(`Sending message: ${onmessage}`);
+      console.log(`Sending message: ${message}`);
       // Replace the following line with your actual message sending logic
-      // this.aquaService.onmessage(onmessage); 
+      // this.aquaService.send(message); 
     } catch (error) {
       console.error('Error sending message:', error);
       // Handle the error appropriately, e.g., reconnect or show an error message
@@ -40,11 +42,9 @@ export class AquaChat {
     // Set isConnected status based on the success of disconnection 
     this.isConnected = false; // Replace with your actual disconnection logic
   }
-
 }
 
 const AquaChatComponent = ({ aquaConfig }: { aquaConfig: AquaConfig }) => {
-
   const [aquaChat, setAquaChat] = useState<AquaChat | null>(null);
 
   useEffect(() => {
@@ -63,10 +63,8 @@ const AquaChatComponent = ({ aquaConfig }: { aquaConfig: AquaConfig }) => {
     };
   }, [aquaConfig]);
 
-  return {
-    aquaChat,
-  };
-
+  // Return the aquaChat instance for use in components
+  return aquaChat;
 };
 
 export default AquaChatComponent;

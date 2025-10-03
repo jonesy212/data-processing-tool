@@ -1,6 +1,6 @@
 // components/DynamicTypography.tsx
 import React from "react";
-import DummyCardLoader, { ContentItem } from "../cards/DummyCardLoader";
+import DummyCardLoader, { ContentItem } from "@/app/cards/DummyCardLoader";
 
 interface BodyTextProps {
   fontSize?: string;

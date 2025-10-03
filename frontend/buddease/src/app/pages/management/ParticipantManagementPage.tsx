@@ -1,11 +1,10 @@
 import RootLayout from "@/app/RootLayout";
-import { ParticipantActions } from "@/app/components/actions/ParticipantActions";
-import { ToolbarActions } from "@/app/components/actions/ToolbarActions";
-import { MobXRootState} from "@/app/components/state/stores/RootStores";
+import { ToolbarActions } from "@/app/actions/ToolbarActions";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
-import { User } from "@/app/components/users/User";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import React, { useEffect } from "react";
+import { MobXRootState } from "@/app/state/stores/RootStores";
+import { User } from "@/app/users/User";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 

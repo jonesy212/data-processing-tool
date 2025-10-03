@@ -1,26 +1,26 @@
 // chatUtils.ts
-import { getUserPreferences } from "@/app/configs/UserPreferences";
+import { CollaborationActions } from "@/app/actions/CollaborationActions";
+import { openNotificationPreferencesModal } from "@/app/cards/modal/openNotificationPreferencesModal";
+import { saveToLocalStorage } from "@/app/hooks/useLocalStorage";
+import { useSecureDocumentId } from "@/app/hooks/useSecureDocumentId";
+import { useSecureUserId } from "@/app/hooks/useSecureUserId";
+import { CollaborationPreferences } from "@/app/interfaces/settings/CollaborationPreferences";
+import { showErrorMessage, showToast } from "@/app/models/display/ShowToast";
 import configureCollaborationPreferences from "@/app/pages/community/configureCollaborationPreferences";
+import { isValidNotificationPreferences } from "@/app/security/validationRulesCode";
+import { PrivacySettings } from "@/app/settings/PrivacySettings";
+import { configureSecuritySettings } from "@/app/settings/configureSecuritySettings";
+import { saveSecuritySettings } from "@/app/settings/saveSecuritySettings";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
-import RichTextEditor from "@/documents/RichTextEditor";
-import { CollaborationActions } from "../../actions/CollaborationActions";
-import { openNotificationPreferencesModal } from "../../cards/modal/openNotificationPreferencesModal";
-import { saveToLocalStorage } from "../../hooks/useLocalStorage";
-import { CollaborationPreferences } from "../../interfaces/settings/CollaborationPreferences";
-import { showErrorMessage, showToast } from "../../models/display/ShowToast";
-import { isValidNotificationPreferences } from "../../security/validationRulesCode";
-import { PrivacySettings } from "../../settings/PrivacySettings";
-import { configureSecuritySettings } from "../../settings/configureSecuritySettings";
-import { saveSecuritySettings } from "../../settings/saveSecuritySettings";
-import { DocumentEditingPermissions } from '../../users/Permissions';
-import { useSecureDocumentId } from "../../utils/useSecureDocumentId";
-import { useSecureUserId } from "../../utils/useSecureUserId";
-import { openPrivacySettingsMenu } from "../../video/openPrivacySettingsMenu";
-import { openVideoOptionsMenu } from "../../video/openVideoOptionsMenu";
+import { openPrivacySettingsMenu } from "@/app/video/openPrivacySettingsMenu";
+import { openVideoOptionsMenu } from "@/app/video/openVideoOptionsMenu";
+import { getUserPreferences } from "@/config/UserPreferences";
 import {
     NotificationContextProps,
     NotificationType,
 } from "@/context/NotificationContext";
+import RichTextEditor from "@/documents/RichTextEditor";
+import { DocumentEditingPermissions } from '@/app/components/users/Permissions';
 import {
     AudioOptions,
     ChatSettingsModal,

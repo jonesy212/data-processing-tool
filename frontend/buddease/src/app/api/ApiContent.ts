@@ -1,16 +1,16 @@
 // ApiContent.ts
 import { BaseData } from '@/app/components/models/data/Data';
-import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext"; 
+import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 
+import axiosInstance from "@/app/api/csrfToken";
+import headersConfig from "@/app/api/headers/HeadersConfig";
+import { YourResponseType } from "@/app/components/typings/types";
+import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from "axios";
 import { ContentState } from "draft-js";
-import useErrorHandling from "../components/hooks/useErrorHandling";
-import { YourResponseType } from "../components/typings/types";
-import { StructuredMetadata } from "../configs/StructuredMetadata";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
-import axiosInstance from "./axiosInstance";
-import headersConfig from "./headers/HeadersConfig";
 
 // Define the API base URL
 const API_BASE_URL = endpoints.content
@@ -143,7 +143,7 @@ const updateContent = async (
       contentNotificationMessages.UPDATE_CONTENT_SUCCESS,
       { contentId },
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error) {
     console.error("Error updating content:", error);
@@ -170,7 +170,7 @@ const createContent = async (newContentData: any): Promise<void> => {
       contentNotificationMessages.CREATE_CONTENT_SUCCESS,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error: any) {
     console.error("Error creating content:", error);
@@ -196,7 +196,7 @@ const deleteContent = async (contentId: number): Promise<void> => {
       contentNotificationMessages.DELETE_CONTENT_SUCCESS,
       { contentId },
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error: any) {
     console.error("Error deleting content:", error);
@@ -305,8 +305,8 @@ const getContentIdFromURL = (url: string): string => {
   };
 
   export {
-  createContent, createContentStateFromText, deleteContent, fetchContent, fetchContentDataFromAPI,
-  fetchContentId, fetchContentIdFromAPI, getContentIdFromURL, getMetadataForContent,
-  getTaskHistoryFromDatabase, handleContentApiErrorAndNotify, saveTaskHistoryToDatabase, updateContent
+    createContent, createContentStateFromText, deleteContent, fetchContent, fetchContentDataFromAPI,
+    fetchContentId, fetchContentIdFromAPI, getContentIdFromURL, getMetadataForContent,
+    getTaskHistoryFromDatabase, handleContentApiErrorAndNotify, saveTaskHistoryToDatabase, updateContent
 };
 

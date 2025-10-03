@@ -1,16 +1,16 @@
 // ExtendedAppLogic.tsx
+import { DynamicPromptProvider } from "@/app/components/prompts/DynamicPromptContext";
+import NotificationManager from "@/app/features/support/NotificationManager";
+import { ThemeConfigProvider } from "@/app/hooks/userInterface/ThemeConfigContext";
+import ThemeCustomization from "@/app/hooks/userInterface/ThemeCustomization";
+import { NotificationState, initialNotificationState } from "@/app/state/redux/slices/NotificationSlice";
+import { ThemeState, initialThemeState } from "@/app/state/redux/slices/ThemeSlice";
+import { NotificationData } from "@/app/support/NofiticationsSlice";
 import { BytesLike } from "ethers";
 import React, { useState } from "react";
 import { Navigator, Router, Routes, useLocation } from "react-router-dom";
-import { ThemeConfigProvider } from "../components/hooks/userInterface/ThemeConfigContext";
-import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
-import { DynamicPromptProvider } from "../components/prompts/DynamicPromptContext";
-import { NotificationData } from "../components/support/NofiticationsSlice";
-import NotificationManager from "../components/support/NotificationManager";
 import CollaborationDashboard from "./dashboards/CollaborationDashboard";
 import SearchComponent from "./searchs/SearchComponent";
-import { ThemeState, initialThemeState } from "../components/state/redux/slices/ThemeSlice";
-import { NotificationState, initialNotificationState } from "../components/state/redux/slices/NotificationSlice";
 
 interface ExtendedAppProps {
   notifications: NotificationData[];

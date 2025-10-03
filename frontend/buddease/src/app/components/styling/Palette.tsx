@@ -1,6 +1,6 @@
 // Palette.tsx
 import React from "react";
-import { Highlight } from "../documents/NoteData";
+import { Highlight } from "@/app/documents/NoteData";
 
 import { ColorSwatchProps } from "./ColorPalette";
 import ColorPicker from "./ColorPicker";

@@ -1,9 +1,9 @@
 // EventSentiment.tsx
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import React, { useEffect, useState } from "react";
-import useErrorHandling from "../hooks/useErrorHandling";
-import { processAutoGPTOutputWithSpaCy } from "../intelligence/AutoGPTSpaCyIntegration";
-import LoadingSpinner from "../models/tracker/LoadingSpinner";
+import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { processAutoGPTOutputWithSpaCy } from "@/app/components/intelligence/AutoGPTSpaCyIntegration";
+import LoadingSpinner from "@/app/models/tracker/LoadingSpinner";
 
 const EventSentiment: React.FC<{ event: CalendarEvent }> = ({ event }) => {
   const [sentiment, setSentiment] = useState<string>(""); // State to store sentiment

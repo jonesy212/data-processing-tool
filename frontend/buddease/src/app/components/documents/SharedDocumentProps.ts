@@ -2,22 +2,22 @@
 
 import { DocumentFormattingOptions } from '@/app/components/documents/ DocumentFormattingOptionsComponent';
 import { BaseData } from '@/app/components/models/data/Data';
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
-import { DocumentBuilderConfig } from "@/app/configs/DocumentBuilderConfig";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
+import { Phase } from "@/app/phases/Phase";
+import { TagsRecord } from '@/app/snapshots';
+import AppVersionImpl from "@/app/versions/AppVersion";
+import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { ContentState, EditorState } from 'draft-js';
 import { Dispatch, SetStateAction } from "react";
-import { DocumentTypeEnum } from '../../../server/DocumentGenerator';
-import { ProjectPhaseTypeEnum } from "../models/data/StatusType";
-import { Phase } from "../phases/Phase";
-import { TagsRecord } from '../snapshots';
+import { DocumentTypeEnum } from '@/server/ServerDocumentGenerator';
+import AccessHistory from '@/app/components/versions/AccessHistory';
+import { VersionData } from '@/app/versions/VersionData';
 import { WritableDraft } from '../state/redux/ReducerGenerator';
 import { DocumentObject } from '../state/redux/slices/DocumentSlice';
-import AccessHistory from '../versions/AccessHistory';
-import AppVersionImpl from "../versions/AppVersion";
-import { VersionData } from '../versions/VersionData';
 import { ModifiedDate } from "./DocType";
-import { DocumentData } from "./DocumentBuilder";
+import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { DocumentOptions } from "./DocumentOptions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 
@@ -67,7 +67,7 @@ export interface DocumentBuilderProps<
         copyright?: string;
         license?: string;
         links?: string[];
-         tags?: TagsRecord<T, K> | string[] | undefined; 
+         tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined; 
         phaseType: ProjectPhaseTypeEnum;
         customProp1: string;
         customProp2: number;

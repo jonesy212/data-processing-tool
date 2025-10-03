@@ -1,6 +1,6 @@
 import ResizablePanels, {
   ResizablePanelsProps,
-} from "@/app/components/hooks/userInterface/ResizablePanels";
+} from "@/app/hooks/userInterface/ResizablePanels";
 import {
   ButtonGenerator,
   buttonGeneratorProps,
@@ -11,14 +11,14 @@ import FormControl from "@/app/pages/forms/FormControl";
 import { Input } from "antd";
 import { Router, useRouter } from "next/router";
 import React, { ReactNode, useRef } from "react";
-import DynamicNamingConventions from "../DynamicNamingConventions";
-import InputLabel from "../hooks/userInterface/InputFields";
-import CustomSlider from "../libraries/ui/buttons/CustomSlider";
-import ReusableButton from "../libraries/ui/buttons/ReusableButton";
-import { brandingSettings } from "../projects/branding/BrandingSettings";
-import DynamicComponent from "../styling/DynamicComponents";
-import DynamicSpacingAndLayout from "../styling/DynamicSpacingAndLayout";
-import DynamicTypography from "../styling/DynamicTypography";
+import DynamicNamingConventions from "@/app/DynamicNamingConventions";
+import InputLabel from "@/app/hooks/userInterface/InputFields";
+import CustomSlider from "@/app/libraries/ui/buttons/CustomSlider";
+import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
+import { brandingSettings } from "@/app/branding/BrandingSettings";
+import DynamicComponent from "@/app/styling/DynamicComponents";
+import DynamicSpacingAndLayout from "@/app/styling/DynamicSpacingAndLayout";
+import DynamicTypography from "@/app/styling/DynamicTypography";
 
 
 interface CustomBoxProps extends ResizablePanelsProps {

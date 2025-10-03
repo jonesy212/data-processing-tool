@@ -1,7 +1,7 @@
 // SettingsAPI.ts
 
-import { PrivacySettings } from "../components/settings/PrivacySettings";
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "@/app/api/csrfToken";
+import { PrivacySettings } from "@/app/components/settings/PrivacySettings";
 
 export default class SettingsAPI {
     private static API_BASE_URL = "https://example.com/api"; // Update with your API base URL

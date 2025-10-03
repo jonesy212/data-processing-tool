@@ -1,8 +1,8 @@
 // ScheduleEventModal.tsx
+import { CalendarEvent, useCalendarManagerStore } from '@/app/calendar/CalendarEvent';
 import { Button, Form, Input, Modal, Select } from "antd";
 import moment from "moment";
 import React, { useState } from "react";
-import { CalendarEvent, useCalendarManagerStore } from '../components/state/stores/CalendarEvent';
 
 const { Option } = Select;
 

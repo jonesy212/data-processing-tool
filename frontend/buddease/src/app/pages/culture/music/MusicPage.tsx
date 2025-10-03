@@ -1,7 +1,7 @@
 // MusicPage.tsx
 
 import React from 'react';
-import MusicSection from '../../../components/users/artist/MusicSection';
+import MusicSection from '@/app/components/users/artist/MusicSection';
 
 const MusicPage: React.FC = () => {
   return (

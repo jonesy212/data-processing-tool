@@ -2,9 +2,9 @@
 import { AxiosError } from 'axios';
 import CalendarEventCollaborator from '../components/calendar/CalendarEventCollaborator';
 import { NotificationType, useNotification } from '../components/context/NotificationContext';
-import InvitationData from '../components/state/redux/slices/InvitationData';
+import InvitationData from '@/app/state/redux/slices/InvitationData';
 import { endpoints } from './ApiEndpoints';
-import axiosInstance from './axiosInstance';
+import axiosInstance from '@/app/api/csrfToken'
 
 // Define the API base URL
 const API_BASE_URL = endpoints.collaborators.base;

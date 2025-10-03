@@ -1,6 +1,6 @@
 import { EditorState } from "draft-js";
 import { useState } from "react";
-import { Progress } from "../models/tracker/ProgressBar";
+import { Progress } from "@/app/models/tracker/ProgressBar";
 import ToolbarItem from "./ToolbarItem";
 import React from "react";
 

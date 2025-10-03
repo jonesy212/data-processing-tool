@@ -1,6 +1,6 @@
 import { User } from '@/app/components/users/User';
 import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
-import { userService } from '../../api/ApiUser';
+import { userService } from '@/app/components/api/ApiUser';
 import { UserRole } from './UserRole';
 
 class UserManagement {

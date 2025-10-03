@@ -123,7 +123,7 @@ describe('UserFormComponent', () => {
         'An error occurred',
         'error',
         expect.any(Date),
-        NotificationTypeEnum.LoggingError
+        NotificationTypeEnum.LOGGING_ERROR
       );
     });
   });
@@ -256,7 +256,7 @@ describe('UserFormComponent', () => {
         'An error occurred',
         'error',
         expect.any(Date),
-        NotificationTypeEnum.LoggingError
+        NotificationTypeEnum.LOGGING_ERROR
       );
     });
   });

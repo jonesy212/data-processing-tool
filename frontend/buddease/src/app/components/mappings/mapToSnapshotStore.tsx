@@ -1,14 +1,14 @@
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import SnapshotStore from "../snapshots/SnapshotStore";
-import { Snapshot } from "@/app/components/snapshots";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { Snapshot } from "@/app/snapshots";
 import { BaseData } from '@/app/components/models/data/Data';
 
 type AsyncOperation<T> = (snapshotId: string, criteria: CriteriaType) => Promise<T>;
 
 
 export function mapToSnapshotStore <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  map: Map<string, Snapshot<T, K> | null>
-): Partial<SnapshotStore<T, K>> {
+  map: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>
+): Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   // Filter out undefined values and map entries to a new Map
   if (map === null) {
     return {
@@ -19,8 +19,8 @@ export function mapToSnapshotStore <T extends  BaseData<any>, K extends T = T, M
   // Check if `map` is a Map
   if (map instanceof Map) {
     // Filter out undefined values and map entries to a new Map
-    const filteredEntries: [string, Snapshot<T, K>][] = Array.from(map.entries())
-      .filter((entry): entry is [string, Snapshot<T, K>] => entry[1] !== null);
+    const filteredEntries: [string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>][] = Array.from(map.entries())
+      .filter((entry): entry is [string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>] => entry[1] !== null);
 
     return {
       data: new Map(filteredEntries)
@@ -36,10 +36,10 @@ export function mapToSnapshotStore <T extends  BaseData<any>, K extends T = T, M
 
 // Core logic used by both functions
 function mapSnapshotCore<T, K>(
-  snapshot: Snapshot<T, K>,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   mapFn: (item: T) => T,
-  callback: (snapshot: Snapshot<T, K>) => void
-): Snapshot<T, K> | null {
+  callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
+): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
   const mappedData = mapFn(snapshot.data);
   if (mappedData) {
     const newSnapshot = { ...snapshot, data: mappedData };
@@ -51,11 +51,11 @@ function mapSnapshotCore<T, K>(
 
 // Asynchronous version
 async function mapSnapshotAsync<T, K>(
-  snapshot: Snapshot<T, K>,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotId: string,
   criteria: CriteriaType,
   mapFn: (item: T) => T,
-  callback: (snapshot: Snapshot<T, K>) => void
+  callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
 ): Promise<string | undefined> | null {
   try {
     const result = await someAsyncOperation(snapshotId, criteria); // Example async task
@@ -72,10 +72,10 @@ async function mapSnapshotAsync<T, K>(
 
 // Synchronous version
 function mapSnapshotSync<T, K>(
-  snapshot: Snapshot<T, K>,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   mapFn: (item: T) => T,
-  callback: (snapshot: Snapshot<T, K>) => void
-): Snapshot<T, K> | null {
+  callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
+): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
   return mapSnapshotCore(snapshot, mapFn, callback);
 }
 
@@ -83,11 +83,11 @@ function mapSnapshotSync<T, K>(
 
 // Asynchronous version
 async function mapSnapshotAsync<T, K>(
-  snapshot: Snapshot<T, K>,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotId: string,
   criteria: CriteriaType,
   mapFn: (item: T) => T,
-  callback: (snapshot: Snapshot<T, K>) => void
+  callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
 ): Promise<string | undefined> | null {
   try {
     const result = await someAsyncOperation(snapshotId, criteria); // Example async task
@@ -104,10 +104,10 @@ async function mapSnapshotAsync<T, K>(
 
 // Synchronous version
 function mapSnapshotSync<T, K>(
-  snapshot: Snapshot<T, K>,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   mapFn: (item: T) => T,
-  callback: (snapshot: Snapshot<T, K>) => void
-): Snapshot<T, K> | null {
+  callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
+): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
   return mapSnapshotCore(snapshot, mapFn, callback);
 }
 

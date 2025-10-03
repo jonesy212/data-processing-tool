@@ -1,23 +1,24 @@
 import { BaseData } from '@/app/components/models/data/Data';
-import { Snapshots } from '@/app/components/snapshots/LocalStorageSnapshotStore';
+import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import endpointConfigurations, { EndpointConfig } from "./endpointConfigurations";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/configs/BaseConfig';
-
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
 
 type SnapshotCategoryType = "User" | "Todo" | "Task" | "Delegate" | "Highlight" |  "Project" |
     "Note" |
     "Comment";
 
 interface SnapshotCategory<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
     id: string;
     name: SnapshotCategoryType;
     description?: string;
-    snapshots: Snapshots<T, K, Meta, ExcludedFields>[]; // All 4 parameters
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 // Update your function to accept SnapshotCategoryType

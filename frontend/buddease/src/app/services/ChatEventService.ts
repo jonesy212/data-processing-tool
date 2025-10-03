@@ -1,7 +1,7 @@
 // ChatEventService.ts
 import { AxiosResponse } from 'axios';
-import axiosInstance from '../api/axiosInstance';
-import ChatEvent from '../components/state/stores/ChatEvent';
+import axiosInstance from '@/app/api/csrfToken'
+import ChatEvent from '@/app/state/stores/ChatEvent';
 import ChatMessage from '../components/communications/chat/ChatMessage';
 
 class ChatEventService {

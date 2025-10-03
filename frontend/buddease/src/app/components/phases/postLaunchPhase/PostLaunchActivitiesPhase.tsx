@@ -1,5 +1,5 @@
 import React from 'react';
-import RefactoringRebrandingPhase from '../../projects/RefactoringRebrandingPhase';
+import RefactoringRebrandingPhase from '@/app/projects/RefactoringRebrandingPhase';
 import CollaborationSettingsPhase from '../collaborationPhase/CollaborationSettingsPhase';
 
 interface PostLaunchActivitiesPhaseProps {

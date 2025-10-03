@@ -1,14 +1,11 @@
 //UserContext.tsx
-import { ActivityStatus } from '@/app/pages/profile/Profile';
 import { DataSharingPreferences } from '@/app/components/settings/PrivacySettings';
-import { createContext, useContext, useEffect, useState } from "react";
-import { User } from "../components/users/User";
-import UserRoles from "../components/users/UserRoles";
-import useAuthentication from "../components/hooks/useAuthentication";
-import useSocialAuthentication from "../components/hooks/commHooks/useSocialAuthentication";
-import React from "react";
-import ProfileAccessControl from "../pages/profile/Profile";
-import { refreshUI } from '@/app/components/snapshots/refreshUI'
+import useAuthentication from "@/app/hooks/useAuthentication";
+import { refreshUI } from '@/app/snapshots/refreshUI';
+import { User } from "@/app/users/User";
+import useSocialAuthentication from "@/components/hooks/commHooks/useSocialAuthentication";
+import UserRoles from "@/users/UserRoles";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface UserContextType {
   user: User | null;

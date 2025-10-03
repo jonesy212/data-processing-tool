@@ -1,8 +1,8 @@
 // EventDataService.tsx
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import axiosInstance from '../components/security/csrfToken';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import axiosInstance from '@/app/api/csrfToken';
 import { AxiosResponse } from "axios";
-import { Config } from "../api/ApiConfig";
+import { Config } from "@/app/api/ApiConfig";
 
 // 1. Define interfaces for dependencies
 interface EventDataService {

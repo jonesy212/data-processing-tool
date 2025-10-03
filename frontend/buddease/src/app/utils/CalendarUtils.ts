@@ -1,8 +1,8 @@
 // Type guard to check if the given value is of type CalendarEventWithCriteria
 // CalendarUtils.ts
 import { CalendarEventWithCriteria } from '@/app/pages/searchs/FilterCriteria';
-import { SnapshotStoreOptions } from '@/app/components/snapshots/SnapshotStoreOptions';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 function isCalendarEventWithCriteria<T>(
     data: T | CalendarEventWithCriteria
     ): data is CalendarEventWithCriteria {

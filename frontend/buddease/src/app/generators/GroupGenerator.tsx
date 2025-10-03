@@ -1,6 +1,6 @@
 // GroupGenerator.tsx
 import React from "react";
-import Group from "../components/communications/chat/Group";
+import Group from "@/app/components/communications/chat/Group";
 
 interface GroupGeneratorProps<T> {
   groups: Group<T>[];

@@ -1,6 +1,6 @@
-import { getUsersData } from "../api/UsersApi";
-import { DocumentNode, DocumentTree } from "../components/users/User";
-import { isUserLoggedIn } from "../pages/forms/utils/CommonLoginLogic";
+import { getUsersData } from "@/app/api/UsersApi";
+import { isUserLoggedIn } from "@/app/pages/forms/utils/CommonLoginLogic";
+import { DocumentNode, DocumentTree } from "@/app/users/User";
 
 // Define a type for your tree structure
 type AppTree = {

@@ -1,13 +1,16 @@
 // FormBuilder.tsx
 
-import DocumentBuilder from "@/app/components/documents/DocumentBuilder";
+import DocumentBuilder from "@/app/documents/editing/DocumentBuilder";
 import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import { DocumentBuilderProps } from "@/app/components/documents/SharedDocumentProps";
-import useFilePath from "@/app/components/hooks/useFilePath";
-import { DocumentSize, ProjectPhaseTypeEnum } from "@/app/components/models/data/StatusType";
-import { AlignmentOptions } from "@/app/components/state/redux/slices/toolbarSlice";
-import AppVersionImpl from "@/app/components/versions/AppVersion";
-import { DocumentTypeEnum } from "@/server/DocumentGenerator";
+import useFilePath from "@/app/hooks/useFilePath";
+import { DocumentSize, ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
+import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
+import AppVersionImpl from "@/app/versions/AppVersion";
+import {
+    DocumentStatusEnum,
+    DocumentTypeEnum
+} from "@/app/typings/documents";
 import React, { useState } from "react";
 import DynamicForm from "./DynamicForm";
 

@@ -1,11 +1,11 @@
 // DatabaseOperations.ts
 
 import {
-  DatabaseConfig,
-  DatabaseService,
-  MysqlDatabaseService,
-  PostgresDatabaseService
-} from "@/app/configs/DatabaseConfig";
+    DatabaseConfig,
+    DatabaseService,
+    MysqlDatabaseService,
+    PostgresDatabaseService
+} from "@/config/DatabaseConfig";
 // Function to perform database operation
 
 const performDatabaseOperation = async (

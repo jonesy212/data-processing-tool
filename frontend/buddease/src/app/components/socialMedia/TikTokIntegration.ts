@@ -1,6 +1,6 @@
 // TikTokIntegration.ts
 import {UserDetails} from '@/app/components/users/User';
-import { Video } from '../state/stores/VideoStore';
+import { Video } from '@/app/state/stores/VideoStore';
 interface TikTokUserDetails {
   userId: string;
   username: string;

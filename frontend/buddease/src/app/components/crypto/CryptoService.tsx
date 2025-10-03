@@ -1,7 +1,7 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
-import { rootStores } from "@/app/components/state/stores/RootStores"; // Import rootStores
+import { rootStores } from "@/app/state/stores/RootStores"; // Import rootStores
 import { action, observable, runInAction } from "mobx";
-import { CryptoActions } from "../actions/CryptoActions";
+import { CryptoActions } from "@/app/actions/CryptoActions";
 
 const API_BASE_URL = endpoints.crypto.settings;
 

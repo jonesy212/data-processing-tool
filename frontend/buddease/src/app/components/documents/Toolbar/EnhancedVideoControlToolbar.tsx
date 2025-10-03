@@ -1,13 +1,13 @@
 // EnhancedVideoControlToolbar.tsx
+import { ToolbarActions } from '@/app/actions/ToolbarActions';
 import { handleApiError } from '@/app/api/ApiLogs';
-import ParticipantData from '@/app/components/hooks/dataHooks/RealtimeUpdatesComponent';
 import { User } from '@/app/components/users/User';
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import ParticipantData from '@/app/hooks/dataHooks/RealtimeUpdatesComponent';
+import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
 import { AxiosError } from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { ToolbarActions } from '../../actions/ToolbarActions';
-import { RootState } from '../../state/redux/slices/RootSlice';
-import NOTIFICATION_MESSAGES from '../../support/NotificationMessages';
-import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
+import { RootState } from '@/app/components/state/redux/slices/RootSlice';
 
 
 const EnhancedVideoControlToolbar = () => {
@@ -156,7 +156,7 @@ const handleParticipantManagement = async () => {
       'Error handling participant management:',
       NOTIFICATION_MESSAGES.Video.PARTICIPANT_MANAGEMENT_ERROR,
       new Date(),
-     NotificationTypeEnum.Error)    // Optionally, dispatch an action to display an error message to the user
+     NotificationTypeEnum.ERROR)    // Optionally, dispatch an action to display an error message to the user
   }
 };
 

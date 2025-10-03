@@ -1,6 +1,6 @@
 // InformationGatheringPage.tsx
 import React from 'react';
-import generateDynamicDummyHook from '../hooks/generateDynamicDummyHook';
+import generateDynamicDummyHook from '@/app/hooks/generateDynamicDummyHook';
 import RootLayout from '@/app/RootLayout';
 
 const InformationGatheringPage: React.FC = () => {

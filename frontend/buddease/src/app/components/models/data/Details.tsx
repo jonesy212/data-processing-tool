@@ -1,26 +1,23 @@
 // components/Details.tsx
 
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { SharedIdentifiers } from '@/app/components/documents/RelatedProps';
 import { Label } from '@/app/components/projects/branding/BrandingSettings';
-import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { FakeData } from "@/app/intelligence/FakeDataGenerator";
+import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
+import { CommonData, Customizations } from "@/app/models/CommonData";
 import { Participant } from "@/app/pages/management/ParticipantManagementPage";
+import { Phase } from "@/app/phases/Phase";
+import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
+import CommonEvent from "@/app/state/stores/CommonEvent";
+import { DetailsItemExtended } from "@/app/state/stores/DetailsListStore";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { SharedMetadata } from "@/config/metadata/MetadataHooks";
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { FakeData } from "../../intelligence/FakeDataGenerator";
-import { CollaborationOptions } from "../../interfaces/options/CollaborationOptions";
-import { Phase } from "../../phases/Phase";
-import { CustomComment } from "../../state/redux/slices/BlogSlice";
-import CommonEvent from "../../state/stores/CommonEvent";
-import { DetailsItemExtended } from "../../state/stores/DetailsListStore";
-import { CommonData, Customizations } from "../CommonData";
 import ListGenerator from "./../../../../app/generators/ListGenerator";
 import { Comment } from "./Comments";
-import { BaseData, Data } from "./Data";
-import { SharedIdentifiers } from '@/app/components/documents/RelatedProps';
-import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/app/configs/BaseConfig';
+import { Data } from "./Data";
 
 export type DataAndEventDetails = Data<any, any, any> | CommonEvent;
 

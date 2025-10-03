@@ -1,7 +1,7 @@
 import { endpoints } from '@/app/api/ApiEndpoints';
 import { createSnapshot } from '@/app/api/SnapshotApi';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
-import { Snapshot } from "@/app/components/snapshots";
+import { Snapshot } from "@/app/snapshots";
 import {
   AddReportBase,
   BaseReport, FinancialReport, ReportOptions,
@@ -10,7 +10,7 @@ import {
 } from '../components/documents/documentation/report/Report';
 import { FinancialMetrics, processFinancialMetrics } from '../components/metrics/FinancialMetrics';
 import { processTechnicalSpecifications, TechnicalSpecifications } from '../components/metrics/TechnicalSpecifications';
-import { createSnapshotInstance } from '../components/snapshots/createSnapshotInstance';
+import { createSnapshotInstance } from '@/app/snapshots/createSnapshotInstance';
 import { analyzeResearchFindings, ResearchFindings } from '../pages/searchs/ResearchFindings';
 
 // Define the API base URL for reports

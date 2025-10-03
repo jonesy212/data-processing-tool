@@ -1,4 +1,4 @@
-import { csrfToken } from "@/app/components/security/csrfToken";
+import axiosInstance from '@/app/api/csrfToken';
 
 // HeadersConfig.tsx
 export interface HeadersConfig {
@@ -9,7 +9,7 @@ const headersConfig: HeadersConfig = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'Authorization': `Bearer ${localStorage.getItem('accessToken')}` || '', // Use localStorage for token
-    'X-CSRF-Token': csrfToken,
+    'X-CSRF-Token': axiosInstance,
     // Add other headers as needed
 };
 

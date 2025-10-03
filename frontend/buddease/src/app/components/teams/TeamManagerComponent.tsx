@@ -1,7 +1,7 @@
 // TeamManagerComponent.tsx
 import React, { useState } from 'react';
-import { useAssignTeamMemberStore } from '../state/stores/AssignTeamMemberStore';
-import { useTeamManagerStore } from '../state/stores/TeamStore';
+import { useAssignTeamMemberStore } from '@/app/state/stores/AssignTeamMemberStore';
+import { useTeamManagerStore } from '@/app/state/stores/TeamStore';
 
 interface TeamAssignmentSnapshotProps {
   teamId: string;

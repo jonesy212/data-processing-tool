@@ -1,4 +1,4 @@
-import SortCriteria from "@/app/components/settings/SortCriteria";
+import SortCriteria from "@/app/settings/SortCriteria";
 import React from "react";
 
 interface TaskSort {

@@ -6,9 +6,9 @@ import ProfessionalTraderContentManagement from '@/app/pages/personas/Profession
 import ProfessionalTraderDashboard from '@/app/pages/personas/ProfessionalTraderDashboard';
 import ProfessionalTraderDocuments from '@/app/pages/personas/ProfessionalTraderDocuments';
 import ProfessionalTraderProfile from '@/app/pages/personas/ProfessionalTraderProfile';
+import { tradingPhases } from '@/config/trading/TradingPhaseConfig';
 import React, { useState } from "react";
-import { TraderCallsProps } from '../../trading/Trades';
-import { tradingPhases } from '../../trading/TradingPhaseConfig';
+import { TraderCallsProps } from '@/app/components/trading/Trades';
 import RiskAssessment from './RiskAssessment';
 import TraderTypesSelection from './TraderTypesSelection';
 import VerificationProcess from './VerificationProcess';

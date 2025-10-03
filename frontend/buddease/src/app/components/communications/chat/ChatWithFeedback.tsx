@@ -1,10 +1,10 @@
 // ChatWithFeedback.tsx
 import React, { useEffect, useState } from 'react';
-import FeedbackLoop from '../../FeedbackLoop';
-import { Feedback } from '../../support/Feedback';
-import FeedbackService from '../../support/FeedbackService';
+import FeedbackLoop from '@/app/features/feedback/FeedbackLoop';
+import { Feedback } from '@/app/components/support/Feedback';
+import FeedbackService from "@/app/api/service/FeedbackService";
 import ChatRoom from './ChatRoom'; // Import the ChatRoom component
-import { Channel, ChannelRole, ChannelType } from '../../interfaces/chat/Channel';
+import { Channel, ChannelRole, ChannelType } from '@/app/components/interfaces/chat/Channel';
 import ChatMessageData from './ChatRoomDashboard';
 import ChatEventService from '@/app/services/ChatEventService';
 import ChatMessage from './ChatMessage';

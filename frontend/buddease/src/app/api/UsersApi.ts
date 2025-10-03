@@ -1,8 +1,8 @@
+import Logger from '@/app/libraries/logging/Logger';
+import { databaseConfig } from '@/config/DatabaseConfig';
 import { Dispatch, UnknownAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import Logger from '../components/logging/Logger';
 import { User } from '../components/users/User';
-import { databaseConfig } from '../configs/DatabaseConfig';
 import UserService from './ApiUser';
 
 // Function to log API errors

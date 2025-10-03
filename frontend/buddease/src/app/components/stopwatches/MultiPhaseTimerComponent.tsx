@@ -1,7 +1,7 @@
 // MultiPhaseTimerComponent.tsx
 import React, { useState, useEffect } from 'react';
 import { Phase } from '../phases/Phase';
-import { PhaseHookConfig } from '../hooks/phaseHooks/PhaseHooks';
+import { PhaseHookConfig } from '@/app/hooks/phaseHooks/PhaseHooks';
 
 
 interface MultiPhaseTimerProps {

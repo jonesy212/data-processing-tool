@@ -2,19 +2,19 @@
 
 import { handleApiError } from "@/app/api/ApiLogs";
 import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/context/NotificationContext";
+import {
+    getFromLocalStorage,
+    saveToLocalStorage,
+} from "@/app/hooks/useLocalStorage";
+import AppTreeService from "@/app/services/AppTreeService";
+import { ReassignEventResponse } from "@/app/state/stores/AssignEventStore";
+import { isDataRecentEnough } from "@/app/utils/isDataRecentEnough";
 import { setThreshold } from '@/app/utils/setThresholdUtils';
 import { AxiosError } from "axios";
-import {
-  getFromLocalStorage,
-  saveToLocalStorage,
-} from "../components/hooks/useLocalStorage";
-import { ReassignEventResponse } from "../components/state/stores/AssignEventStore";
-import AppTreeService from "../services/AppTreeService";
-import { isDataRecentEnough } from "../utils/isDataRecentEnough";
  
 const RESPONSES_STORAGE_KEY = 'responses';
 
@@ -111,7 +111,7 @@ class AppTreeApiService {
         "Refreshing app tree from API",
         {},
         new Date(),
-        NotificationTypeEnum.Info
+        NotificationTypeEnum.INFO
       );
   
       // Fetch updated app tree data from the API

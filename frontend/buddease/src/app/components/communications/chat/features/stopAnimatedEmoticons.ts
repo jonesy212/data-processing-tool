@@ -1,5 +1,5 @@
-import useErrorHandling from "@/app/components/hooks/useErrorHandling";
-import { AnimationLogger, FileLogger } from "@/app/components/logging/Logger";
+import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { AnimationLogger, FileLogger } from "@/app/libraries/logging/Logger";
 import { useNotification } from "@/app/context/NotificationContext";
 const { handleError } = useErrorHandling(); // Integrate error handling
 

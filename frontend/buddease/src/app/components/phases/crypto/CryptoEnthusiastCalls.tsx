@@ -5,12 +5,12 @@ import { DataAnalysisAction, DataAnalysisDispatch } from '@/app/typings/dataAnal
 import { Dispatch } from '@reduxjs/toolkit';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import userService from '../../../api/ApiUser';
-import { authToken } from '../../auth/authToken';
-import useTwoFactorAuthentication from '../../hooks/authentication/useTwoFactorAuthentication';
-import DataFilterForm from '../../models/data/DataFilterForm';
-import SnapshotList from '../../snapshots/SnapshotList';
-import { TraderCallsProps } from '../../trading/Trades';
+import userService from '@/app/components/api/ApiUser';
+import { authToken } from '@/app/components/auth/authToken';
+import useTwoFactorAuthentication from '@/app/hooks/authentication/useTwoFactorAuthentication';
+import DataFilterForm from '@/app/components/models/data/DataFilterForm';
+import SnapshotList from '@/app/snapshots/SnapshotList';
+import { TraderCallsProps } from '@/app/components/trading/Trades';
 
 interface CryptoEnthusiastCallsProps extends TraderCallsProps {
   // Define any props needed for the component

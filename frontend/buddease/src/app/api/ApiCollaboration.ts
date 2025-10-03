@@ -4,8 +4,8 @@ import { endpoints } from '@/app/api/ApiEndpoints';
 import { handleApiError } from '@/app/api/ApiLogs';
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError, AxiosResponse } from 'axios';
-import { CollaborationLogger } from '../components/logging/Logger';
-import axiosInstance from './axiosInstance';
+import { CollaborationLogger } from '@/app/libraries/logging/Logger';
+import axiosInstance from '@/app/api/csrfToken'
 
 
 const API_BASE_URL = endpoints.collaborationTools

@@ -2,19 +2,19 @@
 // import { endpoints } from './ApiEndpoints';
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 
+import { fetchUserIdsFromDatabase } from "@/app/api/ApiDatabase";
+import axiosInstance from '@/app/api/csrfToken';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import { addLog } from '@/app/state/redux/slices/LogSlice';
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { notificationStore } from '@/app/features/support/NotificationProvider';
 import { AxiosError, AxiosResponse } from 'axios';
-import { fetchUserIdsFromDatabase } from "../api/ApiDatabase";
 import HighlightEvent from '../components/documents/screenFunctionality/HighlightEvent';
-import { useDataStore } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { addLog } from '../components/state/redux/slices/LogSlice';
-import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
-import { notificationStore } from '../components/support/NotificationProvider';
+import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { YourResponseType } from '../components/typings/types';
-import { Version } from '../components/versions/Version';
-import { StructuredMetadata } from "../configs/StructuredMetadata";
+import { Version } from '../versions/Version';
 import { handleApiError } from './ApiLogs';
-import axiosInstance from './axiosInstance';
 import { endpoints } from './endpointConfigurations';
 import headersConfig from './headers/HeadersConfig';
 
@@ -242,7 +242,7 @@ const updateData = async (dataId: number, newData: any): Promise<any> => {
       successMessage,
       { dataId },
       new Date(),
-      NotificationTypeEnum.Success,
+      NotificationTypeEnum.SUCCESS,
       {}
     );
 
@@ -258,7 +258,7 @@ const updateData = async (dataId: number, newData: any): Promise<any> => {
       errorMessageId,
       { dataId, error: errorMessage },
       new Date(),
-      NotificationTypeEnum.Error
+      NotificationTypeEnum.ERROR
     );
 
     throw error;

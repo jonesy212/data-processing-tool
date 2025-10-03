@@ -1,14 +1,14 @@
 // TradeData.tsx
 import React from 'react';
 import { T, K, Meta} from "@/app/components/models/data/dataStoreMethods";
-import CommonDetails from '../models/CommonData';
+import CommonDetails from '@/app/models/CommonData';
 import { CommonData, Customizations } from '../models/CommonDetails';
-import { Data, DataDetailsProps } from '../models/data/Data';
-import { Tag } from '../models/tracker/Tag';
+import { Data, DataDetailsProps } from '@/app/models/data/Data';
+import { Tag } from '@/appp/models/tracker/Tag';
 import { Phase } from '../phases/Phase';
-import { AnalysisTypeEnum } from "../projects/DataAnalysisPhase/AnalysisType";
-import { DataAnalysisResult } from "../projects/DataAnalysisPhase/DataAnalysisResult";
-import { DetailsItemExtended } from '../state/stores/DetailsListStore';
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
+import { DetailsItemExtended } from '@/app/state/stores/DetailsListStore';
 
 // Define the TradeData interface extending the CommonData interface
 interface TradeData 
@@ -18,7 +18,7 @@ extends CommonData<T, K, Meta, ExcludedFields>, DataDetailsProps<Data> {
   tradeType: string;
   tradeAmount: number;
   tradeDate?: Date;
-  phase?: Phase;
+  phase?: PhaseDefault | null;
   isActive?: boolean;
   analysisType?: AnalysisTypeEnum;
   analysisResults?: DataAnalysisResult<T>[];

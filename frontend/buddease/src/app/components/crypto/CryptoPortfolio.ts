@@ -1,7 +1,7 @@
 import { BaseData } from '@/app/components/models/data/Data';
-import { Snapshot } from "@/app/components/snapshots";
-import SnapshotStore from '@/app/components/snapshots/SnapshotStore';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { Snapshot } from "@/app/snapshots";
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { logTradeActivity, updateUserPortfolio } from './portfolioService';
 import { getMarketPrice } from './priceService';
 
@@ -106,10 +106,10 @@ export const fetchSnapshotAndCryptoData = async <
     K extends T = T,
     Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >(
-    snapshotContainer: SnapshotStore<T, K>,
+    snapshotContainer: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
     cryptoPortfolio: CryptoPortfolio
-  ): Promise<{ snapshot: Snapshot<T, K>; portfolio: CryptoPortfolio }> => {
+  ): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; portfolio: CryptoPortfolio }> => {
     // Fetch snapshot and portfolio data
     const snapshot = snapshotContainer[snapshotId];
     return { snapshot, portfolio: cryptoPortfolio };

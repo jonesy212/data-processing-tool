@@ -1,4 +1,4 @@
-import { RetryConfig } from "@/app/configs/ConfigurationService";
+import { RetryConfig } from "@/config/ConfigurationService";
 import { useEffect, useState } from "react";
 
 const connectToChatWebSocket = (roomId: any, retryConfig: RetryConfig) => {

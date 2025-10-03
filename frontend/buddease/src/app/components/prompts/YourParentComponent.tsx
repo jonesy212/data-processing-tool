@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import useSearchPagination from "../hooks/commHooks/useSearchPagination";
-import useAsyncHookLinker from "../hooks/useAsyncHookLinker";
+import useSearchPagination from '@/app/hooks/commHooks/useSearchPagination';
+import useAsyncHookLinker from "@/app/hooks/useAsyncHookLinker";
 import PromptComponent from "./PromptComponent";
 import { PromptPageProps } from "./PromptPage";
 

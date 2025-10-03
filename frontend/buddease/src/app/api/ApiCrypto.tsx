@@ -2,11 +2,11 @@ import { handleApiError } from '@/app/api/ApiLogs';
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { AxiosError } from 'axios';
 import { observable, runInAction } from 'mobx';
-import { markTaskAsComplete, markTodoAsComplete } from '../components/state/redux/slices/ApiSlice';
-import NOTIFICATION_MESSAGES from '../components/support/NotificationMessages';
+import { markTaskAsComplete, markTodoAsComplete } from '@/app/state/redux/slices/ApiSlice';
+import NOTIFICATION_MESSAGES from '@/app/support/NotificationMessages';
 import { ApiActions } from './ApiActions';
 import { endpoints } from './ApiEndpoints';
-import axiosInstance from './axiosInstance';
+import axiosInstance from '@/app/api/csrfToken'
 
 const API_BASE_URL = endpoints.crypto;
 

@@ -1,7 +1,7 @@
 // CustomEvent.ts
-import { SharedSnapshotEvent } from "@/app/typings/eventTypes";
-import { ExtendedCalendarEvent } from "../calendar/CalendarEventTimingOptimization";
-import { K, T } from "../models/data/dataStoreMethods";
+import { SharedSnapshotEvent } from "@/app/typings/appEventTypes";
+import { ExtendedCalendarEvent } from "@/app/calendar/CalendarEventTimingOptimization";
+import { K, T } from "@/app/models/data/dataStoreMethods";
 
 const ClipboardData = {
   onCopy: (content: string) => {},

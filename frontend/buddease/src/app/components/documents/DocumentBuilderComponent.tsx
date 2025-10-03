@@ -2,12 +2,12 @@
 import { BaseData } from '@/app/components/models/data/Data';
 import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
 import { ExcludedFields } from '@/app/components/routing/Fields';
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { useDispatch } from 'react-redux';
-import { DocumentObject } from "../state/redux/slices/DocumentSlice";
 import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
-import DocumentBuilder, { saveDocument } from "./DocumentBuilder";
+import DocumentBuilder, { saveDocument } from "@/app/documents/editing/DocumentBuilder";
 import { getDefaultDocumentOptions } from "./DocumentOptions";
 
 const dispatch = useDispatch()

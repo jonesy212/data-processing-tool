@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ToggleSwitch from "./../../components/libraries/menu/ToggleSwitch"
 import { toggleTask } from "@/app/api/TasksApi"
 import Task from "@/app/components/models/tasks/Task";
-import { RootState } from "../state/redux/slices/RootSlice";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
 
 const ToggleSwitchContainer: React.FC<{ taskId: string }> = ({ taskId }) => {
   const dispatch = useDispatch();

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { createPhaseHook, idleTimeoutDuration } from "../hooks/phaseHooks/PhaseHooks";
-import { navigateToCalendarPage } from "../navigation/navigateToCalendar";
-import { CustomPhaseHooks, Phase } from "../phases/Phase";
-import axiosInstance from "../security/csrfToken";
+import { createPhaseHook, idleTimeoutDuration } from "@/app/hooks/phaseHooks/PhaseHooks";
+import { navigateToCalendarPage } from "@/app/navigation/navigateToCalendar";
+import { CustomPhaseHooks, Phase } from "@/app/phases/Phase";
+import axiosInstance from '@/app/api/csrfToken';
 
 /**
  * Function to update state with additional data

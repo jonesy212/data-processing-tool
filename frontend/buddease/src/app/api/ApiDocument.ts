@@ -1,36 +1,34 @@
 // ApiDocument.ts
-import { LanguageEnum } from '@/app/components/communications/LanguageEnum';
+import axiosInstance from "@/app/api/csrfToken";
+import headersConfig from "@/app/api/headers/HeadersConfig";
+import { LanguageEnum } from '@/app/communications/LanguageEnum';
+import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { Presentation } from "@/app/components/documents/Presentation";
 import { BaseData } from '@/app/components/models/data/Data';
 import Collaborator from "@/app/components/models/TeamMembers";
 import {
-    NotificationTypeEnum,
-    useNotification,
+    useNotification
 } from "@/app/context/NotificationContext";
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { AxiosError } from "axios";
-import { current } from "immer";
+import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
+import { DocumentActions } from "@/app/tokens/DocumentActions";
 import {
     DocumentStatusEnum,
     DocumentTypeEnum,
-} from "../../server/DocumentGenerator";
-import { DocumentOptions } from "../components/documents/DocumentOptions";
-import { Presentation } from "../components/documents/Presentation";
-import { DocumentObject } from "../components/state/redux/slices/DocumentSlice";
-import { DatabaseConfig } from "../configs/DatabaseConfig";
-import { DocumentActions } from "../tokens/DocumentActions";
+} from "@/app/typings/documents";
+import { DatabaseConfig } from "@/config/DatabaseConfig";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { AxiosError } from "axios";
+import { current } from "immer";
 import { K, T } from './../components/models/data/dataStoreMethods';
-// import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
-import axiosInstance from "./axiosInstance";
-import headersConfig from "./headers/HeadersConfig";
 
 
-import { ClientInformation, CustomMediaSession } from '../../server/database/ClientInformation';
+import { ClientInformation, CustomMediaSession } from '@/app/components/server/database/ClientInformation';
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { Document } from '@/app/state/stores/DocumentStore';
 import { DocumentData } from '../components/documents/DocumentBuilder';
 import { Content } from '../components/models/content/AddContent';
 import FileData from '../components/models/data/FileData';
-import { WritableDraft } from "../components/state/redux/ReducerGenerator";
-import { Document } from '../components/state/stores/DocumentStore';
 import { StructuredMetadata } from '../configs/StructuredMetadata';
 import { endpoints } from './endpointConfigurations';
 // Define the API base URL

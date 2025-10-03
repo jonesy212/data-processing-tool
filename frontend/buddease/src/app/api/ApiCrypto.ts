@@ -1,14 +1,14 @@
 // ApiCrypto.ts
 
+import axiosInstance from "@/app/api/csrfToken";
+import { headersConfig } from "@/app/components/shared/SharedHeaders";
 import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/context/NotificationContext";
 import { AxiosError } from "axios";
-import { headersConfig } from "../components/shared/SharedHeaders";
 import { endpoints } from "./ApiEndpoints";
-import axiosInstance from "./axiosInstance";
 
 const API_BASE_URL = endpoints.crypto;
 
@@ -88,7 +88,7 @@ export const addCrypto = async (newCrypto: any): Promise<void> => {
       successMessage,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error) {
     const errorMessage = "Failed to add crypto";
@@ -114,7 +114,7 @@ export const removeCrypto = async (cryptoId: string): Promise<void> => {
       successMessage,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error) {
     // Handle errors
@@ -147,7 +147,7 @@ export const updateCrypto = async (
       successMessage,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error) {
     // Handle errors

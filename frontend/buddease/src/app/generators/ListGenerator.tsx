@@ -1,7 +1,7 @@
 import { BaseData } from '@/app/components/models/data/Data';
-import DetailsListItem, { AllProperties } from "../components/models/data/DetailsListItem";
-import { DetailsItem } from "../components/state/stores/DetailsListStore";
-import { StructuredMetadata } from "../configs/StructuredMetadata";
+import DetailsListItem, { AllProperties } from "@/app/components/models/data/DetailsListItem";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 // Define a new type for DetailsItem with optional properties
 type DetailsItemCommon<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = DetailsItem<Partial<AllProperties<T, K>>>;

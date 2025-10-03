@@ -1,6 +1,6 @@
 // cryptoDocumentManager.ts
-import { encryptString } from "../security/encryptString";
-import { DocumentTree } from "../users/User";
+import { encryptString } from "@/app/security/encryptString";
+import { DocumentTree } from "@/app/users/User";
 import { CryptoDocument } from "./cryptoDocument";
 
 

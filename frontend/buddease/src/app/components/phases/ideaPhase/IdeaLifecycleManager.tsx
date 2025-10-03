@@ -1,8 +1,8 @@
 // IdeaLifecycleManager.tsx
 import React, { useState } from 'react';
-import ConceptDevelopment from '../../users/userJourney/ConceptDevelopment';
-import IdeaValidation from '../../users/userJourney/IdeaValidation';
-import ProofOfConcept from '../../users/userJourney/ProofOfConcept';
+import ConceptDevelopment from '@/app/components/users/userJourney/ConceptDevelopment';
+import IdeaValidation from '@/app/components/users/userJourney/IdeaValidation';
+import ProofOfConcept from '@/app/components/users/userJourney/ProofOfConcept';
 import { IdeaLifecyclePhase } from './IdeaLifecyclePhase';
 
 

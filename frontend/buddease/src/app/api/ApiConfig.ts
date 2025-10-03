@@ -1,8 +1,8 @@
 import { handleApiError } from "@/app/api/ApiLogs";
+import { sanitizeInput } from "@/app/components/security/SanitizationFunctions";
+import { SharedConfig } from '@/config/BaseConfig';
 import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
-import { sanitizeInput } from "../components/security/SanitizationFunctions";
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { SharedConfig } from '@/app/configs/BaseConfig'
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 // Import any other necessary dependencies
 
 export interface Config extends SharedConfig {
@@ -69,7 +69,7 @@ class ConfigManager {
       "API configuration rolled back to default.",
       new Date,
       NOTIFICATION_MESSAGES.Config.CONFIG_ROLLEDBACK,
-      NotificationTypeEnum.Info
+      NotificationTypeEnum.INFO
    
     );
   }

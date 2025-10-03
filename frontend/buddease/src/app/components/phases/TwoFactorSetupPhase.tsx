@@ -1,7 +1,7 @@
 // TwoFactorSetupPhase component
 import React from "react";
 import { useState } from "react";
-import axiosInstance from "../security/csrfToken";
+import axiosInstance from '@/app/api/csrfToken';
 
 // TwoFactorSetupPhase component
 const TwoFactorSetupPhase: React.FC<{ onSetupComplete: () => void }> = ({

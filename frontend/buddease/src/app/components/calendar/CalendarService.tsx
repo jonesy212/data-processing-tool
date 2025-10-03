@@ -1,10 +1,10 @@
 import { handleApiError } from '@/app/api/ApiLogs';
+import axiosInstance from '@/app/api/csrfToken';
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import { CalendarEvent } from '@/app/state/stores/CalendarEvent';
 import { AxiosError, AxiosResponse } from 'axios';
 import { observable, runInAction } from 'mobx';
-import axiosInstance from '../security/csrfToken';
-import { CalendarEvent } from '../state/stores/CalendarEvent';
-import NOTIFICATION_MESSAGES from '../support/NotificationMessages';
 
 
 interface FetchEventsResponse {
@@ -46,7 +46,7 @@ export const calendarService = observable({
         "Remove Event Error",
         NOTIFICATION_MESSAGES.CalendarEvents.REMOVE_EVENT_ERROR,
         new Date(),
-         NotificationTypeEnum.Error
+         NotificationTypeEnum.ERROR
       );
 
       throw error;
@@ -121,7 +121,7 @@ export const calendarService = observable({
         "Error",
         NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_ERROR, "Reassign Event Error",
         new Date,
-        NotificationTypeEnum.Error
+        NotificationTypeEnum.ERROR
       );
       throw error;
     }

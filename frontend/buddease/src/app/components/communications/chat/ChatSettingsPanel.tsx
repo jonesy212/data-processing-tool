@@ -2,9 +2,9 @@ import React from "react";
 
 import userSettings from '@/app/configs/UserSettings';
 import { useEffect, useState } from 'react';
-import { useAuth } from '../../auth/AuthContext';
-import { UserData } from '../../users/User';
-import { subscribeToRealtimeUpdates } from '../../web3/dAppAdapter/functionality/RealtimeUpdates';
+import { useAuth } from '@/app/components/auth/AuthContext';
+import { UserData } from '@/app/components/users/User';
+import { subscribeToRealtimeUpdates } from '@/app/components/web3/dAppAdapter/functionality/RealtimeUpdates';
 
 // Define a type for chat settings
 interface ChatSettings {
@@ -18,6 +18,10 @@ interface ChatSettings {
   enableDecentralizedStorage: boolean;
   collaborationPreference1: string | undefined;
   collaborationPreference2: string | undefined;
+  platforms: ('slack' | 'teams' | 'discord' | 'whatsapp')[];
+  messageFormat: 'text' | 'rich' | 'interactive';
+  mentionUsers: boolean;
+  channelId?: string;
   close?: () => void;
   // Add more settings as needed
 }

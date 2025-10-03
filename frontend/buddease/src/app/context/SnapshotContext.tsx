@@ -1,18 +1,17 @@
 // // SnapshotContext.ts
-import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, } from "@/app/components/models/data/Data";
-import { SnapshotData } from '@/app/components/snapshots';
-import { SnapshotStoreOptions } from '@/app/components/snapshots/SnapshotStoreOptions';
-import { createContext, ReactNode, useContext, useState } from "react";
+import { SnapshotData } from '@/app/snapshots';
 import {
     Snapshot,
-} from "../components/snapshots/LocalStorageSnapshotStore";
+} from "@/app/snapshots/LocalStorageSnapshotStore";
+import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
+import { createContext, ReactNode, useContext, useState } from "react";
 
-import { SnapshotStoreProps } from '@/app/components/snapshots/useSnapshotStore';
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMemo } from 'react';
-import { createSnapshotInstance } from "../components/snapshots/createSnapshotInstance";
-import SnapshotStore from "../components/snapshots/SnapshotStore";
-import { StructuredMetadata } from "../configs/StructuredMetadata";
 
 const fetchSnapshotFromAPI = async <T extends BaseData<any> = BaseData<any, any>, K extends T = T>(id: string) => {
   try {
@@ -29,45 +28,50 @@ const fetchSnapshotFromAPI = async <T extends BaseData<any> = BaseData<any, any>
 };
 
 interface SnapshotContextType<
-    T extends BaseData<any> = BaseData<any, any>, 
-    K extends T = T,
-    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
-  snapshot: Snapshot<T, K> | null;
-  snapshots: Snapshot<T, K>[]; // Using generic types
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Using generic types
   createSnapshot: (
     id: string,
     snapshotData: SnapshotData<any, T>,
     category: string
   ) => void;
-  fetchSnapshot: (id: string) => Promise<Snapshot<T, K>>;
-  snapshotStore: SnapshotStore<T, K>;
-  snapshotMap: Map<string, Snapshot<T, K>>; // Add this property
+  fetchSnapshot: (id: string) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  snapshotMap: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>; // Add this property
 }
 
 
 // Create the context with default values
 export const SnapshotContext = createContext<
-  SnapshotContextType<any, any> | undefined
+  SnapshotContextType<any, any, any, any, any, any> | undefined
 >(undefined);
 
 export const SnapshotProvider = <
-  T extends BaseData<any>,
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >({
   children,
 }: {
   children: ReactNode;
 }) => {
-  const [snapshot, setSnapshot] = useState<Snapshot<T, K> | null>(null);
-  const [snapshots, setSnapshots] = useState<Snapshot<T, K>[]>([]);
+  const [snapshot, setSnapshot] = useState<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(null);
+  const [snapshots, setSnapshots] = useState<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>([]);
 
 
   // Initialize the snapshotMap from the snapshots array
   const snapshotMap = useMemo(() => {
-    const map = new Map<string, Snapshot<T, K>>();
+    const map = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
 
 
     if (!snapshots || snapshots.length === 0) {
@@ -95,7 +99,7 @@ export const SnapshotProvider = <
     category: Category,
     storeProps?: SnapshotStoreProps<T, K>, // Optional parameter
     storeOptions?: SnapshotStoreOptions<T, K, Meta, ExcludedFields> // Optional parameter
-  ): Promise<Snapshot<T, K>> => {
+  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
     return new Promise(async (resolve, reject) => {
       // Check if storeProps is defined before destructuring
       if (storeProps) {
@@ -115,7 +119,7 @@ export const SnapshotProvider = <
         try {
           const newSnapshot = createSnapshotInstance(
             snapshotData.data as T,
-            new Map<string, Snapshot<T, K>>(), // Pass a new or existing metadata map
+            new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(), // Pass a new or existing metadata map
             id,
             category,
             null, // Pass a `snapshotStore` if applicable
@@ -203,7 +207,7 @@ export const useSnapshot = <
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(): { snapshotMap: Map<string, Snapshot<T, K, Meta, ExcludedFields>> } => {
+>(): { snapshotMap: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> } => {
   const context = useContext(SnapshotContext);
 
   if (!context) {
@@ -211,14 +215,14 @@ export const useSnapshot = <
   }
 
   return {
-    snapshotMap: context.snapshotMap as Map<string, Snapshot<T, K, Meta, ExcludedFields>>,
+    snapshotMap: context.snapshotMap as Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   };
 };
 
 
 // function fetchSnapshotFromAPI<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
 //   id: string
-// ): Promise<Snapshot<T, K>> {
+// ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
 //   return new Promise((resolve, reject) => {
 //     // Wrapping async logic in a Promise
 //     fetch(`/api/snapshots/${id}`)
@@ -233,10 +237,10 @@ export const useSnapshot = <
 //       .then((data) => {
         
 //       // Use type assertion to ensure the data fits the expected structure
-//       const fetchedData = data as FetchedSnapshotStore<T, K>;
+//       const fetchedData = data as FetchedSnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
-//         // Ensure the data fits the Snapshot<T, K> type
-//         const fetchedSnapshot: Snapshot<T, K> = {
+//         // Ensure the data fits the Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> type
+//         const fetchedSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
 //           id: fetchedData.snapshotStore.id,
 //           data: fetchedData.data,
 //           storeId: fetchedData.snapshotStore.storeId,
@@ -459,7 +463,7 @@ export const useSnapshot = <
 
 // function fetchSnapshotStoreFromAPI<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
 //   id: string
-// ): Promise<SnapshotStore<T, K>> {
+// ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
 //   return new Promise((resolve, reject) => {
 //     // Wrapping async logic in a Promise
 //     fetch(`/api/snapshotStores/${id}`)
@@ -473,10 +477,10 @@ export const useSnapshot = <
 //       })
 //       .then((data) => {
 //         // Use type assertion to ensure the data fits the expected structure
-//         const fetchedData = data as FetchedSnapshotStore<T, K>;
+//         const fetchedData = data as FetchedSnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
-//         // Ensure the data fits the SnapshotStore<T, K> type
-//         const fetchedSnapshotStore: SnapshotStore<T, K> = {
+//         // Ensure the data fits the SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> type
+//         const fetchedSnapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
 //           id: fetchedData.snapshotStore.id,
 //           snapshots: fetchedData.snapshotStore.snapshots,
 //           snapshotCount: fetchedData.snapshotStore.snapshots.length, // Adding snapshotCount

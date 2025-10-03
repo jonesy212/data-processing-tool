@@ -1,27 +1,27 @@
 // FileSharingComponent.tsx
 import { endpoints } from "@/app/api/ApiEndpoints";
-import axiosInstance from "@/app/api/axiosInstance";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import axiosInstance from '@/app/api/csrfToken';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import CustomBox from "@/app/containers/CustomBox";
+import useFileUpload from "@/app/hooks/commHooks/useFileUpload";
+import DynamicInputFields from "@/app/hooks/userInterface/DynamicInputFieldsProps";
+import InputLabel, { Input } from "@/app/hooks/userInterface/InputFields";
+import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
+import { SupportedData } from "@/app/models/CommonData";
+import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
+import { DataDetailsComponent } from "@/app/models/teams/Team";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
 import FormControl from "@/app/pages/forms/FormControl";
+import { brandingSettings } from "@/app/branding/BrandingSettings";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import DynamicTypography from "@/app/styling/DynamicTypography";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import MenuDivider from "antd/es/menu/MenuDivider";
 import { Router, useRouter } from "next/router";
 import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import socketIOClient from "socket.io-client";
-import CustomBox from "../containers/CustomBox";
-import useFileUpload from "../hooks/commHooks/useFileUpload";
-import DynamicInputFields from "../hooks/userInterface/DynamicInputFieldsProps";
-import InputLabel, { Input } from "../hooks/userInterface/InputFields";
-import ReusableButton from "../libraries/ui/buttons/ReusableButton";
-import { SupportedData } from "../models/CommonData";
-import { RealtimeDataItem } from "../models/realtime/RealtimeData";
-import { DataDetailsComponent } from "../models/teams/Team";
-import { brandingSettings } from "../projects/branding/BrandingSettings";
-import SnapshotStore from "../snapshots/SnapshotStore";
-import DynamicTypography from "../styling/DynamicTypography";
  
 const API_BASE_URL = endpoints;
 // FileSharingComponent functional component
@@ -47,7 +47,7 @@ const FileSharingComponent: React.FC = <T extends  BaseData<any>, K extends T = 
   const updateCallback = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
     data: SupportedData<T, K, Meta>[],
     events: Record<string, CalendarEvent[]>,
-    snapshotStore: SnapshotStore<T, K>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     dataItems: RealtimeDataItem[]
   ) => {
     // Your update logic here

@@ -1,16 +1,16 @@
-import { useSecureStoreId } from '@/app/components/utils/useSecureStoreId';
+import { useSecureStoreId } from '@/app/hooks/useSecureStoreId';
 // OnboardingHooks.ts
 
 import { makeAutoObservable } from 'mobx';
 import { useEffect } from 'react';
-import { initializeUserData } from '../../pages/onboarding/PersonaBuilderData.js';
-import { useAuth } from '@/server/auth/AuthContext';
-import { Tracker } from '../models/tracker/Tracker';
-import { rootStores } from '../state/stores/RootStores';
-import TrackerStore from '../state/stores/TrackerStore';
-import { DocumentData } from '../documents/DocumentBuilder.jsx';
+import { initializeUserData } from '@/app/pages/onboarding/PersonaBuilderData.js';
+import { useAuth } from '@/context/AuthContext';
+import { Tracker } from '@/app/models/tracker/Tracker';
+import { rootStores } from '@/app/state/stores/RootStores';
+import TrackerStore from '@/app/state/stores/TrackerStore';
+import { DocumentData } from '@/components/documents/DocumentBuilder';
 import { User } from '../users/User.jsx';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '../../../data_analysis/frontend/buddease/src/app/configs/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 class OnboardingPhase {
   id: string;

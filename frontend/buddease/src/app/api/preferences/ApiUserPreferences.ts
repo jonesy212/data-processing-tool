@@ -1,9 +1,9 @@
+import { UserPreferences } from "@/config/UserPreferences";
+import { endpointPreferences } from "@/app/ApiPreferencesEndpoints";
+import axiosInstance from '@/app/api/csrfToken';
 import { NotificationPreferences } from "@/app/components/communications/chat/ChatSettingsModal";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
-import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import { UserPreferences } from "../../configs/UserPreferences";
-import { endpointPreferences } from "../ApiPreferencesEndpoints";
-import axiosInstance from "../axiosInstance";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 
 type ApiUserPreferences = {
   fetchUserPreferences: () => Promise<UserPreferences>;

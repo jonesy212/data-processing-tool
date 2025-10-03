@@ -1,8 +1,8 @@
+import { endpoints } from "@/app/api/ApiEndpoints";
+import axiosInstance from '@/app/api/csrfToken';
 import { useNotification } from "@/app/context/NotificationContext";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { NotificationTypeEnum } from "@/context/NotificationContext";
-import { endpoints } from "../api/ApiEndpoints";
-import axiosInstance from "../api/axiosInstance";
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
 
 const API_BASE_URL = endpoints.generators.generateTransferToken
 const { notify } = useNotification();
@@ -24,7 +24,7 @@ export const generateTransferToken = async () => {
             NOTIFICATION_MESSAGES.TokenUtils.ERROR_GENERATING_TRANSFER_TOKEN,
             {},
             new Date,
-            NotificationTypeEnum.Error);
+            NotificationTypeEnum.ERROR);
         console.error('Error generating transfer token:', error);
         return null;
     }
@@ -41,7 +41,7 @@ export const handleAdminLogin = async () => {
                 NOTIFICATION_MESSAGES.TokenUtils.ERROR_GENERATING_TRANSFER_TOKEN,
                 {},
                 new Date,
-                NotificationTypeEnum.Error);
+                NotificationTypeEnum.ERROR);
             return;
         }
         const response = await axiosInstance.post(endpoints.auth.admin, { token: transferToken });
@@ -55,6 +55,6 @@ export const handleAdminLogin = async () => {
             NOTIFICATION_MESSAGES.TokenUtils.ERROR_GENERATING_TRANSFER_TOKEN,
             {},
             new Date,
-            NotificationTypeEnum.Error);
+            NotificationTypeEnum.ERROR);
     }
 };

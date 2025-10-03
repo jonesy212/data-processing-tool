@@ -1,6 +1,6 @@
-import DynamicEventHandlerExample from "../components/documents/screenFunctionality/ShortcutKeys";
-import DynamicEventHandlerService from "../components/event/DynamicEventHandlerExample";
-import SnapshotList from "../components/snapshots/SnapshotList";
+import DynamicEventHandlerExample from "@/app/components/documents/screenFunctionality/ShortcutKeys";
+import DynamicEventHandlerService from "@/app/components/event/DynamicEventHandlerExample";
+import SnapshotList from "@/app/snapshots/SnapshotList";
 
 const processSnapshotList = (snapshotList: SnapshotList) => {
   // Implement your logic to process the snapshot list here

@@ -1,26 +1,25 @@
 // ApiNotes.ts
+import axiosInstance from "@/app/api/csrfToken";
+import headersConfig from "@/app/api/headers/HeadersConfig";
+import { ModifiedDate } from "@/app/components/documents/DocType";
+import { NoteData } from "@/app/components/documents/NoteData";
 import { BaseData } from '@/app/components/models/data/Data';
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import FolderData from "@/app/components/models/data/FolderData";
 import { Tag } from '@/app/components/models/tracker/Tag';
+import { Encryption } from "@/app/components/security/Encryption";
+import { YourResponseType } from "@/app/components/typings/types";
 import {
-    NotificationTypeEnum,
-    useNotification,
+    useNotification
 } from "@/app/context/NotificationContext";
+import AccessHistory from "@/app/versions/AccessHistory";
+import SearchHistory from "@/app/versions/SearchHistory";
+import Version from "@/app/versions/Version";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from "axios";
-import { ModifiedDate } from "../components/documents/DocType";
-import { NoteData } from "../components/documents/NoteData";
-import FolderData from "../components/models/data/FolderData";
-import { Encryption } from "../components/security/Encryption";
-import { YourResponseType } from "../components/typings/types";
-import AccessHistory from "../components/versions/AccessHistory";
-import SearchHistory from "../components/versions/SearchHistory";
-import Version from "../components/versions/Version";
-import { StructuredMetadata } from "../configs/StructuredMetadata";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import { SearchResponseData } from "./ApiSearch";
-import axiosInstance from "./axiosInstance";
-import headersConfig from "./headers/HeadersConfig";
 
 // Define the API base URL
 const API_BASE_URL = endpoints.notes;

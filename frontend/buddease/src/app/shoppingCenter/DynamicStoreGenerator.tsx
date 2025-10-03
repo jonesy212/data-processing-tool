@@ -1,6 +1,6 @@
 // DynamicStoreGenerator.tsx
 import * as path from 'path';
-import { generateStores } from '../components/state/stores/StoreGenerator';
+import { generateStores } from '@/app/state/stores/StoreGenerator';
 
 const srcPath = path.join(__dirname, 'src');
 

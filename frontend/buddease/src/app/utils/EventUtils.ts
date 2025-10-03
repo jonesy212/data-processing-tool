@@ -1,5 +1,5 @@
-import { BaseEvent, UserEvent, TaskEvent } from "@/app/typings/eventTypes";
-import { EventAttendance } from '../components/calendar/AttendancePrediction';
+import { BaseEvent, TaskEvent, UserEvent } from "@/app/typings/eventTypes";
+import { EventAttendance } from '../calendar/AttendancePrediction';
 import { SystemEvent } from '../components/event/BaseEvent';
 
   // Check if the event is a Task Event
@@ -23,4 +23,4 @@ import { SystemEvent } from '../components/event/BaseEvent';
   }
   
     
-export { isTaskEvent, isUserEvent, isEventAttendance, isSystemEvent }
+export { isEventAttendance, isSystemEvent, isTaskEvent, isUserEvent };

@@ -6,13 +6,13 @@ import { PersonaCard } from "@/app/components/cards/PersonaCard";
 import DetailsList from "@/app/components/lists/DetailsList";
 import {
     SupportedData,
-} from "@/app/components/models/CommonData";
+} from "@/app/models/CommonData";
 import { Data } from "@/app/components/models/data/Data";
 import DetailsProps from "@/app/components/models/data/Details";
 import DetailsListItem from "@/app/components/models/data/DetailsListItem";
-import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
-import DataPreview from "../../../components/users/DataPreview";
-import { PersonaData, PersonaTypeEnum } from "../PersonaBuilder";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
+import DataPreview from "@/app/users/DataPreview";
+import { PersonaData, PersonaTypeEnum } from "@/app/PersonaBuilder";
 import PersonaPanel from "./PersonaPanel";
 import React from "react";
 

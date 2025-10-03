@@ -2,7 +2,7 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { Link } from "react-router-dom";
-import { Task } from "../models/tasks/Task";
+import { Task } from "@/app/models/tasks/Task";
 
 interface TaskProjectListingsProps {
   tasks: Task[];

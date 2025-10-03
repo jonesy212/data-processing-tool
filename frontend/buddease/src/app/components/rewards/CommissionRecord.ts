@@ -1,4 +1,4 @@
-import axiosInstance from "../security/csrfToken";
+import axiosInstance from '@/app/api/csrfToken';
 
 interface CommissionRecord {
     commissionAmount: number;

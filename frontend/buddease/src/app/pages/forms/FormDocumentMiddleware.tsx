@@ -2,7 +2,7 @@
 
 import { DocumentOptions } from '@/app/components/documents/DocumentOptions';
 import React, { useState } from 'react';
-import DocumentBuilder, { DocumentBuilderProps } from './DocumentBuilder';
+import DocumentBuilder, { DocumentBuilderProps } from '@/app/documents/editing/DocumentBuilder';
 import DynamicForm from './DynamicForm';
 
 const FormDocumentMiddleware: React.FC = () => {

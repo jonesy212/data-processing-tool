@@ -1,6 +1,6 @@
 // SQLDoc.ts
 
-import { Task } from "../models/tasks/Task";
+import { Task } from "@/app/models/tasks/Task";
 import { SQLDocument } from "./DocumentInterfaces";
 
 // SQLDocument Implementation

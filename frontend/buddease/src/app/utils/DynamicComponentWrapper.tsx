@@ -1,16 +1,14 @@
-import React from "react";
 import DynamicConfigActionType, {
   DynamicComponentsProvider,
   DynamicConfigType,
   useDynamicComponents,
-} from "../components/DynamicComponentsContext";
-import ChatComponent from "../components/communications/chat/ChatComponent";
-import useErrorHandling from "../components/hooks/useErrorHandling";
+} from "@/app/components/DynamicComponentsContext";
+import useErrorHandling from "@/app/hooks/useErrorHandling";
 import DynamicSelectionControls, {
   Option,
-} from "../components/libraries/animations/DynamicSelectionControls";
-import Logger, { ComponentLogger } from "../components/logging/Logger";
-import { DappProps } from "../components/web3/dAppAdapter/DAppAdapterConfig";
+} from "@/app/libraries/animations/DynamicSelectionControls";
+import Logger, { ComponentLogger } from "@/app/libraries/logging/Logger";
+import React from "react";
 
 interface DynamicComponentProps {
   component: React.ReactNode; // Define the type of the component prop

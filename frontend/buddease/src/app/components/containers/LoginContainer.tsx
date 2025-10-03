@@ -18,12 +18,6 @@ interface RequireContext extends NodeRequire {
   ) => any;
 }
 
-interface LoginResult {
-  success: boolean;
-  error?: Error;
-  dashboardConfig?: any;
-}
-
 interface DashboardModule {
   default: React.ComponentType<any>;
 }

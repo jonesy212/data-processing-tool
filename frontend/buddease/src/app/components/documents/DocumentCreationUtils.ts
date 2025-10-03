@@ -1,6 +1,6 @@
 // DocumentCreationUtils.ts
 import { PDFDocument, rgb } from 'pdf-lib';
-import { DocumentFormattingOptions } from './ DocumentFormattingOptionsComponent';
+import { DocumentFormattingOptions } from '@/components/documents/DocumentFormattingOptionsComponent';
 
 
 export const getFormattedOptions = (userOptions: DocumentFormattingOptions): DocumentFormattingOptions => {

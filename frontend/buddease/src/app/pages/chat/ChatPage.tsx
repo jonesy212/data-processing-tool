@@ -1,14 +1,14 @@
 // ChatPage.tsx
 import RootLayout from "@/app/RootLayout";
 import {
-  Channel,
-  ChannelMember,
-  ChannelMessage,
-  ChannelRole,
-  ChannelType,
-} from "@/app/components/interfaces/chat/Channel";
-import { User } from "@/app/components/users/User";
+    Channel,
+    ChannelMember,
+    ChannelMessage,
+    ChannelRole,
+    ChannelType,
+} from "@/app/interfaces/chat/Channel";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
+import { User } from "@/app/users/User";
 import React, { useEffect, useState } from "react";
 
 // Expand the ChatPageProps interface

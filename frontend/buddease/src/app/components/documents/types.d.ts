@@ -1,6 +1,6 @@
 // types.d.ts
 
-import { DocumentData } from "@/app/components/documents/DocumentBuilder";
+import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 
 type DocumentStatus = 'draft' | 'submitted' | 'approved' | 'rejected' | 'published' | 'restored' | string;
 

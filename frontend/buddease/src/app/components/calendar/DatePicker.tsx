@@ -1,15 +1,8 @@
 // DatePicker.ts
-import React from "react";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import { Label } from "../projects/branding/BrandingSettings";
-import { useState } from "react";
-import Calendar, {CommonCalendarProps} from "./Calendar"; // Assuming Calendar is another component used for date selection
-import CryptoTransaction from "../crypto/CryptoTransaction";
-import { ContentPost } from "../models/content/ContentPost";
-import { Task } from "../models/tasks/Task";
-import { Project } from "../projects/Project";
-import { RootState } from "../state/redux/slices/RootSlice";
-import Milestone from "./CalendarSlice";
+import React, { useState } from "react";
+import Calendar, { CommonCalendarProps } from "@/app/calendar/Calendar"; // Assuming Calendar is another component used for date selection
+import { Label } from "@/app/branding/BrandingSettings";
 
 
 interface DatePickerProps extends CommonCalendarProps{

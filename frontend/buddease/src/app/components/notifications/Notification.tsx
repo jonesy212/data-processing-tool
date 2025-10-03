@@ -1,8 +1,8 @@
 // Notification.ts
+import { ThemeConfigProps } from '@/app/hooks/userInterface/ThemeConfigContext';
+import useNotificationStore from '@/app/state/stores/NotificationStore';
 import { NotificationContext, NotificationTypeEnum } from '@/context/NotificationContext';
 import React, { useContext } from 'react';
-import { ThemeConfigProps } from '../hooks/userInterface/ThemeConfigContext';
-import useNotificationStore from '../state/stores/NotificationStore';
 import { NotificationProps } from '../typings/PropTypes';
 
 interface NotificationStyleProps extends ThemeConfigProps, NotificationProps {}
@@ -43,7 +43,7 @@ const Notification: React.FC<NotificationStyleProps> = ({
         "Notification dismissed", // Message for dismissal
         "Notification dismissed successfully", // Standardized message
         new Date(),
-        NotificationTypeEnum.Info // Notification type for dismissal
+        NotificationTypeEnum.INFO // Notification type for dismissal
       );
     } catch (error) {
       console.error("Error dismissing notification:", error);
@@ -52,7 +52,7 @@ const Notification: React.FC<NotificationStyleProps> = ({
         "Error dismissing notification", // Message for error
         "Error occurred while dismissing notification", // Standardized error message
         new Date(),
-        NotificationTypeEnum.Error // Notification type for error
+        NotificationTypeEnum.ERROR // Notification type for error
       );
     }
   };

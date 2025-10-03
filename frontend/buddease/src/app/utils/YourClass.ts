@@ -1,6 +1,6 @@
-import { DocumentSize } from "../components/models/data/StatusType";
-import { CustomDocumentOptionProps } from "../components/web3/dAppAdapter/DApp";
-import { DappProps, fluenceApiKey } from "../components/web3/dAppAdapter/DAppAdapterConfig";
+import { DocumentSize } from "@/app/models/data/StatusType";
+import { CustomDocumentOptionProps } from "@/app/utils/web3/dAppAdapter/DApp";
+import { DappProps, fluenceApiKey } from "@/app/utils/web3/dAppAdapter/DApp";
 
 
 // YourClass.ts

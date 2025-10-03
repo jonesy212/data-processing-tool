@@ -1,8 +1,8 @@
 // TreeView.tsx
 import DummyCard from "@/app/components/cards/DummyCard";
-import useSearchPagination from "@/app/components/hooks/commHooks/useSearchPagination";
+import useSearchPagination from "@/app/hooks/commHooks/useSearchPagination";
 import React, { useState } from "react";
-import { useSearch } from "../searchs/SearchContext";
+import { useSearch } from "@/app/context/SearchContext";
 // Define a TreeNode component for individual nodes
 const TreeNode = ({
   node,

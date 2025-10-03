@@ -1,9 +1,9 @@
 // Client.ts
 import { Pool, QueryResult } from 'pg';
 
-import clientApiService from "@/app/api/ApiClient";
-import { mapLanguageToEnum } from '../../app/components/communications/Language';
-import { ClientInformation } from './ClientInformation';
+import internalApiService from "@/app/api/ApiClient";
+import { mapLanguageToEnum } from '@/app/components/app/components/communications/Language';
+import { ClientInformation } from '@/server/database/ClientInformation';
 import { DatabasePool } from '@/server/database/DatabasePool'
 
 // Define the structure for ClientConfig
@@ -104,7 +104,7 @@ export class Client {
   async connectWithBackend(tenantId: number): Promise<void> {
     try {
       // Call the client API service to connect with the backend
-      await clientApiService.connectWithTenant(tenantId);
+      await internalApiService.connectWithTenant(tenantId);
     } catch (error) {
       console.error('Error connecting with the backend:', error);
       throw error; // Propagate the error to the caller
@@ -115,7 +115,7 @@ export class Client {
   async executeClientQuery(/* Pass necessary parameters */): Promise<any> {
     try {
       // Call the client API service to execute queries
-      const result = await clientApiService.listClientTasks(/* pass necessary parameters */);
+      const result = await internalApiService.listClientTasks(/* pass necessary parameters */);
 
       // Log a message indicating successful query execution
       console.log('Client query executed successfully');

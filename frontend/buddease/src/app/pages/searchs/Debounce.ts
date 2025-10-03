@@ -1,4 +1,4 @@
-import LazyLoadScriptConfigImpl from "@/app/configs/LazyLoadScriptConfig";
+import LazyLoadScriptConfigImpl from "@/app/components/configs/LazyLoadScriptConfig";
 
 /**
  * Debounces a function to limit the rate at which it is called.

@@ -1,10 +1,10 @@
 import useAsyncHookLinker, {
   AsyncHookLinkerConfig,
-} from "@/app/components/hooks/useAsyncHookLinker";
-import useErrorHandling from "@/app/components/hooks/useErrorHandling";
+} from "@/app/hooks/useAsyncHookLinker";
+import useErrorHandling from "@/app/hooks/useErrorHandling";
 import SearchResultItem from "@/app/components/models/data/SearchResultItem";
 import { useEffect, useState } from "react";
-import { SearchLogger } from "../../components/logging/Logger";
+import { SearchLogger } from "@/app/libraries/logging/Logger";
 import { debounce } from "./Debounce";
 import React from "react";
 

@@ -2,11 +2,11 @@
 import { ListGeneratorProps } from "@/app/generators/ListGenerator";
 import { EditorState } from "draft-js";
 import React from "react";
-import BlogAndContentEditor from "../models/content/BlogAndContentEditor";
-import ContentList from "../models/content/ContentList";
-import { Data } from "../models/data/Data";
-import useContentManagementStore from "../state/stores/ContentStore";
-import ContentType from "../typings/ContentType";
+import BlogAndContentEditor from "@/app/models/content/BlogAndContentEditor";
+import ContentList from "@/app/models/content/ContentList";
+import { Data } from "@/app/models/data/Data";
+import useContentManagementStore from "@/app/state/stores/ContentStore";
+import ContentType from "@/app/typings/ContentType";
 
 
 

@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
+import { CommonCalendarProps } from '@/app/components/calendar/Calendar';
 import { Project } from '../projects/Project';
 import { RootState } from '../state/redux/slices/RootSlice';
-import { CommonCalendarProps } from './Calendar';
 import MonthView from './CalendarMonthView';
 import { YearInfo } from './CalendarYear';
 import { Month } from './Month';

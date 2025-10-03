@@ -1,6 +1,6 @@
-import { Snapshot } from "@/app/components/snapshots";
-import { Data } from "../models/data/Data";
-import Team from "../models/teams/Team";
+import { Snapshot } from "@/app/snapshots";
+import { Data } from "@/app/models/data/Data";
+import Team from "@/app/models/teams/Team";
 
 // Define the type for teamSnapshot
 interface TeamSnapshot extends Snapshot<Data, Data> {

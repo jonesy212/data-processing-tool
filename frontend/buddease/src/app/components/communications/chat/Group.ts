@@ -1,6 +1,6 @@
 import { BlogPost } from "@/app/pages/blog/BlogPost";
-import { Data } from "../../models/data/Data";
-import { Member } from "../../models/teams/TeamMembers";
+import { Data } from "@/app/models/data/Data";
+import { Member } from "@/app/models/teams/TeamMembers";
 
 // Group.ts
 interface Group<T> extends Data{

@@ -1,14 +1,13 @@
 // DataContext.tsx
 import { BaseData } from "@/app/components/models/data/Data";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { createContext, ReactNode, useContext } from "react";
-import { K, T } from "../components/models/data/dataStoreMethods";
 import {
-  DataStore,
-  useDataStore,
-  VersionedData,
-} from "../components/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SnapshotStoreConfig } from "../components/snapshots";
+    DataStore,
+    useDataStore,
+    VersionedData,
+} from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { SnapshotStoreConfig } from "@/app/snapshots";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { createContext, ReactNode, useContext } from "react";
 
 interface DataContextProps<
   T extends BaseData<any> = BaseData<any, any>,

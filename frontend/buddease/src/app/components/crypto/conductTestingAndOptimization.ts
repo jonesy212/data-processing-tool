@@ -3,7 +3,7 @@
 import FeedbackReportGenerator, {
     FeedbackReport,
 } from "@/app/generators/FeedbackReportGenerator";
-import { Feedback } from "../support/Feedback";
+import { Feedback } from "@/app/features/support/Feedback";
 import TradingStrategy, { MarketData, TradingStrategyOptions } from "./TradingStrategy";
 
 const calculateHistoricalVolatility = (prices: number[]): number => {

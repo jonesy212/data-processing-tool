@@ -1,7 +1,7 @@
 // EnthusiastProfile.tsx
 
 import React, { useState } from "react";
-import useTwoFactorAuthentication from "../../hooks/authentication/useTwoFactorAuthentication";
+import useTwoFactorAuthentication from "@/app/hooks/authentication/useTwoFactorAuthentication";
 
 interface EnthusiastProfileProps {
   onComplete: () => void; // Define the onComplete function type

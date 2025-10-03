@@ -1,6 +1,6 @@
 import FileData from '@/app/components/models/data/FileData';
 import { endpoints } from './ApiEndpoints';
-import axiosInstance from './axiosInstance';
+import axiosInstance from '@/app/api/csrfToken'
 
 const { files } = endpoints;
 

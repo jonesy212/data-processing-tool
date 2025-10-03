@@ -1,6 +1,6 @@
 import React from 'react';
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { ExcludedFields } from '@/app/components/routing/Fields';
 

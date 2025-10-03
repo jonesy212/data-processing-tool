@@ -1,24 +1,24 @@
 // TeamManagementService.ts
+import { TeamActions } from "@/app/actions/TeamActions";
 import { handleApiError } from "@/app/api/ApiLogs";
+import axiosInstance from "@/app/api/csrfToken";
+import { useTeamContext } from "@/app/components/context/TeamContext";
+import { Team } from "@/app/components/models/teams/Team";
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/context/NotificationContext";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import {
+    markTaskAsComplete,
+    markTodoAsComplete,
+} from "@/app/state/redux/slices/ApiSlice";
+import { useTeamManagerStore } from "@/app/state/stores/TeamStore";
 import { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
-import { TeamActions } from "../components/actions/TeamActions";
-import { useTeamContext } from "../components/context/TeamContext";
-import { Team } from "../components/models/teams/Team";
-import {
-  markTaskAsComplete,
-  markTodoAsComplete,
-} from "../components/state/redux/slices/ApiSlice";
-import { useTeamManagerStore } from "../components/state/stores/TeamStore";
-import NOTIFICATION_MESSAGES from "../components/support/NotificationMessages";
-import { endpoints } from "./ApiEndpoints";
-import axiosInstance from "./axiosInstance";
-import { getEndpoint } from "./getEndpoint";
 import { getStoreId } from "./ApiData";
+import { endpoints } from "./ApiEndpoints";
+import { getEndpoint } from "./getEndpoint";
 
 const API_BASE_URL = endpoints.teamManagement; // Update to the correct endpoint
 

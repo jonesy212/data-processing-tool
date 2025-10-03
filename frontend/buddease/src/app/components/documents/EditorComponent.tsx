@@ -1,8 +1,8 @@
 import { Editor } from "draft-js";
-import SnapshotStore from "../snapshots/SnapshotStore";
-import BrowserCheckStore from "../state/stores/BrowserCheckStore";
-import { rootStores } from "../state/stores/RootStores";
-import useEditorState from "../state/useEditorState";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import BrowserCheckStore from "@/app/state/stores/BrowserCheckStore";
+import { rootStores } from "@/app/state/stores/RootStores";
+import useEditorState from "@/app/state/useEditorState";
 import { useDispatch } from "react-redux";
 
 const dispatch = useDispatch()

@@ -1,23 +1,22 @@
+import { ChatRoom } from "@/app/components/communications";
+import connectToChatWebSocket from '@/app/components/communications/WebSocket';
+import { TodoList } from '@/app/components/lists/TodoList';
+import ProjectManagementSimulation from "@/app/components/projects/projectManagement/ProjectManagementSimulation";
 import InviteFriends from "@/app/components/referrals/InviteFriends";
+import ColorPalette from "@/app/components/styling/ColorPalette";
+import { NotificationData } from '@/app/components/support/NofiticationsSlice';
+import TaskManagerComponent from "@/app/components/tasks/TaskManagerComponent";
+import { NotificationType } from '@/app/context/NotificationContext';
+import NotificationManager from "@/app/features/support/NotificationManager";
+import { ModalGenerator } from "@/app/generators/GenerateModal";
+import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import useModalFunctions from '@/app/pages/dashboards/ModalFunctions';
 import UserDashboard from "@/app/pages/dashboards/UserDashboard";
+import PersonaBuilderDashboard from "@/app/personas/recruiter_dashboard/PersonaBuilderDashboard";
 import Clipboard from "@/app/ts/clipboard";
-import ProjectManagementSimulation from "@/app/components/projects/projectManagement/ProjectManagementSimulation";
-import  connectToChatWebSocket from '@/app/components/communications/WebSocket';
-import PersonaBuilderDashboard from "../personas/recruiter_dashboard/PersonaBuilderDashboard";
-import { TodoList } from '@app/components/lists/TodoList';
-import NotificationManager from "@/app/components/support/NotificationManager";
-import TaskManagerComponent from "@/app/components/tasks/TaskManagerComponent";
 import DynamicComponentWrapper from "@/app/utils/DynamicComponentWrapper";
-import { ModalGenerator } from "@/app/generators/GenerateModal";
-import { useEffect } from 'react';
-import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { NotificationType } from '@/app/context/NotificationContext';
-import { NotificationData } from '@/app/components/support/NofiticationsSlice';
-import { useState } from 'react';
-import { DesignDashboardBaseProps } from '@/pages/dashboards/DesignDashboard'
-import { ChatRoom } from "@/app/components/communications";
-import ColorPalette from "@/app/components/styling/ColorPalette";
+import { DesignDashboardBaseProps } from '@/pages/dashboards/DesignDashboard';
+import { useEffect, useState } from 'react';
 
 
 interface ClientDesignDashboardProps extends DesignDashboardBaseProps {

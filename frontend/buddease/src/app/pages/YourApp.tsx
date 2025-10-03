@@ -1,11 +1,10 @@
 // YourApp.tsx
 import React, { useEffect, useState } from 'react';
-import authService from '../components/auth/AuthService';
-import createDynamicHook from "../components/hooks/phaseHooks/DynamicPromptPhaseHook";
+import authService from '@/server/auth/AuthService';
+import createDynamicHook from "@/app/hooks/phaseHooks/DynamicPromptPhaseHook";
 import BasicStopwatchComponent from '../components/stopwatches/BasicStopwatchComponent';
 import CountdownTimerComponent from '../components/stopwatches/CountdownTimerComponent';
 import UserFormComponent from './forms/UserFormComponent';
-// Import other timer components as needed
 
 const YourApp: React.FC = () => {
   const [timerType, setTimerType] = useState<string>('basicStopwatch');

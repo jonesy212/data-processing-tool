@@ -1,6 +1,6 @@
 import ProjectEventEmitter from "@/app/ts/EventEmitter";
 import React, { useEffect, useState } from "react";
-import { enhancePromptWithEntities } from "../intelligence/EventEmitterIntegration";
+import { enhancePromptWithEntities } from "@/app/intelligence/EventEmitterIntegration";
 import {
     CalendarEventViewingDetailsProps,
     EventDetails,

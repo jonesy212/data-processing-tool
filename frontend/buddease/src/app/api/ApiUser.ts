@@ -1,19 +1,19 @@
 // ApiUser.ts
+import { UserRoleActions } from "@/app/actions/UserRoleActions";
 import { createHeaders } from "@/app/api/ApiClient";
 import { endpoints } from "@/app/api/ApiEndpoints";
-import axiosInstance from "@/app/api/axiosInstance";
-import Logger from "@/app/components/logging/Logger";
+import axiosInstance from '@/app/api/csrfToken';
+import { UserActions } from "@/app/components/users/UserActions";
+import { UserRole } from "@/app/components/users/UserRole";
+import { sendNotification } from "@/app/components/users/UserSlice";
+import Logger from "@/app/libraries/logging/Logger";
+import { User } from "@/app/users/User";
 import dotProp from "dot-prop";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
-import { User } from "../components/users/User";
-import { UserActions } from "../components/users/UserActions";
-import { UserRole } from "../components/users/UserRole";
-import { UserRoleActions } from "../components/users/UserRoleActions";
-import { sendNotification } from "../components/users/UserSlice";
 // Other imports remain unchanged
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
-import updateUI from '../components/documents/editing/updateUI';
+import updateUI from '../documents/editing/updateUI';
 
 const API_BASE_URL = endpoints.users;
 
@@ -579,4 +579,5 @@ updateUserRoles = async (users: {
 
 export default UserService;
 export const userService = new UserService();
-export type { UserProfile, AdminUser };
+export type { AdminUser, UserProfile };
+

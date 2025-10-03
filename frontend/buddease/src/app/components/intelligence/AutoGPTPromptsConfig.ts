@@ -1,5 +1,5 @@
 // src/app/prompts/AutoGPTPromptsConfig.ts
-import { Prompt } from "../prompts/PromptPage";
+import { Prompt } from "@/app/prompts/PromptPage";
 
 const fetchPrompts = async (phase: string, userContext: any): Promise<Prompt[]> => {
   // Simulate an asynchronous API call to fetch prompts based on the phase and user context

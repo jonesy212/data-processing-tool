@@ -1,45 +1,45 @@
-import VersionImpl, { version } from '@/app/components/versions/Version';
-import { MetadataEntriesType } from "@/app/configs/StructuredMetadata";
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import VersionImpl, { version } from '@/app/versions/Version';
+import { MetadataEntriesType } from "@/config/StructuredMetadata";
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 import { CustomStyle } from '@/app/api/ApiService';
+import {
+    CodingLanguageEnum,
+    LanguageEnum,
+} from "@/app/communications/LanguageEnum";
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { AllTypes } from '@/app/components/typings/PropTypes';
-import { DataVersions } from "@/app/configs/DataVersionsConfig";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { UserSettings } from "@/app/configs/UserSettings";
-import BackendStructure from "@/app/configs/appStructure/BackendStructure";
-import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import { BaseData } from "@/app/models/data/Data";
+import {
+    BorderStyle,
+    DocumentSize,
+    Layout,
+    PrivacySettingEnum,
+    ProjectPhaseTypeEnum,
+} from "@/app/models/data/StatusType";
+import { Phase } from "@/app/phases/Phase";
+import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
+import { Document } from "@/app/state/stores/DocumentStore";
+import { CustomProperties, HighlightColor } from "@/app/styling/Palette";
+import { DocumentTypeEnum } from "@/app/typings/documents";
+import { UserIdea } from "@/app/users/Ideas";
+import Version from "@/app/versions/Version";
+import { VersionData } from "@/app/versions/VersionData";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { UserSettings } from "@/config/UserSettings";
+import FrontendStructure from "@/config/appStructure/FrontendStructure";
+import { DataVersions } from "@/configs/DataVersionsConfig";
+import BackendStructure from '@/server/database/BackendStructure';
 import * as docx from "docx";
 import { ContentState } from "draft-js";
-import { DocumentTypeEnum } from "../../../server/DocumentGenerator";
-import {
-  CodingLanguageEnum,
-  LanguageEnum,
-} from "../communications/LanguageEnum";
-import { BaseData } from "../models/data/Data";
-import {
-  BorderStyle,
-  DocumentSize,
-  Layout,
-  PrivacySettingEnum,
-  ProjectPhaseTypeEnum,
-} from "../models/data/StatusType";
-import { Phase, PhaseLite } from "../phases/Phase";
-import { AlignmentOptions } from "../state/redux/slices/toolbarSlice";
-import { Document } from "../state/stores/DocumentStore";
-import { CustomProperties, HighlightColor } from "../styling/Palette";
-import { UserIdea } from "../users/Ideas";
-import Version from "../versions/Version";
-import { VersionData } from "../versions/VersionData";
-import { createLastUpdatedWithVersion, createLatestVersion } from '../versions/createLatestVersion';
+import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
 import { ModifiedDate } from "./DocType";
-import { computeChecksum, DocumentData, RevisionOptions } from "./DocumentBuilder";
+import { computeChecksum, DocumentData, RevisionOptions } from "@/app/documents/editing/DocumentBuilder";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
 import { NoteAnimationOptions, NoteOptions } from "./NoteData";
 import { DocumentAnimationOptions } from "./SharedDocumentProps";
-import { BaseDataEntity, DefaultMeta } from '@/app/configs/BaseConfig';
  
 export interface CustomDocument extends docx.Document {
   createSection(): docx.SectionProperties;
@@ -243,7 +243,7 @@ export interface DocumentOptions<
     customProp2: number;
     onChange: (phase: ProjectPhaseTypeEnum) => void;
   };
-  versionData: string | VersionData<T, K> | undefined;
+  versionData: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   version?: Version<T, K> | undefined;
   isDynamic: boolean | undefined;
   size: DocumentSize;

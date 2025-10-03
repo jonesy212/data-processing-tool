@@ -1,9 +1,9 @@
-import { BaseData } from "../components/models/data/Data";
-import { userPreferences } from "../configs/UserPreferences";
-import userSettings, { UserSettings } from "../configs/UserSettings";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { UserData } from "@/app/components/users/User";
-import { UserConfig } from "../components/snapshots";
+import { BaseData } from "@/app/components/models/data/Data";
+import { UserConfig } from "@/app/snapshots";
+import { UserData } from "@/app/users/User";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { userPreferences } from "@/config/UserPreferences";
+import userSettings, { UserSettings } from "@/config/UserSettings";
 
 
 interface UserConfigData<
@@ -34,4 +34,4 @@ export const UserConfigs = {
 };
 
 
-export type { UserConfigData }
+export type { UserConfigData };

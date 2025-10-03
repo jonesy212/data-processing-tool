@@ -1,84 +1,84 @@
-import { snapshot, SnapshotOperation, SnapshotStoreProps } from '@/app/components/snapshots';
-import { UnifiedMetadata } from "@/app/configs/database/MetaDataOptions";
+import { createSnapshot } from '@/app/api/SnapshotApi';
+import { snapshot, SnapshotOperation, SnapshotStoreProps } from '@/app/snapshots';
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { useCallback } from 'react';
 
-import { InitializedData, SnapshotStoreOptions } from '@/app/components/snapshots/SnapshotStoreOptions';
-import { SnapshotSubscriberManagement } from "@/app/components/snapshots/SnapshotSubscriberManagement";
-import { getCategory } from '@/app/components/snapshots/snapshotContainerUtils';
-import { getSnapshot, SnapshotOperations } from '@/app/components/snapshots/snapshotOperations';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { subscriptionServiceInstance } from '@/app/hooks/dynamicHooks/dynamicHooks';
+import useErrorHandling from "@/app/hooks/useErrorHandling";
+import determineFileCategory from "@/app/libraries/categories/determineFileCategory";
+import { processSnapshotsByCategory } from "@/app/libraries/categories/fileCategoryMapping";
+import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
+import { SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriberManagement";
+import { getCategory } from '@/app/snapshots/snapshotContainerUtils';
+import { getSnapshot, SnapshotOperations } from '@/app/snapshots/snapshotOperations';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from "axios";
 import { useDispatch } from 'react-redux';
-import { subscriptionServiceInstance } from '../components/hooks/dynamicHooks/dynamicHooks';
-import useErrorHandling from "../components/hooks/useErrorHandling";
-import determineFileCategory from "../components/libraries/categories/determineFileCategory";
-import { processSnapshotsByCategory } from "../components/libraries/categories/fileCategoryMapping";
 
-import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
-import { isSnapshot } from "@/app/components/utils/snapshotUtils";
-import { Category } from "../components/libraries/categories/generateCategoryProperties";
-import { Content } from "../components/models/content/AddContent";
-import { BaseData } from "../components/models/data/Data";
+import { Content } from "@/app/components/models/content/AddContent";
+import { BaseData } from "@/app/components/models/data/Data";
+import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
+import { Member } from "@/app/components/models/teams/TeamMembers";
+import { DataStoreMethods } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import { ProjectType } from "@/app/components/projects/Project";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import {
   PriorityTypeEnum,
   ProjectStateEnum
-} from "../components/models/data/StatusType";
-import { RealtimeDataItem } from '../components/models/realtime/RealtimeData';
-import { Member } from "../components/models/teams/TeamMembers";
-import { DataStoreMethods } from '../components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-import { DataStore } from '../components/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { sendToAnalytics } from '../components/projects/DataAnalysisPhase/sendToAnalytics';
-import { ProjectType } from "../components/projects/Project";
-import { ConfigureSnapshotStorePayload, SnapshotConfig, SnapshotData, SnapshotDataType, SnapshotStoreConfig, SnapshotWithCriteria, useSnapshotStore } from "../components/snapshots";
-import { snapshotFunction, Snapshots } from "../components/snapshots/LocalStorageSnapshotStore";
-import { Snapshot } from "../components/snapshots/Snapshot";
-import { SnapshotContainer, SnapshotContainerData } from "../components/snapshots/SnapshotContainer";
-import SnapshotList from "../components/snapshots/SnapshotList";
-import { isSnapshotFunction } from '../components/snapshots/SnapshotStoreMap';
-import SnapshotStore from "../components/snapshots/SnapshotStore";
-import { isValidFileCategory } from "../components/snapshots/isValidFileCategory";
-import { updateUIWithSnapshotStore } from '../components/snapshots/updateUIWithSnapshotStore';
-import { FilterState } from "../components/state/redux/slices/FilterSlice";
-import { Subscription } from '../components/subscriptions/Subscription';
-import { defaultCategoryProperties } from '../pages/personas/ScenarioBuilder';
+} from "@/app/models/data/StatusType";
+import { defaultCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { sendToAnalytics } from '@/app/projects/DataAnalysisPhase/sendToAnalytics';
+import { ConfigureSnapshotStorePayload, SnapshotConfig, SnapshotData, SnapshotDataType, SnapshotStoreConfig, SnapshotWithCriteria, useSnapshotStore } from "@/app/snapshots";
+import { snapshotFunction, Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotContainer, SnapshotContainerData } from "@/app/snapshots/SnapshotContainer";
+import SnapshotList from "@/app/snapshots/SnapshotList";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { isSnapshotFunction } from '@/app/snapshots/SnapshotStoreMap';
+import { isValidFileCategory } from "@/app/snapshots/isValidFileCategory";
+import { updateUIWithSnapshotStore } from '@/app/snapshots/updateUIWithSnapshotStore';
+import { FilterState } from "@/app/state/redux/slices/FilterSlice";
+import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { Subscription } from '@/app/subscriptions/Subscription';
+import { isSnapshot } from "@/app/utils/snapshotUtils";
 
+import { constructTarget, Target } from "@/app//api/EndpointConstructor";
+import { handleApiError } from "@/app/api/ApiLogs";
+import { searchAPI } from '@/app/api/ApiSearch';
+import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
+import headersConfig from "@/app/api/headers/HeadersConfig";
+import {
+  AuthenticationHeaders,
+  createAuthenticationHeaders,
+} from "@/app/api/headers/authenticationHeaders";
+import createCacheHeaders from "@/app/api/headers/cacheHeaders";
+import createContentHeaders from "@/app/api/headers/contentHeaders";
+import generateCustomHeaders from "@/app/api/headers/customHeaders";
+import createRequestHeaders from "@/app/api/headers/requestHeaders";
 import {
   NotificationTypeEnum,
   useNotification,
 } from "@/app/context/NotificationContext";
-import { Meta } from '../components/models/data/dataStoreMethods';
-import { ExcludedFields } from '../components/routing/Fields';
-import { createSnapshotInstance } from '../components/snapshots/createSnapshotInstance';
-import { Subscriber } from '../components/users/Subscriber';
-import { unsubscribe } from '../components/utils/applicationUtils';
-import { addToSnapshotList } from "../components/utils/snapshotUtils";
-import useSecureStoreId from '../components/utils/useSecureStoreId';
-import { createDefaultVersionData } from '../components/versions/VersionData';
-import { createLatestVersion } from '../components/versions/createLatestVersion';
-import { AppConfig, getAppConfig } from "../configs/AppConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '../configs/BaseConfig';
-import configData from "../configs/configData";
-import { UnifiedMetaDataOptions } from '../configs/database/MetaDataOptions';
-import { CategoryProperties } from "../pages/personas/ScenarioBuilder";
-import { CriteriaType } from "../pages/searchs/CriteriaType";
-import { SnapshotEvent } from '../typings/eventTypes';
-import { endpoints } from "./ApiEndpoints";
-import { handleApiError } from "./ApiLogs";
-import { searchAPI } from './ApiSearch';
-import { constructTarget, Target } from "./EndpointConstructor";
-import SnapshotApiService from './SnapshotApiService';
-import { CreateOptions } from './SnapshotOptions';
-import axiosInstance from "./axiosInstance";
-import headersConfig from "./headers/HeadersConfig";
-import {
-  AuthenticationHeaders,
-  createAuthenticationHeaders,
-} from "./headers/authenticationHeaders";
-import createCacheHeaders from "./headers/cacheHeaders";
-import createContentHeaders from "./headers/contentHeaders";
-import generateCustomHeaders from "./headers/customHeaders";
-import createRequestHeaders from "./headers/requestHeaders";
+import useSecureStoreId from '@/app/hooks/useSecureStoreId';
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { CreateOptions } from '@/app/snapshots/SnapshotOptions';
+import { Subscriber } from '@/app/users/Subscriber';
+import { addToSnapshotList } from "@/app/utils/snapshotUtils";
+import { unsubscribe } from '@/app/utils/web3/applicationUtils';
+import { Meta } from '@/components/models/data/dataStoreMethods';
+import { ExcludedFields } from '@/components/routing/Fields';
+import { AppConfig, getAppConfig } from "@/config/AppConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import configData from "@/config/configData";
+import { UnifiedMetaDataOptions } from '@/configs/database/MetaDataOptions';
+import { SnapshotEvent } from '@/typings/eventTypes';
+import { createDefaultVersionData } from '@/versions/VersionData';
+import { createLatestVersion } from '@/versions/createLatestVersion';
+import SnapshotApiService from '@/app/api/service/SnapshotApiService';
 
 const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
 const dispatch = useDispatch()
@@ -103,11 +103,12 @@ interface SnapshotStoreIdResponse {
 
 
 // Extending Snapshot to add optional properties (Extras) for specific contexts
-type SnapshotWithExtras<  T extends BaseDataEntity, 
+type SnapshotWithExtras<
+  T extends BaseDataEntity, 
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  Extras = {}> = Snapshot<T, K, Meta, ExcludedFields> & Extras;
+  Extras = {}> = Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & Extras;
 
 
 const handleSnapshotApiError = (
@@ -187,8 +188,8 @@ const apiCall = <
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   data?: any,
   additionalHeaders?: Record<string, string>
-): Promise<Snapshot<T, K, Meta, ExcludedFields>> => {
-  return new Promise<Snapshot<T, K, Meta, ExcludedFields>>(async (resolve, reject) => {
+): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+  return new Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(async (resolve, reject) => {
     try {
       const headers = createHeaders(additionalHeaders);
       const response = await axiosInstance({
@@ -199,7 +200,7 @@ const apiCall = <
       });
 
       if (response.status === 200) {
-        resolve(response.data as Snapshot<T, K, Meta, ExcludedFields>);
+        resolve(response.data as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
       } else {
         handleOtherStatusCodes(getAppConfig(), response.status);
         reject(new Error(`Unexpected status code: ${response.status}`));
@@ -225,7 +226,7 @@ export const useSnapshotApi = () => {
       T extends BaseData<any, any, any, any, any>, // Provide all required type arguments
       K extends T = T
     >(
-      snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       options?: CreateOptions
     ) => {
       return snapshotApi.create(snapshot, options);
@@ -283,8 +284,8 @@ function getSnapshotData<
           // Process the snapshot data by category (if relevant)
           const processedSnapshot = processSnapshotsByCategory(response, category);
 
-          // Ensure processedSnapshot conforms to Snapshot<T, K, Meta, ExcludedFields>
-          if (isSnapshot<T, K, Meta, ExcludedFields>(processedSnapshot)) {
+          // Ensure processedSnapshot conforms to Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+          if (isSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(processedSnapshot)) {
             // Narrowing snapshotId to not include null here
             if (processedSnapshot.snapshotId !== null) {
               return processedSnapshot as SnapshotDataType<T, K>;
@@ -293,7 +294,7 @@ function getSnapshotData<
               return undefined;
             }
           } else {
-            console.warn('Processed snapshot is not a valid Snapshot<T, K, Meta, ExcludedFields>', processedSnapshot);
+            console.warn('Processed snapshot is not a valid Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>', processedSnapshot);
             return undefined;
           }
         }
@@ -339,7 +340,7 @@ const postSnapshotToAPI = async <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   Extras = {}
 >(
-  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotExtras?: Extras
 ): Promise<void> => {
   try {
@@ -381,7 +382,7 @@ const determineCategory = <
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >(
-  snapshot: Snapshot<T, K, Meta, ExcludedFields>
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): string => {
   const category = snapshot.category; // Assuming 'category' is a property of Snapshot
   return typeof category === 'string' ? category : 'defaultCategory'; // Fallback to 'defaultCategory' if category is not a string
@@ -395,13 +396,13 @@ const getSnapshotsAndCategory = async <
   category: Category | undefined,
   snapshotId: string,
   storeId: number, 
-  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   type: string,
-  event: SnapshotEvent<T, K>,
+  event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotConfig: SnapshotConfig<T, K>,
   additionalHeaders?: Record<string, string>
 ): Promise<{ 
-  snapshots: Snapshot<T, K, Meta, ExcludedFields>[]; 
+  snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; 
   categoryProperties?: CategoryProperties; 
   cacheID: string 
 }> => {
@@ -410,11 +411,11 @@ const getSnapshotsAndCategory = async <
 
   try {
     const response = await axiosInstance.get(targetUrl, { headers });
-    const isValidSnapshotFunc = (entry: any): entry is Snapshot<T, K, Meta, ExcludedFields> => isSnapshot<T, K, Meta, ExcludedFields>(entry);
+    const isValidSnapshotFunc = (entry: any): entry is Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => isSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(entry);
 
-    const snapshotsData: Snapshot<T, K, Meta, ExcludedFields>[] = response.data
+    const snapshotsData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = response.data
       .filter(isValidSnapshotFunc)
-      .map((entry: Snapshot<T, K, Meta, ExcludedFields>) => ({
+      .map((entry: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => ({
         ...entry,
         filterSnapshotsByStatus: entry?.filterSnapshotsByStatus,
         filterSnapshotsByCategory: entry?.filterSnapshotsByCategory,
@@ -462,7 +463,7 @@ const findSnapshotsBySubscriber = async <T extends  BaseData<any>, K extends T =
   subscriberId: string,
   category: Category | undefined,  endpointCategory: string | number,
   snapshotConfig: SnapshotConfig<T, K>
-): Promise<Snapshot<T, K, Meta, ExcludedFields>[]> => {
+): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
 
 
   const target: Target = constructTarget(
@@ -497,7 +498,7 @@ const findSnapshotsBySubscriber = async <T extends  BaseData<any>, K extends T =
     const response = await axiosInstance.get(target.url, { headers });
     const snapshotsData: SnapshotDataType<T, K>[] = response.data;
 
-    const mapSnapshotEntryToSnapshot = (entry: any): Snapshot<T, K, Meta, ExcludedFields> | null => {
+    const mapSnapshotEntryToSnapshot = (entry: any): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null => {
       if (!entry || typeof entry !== 'object') return null;
 
       return {
@@ -740,14 +741,14 @@ const findSnapshotsBySubscriber = async <T extends  BaseData<any>, K extends T =
     }
 
     // Process the response data to create an array of Snapshots
-    const snapshots: Snapshot<T, K, Meta, ExcludedFields>[] = snapshotsData.flatMap((snapshotData) => {
+    const snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = snapshotsData.flatMap((snapshotData) => {
       if (!snapshotData) return [];
 
       if (snapshotData instanceof Map) {
         // If it's a Map, convert the entries to Snapshots
-        return Array.from(snapshotData.values() as Iterable<Snapshot<T, K, Meta, ExcludedFields>>)
+        return Array.from(snapshotData.values() as Iterable<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>)
           .map(mapSnapshotEntryToSnapshot)
-          .filter(Boolean) as Snapshot<T, K, Meta, ExcludedFields>[];
+          .filter(Boolean) as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
       }
 
       // For non-Map snapshotData, map it directly
@@ -885,8 +886,8 @@ const addSnapshot = async <
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >(
-  newSnapshot: Omit<Snapshot<T, K, Meta, ExcludedFields>, "id">
-): Promise<Snapshot<T, K, Meta, ExcludedFields>> => {
+  newSnapshot: Omit<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id">
+): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     const token = localStorage.getItem("accessToken");
     const userId = localStorage.getItem("userId");
@@ -901,7 +902,7 @@ const addSnapshot = async <
     ];
 
     const headers = Object.assign({}, ...headersArray);
-    const response = await axiosInstance.post<Snapshot<T, K, Meta, ExcludedFields>>(
+    const response = await axiosInstance.post<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
       "/snapshots",
       newSnapshot,
       { headers: headers as Record<string, string> }
@@ -913,7 +914,7 @@ const addSnapshot = async <
       console.log("Snapshot added successfully:", addedSnapshot);
 
       // ✅ Notify with the properly typed Snapshot
-      subscriptionServiceInstance.notify<Snapshot<T, K, Meta, ExcludedFields>>(
+      subscriptionServiceInstance.notify<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
         "snapshotAdded",
         addedSnapshot
       );
@@ -932,7 +933,7 @@ const addSnapshot = async <
 
 
 const addSnapshotSuccess = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  newSnapshot: Omit<Snapshot<T, K, Meta, ExcludedFields>, "id">
+  newSnapshot: Omit<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id">
 ) => {
   try {
     const token = localStorage.getItem("accessToken");
@@ -1011,7 +1012,7 @@ const saveSnapshotToDatabase = async (snapshotData: any): Promise<boolean> => {
       snapshotNotificationMessages.CREATE_SNAPSHOT_SUCCESS,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
 
     // Notify subscribers of successful snapshot save
@@ -1137,7 +1138,7 @@ const fetchSnapshotById = async<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
     snapshotId: string
-  ): Promise<SnapshotContainer<T, K, Meta, ExcludedFields> | undefined> => {
+  ): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> => {
     try {
       const token = localStorage.getItem("accessToken");
       const userId = localStorage.getItem("userId");
@@ -1255,7 +1256,7 @@ const fetchSnapshotStoreData = async  <
   T extends BaseData<any>,
   K extends T = T>(
     snapshotId: string
-): Promise<SnapshotContainer<T, K, Meta, ExcludedFields>> => {
+): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     const accessToken = localStorage.getItem("accessToken");
     const userId = localStorage.getItem("userId");
@@ -1274,7 +1275,7 @@ const fetchSnapshotStoreData = async  <
     ];
     const headers = Object.assign({}, ...headersArray);
 
-    const response = await axiosInstance.get<SnapshotContainer<T, K, Meta, ExcludedFields>>(
+    const response = await axiosInstance.get<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
       // Assuming target is a valid URL string
       `${API_BASE_URL}/snapshots/${snapshotId}`,
       {
@@ -1293,9 +1294,12 @@ const fetchSnapshotStoreData = async  <
 };
 
 const takeSnapshot = <
-  T extends BaseData<any>, 
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   target: SnapshotList<T, K> | Content<T, K>,
   date?: Date,
@@ -1304,7 +1308,7 @@ const takeSnapshot = <
   projectState?: ProjectStateEnum,
   projectPriority?: PriorityTypeEnum,
   projectMembers?: Member[]
-): Promise<Snapshot<T, K, Meta, ExcludedFields>> => {
+): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   return new Promise(async (resolve, reject) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
@@ -1434,7 +1438,7 @@ const snapshotContainer = <
 
 >(
   snapshotId: string
-): Promise<SnapshotContainer<T, K, Meta, ExcludedFields>> => {
+): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   return new Promise(async (resolve, reject) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
@@ -1451,7 +1455,7 @@ const snapshotContainer = <
         // Add other header objects as needed
       ];
       const headers = Object.assign({}, ...headersArray);
-      const response = await axiosInstance.get<SnapshotContainer<T, K, Meta, ExcludedFields>>(
+      const response = await axiosInstance.get<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
         `${API_BASE_URL}/${snapshotId}/container`,
         {
           headers: headers as Record<string, string>,
@@ -1470,9 +1474,9 @@ function getCurrentSnapshot<T extends  BaseData<any>, K extends T = T, Meta exte
   snapshotId: string,
   storeId: number,
   additionalHeaders?: Record<string, string>
-): Promise<Snapshot<T, K, Meta, ExcludedFields> | null> {
+): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
   return new Promise((resolve, reject) => {
-    snapshotApi.getSnapshot<T, K, Meta, ExcludedFields>(snapshotId, storeId, additionalHeaders)
+    snapshotApi.getSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(snapshotId, storeId, additionalHeaders)
       .then(snapshot => {
         if (snapshot) {
           resolve(snapshot);
@@ -1502,15 +1506,15 @@ const fetchSnapshotsFromDatabase = async <
   snapshotConfig: SnapshotConfig<any>,
   event: Event,
   additionalHeaders?: Record<string, string>
-): Promise<Snapshot<T, K, Meta, ExcludedFields>[]> => {
+): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   // Here you would make the necessary call to retrieve the snapshots
   // For now, returning an empty array or mock snapshots
   console.log('Simulating snapshot retrieval...');
   const storeId = useSecureStoreId()
-  const snapshot = snapshotApi.getSnapshot<T, K, Meta, ExcludedFields>(String(snapshotId), Number(storeId))
+  const snapshot = snapshotApi.getSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(String(snapshotId), Number(storeId))
   // Simulate response
   return [
-    createSnapshotInstance<T, K>({
+    createSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
       ...snapshot,
       id: snapshotId,
       parentId: 'parent-id',
@@ -1518,7 +1522,7 @@ const fetchSnapshotsFromDatabase = async <
       timestamp: new Date().toISOString(),
       schema: 'schema-v1',
     }), 
-    createSnapshotInstance<T, K>({
+    createSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
       id: snapshotId,
       parentId: 'parent-id',
       label: 'Snapshot 2',
@@ -1535,7 +1539,7 @@ function unwrapStoreProps<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(props: SnapshotContainer<T, K, Meta, ExcludedFields>) {
+>(props: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
   const {
     id,
     criteria,
@@ -1578,10 +1582,10 @@ function getSnapshotContainer<T extends BaseData<any>, K extends T = T, Meta ext
   snapshotId: string | number | undefined,
   storeId: number,
   additionalHeaders?: Record<string, string>,
-  storeProps?: SnapshotContainer<T, K, Meta, ExcludedFields>,
+  storeProps?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   category?:  Category, // Optional category
-  snapshotStore?: SnapshotContainer<T, K, Meta, ExcludedFields> // Optional store to retrieve from
-): Promise<SnapshotContainer<T, K, Meta, ExcludedFields>> {
+  snapshotStore?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // Optional store to retrieve from
+): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   return new Promise(async (resolve, reject) => {
     try {
       const resolvedSnapshotConfig = await storeProps; 
@@ -1676,7 +1680,7 @@ async function fetchSnapshotContainerData<T extends  BaseData<any>, K extends T 
   // Simulate fetching data, e.g., from an API or database
 
   const { criteria, storeId } = storeProps;
-  const snapshotContainer = await getSnapshotContainer<T, K, Meta, ExcludedFields>(snapshotId, storeProps).then((snapshotContainer) => {
+  const snapshotContainer = await getSnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(snapshotId, storeProps).then((snapshotContainer) => {
     return snapshotContainer;
   });
   if (snapshotContainer === null) {
@@ -1692,7 +1696,7 @@ async function fetchSnapshotContainerData<T extends  BaseData<any>, K extends T 
   }
   return {
     id: snapshotId,
-    data: {} as InitializedData<T, K>, 
+    data: {} as InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
     items: [] as K[], // Replace with actual data fetching logic
     config: currentConfig,
     timestamp: new Date(),
@@ -1710,17 +1714,17 @@ function createSnapshotContainer<
 >(
   data: SnapshotContainerData<T, K>,
   storeProps?: SnapshotStoreProps<T, K>
-): SnapshotContainer<T, K, Meta, ExcludedFields> {
+): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 
   const { id, criteria } = storeProps
   const { timestamp, currentCategory, items, config } = data;
   // Initialize mapped snapshot data
-  const mappedSnapshotData = new Map<string, Snapshot<T, K, Meta, ExcludedFields>>();
+  const mappedSnapshotData = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
   
   // Real-time update implementation
   const setupRealTimeUpdates = (
     snapshotId: string,
-    updateHandler: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => void
+    updateHandler: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
   ): { unsubscribe: () => void } => {
     // In a real implementation, this would connect to your backend service
     // (WebSocket, SSE, polling, etc.) and call updateHandler when data changes
@@ -1759,8 +1763,8 @@ function createSnapshotContainer<
 
         subscribeToSnapshot: (
       snapshotId: string,
-      callback: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => Subscriber<T, K> | null,
-      snapshot: Snapshot<T, K, Meta, ExcludedFields>
+      callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K> | null,
+      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => {
       // Generate a unique ID for this subscriber
       const subscriberId = `sub_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -1858,10 +1862,10 @@ function createSnapshotContainer<
       id: string | number | undefined,
       snapshotData: SnapshotData<T, K>,
       category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
-      callback: (snapshotStore: SnapshotContainer<T, K, Meta, ExcludedFields>) => void,
+      callback: (snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
       dataStore: DataStore<T, K>,
       dataStoreMethods: DataStoreMethods<T, K>,
-      metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
+      metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       subscriberId: string,
       endpointCategory: string | number,
       storeProps: SnapshotStoreProps<T, K>,
@@ -1869,18 +1873,18 @@ function createSnapshotContainer<
       subscription: Subscription<T, K>,
       snapshotId?: string | number | null,
       snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
-      snapshotContainer?: SnapshotContainer<T, K, Meta, ExcludedFields> | Snapshot<T, K, Meta, ExcludedFields> | null
+      snapshotContainer?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
     ) => {
       // Logic to return a Snapshot
-      return {} as Snapshot<T, K, Meta, ExcludedFields>; // Placeholder
+      return {} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Placeholder
     },
     snapshotStore: null,
     snapshotData: (
       id: string | number | undefined,
-      data: Snapshot<T, K, Meta, ExcludedFields>,
-      mappedSnapshotData: Map<string, Snapshot<T, K, Meta, ExcludedFields>> | null | undefined,
+      data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined,
       snapshotData: SnapshotData<T, K>,
-      snapshotStore: SnapshotContainer<T, K, Meta, ExcludedFields>,
+      snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       dataStoreMethods: DataStoreMethods<T, K>,
@@ -1957,7 +1961,7 @@ function createSnapshotContainer<
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       dataStoreMethods: DataStore<T, K>
-    ): Map<string, Snapshot<T, K, Meta, ExcludedFields>> | null | undefined => {
+    ): Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined => {
       // Fetch logic to get snapshot data based on ID
       return data.mappedSnapshotData.get(id); // Replace with your data fetching logic
     },
@@ -1968,7 +1972,6 @@ function createSnapshotContainer<
     // Additional properties from SnapshotData and SnapshotRelationships, if needed
   };
 }
-
 
 
 
@@ -1999,17 +2002,17 @@ const getSnapshotCriteria = async <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  snapshotContainer: SnapshotContainer<T, K, Meta, ExcludedFields>,
+  snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshot?: (
     id: string | number | undefined,
     snapshotData: SnapshotData<T, K>,
-    category: Category | undefined,    callback: (snapshot: SnapshotContainer<T, K, Meta, ExcludedFields>) => void,
+    category: Category | undefined,    callback: (snapshot: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     criteria: CriteriaType,
     snapshotId?: string | number | null,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
-    snapshotContainerData?: SnapshotContainer<T, K, Meta, ExcludedFields> | Snapshot<T, K, Meta, ExcludedFields> | null,
+    snapshotContainerData?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   ) => Promise<SnapshotData<T, K>>,
-  snapshotObj?: Snapshot<T, K, Meta, ExcludedFields> | undefined,
+  snapshotObj?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
   snapshotStoreConfigSearch?: SnapshotStoreConfig<
   SnapshotWithCriteria<any, BaseData>, SnapshotWithCriteria<any, BaseData>>
 
@@ -2116,7 +2119,7 @@ const getSnapshotConfig = <
     snapshotId: string | null,
     snapshotData: SnapshotData<T, K>, // Type updated here
     category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
-    callback: (snapshotStore: SnapshotContainer<T, K, Meta, ExcludedFields> | null) => void,
+    callback: (snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => void,
     dataStore: DataStore<T, K>,
     dataStoreMethods: DataStoreMethods<T, K>,
     metadata: UnifiedMetadata<T, K, Meta, keyof T>,    // dataStoreSnapshotMethods: DataStoreWithSnapshotMethods<T, K>,
@@ -2126,18 +2129,18 @@ const getSnapshotConfig = <
     snapshotConfigData: SnapshotConfig<T, K>,
     subscription: Subscription<T, K>,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
-    snapshotContainer?: SnapshotContainer<T, K, Meta, ExcludedFields> | Snapshot<T, K, Meta, ExcludedFields> | null,
-  ) => Promise<{ snapshot: Snapshot<T, K, Meta, ExcludedFields>; }>,
-  data: Map<string, Snapshot<T, K, Meta, ExcludedFields>>,
+    snapshotContainer?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
+  ) => Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; }>,
+  data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   events: Record<string, CalendarManagerStoreClass<T, K>[]>, 
   dataItems: RealtimeDataItem[], 
-  newData: Snapshot<T, K, Meta, ExcludedFields>, 
+  newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
   payload: ConfigureSnapshotStorePayload<T, K>, 
-  store: SnapshotContainer<T, K, Meta, ExcludedFields>, 
-  callback: (snapshot: SnapshotContainer<T, K, Meta, ExcludedFields>) => void, 
+  store: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+  callback: (snapshot: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void, 
   storeProps: SnapshotStoreProps<T, K>,
   endpointCategory: string | number,
-  snapshotContainer: Promise<SnapshotContainer<T, K, Meta, ExcludedFields>>,
+  snapshotContainer: Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
 ): Promise<SnapshotConfig<T, K>> => {
   return new Promise<SnapshotConfig<T, K>>(
     (resolve, reject) => {
@@ -2208,7 +2211,7 @@ const getSnapshotConfig = <
           throw new Error("SnapshotContainer is undefined");
         }
 
-        // Assuming snapshotContainer is a Promise<SnapshotContainer<T, K, Meta, ExcludedFields>>
+        // Assuming snapshotContainer is a Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
         const snapshotContainerResolved = await snapshotContainer;
 
         if(subscription === undefined){
@@ -2222,7 +2225,7 @@ const getSnapshotConfig = <
             snapshotContainerResolved.snapshotData as unknown as SnapshotData<T, K>,
             category,
             categoryProperties,
-            async (snapshotStore: SnapshotContainer<T, K, Meta, ExcludedFields> | null) => {
+            async (snapshotStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => {
               // Handle the snapshotStore as needed
               const shouldUpdateState = true; // Replace with actual condition
               const shouldLog = true; // Replace with actual condition
@@ -2288,7 +2291,7 @@ const getSnapshotConfig = <
 
 const getSnapshotStoreConfigData = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string | null,
-  snapshotContainer: SnapshotContainer<T, K, Meta, ExcludedFields>,
+  snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   criteria: CriteriaType,
   storeId: number,
   config: SnapshotStoreConfig<SnapshotWithCriteria<T, any>, any>
@@ -2330,7 +2333,7 @@ const getSnapshotStoreConfigData = <T extends  BaseData<any>, K extends T = T, M
 
 const getSnapshotConfigData = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string | null,
-  snapshotContainer: SnapshotContainer<T, K, Meta, ExcludedFields>,
+  snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   criteria: CriteriaType,
   storeId: number):
   Promise<SnapshotConfig<T, K>> => {
@@ -2370,17 +2373,17 @@ const getSnapshotConfigData = <T extends  BaseData<any>, K extends T = T, Meta e
 
 const getSnapshotStoreConfig = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
   snapshotId: string | null,
-  snapshotContainer: SnapshotContainer<T, K, Meta, ExcludedFields>,
+  snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   criteria: CriteriaType,
   storeId: number,
   snapshotFunction: (
     id: string | number | undefined,
     snapshotData: SnapshotData<T, K>,
-    category: Category | undefined,    callback: (snapshot: SnapshotContainer<T, K, Meta, ExcludedFields>) => void,
+    category: Category | undefined,    callback: (snapshot: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     criteria: CriteriaType,
     snapshotId?: string | number | null,
     snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, SnapshotWithCriteria<any, BaseData>>,
-    snapshotContainerData?: SnapshotContainer<T, K, Meta, ExcludedFields> | Snapshot<T, K, Meta, ExcludedFields> | null
+    snapshotContainerData?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
   ) => Promise<SnapshotData<T, K>>
 ): Promise<SnapshotStoreConfig<T, K>> => {
   return new Promise(async (resolve, reject) => {
@@ -2417,23 +2420,30 @@ const getSnapshotStoreConfig = <T extends  BaseData<any>, K extends T = T, Meta 
   });
 }
 
-const getSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const getSnapshotStore = <  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshotId: number | null,
-  snapshotContainer: SnapshotContainer<T, K, Meta, ExcludedFields>,
+  snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   storeId: number,
   criteria: CriteriaType,
   snapshotFunction: (
     id: string | number | undefined,
     snapshotData: SnapshotData<T, K>,
     category: Category | undefined,
-    callback: (snapshot: SnapshotStore<T, K, Meta>) => void,
+    callback: (snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     criteria: CriteriaType,
     snapshotId?: string | number | null,
-    snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta>,
+    snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotStoreConfigSearch?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, SnapshotWithCriteria<any, BaseData>>,
-    snapshotContainerData?: SnapshotStore<T, K, Meta> | Snapshot<T, K, Meta> | null
-  ) => Promise<SnapshotData<T, K, Meta>>
-): Promise<SnapshotStore<T, K, Meta>> => {
+    snapshotContainerData?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+  ) => Promise<SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   return new Promise(async (resolve, reject) => {
     try {
       const accessToken = localStorage.getItem("accessToken");
@@ -2449,7 +2459,7 @@ const getSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta extend
         createRequestHeaders(accessToken || ""),
       ];
       const headers = Object.assign({}, ...headersArray);
-      const response = await axiosInstance.post<SnapshotContainer<T, K, Meta, ExcludedFields>>(
+      const response = await axiosInstance.post<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
         `${API_BASE_URL}/${storeId}/store`,
         {
 
@@ -2469,7 +2479,7 @@ const getSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta extend
 }
 
 
-const findSnapshotStoresById = async <T, K>(id: number): Promise<SnapshotContainer<T, K, Meta, ExcludedFields>[] | undefined> => {
+const findSnapshotStoresById = async <T, K>(id: number): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> => {
   return new Promise(async (resolve, reject) => {
     try {
       const token = localStorage.getItem("accessToken");
@@ -2494,7 +2504,7 @@ const findSnapshotStoresById = async <T, K>(id: number): Promise<SnapshotContain
       });
 
       if (response.status === 200 && response.data.length > 0) {
-        resolve(response.data); // Assuming response.data contains an array of `SnapshotContainer<T, K, Meta, ExcludedFields>`
+        resolve(response.data); // Assuming response.data contains an array of `SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>`
       } else {
         reject(new Error("Failed to retrieve snapshot stores by ID"));
       }
@@ -2506,18 +2516,25 @@ const findSnapshotStoresById = async <T, K>(id: number): Promise<SnapshotContain
 };
 
 
-const retrieveSnapshots = async <T extends BaseData<any>, K extends T = T>(
+const retrieveSnapshots = async <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshotId: string | number | null,
   storeId: number,
   snapshot: Snapshot<any>, // Use the appropriate type for T
   type: string,
-  event: SnapshotEvent<T, K>,
-  snapshotConfig: SnapshotConfig<any>,
+  event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  snapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   additionalHeaders: Record<string, string> = {}
-): Promise<Snapshot<T, K, Meta, ExcludedFields>[]> => {
+): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
     // Fetch snapshot by ID
-    const snapshot = await getSnapshot<T, K, Meta, ExcludedFields>(
+    const snapshot = await getSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
       snapshotId,
       storeId,
       snapshot,
@@ -2532,7 +2549,7 @@ const retrieveSnapshots = async <T extends BaseData<any>, K extends T = T>(
     }
 
     // Fetch multiple snapshots if not found by ID
-    const response = await axiosInstance.post<Snapshot<T, K, Meta, ExcludedFields>[]>(
+    const response = await axiosInstance.post<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>(
       `${API_BASE_URL}/snapshots/retrieve`,
       { snapshotConfig },
       { headers: additionalHeaders }
@@ -2552,10 +2569,14 @@ const retrieveSnapshots = async <T extends BaseData<any>, K extends T = T>(
 
 
 const mapSnapshotData = async <
-  T extends BaseData<any, any> = BaseData<any, any>,
-  K extends T = T
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
-  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   config: SnapshotStoreConfig<T, K>,
   mappedData: Map<string, SnapshotStoreConfig<T, K>>
 ): Promise<SnapshotStoreConfig<T, K>> => {
@@ -2564,7 +2585,7 @@ const mapSnapshotData = async <
     const { id, data } = snapshot;
 
     const {
-      versionData = createDefaultVersionData<T, K>(),
+      versionData = createDefaultVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
       latestVersion = createLatestVersion<T, K>(),
       ...rest
     } = data;
@@ -2605,7 +2626,7 @@ const sortSnapshotData = async <
   T extends BaseData<any>,
   K extends T = T
 >(
-  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   config: SnapshotStoreConfig<T, K>,
   mappedData: Map<string, SnapshotStoreConfig<T, K>>
 ): Promise<SnapshotStoreConfig<T, K>> => {
@@ -2641,7 +2662,7 @@ const categorizeSnapshotData = async <
   T extends BaseData<any>,
   K extends T = T
 >(
-  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   config: SnapshotStoreConfig<T, K>,
   mappedData: Map<string, SnapshotStoreConfig<T, K>>
 ): Promise<SnapshotStoreConfig<T, K>> => {
@@ -2684,7 +2705,7 @@ const searchSnapshotData = async <
   T extends BaseData<any>,
   K extends T = T
 >(
-  snapshot: Snapshot<T, K, Meta, ExcludedFields>,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   config: SnapshotStoreConfig<T, K>,
   mappedData: Map<string, SnapshotStoreConfig<T, K>>,
   operation: SnapshotOperation<T, K>
@@ -2779,9 +2800,9 @@ const updateSnapshotStore = async <
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >(
   storeId: number, // ID of the SnapshotStore to update
-  updatedData: Partial<SnapshotContainer<T, K, Meta, ExcludedFields>>, // Partial data to update
+  updatedData: Partial<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, // Partial data to update
   additionalHeaders?: Record<string, string> // Optional headers
-): Promise<SnapshotContainer<T, K, Meta, ExcludedFields>> => {
+): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     // Fetch the existing SnapshotStore
     const existingStore = await fetchSnapshotStoreData<T, K>(storeId);
@@ -2791,7 +2812,7 @@ const updateSnapshotStore = async <
     }
 
     // Merge the existing store with the updated data
-    const updatedStore: SnapshotContainer<T, K, Meta, ExcludedFields> = {
+    const updatedStore: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       ...existingStore,
       ...updatedData,
     };
@@ -2813,7 +2834,7 @@ const updateSnapshotStore = async <
     const headers = Object.assign({}, ...headersArray);
 
     // Make the API request to update the SnapshotStore
-    const response = await axiosInstance.put<SnapshotContainer<T, K, Meta, ExcludedFields>>(
+    const response = await axiosInstance.put<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
       `${API_BASE_URL}/snapshotStores/${storeId}`,
       updatedStore,
       { headers }
@@ -2882,10 +2903,10 @@ const mapSnapshots = async <
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >(
-  snapshots: Snapshot<T, K, Meta, ExcludedFields>[], // Array of snapshots to process
-  mapper: (snapshot: Snapshot<T, K, Meta, ExcludedFields>) => Promise<Snapshot<T, K, Meta, ExcludedFields>>, // Mapping function
+  snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], // Array of snapshots to process
+  mapper: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, // Mapping function
   additionalHeaders?: Record<string, string> // Optional headers
-): Promise<Snapshot<T, K, Meta, ExcludedFields>[]> => {
+): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
     // Validate input
     if (!Array.isArray(snapshots)) {
@@ -2923,14 +2944,13 @@ const mapSnapshots = async <
 export {
   addSnapshot,
   addSnapshotSuccess,
-  apiCall, categorizeSnapshotData, createHeaders, postSnapshotToAPI,
-  createSnapshotContainer, deleteSnapshot, deleteSnapshotStore, extractCriteria, fetchAllSnapshots, fetchSnapshotById,
+  apiCall, categorizeSnapshotData, createHeaders, createSnapshotContainer, deleteSnapshot, deleteSnapshotStore, extractCriteria, fetchAllSnapshots, fetchSnapshotById,
   fetchSnapshotIds, fetchSnapshotStoreData, findSnapshotsBySubscriber, findSnapshotStoresById, findSubscriberById,
   getCurrentSnapshot, getSnapshot, getSnapshotConfig, getSnapshotConfigData,
   getSnapshotContainer, getSnapshotCriteria, getSnapshotData,
   getSnapshotId, getSnapshots, getSnapshotsAndCategory, getSnapshotStore, getSnapshotStoreConfig,
   getSnapshotStoreConfigData, getSnapshotStoreId, getSortedList,
-  handleOtherApplicationLogic, handleOtherStatusCodes, handleSpecificStatusCode, mapSnapshotData, mapSnapshots, mergeSnapshots, removeSnapshot, retrieveSnapshots, saveSnapshotToDatabase, searchSnapshotData,
+  handleOtherApplicationLogic, handleOtherStatusCodes, handleSpecificStatusCode, mapSnapshotData, mapSnapshots, mergeSnapshots, postSnapshotToAPI, removeSnapshot, retrieveSnapshots, saveSnapshotToDatabase, searchSnapshotData,
   snapshotContainer, sortSnapshotData, takeSnapshot, updateSnapshotStore
 };
 

@@ -5,9 +5,9 @@ import { CollaborationOptions } from '@/app/components/interfaces/options/Collab
 import { BaseData, Data } from '@/app/components/models/data/Data';
 import { Task } from '@/app/components/models/tasks/Task';
 import { Member } from '@/app/components/models/teams/TeamMembers';
-import { AllStatus } from '@/app/components/state/stores/DetailsListStore';
+import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { User } from '@/app/components/users/User';
-import { BaseMetadata, BaseMetaDataOptions, UnifiedMetaDataOptions } from '@/app/configs/database/MetaDataOptions';
+import { BaseMetadata, BaseMetaDataOptions, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { Project } from 'next/dist/build/swc';
 import { Resource } from 'node_modules/@refinedev/core/dist/hooks/router/use-go';

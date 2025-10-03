@@ -1,6 +1,6 @@
 // apiEndpointOutput.ts
-import { NestedEndpoints, endpoints } from "../api/ApiEndpoints";
-import { generatedApiCode } from "../generators/ApiCodeGenerator";
+import { NestedEndpoints, endpoints } from "@/app/api/ApiEndpoints";
+import { generatedApiCode } from "@/app/generators/ApiCodeGenerator";
 import { endpointPreferences } from "./ApiPreferencesEndpoints";
 
 console.log(generatedApiCode); // Output generated TypeScript API code

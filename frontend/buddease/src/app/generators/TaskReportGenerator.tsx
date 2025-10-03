@@ -1,6 +1,6 @@
 // TaskReportGenerator.tsx
 
-import { Task } from "../components/models/tasks/Task";
+import { Task } from "@/app/components/models/tasks/Task";
 
 // Define the structure of the task report
 export interface TaskReport {

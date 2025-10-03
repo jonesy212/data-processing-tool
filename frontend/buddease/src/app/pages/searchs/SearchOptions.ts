@@ -1,12 +1,12 @@
-import { CodingLanguageEnum, LanguageEnum } from "@/app/components/communications/LanguageEnum";
+import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
 import { DashboardPreferenceEnum } from "@/app/components/dashboards/DashboardSettings";
 import { FileTypeEnum } from "@/app/components/documents/FileType";
 import { FilterOptions } from "@/app/components/models/data/DataFilterForm";
-import { PrivacySettingEnum } from "@/app/components/models/data/StatusType";
 import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
-import { SecurityFeatureEnum } from "@/app/components/security/SecurityFeatureEnum";
 import { CalendarSettingsEnum } from "@/app/components/settings/CalendarSettingsEnum";
-import { SortCriteria } from "@/app/components/settings/SortCriteria";
+import { SortCriteria } from "@/app/settings/SortCriteria";
+import { PrivacySettingEnum } from "@/app/models/data/StatusType";
+import { SecurityFeatureEnum } from "@/server/security/SecurityFeatureEnum";
 
 interface NewsOptions {
   newsCategory: string; // Example: 'technology', 'business', etc.
@@ -176,6 +176,6 @@ const options: SearchOptions = {
     excludeKeywords: []
   }
 };
-export type { CustomFilter, AdditionalOptions, PaginationOptions, SearchAnimationOptions, SearchOptions, SearchSize, SortingOption };
+export type { AdditionalOptions, CustomFilter, PaginationOptions, SearchAnimationOptions, SearchOptions, SearchSize, SortingOption };
   
   export { searchOptions };

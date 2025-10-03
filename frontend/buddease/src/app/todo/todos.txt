@@ -23,12 +23,13 @@ Prompt Handling:
 
 PromptsStore: Manages state related to prompts and notifications.
 PromptComponentStore: Handles state for individual prompt components.
+
 Routing and Navigation:
 
 RoutingStore: Manages general routing state.
-ProtectedRouteStore: Specific store for handling protected routes.
-Styling and Design:
+RouteGuardStore: Specific store for handling protected routes.
 
+Styling and Design:
 StylingStore: Manages overall styling and design-related states.
 Sub-stores like ColorPaletteStore, DynamicColorPaletteStore, etc.: Handle specific styling aspects.
 Support and Help Desk:

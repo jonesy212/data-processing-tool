@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import ChatSettings from "../ChatSettingsPanel";
+import ChatSettings from "@/app/ChatSettingsPanel";
 
 
 const settingsPanel = useRef<ChatSettings | null>(null);

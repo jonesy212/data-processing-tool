@@ -3,7 +3,7 @@ import { BlogPost } from "@/app/components/community/DiscussionForumComponent";
 import GroupGenerator from "@/app/generators/GroupGenerator";
 import Group from "@/app/components/communications/chat/Group";
 import ListGenerator from "@/app/generators/ListGenerator";
-import { DetailsItem } from "@/app/components/state/stores/DetailsListStore";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 
 interface BlogGroupProps {
   blogGroups: Group<BlogPost>[];

@@ -1,13 +1,20 @@
+// AppRouter.tsx
+
 import RootLayout from "@/app/RootLayout";
-import authService from "@/app/components/auth/AuthService"; // Import authService
+import authService from "@/server/auth/AuthService";
 import Home from "@/app/page";
 import Dashboard from "@/app/pages/dashboards/UserDashboard";
 import RegisterForm from "@/app/pages/forms/RegisterForm";
 import React from "react";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import LoginForm from "../../pages/forms/LoginForm";
-import { LoginResult } from "../containers/LoginContainer";
-import ProtectedRoute from "../routing/ProtectedRoute";
+import LoginForm from "@/app/pages/forms/LoginForm";
+import { LoginResult } from "@/app/containers/LoginContainer";
+import { RouteGuard } from "@/app/components/routing/RouteGuard";
+import Unauthorized from "@/app/pages/Unauthorized";
+import AccessDenied from "@/app/pages/AccessDenied";
+import ProfilePage from "@/app/pages/profile/ProfilePage"; // Add these imports
+import VerificationPage from "@/app/pages/profile/VerificationPage";
+import TeamManagementPage from "@/app/pages/team/TeamManagementPage";
 
 const AppRouter: React.FC = () => {
   const handleLoginSubmit = async (
@@ -17,23 +24,20 @@ const AppRouter: React.FC = () => {
     onError: (error: string) => void
   ): Promise<LoginResult> => {
     try {
-      // Use AuthService to handle login
       const { accessToken } = await authService.login(username, password);
 
       if (accessToken) {
-        // Logic after successful login
-        onSuccess(); // Call onSuccess callback
-        return { success: true }; // Return success result
+        onSuccess();
+        return { success: true };
       } else {
-        // Handle login failure
         console.error("Login failed");
-        onError("Login failed"); // Call onError callback with error message
-        return { success: false }; // Return failure result
+        onError("Login failed");
+        return { success: false };
       }
     } catch (error) {
       console.error("Error during login:", error);
-      onError("Error during login"); // Call onError callback with error message
-      return { success: false, error: error as Error }; // Cast error to Error type before assigning
+      onError("Error during login");
+      return { success: false, error: error as Error };
     }
   };
 
@@ -41,26 +45,107 @@ const AppRouter: React.FC = () => {
     <Router>
       <RootLayout>
         <Routes>
+          {/* Public routes */}
+          <Route path="/unauthorized" element={<Unauthorized />} />
+          <Route path="/access-denied" element={<AccessDenied />} />
+          
           <Route
             path="/register"
-            element={
-              <RegisterForm
-              // Add necessary props for SignUpForm component
-              />
-            }
+            element={<RegisterForm />}
           />
+          
           <Route
             path="/login"
             element={
               <LoginForm
-                onSubmit={handleLoginSubmit} // Pass the onSubmit function
+                onSubmit={handleLoginSubmit}
                 setUsername={() => {}}
                 setPassword={() => {}}
               />
             }
           />
-          <ProtectedRoute path="/dashboard" component={Dashboard} />
-          <ProtectedRoute path="/" component={Home} />
+          
+          {/* Protected routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <RouteGuard 
+                requiredPermissions={['view_dashboard']}
+                fallbackPath="/unauthorized"
+              >
+                <Dashboard />
+              </RouteGuard>
+            }
+          />
+          
+          <Route
+            path="/profile"
+            element={
+              <RouteGuard 
+                requiredPermissions={['view_profile']}
+                fallbackPath="/unauthorized"
+              >
+                <ProfilePage />
+              </RouteGuard>
+            }
+          />
+          
+          <Route
+            path="/verification"
+            element={
+              <RouteGuard 
+                requiredPermissions={['can_verify']}
+                fallbackPath="/access-denied"
+              >
+                <VerificationPage />
+              </RouteGuard>
+            }
+          />
+          
+          <Route
+            path="/team-management"
+            element={
+              <RouteGuard 
+                requiredPermissions={['manage_team']}
+                requiredRoles={['manager', 'admin']}
+                fallbackPath="/access-denied"
+              >
+                <TeamManagementPage />
+              </RouteGuard>
+            }
+          />
+          
+          <Route
+            path="/"
+            element={
+              <RouteGuard fallbackPath="/login">
+                <Home />
+              </RouteGuard>
+            }
+          />
+          
+          {/* Admin routes */}
+          <Route
+            path="/admin"
+            element={
+              <RouteGuard 
+                requiredRoles={['admin']}
+                requiredPermissions={['admin_access']}
+                enableFuzzyAuth={true}
+                fallbackPath="/access-denied"
+              >
+                <AdminDashboard />
+              </RouteGuard>
+            }
+          />
+          
+          {/* 404 fallback */}
+          <Route path="*" element={
+            <div className="text-center p-8">
+              <h1 className="text-2xl font-bold">404 - Page Not Found</h1>
+              <p>The page you're looking for doesn't exist.</p>
+            </div>
+          } />
         </Routes>
       </RootLayout>
     </Router>

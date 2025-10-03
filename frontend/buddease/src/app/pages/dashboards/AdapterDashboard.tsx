@@ -1,15 +1,9 @@
 // AdapterDashboard.tsx
-import useLayoutGenerator, {
-  DocumentGenerationResult,
-} from "@/app/components/hooks/GenerateUserLayout";
+import AndroidIcon from "@/app/components/icons/AndroidIcon";
 import FallbackIcon from "@/app/components/icons/FallbackIcon";
 import WebIcon from "@/app/components/icons/WebIcon";
 import { loadFavoriteIcon, loadSettingsIcon, loadShareIcon } from "@/app/components/icons/androidIcons";
 import { loadAppStoreIcon, loadApplePayIcon, loadAppleTouchIcon, loadAppleWatchIcon, loadNotificationIcon } from "@/app/components/icons/iOsIcons";
-import {
-  AnimatedComponent,
-  AnimatedComponentRef,
-} from "@/app/components/libraries/animations/AnimationComponent";
 import { AnimatedComponentProps } from "@/app/components/styling/AnimationsAndTansitions";
 import ColorPalette, {
   ColorSwatchProps,
@@ -17,11 +11,17 @@ import ColorPalette, {
 import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
 import AdapterContent from "@/app/components/web3/dAppAdapter/AdapterContent";
 import { DocxGeneratorOptions } from "@/app/generators/docxGenerator";
+import useLayoutGenerator, {
+  DocumentGenerationResult,
+} from "@/app/hooks/GenerateUserLayout";
+import CommonLayout from "@/app/layouts/CommonLayout";
+import {
+  AnimatedComponent,
+  AnimatedComponentRef,
+} from "@/app/libraries/animations/AnimationComponent";
 import DashboardLoader from "@/dashboards/DashboardLoader";
 import Image from 'next/image';
 import React, { ReactNode, useRef } from "react";
-import AndroidIcon from "../../components/icons/AndroidIcon";
-import CommonLayout from "../layouts/CommonLayout";
 // Import specific icons for each platform
 
 const AdapterDashboard: React.FC = () => {

@@ -1,4 +1,4 @@
-import { createSubscriptionPayload } from "../../../app/components/actions/SubscriptionActions";
+import { createSubscriptionPayload } from "@/app/app/actions/SubscriptionActions";
 import { NotificationTypeEnum } from "@/context/NotificationContext";
 
 const projectCategory = "Project Management"; // Example category
@@ -13,7 +13,7 @@ const projectSubscriptionPayload = createSubscriptionPayload({
       id: "task-update-id",
       isSticky: true,
       name: "Task Update Notification",
-      type: NotificationTypeEnum.Info,
+      type: NotificationTypeEnum.INFO,
       status: 'ACTIVE',
         isDismissable, isClickable,
         isClosable, isAutoDismiss, isAutoDismissable, isAutoDismissOnNavigation, isAutoDismissOnAction, isAutoDismissOnTimeout,

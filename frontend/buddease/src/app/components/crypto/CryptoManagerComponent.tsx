@@ -1,9 +1,9 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import { useSecureUserId } from "../utils/useSecureUserId";
+import { useSecureUserId } from '@/app/hooks/useSecureStoreId';
 import { CryptoHolding } from "./CryptoHolding";
 import { useCryptoManager } from "./CryptoManager";
-import { SearchLogger } from "../logging/Logger";
+import { SearchLogger } from "@/app/libraries/logging/Logger";
 
 const CryptoManagerComponent: React.FC = () => {
   const {

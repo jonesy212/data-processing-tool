@@ -1,15 +1,15 @@
 // articleApi.ts
+import axiosInstance from "@/app/api/csrfToken";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { addLog } from "@/app/state/redux/slices/LogSlice";
+import { useArticleStore } from "@/app/state/stores/ArticleStore";
+import { User } from "@/app/users/User";
 import { useNotification } from "@/context/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
-import { addLog } from "../components/state/redux/slices/LogSlice";
-import { useArticleStore } from "../components/state/stores/ArticleStore";
-import { User } from "../components/users/User";
-import { Message } from "../generators/GenerateChatInterfaces";
-import UniqueIDGenerator from "../generators/GenerateUniqueIds";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
-import axiosInstance from "./axiosInstance";
 
 const API_BASE_URL = endpoints.apiConfig;
 

@@ -1,15 +1,13 @@
 // DocumentPath.ts
-import { CommonData } from "@/app/components/models/CommonData";
+import { CommonData } from "@/app/models/CommonData";
 import { Content } from "@/app/components/models/content/AddContent";
-import { BaseData } from "@/app/components/models/data/Data";
-import { DocumentBase } from "@/app/components/state/stores/DocumentStore";
 import { DatasetModel } from "@/app/components/todos/tasks/DataSetModel";
-import { Version } from "@/app/components/versions/Version";
-import { VersionData } from "@/app/components/versions/VersionData";
-import { AppStructurePermissions } from "@/app/configs/appStructure/AppStructure";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import AccessHistory from "@/versions/AccessHistory";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
+import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import { DocumentBase } from "@/app/state/stores/DocumentStore";
+import AccessHistory from "@/app/versions/AccessHistory";
+import { Version } from "@/app/versions/Version";
+import { VersionData } from "@/app/versions/VersionData";
+import { AppStructurePermissions } from "@/configs/appStructure/AppStructure";
 
 
 interface DocumentPath<
@@ -34,7 +32,7 @@ DatasetModel<T, K, Meta> {
   accessHistory: AccessHistory[];
   documentPhase?: string;
   version?: Version<T, K, Meta>;
-  versionData?: VersionData<T, K>;
+  versionData?: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   visibility: string;
   documentSize: { size: number };
   lastModifiedDate: Date;
@@ -77,4 +75,4 @@ DatasetModel<T, K, Meta> {
 }
 
 
-export type { DocumentPath }
+export type { DocumentPath };

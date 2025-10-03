@@ -1,4 +1,4 @@
-import HighlightEvent from "../components/documents/screenFunctionality/HighlightEvent";
+import HighlightEvent from "@/app/components/documents/screenFunctionality/HighlightEvent";
 
 // apiEndpoints.ts
 const BASE_URL = "https://your-api-base-url";

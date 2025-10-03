@@ -1,13 +1,8 @@
-import { databaseService } from './../database/DatabaseOperations';
 // AuthService.ts
-// import JWT_SECRET from "@/app/configs/JwtConfig";
-import { DatabaseConfig, DatabaseService } from "@/app/configs/DatabaseConfig";
-import { generateToken } from "@/app/generators/generateTokens";
-import * as jwt from 'jsonwebtoken';
-import { PostgresDatabaseService } from "../database/PostgresDatabaseService";
-import { JWT_SECRET } from "@/server/JwtConfig";
-import UserService from "@/api/ApiUser";
+// import JWT_SECRET from "@/configs/JwtConfig";
 import { databaseConfig } from '@/app/configs/DatabaseConfig';
+import { PostgresDatabaseService } from "@/app/database/PostgresDatabaseService";
+import { DatabaseConfig, DatabaseService } from "@/config/DatabaseConfig";
 
 type AuthenticationProvider = 'Google' | 'Facebook' | 'Twitter' | 'LinkedIn' | 'GitHub';
 

@@ -1,12 +1,12 @@
 // components/ResponsiveDesign.tsx
-import BackendStructure from "@/app/configs/appStructure/BackendStructure";
-import FrontendStructure from "@/app/configs/appStructure/FrontendStructure";
+import { BoardItem, CollaborationBoardStore } from "@/app/state/stores/CollaborationBoardStore";
+import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import FrontendStructure from "@/config/appStructure/FrontendStructure";
+import getAppPath from "@/config/appStructure/appPath";
+import BackendStructure from '@/server/database/BackendStructure';
 import { action, observable } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
 import React, { useState } from "react";
-import getAppPath from "../../configs/appStructure/appPath";
-import { BoardItem, CollaborationBoardStore } from "../state/stores/CollaborationBoardStore";
-import { getCurrentAppInfo } from "../versions/VersionGenerator";
 import { ColorSwatchProps } from "./ColorPalette";
  
 // Usage of getCurrentAppInfo

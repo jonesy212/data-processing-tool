@@ -1,9 +1,9 @@
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { ThemeConfigProps } from "@/app/hooks/userInterface/ThemeConfigContext";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { randomBytes } from "ethers";
 import React from "react";
-import { ThemeConfigProps } from "../hooks/userInterface/ThemeConfigContext";
-import { NotificationData } from "../support/NofiticationsSlice";
-import NOTIFICATION_MESSAGES from "../support/NotificationMessages";
 import './NotificationComponent.css'; // Assuming styles are defined here
 import useNotificationManagerService from "./NotificationService";
 
@@ -17,12 +17,12 @@ const CustomNotification: React.FC<CustomNotificationProps> = ({ type, message }
   let notificationStyle = "";
 
   switch (type) {
-    case NotificationTypeEnum.Info:
+    case NotificationTypeEnum.INFO:
       notificationStyle = 'info-notification';
-    case NotificationTypeEnum.Success:
+    case NotificationTypeEnum.SUCCESS:
       notificationStyle = "success-notification";
       break;
-    case NotificationTypeEnum.Error:
+    case NotificationTypeEnum.ERROR:
       notificationStyle = "error-notification";
       break;
     case NotificationTypeEnum.Warning:
@@ -73,7 +73,7 @@ const NotificationComponent: React.FC<NotificationComponentProps & CustomNotific
       {notifications.map((notification) => (
         <div key={notification.id}>
           <CustomNotification 
-            type={notification.type ?? NotificationTypeEnum.Info} // Provide a default type if undefined
+            type={notification.type ?? NotificationTypeEnum.INFO} // Provide a default type if undefined
             message={notification.message} 
           />
           <button onClick={() => handleDismiss(notification)}>

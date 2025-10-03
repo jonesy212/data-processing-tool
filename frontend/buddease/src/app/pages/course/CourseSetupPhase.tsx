@@ -1,7 +1,7 @@
 import { Data } from "@/app/components/models/data/Data";
 import SnapshotStore, {
     Snapshot,
-} from "@/app/components/snapshots/SnapshotStore";
+} from "@/app/snapshots/SnapshotStore";
 import React, { useState } from "react";
 import { CourseDevelopmentPhase } from "./CourseDevelopmentPhaseManager";
 

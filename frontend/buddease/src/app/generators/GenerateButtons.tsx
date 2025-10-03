@@ -1,27 +1,27 @@
 // ButtonGenerator.tsx
 import { fetchEventData } from '@/app/api/ApiEvent';
+import userService from "@/app/api/ApiUser";
 import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
-import { Label } from '@/app/components/projects/branding/BrandingSettings';
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { Router, useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import userService from "../api/ApiUser";
-import { useDynamicComponents } from "../components/DynamicComponentsContext";
+import { useDynamicComponents } from "@/app/components/DynamicComponentsContext";
 import {
     startVoiceRecognition,
     stopVoiceRecognition,
-} from "../components/intelligence/VoiceControl";
-import ReusableButton from "../components/libraries/ui/buttons/ReusableButton";
-import { RealtimeDataComponent } from "../components/models/realtime/RealtimeData";
-import useNotificationManagerService from "../components/notifications/NotificationService";
-import { Phase } from "../components/phases/Phase";
+} from "@/app/components/intelligence/VoiceControl";
+import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
+import { RealtimeDataComponent } from "@/app/components/models/realtime/RealtimeData";
+import useNotificationManagerService from "@/app/services/NotificationService";
+import { Phase } from "@/app/components/phases/Phase";
+import { Label } from '@/app/components/projects/branding/BrandingSettings';
+import { brandingSettings } from "@/app/libraries/theme/BrandingService";
 import {
     nextPhase,
     previousPhase,
-} from "../components/phases/PhaseTransitions";
-import { brandingSettings } from "../libraries/theme/BrandingService";
-import { ExtendedRouter } from "../pages/MyAppWrapper";
+} from "@/app/models/phases/PhaseTransitions";
+import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { Router, useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
 import { BaseData } from "./data/Data";
 
@@ -37,7 +37,7 @@ startVoiceRecognition;
  * // Import ButtonGenerator and its props
  * import { ButtonGenerator, ButtonGeneratorProps } from "./path/to/ButtonGenerator";
  *
- * import NotificationManager from '../components/support/NotificationManager';
+ * import NotificationManager from '@/app/support/NotificationManager';
  * import NotificationManager from '../components/notifications/NotificationManager';
  * import { buttonGeneratorProps } from '@/app/generators/GenerateButtons';
 import { Router } from 'react-router-dom';

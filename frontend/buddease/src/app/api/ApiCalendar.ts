@@ -1,21 +1,22 @@
 // ApiCalendar.ts
+import { endpoints } from "@/app/api/endpointConfigurations";
 import {
-  NotificationType,
-  useNotification,
-  NotificationTypeEnum
-} from "@/app/context/NotificationContext";
-import { AxiosResponse } from "axios";
-import {
-  SimpleCalendarEvent,
-  useCalendarContext,
-} from "../components/calendar/CalendarContext";
+    SimpleCalendarEvent,
+    useCalendarContext,
+} from "@/app/calendar/CalendarContext";
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import UniqueIDGenerator from "../generators/GenerateUniqueIds";
-import clientApiService from "./ApiClient";
-import { endpoints } from "./ApiEndpoints";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import {
+    CalendarNotificationTypes,
+    NotificationType,
+    useNotification
+} from "@/app/support/NotificationContext";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { AxiosResponse } from "axios";
+import internalApiService from "./ApiClient";
+
+import axiosInstance from "@/app/api/csrfToken";
 import { handleApiError } from "./ApiLogs";
-import axiosInstance from "./axiosInstance";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "../configs/BaseConfig";
 
 const API_BASE_URL = endpoints.calendar
 interface CalendarNotificationMessages {
@@ -45,7 +46,9 @@ class CalendarApiService <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >{
   notify: (
     id: string,
@@ -88,16 +91,16 @@ class CalendarApiService <
     }
   }
 
-  async fetchCalendarEvent(): Promise<CalendarEvent<T, K, Meta, ExcludedFields>[]> {
+  async fetchCalendarEvent(): Promise<CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     try {
       const response = await this.requestHandler(
-        () => clientApiService.listClientCMessages(),
+        () => internalApiService.listClientCMessages(),
         "FETCH_CALENDAR_EVENTS_SUCCESS",
         "FETCH_CALENDAR_EVENTS_ERROR"
       );
 
       // Extract data from the AxiosResponse object
-      const calendarEvents: CalendarEvent<T, K, Meta, ExcludedFields>[] = response.data;
+      const calendarEvents: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = response.data;
       return calendarEvents;
     } catch (error) {
       console.error("Error fetching calendar events:", error);
@@ -105,30 +108,26 @@ class CalendarApiService <
     }
   }
 
-  async fetchCalendarEvents(): Promise<CalendarEvent<T, K, Meta, ExcludedFields>[]> {
+  async fetchCalendarEvents(): Promise<CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     try {
       const response = await this.requestHandler(
-        () => clientApiService.listClientCMessages(),
-        "FETCH_CALENDAR_EVENTS_SUCCESS",
+        () => internalApiService.get(`${API_BASE_URL}/calendar/events`), // ✅ Use internalApiService with correct endpoint
+        "FETCH_CALENDAR_EVENTS_SUCCESS", 
         "FETCH_CALENDAR_EVENTS_ERROR"
       );
 
-      // Extract data from the AxiosResponse object
-      const calendarEvents: CalendarEvent<T, K, Meta, ExcludedFields>[] = response.data;
-
-      return calendarEvents;
+      return response.data;
     } catch (error) {
       console.error("Error fetching calendar events:", error);
       throw error;
     }
   }
 
-  async addCalendarEvent(
-    newEvent: Omit<SimpleCalendarEvent, "id">
-  ): Promise<void> {
+ async addCalendarEvent(
+  newEvent: Omit<SimpleCalendarEvent, "id">): Promise<void> {
     try {
       await this.requestHandler(
-        () => clientApiService.createClientTask(newEvent),
+        () => internalApiService.post(`${API_BASE_URL}/calendar/events`, newEvent), // ✅ Correct calendar endpoint
         "ADD_CALENDAR_EVENT_SUCCESS",
         "ADD_CALENDAR_EVENT_ERROR"
       );
@@ -138,7 +137,7 @@ class CalendarApiService <
       id: UniqueIDGenerator.generateID(
         "newCalendarEventSuccess",
         "calendar-event",
-        NotificationTypeEnum.EventOccurred,
+        CalendarNotificationTypes.EventOccurred,
         "EventCreation" as NotificationType
       ),
       title: "", // Initialize title as an empty string or provide a default value
@@ -186,7 +185,7 @@ class CalendarApiService <
 
       // Remove the event from the server
       await this.requestHandler(
-        () => clientApiService.removeCalendarEvent(Number(eventId)),
+        () => internalApiService.removeCalendarEvent(Number(eventId)),
         "REMOVE_CALENDAR_EVENT_SUCCESS",
         "REMOVE_CALENDAR_EVENT_ERROR"
       );
@@ -199,7 +198,7 @@ class CalendarApiService <
   async updateCalendarEvent(eventId: string, newTitle: string): Promise<void> {
     try {
       await this.requestHandler(
-        () => clientApiService.updateCalendarEvent(Number(eventId), newTitle),
+        () => internalApiService.updateCalendarEvent(Number(eventId), newTitle),
         "UPDATE_CALENDAR_EVENT_SUCCESS",
         "UPDATE_CALENDAR_EVENT_ERROR"
       );
@@ -212,10 +211,10 @@ class CalendarApiService <
 
 
   // Function to fetch calendar events from the database
-  async fetchCalendarEventsFromDatabase(documentId: number): Promise<CalendarEvent<T, K, Meta, ExcludedFields>[]> {
+  async fetchCalendarEventsFromDatabase(documentId: number): Promise<CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     try {
       // Make a GET request to the API endpoint with documentId
-      const response = await axiosInstance.get<CalendarEvent<T, K, Meta, ExcludedFields>[]>(`${API_BASE_URL}/calendar/events/${documentId}`);
+      const response = await axiosInstance.get<CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>(`${API_BASE_URL}/calendar/events/${documentId}`);
 
       // Extract the data from the response
       const calendarEvents = response.data;
@@ -228,10 +227,10 @@ class CalendarApiService <
     }
   }
   // Function to fetch calendar events data from the database
-  async fetchCalendarEventsDataFromDB(): Promise<Record<string, CalendarEvent<T, K, Meta, ExcludedFields>[]>> {
+  async fetchCalendarEventsDataFromDB(): Promise<Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>> {
     try {
       // Make a GET request to the API endpoint
-      const response = await axiosInstance.get<Record<string, CalendarEvent<T, K, Meta, ExcludedFields>[]>>(`${API_BASE_URL}/calendar/events/data`);
+      const response = await axiosInstance.get<Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>>(`${API_BASE_URL}/calendar/events/data`);
 
       // Extract the data from the response
       const calendarEventsData = response.data;
@@ -245,32 +244,42 @@ class CalendarApiService <
   }
 
 
-
-  async fetchGoogleCalendarEvents(): Promise<any> {
-    try {
-      // Define Google Calendar API endpoint and authentication credentials
-      const googleCalendarApiEndpoint =
-        "https://www.googleapis.com/calendar/v3/events";
-      const accessToken = process.env.FRONTEND_API_ACCESS_TOKEN;
-
-      // Make API request to fetch events from Google Calendar
-      const response: AxiosResponse = await axiosInstance.get(
-        googleCalendarApiEndpoint,
-        {
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
-
-      // Return the response data containing Google Calendar events
-      return response.data;
-    } catch (error) {
-      // Handle any errors that occur during fetching events
-      console.error("Error fetching events from Google Calendar:", error);
-      throw error;
-    }
+// For INTERNAL APIs (your app's backend)
+async fetchCalendarEvents(): Promise<any> {
+  try {
+    const response = await this.requestHandler(
+      () => internalApiService.get("/api/calendar/events"), // ✅ internalApiService for your app
+      "FETCH_CALENDAR_EVENTS_SUCCESS", 
+      "FETCH_CALENDAR_EVENTS_ERROR"
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching calendar events:", error);
+    throw error;
   }
+}
+
+// For EXTERNAL APIs (Google, etc.)
+async fetchGoogleCalendarEvents(): Promise<any> {
+  try {
+    const googleCalendarApiEndpoint = "https://www.googleapis.com/calendar/v3/events";
+    const accessToken = process.env.FRONTEND_API_ACCESS_TOKEN;
+
+    // ✅ axiosInstance for external APIs
+    const response: AxiosResponse = await axiosInstance.get(
+      googleCalendarApiEndpoint,
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching events from Google Calendar:", error);
+    throw error;
+  }
+}
 
   updateCalendarWithGoogleEvents(googleEvents: any) {
     try {

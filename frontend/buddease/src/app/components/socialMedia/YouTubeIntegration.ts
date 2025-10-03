@@ -1,4 +1,4 @@
-import UserDetails from "../users/User";
+import UserDetails from "@/app/users/User";
 
 interface YouTubeUserDetails {
   channelId: string;

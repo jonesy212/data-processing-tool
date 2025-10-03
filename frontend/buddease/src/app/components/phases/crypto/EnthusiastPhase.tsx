@@ -1,6 +1,6 @@
 // EnthusiastPhase.tsx
 import React, { useState } from "react";
-import AddContent from '../../models/content/AddContent'; // Import AddContent component
+import AddContent from '@/app/components/models/content/AddContent'; // Import AddContent component
 import CallsConferences from './CallsConferences';
 import DoYourOwnResearch from './DoYourOwnResearch';
 import EnthusiastProfile from './EnthusiastProfile';

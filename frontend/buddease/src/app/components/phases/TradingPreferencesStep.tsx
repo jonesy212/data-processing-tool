@@ -1,7 +1,7 @@
 // TradingPreferencesStep.tsx
 import React from "react";
 
-import PreferencesStep from "./actions/PreferencesStep";
+import PreferencesStep from "@/app/actions/phases/PreferencesStep";
 
 // Specific Preferences Step Components
 const TradingPreferencesStep: React.FC<{ onSubmit: (preferences: any) => void }> = ({ onSubmit }) => {

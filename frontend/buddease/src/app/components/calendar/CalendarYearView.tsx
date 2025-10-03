@@ -1,6 +1,6 @@
 import React from "react";
-import { CommonCalendarProps } from "./Calendar";
-import { Project } from "../projects/Project";
+import { CommonCalendarProps } from "@/app/calendar/Calendar";
+import { Project } from "@/app/models/projects/Project";
 import { YearInfo } from "./CalendarYear";
 
 interface YearWiewProps extends CommonCalendarProps {

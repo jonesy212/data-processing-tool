@@ -1,18 +1,18 @@
-import { Snapshot } from "@/app/components/snapshots";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { Snapshot } from "@/app/snapshots";
 import React from "react";
 import { BaseData, Data } from "./components/models/data/Data";
 import { EventManager } from "./components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { UnifiedMetadata } from "./configs/database/MetaDataOptions";
 
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
-import { LanguageEnum } from "./components/communications/LanguageEnum";
-import { version } from "./components/versions/Version";
-import { createLastUpdatedWithVersion, createLatestVersion } from "./components/versions/createLatestVersion";
-import { useMeta } from "./configs/useMeta";
-import { useMetadata } from "./configs/useMetadata";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { useMeta } from "@/config/useMeta";
+import { useMetadata } from "@/config/useMetadata";
+import { LanguageEnum } from "./communications/LanguageEnum";
 import { useSnapshot } from "./context/SnapshotContext";
+import { version } from "./versions/Version";
+import { createLastUpdatedWithVersion, createLatestVersion } from "./versions/createLatestVersion";
 
 
 const area = fetchUserAreaDimensions().toString()
@@ -24,7 +24,7 @@ const { snapshotMap } = useSnapshot<T, K, StructuredMetadata<T, K>, keyof T>();
 const mappedSnapshot: Map<string, Snapshot<T, K, StructuredMetadata<T, K>, keyof T>> = snapshotMap;
 
 export const defaultMetadata = <
-  T extends BaseData<any> = BaseData<any>,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T
 >(): UnifiedMetadata<T, K, StructuredMetadata<T, K>> => ({
   title: 'Next.js',
@@ -87,7 +87,7 @@ export const defaultMetadata = <
     },
     initialState: undefined,
     meta: {} as StructuredMetadata<T, K>,
-    mappedSnapshot: new Map<string, Snapshot<T, K>>(),
+    mappedSnapshot: new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(),
     events: {} as EventManager<T, K>,
   },
 

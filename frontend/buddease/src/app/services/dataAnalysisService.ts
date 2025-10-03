@@ -1,54 +1,79 @@
-// Function to initiate data analysis process
-import axiosInstance from "../api/axiosInstance";
-import dataProcessingService, { DataProcessing, DataProcessingResult } from "../components/projects/DataAnalysisPhase/DataProcessing/DataProcessingService";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+// src/services/dataAnalysisService.ts
+import { DataAnalysis } from '@/app/components/projects/DataAnalysisPhase/DataAnalysis';
 
-export const sendDataToBackend = async (data: any) => {
-  try {
-    // Example: Send processed data to the backend
-    const response = await axiosInstance.post("/api/data-analysis", data);
-    console.log("Data sent to backend:", response.data);
-  } catch (error) {
-    console.error("Error sending data to backend:", error);
+class DataAnalysisService {
+  private baseUrl: string;
+
+  constructor(baseUrl: string = '') {
+    this.baseUrl = baseUrl;
   }
-};
 
-
-// Function to initiate data analysis process
-export const initiateDataAnalysis = async (event: CalendarEvent) => {
-  try {
-    // Step 1: Fetch Original Data
-    const originalData = await fetchDataForAnalysis(event);
-
-    // Step 2: Perform Data Processing
-    const data: DataProcessing = { datasetPath: event.datasetPath }; // Assuming datasetPath is a property of the event
-    const processedResult: DataProcessingResult = await dataProcessingService.loadDataAndProcess(data);
-
-    // Step 3: Display Original Data
-    console.log("Original Data:", originalData);
-    // Display the original data in the user interface or log it for inspection.
-    // For example, you can display a table, chart or other visualization of the original data
+  async fetchDataAnalysis(): Promise<DataAnalysis[]> {
+    const response = await fetch(`${this.baseUrl}/api/data-analysis`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     
-
-    // Step 4: Display Processed Result
-    console.log("Processed Result:", processedResult);
-    // Display the processed result, including insights and visualizations, in the user interface or log it for inspection.
+    if (!response.ok) {
+      throw new Error('Failed to fetch data analysis');
+    }
     
-    // Step 5: Store or Send Data to Backend (Optional)
-    await sendDataToBackend(processedResult); // Optionally, you can send the processed result to the backend for storage or further analysis.
-  } catch (error) {
-    // Handle errors
-    console.error("Error during data analysis:", error);
+    return response.json();
   }
-};
 
-// Function to fetch original data for analysis
-export const fetchDataForAnalysis = async (event: CalendarEvent): Promise<any> => { 
-  try {
-    const response = await axiosInstance.get("/api/data/" + event.id);
-    return response.data;
-  } catch (error) { 
-    console.error("Error fetching data for analysis:", error);
-    throw error;
+  async getDataByProjectId(projectId: string): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/api/data-analysis?projectId=${projectId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch project data');
+    }
+    
+    return response.json();
+  }
+
+  async postDataAnalysis(dataAnalysis: DataAnalysis): Promise<DataAnalysis> {
+    const response = await fetch(`${this.baseUrl}/api/data-analysis`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dataAnalysis),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to post data analysis');
+    }
+    
+    return response.json();
+  }
+
+  // For database operations, call your API route
+  async executeQuery(query: string, params: any[] = []): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/api/database`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'query',
+        query,
+        params,
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Database query failed');
+    }
+    
+    return response.json();
   }
 }
+
+export default DataAnalysisService;

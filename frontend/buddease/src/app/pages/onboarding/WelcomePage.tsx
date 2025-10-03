@@ -1,6 +1,6 @@
 // WelcomePage.tsx
 import RootLayout from "@/app/RootLayout";
-import DynamicNamingConventions from "@/app/components/DynamicNamingConventions";
+import DynamicNamingConventions from "@/app/utils/DynamicNamingConventions";
 import React from "react";
 
 const WelcomePage: React.FC = () => {

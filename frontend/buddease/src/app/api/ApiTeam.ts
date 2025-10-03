@@ -1,7 +1,7 @@
 // ApiTeam.ts
-import { headersConfig } from "../components/shared/SharedHeaders";
+import axiosInstance from "@/app/api/csrfToken";
+import { headersConfig } from "@/app/components/shared/SharedHeaders";
 import { endpoints } from "./ApiEndpoints";
-import axiosInstance from "./axiosInstance";
 const API_BASE_URL = endpoints.teams.list;
 
 export const fetchTeams = async (): Promise<any[]> => {

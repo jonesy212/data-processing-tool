@@ -1,33 +1,33 @@
 // AnimatedDashboard.tsx
 import DynamicIntroTooltip from "@/app/components/DynamicIntroTooltip";
-import { AnimatedComponent } from "@/app/components/libraries/animations/AnimationComponent";
+import { AnimatedComponent } from "@/app/libraries/animations/AnimationComponent";
 
 import SwingCard from "@/app/components/cards/animation/SwingCard";
 import React, { useEffect, useState } from "react";
 
-import ClickableList from "@/app/components/actions/ClickableList";
-import { ImageCard } from "@/app/components/cards";
-import {
-  LayoutGeneratorProps,
-  default as useLayoutGenerator,
-} from "@/app/components/hooks/GenerateUserLayout";
-import {
-  darkModeTogglePhaseHook,
-  notificationBarPhaseHook,
-} from "@/app/components/hooks/userInterface/UIPhaseHooks";
-import useDarkModeToggle from "@/app/components/hooks/userInterface/useDarkModeToggle";
+import ClickableList from "@/app/actions/ClickableList";
+import { ImageCard } from "@/app/cards";
 import { loadDuckDuckGoIcon } from "@/app/components/icons/IconLoader";
-import { AnimatedComponentRef } from "@/app/components/libraries/animations/AnimationComponent";
 import TaskList from "@/app/components/lists/TaskList";
-import { useTaskManagerStore } from "@/app/components/state/stores/TaskStore ";
-import useTodoManagerStore from "@/app/components/state/stores/TodoStore";
+import ContentItemComponent, {
+  ContentItem,
+} from "@/app/components/models/content/ContentItem";
 import TodoList from "@/app/components/todos/TodoList";
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { DocxGeneratorOptions } from "@/app/generators/docxGenerator";
-import ContentItemComponent, {
-  ContentItem,
-} from "../../components/models/content/ContentItem";
-import responsiveDesignStore from "../../components/styling/ResponsiveDesign";
+import {
+  LayoutGeneratorProps,
+  default as useLayoutGenerator,
+} from "@/app/hooks/GenerateUserLayout";
+import {
+  darkModeTogglePhaseHook,
+  notificationBarPhaseHook,
+} from "@/app/hooks/userInterface/UIPhaseHooks";
+import useDarkModeToggle from "@/app/hooks/userInterface/useDarkModeToggle";
+import { AnimatedComponentRef } from "@/app/libraries/animations/AnimationComponent";
+import responsiveDesignStore from "@/app/ponents/styling/ResponsiveDesign";
+import { useTaskManagerStore } from "@/app/state/stores/TaskStore ";
+import useTodoManagerStore from "@/app/state/stores/TodoStore";
 import { useLayout } from "./LayoutContext";
 
 interface ClickableListItem {
@@ -231,4 +231,4 @@ const darkModeToggleHook = darkModeTogglePhaseHook;
 
 export default AnimatedDashboard;
 useLayoutGenerator({} as LayoutGeneratorProps);
-export type {ClickableListItem}
+export type { ClickableListItem };

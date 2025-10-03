@@ -1,6 +1,6 @@
-import useSearchPagination from '@/app/components/hooks/commHooks/useSearchPagination';
-import useFiltering from '@/app/components/hooks/useFiltering';
-import { usePagination } from '@/app/components/hooks/userInterface/usePagination';
+import useSearchPagination from '@/app/hooks/commHooks/useSearchPagination';
+import useFiltering from '@/app/hooks/useFiltering';
+import { usePagination } from '@/app/hooks/userInterface/usePagination';
 import React from 'react';
 import Filter from './Filter';
 import { SearchOptions, SortingOption } from './SearchOptions';

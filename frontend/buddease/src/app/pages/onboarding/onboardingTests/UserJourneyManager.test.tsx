@@ -2,7 +2,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import axios from 'axios';
 import React from 'react';
-import UserJourneyManager from '../../personas/UserJourneyManager';
+import UserJourneyManager from '@/app/components/personas/UserJourneyManager';
 
 jest.mock('axios');
 

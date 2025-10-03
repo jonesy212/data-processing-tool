@@ -1,6 +1,6 @@
 // NewsComponent.tsx
 import { useState } from 'react';
-import useFiltering from '../hooks/useFiltering';
+import useFiltering from '@/app/hooks/useFiltering';
 import { SearchOptions } from '@/app/pages/searchs/SearchOptions';
 import React from 'react'
 

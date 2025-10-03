@@ -1,12 +1,15 @@
 // NotificationsService.ts
+import { endpoints } from "@/app/api/endpointConfigurations";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/context/NotificationContext";
-import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import { NotificationData } from "../components/support/NofiticationsSlice";
-import { endpoints } from "./ApiEndpoints";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { Attachment } from '@/app/models/data/Attachment';
+import { NotificationData } from "@/app/support/NofiticationsSlice";
+
 // Define API base URL
 const API_BASE_URL = endpoints.notifications;
 
@@ -16,7 +19,14 @@ interface ApiNotificationMessages {
   FETCH_NOTIFICATIONS_ERROR: string;
 }
 
-class ApiNotificationsService {
+class ApiNotificationsService<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   notify: (
     id: string,
     message: string,
@@ -77,11 +87,11 @@ class ApiNotificationsService {
       const data: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = await response.json();
       data.forEach((notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         this.notify(
-          notification.id,
+          notification.id || "unknown-notification-id",
           this.notificationMessages.FETCH_NOTIFICATIONS_SUCCESS,
           NOTIFICATION_MESSAGES.Fetch_Notification_Defaults,
           new Date(),
-          NotificationTypeEnum.Info
+          NotificationTypeEnum.INFO
         );
       });
     } catch (error) {
@@ -91,7 +101,7 @@ class ApiNotificationsService {
         this.notificationMessages.FETCH_NOTIFICATIONS_ERROR,
         NOTIFICATION_MESSAGES.Fetch_Notification_Defaults,
         new Date(),
-        NotificationTypeEnum.Error
+        NotificationTypeEnum.ERROR
       );
     }
     return []; // Return an empty array in case of error
@@ -108,7 +118,7 @@ class ApiNotificationsService {
       message,
       userId,
       new Date(),
-      NotificationTypeEnum.Info
+      NotificationTypeEnum.INFO
     );
   }
 
@@ -120,7 +130,7 @@ class ApiNotificationsService {
     const message = `You have ${
       action === "join" ? "joined" : "left"
     } project ${projectId}`;
-    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.Info);
+    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.INFO);
   }
 
   async sendTaskAssignmentNotification(
@@ -129,7 +139,7 @@ class ApiNotificationsService {
     userId: string
   ): Promise<void> {
     const message = `You have been assigned task "${task}" in project ${projectId}`;
-    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.Info);
+    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.INFO);
   }
 
   async sendDeadlineReminder(
@@ -138,7 +148,7 @@ class ApiNotificationsService {
     userId: string
   ): Promise<void> {
     const message = `Deadline for project ${projectId}: ${deadline} is approaching`;
-    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.Warning);
+    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.WARNING);
   }
 
   async sendFeedbackNotification(
@@ -147,7 +157,7 @@ class ApiNotificationsService {
     userId: string
   ): Promise<void> {
     const message = `Feedback provided on your work in project ${projectId} by user ${reviewerId}`;
-    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.Info);
+    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.INFO);
   }
 
   async sendCollaborationNotification(
@@ -155,7 +165,7 @@ class ApiNotificationsService {
     userId: string
   ): Promise<void> {
     const message = `Real-time collaboration ongoing on project ${projectId}`;
-    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.Info);
+    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.INFO);
   }
 
   async sendEventNotification(
@@ -164,7 +174,7 @@ class ApiNotificationsService {
     userId: string
   ): Promise<void> {
     const message = `Upcoming event: ${event} in project ${projectId}`;
-    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.Info);
+    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.INFO);
   }
 
   async sendAchievementNotification(
@@ -172,7 +182,7 @@ class ApiNotificationsService {
     userId: string
   ): Promise<void> {
     const message = `Congratulations! You have achieved ${achievement}`;
-    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.Success);
+    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.SUCCESS);
   }
 
   async sendIntegrationNotification(
@@ -180,7 +190,7 @@ class ApiNotificationsService {
     userId: string
   ): Promise<void> {
     const message = `Integration with ${integration} has been updated`;
-    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.Info);
+    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.INFO);
   }
 
   async sendMaintenanceNotification(
@@ -188,14 +198,14 @@ class ApiNotificationsService {
     userId: string
   ): Promise<void> {
     const message = `Scheduled maintenance: ${maintenance}`;
-    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.Info);
+    await this.sendNotification(message, userId, new Date(), NotificationTypeEnum.INFO);
   }
 
   private async sendNotification(
     eventType: string,
     eventData: any,
     date: Date,
-    type: NotificationTypeEnum
+    type: NotificationType
   ): Promise<void> {
     // Assuming implementation for sending notification
     this.notify(
@@ -213,13 +223,13 @@ class ApiNotificationsService {
     eventType: string,
     eventData: any,
     date: Date,
-    type: NotificationTypeEnum
+    type: NotificationType
   ) => Promise<void> {
     return async (
       eventType,
       eventData,
       date: Date,
-      type: NotificationTypeEnum
+      type: NotificationType
     ) => {
       return this.sendNotification(
         eventType,

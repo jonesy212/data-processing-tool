@@ -1,16 +1,14 @@
 // RealTimeDashboardPage.tsx
+import UserProfileComponent from "@/app/components/community/UserProfileComponent";
+import Sidebar from "@/app/components/libraries/toolbar/Sidebar";
+import DataFilterForm from "@/app/components/models/data/DataFilterForm";
+import NotificationComponent from "@/app/components/notifications/NotificationComponent";
+import SearchBar from "@/app/components/routing/SearchBar";
 import RootLayout from "@/app/RootLayout";
-import { User } from "@/app/components/users/User";
+import { User } from "@/app/users/User";
 import React, { useState } from "react";
 import RealTimeChart from "./RealTimeChart"; // Import a real-time chart component
 import VisualFlowDashboard from "./VisualFlowDashboard"; // Import your specific dashboard component
- import DataFilterForm, {
-  FilterOptions,
-} from "@/app/components/models/data/DataFilterForm";
-import Sidebar from "@/app/components/libraries/toolbar/Sidebar";
-import NotificationComponent from "@/app/components/notifications/NotificationComponent";
-import UserProfileComponent from "@/app/components/community/UserProfileComponent";
-import SearchBar from "@/app/components/routing/SearchBar";
 interface RealTimeDashboardPageProps {
   user: User; // User object representing the current user
 }

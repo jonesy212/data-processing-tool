@@ -1,24 +1,24 @@
 // OnboardingPhase.tsx
-import axiosInstance from "@/app/api/axiosInstance";
-import { useAuth } from "@/server/auth/AuthContext";
+import axiosInstance from '@/app/api/csrfToken';
 import CommonDetails, {
-  SupportedData,
-} from "@/app/components/models/CommonData";
+    SupportedData,
+} from "@/app/models/CommonData";
 import DetailsProps from "@/app/components/models/data/Details";
 import EmailConfirmationPhase from "@/app/components/phases/EmailConfirmationPhase";
 import TwoFactorSetupPhase from "@/app/components/phases/TwoFactorSetupPhase";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
 import WelcomePhase from "@/app/components/phases/onboarding/WelcomePhase";
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/context/NotificationContext";
-import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import { UserData } from "@/app/components/users/User";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
+import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
+import UserQuestionnaire from "@/app/personas/UserQuestionnaire";
+import { UserData } from "@/app/users/User";
+import { useAuth } from "@/context/AuthContext";
 import React, { useState } from "react";
-import generateTimeBasedCode from "../../components/models/realtime/TimeBasedCodeGenerator";
-import { OnboardingPhase } from "../personas/UserJourneyManager";
-import UserQuestionnaire from "../personas/UserQuestionnaire";
 import onboardingQuestionnaireData from "./OnboardingQuestionnaireData";
 import RegistrationPhase from "./RegistrationPhase";
 
@@ -34,7 +34,7 @@ const handleRegistrationSuccess = (userData: UserData) => {
     "Registration Success",
     NOTIFICATION_MESSAGES.Registration.REGISTRATION_SUCCESS,
     new Date,
-    NotificationTypeEnum.Success
+    NotificationTypeEnum.SUCCESS
     );
 }
 

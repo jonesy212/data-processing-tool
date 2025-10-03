@@ -1,7 +1,7 @@
 import { Button, Space } from "antd";
 import React from "react";
-import { ProjectManagementActions } from "../components/actions/ProjectManagementActions";
-import { ButtonGenerator, ButtonGeneratorProps } from "../generators/GenerateButtons";
+import { ProjectManagementActions } from "@/app/actions/ProjectManagementActions";
+import { ButtonGenerator, ButtonGeneratorProps } from "@/app/generators/GenerateButtons";
 import ScheduleEventModal from "./ScheduleEventModal";
 
 const ScheduleEventDashboard: React.FC = () => {

@@ -1,18 +1,18 @@
 // ApiDrawing.ts
+import axiosInstance from "@/app/api/csrfToken";
+import headersConfig from "@/app/api/headers/HeadersConfig";
+import { BaseData } from "@/app/components/models/data/Data";
+import { YourResponseType } from "@/app/components/typings/types";
 import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification,
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/context/NotificationContext";
+import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from "axios";
-import { YourResponseType } from "../components/typings/types";
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
-import axiosInstance from "./axiosInstance";
-import headersConfig from "./headers/HeadersConfig";
-import useErrorHandling from "../components/hooks/useErrorHandling";
-import { BaseData } from "../components/models/data/Data";
-import { StructuredMetadata } from "../configs/StructuredMetadata";
 
 // Define the API base URL
 const API_BASE_URL = endpoints.drawing; // Accessing property directly
@@ -130,7 +130,7 @@ export const createDrawing = async (newDrawingData: any): Promise<void> => {
       drawingNotificationMessages.CREATE_DRAWING_SUCCESS,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error: any) {
     console.error("Error creating drawing:", error);
@@ -159,7 +159,7 @@ export const updateDrawing = async (
       drawingNotificationMessages.UPDATE_DRAWING_SUCCESS,
       `${drawingNotificationMessages.UPDATE_DRAWING_SUCCESS} (ID: ${drawingId})`, 
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error: any) {
     console.error("Error updating drawing:", error);
@@ -186,7 +186,7 @@ export const saveDrawingToDatabase = async (
       drawingNotificationMessages.CREATE_DRAWING_SUCCESS,
       null,
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
 
     // Return true to indicate successful saving
@@ -216,7 +216,7 @@ export const deleteDrawing = async (drawingId: number): Promise<void> => {
       drawingNotificationMessages.DELETE_DRAWING_SUCCESS,
       `${drawingNotificationMessages.DELETE_DRAWING_SUCCESS} (ID: ${drawingId})`, 
       new Date(),
-      NotificationTypeEnum.Success
+      NotificationTypeEnum.SUCCESS
     );
   } catch (error: any) {
     console.error("Error deleting drawing:", error);

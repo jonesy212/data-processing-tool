@@ -1,13 +1,13 @@
 // CalendarView.tsx
 
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import React from "react";
-import { Task } from "../models/tasks/Task";
-import { Project } from "../projects/Project";
-import { selectSelectedProject } from "../state/redux/slices/CollaborationSlice";
-import { Todo } from "../todos/Todo";
-import { CommonCalendarProps } from "./Calendar";
-import DayView from "./CalendarDay";
+import { CommonCalendarProps } from "@/app/calendar/Calendar";
+import { Task } from "@/app/models/tasks/Task";
+import { Project } from "@/app/models/projects/Project";
+import { selectSelectedProject } from "@/app/state/redux/slices/CollaborationSlice";
+import { Todo } from "@/app/todos/Todo";
+import DayView from "@/app/calendar/CalendarDay";
 import MonthView from "./CalendarMonthView";
 import WeekView from "./CalendarWeek";
 import YearView from "./CalendarYearView";

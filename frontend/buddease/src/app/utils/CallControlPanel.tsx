@@ -1,8 +1,8 @@
 // CallControlPanel.tsx
 import React from 'react';
-import CallButton from '../components/utils/CallButton';
-import useErrorHandling from '../components/hooks/useErrorHandling';
-import { onAudioCallStart, onVideoCallStart } from '../components/utils/commonUtils';
+import CallButton from '@/app/utils/CallButton';
+import useErrorHandling from '@/app/hooks/useErrorHandling';
+import { onAudioCallStart, onVideoCallStart } from '@/app/utils/commonUtils';
 
 const CallControlPanel: React.FC = () => {
   const { error, clearError } = useErrorHandling();

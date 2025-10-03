@@ -1,6 +1,6 @@
 // UserListActions.ts
+import { User } from "@/app/users/User";
 import { createAction } from "@reduxjs/toolkit";
-import { User } from "../components/users/User";
 
 export const UserListActions = {
   // Actions for manipulating lists of users

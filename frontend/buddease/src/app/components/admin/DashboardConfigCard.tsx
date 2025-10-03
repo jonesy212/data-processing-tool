@@ -1,6 +1,5 @@
-import React from "react";
-import { ApiConfig } from "@/app/configs/ConfigurationService";
-import { useEffect } from "react";
+import { ApiConfig } from "@/config/ConfigurationService";
+import React, { useEffect } from "react";
 
 interface DashboardConfigCardProps {
     apiConfig: ApiConfig;

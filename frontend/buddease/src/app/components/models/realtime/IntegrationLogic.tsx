@@ -1,6 +1,7 @@
+import Calendar, { CommonCalendarProps } from "@/app/calendar/Calendar";
 import { month } from "@/app/components/calendar/CalendarMonth";
 import Milestone, {
-    CalendarManagerState,
+  CalendarManagerState,
 } from "@/app/components/calendar/CalendarSlice";
 import year, { YearInfo } from "@/app/components/calendar/CalendarYear";
 import { Month, MonthInfo } from "@/app/components/calendar/Month";
@@ -9,20 +10,19 @@ import { ContentPost } from "@/app/components/models/content/ContentPost";
 import { AttendancePredictionResult } from "@/app/components/models/data/CalendarEventAttendancePrediction";
 import { Task } from "@/app/components/models/tasks/Task";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import TaskManagementManager from "@/app/components/projects/TaskManagementPhase";
+import TaskManagementManager from "@/app/projects/TaskManagementPhase";
 import {
-    Label,
-    label,
-    labels,
+  Label,
+  label,
+  labels,
 } from "@/app/components/projects/branding/BrandingSettings";
-import { Resource, selectSelectedProject } from "@/app/components/state/redux/slices/CollaborationSlice";
-import { RootState } from "@/app/components/state/redux/slices/RootSlice";
-import { rootStores } from "@/app/components/state/stores/RootStores";
 import { NotificationContextProps } from "@/app/context/NotificationContext";
+import { BaseData } from "@/app/data/Data";
+import { Resource, selectSelectedProject } from "@/app/state/redux/slices/CollaborationSlice";
+import { RootState } from "@/app/state/redux/slices/RootSlice";
+import { rootStores } from "@/app/state/stores/RootStores";
 import ControlPanel from "@/app/utils/ControlPanel";
 import React, { useEffect, useState } from "react";
-import Calendar, { CommonCalendarProps } from "../../calendar/Calendar";
-import { BaseData } from "../data/Data";
 
 interface Dependency {
   // Define the properties of the Dependency type

@@ -1,7 +1,7 @@
 // Product.tsx
 
-import { CommonData } from "../models/CommonData";
-import { UserData, VisualizationData } from "../users/User";
+import { CommonData } from "@/app/models/CommonData";
+import { UserData, VisualizationData } from "@/app/users/User";
 
 interface Product extends UserData {
   // Add specific properties for the product

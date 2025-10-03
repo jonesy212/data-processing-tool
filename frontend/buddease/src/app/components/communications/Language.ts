@@ -1,4 +1,4 @@
-import { LanguageEnum } from "./LanguageEnum";
+import { LanguageEnum } from "../../communications/LanguageEnum";
 
 interface Language {
   code: string;
@@ -41,4 +41,4 @@ interface TimeZone {
 
   export type { CrossCulturalCommunication, Language, TimeZone };
 
-export {mapLanguageToEnum}
+  export { mapLanguageToEnum };

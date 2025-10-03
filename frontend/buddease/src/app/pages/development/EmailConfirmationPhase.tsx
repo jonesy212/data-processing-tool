@@ -1,7 +1,7 @@
 // EmailConfirmationPhase.tsx
 
 import { useNavigate } from 'react-router-dom';
-import { OnboardingPhase } from "../personas/UserJourneyManager";
+import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
 import { DevelopmentPhase } from "./DevelopmentPhase";
 import EmailConfirmationPhaseComponent from "./EmailConfirmationPhaseComponent";
 import { generateNextPhaseRoute } from '@/app/components/event/DynamicEventHandlerExample';

@@ -1,24 +1,23 @@
 // CollaborationDashboard.tsx
-import DynamicNamingConventions from "@/app/components/DynamicNamingConventions";
-import { useAuth } from "@/server/auth/AuthContext";
 import Stopwatch from "@/app/components/calendar/Stopwatch";
 import { ChatRoom } from "@/app/components/communications";
 import EditorWithPrompt from "@/app/components/documents/EditorWithPrompt";
-import { useThemeConfig } from "@/app/components/hooks/userInterface/ThemeConfigContext";
+import DynamicNamingConventions from "@/app/utils/DynamicNamingConventions";
 import { CollaborationProvider } from "@/app/components/phases/collaborationPhase/CollaborationContext";
 import ProjectManagementSimulation from "@/app/components/projects/projectManagement/ProjectManagementSimulation";
 import ProjectTimelineDashboard from "@/app/components/projects/projectManagement/ProjectTimelineDashboard";
 import ColorPalette from "@/app/components/styling/ColorPalette";
 import PaletteManager from "@/app/components/styling/PaletteManager";
 import UsageExamplesBox from "@/app/components/styling/UsageExamplesBox";
+import { AquaConfig } from "@/app/components/web3/webConfigs/AquaConfig";
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
-import NOTIFICATION_MESSAGES from "@/app/components/support/NotificationMessages";
-import { AquaConfig } from "@/app/components/web3/web_configs/AquaConfig";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
+import { SearchProvider, useSearch } from "@/app/context/SearchContext";
+import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
-import { SearchProvider, useSearch } from "../searchs/SearchContext";
 import ChatDashboard from "./ChatDashboard";
 import CollaborationPanel from "./CollaborationPanel";
-import React from "react";
 const CollaborationDashboard = () => {
   const { searchQuery, updateSearchQuery } = useSearch();
   const { isDarkMode, primaryColor, fontSize } = useThemeConfig();

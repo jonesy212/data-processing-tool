@@ -5,30 +5,37 @@
  * @param endOffset - The end offset of the substring.
  * @returns The extracted text between the specified offsets.
  */
+// app/utils/string/offsetUtils.ts
 
-const getTextBetweenOffsets = (
-    inputText: string,
-    startOffset: number,
-    endOffset: number
-  ): string => {
-    // Ensure startOffset is within bounds
-    const adjustedStartOffset = Math.max(0, startOffset);
+/**
+ * Extracts text between start and end offsets with bounds checking
+ */
+export const getTextBetweenOffsets = (
+  inputText: string,
+  startOffset: number,
+  endOffset: number
+): string => {
+  const adjustedStart = Math.max(0, Math.min(startOffset, inputText.length));
+  const adjustedEnd = Math.max(adjustedStart, Math.min(endOffset, inputText.length));
   
-    // Ensure endOffset is within bounds
-    const adjustedEndOffset = Math.min(inputText.length, endOffset);
+  return inputText.substring(adjustedStart, adjustedEnd);
+};
+
+/**
+ * Alternative implementation with more options
+ */
+export const extractText = (
+  text: string,
+  start: number,
+  end: number,
+  options: { clampBounds?: boolean } = { clampBounds: true }
+): string => {
+  if (!options.clampBounds && (start < 0 || end > text.length)) {
+    throw new Error('Offset out of bounds');
+  }
   
-    // Extract the substring based on the adjusted offsets
-    const extractedText = inputText.substring(adjustedStartOffset, adjustedEndOffset);
+  const safeStart = Math.max(0, start);
+  const safeEnd = Math.min(text.length, end);
   
-    return extractedText;
-  };
-  
-  // Example usage:
-  const inputText = "This is an example text.";
-  const startOffset = 5;
-  const endOffset = 12;
-  
-  const result = getTextBetweenOffsets(inputText, startOffset, endOffset);
-  console.log(result); // Output: "is an ex"
-  
-  export { getTextBetweenOffsets };
+  return text.substring(safeStart, safeEnd);
+};

@@ -1,4 +1,22 @@
 // ControlPanel.tsx
+import { CustomEventExtension } from "@/app/components/event/BaseCustomEvent";
+import { createCustomEvent } from "@/app/services/EventService";
+import CustomizableTimersComponent from "@/app/components/stopwatches/CustomizableTimersComponent";
+import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
+import {
+  ButtonGenerator,
+  buttonGeneratorProps,
+} from "@/app/generators/GenerateButtons";
+import { usePresetPercentages } from "@/app/generators/presetPercentages";
+import ThemeCustomization from "@/app/hooks/userInterface/ThemeCustomization";
+import AnimationDial from "@/app/libraries/animations/AnimationDial";
+import FadeInAnimation from "@/app/libraries/animations/FadeInAnimation";
+import RotateAnimation from "@/app/libraries/animations/RotateAnimation";
+import SlideUpAnimation from "@/app/libraries/animations/SlideUpAnimation";
+import { themeConfig } from "@/app/pages/_app";
+import {
+  default as useNotificationStore
+} from "@/app/state/stores/NotificationStore";
 import {
   NotificationContextProps,
   NotificationType,
@@ -7,24 +25,6 @@ import {
 import SpeedOutlined from "@ant-design/icons"; // Import SpeedOutlined icon from Ant Design icons
 import { Button, Dropdown, Menu, Slider, Space } from "antd"; // Import Slider and Button components from Ant Design
 import React, { useState } from "react";
-import { CustomEventExtension } from "../components/event/BaseCustomEvent";
-import { createCustomEvent } from "../components/event/EventService";
-import ThemeCustomization from "../components/hooks/userInterface/ThemeCustomization";
-import AnimationDial from "../components/libraries/animations/AnimationDial";
-import FadeInAnimation from "../components/libraries/animations/FadeInAnimation";
-import RotateAnimation from "../components/libraries/animations/RotateAnimation";
-import SlideUpAnimation from "../components/libraries/animations/SlideUpAnimation";
-import {
-  default as useNotificationStore
-} from "../components/state/stores/NotificationStore";
-import CustomizableTimersComponent from "../components/stopwatches/CustomizableTimersComponent";
-import responsiveDesignStore from "../components/styling/ResponsiveDesign";
-import {
-  ButtonGenerator,
-  buttonGeneratorProps,
-} from "../generators/GenerateButtons";
-import { usePresetPercentages } from "../generators/presetPercentages";
-import { themeConfig } from "../pages/_app";
 
 
 

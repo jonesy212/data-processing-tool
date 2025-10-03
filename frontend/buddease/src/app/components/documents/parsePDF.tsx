@@ -1,7 +1,7 @@
 import { PDFDocument, PDFPage } from "pdf-lib";
-import { ParsedData } from "../crypto/parseData";
-import useErrorHandling from "../hooks/useErrorHandling";
-import { sanitizeData, sanitizeInput } from "../security/SanitizationFunctions";
+import { ParsedData } from "@/app/crypto/parseData";
+import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { sanitizeData, sanitizeInput } from "@/app/security/SanitizationFunctions";
 import { YourPDFType } from "./DocType";
 import { extractTextFromPDF } from "./DocumentGeneratorMethods";
 

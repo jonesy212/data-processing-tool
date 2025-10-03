@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import useUserProfile from '../hooks/useUserProfile';
+import useUserProfile from '@/app/hooks/useUserProfile';
 
 
 const UserProfileComponent: React.FC = () => {

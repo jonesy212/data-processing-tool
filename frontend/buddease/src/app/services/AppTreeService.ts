@@ -1,6 +1,6 @@
-import { fetchUserIdsFromDatabase } from "../api/ApiDatabase";
-import { getUserData, getUsersData } from "../api/UsersApi";
-import { useTaskManagerStore } from "../components/state/stores/TaskStore ";
+import { fetchUserIdsFromDatabase } from "@/app/api/ApiDatabase";
+import { getUserData, getUsersData } from "@/app/api/UsersApi";
+import { useTaskManagerStore } from "@/app/state/stores/TaskStore ";
 
 class AppTreeService {
   // Function to fetch user IDs from the database

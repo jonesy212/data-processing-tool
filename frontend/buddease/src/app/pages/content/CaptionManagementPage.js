@@ -1,7 +1,7 @@
 // CaptionManagementPage.js
 
 import { useEffect, useState } from 'react';
-import { getCaptions } from '../../api/api/captionApi'; // Assuming you have an API function to fetch captions
+import { getCaptions } from '@/app/components/api/api/captionApi'; // Assuming you have an API function to fetch captions
 
 const CaptionManagementPage = () => {
   const [captions, setCaptions] = useState([]);

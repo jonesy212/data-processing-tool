@@ -1,128 +1,52 @@
-import ProtectedRoute from "@/app/components/routing/ProtectedRoute";
+"use client"; // Add this to ensure it's a client component
+
+import YourParentComponent from "@/app/components/prompts/YourParentComponent";
 import ColorPalette from "@/app/components/styling/ColorPalette";
 import DynamicSpacingAndLayout from "@/app/components/styling/DynamicSpacingAndLayout";
 import DynamicTypography, {
-  BodyTextProps,
-  DynamicTypographyProps,
-  HeadingProps,
+    BodyTextProps,
+    DynamicTypographyProps,
+    HeadingProps,
 } from "@/app/components/styling/DynamicTypography";
-
-import React, { useEffect, useState } from "react"; // import {
-//   DocumentBuilderConfig,
-//   FrontendDocumentConfig,
-//   GenerateUserPreferences,
-//   LazyLoadScriptConfig,
-//   StructuredMetadata,
-//   UpdatePreferences,
-// } from "@/app/components/configs";
-// import {
-//   GenerateCache,
-//   GenerateComponent
-// } from "@/app/components/generators";
-// import { NotificationStore, NotificationTypes } from "@/app/components/support";
-// import { TaskService } from "@/app/components/tasks";
-// import {
-//   FetchTodos,
-// } from "@/app/components/todos";
-
-// import {
-//   AppCacheManager,
-//   CacheManager,
-//   CacheUtils,
-//   CleanupUtil,
-//   FrontendCacheManager,
-//   ReadAndWriteCache,
-// } from "@/app/components/utils";
-// import { Web3Provider } from "@/app/components/web3";
-// // import AppCacheManager
-
-// // import ConfirmationModal from "@/app/components/communications/ConfirmationModal";
-
-import { UserData } from "@/app/components/users/User";
-
-import FrontendStructureViewer from "@/app/components/development/FrontendStructureViewer";
-import { LogData } from "@/app/components/models/LogData";
-import ProjectPhaseComponent from "@/app/components/projects/projectManagement/ProjectPhaseComponent";
-import { NotificationData } from "@/app/components/support/NofiticationsSlice";
-import BackendStructure from "@/app/configs/appStructure/BackendStructure";
-import FrontendStructure from "@/app/configs/appStructure/FrontendStructureComponent";
-import {
-  NotificationType
-} from "@/app/context/NotificationContext";
-import YourParentComponent from "../../components/prompts/YourParentComponent";
+import FrontendStructure from "@/configs/appStructure/FrontendStructureComponent";
+import { NotificationType } from "@/app/context/NotificationContext";
 import DataPreview, {
-  DataPreviewProps,
-} from "../../components/users/DataPreview";
+    DataPreviewProps,
+} from "@/app/users/DataPreview";
+import { UserData } from "@/app/users/User";
+import dynamic from "next/dynamic";
+import React, { useEffect, useState } from "react";
 
-interface DynamicComponentWrapperProps<T> {
-  component: T;
-  dynamicProps: {
-    condition?: () => boolean;
-    asyncEffect?: () => Promise<void>;
-    cleanup?: () => void;
-    resetIdleTimeout?: () => void;
-    isActive?: (selector: string) => void;
-  };
-  children: (props: T) => React.ReactNode;
-}
+// Dynamically import components that might have server-side dependencies
+const RouteGuard = dynamic(
+  () => import("@/app/components/routing/RouteGuard"),
+  { ssr: false, loading: () => <div>Loading...</div> }
+);
 
-// Define the shape of the Notification context value
-export interface NotificationContextValue {
-  notifications: NotificationData[];
-  addNotification: (notification: NotificationData) => void;
-  removeNotification: (id: string) => void;
-  notify: (
-    message: string,
-    content: any,
-    date: Date,
-    type: NotificationType
-  ) => void;
-}
+const FrontendStructureViewer = dynamic(
+  () => import("@/app/components/development/FrontendStructureViewer"),
+  { ssr: false, loading: () => <div>Loading...</div> }
+);
 
-const DynamicComponentWrapper = <T extends {}>({
-  component,
-  dynamicProps,
-  children,
-}: DynamicComponentWrapperProps<T>): React.ReactElement => {
-  useEffect(() => {
-    const { condition, asyncEffect, cleanup, resetIdleTimeout, isActive } =
-      dynamicProps;
-
-    // Your common logic for useEffect
-    useEffect(() => {
-      if (condition) condition();
-      if (asyncEffect) asyncEffect();
-
-      return () => {
-        if (cleanup) cleanup();
-        if (resetIdleTimeout) resetIdleTimeout();
-      };
-    }, [condition, asyncEffect, cleanup, resetIdleTimeout]);
-
-    // Your common logic for other properties
-    if (isActive) isActive("selector");
-  }, [dynamicProps]);
-
-  return <>{children(component)}</>;
-};
-
-
+const ProjectPhaseComponent = dynamic(
+  () =>
+    import("@/app//projects/projectManagement/ProjectPhaseComponent"),
+  { ssr: false, loading: () => <div>Loading...</div> }
+);
 
 interface DesignDashboardBaseProps {
-  // Shared props between client and server
   colors: string[];
   onColorChange?: (newColors: string[]) => void;
   frontendStructure?: FrontendStructure;
-  backendStructure?: BackendStructure;
+  backendStructure?: any; // Changed from BackendStructure to any
 }
 
 const DesignDashboard: React.FC<DesignDashboardBaseProps> = ({
   colors,
   onColorChange,
   frontendStructure,
-  backendStructure
+  backendStructure,
 }) => {
-  // Shared state
   const [completionMessageLog] = useState<LogData>({
     message: "Design Completed",
     content: "Design Completed",
@@ -132,26 +56,42 @@ const DesignDashboard: React.FC<DesignDashboardBaseProps> = ({
     type: "DesignCompleted" as NotificationType,
   });
 
-  // Shared handlers
-  const handleColorChange = (colorIndex: number, newColor: string): string[] => {
+  const [backendData, setBackendData] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchBackendData = async () => {
+      try {
+        const response = await fetch("/api/backend-structure");
+        const data = await response.json();
+        setBackendData(data);
+      } catch (error) {
+        console.error("Failed to fetch backend structure:", error);
+      }
+    };
+
+    fetchBackendData();
+  }, []);
+
+  const handleColorChange = (
+    colorIndex: number,
+    newColor: string
+  ): string[] => {
     const updatedColors = [...colors];
     updatedColors.splice(colorIndex, 1, newColor);
     onColorChange?.(updatedColors);
     return updatedColors;
   };
 
-  // Shared utilities
   const handleNewTitleChange = (newTitle: string) => newTitle;
 
   return (
     <>
-      {/* Shared components only */}
       <DynamicTypography
         {...({} as DynamicTypographyProps & (BodyTextProps | HeadingProps))}
       />
-      
+
       <DynamicSpacingAndLayout />
-      
+
       {frontendStructure && (
         <FrontendStructureViewer frontendStructure={frontendStructure} />
       )}
@@ -166,7 +106,7 @@ const DesignDashboard: React.FC<DesignDashboardBaseProps> = ({
 
       <ProjectPhaseComponent />
 
-      <ProtectedRoute component={YourParentComponent} />
+      <RouteGuard component={YourParentComponent} />
     </>
   );
 };

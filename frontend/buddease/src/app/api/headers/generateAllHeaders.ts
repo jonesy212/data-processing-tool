@@ -1,6 +1,7 @@
 // generateAllHeaders.ts
-import { useSecureSnapshotId } from '@/app/components/utils/useSecureSnapshotId';
-import { useSecureStoreId } from '@/app/components/utils/useSecureStoreId';
+import { useSecureSnapshotId } from '@/app/hooks/useSecureSnapshotId';
+;
+import { useSecureStoreId } from '@/app/hooks/useSecureStoreId';
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { authToken } from "@/server/auth/authToken";
 import createCacheHeaders from "./cacheHeaders";

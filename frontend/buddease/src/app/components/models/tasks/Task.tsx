@@ -1,32 +1,32 @@
 // Task.ts
 import { ScheduledData } from "@/app/components/calendar/ScheduledData";
-import { SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import { SharedDetails } from '@/app/components/models/data/Details';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { PhaseData, PhaseMeta } from "@/app/components/phases/Phase";
 import { Permission } from '@/app/components/users/Permission';
-import { User } from "@/app/components/users/User";
-import { SharedMetadata } from "@/app/configs/metadata/createMetadataState";
-import { StructuredMetadata } from "@/app/configs/StructuredMetadata";
+import { User } from "@/app/users/User";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { SharedMetadata } from "@/config/metadata/MetadataHooks";
 
 import { BaseEntity } from '@/app//components/routing/FuzzyMatch';
+import { EventManager } from "@/app/@/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import TodoImpl from '@/app/components/todos/Todo';
-import { AppMetadata } from '@/app/configs/database/MetaDataOptions';
-import { Phase } from "../../phases/Phase";
-import { AnalysisTypeEnum } from "../../projects/DataAnalysisPhase/AnalysisType";
-import { EventManager } from "../../projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Snapshot, TagsRecord } from "../../snapshots";
-import { AllStatus, DetailsItem } from "../../state/stores/DetailsListStore";
-import { AllTypes } from "../../typings/PropTypes";
-import { Idea } from "../../users/Ideas";
-import { VideoData } from "../../video/Video";
-import CommonDetails, { SupportedData } from "../CommonData";
-import { BaseData } from "../data/Data";
-import { K, T } from "../data/dataStoreMethods";
-import { PriorityTypeEnum, TaskStatus } from "../data/StatusType";
+import { BaseData } from "@/app/data/Data";
+import { K, T } from "@/app/data/dataStoreMethods";
+import CommonDetails, { SupportedData } from "@/app/models/CommonData";
+import { PriorityTypeEnum, TaskStatus } from "@/app/models/data/StatusType";
+import { Phase } from "@/app/phases/Phase";
+import { Snapshot, TagsRecord } from "@/app/snapshots";
+import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { AllTypes } from "@/app/typings/PropTypes";
+import { Idea } from "@/app/users/Ideas";
+import { VideoData } from "@/app/video/Video";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { AppMetadata } from "@/server/database/MetaDataOptions";
 import { TaskMetadata, UnifiedMetaDataOptions } from './../../../configs/database/MetaDataOptions';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/configs/BaseConfig";
 
 export type TaskData = BaseData<any, any, StructuredMetadata<any, any>, Attachment>;
  
@@ -56,11 +56,11 @@ interface Task<
 > extends Omit<TaskMetadata<T, K>, 'tags'>,
   SharedDetails<T, K, Meta>,
   SharedTimestamps,
-    SharedMetadata<T, K> {
+    SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string;
   title: string;
   description: string;
-  selectedTask?: Task<T, K, Meta, ExcludedFields>;
+  selectedTask?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   progress: Progress;
   position?: { x: number; y: number }; // Update `position` to be an object
   property?: string;
@@ -89,12 +89,12 @@ interface Task<
     callbackfn: (value: Task<T, K>, index: number, array: Task<T, K>[]) => unknown,
     thisArg?: any
   ) => boolean;
-  subtasks?: Array<Task<T, K, Meta, ExcludedFields> | TodoImpl<T, K, Meta, ExcludedFields>> | undefined;
-  details?: DetailsItem<Task<T, K, Meta, ExcludedFields>> | undefined;
+  subtasks?: Array<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | TodoImpl<T, K, Meta, ExcludedFields>> | undefined;
+  details?: DetailsItem<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined;
   startDate: Date | undefined;
   endDate: Date | undefined;
   isActive: boolean;
-  tags?: TagsRecord<T, K> | string[] | undefined;
+  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
   analysisType?: AnalysisTypeEnum;
   analysisResults?: any[];
   videoThumbnail?: string;
@@ -169,14 +169,14 @@ const tasksDataSource: Record<string, Task<T, K>> = {
     
     timeout: "",
     retryAttempts: 3,
-    meta: new Map<string, Snapshot<T, K>>(),
+    meta: new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(),
     events: {eventRecords: {}
   },
    
     id: "1",
     _id: "taskData",
     phase: {} as Phase<PhaseData<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>, PhaseData<PhaseData<BaseData<any>>>, PhaseMeta<PhaseData<BaseData<any>>>>,
-    videoData: {} as VideoData<T, K>,
+    videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     ideas: {} as Idea[],
     timestamp: new Date(),
     category: "default",
@@ -385,7 +385,7 @@ const tasksDataSource: Record<string, Task<T, K>> = {
    // ideas: {} as Idea[],
     timestamp: new Date(), // Add timestamp property
     category: "default", // Add category property
-    // phase: {} as Phase<T, K>,
+    // phase: {} as Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   },
   // Add more tasks as needed
 };
