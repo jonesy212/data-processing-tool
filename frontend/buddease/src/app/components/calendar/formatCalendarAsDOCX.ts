@@ -1,9 +1,9 @@
 // formatCalendarAsDOCX.ts
 import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
-import { MyPropertiesOptions } from '@/app/configs/declarations/global';
+import { MyPropertiesOptions } from '@/config//declarations/global';
 import * as docx from 'docx';
 import { SimpleCalendarEvent } from "@/app/calendar/CalendarContext";
-import { CustomDocument } from '../documents/DocumentOptions';
+import { CustomDocument } from '@/documents/DocumentOptions';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 
 

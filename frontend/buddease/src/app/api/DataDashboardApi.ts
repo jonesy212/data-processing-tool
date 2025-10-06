@@ -1,5 +1,5 @@
 import  axiosInstance from '@/app/api/axiosInstance';
-import { DeviceDimensions } from './../components/models/display/DeviceDimensions';
+import { DeviceDimensions } from '@/components/models/display/DeviceDimensions';
 // dataDashboardApi.ts
 
 

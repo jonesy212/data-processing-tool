@@ -1,6 +1,5 @@
+import { useStore } from '@/store/StoreProvider'; // Assuming you have a MobX store
 import { observer } from 'mobx-react';
-import React from 'react';
-import { useStore } from '../store/StoreProvider'; // Assuming you have a MobX store
 
 const MeetingSchedulerToolbar = observer(() => {
   const store = useStore(); // Access the MobX store

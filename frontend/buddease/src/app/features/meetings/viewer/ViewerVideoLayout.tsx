@@ -1,9 +1,9 @@
 // ViewerVideoLayout.tsx
 
 import React, { useEffect, useState } from 'react';
-import VideoAPI from './VideoAPI';
-import VideoViewer from './VideoViewer';
-import { Video } from './types';
+import VideoAPI from '@/VideoAPI';
+import VideoViewer from '@/VideoViewer';
+import { Video } from '@/types';
 
 const ViewerVideoLayout: React.FC = () => {
   const [videos, setVideos] = useState<Video[]>([]);

@@ -1,6 +1,6 @@
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { useNotification } from '@/app/context/context/NotificationContext';
-import { BaseData, Data } from "@/app/components/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 
 import { VideoData } from "@/app/components/video/Video";

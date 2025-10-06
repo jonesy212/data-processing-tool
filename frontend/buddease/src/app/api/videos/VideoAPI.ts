@@ -1,10 +1,10 @@
 // VideoAPI.ts
 
 import axios, { AxiosResponse } from 'axios';
-import { VideoOptions } from '../communications/chat/ChatSettingsModal';
+import { VideoOptions } from '@/communications/chat/ChatSettingsModal';
 import { Video } from '@/app/state/stores/VideoStore';
 import axiosInstance from '@/app/api/csrfToken';
-import { PrivacySettings } from '../settings/PrivacySettings';
+import { PrivacySettings } from '@/settings/PrivacySettings';
 
 
 

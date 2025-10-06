@@ -1,6 +1,6 @@
 // InternalCache.ts
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 class InternalCache<T> {

@@ -1,14 +1,13 @@
 // transformMethods.tsx
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { Subscriber } from "@/app/users/Subscriber";
 import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
-import { SnapshotCoreBase } from '@/app/snapshots';
-import { Data } from "@/app/data_analysis/frontend/buddease/src/app/components/models/data/Data";
-import { ExcludedFields } from "@/app/data_analysis/frontend/buddease/src/app/components/routing/Fields";
-import SnapshotStore from "@/app/data_analysis/frontend/buddease/src/app/snapshots/SnapshotStore";
-import { Subscriber } from "@/app/data_analysis/frontend/buddease/src/app/users/Subscriber";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
 import { Snapshots } from "@/app/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/Snapshot";
+import { SnapshotCoreBase } from '@/app/snapshots';
 import { SnapshotStoreConfig } from "@/app/snapshotstoreConfig";
+import { Attachment } from "@/app/documents/Attachment/attachment";
 
 // -------------------------------
 // SnapshotStore Cnfig with Core
@@ -18,8 +17,10 @@ interface SnapshotStoreConfigWithCore<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, SnapshotCoreBase<T, K, Meta, ExcludedFields> {}
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, SnapshotCoreBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {}
 // -------------------------------
 // Transform Subscriber
 // -------------------------------
@@ -27,17 +28,19 @@ interface SnapshotStoreConfigWithCore<
 export const TransformMethods = {
 
   transformSubscriber: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscriberId: string,
-    sub: Subscriber<T, K, Meta, ExcludedFields>
-  ): Subscriber<T, K, Meta, ExcludedFields> {
+    sub: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     // Simple transformation for the interface
-    const transformedSubscriber: Subscriber<T, K, Meta, ExcludedFields> = {
+    const transformedSubscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       ...sub,
       id: subscriberId,
       metadata: {
@@ -53,34 +56,39 @@ export const TransformMethods = {
     T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
     ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T,
     U extends BaseDataEntity = T,
     V extends U = U,
     Meta2 = DefaultMeta<U, V>,
-    ExcludedFields2 extends keyof U = DefaultExcludedFields<U>
+    AttachmentType2 extends Attachment = Attachment,
+    ExcludedFields2 extends keyof U = DefaultExcludedFields<U>,
+    IncludedFields2 extends keyof U = keyof U
+
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscriber: (
       event: string,
       snapshotId: string,
-      snapshot: Snapshot<U, V, Meta2, ExcludedFields2>,
-      snapshotStore: SnapshotStore<U, V, Meta2, ExcludedFields2>,
+      snapshot: Snapshot<U, V, Meta2, ExcludedFields2, IncludedFields2>,
+      snapshotStore: SnapshotStore<U, V, Meta2, ExcludedFields2, IncludedFields2>,
       dataItems: any[],
       criteria: any,
       category: symbol | string | undefined
     ) => void,
     transformSnapshot: (
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    ) => Snapshot<U, V, Meta2, ExcludedFields2>,
+    ) => Snapshot<U, V, Meta2, ExcludedFields2, IncludedFields2>,
     transformSnapshotStore: (
-      store: SnapshotStore<T, K, Meta, ExcludedFields>
-    ) => SnapshotStore<U, V, Meta2, ExcludedFields2>,
+      store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    ) => SnapshotStore<U, V, Meta2, ExcludedFields2, IncludedFields2>,
     transformSnapshotCriteria: (criteria: any) => any
   ): (
     event: string,
     snapshotId: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     dataItems: any[],
     criteria: any,
     category: symbol | string | undefined
@@ -111,16 +119,18 @@ export const TransformMethods = {
   },
 
   transformDelegate: async function <
-    T extends BaseDataEntity,
+    T extends BaseDataEntity = BaseDataRoot,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     delegate: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-    transformSubscriberFn: (sub: Subscriber<T, K, Meta, ExcludedFields>) => Subscriber<T, K, Meta, ExcludedFields>,
-    subscribers: Subscriber<T, K, Meta, ExcludedFields>[],
-    snapshots: Snapshots<T, K, Meta, ExcludedFields>
+    transformSubscriberFn: (sub: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     return Promise.all(
       delegate.map(async (config) => {
@@ -132,7 +142,7 @@ export const TransformMethods = {
 
         return {
           ...config,
-          subscribers: subscribersPromise.subscribers.map((sub: Subscriber<T, K, Meta, ExcludedFields>) =>
+          subscribers: subscribersPromise.subscribers.map((sub: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) =>
             transformSubscriberFn(sub)
           ),
           configOption:
@@ -144,7 +154,7 @@ export const TransformMethods = {
                       subscribers,
                       snapshots
                     )
-                  ).subscribers.map((sub: Subscriber<T, K, Meta, ExcludedFields>) =>
+                  ).subscribers.map((sub: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) =>
                     transformSubscriberFn(sub)
                   ),
                 }
@@ -155,12 +165,14 @@ export const TransformMethods = {
   },
 
   transformMappedData: function <
-    T extends BaseDataEntity,
+    T extends BaseDataEntity = BaseDataRoot,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     value: T | Partial<T> 
   ): T {
     // Define default fields for BaseDataEntity with proper typing
@@ -181,14 +193,16 @@ export const TransformMethods = {
   },
 
   transformConfigOption: function <
-    T extends BaseDataEntity,
+    T extends BaseDataEntity = BaseDataRoot,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     option: Partial<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | string | null | undefined
-  ): SnapshotStoreConfigWithCore<T, K, Meta, ExcludedFields> | string | null {
+  ): SnapshotStoreConfigWithCore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string | null {
     if (!option) return null;
 
     // If option is already a string, return as-is
@@ -210,4 +224,4 @@ export const TransformMethods = {
 
 
 
-export type { SnapshotStoreConfigWithCore }
+export type { SnapshotStoreConfigWithCore };

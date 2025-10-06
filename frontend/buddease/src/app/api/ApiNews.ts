@@ -1,7 +1,7 @@
 // ApiNews.ts
 import axiosInstance from '@/app/api/csrfToken'
 import { AxiosError, AxiosResponse } from 'axios';
-import { endpoints } from './endpointConfigurations';
+import { endpoints } from '@/app//endpointConfigurations';
 
 const  newsApiBaseURL = endpoints; // Ensure you have this defined in your ApiEndpoints
 

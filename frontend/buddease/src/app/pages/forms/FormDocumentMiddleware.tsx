@@ -1,9 +1,9 @@
 // FormDocumentMiddleware.tsx
 
-import { DocumentOptions } from '@/app/components/documents/DocumentOptions';
+import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import React, { useState } from 'react';
 import DocumentBuilder, { DocumentBuilderProps } from '@/app/documents/editing/DocumentBuilder';
-import DynamicForm from './DynamicForm';
+import DynamicForm from '@/DynamicForm';
 
 const FormDocumentMiddleware: React.FC = () => {
   const [documentBuilderProps, setDocumentBuilderProps] = useState<DocumentBuilderProps>({

@@ -14,10 +14,10 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { BaseDataEntity } from '@/config/BaseConfig';
 import { T } from "@/app/models/data/dataStoreMethods";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
-import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { convertMetadata } from './convertMetadata';
+import { convertMetadata } from '@/convertMetadata';
 import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";
 
 // SnapshotStore.ts

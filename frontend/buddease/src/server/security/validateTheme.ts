@@ -1,4 +1,4 @@
-import { isValidDID } from './../../utils/web3/didUtils';
+import { isValidDID } from '@/utils/web3/didUtils';
 // validateTheme.ts
 import { Theme } from "@/app/components/libraries/ui/theme/Theme";
 

@@ -1,37 +1,35 @@
 // AppStore.ts
-import { makeAutoObservable } from 'mobx';
-import { AppState } from '../redux/slices/AppSlice'
 import { UserProfile } from '@/app/api/ApiUser';
-import { VideoState } from '../redux/slices/VideoSlice';
-import { ToolbarState } from './ToolbarStore';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { PagingState } from '@/app/pages/Paging';
-import { DataAnalysisState } from '@/app/typings/dataAnalysisTypes';
-import { EntityState, EntityId } from '@reduxjs/toolkit';
 import { CalendarManagerState } from '@/app/components/calendar/CalendarSlice';
-import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
-import { T, K, Meta } from '@/app/components/models/data/dataStoreMethods';
-import { ProjectData } from '@/app/components/projects/Project';
-import { ProjectOwnerState } from '@/app/components/users/ProjectOwnerSlice';
-import { UserData } from '@/app/components/users/User';
-import { UserManagerState } from '@/app/components/users/UserSlice';
-import { ApiManagerState } from '../redux/slices/ApiSlice';
-import { BlogState } from '../redux/slices/BlogSlice';
-import { CollaborationState } from '../redux/slices/CollaborationSlice';
-import { DataSliceState } from '../redux/slices/DataSlice';
-import { DocumentSliceState } from '../redux/slices/DocumentSlice';
-import { DrawingState } from '../redux/slices/DrawingSlice';
-import { EventState } from '../redux/slices/EventSlice';
-import { NotificationState } from '../redux/slices/NotificationSlice';
-import { ProjectState } from '../redux/slices/ProjectSlice';
-import { RandomWalkState } from '../redux/slices/RandomWalkManagerSlice';
-import { RealtimeDataState } from '../redux/slices/RealtimeDataSlice';
-import { SettingsState } from '../redux/slices/SettingsSlice';
-import { TaskState } from '../redux/slices/TaskSlice';
-import { TodoManagerState } from '../redux/slices/TodoSlice';
-import { TrackerManagerState } from '../redux/slices/TrackerSlice';
-import { VersionState } from '../redux/slices/VersionSlice';
-import { UIState } from './UISlice';
+import { ProjectData } from '@/app/models/projects/Project';
+import { PagingState } from '@/app/pages/Paging';
+import { ApiManagerState } from '@/app/state/redux/slices/ApiSlice';
+import { AppState } from '@/app/state/redux/slices/AppSlice';
+import { BlogState } from '@/app/state/redux/slices/BlogSlice';
+import { CollaborationState } from '@/app/state/redux/slices/CollaborationSlice';
+import { DataSliceState } from '@/app/state/redux/slices/DataSlice';
+import { DocumentSliceState } from '@/app/state/redux/slices/DocumentSlice';
+import { DrawingState } from '@/app/state/redux/slices/DrawingSlice';
+import { EventState } from '@/app/state/redux/slices/EventSlice';
+import { NotificationState } from '@/app/state/redux/slices/NotificationSlice';
+import { ProjectOwnerState } from '@/app/state/redux/slices/ProjectOwnerSlice';
+import { ProjectState } from '@/app/state/redux/slices/ProjectSlice';
+import { RandomWalkState } from '@/app/state/redux/slices/RandomWalkManagerSlice';
+import { RealtimeDataState } from '@/app/state/redux/slices/RealtimeDataSlice';
+import { SettingsState } from '@/app/state/redux/slices/SettingsSlice';
+import { TaskState } from '@/app/state/redux/slices/TaskSlice';
+import { TodoManagerState } from '@/app/state/redux/slices/TodoSlice';
+import { TrackerManagerState } from '@/app/state/redux/slices/TrackerSlice';
+import { UserManagerState } from '@/app/state/redux/slices/UserSlice';
+import { VersionState } from '@/app/state/redux/slices/VersionSlice';
+import { VideoState } from '@/app/state/redux/slices/VideoSlice';
+import { ToolbarState } from '@/app/state/stores/ToolbarStore';
+import { UIState } from '@/app/state/stores/UISlice';
+import { DataAnalysisState } from '@/app/typings/phases/dataAnalysisTypes';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { EntityId, EntityState } from '@reduxjs/toolkit';
+import { makeAutoObservable } from 'mobx';
+
 // Define the initial state
 const initialState: AppState = {
   progress: 0,
@@ -99,4 +97,4 @@ class AppStore {
 const appStore = new AppStore(initialState);
 
 export default appStore;
-export { AppStore}
+export { AppStore };

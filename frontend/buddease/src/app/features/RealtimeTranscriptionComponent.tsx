@@ -5,7 +5,7 @@ import useRealtimeData from "./hooks/commHooks/useRealtimeData";
 import useRealtimeEditing from "./hooks/useRealtimeEditing";
 import useDocumentStore, { Document } from "./state/stores/DocumentStore";
 import calculateKPMBasedOnEditorChanges from "./strategy/calculateKPMBasedOnEditorChanges";
-import * as apiDocument from './../../app/api/ApiDocument'
+import * as apiDocument from '@/app/api/ApiDocument'
 
 
 const RealtimeTranscriptionComponent = () => {

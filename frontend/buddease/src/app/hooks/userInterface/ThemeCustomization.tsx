@@ -1,7 +1,7 @@
-import React, { SetStateAction } from "react";
 import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";
-import { NotificationData } from "@/app/support/NofiticationsSlice";
+import React, { SetStateAction } from "react";
 import { TableStyle } from "./TableStyle";
 interface ThemeCustomizationProps {
   themeState: ThemeConfig;
@@ -343,4 +343,4 @@ const defaultThemeConfig: ThemeConfig = {
 export default ThemeCustomization;
 export type { ThemeCustomizationProps };
 
-export {defaultThemeConfig}
+    export { defaultThemeConfig };

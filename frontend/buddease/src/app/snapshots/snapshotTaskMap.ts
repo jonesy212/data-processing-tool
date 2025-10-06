@@ -1,5 +1,5 @@
 import { Snapshot } from ".";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { K, T } from "./SnapshotConfig";
 
 //snapshotTaskMap.ts

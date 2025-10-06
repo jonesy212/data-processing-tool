@@ -3,11 +3,11 @@
 // Import necessary modules and types
 import { useSecureAccountId } from '@/app/hooks/useSecureAccountId';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
-import { FacebookIntegration } from './FacebookIntegration';
-import { InstagramIntegration } from './InstagramIntegration';
-import { TikTokIntegration } from './TikTokIntegration';
-import { TwitterIntegration } from './TwitterIntegration';
-import { YouTubeIntegration } from './YouTubeIntegration';
+import { FacebookIntegration } from '@/FacebookIntegration';
+import { InstagramIntegration } from '@/InstagramIntegration';
+import { TikTokIntegration } from '@/TikTokIntegration';
+import { TwitterIntegration } from '@/TwitterIntegration';
+import { YouTubeIntegration } from '@/YouTubeIntegration';
 
 // Define a type for the social media platform
 type SocialMediaPlatform = 'Facebook' | 'Instagram' | 'Twitter' | 'YouTube' | 'TikTok';

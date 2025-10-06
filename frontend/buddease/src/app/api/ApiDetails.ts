@@ -5,8 +5,8 @@ import { NotificationTypeEnum, useNotification } from "@/app/context/Notificatio
 import { useDetailsContext } from '@/app/models/data/DetailsContext';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { Attachment } from '../components/models/data/Attachment';
-import { detailsApiService } from './service/DetailsApiService';
+import { Attachment } from '@/models/data/attachment/Attachment/attachment';
+import { detailsApiService } from '@/app/api/service/DetailsApiService';
 
 // Define notification messages for details API
 interface DetailsNotificationMessages {

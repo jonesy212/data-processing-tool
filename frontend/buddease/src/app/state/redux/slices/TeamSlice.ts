@@ -1,9 +1,9 @@
 import { CollaborationPreferences } from "@/app/components/interfaces/settings/CollaborationPreferences";
 import TeamData from "@/app/components/models/teams/TeamData";
-import { Project } from "@/app/components/projects/Project";
-import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Project } from "@/app/projects/Project";
 import { WritableDraft } from "@/app/ReducerGenerator";
 import { RootState } from "@/state/redux/slices/RootSlice";
+import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface TeamManagerState {
   teams: TeamData[]; // Updated to store TeamData objects instead of just team names

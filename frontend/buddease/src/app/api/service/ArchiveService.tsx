@@ -1,8 +1,8 @@
 import { NotificationType } from '@/app/context/NotificationContext';
 import { notify } from '@/app/utils/snapshotUtils';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StorageService } from '../models/storage/StoragService';
-import { Snapshot } from './Snapshot';
+import { StorageService } from '@/models/storage/StoragService';
+import { Snapshot } from '@/Snapshot';
 // Archive types
 export interface ArchiveMetadata {
   id: string | number;
@@ -356,6 +356,6 @@ const calculateChecksum = (data: string): string => {
 
 
 export {
-  calculateChecksum, compressData, generateArchiveId
+    calculateChecksum, compressData, generateArchiveId
 };
 

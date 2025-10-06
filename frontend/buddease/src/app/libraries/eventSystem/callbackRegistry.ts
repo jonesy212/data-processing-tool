@@ -1,4 +1,4 @@
-import { EventHandler, EventFilter } from '../types/eventTypes';
+import { EventHandler, EventFilter } from '@/types/eventTypes';
 import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
 
 export interface RegisteredCallback<T = any> {

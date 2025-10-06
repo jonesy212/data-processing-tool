@@ -1,10 +1,10 @@
 import { ProgressPhase } from '@/app/components/models/tracker/ProgressBar';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { DocumentPath } from "@/server/DocumentPath";
-import { ModifiedDate } from "@/app/components/documents/DocType";
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { ModifiedDate } from "@/app/documents/DocType";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { Content } from "@/app/models/content/AddContent";
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { Team } from "@/app/models/teams/Team";
 import { BaseEntity } from "@/app/routing/FuzzyMatch";
 import { TagsRecord } from "@/app/snapshots";
@@ -12,8 +12,8 @@ import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentBase, PhaseTypeEnums } from "@/app/state/stores/DocumentStore";
 import { AllTypes } from "@/app/typings/PropTypes";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
+import { DocumentPath } from "@/server/DocumentPath";
 
 
 interface DatasetModel<

@@ -1,4 +1,4 @@
-import { OutcomeVariabilityPrediction } from "@/app/components/models/data/EventPriorityClassification";
+import { OutcomeVariabilityPrediction } from "@/app/models/data/EventPriorityClassification";
 
 // CalendarEventOutcomeVariabilityPrediction.ts
 interface CalendarEventOutcomeVariabilityPrediction extends OutcomeVariabilityPrediction {

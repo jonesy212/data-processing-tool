@@ -1,6 +1,6 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { ComponentActions } from './ComponentActions';
+import { ComponentActions } from '@/ComponentActions';
 
 const DeleteComponent = () => {
   const dispatch = useDispatch();

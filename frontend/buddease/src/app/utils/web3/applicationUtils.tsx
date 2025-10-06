@@ -5,39 +5,39 @@ import * as articleApi from '@/app/api/articleApi';
 import { ApiNotificationsService } from "@/app/api/NotificationsService";
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import {
-    NotificationTypeEnum,
-    useNotification,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/context/NotificationContext";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Content } from "@/app/models/content/AddContent";
-import { BaseData } from "@/app/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { ActivityActionEnum, ActivityTypeEnum, ProjectStateEnum, StatusType } from "@/app/models/data/StatusType";
 import { Project, ProjectDetails } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
 import { Article } from "@/app/pages/blog/Blog";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { updateProject } from "@/app/state/redux/slices/ProjectManagerSlice";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import { AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
-import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
 
-import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import NotificationManager from "@/app/components/support/NotificationManager";
-import { useMeta } from '@/config/useMeta';
-import { useMetadata } from '@/config/useMetadata';
 import { useSecureUserId } from "@/app/hooks/useSecureUserId";
 import { CombinedEvents, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { CalendarEventWithCriteria } from '@/app/pages/searchs/FilterCriteria';
+import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { snapshot, SnapshotData, SnapshotStoreProps } from '@/app/snapshots';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { SubscriberCallbackType } from '@/app/subscriptions/Subscription';
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
+import { useMeta } from '@/config/useMeta';
+import { useMetadata } from '@/config/useMetadata';
  const dispatch = useDispatch()
 const { notify } = useNotification()
 
@@ -790,7 +790,7 @@ const isValidParameters = (params: any): boolean => {
 
   
   export {
-    logActivity, notifyEventSystem, portfolioUpdates, tradeExections, triggerEvent, triggerIncentives, unsubscribe, updateProjectState
+  logActivity, notifyEventSystem, portfolioUpdates, tradeExections, triggerEvent, triggerIncentives, unsubscribe, updateProjectState
 };
 
   export type { LogActivityParams, TriggerIncentivesParams };

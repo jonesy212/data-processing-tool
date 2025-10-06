@@ -6,10 +6,10 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { K, Snapshot, snapshot, snapshotContainer, SnapshotOperation, SnapshotOperationType, snapshotStoreConfig, SnapshotStoreConfig, SnapshotWithCriteria, subscribeToSnapshot, subscribeToSnapshots, T } from ".";
 import { CreateSnapshotStoresPayload } from "@/app/server/database/Payload";
 import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
-import { BaseData, Data } from "@/app/models/data/Data";
-import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { BaseData, Data } from '@/app/models/data/Data';
+import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { ExcludedFields } from '../routing/Fields';
+import { ExcludedFields } from '@/routing/Fields';
 import SnapshotManagerOptions from "./SnapshotManagerOptions";
 import SnapshotStore from "./SnapshotStore";
 

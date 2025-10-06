@@ -1,6 +1,6 @@
 // CriteriaOptions.ts
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
-import { FileTypeEnum } from "@/app/components/documents/FileType";
+import { FileTypeEnum } from "@/app/documents/FileType";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
 import { SearchCriteria } from "@/app/components/routing/SearchCriteria";
@@ -27,7 +27,7 @@ import {
   PerformanceStatusEnum,
   PhaseDurationEnum,
   TechnologyEnum
-} from './CriteriaEnums';
+} from '@/CriteriaEnums';
 import { FilterCriteria } from "./FilterCriteria";
 
 

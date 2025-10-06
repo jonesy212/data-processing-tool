@@ -1,17 +1,17 @@
 // SettingsStore.ts
+import axiosInstance from '@/app/api/csrfToken';
+import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
 import {
     NotificationTypeEnum,
     useNotification,
 } from "@/app/context/NotificationContext";
-import { makeAutoObservable } from "mobx";
-import { useState } from "react";
-import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
-import axiosInstance from '@/app/api/csrfToken';
-import { NotificationData } from "@/app/support/NofiticationsSlice";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { YourResponseType, YourSettingsResponseType } from "@/app/typings/types";
 import { UserManagerState } from "@/app/users/UserSlice";
+import { makeAutoObservable } from "mobx";
+import { useState } from "react";
 
 // Define the interface for different types of settings
 export interface Settings extends YourResponseType {

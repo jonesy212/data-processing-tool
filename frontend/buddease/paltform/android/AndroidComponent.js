@@ -1,8 +1,7 @@
 // AndroidComponent.js
 
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import SharedButton from '../shared/SharedButton';  // Import shared component
+import SharedButton from '@/shared/SharedButton'; // Import shared component
+import { StyleSheet, Text, View } from 'react-native';
 
 const AndroidComponent = () => {
   // Handle any Android-specific behaviors here

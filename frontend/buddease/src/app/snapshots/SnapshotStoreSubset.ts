@@ -8,24 +8,24 @@ import {
     Payload
 } from "@/app/server/database/Payload";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
-import { Subscriber } from "@/app/users/Subscriber";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import {  Snapshots, SnapshotUnion } from "./LocalStorageSnapshotStore";
 import { Snapshot } from "./Snapshot";
 import { SnapshotOperation } from "./SnapshotActions";
 import { CustomSnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 
-import { DataStore } from '@/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
-import { SnapshotContext } from './SnapshotSubscriberManagement';
+import { SnapshotContext } from '@/SnapshotSubscriberManagement';
 
 // SnapshotStoreSubset.ts
 interface SnapshotStoreSubset<

@@ -1,26 +1,27 @@
 // SnapshotStoreProps.ts
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { SnapshotEventBase } from '@/SnapshotEvents';
 import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from '@/app/components/documents/RelatedProps';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { Meta } from '@/app/components/models/data/dataStoreMethods';
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
-import { createDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { ExcludedFields } from '@/app/components/routing/Fields';
-import { BaseDataEntity } from '@/config/BaseConfig';
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { createBaseData, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
+import { K, T } from '@/app/models/data/dataStoreMethods';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { createDataStore, DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { ExcludedFields } from '@/app/routing/Fields';
 import { SnapshotConfig, SnapshotData } from '@/app/snapshots';
 import {
-    Snapshots,
-    SnapshotsArray,
-    SnapshotUnion
+  Snapshots,
+  SnapshotsArray,
+  SnapshotUnion
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/SnapshotActions";
@@ -33,25 +34,22 @@ import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { fetchSnapshotsForCategory } from '@/app/snapshots/fetchSnapshotsForCategory';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { Subscriber } from '@/app/users/Subscriber';
 import { addToSnapshotList, isSnapshot } from '@/app/utils/snapshotUtils';
-import Version from "@/app/versions/Version";
+import { Version } from "@/app/versions/Version";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { DataStore, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { BaseSnapshotProps } from '@/createBaseSnapshot';
+import { displayToast } from '@/models/display/ShowToast';
 import { Payload } from "@/server/database/Payload";
 import { SchemaField } from "@/server/database/SchemaField";
 import baseMeta from "@/server/database/baseMeta";
+import { createSnapshotStoreConfig } from '@/snapshotStoreConfigInstance';
 import { BrowserBehaviorConfig } from "@/state/BrowserBehaviorManager";
 import { version } from "react";
 import { snapshotStoreConfig } from '.';
-import { K, T } from '@/app/models/data/dataStoreMethods';
-import { displayToast } from '../models/display/ShowToast';
-import { SnapshotEventBase } from './SnapshotEvents';
-import { BaseSnapshotProps } from './createBaseSnapshot';
-import { createSnapshotStoreConfig } from './snapshotStoreConfigInstance';
 
 // Base interface for all snapshot store properties
 

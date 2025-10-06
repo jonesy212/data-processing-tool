@@ -3,9 +3,16 @@
 import { CommonData } from "@/app/models/CommonData";
 import { UserData, VisualizationData } from "@/app/users/User";
 
-interface Product extends UserData {
+interface Product<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends UserData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  
   // Add specific properties for the product
-
   productId: string;
   productName: string;
   productDescription: string;

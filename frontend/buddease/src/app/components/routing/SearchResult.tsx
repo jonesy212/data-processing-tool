@@ -1,17 +1,16 @@
 // SearchResult.tsx
+import { DocumentOptions } from '@/documents/DocumentOptions';
 import { searchDocumentAPI } from '@/app/api/ApiDocument'; // Import the searchDocumentAPI method
 import SearchResultItem from '@/app/components/models/data/SearchResultItem';
-import ListGenerator from '@/app/generators/ListGenerator';
-import { useEffect, useState } from 'react';
-import * as React from 'react';
-import { DocumentOptions } from '../documents/DocumentOptions';
-import FolderData from '../models/data/FolderData';
 import SearchHistory from '@/app/components/versions/SearchHistory';
 import Version from '@/app/components/versions/Version';
-import { Entity } from './FuzzyMatch';
-import { DocumentData } from '../documents/DocumentBuilder';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { BaseData } from '@/app/models/data/Data';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import ListGenerator from '@/app/generators/ListGenerator';
+import { DocumentData } from '@/documents/DocumentBuilder';
+import FolderData from '@/models/data/FolderData';
+import * as React from 'react';
+import { useEffect, useState } from 'react';
+import { Entity } from '@/FuzzyMatch';
 
 
 // Define the SearchResultWithQuery interface that extends SearchResult

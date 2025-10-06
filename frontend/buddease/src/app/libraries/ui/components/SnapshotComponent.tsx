@@ -1,6 +1,6 @@
 import useErrorHandling from "@/app/hooks/useErrorHandling";
-import { BaseData, Data } from '@/app/components/models/data/Data';
-import { DataStoreMethods } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { BaseData, Data } from '@/app/models/data/Data';
+import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import {
   CustomSnapshotData,
@@ -11,9 +11,13 @@ import {
   SnapshotStoreConfig,
   SnapshotStoreProps,
 } from "@/app/snapshots";
+import {
+  Snapshot
+} from "@/app/snapshots/Snapshot";
+import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { isSnapshot } from "@/app/utils/snapshotUtils";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { useEffect, useState } from "react";
 

@@ -1,15 +1,15 @@
 // defineConfig.ts
 
 
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, '@/src'),
     },
   },
   define: {
@@ -28,14 +28,14 @@ export default defineConfig({
 
 
 
-import { defineConfig, UserConfigExport } from "vite";
+import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
 import { ModifiedDate } from "@/app/documents/DocType";
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
-import { Subscriber, payload } from "@/app/users/Subscriber";
-import { notifyEventSystem, updateProjectState, logActivity, triggerIncentives } from "@/app/utils/web3/applicationUtils";
-import { T , K, Meta } from "@/app/components/models/data/dataStoreMethods";
-import { snapshotConfig } from "./snapshotStoreConfigInstance";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { payload, Subscriber } from "@/app/subscribers/Subscriber";
+import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "@/app/utils/web3/applicationUtils";
+import { UserConfigExport } from "vite";
+import { snapshotConfig } from "./snapshotStoreConfigInstance";
 
 
 // Function to get the project ID from an environment variable or use a default value
@@ -49,7 +49,7 @@ function getProjectId() {
      plugins: [react()],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src'),
+        '@': path.resolve(__dirname, '@/src'),
       },
     },
     

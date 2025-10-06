@@ -1,9 +1,9 @@
 // Import necessary dependencies and actions
 import { ProjectActions } from "@/app/actions/ProjectActions";
-import { Project } from "@/app/components/projects/Project";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { Project } from "@/app/projects/Project";
 import axios, { AxiosResponse } from "axios";
 import { call, put, takeLatest } from "redux-saga/effects";
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 
 // Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchProjectsAPI = () => axios.get('/api/projects');

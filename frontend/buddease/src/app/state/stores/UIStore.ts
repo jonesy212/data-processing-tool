@@ -5,14 +5,14 @@ import ErrorHandler from '@/app/shared/ErrorHandler';
 import { action, makeObservable, observable } from 'mobx';
 import { ErrorInfo } from 'react';
 import { UIActions } from '@/app/actions/UIActions';
-import safeParseData from '@/app/components/crypto/SafeParseData';
-import { ParsedData } from '@/app/components/crypto/parseData';
-import { Theme } from '@/app/components/libraries/ui/theme/Theme';
-import { FileLogger } from '@/app/components/logging/Logger';
-import { displayToast } from '@/app/components/models/display/ShowToast';
+import safeParseData from '@/app/crypto/SafeParseData';
+import { ParsedData } from '@/app/crypto/parseData';
+import { Theme } from '@/app/libraries/ui/theme/Theme';
+import { FileLogger } from '@/app/logging/Logger';
+import { displayToast } from '@/app/models/display/ShowToast';
 import axiosInstance from '@/app/api/csrfToken';
-import { YourResponseType } from '@/app/components/typings/types';
-import { createMessage } from '@/app/components/utils/createMessage';
+import { YourResponseType } from '@/app/typings/types';
+import { createMessage } from '@/app/utils/createMessage';
 
 class UIStore {
   @observable theme = {

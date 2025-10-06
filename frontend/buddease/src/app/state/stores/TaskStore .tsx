@@ -1,8 +1,10 @@
-//TaskManagerStore.tsx
+// TaskManagerStore.tsx
+
 import { TaskActions } from '@/app/actions/TaskActions';
 import { addSnapshot } from '@/app/api/SnapshotApi';
 import { saveAs } from '@/app/components/documents/editing/autosave';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { Subscriber } from '@/app/components/users/Subscriber';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import {
     NotificationType, NotificationTypeEnum,
     useNotification
@@ -13,25 +15,24 @@ import { generateNewTask } from "@/app/generators/GenerateNewTask";
 import useApiManager from "@/app/hooks/dynamicHooks/useApiManager";
 import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum, TaskStatus } from "@/app/models/data/StatusType";
 import { Task, tasksDataSource } from "@/app/models/tasks/Task";
 import FilterTasksRequest from "@/app/pages/searchs/FilterTasksRequest";
 import { useApiManagerSlice } from "@/app/redux/slices/ApiSlice";
 import { useTaskManagerSlice } from "@/app/redux/slices/TaskSlice";
 import { taskService } from "@/app/services/TaskService";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { updateSnapshot } from '@/app/snapshots/snapshotHandlers';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { Todo } from "@/app/todos/Todo";
 import { User } from "@/app/users/User";
+import { clearSnapshots, removeSnapshot } from '@/redux/slices/SnapshotSlice';
 import { makeAutoObservable } from "mobx";
 import { title } from 'process';
 import { useState } from "react";
-import { Subscriber } from '@/app/components/users/Subscriber';
-import { clearSnapshots, removeSnapshot } from '../redux/slices/SnapshotSlice';
 import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
 ;
 

@@ -1,6 +1,6 @@
 // RealtimeDataComponent.tsx
 import { ExchangeActions } from "@/app/actions/ExchangeActions";
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { ExchangeData } from "@/app/components/models/data/ExchangeData";
 import useRealtimeData, { RealtimeUpdateCallback } from "@/app/hooks/commHooks/useRealtimeData";
 import useErrorHandling from "@/app/hooks/useErrorHandling";

@@ -1,8 +1,8 @@
-import { PaginationOptions } from '@/app/pages/searchs/SearchOptions';
-import { FilterCriteria } from '@/app/pages/searchs/FilterCriteria';
-import { createSlice, EntityState, PayloadAction, createEntityAdapter } from '@reduxjs/toolkit';
 import { Todo } from '@/app/components/todos/Todo';
-import { WritableDraft } from '../ReducerGenerator';
+import { FilterCriteria } from '@/app/pages/searchs/FilterCriteria';
+import { PaginationOptions } from '@/app/pages/searchs/SearchOptions';
+import { WritableDraft } from '@/ReducerGenerator';
+import { createEntityAdapter, createSlice, EntityState, PayloadAction } from '@reduxjs/toolkit';
 
 export interface TodoManagerState extends EntityState<WritableDraft<Todo>, string>  {
   todos: Todo[]; // List of todos

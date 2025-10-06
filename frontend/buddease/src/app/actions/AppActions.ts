@@ -1,9 +1,9 @@
 // AppActions.ts
 import { createAction } from '@reduxjs/toolkit';
-import { ApiActionTypes } from "@/app/api/ApiActions";
+import { ApiActionTypes } from "@/app/actions/ApiActions";
 import { DocumentActionTypes } from '@/app/tokens/DocumentActions';
 import { TokenActionTypes } from '@/app/tokens/TokenActions';
-import { UserPreferencesActionTypes } from '@/app/configs/UserPreferencesActions';
+import { UserPreferencesActionTypes } from '@/config/UserPreferencesActions';
 // Import other action types
 
 

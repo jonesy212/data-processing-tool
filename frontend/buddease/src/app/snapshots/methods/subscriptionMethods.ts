@@ -1,12 +1,12 @@
 // subscriptionMethods.ts
-import { Snapshot, SnapshotData, Snapshots, SnapshotsArray, SnapshotStoreConfig } from "..";
-import { UnsubscribeDetails } from "@/app/data_analysis/frontend/buddease/src/app/components/event/DynamicEventHandlerExample";
-import { Category } from "@/app/data_analysis/frontend/buddease/src/app/components/libraries/categories/generateCategoryProperties";
-import { Subscriber } from "@/app/data_analysis/frontend/buddease/src/app/users/Subscriber";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
-import { SnapshotEvent } from "@/app/data_analysis/frontend/buddease/src/app/typings/eventTypes";
+import { UnsubscribeDetails } from "@/app/components/event/DynamicEventHandlerExample";
+import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { SnapshotEvent } from "@/app/typings/eventTypes";
+import { Subscriber } from "@/app/users/Subscriber";
 import SnapshotStore from "@/app/snapshotstore";
 import { Callback } from "@/app/subscribeToSnapshotsImplementation";
+import { Snapshot, SnapshotData, Snapshots, SnapshotsArray, SnapshotStoreConfig } from "..";
 
 
 

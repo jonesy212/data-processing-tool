@@ -1,5 +1,5 @@
+import { openChatSidebar } from '@/components/communications/chat/chatUtils';
 import React, { createContext, useContext, useState } from 'react';
-import { openChatSidebar } from '../components/communications/chat/chatUtils';
 
 // Define the type for the props of ChatSidebarProvider
 type ChatSidebarProviderProps = {

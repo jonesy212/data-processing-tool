@@ -1,5 +1,5 @@
-// import { Data } from "@/app/models/data/Data";
-// import { Snapshot } from "@/app/snapshots";
+// import { Data } from '@/app/models/data/Data';
+// import { Snapshot } from '@/app/snapshots/Snapshot';
 // import { SnapshotItem } from "./SnapshotList";
 
 // // convertSnapshotToItem.ts

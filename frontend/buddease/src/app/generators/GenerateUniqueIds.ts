@@ -1,10 +1,10 @@
-import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
-import { DataDetails } from "@/app/components/models/data/Data";
 import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
+import { DataDetails } from '@/app/models/data/Data';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
-import { NotificationData } from "@/app/support/NofiticationsSlice";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";

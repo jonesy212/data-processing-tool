@@ -1,6 +1,6 @@
 // components/DynamicColorPalette.tsx
 import React from 'react';
-import ColorPalette, { ColorSwatchProps } from './ColorPalette';
+import ColorPalette, { ColorSwatchProps } from '@/ColorPalette';
 
 interface DynamicColorPaletteProps {
   dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering

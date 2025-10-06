@@ -1,4 +1,4 @@
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { K, T } from "./SnapshotConfig";
 
 // Implement the getSnapshotEntries method

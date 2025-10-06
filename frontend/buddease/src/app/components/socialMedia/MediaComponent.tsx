@@ -1,7 +1,7 @@
 // MediaComponent.tsx
 
 import React, { useEffect, useState } from 'react';
-import { socialMediaIntegrationService } from './SocialMediaIntegrationService';
+import { socialMediaIntegrationService } from '@/SocialMediaIntegrationService';
 
 const MediaComponent: React.FC = () => {
   const [messages, setMessages] = useState<any[]>([]);

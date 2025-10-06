@@ -1,6 +1,6 @@
 import DynamicTextArea from "@/app/ts/DynamicTextArea";
 import React, { useState } from "react";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import RootLayout from "@/app/RootLayout";
 
 interface PromptOption {

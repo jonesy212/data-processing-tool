@@ -1,12 +1,20 @@
 // determinCategory.ts
-import { BaseData } from '@/app/components/models/data/Data';
-import { Snapshot } from "@/app/snapshots";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData } from '@/app/models/data/Data';
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { isCategoryProperties } from "./generateCategoryProperties";
+import { isCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // determineCategory function
-function determineCategory<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function determineCategory<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined
 ): string | CategoryProperties | null {
   if (!data) {

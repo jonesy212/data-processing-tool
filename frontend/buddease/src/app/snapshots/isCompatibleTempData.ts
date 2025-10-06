@@ -1,17 +1,17 @@
 //isCompatibleTempData.ts
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { BaseData } from "@/app/components/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { T } from "@/app/components/models/data/dataStoreMethods";
 import { TempData } from "@/app/components/models/data/TempData";
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
-import { Subscriber } from "@/app/users/Subscriber";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { SnapshotsArray } from "./LocalStorageSnapshotStore";
 import { Snapshot } from "./Snapshot";
 import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";

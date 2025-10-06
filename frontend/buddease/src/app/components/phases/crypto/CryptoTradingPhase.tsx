@@ -9,9 +9,9 @@ import ProfessionalTraderProfile from '@/app/pages/personas/ProfessionalTraderPr
 import { tradingPhases } from '@/config/trading/TradingPhaseConfig';
 import React, { useState } from "react";
 import { TraderCallsProps } from '@/app/components/trading/Trades';
-import RiskAssessment from './RiskAssessment';
-import TraderTypesSelection from './TraderTypesSelection';
-import VerificationProcess from './VerificationProcess';
+import RiskAssessment from '@/RiskAssessment';
+import TraderTypesSelection from '@/TraderTypesSelection';
+import VerificationProcess from '@/VerificationProcess';
 
 enum TradingPhase {
   VERIFICATION = 'Verification',

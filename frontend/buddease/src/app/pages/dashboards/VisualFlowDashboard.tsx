@@ -1,6 +1,6 @@
 // VisualFlowDashboard.tsx
 
-import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import Visualization from "@/app/hooks/userInterface/Visualization";
 import { DocumentTree, User, UserData } from "@/app/users/User";
 import DocumentGenerator from "@/server/ServerDocumentGenerator";

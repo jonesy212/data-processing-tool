@@ -5,13 +5,13 @@ import headersConfig from '@/app/api/headers/HeadersConfig';
 import { DataFrameActions } from '@/app/actions/DataFrameActions';
 import { FileActions } from '@/app/actions/FileActions';
 import useErrorHandling from '@/app/hooks/useErrorHandling';
-import { Data } from '@/app/components/models/data/Data';
-import { DataActions } from '@/app/components/projects/DataAnalysisPhase/DataActions';
+import { Data } from '@/app/models/data/Data';
+import { DataActions } from '@/app/projects/DataAnalysisPhase/DataActions';
 import axios, { AxiosResponse } from 'axios';
 import { call, put, takeLatest } from 'redux-saga/effects';
 import { fetchDataFrame, removeFile, updateDataFrame } from '@/api/DataframeApi';
-import { fetchDataFrameSuccess } from '../slices/DataFrameSlice';
-import { updateDataTitle } from '../slices/DataSlice';
+import { fetchDataFrameSuccess } from '@/slices/DataFrameSlice';
+import { updateDataTitle } from '@/slices/DataSlice';
 const { handleError } = useErrorHandling();
 
 import { default as archiveFile, default as batchRemoveFiles, default as createFileVersion, default as determineFileType, default as exportFile, default as fetchFiles, default as fetchFileVersions, default as importFile, default as markFileAsComplete, default as receiveFileUpdate, default as requestAccessToFile, default as shareFile, default as startCollaborativeEdit, default as uploadFile } from '@/app/api/ApiFiles';

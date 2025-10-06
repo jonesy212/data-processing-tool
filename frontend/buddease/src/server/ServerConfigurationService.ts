@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 import { SystemConfigs } from "@/app/api/systemConfigs";
 import { UserConfigs } from "@/app/api/userConfigs";
-import { AquaConfig } from "@/app/components/web3/webConfigs/AquaConfig";
+import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
 import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
 import { BackendConfig, backendConfig } from "./BackendConfig";
 import { frontendConfig } from "./FrontendConfig";
@@ -83,7 +83,7 @@ export class ServerConfigurationService {
   // Get data path (server-side)
   getDataPath(): string {
     const config = this.readConfigFile();
-    return config.dataPath || './data';
+    return config.dataPath || '@/data';
   }
 
   // Get complete configuration (server-side)

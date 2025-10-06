@@ -1,17 +1,17 @@
-import ProjectModel from "@/app/models/ProjectModel";
 import { ProjectActions } from "@/app/actions/ProjectActions";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import axiosInstance from '@/app/api/csrfToken';
 import { Task } from "@/app/components/models/tasks/Task";
 import { Phase } from "@/app/components/phases/Phase";
 import { Product } from "@/app/components/products/Product";
-import { Project, ProjectData } from "@/app/components/projects/Project";
-import { sendNotification } from "@/app/components/users/UserSlice";
-import { ProjectMetadata } from "@/config/StructuredMetadata";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import ProjectModel from "@/app/models/ProjectModel";
+import { Project, ProjectData } from "@/app/projects/Project";
+import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import { User } from "@/app/users/User";
+import { K, T } from '@/components/models/data/dataStoreMethods';
+import { ProjectMetadata } from "@/config/StructuredMetadata";
 import { makeAutoObservable } from 'mobx';
-import { K, T } from '../components/models/data/dataStoreMethods';
 
 const API_BASE_URL = endpoints.projects;
 

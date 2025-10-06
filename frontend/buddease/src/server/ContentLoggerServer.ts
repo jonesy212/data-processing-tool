@@ -1,6 +1,6 @@
 // ContentLoggerServer.ts
 import fs from 'fs';
-import { Logger } from './BaseLogger'; // Assuming Logger is defined elsewhere
+import { Logger } from '@/BaseLogger'; // Assuming Logger is defined elsewhere
 
 export class ContentLoggerServer extends Logger {
   static logContentCreation(title: string, contentId: string, userId: string) {

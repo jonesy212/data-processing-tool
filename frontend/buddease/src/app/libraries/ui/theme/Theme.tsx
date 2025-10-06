@@ -1,6 +1,6 @@
-import { BrandingSettings } from "@/app/components/projects/branding/BrandingSettings";
+import { BrandingSettings } from "@/app/branding/BrandingSettings";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";
-import { NotificationData } from "@/app/support/NofiticationsSlice";
 import React, { SetStateAction } from "react";
 
 // Define the Theme interface

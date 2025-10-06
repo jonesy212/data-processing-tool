@@ -1,6 +1,6 @@
 // FilePreview.tsx
 import  { useState } from "react";
-import CustomFile from "./File";
+import CustomFile from "@/app/documents/File";
 import React from "react";
 
 const FilePreview: React.FC = () => {

@@ -1,18 +1,18 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import axiosInstance from '@/app/api/csrfToken';
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { DocumentPhaseTypeEnum } from "@/app/components/documents/DocumentPhaseType";
-import { BaseData } from '@/app/components/models/data/Data';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseData } from '@/app/models/data/Data';
 import { useNotification } from "@/app/context/NotificationContext";
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Content } from "@/app/models/content/AddContent";
 import { Comment } from "@/app/models/data/Comments";
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { ProgressPhase } from "@/app/models/tracker/ProgressBar";
 import { CustomComment } from "@/app/redux/slices/BlogSlice";
 import { TagsRecord } from "@/app/snapshots";
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { AllTypes } from "@/app/typings/PropTypes";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
@@ -58,6 +58,11 @@ interface DocumentContent<
   // Add more properties as needed
 }
 
+// ---------------------------
+// Base Document Interfaces
+// ---------------------------
+
+
 interface DocumentBase<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -65,30 +70,149 @@ interface DocumentBase<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-  > {
-  id?: string | number | undefined;
+> {
+  // Core identification
+  id: string | number;
+  _id: string;
+  _rev?: string;
+  
+  // Document metadata
+  name?: string;
   title: string;
-  content: Content<T, K, Meta>;
-  description?: string | null | undefined;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined; 
-  createdAt: string | Date | undefined;
-  updatedAt?: string | Date;
-  createdBy: string | undefined;
-  updatedBy: string;
+  description?: string | null;
+  
+  // Versioning
+  version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  versionData?: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  
+  // Status and type
+  status?: AllStatus;
+  type?: AllTypes;
+  documentType: string | DocumentTypeEnum;
   visibility: AllTypes;
   phaseType: PhaseTypeEnums;
-  documentData?: Document<T, K, Meta>;
-  comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
-  // selectedDocument: DocumentData<T> | null;
-  selectedDocuments?: Document<T, K, Meta>[];
   
+  // Timestamps
+  createdDate?: string | Date;
+  createdByRenamed?: string;
+  lastModifiedDate?: ModifiedDate;
+  lastModifiedBy: string;
+  lastModifiedByTeamId?: number | null;
+  lastModifiedByTeam?: Team;
+  timestamp?: Date;
+  
+  // Content
+  content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  previousContent?: string | ContentState;
+  currentContent?: ContentState;
+  
+  // Metadata
+  currentMeta: Meta;
+  previousMeta?: Meta;
+  currentMetadata: UnifiedMetadata<T, K, Meta, ExcludedFields>;
+  previousMetadata?: UnifiedMetadata<T, K, Meta, ExcludedFields>;
+  
+  // File handling
+  file?: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  files?: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  filePath?: DocumentPath<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  folder?: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  folders: FolderData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  
+  // Document structure
+  document?: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  documents: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[];
+  documentData?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  updatedDocument?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  
+  selectedDocuments?: WritableDraft<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[];
+  artwork?: any[]; // Should be properly typed based on your usage
+  clientInformation?: ClientInformation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  supportedLanguages?: string[];
+  body?: WritableDraft<HTMLElement> | HTMLElement;
+  comments?: Comment[] | Comment;
+  
+  // Organization
+  topics?: string[];
+  highlights?: string[];
+  keywords?: string[];
+  category?: string;
+  
+  // Permissions and access
+  permissions?: DocumentPermissions;
+  accessHistory: AccessHistory[];
+  requiredRole?: UserRoleEnum;
+  isPrivate?: boolean;
+  
+  // Document properties
+  locked?: boolean;
+  changes?: boolean | string | string[];
+  documentSize: DocumentSize;
+  url?: string;
+  source?: string;
+  
+  // Reports
+  report?: FinancialReport | TechnicalReport | ResearchReport;
+  
+  // Options and configuration
+  options?: DocumentOptions;
+  folderPath: string;
+  documentOptions?: DocumentWithBuilderProps<T, K, Meta, ExcludedFields>;
+  
+  // Workflow
+  documentPhase?: DocumentPhase<T, K, Meta, ExcludedFields>;
+  subtasks?: TodoSubtasks;
+  
+  // Browser/document properties
+  bgColor?: string;
+  documentURI?: string;
+  currentScript?: string | null;
+  defaultView?: Window;
+  doctype?: DocumentType | null;
+  ownerDocument?: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  scrollingElement?: Element | null;
+  timeline?: DocumentTimeline;
+  
+  // Database specific fields
+  _attachments?: Record<string, any>;
+  _links?: Record<string, any>;
+  _etag?: string;
+  _local?: boolean;
+  _revs?: string[];
+  _source?: Record<string, any>;
+  _shards?: Record<string, any>;
+  _size?: number;
+  _version?: number;
+  _version_conflicts?: number;
+  _seq_no?: number;
+  _primary_term?: number;
+  _routing?: string;
+  _parent?: string;
+  _parent_as_child?: boolean;
+  
+  // Search/Elasticsearch fields
+  _slices?: any[];
+  _highlight?: Record<string, any>;
+  _highlight_inner_hits?: Record<string, any>;
+  _source_as_doc?: boolean;
+  _source_includes?: string[];
+  _routing_keys?: string[];
+  _routing_values?: string[];
+  _routing_values_as_array?: string[];
+  _routing_values_as_array_of_objects?: Record<string, any>[];
+  _routing_values_as_array_of_objects_with_key?: Record<string, any>[];
+  _routing_values_as_array_of_objects_with_key_and_value?: Record<string, any>[];
+  _routing_values_as_array_of_objects_with_key_and_value_and_value?: Record<string, any>[];
+  
+  // Methods
+  load?(content: any): void;
 }
 
 interface DocumentMetadata {
   characterSet: string;
   charset: string;
   compatMode: string;
-  contentType: string;
+contentType: string;
   cookie: string;
   designMode: string;
   dir: string;
@@ -151,6 +275,8 @@ interface DocumentAdditionalProps <T extends  BaseData<any>, K extends T = T, Me
 
 
 
+
+// Document interface (extends DocumentBase)
 interface Document<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -159,10 +285,18 @@ interface Document<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends DocumentBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-          DocumentMetadata,
-          DocumentStatus,
-          DocumentAdditionalProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
-{
+    DocumentMetadata,
+    DocumentStatus,
+    DocumentAdditionalProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  
+  artwork?: any[];
+  clientInformation?: ClientInformation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  supportedLanguages?: string[];
+  body?: WritableDraft<HTMLElement> | HTMLElement;
+  comments?: Comment[] | Comment;
+  selectedDocuments?: WritableDraft<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[];
+
+  // Document specific properties
   bgColor: string;
   documentURI: string;
   currentScript: string | null;
@@ -176,34 +310,6 @@ interface Document<
   filePath?: DocumentPath<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   documentData?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   isPrivate?: boolean;
-  _rev?: string;
-  _attachments?: Record<string, any>;
-  _links?: Record<string, any>;
-  _etag?: string;
-  _local?: boolean;
-  _revs?: string[];
-  _source?: Record<string, any>;
-  _shards?: Record<string, any>;
-  _size?: number;
-  _version?: number;
-  _version_conflicts?: number;
-  _seq_no?: number;
-  _primary_term?: number;
-  _routing?: string;
-  _parent?: string;
-  _parent_as_child?: boolean;
-  _slices?: any[];
-  _highlight?: Record<string, any>;
-  _highlight_inner_hits?: Record<string, any>;
-  _source_as_doc?: boolean;
-  _source_includes?: string[];
-  _routing_keys?: string[];
-  _routing_values?: string[];
-  _routing_values_as_array?: string[];
-  _routing_values_as_array_of_objects?: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key?: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key_and_value?: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key_and_value_and_value?: Record<string, any>[];
 }
 
 

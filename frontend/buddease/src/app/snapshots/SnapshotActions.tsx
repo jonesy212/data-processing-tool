@@ -1,24 +1,24 @@
 // snapshots/SnapshotActions.ts
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { BaseData, Data } from '@/app/models/data/Data';
+import { BaseDataRoot } from "@/config/BaseConfig";
+import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+import { Task } from "@/app/models/tasks/Task";
+import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { NotificationType } from '@/app/context/NotificationContext';
-import { Category } from "@/app/data_analysis/frontend/buddease/src/app/components/libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from "@/app/data_analysis/frontend/buddease/src/app/components/models/data/Data";
-import { RealtimeDataItem } from "@/app/data_analysis/frontend/buddease/src/app/components/models/realtime/RealtimeData";
-import { Task } from "@/app/data_analysis/frontend/buddease/src/app/components/models/tasks/Task";
-import { DataStoreMethods } from "@/app/data_analysis/frontend/buddease/src/app/components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import CalendarManagerStoreClass from "@/app/data_analysis/frontend/buddease/src/app/components/state/stores/CalendarManagerStore";
-import { Subscriber } from "@/app/data_analysis/frontend/buddease/src/app/users/Subscriber";
-import { SubscriberCollection } from "@/app/data_analysis/frontend/buddease/src/app/users/SubscriberCollection";
-import { CreateSnapshotsPayload, Payload } from "@/app/data_analysis/frontend/buddease/src/server/database/Payload";
+import { Subscriber } from "@/app/users/Subscriber";
+import { SubscriberCollection } from "@/app/users/SubscriberCollection";
+import { CreateSnapshotsPayload, Payload } from "@/server/database/Payload";
 import { Attachment } from "@/app/documents/Attachment/attachment";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { NotificationPosition, PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { DefaultExcludedFields } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { ActionCreatorWithPayload, createAction } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
@@ -86,11 +86,12 @@ export enum SnapshotOperationType {
 
 
 type SnapshotOperation<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = {
   // The type of operation being performed
   operationType: SnapshotOperationType;

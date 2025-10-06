@@ -1,4 +1,4 @@
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 
 // convertSnapshotsToRecord.ts

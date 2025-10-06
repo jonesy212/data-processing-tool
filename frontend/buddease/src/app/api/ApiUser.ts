@@ -5,15 +5,15 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import axiosInstance from '@/app/api/csrfToken';
 import { UserActions } from "@/app/components/users/UserActions";
 import { UserRole } from "@/app/components/users/UserRole";
-import { sendNotification } from "@/app/components/users/UserSlice";
 import Logger from "@/app/libraries/logging/Logger";
+import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import { User } from "@/app/users/User";
 import dotProp from "dot-prop";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 // Other imports remain unchanged
+import updateUI from '@/documents/editing/updateUI';
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
-import updateUI from '../documents/editing/updateUI';
 
 const API_BASE_URL = endpoints.users;
 

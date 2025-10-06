@@ -2,13 +2,13 @@ import { useStore } from '@/app/hooks/useStore';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 
-import ListGenerator, { DetailsItemCommon } from '@/app/generators/ListGenerator';
 import { NotificationData } from '@/app/components/features/support/NofiticationsSlice';
 import { UserData } from '@/app/components/users/User';
-import { Data } from '../data/Data';
-import FileData from '../data/FileData';
-import FolderData from '../data/FolderData';
-import { CommonTrackerProps, TrackerProps } from './Tracker';
+import ListGenerator, { DetailsItemCommon } from '@/app/generators/ListGenerator';
+import { Data } from '@/data/Data';
+import FileData from '@/data/FileData';
+import FolderData from '@/data/FolderData';
+import { CommonTrackerProps, TrackerProps } from '@/Tracker';
 
 const ExampleComponent: React.FC = observer(() => {
   const { trackerManager } = useStore(); // Replace with your actual store names

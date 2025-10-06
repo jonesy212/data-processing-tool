@@ -12,6 +12,7 @@ interface SmartContractInteraction {
 interface CustomTransactionProps extends SmartContractInteraction,  BaseTransaction {
   _id: string | undefined;
   date: Date | undefined;
+  title: string | null
   startDate: Date | undefined;
   endDate: Date | undefined;
   serialized: string | undefined;
@@ -128,9 +129,13 @@ function createCustomTransaction(
   transaction: Transaction,
   props: CustomTransactionProps
 ): CustomTransaction {
-  return {
-    ...(transaction as CustomTransaction),
+  // Create the base object with proper typing
+  const customTx: CustomTransaction = {
+    ...transaction,
     ...props,
+    // Ensure transactionType is properly typed
+    transactionType: transaction.transactionType,
+    title: props.title ?? null, // Add the missing title property
     isLegacy() {
       return isTransactionType(this, 0) && this.gasPrice !== null;
     },
@@ -181,9 +186,8 @@ function createCustomTransaction(
         chainId: this.chainId !== null && this.chainId !== undefined ? BigInt(this.chainId) : BigInt(0),
         getSubscriptionLevel: () => "",
         unsignedHash: this.unsignedHash ?? "",
-        // Ensure type compatibility
-        type: this.type, // This will be string literal
-        transactionType: this.transactionType // This will be number | null
+        type: this.type,
+        transactionType: this.transactionType // This now matches the interface
       });
     },
     equals(other) {
@@ -227,6 +231,9 @@ function createCustomTransaction(
       );
     },
   };
+
+  return customTx;
 }
 
 export type { CustomTransaction, SmartContractInteraction , CustomTransactionProps};
+export { createCustomTransaction }

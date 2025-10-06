@@ -1,7 +1,9 @@
+// PhaseEnums.ts
 // DevelopmentPhaseManager.tsx
+
 import { useState } from 'react';
 import React from'react';
-// PhaseEnums.ts
+
 export enum DevelopementPhaseEnum {
   Planning = 'Planning',
   Development = 'Development',

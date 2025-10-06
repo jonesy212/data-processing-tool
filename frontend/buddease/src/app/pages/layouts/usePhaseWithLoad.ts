@@ -1,5 +1,5 @@
-import { usePhaseMeta } from './usePhaseMeta';
-import { waitForLoad } from './waitForLoad';
+import { usePhaseMeta } from '@/usePhaseMeta';
+import { waitForLoad } from '@/waitForLoad';
 
 export const usePhaseWithLoad = <
     T extends BaseData<any>, 

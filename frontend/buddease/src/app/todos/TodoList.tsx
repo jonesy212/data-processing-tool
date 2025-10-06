@@ -1,9 +1,9 @@
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import axios from "axios";
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 import CommonDetails, { CommonData } from "@/app/models/CommonData";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";

@@ -1,7 +1,7 @@
 // useTagManagerSlice.ts
 import { Tag, TagOptions } from '@/app/components/models/tracker/Tag';
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
-import { RootState } from './RootSlice';
+import { RootState } from '@/RootSlice';
 
 interface TagManagerState {
   tags: Tag[];

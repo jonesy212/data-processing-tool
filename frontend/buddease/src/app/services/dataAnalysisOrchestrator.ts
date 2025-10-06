@@ -1,7 +1,7 @@
-// dataAnalysisService.ts
+// dataAnalysisOrchestrator.ts
 // // Function to initiate data analysis process
 import axiosInstance from '@/app/api/csrfToken';
-import dataProcessingService, { DataProcessing, DataProcessingResult } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataProcessingService";
+import dataProcessingService, { DataProcessing, DataProcessingResult } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataProcessingService";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 
 export const sendDataToBackend = async (data: any) => {

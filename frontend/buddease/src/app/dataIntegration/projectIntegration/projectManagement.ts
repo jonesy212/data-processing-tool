@@ -1,14 +1,14 @@
-import { Attachment } from "@/app/components/documents/Attachment/attachment";
 import {
-    ProjectAttachment,
-    ProjectEntity,
-    ProjectIncludedFields,
-    ProjectK,
-    ProjectMeta
+  ProjectAttachment,
+  ProjectEntity,
+  ProjectIncludedFields,
+  ProjectK,
+  ProjectMeta
 } from '@/app/components/models/ProjectModel';
-import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
-import { BaseData } from "@/app/models/data/Data";
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { BaseData } from '@/app/models/data/Data';
 import { Task } from "@/app/models/tasks/Task";
+import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Logger } from "./activityLogger";
 import { ProjectConversionResult, ProjectConverter } from "./projectConverter";

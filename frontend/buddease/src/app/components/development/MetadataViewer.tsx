@@ -1,8 +1,6 @@
-import React from 'react';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
+import { ExcludedFields } from '@/app/routing/Fields';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
-import { ExcludedFields } from '@/app/components/routing/Fields';
 
 // Define the StructuredMetadataViewer component
 const MetadataViewer = ({ metadata }: { metadata: UnifiedMetadata<T, K, Meta, ExcludedFields> }) => {

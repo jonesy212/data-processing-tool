@@ -1,12 +1,12 @@
 import axiosInstance from '@/app/api/csrfToken';
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
+import { DocumentData } from '@/documents/editing/DocumentBuilder';
+import { WritableDraft } from '@/state/redux/ReducerGenerator';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from 'axios';
-import { DocumentData } from '../components/documents/DocumentBuilder';
-import { WritableDraft } from '../components/state/redux/ReducerGenerator';
-import { endpoints } from './ApiEndpoints';
-import { handleApiError } from './ApiLogs';
-import headersConfig from './headers/HeadersConfig';
+import { endpoints } from '@/app/endpointConfigurations';
+import { handleApiError } from '@/app/api/ApiLogs';
+import headersConfig from '@/app/api/headers/HeadersConfig';
 
 // Define the API base URL for trading operations
 const TRADING_API_BASE_URL = endpoints.trading;
@@ -93,7 +93,7 @@ const handleTradingApiErrorAndNotify = (
       errorMessageText,
       null,
       new Date(),
-      "TradingError" as NotificationTypeEnum
+      "TradingError" as NotificationType
     );
   }
 };

@@ -1,21 +1,21 @@
 import { Exchange } from "@/app/components/crypto/Exchange";
 import { DEXEnum, ExchangeDataTypeEnum, ExchangeEnum } from "@/app/components/crypto/exchangeIntegration";
+import { Data } from '@/app/models/data/Data';
+import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
+import { DEX } from "@/app/crypto/DEX";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import useRealtimeDextData from "@/app/hooks/commHooks/useRealtimeDextData";
 import useRealtimeExchangeData from "@/app/hooks/commHooks/useRealtimeExchangeData";
-import { Data } from "@/app/components/models/data/Data";
+import { RealtimeUpdateCallback } from "@/app/hooks/commHooks/useUIRealtimeData";
 import SnapshotList, { SnapshotItem } from '@/app/snapshots/SnapshotList';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from "react-redux";
-import { DEX } from "@/app/crypto/DEX";
-import { RealtimeUpdateCallback } from "@/app/hooks/commHooks/useUIRealtimeData";
-import { CalendarEvent } from '@/app/components/state/stores/CalendarEvent';
 import { RealtimeData, RealtimeDataItem } from "./RealtimeData";
 
 import {
   BaseDataEntity
-} from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
+} from "@/config/s/BaseConfig";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
   
 

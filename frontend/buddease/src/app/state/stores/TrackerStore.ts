@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { TrackerProps } from '@/app/components/models/tracker/Tracker';
-import { RootStores } from './RootStores';
+import { RootStores } from '@/RootStores';
 
 export interface TrackerStore {
   trackers: Record<string, TrackerProps>;

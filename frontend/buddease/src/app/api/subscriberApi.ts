@@ -1,7 +1,7 @@
 // subscriberApi.ts 
 import axiosInstance from "@/app/api/csrfToken";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { Subscriber } from "@/app/users/Subscriber";
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 
 // Server-side API with ALL 6 generic parameters

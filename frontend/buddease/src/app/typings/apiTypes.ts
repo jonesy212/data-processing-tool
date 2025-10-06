@@ -1,9 +1,9 @@
 // apiTypes.ts
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { ProjectData, ProjectStatus, ProjectPriority } from '@/app/typings/projectTypes';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
+import { ProjectData, ProjectPriority, ProjectStatus } from '@/app/typings/projectTypes';
+import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 
 // -------------------- API Core Types --------------------
 export interface ApiResponse<T = any> {

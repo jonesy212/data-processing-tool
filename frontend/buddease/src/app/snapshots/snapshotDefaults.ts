@@ -1,4 +1,4 @@
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { StatusType } from "@/app/models/data/StatusType";
 
 // snapshotDefaults.ts

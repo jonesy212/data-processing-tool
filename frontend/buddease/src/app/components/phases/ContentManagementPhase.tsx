@@ -4,7 +4,7 @@ import { EditorState } from "draft-js";
 import React from "react";
 import BlogAndContentEditor from "@/app/models/content/BlogAndContentEditor";
 import ContentList from "@/app/models/content/ContentList";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import useContentManagementStore from "@/app/state/stores/ContentStore";
 import ContentType from "@/app/typings/ContentType";
 

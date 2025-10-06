@@ -4,15 +4,15 @@
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import HeadersConfig from "@/app/api/headers/HeadersConfig";
-import FileImportData from '@/app/components/documents/FileImportData';
+import FileImportData from '@/app/documents/FileImportData';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { Attachment } from '@/app/models/data/Attachment';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import { VersionData } from '../versions/VersionData';
+import { VersionData } from '@/versions/VersionData';
 import { handleApiError } from "./ApiLogs";
 
 

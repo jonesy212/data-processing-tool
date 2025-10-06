@@ -1,33 +1,33 @@
 // snapshotUtils.tsx
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { ModifiedDate } from "@/app/documents/DocType";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import useSecureSnapshotId from '@/app/hooks/useSecureSnapshotId';
 import useSecureStoreId from '@/app/hooks/useSecureStoreId';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
+import { Meta } from '@/app/models/data/dataStoreMethods';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotWithCriteria } from '@/app/snapshots';
 import {
-    Snapshot,
-    Snapshots,
-    SnapshotsArray,
-    SnapshotStoreObject,
-    SnapshotUnion,
+  Snapshot,
+  Snapshots,
+  SnapshotsArray,
+  SnapshotStoreObject,
+  SnapshotUnion,
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreProps, useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
+import { Subscriber, SubscriberCallback } from "@/app/subscribers/Subscriber";
 import { SubscriberCallbackType, Subscription } from "@/app/subscriptions/Subscription";
 import { getSubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
-import { Subscriber, SubscriberCallback } from "@/app/users/Subscriber";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useNotification } from "@/context/NotificationContext";
 import { IHydrateResult } from "mobx-persist";
-import { Meta } from '@/app/models/data/dataStoreMethods';
 
 function isHydrateResult<T>(result: any): result is IHydrateResult<T> {
   return (result as IHydrateResult<T>).then !== undefined;
@@ -568,7 +568,7 @@ function isSnapshotDataType<
     return 'structuredMetadata' in data || 'keys' in data;
   }
 
-  return false; // Not a valid SnapshotDataType<T, K>
+  return false; // Not a valid SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 }
 
 function isSnapshot<
@@ -794,12 +794,12 @@ export const snapshot = snapshotApi.getSnapshot(
 );
 
 export {
-    castToSnapshot, convertToSnapshotArray, findCorrectSnapshotStore,
-    isArrayOfTypeT, isBaseData, isHydrateResult, isSnapshot,
-    isSnapshotConfig, isSnapshotContainer, isSnapshotData,
-    isSnapshotDataType, isSnapshotOfType, isSnapshotStoreConfig,
-    isSnapshotStoreCoreData, isSnapshotUnionBaseData,
-    isSnapshotWithCriteria, isSubscriberCallback
+  castToSnapshot, convertToSnapshotArray, findCorrectSnapshotStore,
+  isArrayOfTypeT, isBaseData, isHydrateResult, isSnapshot,
+  isSnapshotConfig, isSnapshotContainer, isSnapshotData,
+  isSnapshotDataType, isSnapshotOfType, isSnapshotStoreConfig,
+  isSnapshotStoreCoreData, isSnapshotUnionBaseData,
+  isSnapshotWithCriteria, isSubscriberCallback
 };
 
 export const snapshots = snapshotApi.getSnapshots(category)

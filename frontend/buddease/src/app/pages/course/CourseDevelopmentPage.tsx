@@ -1,6 +1,6 @@
 // CourseDevelopmentPage.tsx
 import { fetchDataWithToken, useAuth } from "@/app/components/auth/AuthContext";
-import { Data } from "@/app/components/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import SnapshotStore, {
     Snapshot,
 } from "@/app/snapshots/SnapshotStore";

@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { readServerCache, writeServerCache } from '@/app/components/lib/cache/server/CacheManager';
 import Docxtemplater from "docxtemplater";
 import PizZip from "pizzip";
-import { DocumentOptions } from '@/app/components/documents/DocumentOptions';
+import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
-import { BaseData } from "@/app/components/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 
 export async function GET(
   request: NextRequest,

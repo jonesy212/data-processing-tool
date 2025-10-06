@@ -1,22 +1,26 @@
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData } from '@/app/models/data/Data';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { BrainstormingSettings } from "@/app/interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "@/app/interfaces/settings/CollaborationPreferences";
 import { TeamBuildingSettings } from "@/app/interfaces/settings/TeamBuildingSettings";
 import { Project } from "@/app/models/projects/Project";
 import { User } from "@/app/users/User";
-import { Data } from "@/app/data/Data";
-import { Progress } from "@/app/tracker/ProgressBar";
+import { Data } from "@/app/models/data/Data";
+import { Progress } from "@/app/models/tracker/ProgressBar";
 import { Member } from "./TeamMembers";
 import { CommonData } from "@/app/models/CommonData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
-interface TeamData<
-  T extends BaseDataEntity = BaseDataEntity,
+interface TeamData<  
+T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-> extends CommonData<T, K>, Partial< BaseData<any>> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends CommonData<T, K>, 
+  Partial<BaseData<any>> {
   id: number | string;
   teamName: string
   description?: string;
@@ -70,6 +74,7 @@ const teamData: TeamData<StringData, string> = {
   leader: null,
   progress: null,
   color: "",
+  date: new Date(),
   collaborationTools: {
     audio: false,
     video: false,

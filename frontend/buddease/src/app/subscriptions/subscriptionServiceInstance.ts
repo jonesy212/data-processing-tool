@@ -1,12 +1,9 @@
-import { BaseData } from '@/app/components/models/data/Data';
-import { determineSubscriberType } from "@/app/subscriptions/SubscriptionLevel";
-import { getSubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
+import { BaseData } from '@/app/models/data/Data';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { subscriptionServiceInstance } from "@/app/hooks/dynamicHooks/dynamicHooks";
-import { Data } from "@/app/models/data/Data";
-import { Subscriber } from "@/app/users/Subscriber";
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { determineSubscriberType } from "@/app/subscriptions/SubscriptionLevel";
 import { Subscription } from "./Subscription";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { SubscriberCollection } from '@/app/users/SubscriberCollection'
  // Helper function to generate a unique event name based on user and snapshot
 const getEventName = (userId: string, snapshotId: string) => `${userId}:${snapshotId}`;
 

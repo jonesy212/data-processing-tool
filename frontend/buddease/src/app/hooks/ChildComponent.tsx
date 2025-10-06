@@ -1,6 +1,6 @@
+import { BrandingSettings } from '@/app/projects/branding/BrandingSettings';
 import { Router } from 'next/router';
 import React from 'react';
-import { BrandingSettings } from '../projects/branding/BrandingSettings';
 
 interface ChildComponentProps {
   router: Router // Update with the appropriate type for router

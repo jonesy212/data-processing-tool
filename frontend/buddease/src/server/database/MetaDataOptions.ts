@@ -1,33 +1,33 @@
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { dynamicMeetingMetadata, MeetingMetadata } from '@/app/components/calendar/ScheduledData';
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { SharedRelationshipData } from '@/app/components/models/data/Data';
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { SharedRelationshipData } from '@/app/models/data/Data';
+import { K, T } from '@/app/models/data/dataStoreMethods';
 import { FileMetadata } from '@/app/components/models/file/FileManager';
 import { Task } from '@/app/components/models/tasks/Task';
-import { TransactionData } from '@/app/components/payment/Transaction';
-import { PhaseMeta } from '@/app/components/phases/Phase';
-import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
+import { TransactionData } from '@/app/payment/Transaction';
+import { PhaseMeta } from '@/app/phases/Phase';
+import TodoImpl from '@/app/todos/Todo';
+import { CoreMetadata, SharedMetadata } from '@/config/metadata/MetadataHooks';
+import { MetadataEntriesType, MetadataEntry, projectMetadata, ProjectMetadata, StructuredMetadata, VideoMetadata } from '@/config/StructuredMetadata';
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import TodoImpl from '@/app/components/todos/Todo';
+import { initialState, Snapshot } from '@/app/snapshots/Snapshot';
+import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
+import { data, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
+import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
+import { category } from '@/app/utils/snapshotUtils';
 import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
 import { default as Version, version, versionData, default as VersionImpl } from '@/app/versions/Version';
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { CoreMetadata, SharedMetadata } from '@/app/configs/metadata/createMetadataState';
-import { MetadataEntriesType, MetadataEntry, projectMetadata, ProjectMetadata, StructuredMetadata, VideoMetadata } from '@/app/configs/StructuredMetadata';
-import { useMeta } from '@/config/useMeta';
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { initialState, Snapshot } from '@/app/snapshots';
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
-import { data, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { category } from '@/app/utils/snapshotUtils';
 import { baseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { useMeta } from '@/config/useMeta';
 import { SchemaField } from '@/server/database/SchemaField';
-import { AppStructurePermissions } from '../appStructure/AppStructure';
-import { PriorityTypeEnum } from './../../components/models/data/StatusType';
-import { AllStatus } from './../../components/state/stores/DetailsListStore';
-import { User } from './../../components/users/User';
+import { AppStructurePermissions } from '@/appStructure/AppStructure';
+import { PriorityTypeEnum } from '@/models/data/StatusType';
+import { AllStatus } from '@/state/stores/DetailsListStore';
+import { User } from '@/users/User';
 
 export type BaseAudit<T = any, K = any> = AuditEntry<T, K, StructuredMetadata<T, K>>;
 
@@ -84,8 +84,15 @@ interface AppMetadata<
 }
 
 // Version-related properties
-interface VersionMetadata<T extends BaseDataEntity, K extends T> {
-  version?: string | number | Version<T, K> | null;
+interface VersionMetadata<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  version?: string | number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   versionData?: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   latestVersion?: Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "timestamp" | "author" | "schema">;
   lastUpdated?: Date | VersionHistory<T, K>;
@@ -234,6 +241,9 @@ type UnifiedMetadata<
   timestamp?: string | number | Date;
   revisionNotes?: string;
   transformed?: boolean;
+  count?: number;
+  generatedAt?: Date;
+  dataSource?: string;
 };
 
 interface UnifiedMetaDataOptions<
@@ -609,8 +619,8 @@ function transformProjectToUnifiedMetadata<
 }
 
 export type {
-  AdditionalMetaDataOptions, AppMetadata, BaseMetadata, BaseMetaDataOptions, ConfigMetadata, MediaMetadata, MyDataType, ProjectMetaDataOptions,
-  SnapshotMetaDataOptions, StatusMetadata, TaskMetadata, UnifiedMetadata, UnifiedMetaDataOptions, VersionMetadata
+    AdditionalMetaDataOptions, AppMetadata, BaseMetadata, BaseMetaDataOptions, ConfigMetadata, MediaMetadata, MyDataType, ProjectMetaDataOptions,
+    SnapshotMetaDataOptions, StatusMetadata, TaskMetadata, UnifiedMetadata, UnifiedMetaDataOptions, VersionMetadata
 };
 
 

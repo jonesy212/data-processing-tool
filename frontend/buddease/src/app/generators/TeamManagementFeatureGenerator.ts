@@ -1,5 +1,5 @@
-import { generateApiCode } from './ApiCodeGenerator'; // Import the correct type definition
-import ApiCodeOptions from './ApiCodeOptions';
+import { generateApiCode } from '@/ApiCodeGenerator'; // Import the correct type definition
+import ApiCodeOptions from '@/ApiCodeOptions';
 
 // Function to generate team management feature code
 const generateTeamManagementFeature = (featureName: string, apiBaseUrl: string) => {
@@ -18,7 +18,7 @@ const generateTeamManagementFeature = (featureName: string, apiBaseUrl: string) 
     // ${featureName}Component.tsx
     import React, { useState } from "react";
     import { teamManagementService } from "./TeamManagementApi";
-    import { generateApiCode } from './ApiCodeGenerator';
+    import { generateApiCode } from '@/ApiCodeGenerator';
 
     const ${featureName}Component: React.FC = () => {
       const [teamName, setTeamName] = useState("");

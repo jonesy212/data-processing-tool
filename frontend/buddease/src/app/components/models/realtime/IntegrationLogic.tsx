@@ -1,3 +1,8 @@
+import {
+  Label,
+  label,
+  labels,
+} from "@/app/branding/BrandingSettings";
 import Calendar, { CommonCalendarProps } from "@/app/calendar/Calendar";
 import { month } from "@/app/components/calendar/CalendarMonth";
 import Milestone, {
@@ -10,14 +15,9 @@ import { ContentPost } from "@/app/components/models/content/ContentPost";
 import { AttendancePredictionResult } from "@/app/components/models/data/CalendarEventAttendancePrediction";
 import { Task } from "@/app/components/models/tasks/Task";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import TaskManagementManager from "@/app/projects/TaskManagementPhase";
-import {
-  Label,
-  label,
-  labels,
-} from "@/app/components/projects/branding/BrandingSettings";
 import { NotificationContextProps } from "@/app/context/NotificationContext";
 import { BaseData } from "@/app/data/Data";
+import TaskManagementManager from "@/app/projects/TaskManagementPhase";
 import { Resource, selectSelectedProject } from "@/app/state/redux/slices/CollaborationSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { rootStores } from "@/app/state/stores/RootStores";

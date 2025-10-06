@@ -1,8 +1,8 @@
-import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import React, { createContext, useContext, useState } from "react";
 import { Member } from "@/app/components/models/teams/TeamMembers";
-import { Project } from "@/app/components/projects/Project";
+import { PriorityTypeEnum } from "@/app/models/data/StatusType";
+import { Project } from "@/app/projects/Project";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
+import React, { createContext, useContext, useState } from "react";
 
 // Define the type for calendar data
 type SimpleCalendarEvent = {

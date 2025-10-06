@@ -7,7 +7,7 @@ import DetailsList from "@/app/components/lists/DetailsList";
 import {
     SupportedData,
 } from "@/app/models/CommonData";
-import { Data } from "@/app/components/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import DetailsProps from "@/app/components/models/data/Details";
 import DetailsListItem from "@/app/components/models/data/DetailsListItem";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";

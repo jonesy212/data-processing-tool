@@ -1,32 +1,32 @@
 // Task.ts
 import { ScheduledData } from "@/app/components/calendar/ScheduledData";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import { SharedDetails } from '@/app/components/models/data/Details';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import { PhaseData, PhaseMeta } from "@/app/components/phases/Phase";
-import { Permission } from '@/app/components/users/Permission';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { PhaseData, PhaseMeta } from "@/app/models/phases/Phase";
+import { SharedMetadata } from "@/app/shared/SharedMetadata";
+import { Permission } from '@/app/users/Permission';
 import { User } from "@/app/users/User";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { SharedMetadata } from "@/config/metadata/MetadataHooks";
 
-import { BaseEntity } from '@/app//components/routing/FuzzyMatch';
-import { EventManager } from "@/app/@/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import TodoImpl from '@/app/components/todos/Todo';
+import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
 import { BaseData } from "@/app/data/Data";
 import { K, T } from "@/app/data/dataStoreMethods";
 import CommonDetails, { SupportedData } from "@/app/models/CommonData";
 import { PriorityTypeEnum, TaskStatus } from "@/app/models/data/StatusType";
 import { Phase } from "@/app/phases/Phase";
+import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot, TagsRecord } from "@/app/snapshots";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
+import TodoImpl from '@/app/todos/Todo';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { AllTypes } from "@/app/typings/PropTypes";
+import { VideoData } from "@/app/typings/videoTTypes";
 import { Idea } from "@/app/users/Ideas";
-import { VideoData } from "@/app/video/Video";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { TaskMetadata, UnifiedMetaDataOptions } from '@/configs/database/MetaDataOptions';
 import { AppMetadata } from "@/server/database/MetaDataOptions";
-import { TaskMetadata, UnifiedMetaDataOptions } from './../../../configs/database/MetaDataOptions';
 
 export type TaskData = BaseData<any, any, StructuredMetadata<any, any>, Attachment>;
  
@@ -81,18 +81,18 @@ interface Task<
   estimatedHours?: number | null;
   actualHours?: number | null;
   completionDate?: Date | null;
-  dependencies?: Task<T, K>[] | null;
+  dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
   previouslyAssignedTo: User[];
   done: boolean;
   data: TaskData | undefined;
   [Symbol.iterator]?(): Iterator<any, any, undefined>;
   source: "user" | "system";
   some?: (
-    callbackfn: (value: Task<T, K>, index: number, array: Task<T, K>[]) => unknown,
+    callbackfn: (value: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, index: number, array: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => unknown,
     thisArg?: any
   ) => boolean;
   subtasks?: Array<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | TodoImpl<T, K, Meta, ExcludedFields>> | undefined;
-  details?: DetailsItem<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined;
+  details?: DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   startDate: Date | undefined;
   endDate: Date | undefined;
   isActive: boolean;
@@ -104,7 +104,7 @@ interface Task<
   videoUrl?: string;
   userId?: number; 
   query?: string; 
-  getData: () => Promise<Task<T, K>>
+  getData: () => Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   // New Properties
 }
 
@@ -115,11 +115,18 @@ export interface TaskEntityExtended extends TaskEntity {
 }
 
 // using commong detais we genrate detais for components by mapping through the objects.
-const TaskDetails = <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>({
+const TaskDetails = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>({
   task,
   completed,
 }: {
-  task: Task<T, K>;
+  task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   completed: boolean;
 }) => (
   <CommonDetails
@@ -162,7 +169,7 @@ const TaskDetails = <T extends BaseData<any>, K extends T = T, Meta extends Stru
 );
 
 // Define the tasks data source as an object where keys are task IDs and values are task objects
-const tasksDataSource: Record<string, Task<T, K>> = {
+const tasksDataSource: Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
   "1": {
     taskId: "",
     metadataEntries: {},
@@ -200,7 +207,7 @@ const tasksDataSource: Record<string, Task<T, K>> = {
     done: false,
     data: {} as TaskData,
     source: "user",
-    some: (callbackfn: (value: Task<T, K>, index: number, array: Task<T, K>[]) => unknown, thisArg?: any) => false,
+    some: (callbackfn: (value: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, index: number, array: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => unknown, thisArg?: any) => false,
     startDate: new Date(),
     endDate: new Date(),
     isActive: true,
@@ -316,7 +323,7 @@ const tasksDataSource: Record<string, Task<T, K>> = {
     done: false,
     data: {} as TaskData,
     source: "system",
-    some: (callbackfn: (value: Task<T, K>, index: number, array: Task<T, K>[]) => unknown, thisArg?: any) => false,
+    some: (callbackfn: (value: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, index: number, array: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => unknown, thisArg?: any) => false,
     startDate: new Date(),
     endDate: new Date(),
     isActive: true,
@@ -398,7 +405,7 @@ export type { Task };
 
 // Dynamically create TaskMetadata based on the Task interface
 export const taskMetadata = <T extends BaseData<any>, K extends T = T>(
-  task: Task<T, K>
+  task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): TaskMetadata<T, K> => {
   return {
     subtasks: task.dependencies || [],
@@ -422,9 +429,9 @@ export const taskMetadata = <T extends BaseData<any>, K extends T = T>(
 
 
 const createTask = <T extends BaseData<any>, K extends T = T>(
-  taskData: Partial<Task<T, K>>
-): Task<T, K> => {
-  const defaultTask: Task<T, K> = {
+  taskData: Partial<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+): Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+  const defaultTask: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     id: "default-id",
     title: "New Task",
     description: "Task Description",
@@ -467,7 +474,7 @@ const createTask = <T extends BaseData<any>, K extends T = T>(
   return {
     ...defaultTask,
     metadata: taskMetadata(defaultTask), // Dynamically create metadata
-  } as Task<T, K>;
+  } as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 
 

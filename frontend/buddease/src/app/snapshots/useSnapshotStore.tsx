@@ -5,10 +5,10 @@ import {
     SnapshotConfig,
 } from "@/app/snapshots/SnapshotConfig";
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
-import { createBasicSnapshot, enhanceSnapshotWithMethods, createCompleteSnapshot } from './snapshotUtils';
+import { createBasicSnapshot, enhanceSnapshotWithMethods, createCompleteSnapshot } from '@/snapshotUtils';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -33,7 +33,7 @@ import {
 import useSubscription from "@/app/hooks/useSubscription";
 import { SnapshotLogger } from "@/app/libraries/logging/Logger";
 import { Content } from "@/app/models/content/AddContent";
-import { BaseData, Data, DataEntity, DataK, DataMeta, DataExcludedFields } from "@/app/models/data/Data";
+import { BaseData, Data, DataEntity, DataK, DataMeta, DataExcludedFields } from '@/app/models/data/Data';
 import {
     ActivityActionEnum,
     ActivityTypeEnum,
@@ -55,14 +55,14 @@ import { Member } from "@/app/models/teams/TeamMembers";
 import {
     DataStoreMethods,
     DataStoreWithSnapshotMethods,
-} from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+} from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import {
     DataStore,
     EventRecord
 } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Project, ProjectData, ProjectType } from "@/app/models/projects/Project";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
-import { triggerOnSnapshot } from './snapshotTrigger';
+import { triggerOnSnapshot } from '@/snapshotTrigger';
 
 import {
     NotificationContextType,
@@ -74,7 +74,7 @@ import {
     addNotification,
     NotificationData,
 } from "@/app/state/redux/slices/NofiticationsSlice";
-import { Subscriber } from "@/app/users/Subscriber";
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import UserRoles from "@/users/UserRoles";
 import {
     logActivity,
@@ -96,27 +96,27 @@ import { CreateSnapshotsPayload, Payload } from "@/app/server/database/Payload";
 import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { AttachmentType } from '@/app/components/documents/NoteData';
 import { BaseDataEntity, DefaultExcludedFields, IncludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { convertSubscriptionPayloadToSubscriber } from './convertSubscriptionPayloadToSubscriber';
+import { convertSubscriptionPayloadToSubscriber } from '@/convertSubscriptionPayloadToSubscriber';
 import { createSnapshotInstance } from "./defaultSnapshotBuilder";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { sortByTimestamp } from "./handleSnapshotOperation";
 import { SnapshotActions } from "./SnapshotActions";
-import { SnapshotContainer } from './SnapshotContainer';
+import { SnapshotContainer } from '@/SnapshotContainer';
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import { delegate } from "./snapshotHandlers";
 import SnapshotStore, { U } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { InitializedDataStore } from './SnapshotStoreOptions';
-import { SnapshotContext } from './SnapshotSubscriberManagement';
+import { InitializedDataStore } from '@/SnapshotStoreOptions';
+import { SnapshotContext } from '@/SnapshotSubscriberManagement';
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
-import { useSnapshotOperations } from './operations/useSnapshotOperations';
+import { useSnapshotOperations } from '@/operations/useSnapshotOperations';
 import { useSnapshotSubscriptions } from '@/app/subscriptions/useSnapshotSubscriptions';
 import { useSnapshotNotifications } from '@/app/hooks/useSnapshotNotifications';
-import { snapshotValidators } from '../utils/snapshotValidators';
+import { snapshotValidators } from '@/utils/snapshotValidators';
 import { useEventSystem } from '@/app/hooks/useEventSystem';
 import { useEmergencyShutdown } from '@/app//dataIntegration/errorRecovery';
 

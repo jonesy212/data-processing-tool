@@ -1,14 +1,14 @@
 // ExchangeComponent.tsx
 import { ExchangeDataTypeEnum, ExchangeEnum } from "@/app/components/crypto/exchangeIntegration";
-import { Data } from "@/app/components/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { SnapshotStore } from "@/app/components/snapshots/SnapshotStore";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CalendarEvent } from "@/app/state/stores/CalendarEvent";
 import { useEffect } from "react"; // Import useEffect here
 import { useDispatch } from 'react-redux';
-import { ExchangeData } from './../../../../components/models/data/ExchangeData';
-import { processExchangeData } from './../../../../components/models/data/fetchExchangeData';
-import useRealtimeExchangeData from './.@/app/hooks/commHooks/useRealtimeExchangeData';
+import { ExchangeData } from '@/components/models/data/ExchangeData';
+import { processExchangeData } from '@/components/models/data/fetchExchangeData';
+import useRealtimeExchangeData from '@/.@/app/hooks/commHooks/useRealtimeExchangeData';
 
 const ExchangeComponent = () => {
   const dispatch = useDispatch();

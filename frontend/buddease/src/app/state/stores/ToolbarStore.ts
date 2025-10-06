@@ -1,12 +1,12 @@
 import { action, makeAutoObservable } from 'mobx';
 
-import { ParticipantData } from '@/app/pages/management/ParticipantManagementPage';
-import { useDispatch } from 'react-redux';
 import { ToolbarActions } from '@/app/actions/ToolbarActions';
 import { Theme } from '@/app/components/libraries/ui/theme/Theme';
 import { User } from '@/app/components/users/User';
-import featureStore from '../featureStateManagement';
-import { AlignmentOptions, ToolbarState } from '../redux/slices/toolbarSlice';
+import { ParticipantData } from '@/app/pages/management/ParticipantManagementPage';
+import featureStore from '@/featureStateManagement';
+import { AlignmentOptions, ToolbarState } from '@/redux/slices/toolbarSlice';
+import { useDispatch } from 'react-redux';
 const dispatch = useDispatch();
 
 export class ToolbarStore {

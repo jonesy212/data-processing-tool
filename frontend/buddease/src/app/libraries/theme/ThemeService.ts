@@ -1,13 +1,13 @@
 // ThemeService.ts
 
-import { endpoints } from "@/app/api/ApiEndpoints";
-import { DocumentFormattingOptions } from "@/app/components/documents/ DocumentFormattingOptionsComponent";
-import { useStore } from "@/app/hooks/useStore";
-import { BrandingSettings } from "@/app/components/projects/branding/BrandingSettings";
-import { rootStores } from "@/app/state/stores/RootStores";
-import { ColorSwatchProps } from "@/app/components/styling/ColorPalette";
-import { action, observable, runInAction } from "mobx";
 import { themeChangeAction } from "@/app/actions/themeChangeAction";
+import { endpoints } from "@/app/api/ApiEndpoints";
+import { BrandingSettings } from "@/app/branding/BrandingSettings";
+import { DocumentFormattingOptions } from "@/app/components/documents/ DocumentFormattingOptionsComponent";
+import { ColorSwatchProps } from "@/app/components/styling/ColorPalette";
+import { useStore } from "@/app/hooks/useStore";
+import { rootStores } from "@/app/state/stores/RootStores";
+import { action, observable, runInAction } from "mobx";
 
 
 

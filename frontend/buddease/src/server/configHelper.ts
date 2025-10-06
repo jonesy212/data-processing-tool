@@ -20,7 +20,7 @@ export function getEnvironmentConfig(): AppConfig {
     apiKey: process.env.API_KEY || '',
     appId: process.env.APP_ID || '',
     appDescription: process.env.APP_DESCRIPTION || '',
-    dataPath: process.env.DATA_PATH || './data',
+    dataPath: process.env.DATA_PATH || '@/data',
     baseURL: process.env.API_BASE_URL || 'https://api.example.com'
   };
 

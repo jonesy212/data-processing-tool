@@ -1,6 +1,6 @@
 import { VersionData } from '@/app/versions/VersionData';
 import { Version } from '@/app/versions/Version';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import VersionImpl from "@/app/versions/Version";
 
 

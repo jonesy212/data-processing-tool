@@ -3,14 +3,14 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { DataStore, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import useDocumentStore from "@/app/state/stores/DocumentStore";
-import { Subscriber } from '../users/Subscriber';
+import { Subscriber } from '@/users/Subscriber';
 import { Snapshot, Snapshots } from "./LocalStorageSnapshotStore";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { BaseData } from '../data/Data';
+import { BaseData } from '@/data/Data';
 
 // Example functions for fetching initial snapshot data and current data
 const fetchInitialSnapshotData = async  <

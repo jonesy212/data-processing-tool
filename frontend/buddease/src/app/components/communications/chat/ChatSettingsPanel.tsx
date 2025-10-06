@@ -1,6 +1,6 @@
 import React from "react";
 
-import userSettings from '@/app/configs/UserSettings';
+import userSettings from '@/config//UserSettings';
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/app/components/auth/AuthContext';
 import { UserData } from '@/app/components/users/User';

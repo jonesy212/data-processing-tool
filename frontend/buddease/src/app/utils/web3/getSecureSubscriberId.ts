@@ -1,7 +1,7 @@
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { BaseData } from '@/app/models/data/Data';
 import { sanitizeData } from "@/app/security/SanitizationFunctions";
-import { Subscriber } from "@/app/users/Subscriber";
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 // getSecureSubscriberId.ts
 export const getSecureSubscriberId = <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(

@@ -1,29 +1,29 @@
 // getCurrentSnapshotConfigOptions.ts
 
 import { CategoryProperties } from "@/app/app/pages/personas/ScenarioBuilder";
-import { DataStoreMethods } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { createSnapshotStoreConfig } from '@/app/snapshots/snapshotStoreConfigInstance';
 import { InitializedDelegate } from '@/app/snapshots/SnapshotStoreOptions';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { DataWithPriority, DataWithTimestamp, DataWithVersion } from "@/app/utils/versionUtils";
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { RealtimeDataItem } from '../models/realtime/RealtimeData';
-import { SnapshotContainerType } from './SnapshotContainer';
+import { SnapshotContainerType } from '@/SnapshotContainer';
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 import {
-  ConfigureSnapshotStorePayload,
-  Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData,
-  SnapshotStoreProps,
-  SnapshotWithCriteria
-} from './index';
+    ConfigureSnapshotStorePayload,
+    Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData,
+    SnapshotStoreProps,
+    SnapshotWithCriteria
+} from '@/index';
 
 
 class InitializedDelegateClass<

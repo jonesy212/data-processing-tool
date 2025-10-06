@@ -1,10 +1,10 @@
-import React, { Fragment } from "react";
 import { CommonCalendarProps } from '@/app/components/calendar/Calendar';
-import { Project } from '../projects/Project';
-import { RootState } from '../state/redux/slices/RootSlice';
-import MonthView from './CalendarMonthView';
-import { YearInfo } from './CalendarYear';
-import { Month } from './Month';
+import { Project } from '@/app/models/projects/Project';
+import MonthView from '@/CalendarMonthView';
+import { YearInfo } from '@/CalendarYear';
+import { Month } from '@/Month';
+import { RootState } from '@/state/redux/slices/RootSlice';
+import React, { Fragment } from "react";
 
 interface YearViewProps extends CommonCalendarProps {
   year: YearInfo[];

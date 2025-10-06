@@ -1,8 +1,8 @@
-import { Snapshot } from "@/app/snapshots";
-import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/s/BaseConfig";
+import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { subscribeToSnapshot, subscribeToSnapshots } from "./snapshotHandlers";
 import { SnapshotStoreOptions } from "./SnapshotStoreOptions";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
 
 class SnapshotManagerOptions<T extends BaseDataEntity,
     K extends T = T,

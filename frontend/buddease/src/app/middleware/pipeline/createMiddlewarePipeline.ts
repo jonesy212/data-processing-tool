@@ -1,5 +1,5 @@
 // pipeline.ts
-import { MiddlewareFunction, MiddlewareNext } from '../types';
+import { MiddlewareFunction, MiddlewareNext } from '@/types';
 
 export const createMiddlewarePipeline = (
   middlewares: MiddlewareFunction[]

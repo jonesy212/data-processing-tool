@@ -1,17 +1,15 @@
 import * as apiFile from '@/api/ApiFiles';
 import SecurityAPI from '@/app/api/SecurityAPI';
-import { FileType } from "@/app/components/documents/Attachment/attachment";
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import { SecuritySettings } from '@/app/components/settings/SecuritySettings';
-import { Permission } from "@/app/components/users/Permission";
-import { versionData } from '@/app/versions/Version';
+import { Content } from '@/app/components/models/content/AddContent';
+import { SecuritySettings } from '@/app/settings/SecuritySettings';
+import { Permission } from "@/app/users/Permission";
+import { FileType } from "@/app/documents/Attachment/attachment";
+import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { VersionData } from '@/app/versions/VersionData';
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { Content } from '@/app/components/models/content/AddContent';
-import { BaseDataEntity, BaseDataRoot, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
-import { DataVersions } from '../DataVersionsConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { DataVersions } from '@/configs/DataVersionsConfig';
 import getAppPath from "./appPath";
-import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 
 const userId = useSecureUserId()
 

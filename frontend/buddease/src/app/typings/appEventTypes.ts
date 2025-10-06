@@ -1,16 +1,15 @@
 import { BaseCustomEvent, CustomEventExtension } from '@/app/components/event/BaseCustomEvent';
 import { BaseEvent, CustomEventType, SystemEvent } from '@/app/components/event/BaseEvent';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { Snapshot } from "@/app/snapshots";
+import { EventManager } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { Snapshot, SnapshotData } from "@/app/snapshots";
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { SnapshotOperationType } from "@/app/snapshots/SnapshotActions";
+import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
 import SnapshotStore, { handleSnapshotEvent } from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { EventAttendance } from '../calendar/AttendancePrediction';
-import { EventManager } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { SnapshotData } from "@/app/snapshots";
-import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
-import { SubscriberCollection } from "@/app/users/SubscriberCollection";
+import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
+import { EventAttendance } from '@/calendar/AttendancePrediction';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "./BaseConfig";
 
 interface SharedSnapshotEvent<

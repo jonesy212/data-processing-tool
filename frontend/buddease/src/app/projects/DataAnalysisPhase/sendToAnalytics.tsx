@@ -1,6 +1,6 @@
 import axiosInstance from '@/app/api/csrfToken';
-import { BaseData } from '@/app/components/models/data/Data';
-import { Snapshot } from "@/app/snapshots";
+import { BaseData } from '@/app/models/data/Data';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 const sendToAnalytics = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(eventName: string, eventData: Record<string, any>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {

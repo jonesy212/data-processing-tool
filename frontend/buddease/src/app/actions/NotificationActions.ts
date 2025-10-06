@@ -1,13 +1,12 @@
 // notification/NotificationActions.ts
 import { createAction } from "@reduxjs/toolkit";
-import { NotificationData } from "./NofiticationsSlice";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from "@/app/snapshots/snapshotStoreConfigInstance";
 import {
   BaseDataEntity,
   DefaultExcludedFields,
   DefaultMeta,
 } from "@/config/BaseConfig";
-
-import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields } from "./snapshotStoreConfigInstance";
 
 // Create a type alias for your notification data
 type AppNotificationData = NotificationData<

@@ -2,32 +2,33 @@
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { isCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";
+import { AppEntity, AppExcludedFields, AppK, AppMeta, snapshotStoreConfigInstance } from '@/snapshotStoreConfigInstance';
 import SnapshotStore from "./SnapshotStore";
-import { AppEntity, AppExcludedFields, AppK, AppMeta, snapshotStoreConfigInstance } from './snapshotStoreConfigInstance';
+import { Attachment } from "@/app/documents/Attachment/attachment";
 
 import { Task, TaskData } from "@/app/components/models/tasks/Task";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import {
-    PriorityTypeEnum,
-    ProjectPhaseTypeEnum,
-    StatusType,
-    SubscriberTypeEnum
+  PriorityTypeEnum,
+  ProjectPhaseTypeEnum,
+  StatusType,
+  SubscriberTypeEnum
 } from "@/app/models/data/StatusType";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import {
-    UpdateSnapshotPayload
+  UpdateSnapshotPayload
 } from "@/app/server/database/Payload";
 import createSnapshotOptions from "@/app/snapshots/createSnapshotOptions";
 import { SnapshotEvents } from "@/app/snapshots/SnapshotEvents";
-import { Subscriber } from "@/app/users/Subscriber";
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import {
-    NotificationType
+  NotificationType
 } from "@/context/NotificationContext";
 import {
-    CustomSnapshotData,
-    SnapshotData
+  CustomSnapshotData,
+  SnapshotData
 } from "./SnapshotData";
 import { useSnapshotStore } from "./useSnapshotStore";
 
@@ -39,16 +40,16 @@ import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { RealtimeDataItem } from "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/models/realtime/RealtimeData";
+import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 
 import { AddReport, AddReportType } from "@/app/api/ApiReport";
 import { ChatRoom } from "@/app/calendar/CalendarSlice";
 import { Sender } from "@/app/communications/chat/Communication";
-import { SharedSnapshotProperties } from "@/app/data_analysis/frontend/buddease/src/app/components/documents/RelatedProps";
-import { BaseData } from "@/app/data_analysis/frontend/buddease/src/app/components/models/data/Data";
-import { Meta } from "@/app/data_analysis/frontend/buddease/src/app/components/models/data/dataStoreMethods";
-import { BaseEntity } from "@/app/data_analysis/frontend/buddease/src/app/components/routing/FuzzyMatch";
-import { SharedMetadata } from "@/app/data_analysis/frontend/buddease/src/app/configs/metadata/createMetadataState";
+import { SharedSnapshotProperties } from "@/app/components/documents/RelatedProps";
+import { BaseData } from '@/app/models/data/Data';
+import { Meta } from "@/app/components/models/data/dataStoreMethods";
+import { BaseEntity } from "@/app/components/routing/FuzzyMatch";
+import { SharedMetadata } from "@/config/s/metadata/createMetadataState";
 import { ModifiedDate } from "@/app/documents/DocType";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { K, T } from "@/app/models/data/dataStoreMethods";
@@ -58,17 +59,17 @@ import { ExcludedFields } from "@/app/routing/Fields";
 import { getSubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
 import { isSnapshotData } from '@/app/utils/snapshotUtils';
 import {
-    getCommunityEngagement,
-    getMarketUpdates,
-    getTradeExecutions,
+  getCommunityEngagement,
+  getMarketUpdates,
+  getTradeExecutions,
 } from "@/app/utils/trading/TradingUtils";
 import {
-    logActivity,
-    notifyEventSystem,
-    portfolioUpdates,
-    triggerIncentives,
-    unsubscribe,
-    updateProjectState,
+  logActivity,
+  notifyEventSystem,
+  portfolioUpdates,
+  triggerIncentives,
+  unsubscribe,
+  updateProjectState,
 } from "@/app/utils/web3/applicationUtils";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
@@ -78,8 +79,8 @@ import { createCompleteSnapshot } from "./createSnapshot";
 import { createSnapshot } from "./defaultSnapshotBuilder";
 import { Snapshot } from "./Snapshot";
 import {
-    snapshotContainer,
-    SnapshotContainer
+  snapshotContainer,
+  SnapshotContainer
 } from "./SnapshotContainer";
 import { SnapshotDataParams } from "./SnapshotDataParams";
 import { SnapshotOperations } from "./snapshotOperations";
@@ -868,10 +869,10 @@ const newTask: AppTask = {
 
 export { snapshotFunction, snapshots };
 export type {
-    CompatibleSnapshotData, CoreSnapshot, Result,
-    Snapshots,
-    SnapshotsArray, SnapshotsObject,
-    SnapshotStoreObject, SnapshotStoreUnion, SnapshotUnion
+  CompatibleSnapshotData, CoreSnapshot, Result,
+  Snapshots,
+  SnapshotsArray, SnapshotsObject,
+  SnapshotStoreObject, SnapshotStoreUnion, SnapshotUnion
 };
 
   

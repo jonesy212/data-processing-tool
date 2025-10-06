@@ -1,7 +1,7 @@
 // HistorySlice.ts
 // Assuming your historySlice looks something like this:
+import { HistoryItem } from '@/sagas/UndoRedoSaga';
 import { createSlice } from '@reduxjs/toolkit';
-import { HistoryItem } from '../sagas/UndoRedoSaga';
 
 interface HistoryState {
   history: HistoryItem[]; // Assuming HistoryItem is the type of items in your history

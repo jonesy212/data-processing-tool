@@ -1,15 +1,15 @@
 // chat/ChatSlice.ts
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { Channel } from "@/app/interfaces/chat/Channel";
+import { WritableDraft } from "@/app/ReducerGenerator";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+import { AllTypes } from "@/app/typings/PropTypes";
 import {
     AppUser,
     User, UserData
-} from "@/app/r";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { AllTypes } from "@/app/components/typings/PropTypes";
+} from "@/app/user/User";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { WritableDraft } from "@/app/ReducerGenerator";
-import { NotificationData } from "@/app/support/NofiticationsSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 

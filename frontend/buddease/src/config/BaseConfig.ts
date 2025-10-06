@@ -3,18 +3,18 @@ import { Category } from '@/app/components/libraries/categories/generateCategory
 import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { useSnapshot } from './../context/SnapshotContext';
+import { useSnapshot } from '@/context/SnapshotContext';
 
 import { Taggable } from '@/app/models/CommonData';
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { K, T, Meta } from "@/app/components/models/data/dataStoreMethods";
 import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, } from "./ConfigurationService";
-import { BaseMetadata } from './database/MetaDataOptions';
+import { BaseMetadata } from '@/database/MetaDataOptions';
 import { StructuredMetadata } from "./StructuredMetadata";
 import { useMeta } from "./useMeta";
 import { useMetadata } from "./useMetadata";
-import { SharedIdentifiers } from '../components/documents/RelatedProps';
+import { SharedIdentifiers } from '@/components/documents/RelatedProps';
 
 type BaseDataEntity = BaseDataRoot;
 

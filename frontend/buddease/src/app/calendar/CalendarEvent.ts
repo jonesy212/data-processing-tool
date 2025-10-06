@@ -1,16 +1,16 @@
 //CalendarEvent.ts
-import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { CommonData } from "@/app/models/CommonData";
-import { BaseData } from "@/app/components/models/data/Data";
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { BaseData } from '@/app/models/data/Data';
 import { Team } from "@/app/components/models/teams/Team";
 import { Member } from "@/app/components/models/teams/TeamMembers";
-import { Phase, PhaseData } from "@/app/components/phases/Phase";
-import { Label } from '@/app/components/projects/branding/BrandingSettings';
+import { Phase, PhaseData } from "@/app/models/phases/Phase";
+import { Label } from '@/app/branding/BrandingSettings';
 import { NotificationType } from '@/app/context/NotificationContext';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CalendarEventWithCriteria } from "@/app/pages/searchs/FilterCriteria";
-import { Snapshot, TagsRecord } from "@/app/snapshots";
+import { TagsRecord } from "@/app/snapshots";
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { CommonEvent } from "@/app/state/stores/CommonEvent";
@@ -21,8 +21,8 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { AppStructuredMetadata, AppUnifiedMetadata } from "@/web3/dAppAdapter/AppEntity";
-import { Attachment } from '../components/documents/Attachment/attachment';
+import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/utils/web3/dAppAdapter/AppEntity";
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { Attendee } from "./Attendee";
 
 

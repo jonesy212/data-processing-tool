@@ -1,6 +1,6 @@
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import Version from '../versions/Version';
+import { BaseData } from '@/app/models/data/Data';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import Version from '@/versions/Version';
 
 // ChangeLogEntry Interface
 interface ChangeLogEntry<

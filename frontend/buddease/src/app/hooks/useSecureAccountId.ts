@@ -1,8 +1,8 @@
 // useSecureAccountId.ts
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { sanitizeData } from '../security/SanitizationFunctions';
-import { TwitterIntegration } from '../socialMedia/TwitterIntegration';
+import { sanitizeData } from '@/security/SanitizationFunctions';
+import { TwitterIntegration } from '@/socialMedia/TwitterIntegration';
 
 export const useSecureAccountId = () => {
   const [accountId, setAccountId] = useState<string | null>(null); // Initialize accountId as null or string, depending on your use case

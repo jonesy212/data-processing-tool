@@ -2,7 +2,7 @@
 import React from 'react';
 
 // imports for layout and multimedia content customization components
-import LayoutCustomization from '@/app/configs/LayoutCustomization';
+import LayoutCustomization from '@/config//LayoutCustomization';
 import MultimediaContentCustomization, { MultimediaContentCustomizationProps } from '@/app/pages/content/MultimediaContentCustomization';
 import { useThemeCustomization } from '@/app/hooks/useThemeCustomization';
 import ThemeCustomization from '@/app/hooks/userInterface/ThemeCustomization';

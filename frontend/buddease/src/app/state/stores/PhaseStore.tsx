@@ -3,7 +3,7 @@ import { useNotification } from "@/app/context/NotificationContext";
 import { OnboardingPhase } from "@/app/pages/personas/UserJourneyManager";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { snapshotStore } from "@/app/snapshots/SnapshotStore";
 import { VideoData } from "@/app/video/Video";

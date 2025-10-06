@@ -1,6 +1,6 @@
 // WebLoader.jsx
 import React from 'react';
-import './WebLoader.css';
+import '@/WebLoader.css';
 
 const WebLoader = () => {
   return <div className="web-loader">Web Loader</div>;

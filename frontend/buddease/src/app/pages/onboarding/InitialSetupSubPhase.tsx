@@ -1,12 +1,12 @@
 import { useAuth } from '@/app/components/auth/AuthContext';
 import { sanitizeData, validateUserData } from '@/app/components/crypto/SanitizationFunctions';
-import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
-import React, { useEffect } from 'react';
 import { AppDevelopmentPhase } from '@/app/components/phases/AppDevelopmentPhase';
-import TempUserData from './OnboardingPhase';
-import { AxiosError } from 'axios'; // Import AxiosError
 import { User } from '@/app/components/users/User';
-import DynamicForm from '../forms/DynamicForm';
+import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import DynamicForm from '@/forms/DynamicForm';
+import { AxiosError } from 'axios'; // Import AxiosError
+import React, { useEffect } from 'react';
+import TempUserData from '@/OnboardingPhase';
 
 
 // Conversion function to convert string to TempUserData

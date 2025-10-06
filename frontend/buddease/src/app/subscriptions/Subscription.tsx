@@ -1,19 +1,19 @@
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { Snapshot } from "@/app/snapshots";
-import { SubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
-import { SubscriberCallback } from '@/app/users/Subscriber';
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 import { TriggerIncentivesParams } from "@/app/components/utils/applicationUtils";
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SubscriberCallback } from '@/app/subscribers/Subscriber';
+import { SubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
+import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 
-import { ModifiedDate } from '@/app/components/documents/DocType';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
-import { BaseData } from '@/app/components/models/data/Data';
-import { Callback } from '@/app/snapshots/subscribeToSnapshotsImplementation';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { BaseData } from '@/app/models/data/Data';
+import { ModifiedDate } from '@/app/documents/DocType';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
+import { Callback } from '@/app/snapshots/subscribeToSnapshotsImplementation';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 type FetchSnapshotByIdCallback<
   T extends BaseDataEntity,

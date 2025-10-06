@@ -6,11 +6,11 @@ import { SnapshotContext, SnapshotSubscriberManagement } from "@/app/snapshots/S
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { RealtimeDataItem } from '../models/realtime/RealtimeData';
+import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
 import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
-import { Subscriber } from '../users/Subscriber';
-import { SubscriberCollection } from '../users/SubscriberCollection';
+import { Subscriber } from '@/users/Subscriber';
+import { SubscriberCollection } from '@/users/SubscriberCollection';
 
 interface BaseEventCallbacks<
   T extends BaseDataEntity = BaseDataRoot,

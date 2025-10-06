@@ -1,5 +1,5 @@
 // SafeParseData.ts
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { sanitizeComments } from "@/app/components/crypto/SanitizationFunctions";
 import { ParsedData, parseData } from "./parseData";

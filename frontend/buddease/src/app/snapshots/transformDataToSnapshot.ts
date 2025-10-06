@@ -1,5 +1,5 @@
 // transformDataToSnapshot.ts
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { SnapshotConfig, SnapshotStoreConfig } from ".";
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";

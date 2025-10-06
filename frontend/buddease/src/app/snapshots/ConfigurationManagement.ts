@@ -1,4 +1,4 @@
-// import { BaseData, Data } from '@/app/components/models/data/Data';
+// import { BaseData, Data } from '@/app/models/data/Data';
 // import { SnapshotStoreConfig } from '@/app/snapshots';
 // import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 

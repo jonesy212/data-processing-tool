@@ -1,4 +1,4 @@
-import { RecommendedOptimization } from "@/app/components/models/data/EventPriorityClassification";
+import { RecommendedOptimization } from "@/app/models/data/EventPriorityClassification";
 
 // CalendarEventOptimizationRecommendation.ts
 interface CalendarEventOptimizationRecommendation extends RecommendedOptimization {

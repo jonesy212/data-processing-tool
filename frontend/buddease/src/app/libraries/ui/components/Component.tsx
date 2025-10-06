@@ -1,17 +1,17 @@
 
 import ProjectService from "@/app/api/ProjectService";
 import { addNotification } from "@/app/components/calendar/CalendarSlice";
-import useNotificationManagerService from "@/app/services/NotificationService";
-import { Project } from "@/app/components/projects/Project";
-import UpdatedProjectDetails from "@/app/components/projects/UpdateProjectDetails";
-import { NotificationData } from "@/app/components/support/NofiticationsSlice";
+import UpdatedProjectDetails from "@/app/projects/UpdateProjectDetails";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import {
-    NotificationTypeEnum,
-    useNotification,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { ComponentStatus, StatusType } from "@/app/models/data/StatusType";
+import { Project } from "@/app/projects/Project";
+import useNotificationManagerService from "@/app/services/NotificationService";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -40,7 +40,7 @@ export const handleAddComponent = async () => {
       "Component added successfully",
       NOTIFICATION_MESSAGES.Component.ADD_COMPONENT_SUCCESS,
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     );
   } catch (error) {
     console.error("Error adding component:", error);
@@ -50,7 +50,7 @@ export const handleAddComponent = async () => {
       "Failed to add component",
       NOTIFICATION_MESSAGES.Component.CREATE_COMPONENT_FAILURE,
       new Date(),
-      NotificationTypeEnum.OperationError
+      NotificationTypeEnum.OPERATION_ERROR
     );
   }
 };
@@ -64,7 +64,7 @@ export const handleRemoveComponent = () => {
       id: "2", // Provide a unique ID for the notification
       message: "Component removed successfully",
       createdAt: new Date(),
-      type: NotificationTypeEnum.CreationSuccess,
+      type: NotificationTypeEnum.CREATION_SUCCESS,
       updatedAt: new Date(),
       content: "",
       status: ComponentStatus.Tentative,
@@ -115,7 +115,7 @@ export const handleUpdateComponent = () => {
       id: "3",
       message: "Component updated successfully",
       createdAt: new Date(),
-      type: NotificationTypeEnum.CreationSuccess,
+      type: NotificationTypeEnum.CREATION_SUCCESS,
       updatedAt: new Date(),
       content: "",
       status: "tentative",

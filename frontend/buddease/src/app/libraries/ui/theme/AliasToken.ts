@@ -1,5 +1,5 @@
 import type * as React from 'react';
-import { DesignSystemConfig } from './MapProperties';
+import { DesignSystemConfig } from '@/MapProperties';
 
 export interface AliasProperties extends DesignSystemConfig {
     colorFillContentHover: string;

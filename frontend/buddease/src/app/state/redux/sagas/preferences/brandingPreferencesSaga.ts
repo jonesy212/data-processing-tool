@@ -1,11 +1,11 @@
 // Import necessary dependencies and constants
 import { DocumentFormattingOptions } from '@/app/components/documents/ DocumentFormattingOptionsComponent';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { UserBrandingPreferencesActions } from '@/app/configs/UserPreferencesActions';
+import { UserBrandingPreferencesActions } from '@/config//UserPreferencesActions';
 import { themeService } from '@/app/libraries/theme/ThemeService';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { all, put, takeLatest } from 'redux-saga/effects';
-import { fetchUserPreferencesSaga } from './userPreferencesSagaManager';
+import { fetchUserPreferencesSaga } from '@/userPreferencesSagaManager';
 import { ColorSwatchProps } from '@/app/components/styling/ColorPalette';
 
 

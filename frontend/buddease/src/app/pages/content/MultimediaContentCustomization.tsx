@@ -1,26 +1,26 @@
 // MultimediaContentCustomization.tsx
-import React, { useState } from "react";
-import { Button } from "antd";
-import ContentCreationPage from "./ContentCreationPage";
+import { isProject, isTask, isTodo } from "@/app/components/libraries/ui/ContentHelpers";
+import { Task } from "@/app/components/models/tasks/Task";
+import { AnimatedComponentProps } from "@/app/components/styling/AnimationsAndTansitions";
 import ColorPalette, {
   ColorSwatchProps,
 } from "@/app/components/styling/ColorPalette";
+import { Todo } from "@/app/components/todos/Todo";
+import AdapterContent from "@/app/components/web3/dAppAdapter/AdapterContent";
+import { ChildComponentProps } from "@/app/hooks/ChildComponent";
 import NavigationGenerator, {
   NavigationItem,
 } from "@/app/hooks/userInterface/NavigationGenerator";
-import AdapterContent from "@/app/components/web3/dAppAdapter/AdapterContent";
-import ContentRenderer from "@/app/libraries/ui/ContentRenderer";
-import ContentDetailsListItem from "@/app/models/content/ContentDetailsListItem";
-import { Project } from "@/app/components/projects/Project";
-import { Task } from "@/app/components/models/tasks/Task";
-import { Todo } from "@/app/components/todos/Todo";
-import { AnimatedComponentProps } from "@/app/components/styling/AnimationsAndTansitions";
-import { useNavigate, useNavigation } from "react-router-dom";
-import { isProject, isTask, isTodo } from "@/app/components/libraries/ui/ContentHelpers";
-import { ChildComponentProps } from "@/app/hooks/ChildComponent";
-import useDeviceDimensions, { DeviceDimensions } from "./DeviceDimensions";
 import { brandingSettings } from "@/app/libraries/theme/BrandingService";
 import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
+import ContentRenderer from "@/app/libraries/ui/ContentRenderer";
+import ContentDetailsListItem from "@/app/models/content/ContentDetailsListItem";
+import { Project } from "@/app/projects/Project";
+import { Button } from "antd";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ContentCreationPage from "./ContentCreationPage";
+import useDeviceDimensions, { DeviceDimensions } from "./DeviceDimensions";
 
 interface MultimediaContentCustomizationProps extends ChildComponentProps{
   // Add any necessary props here
@@ -223,4 +223,4 @@ const MultimediaContentCustomization: React.FC<
 const ExampleIcon: React.FC = () => <span>🌐</span>;
 
 export default MultimediaContentCustomization;
-export type {MultimediaContentCustomizationProps}
+export type { MultimediaContentCustomizationProps };

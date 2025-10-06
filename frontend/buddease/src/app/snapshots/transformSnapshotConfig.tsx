@@ -1,4 +1,4 @@
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 function transformToSnapshotMap<
   T extends BaseDataEntity,

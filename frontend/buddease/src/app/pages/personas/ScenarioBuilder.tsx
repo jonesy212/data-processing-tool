@@ -1,23 +1,6 @@
 import { categorizeNews } from "@/app/components/community/articleKeywords";
-import { ModifiedDate } from "@/app/components/documents/DocType";
-import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import { buildDocument } from '@/app/documents/editing/DocumentBuilderComponent';
-import {
-    getDefaultDocumentOptions,
-    getDocumentPhase,
-    mapDocumentToProjectPhase
-} from "@/app/components/documents/DocumentOptions";
-import DocumentPermissions from "@/app/components/documents/DocumentPermissions";
-import { Content } from '@/app/components/models/content/AddContent';
-import { BaseData } from '@/app/components/models/data/Data';
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { allCategories } from "@/app/models/data/DataStructureCategories";
 import { generateValidationRulesCode } from "@/server/security/validationRulesCode";
-import Version from "@/app/versions/Version";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import fs from "fs";
-import { useState } from "react";
-import PersonaTypeEnum, { PersonaBuilder } from "./PersonaBuilder";
 
 
 
@@ -517,15 +500,15 @@ const defaultCondition = async (idleTimeoutDuration: number): Promise<boolean> =
 
 
 export {
-    categorizeNews, dataVisualizationProperties, defaultCategoryProperties,
-    generateFormsComponent, generateNewsCategories,
-    generateNewsComponent, generateUserJourneyComponent,
-    generateUserJourneyMapComponent,
-    generateUserScenarioComponent, generateUserScenarioMapComponent
+  categorizeNews, dataVisualizationProperties, defaultCategoryProperties,
+  generateFormsComponent, generateNewsCategories,
+  generateNewsComponent, generateUserJourneyComponent,
+  generateUserJourneyMapComponent,
+  generateUserScenarioComponent, generateUserScenarioMapComponent
 };
 
     export type { CategoryProperties };
-
+export { dataVisualizationProperties }
 // Example usage of categories
 const newsFeedData = { /* Provide your news feed data here */ };
 const categories = categorizeNews(newsFeedData);

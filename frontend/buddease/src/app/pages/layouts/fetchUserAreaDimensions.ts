@@ -37,7 +37,7 @@ interface FetchOptions<T extends BaseData = BaseData, K extends T = T> {
   /**
    * Transformation to apply to the response
    */
-  transform?: (data: SnapshotDataType<T, K>) => any;
+  transform?: (data: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => any;
   
   /**
    * Logger instance
@@ -214,3 +214,4 @@ initializeArea();
 
 export { FetchOptions };
 export type { Area };
+

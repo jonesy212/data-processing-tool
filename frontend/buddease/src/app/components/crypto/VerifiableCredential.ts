@@ -1,7 +1,7 @@
 // VerifiableCredential.ts
 // VerifiableCredential.ts
 
-import { signCredential, verifyCredential } from './credentialUtils';
+import { signCredential, verifyCredential } from '@/credentialUtils';
 
 /**
  * VerifiableCredential class provides functionalities related to managing verifiable credentials.

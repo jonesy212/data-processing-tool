@@ -1,31 +1,31 @@
+import axiosInstance from '@/app/api/csrfToken';
+import { BaseData } from '@/app/models/data/Data';
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
-import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '@/app/components/server/database/Payload';
-import axiosInstance from '@/app/api/csrfToken'
+import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotWithCriteria } from '@/app/components/snapshots';
+import { VideoData } from "@/app/components/video/Video";
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { CombinedEvents, SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData } from "@/app/components/models/data/Data";
 import { PriorityTypeEnum, StatusType } from '@/app/models/data/StatusType';
-import { RealtimeDataItem } from '../components/models/realtime/RealtimeData';
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { DataStoreWithSnapshotMethods } from '../components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotWithCriteria } from '@/app/components/snapshots';
+import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
+import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotOperation, SnapshotOperationType } from '@/app/snapshots/SnapshotActions';
 import { SnapshotItem } from '@/app/snapshots/SnapshotList';
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { InitializedData, InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
-import { convertSnapshotToMap } from '../components/typings/YourSpecificSnapshotType';
-import { Subscriber } from '@/app/users/Subscriber';
+import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { snapshotId } from "@/app/utils/snapshotUtils";
-import Version from '../versions/Version';
-import { VideoData } from "@/app/components/video/Video";
-import { CategoryProperties } from '../pages/personas/ScenarioBuilder';
+import { RealtimeDataItem } from '@/components/models/realtime/RealtimeData';
+import { DataStoreWithSnapshotMethods } from '@/components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import { convertSnapshotToMap } from '@/components/typings/YourSpecificSnapshotType';
+import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
+import Version from '@/versions/Version';
 
 
 // Define the API endpoint for retrieving snapshot data

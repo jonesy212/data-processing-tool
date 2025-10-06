@@ -1,4 +1,4 @@
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { AllCategoryValues } from "@/app/models/data/DataStructureCategories";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 // Type to represent data structures for various categories

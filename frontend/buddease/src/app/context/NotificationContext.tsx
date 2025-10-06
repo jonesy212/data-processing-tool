@@ -17,9 +17,7 @@ import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { NotificationPosition, PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import NotificationStore from '@/app/state/stores/NotificationStore';
-import {
-    DocumentTypeEnum
-} from "@/app/typings/documents";
+import { DocumentTypeEnum } from "@/app/typings/documents";
 import { createContext, useContext } from 'react';
 
 
@@ -113,7 +111,6 @@ const NotificationTypeEnum = {
   INVALID_CREDENTIALS: AuthNotificationTypes.INVALID_CREDENTIALS,
   PASSWORD_CHANGED: AuthNotificationTypes.PASSWORD_CHANGED,
   PROFILE_UPDATED: AuthNotificationTypes.PROFILE_UPDATED,
-
 
   // Chat types
   NEW_CHAT_MESSAGE: ChatNotificationTypes.NEW_CHAT_MESSAGE,
@@ -278,20 +275,19 @@ const NotificationTypeEnum = {
   TEAM_ID: TeamNotificationTypes.TEAM_ID,
   ADD_PARTICIPANT: TeamNotificationTypes.ADD_PARTICIPANT,
 
-// Post Launch Activities Phases 
-POST_LAUNCH_REFACTORING_REBRANDING_START: PhaseNotificationTypes.POST_LAUNCH_REFACTORING_REBRANDING_START,
-POST_LAUNCH_REFACTORING_REBRANDING_COMPLETE: PhaseNotificationTypes.POST_LAUNCH_REFACTORING_REBRANDING_COMPLETE,
-POST_LAUNCH_COLLABORATION_SETTINGS_START: PhaseNotificationTypes.POST_LAUNCH_COLLABORATION_SETTINGS_START,
-POST_LAUNCH_COLLABORATION_SETTINGS_COMPLETE: PhaseNotificationTypes.POST_LAUNCH_COLLABORATION_SETTINGS_COMPLETE,
+  // Post Launch Activities Phases 
+  POST_LAUNCH_REFACTORING_REBRANDING_START: PhaseNotificationTypes.POST_LAUNCH_REFACTORING_REBRANDING_START,
+  POST_LAUNCH_REFACTORING_REBRANDING_COMPLETE: PhaseNotificationTypes.POST_LAUNCH_REFACTORING_REBRANDING_COMPLETE,
+  POST_LAUNCH_COLLABORATION_SETTINGS_START: PhaseNotificationTypes.POST_LAUNCH_COLLABORATION_SETTINGS_START,
+  POST_LAUNCH_COLLABORATION_SETTINGS_COMPLETE: PhaseNotificationTypes.POST_LAUNCH_COLLABORATION_SETTINGS_COMPLETE,
 
-// Idea Lifecycle Phases 
-IDEA_LIFECYCLE_CONCEPT_DEVELOPMENT_START: PhaseNotificationTypes.IDEA_LIFECYCLE_CONCEPT_DEVELOPMENT_START,
-IDEA_LIFECYCLE_CONCEPT_DEVELOPMENT_COMPLETE: PhaseNotificationTypes.IDEA_LIFECYCLE_CONCEPT_DEVELOPMENT_COMPLETE,
-IDEA_LIFECYCLE_IDEA_VALIDATION_START: PhaseNotificationTypes.IDEA_LIFECYCLE_IDEA_VALIDATION_START,
-IDEA_LIFECYCLE_IDEA_VALIDATION_COMPLETE: PhaseNotificationTypes.IDEA_LIFECYCLE_IDEA_VALIDATION_COMPLETE,
-IDEA_LIFECYCLE_PROOF_OF_CONCEPT_START: PhaseNotificationTypes.IDEA_LIFECYCLE_PROOF_OF_CONCEPT_START,
-IDEA_LIFECYCLE_PROOF_OF_CONCEPT_COMPLETE: PhaseNotificationTypes.IDEA_LIFECYCLE_PROOF_OF_CONCEPT_COMPLETE,
-
+  // Idea Lifecycle Phases 
+  IDEA_LIFECYCLE_CONCEPT_DEVELOPMENT_START: PhaseNotificationTypes.IDEA_LIFECYCLE_CONCEPT_DEVELOPMENT_START,
+  IDEA_LIFECYCLE_CONCEPT_DEVELOPMENT_COMPLETE: PhaseNotificationTypes.IDEA_LIFECYCLE_CONCEPT_DEVELOPMENT_COMPLETE,
+  IDEA_LIFECYCLE_IDEA_VALIDATION_START: PhaseNotificationTypes.IDEA_LIFECYCLE_IDEA_VALIDATION_START,
+  IDEA_LIFECYCLE_IDEA_VALIDATION_COMPLETE: PhaseNotificationTypes.IDEA_LIFECYCLE_IDEA_VALIDATION_COMPLETE,
+  IDEA_LIFECYCLE_PROOF_OF_CONCEPT_START: PhaseNotificationTypes.IDEA_LIFECYCLE_PROOF_OF_CONCEPT_START,
+  IDEA_LIFECYCLE_PROOF_OF_CONCEPT_COMPLETE: PhaseNotificationTypes.IDEA_LIFECYCLE_PROOF_OF_CONCEPT_COMPLETE,
 } as const;
 
 type NotificationContextType = Pick<NotificationContextProps, "notify">;
@@ -308,8 +304,8 @@ const useNotification = () => {
     showNotification: store.showNotification,
     showSuccessNotification: store.showSuccessNotification,
     showErrorNotification: store.showErrorNotification,
-    showInfoNotification: store.showInfoNotification
-    
+    showInfoNotification: store.showInfoNotification,
+    sendNotification: store.sendNotification    
   };
 };
 

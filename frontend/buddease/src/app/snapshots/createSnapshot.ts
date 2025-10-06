@@ -7,13 +7,13 @@ import { SnapshotStoreConfig } from '.';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { defaultSnapshotBuilder } from './defaultSnapshotBuilder';
+import { defaultSnapshotBuilder } from '@/defaultSnapshotBuilder';
 import { SnapshotsArray } from "./LocalStorageSnapshotStore";
-import { UtilMethods } from './methods/utilMethods';
-import SnapshotStore from './SnapshotStore';
-import { SnapshotStoreProps } from './SnapshotStoreProps';
-import { Callback } from './subscribeToSnapshotsImplementation';
-import { SnapshotStoreOptions } from './useSnapshotStore';
+import { UtilMethods } from '@/methods/utilMethods';
+import SnapshotStore from '@/SnapshotStore';
+import { SnapshotStoreProps } from '@/SnapshotStoreProps';
+import { Callback } from '@/subscribeToSnapshotsImplementation';
+import { SnapshotStoreOptions } from '@/useSnapshotStore';
 
 export const createBasicSnapshot = <
   T extends BaseDataEntity,

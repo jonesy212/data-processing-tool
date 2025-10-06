@@ -1,8 +1,5 @@
-import { ParsedData } from "@/app/crypto/parseData";
-import { YourSettingsResponseType } from "@/app/state/stores/SettingsStore";
-import { YourResponseType } from "@/app/types";
-
-
+import { ParsedData } from "@/app/crypto/dataIntegration";
+import { YourResponseType, YourSettingsResponseType } from "@/app/typings/responseTypes";
 
 
 function isYourSettingsResponseType(data: ParsedData<YourResponseType>): data is ParsedData<YourSettingsResponseType> {

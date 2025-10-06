@@ -4,7 +4,7 @@ import { Snapshot, SnapshotData } from '@/app/snapshots';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Subscription } from "@/app/subscriptions/Subscription";
 import { SnapshotConfig } from "./SnapshotConfig";

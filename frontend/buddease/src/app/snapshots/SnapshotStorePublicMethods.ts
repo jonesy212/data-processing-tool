@@ -1,9 +1,8 @@
-import { SubscriberCollection } from '@/app/users/SubscriberCollection'
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData } from "@/app/models/data/Data";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { SnapshotUnion } from "./LocalStorageSnapshotStore";
 import { Snapshot } from "./Snapshot";
-import {  SnapshotUnion } from "./LocalStorageSnapshotStore";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 

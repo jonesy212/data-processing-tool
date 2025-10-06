@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { CustomPhaseHooks, Phase } from "./Phase";
 import React from "react";
 

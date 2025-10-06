@@ -1,44 +1,30 @@
 // ExampleTeam.ts
-import React from "react";
-import dynamic from 'next/dynamic';
-import { UserSettings } from "@/config/UserSettings";
+import { PriorityTypeEnum, TeamStatus } from "@/app/models/data/StatusType";
+import { Project, ProjectType, reassignProject } from "@/app/models/projects/Project";
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
-import { FileTypeEnum } from "@/app/components/documents/FileType";
-import useFiltering from "@/app/hooks/useFiltering";
 import { Phase } from "@/app/phases/Phase";
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
-import { Project, ProjectType, reassignProject } from "@/app/models/projects/Project";
-import { implementThen } from "@/app/state/stores/CommonEvent";
 import { Settings } from "@/app/state/stores/SettingsStore";
+import { Task, TaskData } from "@/app/tasks/Task";
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
+import { Progress } from "@/app/tracker/ProgressBar";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
 import { UserRole } from "@/app/users/UserRole";
-import UserRoles from "@/users/UserRoles";
 import { VideoData } from "@/app/video/Video";
-import { BaseData, DataDetailsProps } from "@/app/data/Data";
-import { PriorityTypeEnum, StatusType, TeamStatus } from "@/app/models/data/StatusType";
-import { Task, TaskData } from "@/app/tasks/Task";
-import { Progress } from "@/app/tracker/ProgressBar";
+import { UserSettings } from "@/config/UserSettings";
+import UserRoles from "@/users/UserRoles";
 import { TeamData } from "./TeamData";
-import { Member, TeamMember } from "./TeamMembers";
 
-import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
 // import { unassignProject } from "@/app/calendar/CalendarApp";
 import {
   CodingLanguageEnum,
   LanguageEnum,
 } from "@/app/communications/LanguageEnum";
-import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
-import { SortCriteria } from "@/app/settings/SortCriteria";
-import { DefaultMeta, DefaultExcludedFields } from "@/config/BaseConfig";
-import { Attachment } from "@/app/components/documents/Attachment/attachment";
 import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
-import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
-import { SubscriberCollection } from "@/app/users/SubscriberCollection";
-import { RealtimeDataItem } from "@/app/realtime/RealtimeData";
+import { DefaultMeta } from "@/config/BaseConfig";
 
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 

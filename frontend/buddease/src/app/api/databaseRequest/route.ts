@@ -1,6 +1,6 @@
 // app/api/databaseRaequest/route.ts
 import isValidAuthToken from "@/app/components/security/AuthValidation";
-import { databaseConfig } from '@/app/configs/DatabaseConfig';
+import { databaseConfig } from '@/config//DatabaseConfig';
 import performDatabaseOperation from "@/server/database/DatabaseOperations";
 import { NextResponse } from 'next/server';
 

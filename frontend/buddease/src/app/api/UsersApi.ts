@@ -2,8 +2,8 @@ import Logger from '@/app/libraries/logging/Logger';
 import { databaseConfig } from '@/config/DatabaseConfig';
 import { Dispatch, UnknownAction } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { User } from '../components/users/User';
-import UserService from './ApiUser';
+import { User } from '@/app/users/User';
+import UserService from '@/ApiUser';
 
 // Function to log API errors
 const handleApiError = (error: any) => {

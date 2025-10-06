@@ -1,7 +1,7 @@
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { Snapshot } from "@/app/snapshots";
-import { BaseData } from '@/app/components/models/data/Data';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { BaseData } from '@/app/models/data/Data';
 
 type AsyncOperation<T> = (snapshotId: string, criteria: CriteriaType) => Promise<T>;
 

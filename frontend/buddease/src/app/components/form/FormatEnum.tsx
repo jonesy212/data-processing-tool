@@ -4,7 +4,7 @@ import {
     fetchJsonDocumentByIdAPI,
     fetchXmlDocumentByIdAPI,
 } from "@/app/api/ApiDocument";
-import { BaseData } from "@/app/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import {
     CustomDocxtemplater,

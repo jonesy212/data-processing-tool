@@ -1,5 +1,5 @@
 // notificationMiddleware.ts
-import { MiddlewareFunction, MiddlewareContext } from '../types';
+import { MiddlewareFunction, MiddlewareContext } from '@/types';
 
 export const notificationMiddleware: MiddlewareFunction = async (context, next) => {
   const { operation, payload, store } = context;

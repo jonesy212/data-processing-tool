@@ -1,12 +1,12 @@
+import { sendAnalyticsDataToBackend, storeAnalyticsData } from '@/app/api/ApiDataAnalysis';
+import { NewsArticle } from "@/app/pages/blog/Blog";
+import calculateMetrics from '@/app/projects/DataAnalysisPhase/DataProcessing/calculateMetrics';
+import { analyzeSentiment, fetchMoreNews, filterNewsFeed } from '@/community/newsFeedIntegration';
+import updateAnalyticsUI from '@/components/libraries/ui/updateAnalyticsUI';
+import { CryptoHolding } from '@/CryptoHolding';
+import CryptoTransaction from '@/CryptoTransaction';
 import * as crypto from 'crypto';
 import { useCallback, useState } from 'react';
-import { CryptoHolding } from './CryptoHolding';
-import CryptoTransaction from './CryptoTransaction';
-import updateAnalyticsUI from './../../components/libraries/ui/updateAnalyticsUI'
-import { sendAnalyticsDataToBackend, storeAnalyticsData } from '@/app/api/ApiDataAnalysis';
-import calculateMetrics from '../projects/DataAnalysisPhase/DataProcessing/calculateMetrics';
-import { fetchMoreNews, filterNewsFeed, analyzeSentiment } from '../community/newsFeedIntegration';
-import { NewsArticle } from "@/app/pages/blog/Blog";
 
 
 const useCryptoManager = () => {

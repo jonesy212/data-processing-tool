@@ -3,7 +3,7 @@ import { createErrorNotificationContent, errorLogger } from "@/app/libraries/log
 import { YourResponseType } from "@/app/typings/types";
 import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
 import React, { useState } from 'react';
-import { Payload } from './LocalStorageSnapshotStore';
+import { Payload } from '@/LocalStorageSnapshotStore';
 
 interface SnapshotErrorHandling<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
     onError?: (error: Payload) => void;

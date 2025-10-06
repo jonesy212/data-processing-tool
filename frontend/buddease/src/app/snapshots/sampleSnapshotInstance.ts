@@ -1,23 +1,23 @@
 import { getDataVersions } from '@/app/api/ApiData';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
-import { Callback, CoreSnapshot, Result, Snapshot, SnapshotContainer, SnapshotData, SnapshotItem, Snapshots, SnapshotStoreConfig, SnapshotStoreProps, SnapshotUnion, SnapshotWithCriteria } from '@/app/snapshots';
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import { NotificationType } from '@/context/NotificationContext';
-import { Payload } from '@/server/database/Payload';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
-import { RealtimeDataItem } from '../models/realtime/RealtimeData';
-import { Tag } from '@/appp/models/tracker/Tag';
-import { DataStoreMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { subscriber, Subscriber } from "@/app/users/Subscriber";
-import { SubscriberCollection } from '../users/SubscriberCollection';
-import { InitializedDataStore } from './SnapshotStoreOptions';
+import { Callback, CoreSnapshot, Result, Snapshot, SnapshotContainer, SnapshotData, SnapshotItem, Snapshots, SnapshotStoreConfig, SnapshotStoreProps, SnapshotUnion, SnapshotWithCriteria } from '@/app/snapshots';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { subscriber, Subscriber } from "@/app/subscribers/Subscriber";
+import { Tag } from '@/appp/models/tracker/Tag';
+import { NotificationType } from '@/context/NotificationContext';
+import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
+import { Payload } from '@/server/database/Payload';
+import { InitializedDataStore } from '@/SnapshotStoreOptions';
+import { SubscriberCollection } from '@/users/SubscriberCollection';
 
 
 const sampleSnapshot: Snapshot<T, K, Meta<T>> = {

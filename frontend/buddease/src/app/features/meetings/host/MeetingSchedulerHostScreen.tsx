@@ -1,6 +1,6 @@
 // MeetingSchedulerHostScreen.tsx
 import React from 'react';
-import MeetingSchedulerHostToolbar from './MeetingSchedulerHostToolbar';
+import MeetingSchedulerHostToolbar from '@/MeetingSchedulerHostToolbar';
 
 const MeetingSchedulerHostScreen: React.FC = () => {
   // Add logic specific to the meeting scheduler host screen here

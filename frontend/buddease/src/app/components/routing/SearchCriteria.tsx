@@ -21,7 +21,7 @@ import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { userService } from "@/app/api/ApiUserr";
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
 import { Entity, fuzzyMatchEntities } from "./FuzzyMatch";
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import LoadingSpinner from "@/app/models/tracker/LoadingSpinner";
 import { searchDocuments } from "@/app/api/ApiDocument";
 import SearchComponent from "@/app/pages/searchs/SearchComponent";

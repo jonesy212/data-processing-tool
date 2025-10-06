@@ -4,7 +4,7 @@ import { useDynamicComponents } from "@/app/DynamicComponentsContext";
 import { Task } from "@/app/models/tasks/Task";
 import LoadingSpinner from "@/app/models/tracker/LoadingSpinner";
 import { Todo } from "@/app/todos/Todo";
-import DynamicTable from "@/app/components/documents/DynamicTable";
+import DynamicTable from "@/app/documents/DynamicTable";
 import DynamicEventHandlerService from "@/app/event/DynamicEventHandlerExample";
 
 interface DynamicRendererProps {

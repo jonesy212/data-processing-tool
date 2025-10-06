@@ -3,7 +3,7 @@
 // import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 // import { Data } from '@/app/models/data/Data';
 // import { Callback, MultipleEventsCallbacks } from '@/app/snapshots/index';
-// import { Snapshot } from "@/app/snapshots";
+// import { Snapshot } from '@/app/snapshots/Snapshot';
 
 
 // class SnapshotStoreComponent<T extends BaseDataEntity,  

@@ -1,12 +1,10 @@
 // Comments.ts
 import { Content } from '@/app/components/models/content/AddContent';
-import { BaseData, Data } from '@/app/components/models/data/Data';
-import { ColorPalettes } from 'antd/es/theme/interface';
+import { BaseData, Data } from '@/app/models/data/Data';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { Attachment } from '@/app/components/documents/Attachment/attachment'
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
-import { BaseDataRoot } from "@/config/BaseConfig";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
 
 
 // Base comment shared by all comment types
@@ -108,14 +106,10 @@ export type EntityComments<T extends keyof EntityCommentMap> = EntityCommentMap[
 
 
 export type {
-  Comment,
+  BlogComment,
+  ChatComment, Comment,
   CommentData,
   CommentMeta,
-  CommentType,
-  BlogComment,
-  ChatComment,
-  ForumComment,
-  CustomComment,
-  VideoComment,
-  EntityCommentMap
+  CommentType, CustomComment, EntityCommentMap, ForumComment, VideoComment
 };
+

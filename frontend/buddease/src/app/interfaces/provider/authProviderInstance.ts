@@ -1,9 +1,8 @@
-// adapted  AuthProvider component into an authProvider object:
+// authProvidenceInstance.ts
 
 import { AuthProvider } from "@refinedev/core";
 import { useAuthStore } from "@/app/state/stores/AuthStore";
 import { useAuthorizationStore } from "@/app/state/stores/AuthorizationStore";
-import { CheckResponse } from "node_modules/@refinedev/core/dist/contexts/auth/types";
 import { Permission, UserPermissions } from "@/app/users/Permission";
 
 interface CustomAuthProvider extends AuthProvider {
@@ -18,8 +17,16 @@ const authProvider: CustomAuthProvider  = {
   login: async ({ username, password }) => {
     // Example login logic using your existing store
     const store = useAuthStore();
-    const authToken = await store.loginSuccess(username, password); // Implement this in your store
+    const authorizationStore = useAuthorizationStore();
+    
+    const authToken = await store.loginSuccess(username, password);
     if (authToken !== undefined) {
+      // Initialize permissions after successful login
+      const userPermissions = await store.getUserPermissions();
+      if (userPermissions) {
+        authorizationStore.setPermissions(userPermissions);
+        this.setPermissions(userPermissions);
+      }
       return { success: true };
     } else {
       throw new Error('Login failed');
@@ -28,22 +35,45 @@ const authProvider: CustomAuthProvider  = {
   
   logout: async () => {
     const store = useAuthStore();
+    const authorizationStore = useAuthorizationStore();
+    
+    // Clear permissions on logout
+    authorizationStore.clearPermissions();
+    this.setPermissions([]);
+    
     store.logout();
     return { success: true };
   },
 
-  check: async (): Promise<CheckResponse> => {
+  check: async () => {
     const store = useAuthStore();
+    const authorizationStore = useAuthorizationStore();
+    
     const isAuthenticated = store.isAuthenticated;
     if (isAuthenticated) {
+      // Ensure permissions are loaded
+      if (authorizationStore.permissions.length === 0) {
+        const userPermissions = await store.getUserPermissions();
+        if (userPermissions) {
+          authorizationStore.setPermissions(userPermissions);
+          this.setPermissions(userPermissions);
+        }
+      }
       return { authenticated: true };
     } else {
       return { authenticated: false, error: new Error('Not authenticated') };
     }
   },
 
-  onError: async (error:any) => {
-    // Handle errors as needed
+  onError: async (error: any) => {
+    const authorizationStore = useAuthorizationStore();
+    
+    // Handle authorization errors
+    if (error.status === 403 || error.status === 401) {
+      authorizationStore.clearPermissions();
+      this.setPermissions([]);
+    }
+    
     return Promise.reject(error);
   },
 
@@ -51,15 +81,29 @@ const authProvider: CustomAuthProvider  = {
     this.userPermissions = permissions;
   },
 
-  
   getPermissions: async () => {
+    const authorizationStore = useAuthorizationStore();
+    
+    // Return permissions from authorization store if available
+    if (authorizationStore.permissions.length > 0) {
+      return authorizationStore.permissions;
+    }
+    
+    // Fallback to auth store if authorization store is empty
     const store = useAuthStore();
-    const permissions = await store.getUserPermissions(); // Implement this in your store
+    const permissions = await store.getUserPermissions();
+    
+    // Update authorization store with fetched permissions
+    if (permissions) {
+      authorizationStore.setPermissions(permissions);
+    }
+    
     return permissions;
   },
   
   getIdentity: async () => {
-    const store = useAuthStore(); // Get an instance of AuthStore
+    const store = useAuthStore();
+    const authorizationStore = useAuthorizationStore();
 
     // Ensure that you first get the access token
     const token = store.getAccessToken();
@@ -77,8 +121,17 @@ const authProvider: CustomAuthProvider  = {
       throw new Error('User is not available');
     }
 
+    // Ensure permissions are loaded for the user
+    if (authorizationStore.permissions.length === 0) {
+      const userPermissions = await store.getUserPermissions();
+      if (userPermissions) {
+        authorizationStore.setPermissions(userPermissions);
+        this.setPermissions(userPermissions);
+      }
+    }
+
     return user;
   },
 };
 
-export {authProvider}
+export { authProvider };

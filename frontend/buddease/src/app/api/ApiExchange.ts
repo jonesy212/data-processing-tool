@@ -1,7 +1,12 @@
-import { AxiosError } from "axios";
-import { ExchangeData } from "@/app/components/models/data/ExchangeData";
-import { YourResponseType } from "@/app/components/typings/types";
+import { Exchange } from "@/app/components/crypto/Exchange";
+import { Attachment } from "@/app/features/support/SupportTicketComponent";
 import useSecureExchangeId from "@/app/hooks/useSecureExchangeId";
+import { ExchangeData } from "@/app/models/data/ExchangeData";
+import { AppEntity } from "@/app/snapshots/snapshotStoreConfigInstance";
+import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
+import { YourResponseType } from "@/app/typings/typeguards/isYourSettingsResponseType";
+import { DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { AxiosError } from "axios";
 import {
   apiNotificationMessages,
   fetchData,
@@ -9,6 +14,8 @@ import {
 } from "./ApiData";
 
 // Define your notification messages interface
+
+
 interface DataNotificationMessages {
   FETCH_EXCHANGE_DATA_ERROR: keyof typeof apiNotificationMessages; // Ensure it matches your actual notification message ID
   // Add more notification IDs as needed
@@ -20,8 +27,9 @@ export const fetchExchangeData = async <
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(): Promise<Exchange<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): Promise<Exchange<T, K>[]> => {
   try {
     
     const id = useSecureExchangeId(); // Use the newly created hook here
@@ -39,7 +47,7 @@ export const fetchExchangeData = async <
     }
 
     // Assuming YourResponseType needs to be transformed to ExchangeData[]
-    const exchangeDataArray: Exchange<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] =
+    const exchangeDataArray: Exchange<T, K>[] =
       transformYourResponseToExchangeData(response.data);
 
     return exchangeDataArray;
@@ -54,107 +62,6 @@ export const fetchExchangeData = async <
   }
 };'use server';
 
-import fs from 'fs';
-import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
-import Docxtemplater from "docxtemplater";
-import { BaseData } from "@/app/components/models/data/Data";
-import PizZip from "pizzip";
-import path from 'path';
-import { DocumentOptions } from '@/app/components/documents/DocumentOptions';
-import { generateFinancialReportContent } from '@/app/components/documents/documentation/report/generateFinancialReportContent';
-
-export enum DocumentTypeEnum {
-  Text = 'text',
-  Spreadsheet = 'spreadsheet',
-  Diagram = 'diagram',
-  CalendarEvents = 'calendarEvents',
-  Drawing = 'drawing',
-  Presentation = 'presentation',
-  CryptoWatch = 'cryptowatch',
-  Draft = 'draft',
-  Document = 'document',
-  Other = 'other',
-  FinancialReport = 'financialReport',
-  MarketAnalysis = 'marketAnalysis',
-  ClientPortfolio = 'clientPortfolio',
-}
-
-export enum DocumentStatusEnum {
-  Draft = 'draft',
-  Finalized = 'finalized',
-  Archived = 'archived',
-  Deleted = 'deleted'
-}
-
-export class ServerDocumentGenerator {
-  async createTextDocument(
-    type: DocumentTypeEnum,
-    options: DocumentOptions,
-    fileContent: Buffer
-  ): Promise<string> {
-    const content = options.content || "Default Text Document Content";
-    const contentData = { content };
-
-    const zip = new PizZip(fileContent);
-    const docx = new Docxtemplater(zip, {
-      paragraphLoop: true,
-      linebreaks: true,
-    });
-    docx.setData(contentData);
-
-    try {
-      docx.render();
-      const result = docx.getZip().generate({ type: "nodebuffer" });
-
-      const generatedFilePath = path.join(process.cwd(), 'generated', 'textDocument.docx');
-      await fs.promises.mkdir(path.dirname(generatedFilePath), { recursive: true });
-      await fs.promises.writeFile(generatedFilePath, result);
-
-      return `Text Document created successfully at ${generatedFilePath}.`;
-    } catch (error: any) {
-      console.error("Error creating text document:", error);
-      throw new Error("Error creating text document: " + error.message);
-    }
-  }
-
-  async createFinancialReport(options: DocumentOptions, documents: DocumentData<BaseData<any>>): Promise<string> {
-    const financialReportContent = "Financial Report Content";
-    const financialReportFileName = "financial_report.docx";
-
-    try {
-      await generateFinancialReportContent(options, [documents]);
-      const generatedFilePath = path.join(process.cwd(), 'generated', financialReportFileName);
-      await fs.promises.writeFile(generatedFilePath, financialReportContent);
-      return `Financial Report created successfully at ${generatedFilePath}.`;
-    } catch (error) {
-      console.error("Error creating financial report:", error);
-      throw new Error("Error creating financial report.");
-    }
-  }
-
-  // Server-only methods
-  async getGeneratedDocumentsList(): Promise<string[]> {
-    try {
-      const generatedDir = path.join(process.cwd(), 'generated');
-      await fs.promises.mkdir(generatedDir, { recursive: true });
-      return await fs.promises.readdir(generatedDir);
-    } catch (error) {
-      console.error("Error reading generated documents:", error);
-      return [];
-    }
-  }
-
-  async deleteDocument(fileName: string): Promise<boolean> {
-    try {
-      const filePath = path.join(process.cwd(), 'generated', fileName);
-      await fs.promises.unlink(filePath);
-      return true;
-    } catch (error) {
-      console.error("Error deleting document:", error);
-      return false;
-    }
-  }
-}
 
 // Using the full 5-parameter defaults
 const transformYourResponseToExchangeData = <

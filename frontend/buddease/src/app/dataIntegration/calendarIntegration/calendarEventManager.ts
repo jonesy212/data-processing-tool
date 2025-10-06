@@ -1,13 +1,13 @@
 // calendarEventManager.ts
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { Snapshot } from '@/app/snapshots';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { ProjectLogger } from '@/app/dataIntegration/projectIntegration/ProjectLogger';
-import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
-import { StatusType, AllStatus } from '@/app/models/data/StatusType';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { AllStatus, StatusType } from '@/app/models/data/StatusType';
 import { Member } from '@/app/models/teams/TeamMembers';
+import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 export interface CalendarEventManagerOptions {
   enableRealTimeUpdates?: boolean;

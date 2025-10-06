@@ -1,4 +1,4 @@
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
 

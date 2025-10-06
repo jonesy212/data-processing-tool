@@ -1,8 +1,20 @@
 // CacheExample.ts
+import { initializeAppData } from '@/app/api/service/ApiService';
+import useFilePath from "@/app/hooks/useFilePath";
+import { CacheReadOptions } from '@/app/libraries/cache/CacheResponse';
+import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
+import { LanguageEnum } from '@/app/communications/LanguageEnum';
+import { CustomApp } from '@/app/utils/web3/dAppAdapter/DApp';
+import { authToken } from '@/server/auth/authToken';
+import { useState } from "react";
+import { BorderStyle, DocumentSize } from "@/app/models/data/StatusType";
+import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
+import { SupportedData } from '@/app/models/CommonData';
+import { ContentState } from "draft-js";
+import { ModifiedDate } from "@/app/documents/DocType";
 
 
-
-// // Usage
+// Usage
 initializeAppData().then(appData => {
   console.log(appData);
 });
@@ -11,6 +23,9 @@ initializeAppData().then(appData => {
 async function runApp() {
   // Initialize appData
   const appData = await initializeAppData();
+  const filePath = useFilePath();
+  const [currentEvent, setCurrentEvent] = useState<any>(null);
+
   console.log(appData);
 
   // Generate headers with the authToken
@@ -658,7 +673,7 @@ const getUserByUsername = async (username: string): Promise<any> => {
 };
 
 
-const writePath = './path/to/cache/data'; // Replace with the actual file path
+const writePath = '@/path/to/cache/data'; // Replace with the actual file path
 
 writeAndUpdateCache(writePath, cacheData)
   .then(() => {

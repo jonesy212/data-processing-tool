@@ -1,7 +1,7 @@
 // Import necessary dependencies
 import axiosInstance from '@/app/api/csrfToken';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { RootState } from './RootSlice';
+import { RootState } from '@/RootSlice';
 
 // Define the entity interface
 interface Entity {

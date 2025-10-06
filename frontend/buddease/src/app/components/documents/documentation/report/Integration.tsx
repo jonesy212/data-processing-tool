@@ -2,7 +2,7 @@
 
 import Visualization from '@/app/hooks/userInterface/Visualization';
 import DataProcessingComponent from '@/app/components/models/data/DataProcessingComponent';
-import { DataProcessingResult } from "@/app/components/projects/DataAnalysisPhase/DataProcessing/DataProcessingService";
+import { DataProcessingResult } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataProcessingService";
 import { dataset } from "@/app/components/todos/tasks/DataSetModel";
 import { validateReport } from "@/app/utils/reportUtils";
 import { addReport, fetchReports, removeReport } from "@/app/api/ApiReport";

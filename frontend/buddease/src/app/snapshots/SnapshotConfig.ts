@@ -1,80 +1,79 @@
 // SnapshotConfig.ts
-import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { SnapshotContainerType } from './SnapshotContainer';
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
+import { SnapshotContainerType } from '@/SnapshotContainer';
 
 import { userId } from "@/api/ApiUser";
 import apiNotificationsService from '@/app/api/NotificationsService';
+import * as snapshotApi from "@/app/api/SnapshotApi";
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+import { ModifiedDate } from "@/app/documents/DocType";
+import { FileCategory } from "@/app/documents/FileType";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import {
+  SnapshotManager
+} from "@/app/hooks/useSnapshotManager";
+import {
+  fetchFileSnapshotData,
+} from "@/app/libraries/categories/determineFileCategory";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { BaseData, Data, DataDetails } from '@/app/models/data/Data';
+import {
+  StatusType,
+  SubscriberTypeEnum,
+  SubscriptionTypeEnum
+} from "@/app/models/data/StatusType";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import { DataStore, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { CreateSnapshotsPayload, Payload } from "@/app/server/database/Payload";
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { CoreSnapshot, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { data, SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { subscriptionLevels } from '@/app/subscriptions/SubscriptionLevel';
+import { Subscriber, SubscriberCallback } from "@/app/subscribers/Subscriber";
+import { SubscriberCallbackType, Subscription } from "@/app/subscriptions/Subscription";
+import { SubscriptionLevel, subscriptionLevels } from '@/app/subscriptions/SubscriptionLevel';
 import { isSnapshot } from '@/app/utils/snapshotUtils';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { ProjectMetadata, StructuredMetadata } from "@/config/StructuredMetadata";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import {
-    NotificationType,
-    NotificationTypeEnum,
+  triggerIncentives
+} from "@/app/utils/web3/applicationUtils";
+import { Version } from "@/app/versions/Version";
+import { ProjectMetadata, StructuredMetadata } from "@/config/StructuredMetadata";
+import {
+  NotificationType,
+  NotificationTypeEnum,
 } from "@/context/NotificationContext";
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { UpdateSnapshotPayload } from '@/server/database/Payload';
 import { useParams } from "next/navigation";
-import { CreateSnapshotsPayload, Payload } from "@/app/server/database/Payload";
-import { ModifiedDate } from "@/app/documents/DocType";
-import { FileCategory } from "@/app/documents/FileType";
 import {
-    SnapshotManager
-} from "@/app/hooks/useSnapshotManager";
-import {
-    fetchFileSnapshotData,
-} from "@/app/libraries/categories/determineFileCategory";
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData, Data, DataDetails } from "@/app/models/data/Data";
-import {
-    StatusType,
-    SubscriberTypeEnum,
-    SubscriptionTypeEnum
-} from "@/app/models/data/StatusType";
-import { DataStoreMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-import { DataStore, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SubscriberCallbackType, Subscription } from "@/app/subscriptions/Subscription";
-import { SubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
-import { Subscriber, SubscriberCallback } from "@/app/users/Subscriber";
-import {
-    triggerIncentives
-} from "@/app/utils/web3/applicationUtils";
-import Version from "@/app/versions/Version";
-import * as snapshotApi from "@/app/api/SnapshotApi";
-import {
-    getCommunityEngagement,
-    getMarketUpdates,
-    getTradeExecutions,
+  getCommunityEngagement,
+  getMarketUpdates,
+  getTradeExecutions,
 } from "./../../components/trading/TradingUtils";
 import { InitializedData, SnapshotStoreOptions } from "./SnapshotStoreOptions";
 
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { BaseDatabaseService } from '@/app/configs/DatabaseConfig';
+import { BaseDatabaseService } from '@/config//DatabaseConfig';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { internalCache } from '@/app/utils/cache/InternalCache';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta, mappedSnapshot } from '@/config/BaseConfig';
-import { SnapshotCallback } from '../event/EventManager';
-import { SubscriberCollection } from '../users/SubscriberCollection';
+import { SnapshotCallback } from '@/app/event/EventManager';
+import { SnapshotContext } from '@/SnapshotSubscriberManagement';
+import { SubscriberCollection } from '@/users/SubscriberCollection';
 import {
-    Snapshots,
-    SnapshotUnion,
+  Snapshots,
+  SnapshotUnion,
 } from "./LocalStorageSnapshotStore";
 import {
-    Snapshot
+  Snapshot
 } from "./Snapshot";
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import { SnapshotItem } from "./SnapshotList";
 import SnapshotStore from "./SnapshotStore";
-import { SnapshotContext } from './SnapshotSubscriberManagement';
 import { Callback } from "./subscribeToSnapshotsImplementation";
 import { SnapshotStoreProps } from "./useSnapshotStore";
 

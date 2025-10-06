@@ -1,11 +1,11 @@
-import { HookActions } from './../actions/HookActions';
+import { HookActions } from '@/app/actions/HookActions';
 // AsyncHookLinkerConfig.tsx
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { UIActions } from '../actions/UIActions';
+import { UIActions } from '@/app/actions/UIActions';
 import { Progress } from '@/appp/models/tracker/ProgressBar';
-import { RootState } from '../state/redux/slices/RootSlice';
-import { PhaseHookConfig } from './phaseHooks/PhaseHooks';
+import { RootState } from '@/state/redux/slices/RootSlice';
+import { PhaseHookConfig } from '@/phaseHooks/PhaseHooks';
 
 export interface AsyncHook<T> extends PhaseHookConfig {
   enable?: () => void; // Change enable method to not be optional

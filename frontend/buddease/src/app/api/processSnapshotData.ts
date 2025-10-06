@@ -1,22 +1,18 @@
-import { isSnapshotStore } from "@/app/typings/YourSpecificSnapshotType";
-import { isSnapshot } from '@/app/utils/snapshotUtils';
+import { Meta } from '@/app/components/models/data/dataStoreMethods';
 import { ExcludedFields } from '@/app/components/routing/Fields';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
+import { DataWithPriority } from "@/app/components/utils/versionUtils";
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Snapshot, SnapshotBaseProperties, SnapshotData, SnapshotDataType } from '@/app/snapshots';
+import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
-import { Snapshot, SnapshotData,SnapshotBaseProperties } from '@/app/snapshots';
-import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotSecurity } from '@/app/snapshots/SnapshotSecurity';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { DataWithPriority } from "@/app/components/utils/versionUtils";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { SnapshotDataType } from "@/app/snapshots";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
-import { Meta } from '@/app/components/models/data/dataStoreMethods';
-import { SharedMetadata } from '@/app/configs/metadata/createMetadataState';
-import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
-import { Attachment } from "@/documents/Attachment/attachment";
-import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
-import { SnapshotSecurity } from '@/app/snapshots/SnapshotSecurity';
+import { isSnapshotStore } from "@/app/typings/YourSpecificSnapshotType";
+import { isSnapshot } from '@/app/utils/snapshotUtils';
+import { SharedMetadata } from '@/config//metadata/MetadataHooks';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 interface EnhancedSnapshotData<
   T extends BaseDataEntity,
@@ -40,7 +36,7 @@ type EnhancedSnapshotDataType<
   | EnhancedSnapshotData<T, K, Meta, ExcludedFields>
   | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   | Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }>
-  | SnapshotDataType<T, K>
+  | SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   | SnapshotStore<T, K, Meta, ExcludedFields>
   | undefined;
@@ -154,7 +150,7 @@ function isEnhancedSnapshotData<
       getSnapshotCategory: baseEntry.getSnapshotCategory ?? (() => undefined),
       getSnapshotData: baseEntry.getSnapshotData ?? (() => undefined),
       deleteSnapshot: baseEntry.deleteSnapshot ?? (() => {}),
-      snapshotData: baseEntry.snapshotData ?? (async () => ({} as SnapshotDataType<T, K>)),
+      snapshotData: baseEntry.snapshotData ?? (async () => ({} as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)),
       
       // Default empty arrays for collection properties
       subscribers: baseEntry.subscribers ?? [],
@@ -302,7 +298,7 @@ function processSnapshotData<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
-  snapshotDataType: SnapshotDataType<T, K> | SnapshotData<T, K, Meta, ExcludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, ExcludedFields> | undefined
+  snapshotDataType: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotData<T, K, Meta, ExcludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, ExcludedFields> | undefined
 ): void {
   if (!snapshotDataType) {
     console.log("No snapshot data available.");
@@ -318,7 +314,7 @@ function processSnapshotData<
       if (isSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(snapshot)) {
         processPriorityData(convertSnapshotToSnapshotDataType<T, K, Meta, ExcludedFields>(snapshot));
       } else if (isSnapshotStore<T, K, Meta, ExcludedFields>(snapshot)) {
-        processPriorityData(snapshotDataType as SnapshotDataType<T, K>);
+        processPriorityData(snapshotDataType as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
       } else {
         processPriorityData(snapshot as any);
       }
@@ -332,12 +328,12 @@ function processSnapshotData<
   // Handle SnapshotStore objects
   else if (isSnapshotStore<T, K, Meta, ExcludedFields>(snapshotDataType)) {
     console.log("Processing SnapshotStore", snapshotDataType);
-    processPriorityData(snapshotDataType as SnapshotDataType<T, K>);
+    processPriorityData(snapshotDataType as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
   }
   // Handle SnapshotData objects
   else {
     console.log("Processing SnapshotData", snapshotDataType);
-    processPriorityData(snapshotDataType as SnapshotDataType<T, K>);
+    processPriorityData(snapshotDataType as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
   }
 }
 
@@ -349,13 +345,13 @@ function convertSnapshotToSnapshotDataType<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-): SnapshotDataType<T, K> {
+): SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Implement conversion logic based on your types
   return {
     // Map snapshot properties to SnapshotDataType structure
     ...snapshot,
     // Add any missing properties or transformations
-  } as unknown as SnapshotDataType<T, K>;
+  } as unknown as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 // Update processPriorityData to accept more types with proper generics
@@ -365,7 +361,7 @@ const processPriorityData = <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
-  snapshotInput: SnapshotDataType<T, K> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, ExcludedFields> | SnapshotData<T, K, Meta, ExcludedFields>
+  snapshotInput: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, ExcludedFields> | SnapshotData<T, K, Meta, ExcludedFields>
 ): void => {
   // Convert to a common type first, then process
   const processedData = convertToProcessableType<T, K, Meta, ExcludedFields>(snapshotInput);
@@ -389,7 +385,7 @@ function convertToProcessableType<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
-  input: SnapshotDataType<T, K> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, ExcludedFields> | SnapshotData<T, K, Meta, ExcludedFields>
+  input: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, ExcludedFields> | SnapshotData<T, K, Meta, ExcludedFields>
 ): SnapshotData<T, K, Meta, ExcludedFields> | null {
   if (isSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(input)) {
     return transformSnapshotToSnapshotData<T, K, Meta, ExcludedFields>(input);
@@ -408,6 +404,7 @@ function hasPriority<T extends Partial<DataWithPriority>>(
 }
 
 export {
-    findSnapshotStoresById, hasPriority, isCustomSnapshotData, processPriorityData, processSnapshotData, transformCustomSnapshotToSnapshot
+  findSnapshotStoresById, hasPriority, isCustomSnapshotData, processPriorityData, processSnapshotData, transformCustomSnapshotToSnapshot
 };
 export type { EnhancedSnapshotData };
+

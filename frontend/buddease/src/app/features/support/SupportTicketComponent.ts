@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/app/state/store';
 import { provideCustomerSupport, addressUserInquiries } from '@/app/state/slices/ApiManagerSlice';
-import { UserSupportPhase } from './UserSupportPhaseComponent';
+import { UserSupportPhase } from '@/UserSupportPhaseComponent';
 
 // Support Ticket Types
 export interface SupportTicket {

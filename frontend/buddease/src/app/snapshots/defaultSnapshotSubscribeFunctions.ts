@@ -1,7 +1,7 @@
 // defaultSnapshotSubscribeFunctions.ts
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { Callback } from "./subscribeToSnapshotsImplementation";
 // Function to unsubscribe from snapshots

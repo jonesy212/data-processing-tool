@@ -1,7 +1,7 @@
-import { BaseData } from "@/app/components/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 
 async function simulateFetch<

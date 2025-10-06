@@ -1,8 +1,8 @@
 // import { initialSnapshot } from "@/app/crypto/exchangeIntegration";
-// import { BaseData } from "@/app/models/data/Data";
+// import { BaseData } from '@/app/models/data/Data';
 // import { snapshotType } from "@/app/typings/YourSpecificSnapshotType";
 // import { data } from "@/app/versions/Version";
-// import { Snapshot } from "@/app/snapshots";
+// import { Snapshot } from '@/app/snapshots/Snapshot';
 // import { SnapshotStoreConfig, snapshotConfig } from "./SnapshotConfig";
 // import SnapshotStore from "./SnapshotStore";
 // import { delegate, subscribeToSnapshots } from "./snapshotHandlers";

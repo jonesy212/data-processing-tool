@@ -2,8 +2,8 @@ import useSearchPagination from '@/app/hooks/commHooks/useSearchPagination';
 import useFiltering from '@/app/hooks/useFiltering';
 import { usePagination } from '@/app/hooks/userInterface/usePagination';
 import React from 'react';
-import Filter from './Filter';
-import { SearchOptions, SortingOption } from './SearchOptions';
+import Filter from '@/Filter';
+import { SearchOptions, SortingOption } from '@/SearchOptions';
 
 // Define the type for the filter column
 type FilterType = keyof SearchOptions['additionalOptions'];

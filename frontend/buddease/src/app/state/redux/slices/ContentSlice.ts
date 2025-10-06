@@ -3,7 +3,7 @@ import { endpoints } from "@/app/api/ApiEndpoints";
 import * as ApiTask from "@/app/api/TasksApi";
 import axiosInstance from '@/app/api/csrfToken'
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import { FileType } from "@/app/components/documents/Attachment/attachment";
+import { FileType } from "@/app/documents/Attachment/attachment";
 import { SupportedData } from '@/app/models/CommonData';
 import ContentDetails from "@/app/components/models/content/ContentDetails";
 import {
@@ -11,13 +11,13 @@ import {
   StatusType,
   TaskStatus,
 } from "@/app/models/data/StatusType";
-import ExportTasksPayload from "@/app/components/models/tasks/ExportTasksPayload";
+import ExportTasksPayload from "@/app/models/tasks/ExportTasksPayload";
 import ImportTasksPayload from "@/app/components/models/tasks/ImportTasksPayload";
 import TaskDetails, { Task, TaskData } from "@/app/components/models/tasks/Task";
 import { Phase } from "@/app/components/phases/Phase";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { SortCriteria } from "@/app/settings/SortCriteria";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotConfig';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { TaskSort } from "@/app/components/sort/TaskSort";

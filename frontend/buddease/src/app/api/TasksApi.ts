@@ -1,17 +1,19 @@
-import { AxiosError, AxiosResponse } from 'axios';
-import { Dispatch } from '@reduxjs/toolkit';
 import { handleApiError } from '@/app/api/ApiLogs';
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { Dispatch } from '@reduxjs/toolkit';
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { AxiosError, AxiosResponse } from 'axios';
 
+import { endpoints } from '@/app/api/endpointConfigurations';
+import axiosInstance from '@/app/api/csrfToken';
 import { NotificationType, useNotification } from '@/app/context/NotificationContext';
-import { TaskHistoryEntry } from '../components/interfaces/history/TaskHistoryEntry';
-import { Task } from '../components/models/tasks/Task';
 import { historyManagerStore } from '@/app/state/stores/HistoryStore';
 import { useTaskManagerStore } from '@/app/state/stores/TaskStore ';
-import { endpoints } from './ApiEndpoints';
-import axiosInstance from '@/app/api/csrfToken'
+import { TaskHistoryEntry } from '@/app/interfaces/history/TaskHistoryEntry';
+import { Task } from '@/app/models/tasks/Task';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.tasks.list;

@@ -1,6 +1,6 @@
 // YourCalendarLibrary.js
+import Task from '@/models/tasks/Task';
 import { useEffect, useState } from 'react';
-import Task from '../models/tasks/Task';
 // YourCalendarLibrary Component (main export)
 const YourCalendarLibrary = () => {
   return (

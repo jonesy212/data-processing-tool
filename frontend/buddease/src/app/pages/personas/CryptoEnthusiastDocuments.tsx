@@ -1,4 +1,4 @@
-import { DocumentOptions, getDefaultDocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { DocumentOptions, getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { updateDocumentInDatabase } from "@/config/database/updateDocumentInDatabase";

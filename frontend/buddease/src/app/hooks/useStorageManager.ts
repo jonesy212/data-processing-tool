@@ -1,7 +1,7 @@
 // useStorageManager.ts
 // useStorageManager.ts
 import { useState, useCallback } from "react";
-import { BaseData } from "@/app/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 
 
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { processTradesServer } from '../exchangeIntegrationServer';
+import { processTradesServer } from '@/app/exchangeIntegrationServer';
 
 export async function POST(request: NextRequest) {
   try {

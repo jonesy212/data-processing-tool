@@ -1,28 +1,27 @@
 // RelatedProps.ts
-import { SnapshotContainer } from '@/app/snapshots';
+import { Label } from '@/app/branding/BrandingSettings';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { Label } from '@/app/components/projects/branding/BrandingSettings';
 import { AllTypes } from '@/app/components/typings/PropTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Data } from '@/app/models/data/Data';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import { Attachment, FileType } from './Attachment/attachment';
-import { ExternalReference } from '../calendar/ExternalReference';
-import { Data } from "@/app/models/data/Data";
+import { SnapshotContainer } from '@/app/snapshots';
+import { Attachment, FileType } from '@/Attachment/attachment';
+import { ExternalReference } from '@/calendar/ExternalReference';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 
 interface BaseEntityProperties { 
   _id?: string;
-   id?: string | number;
-   type?: string | AllTypes | Promise<FileType> | null;
-   title?: string;
-   label?: Label | string | Record<string, string> | null;
-   key?: string;
-   value?: string | number | any | null;
-   name?: string;
-   category?: symbol | string | Category;
-   criteria?: CriteriaType;
-
+  id?: string | number;
+  type?: string | AllTypes | Promise<FileType> | null;
+  title?: string;
+  label?: Label | string | Record<string, string> | null;
+  key?: string;
+  value?: string | number | any | null;
+  name?: string;
+  category?: symbol | string | Category;
+  criteria?: CriteriaType;
  }
 
 interface SharedIdentifiers<  
@@ -146,4 +145,5 @@ interface SharedStatusFlags {
   isUnderMaintenance?: boolean;
 }
 
-export type { SharedIdentifiers, SharedStatusFlags, SharedTimestamps, SharedSnapshotProperties, BaseEntityProperties };
+export type { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties, SharedStatusFlags, SharedTimestamps };
+

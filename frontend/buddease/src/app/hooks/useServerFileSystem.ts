@@ -1,6 +1,6 @@
 // useServerFileSystem.ts
-import { useAuthToken } from './useAuthToken';
-import { ServerFileSystem } from './serverFileSystem';
+import { useAuthToken } from '@/useAuthToken';
+import { ServerFileSystem } from '@/serverFileSystem';
 
 export const useServerFileSystem = () => {
   const authToken = useAuthToken();

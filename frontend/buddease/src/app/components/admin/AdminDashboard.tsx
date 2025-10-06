@@ -8,7 +8,7 @@ import { subscriptionServiceInstance } from "@/app/hooks/dynamicHooks/dynamicHoo
 import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";
 import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";
 import { Theme } from "@/app/libraries/ui/theme/Theme";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { K, T } from "@/app/models/data/dataStoreMethods";
 import useNotificationManagerService from "@/app/notifications/NotificationService";
 import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
@@ -18,9 +18,9 @@ import { AppConfig } from "@/config/AppConfig";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { ApiConfig } from "@/configs/ConfigurationService";
 import SecurityAudit from "@/server/security/SecurityAudit";
+import NotificationManager from '@/support/NotificationManager';
 import { BytesLike } from "ethers";
 import React, { useEffect, useState } from "react";
-import NotificationManager from '../support/NotificationManager';
 import { ConfigCard } from "./DashboardConfigCard";
 
 interface AdminDashboardProps extends YourComponentProps {

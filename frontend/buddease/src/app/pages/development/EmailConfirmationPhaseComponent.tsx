@@ -1,7 +1,7 @@
 import { updateUIWithCopiedText } from '@/app/documents/editing/updateUI';
 import useUIStore from '@/app/components/libraries/ui/useUIStore';
 import React from 'react';
-import * as apiData from './../../api/ApiData';
+import * as apiData from '@/api/ApiData';
 
 interface EmailConfirmationPhaseComponentProps {
   onSuccess: (condition: boolean, dynamicData: any) => void;

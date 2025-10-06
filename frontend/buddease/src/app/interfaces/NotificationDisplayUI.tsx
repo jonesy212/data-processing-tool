@@ -1,10 +1,10 @@
 // NotificationDisplayUI.tsx
 import { useThemeConfig } from '@/app/hooks/userInterface/ThemeConfigContext';
+import { selectNotifications } from '@/app/state/redux/slices/NofiticationsSlice'
+import NotificationComponent from '@/notifications/NotificationComponent';
+import { NotificationProps } from '@/typings/PropTypes';
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { selectNotifications } from '../features/support/NofiticationsSlice';
-import NotificationComponent from '../notifications/NotificationComponent';
-import { NotificationProps } from '../typings/PropTypes';
 
 const NotificationDisplay: React.FC = () => {
   // Get notifications from Redux state

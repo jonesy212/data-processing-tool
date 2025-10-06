@@ -1,8 +1,8 @@
-import { reaction } from 'mobx';
 import { Task } from '@/app/components/models/tasks/Task';
 import { Todo } from '@/app/components/todos/Todo';
-import { useTaskManagerStore } from '../stores/TaskStore ';
-import useTodoManagerStore from '../stores/TodoStore';
+import { useTaskManagerStore } from '@/stores/TaskStore ';
+import useTodoManagerStore from '@/stores/TodoStore';
+import { reaction } from 'mobx';
 
 // Function to set up reaction for a specific store
 const setupReactionForStore = (getStore: () => any, propertyToObserve: string, onReaction: (value: any) => void) => {

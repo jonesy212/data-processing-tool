@@ -1,9 +1,9 @@
 // ContentRenderer.tsx
-import { Project, ProjectDetails } from "@/app/components/projects/Project";
-import React from "react";
 import { StatusType } from "@/app/models/data/StatusType";
 import { Task } from "@/app/models/tasks/Task";
+import { Project, ProjectDetails } from "@/app/projects/Project";
 import { Todo } from "@/app/todos/Todo";
+import React from "react";
 import { isProject, isTask } from "./ContentHelpers";
  
 interface ButtonProps {

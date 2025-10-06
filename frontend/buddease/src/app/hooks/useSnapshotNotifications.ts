@@ -5,7 +5,7 @@ import { snapshotStoreInstance } from '@/app/snapshots/SnapshotStore';
 import { notificationStoreInstance } from '@/app/state/stores/NotificationStore';
 import { useSnapshot } from "@/context/SnapshotContext";
 import { useCallback } from 'react';
-import { NotificationData } from '@/app/components/support/NofiticationsSlice';
+import { NotificationData } from '@/app/state/redux/slices/NofiticationsSlice'
 
 // Snapshot notification types
 interface SnapshotNotificationOptions {

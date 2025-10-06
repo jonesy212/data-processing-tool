@@ -1,7 +1,7 @@
-import React from 'react';
 import { CommonCalendarProps } from '@/app/components/calendar/Calendar';
-import { Task } from '../models/tasks/Task';
 import { CalendarEvent } from '@/app/state/stores/CalendarEvent';
+import { Task } from '@/models/tasks/Task';
+import React from 'react';
 
 interface DayOfWeekProps extends CommonCalendarProps{
   day: string;

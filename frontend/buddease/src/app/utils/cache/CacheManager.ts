@@ -1,5 +1,5 @@
 // CacheManager.ts
-import { BaseData } from "@/app/components/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { CustomPhaseHooks } from "@/app/components/phases/Phase";
 import { DataAnalysisDispatch } from "@/app/typings/dataAnalysisTypes";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";

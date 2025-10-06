@@ -1,6 +1,6 @@
 // AuthService.ts
 // import JWT_SECRET from "@/configs/JwtConfig";
-import { databaseConfig } from '@/app/configs/DatabaseConfig';
+import { databaseConfig } from '@/config//DatabaseConfig';
 import { PostgresDatabaseService } from "@/app/database/PostgresDatabaseService";
 import { DatabaseConfig, DatabaseService } from "@/config/DatabaseConfig";
 

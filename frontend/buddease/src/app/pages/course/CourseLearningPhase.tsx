@@ -1,8 +1,8 @@
 // CourseLearningPhase.tsx
-import { Data } from '@/app/components/models/data/Data';
+import { Data } from '@/app/models/data/Data';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import React, { useState } from 'react';
-import { CourseDevelopmentPhase } from './CourseDevelopmentPhaseManager';
+import { CourseDevelopmentPhase } from '@/CourseDevelopmentPhaseManager';
 
 interface CourseLearningPhaseProps {
   onSubmit: (data: any) => void;

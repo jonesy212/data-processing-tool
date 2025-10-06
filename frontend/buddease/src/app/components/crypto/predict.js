@@ -3,7 +3,7 @@
 import { createInterface } from 'readline';
 
 
-import MachineLearningModel from './machineLearningModel';
+import MachineLearningModel from '@/machineLearningModel';
 
 // Create an instance of the machine learning model
 const model = new MachineLearningModel();

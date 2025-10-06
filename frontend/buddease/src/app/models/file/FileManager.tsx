@@ -1,13 +1,13 @@
+import { fetchFolderContentsAPI } from '@/app/components/api/ApiFiles';
 import { refreshUIForFile } from "@/app/snapshots/refreshUI";
 import { selectFilteredEvents } from "@/app/state/redux/slices/FilteredEventsSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { useFilterStore } from "@/app/state/stores/FilterStore";
+import { Folder } from '@/data/ Folder';
 import { FilteredEventsState } from '@/stats/stores/FilterStore';
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchFolderContentsAPI } from '@/app/components/api/ApiFiles';
-import { Folder } from '../data/ Folder';
 
 interface File {
   id?: string;

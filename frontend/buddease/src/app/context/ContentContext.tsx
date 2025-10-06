@@ -1,9 +1,9 @@
+import * as contentApi from '@/api/ApiContent';
+import { endpoints } from '@/api/endpointConfigurations';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { ContentState } from 'draft-js';
 import * as React from 'react';
 import { createContext, useContext, useEffect, useState } from 'react';
-import { ContentState } from 'draft-js';
-import { StructuredMetadata } from '../configs/StructuredMetadata';
-import * as contentApi from './../api/ApiContent';
-import { endpoints } from '../api/endpointConfigurations';
 
 interface ContentContextType {
   contentState: ContentState | null;

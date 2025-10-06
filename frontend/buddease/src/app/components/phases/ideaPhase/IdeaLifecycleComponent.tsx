@@ -1,5 +1,5 @@
 import React from 'react';
-import { lifecyclePhases } from './path-to-phases-file';  // Update with the correct path
+import { lifecyclePhases } from '@/path-to-phases-file';  // Update with the correct path
 
 const IdeaLifecycleComponent: React.FC = () => {
   // Render Idea Lifecycle phases

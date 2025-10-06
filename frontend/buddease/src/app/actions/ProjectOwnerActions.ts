@@ -1,8 +1,8 @@
+import { Project, ProjectData } from '@/app/models/projects/Project';
+import { Team } from '@/models/teams/Team';
+import MemberData, { TeamMember } from '@/models/teams/TeamMembers';
+import { User } from '@/users/User';
 import { createAction } from '@reduxjs/toolkit';
-import { Team } from '../models/teams/Team';
-import MemberData, { TeamMember } from '../models/teams/TeamMembers';
-import  { ProjectData , Project} from '../projects/Project';
-import { User } from '../users/User';
 
 export const ProjectOwnerActions = {
   // Action creators for creating a project

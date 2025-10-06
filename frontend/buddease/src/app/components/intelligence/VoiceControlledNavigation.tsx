@@ -1,7 +1,7 @@
 import 'intro.js/introjs.css';
 import { IntroJs } from 'intro.js/src/intro';
 import React, { useEffect, useState } from 'react';
-import { startVoiceRecognition, stopVoiceRecognition } from './VoiceControl';
+import { startVoiceRecognition, stopVoiceRecognition } from '@/VoiceControl';
 
   const VoiceControlledNavigation: React.FC = () => {
     const [isVoiceRecognitionActive, setVoiceRecognitionActive] = useState(false);

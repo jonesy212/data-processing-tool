@@ -1,5 +1,5 @@
 import axiosInstance from "@/app/api/csrfToken";
-import { Data } from "@/app/components/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { useDetailsContext } from "@/app/components/models/data/DetailsContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";

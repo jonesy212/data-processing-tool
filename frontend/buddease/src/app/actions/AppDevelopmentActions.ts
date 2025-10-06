@@ -1,7 +1,7 @@
 // AppDevelopmentActions.ts
 import { createAction, PayloadAction } from "@reduxjs/toolkit";
 import { Phase } from "./Phase";
-import { Data } from '@/app/components/models/data/Data';
+import { Data } from '@/app/models/data/Data';
 
 export const AppDevelopmentActions<
   T extends BaseDataEntity,

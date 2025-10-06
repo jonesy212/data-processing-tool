@@ -1,4 +1,4 @@
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { ContentState } from 'draft-js';
 
 interface CustomContentState  {

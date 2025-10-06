@@ -1,41 +1,40 @@
 // SnapshotData.ts
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { SharedIdentifiers, SharedSnapshotProperties } from "@/app/components/documents/RelatedProps";
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
 import CalendarManagerStoreClass from '@/app/components/state/stores/CalendarManagerStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SharedMetadata } from '@/app/configs/metadata/createMetadataState';
+import { SharedMetadata } from '@/config//metadata/MetadataHooks';
 import { Order } from "@/app/crypto/Orders";
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { ChildRelationship, SharedRelationshipData } from "@/app/models/data/Data";
+import { ChildRelationship, SharedRelationshipData } from '@/app/models/data/Data';
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Snapshots } from '@/app/snapshots';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { AuditRecord } from "@/app/subscribers/Subscriber";
 import { Subscription } from "@/app/subscriptions/Subscription";
-import { AuditRecord } from "@/app/users/Subscriber";
 import { SubscriberCollection } from "@/app/users/SubscriberCollection";
 import { VersionHistory } from "@/app/versions/VersionData";
-import { BaseDataRoot } from "@/config/BaseConfig";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { UpdateSnapshotPayload } from '@/server/database/Payload';
+import { SnapshotDataParams } from '@/SnapshotDataParams';
+import { SnapshotInitialization } from '@/SnapshotInitialization';
+import { SnapshotOperations } from '@/snapshotOperations';
 import { SnapshotsArray, SnapshotUnion } from "./LocalStorageSnapshotStore";
 import { Snapshot } from "./Snapshot";
 import { SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotDataParams } from './SnapshotDataParams';
-import { SnapshotInitialization } from './SnapshotInitialization';
 import { SnapshotMethods } from "./SnapshotMethods";
 import { SnapshotSecurity } from "./SnapshotSecurity";
 import SnapshotStore from "./SnapshotStore";
 import { InitializedData } from "./SnapshotStoreOptions";
 import { SnapshotWithCriteria, TagsRecord } from "./SnapshotWithCriteria";
-import { SnapshotOperations } from './snapshotOperations';
 
 
 interface SnapshotBaseProperties<
@@ -112,7 +111,8 @@ interface CustomSnapshotData<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends BaseDataEntity<T, K, Meta, AttachmentType, ExcludedFields>,
   SharedRelationshipData<K>,
   SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -415,6 +415,6 @@ interface HierarchyExport<
 }
 
 export type {
-    CustomSnapshotData, SnapshotBaseMethods, SnapshotBaseProperties, SnapshotData, SnapshotHierarchyMethods, SnapshotRelationships
+  CustomSnapshotData, SnapshotBaseMethods, SnapshotBaseProperties, SnapshotData, SnapshotHierarchyMethods, SnapshotRelationships
 };
 

@@ -1,14 +1,14 @@
 import { NotificationType } from '@/app/components/context/NotificationContext';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { metadata } from '@/app/layout';
-import generateFakeData, { FakeDataPartial } from "@/app/intelligence/FakeDataGenerator";
-import { BaseData, Data } from "@/app/models/data/Data";
 import { Member } from '@/app/components/models/teams/TeamMembers';
+import { useSecureDocumentId } from '@/app/components/utils/useSecureDocumentId';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { useSecureStoreId } from "@/app/hooks/useSecureStoreId";
+import generateFakeData, { FakeDataPartial } from "@/app/intelligence/FakeDataGenerator";
+import { metadata } from '@/app/layout';
+import { BaseData, Data } from '@/app/models/data/Data';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore, { Snapshot } from "@/app/snapshots/SnapshotStore";
-import { useSecureDocumentId } from '@/app/components/utils/useSecureDocumentId';
-import { useSecureStoreId } from "@/app/hooks/useSecureStoreId";
-import { ReassignEventResponse } from './AssignEventStore';
+import { ReassignEventResponse } from '@/AssignEventStore';
 import CalendarManagerStoreClass, {
     CalendarEvent,
     useCalendarManagerStore,
@@ -243,7 +243,7 @@ describe("CalendarManagerStoreClass", () => {
   it("should handle fetch events request failure gracefully", async () => {
     // Mock axiosInstance get method to throw an error
     const mockGet = jest.fn(() => Promise.reject(new Error("API Error")));
-    jest.mock("../../security/csrfToken", () => ({
+    jest.mock("@/security/csrfToken", () => ({
       default: { get: mockGet },
     }));
 
@@ -261,7 +261,7 @@ describe("CalendarManagerStoreClass", () => {
     const mockGet = jest.fn(() =>
       Promise.resolve({ data: [{ id: "1", title: "Mock Event" }] })
     );
-    jest.mock("../../security/csrfToken", () => ({
+    jest.mock("@/security/csrfToken", () => ({
       default: { get: mockGet },
     }));
 

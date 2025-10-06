@@ -1,13 +1,13 @@
 // SnapshotSttoreMethods.ts
 
-import { Category } from "@/app/data_analysis/frontend/buddease/src/app/components/libraries/categories/generateCategoryProperties";
-import { StatusType } from "@/app/data_analysis/frontend/buddease/src/app/components/models/data/StatusType";
-import { RealtimeDataItem } from "@/app/data_analysis/frontend/buddease/src/app/components/models/realtime/RealtimeData";
-import CalendarManagerStoreClass from "@/app/data_analysis/frontend/buddease/src/app/components/state/stores/CalendarManagerStore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
+import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
+import { StatusType } from "@/app/components/models/data/StatusType";
+import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { SnapshotStoreMap } from '@/SnapshotMethods';
 import { Snapshot, SnapshotStoreConfig } from ".";
 import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";
-import { SnapshotStoreMap } from './SnapshotMethods';
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreReference } from "./SnapshotStoreReference";
 import { SnapshotStoreProps } from "./useSnapshotStore";

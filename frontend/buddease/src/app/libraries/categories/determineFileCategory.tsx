@@ -1,8 +1,8 @@
 // determineFileCategory.tsx
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { FileCategory } from "@/app/components/documents/FileType";
+import { BaseData } from '@/app/models/data/Data';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { FileCategory } from "@/app/documents/FileType";
 // Utility function to determine file category based on categoryName
 function determineFileCategory(categoryName: string): FileCategory {
   // Implement logic to determine file category based on the provided categoryName

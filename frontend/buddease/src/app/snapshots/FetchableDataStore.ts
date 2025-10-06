@@ -1,9 +1,9 @@
 // FetchableDataStore.ts
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { BaseDataEntity } from "@/config/BaseConfig";
 
 

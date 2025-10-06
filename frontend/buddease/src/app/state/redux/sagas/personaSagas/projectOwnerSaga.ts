@@ -3,8 +3,8 @@ import { ProjectOwnerActions } from "@/app/actions/ProjectOwnerActions";
 import projectOwnerApiService from "@/app/api/ProjectOwnerApi";
 import { Team } from "@/app/components/models/teams/Team";
 import { TeamMember } from "@/app/components/models/teams/TeamMembers";
-import { ProjectType } from "@/app/components/projects/Project";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { ProjectType } from "@/app/projects/Project";
 import { call, put, takeLatest } from "redux-saga/effects";
 
 // Worker Saga: Create Project

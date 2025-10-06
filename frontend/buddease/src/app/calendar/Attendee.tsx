@@ -1,16 +1,16 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { CalendarManagerState } from "@/app/components/calendar/CalendarSlice";
-import { getDefaultDocumentOptions } from "@/app/components/documents/DocumentOptions";
-import { BaseData, Data } from "@/app/components/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { Team } from "@/app/components/models/teams/Team";
 import { Member } from "@/app/components/models/teams/TeamMembers";
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { VideoData } from "@/app/components/video/Video";
+import { getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { K, T } from '@/components/models/data/dataStoreMethods';
 import { projectMetadata, transformProjectToUnifiedMetadata } from "@/config/StructuredMetadata";
 import { useState } from "react";
-import { K, T } from '../components/models/data/dataStoreMethods';
 import useAttendancePrediction from "./AttendancePrediction";
 
 

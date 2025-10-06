@@ -1,7 +1,7 @@
 // Profile.tsx
-import React from 'react';
 import UserDetails, { User } from '@/app/components/users/User'; // Import the User interface
-import PersonaTypeEnum, { PersonaBuilder, PersonaData } from '../personas/PersonaBuilder';
+import PersonaTypeEnum, { PersonaBuilder, PersonaData } from '@/personas/PersonaBuilder';
+import React from 'react';
 
 interface ProfileProps {
   user: User; // Pass the user data as props
@@ -52,4 +52,4 @@ const Profile: React.FC<ProfileProps> = ({ user, props }) => {
 };
 
 export default Profile;
-export type {ProfileAccessControl, ActivityStatus}
+export type { ActivityStatus, ProfileAccessControl };

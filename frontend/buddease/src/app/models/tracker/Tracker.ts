@@ -1,4 +1,4 @@
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 //Tracker.ts
 import { HighlightColor } from "@/app/components/styling/Palette";
 import { detectMetadataChanges } from "@/configs/metadata/detectMetadataChanges";

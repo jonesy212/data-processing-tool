@@ -1,12 +1,12 @@
 // DashboardLayout.tsx
 
 import React from 'react';
-import CommonLayout from './CommonLayout';
+import CommonLayout from '@/CommonLayout';
 import CollaborationToolsToolbar from '@/app/pages/community/CollaborationToolsToolbar';
 import ProjectManagementToolbar from '@/app/components/documents/ProjectManagementToolbar';
 import { useDashboard } from '@/app/context/DashboardContext';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
-import { Data } from '@/app/components/models/data/Data';
+import { Data } from '@/app/models/data/Data';
 import DashboardLoader from '@/app/components/dashboards/DashboardLoader';
 import CryptoSectionToolbar from '@/app/components/libraries/toolbar/CryptoSectionToolbar';
 import { useAuth } from '@/context/AuthContext'; // Import auth context

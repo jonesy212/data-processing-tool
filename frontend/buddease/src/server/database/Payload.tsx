@@ -12,24 +12,24 @@ import useSubscription from "@/app/app/hooks/useSubscription";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { useNotification } from "@/app/context/NotificationContext";
 import { SnapshotLogger } from "@/app/libraries/logging/Logger";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotActions } from "@/app/snapshots/SnapshotActions";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
-import { Subscriber } from "@/app/users/Subscriber";
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import {
-    addToSnapshotList,
-    category,
+  addToSnapshotList,
+  category,
 } from "@/app/utils/snapshotUtils";
 import {
-    logActivity,
-    notifyEventSystem,
-    triggerIncentives,
-    updateProjectState,
+  logActivity,
+  notifyEventSystem,
+  triggerIncentives,
+  updateProjectState,
 } from "@/app/utils/web3/applicationUtils";
 import {
-    BaseDataEntity,
-    DefaultExcludedFields,
-    DefaultMeta,
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta,
 } from "@/config/BaseConfig";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { LiveEvent } from "@refinedev/core";
@@ -225,11 +225,11 @@ const payload: Partial<
 };
 
 export type {
-    CreateSnapshotsPayload,
-    CreateSnapshotStoresPayload,
-    ExtendedBaseDataPayload,
-    Payload,
-    UpdateSnapshotPayload
+  CreateSnapshotsPayload,
+  CreateSnapshotStoresPayload,
+  ExtendedBaseDataPayload,
+  Payload,
+  UpdateSnapshotPayload
 };
 
   export { payload };

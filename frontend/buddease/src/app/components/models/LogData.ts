@@ -1,7 +1,7 @@
 import { NestedEndpoints } from "@/app/api/ApiEndpoints";
 import CustomFile from "@/app/documents/File";
 import { Highlight } from "@/app/documents/NoteData";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { BaseData } from "./data/Data";
 interface LogData<

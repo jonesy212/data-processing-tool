@@ -1,6 +1,6 @@
 // MeetingSchedulerViewerScreen.tsx
 import React from 'react';
-import MeetingSchedulerViewerToolbar from './MeetingSchedulerViewerToolbar';
+import MeetingSchedulerViewerToolbar from '@/MeetingSchedulerViewerToolbar';
 
 const MeetingSchedulerViewerScreen: React.FC = () => {
   // Add logic specific to the meeting scheduler viewer screen here

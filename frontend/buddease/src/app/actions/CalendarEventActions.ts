@@ -1,12 +1,12 @@
 // CalendarActions.ts
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
+import { K, T } from '@/app/models/data/dataStoreMethods';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { createAction } from "@reduxjs/toolkit";
 import { default as CustomFile, default as File } from "@/app/documents/File";
 import { Theme } from "@/app/libraries/ui/theme/Theme";
-import { BaseData } from "@/app/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 

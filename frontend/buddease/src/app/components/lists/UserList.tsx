@@ -2,7 +2,7 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 
 import ListGenerator from '@/app/generators/ListGenerator';
-import { User } from '../users/User';
+import { User } from '@/users/User';
 interface UserListProps{
   users?: User[];
 }

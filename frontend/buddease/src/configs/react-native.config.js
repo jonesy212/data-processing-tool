@@ -12,8 +12,8 @@ module.exports = {
     assets: [
       // Add any additional asset directories or patterns required for your project
       // For example:
-      // './assets/fonts',
-      // './assets/images',
+      // '@/assets/fonts',
+      // '@/assets/images',
     ],
     commands: [
       // Define custom commands or overrides for default commands

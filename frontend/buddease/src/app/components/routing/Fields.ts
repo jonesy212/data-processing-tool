@@ -1,14 +1,11 @@
-import { Project } from "@/app/components/projects/Project";
-import { BaseDataEntity } from '@/config/BaseConfig';
-import {
-    DefaultExcludedFields
-} from "@/config/BaseConfig";
+import { Project } from "@/app/projects/Project";
+import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
 import { ProjectMetadata, StructuredMetadata } from "@/config/StructuredMetadata";
 import { TaskMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { BaseData } from '@/app/models/data/Data';
-import { Task, TaskData } from '../models/tasks/Task';
+import { Task, TaskData } from '@/models/tasks/Task';
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 // Pick specific keys from T
 type Fields<T, K extends keyof T> = Pick<T, K>;

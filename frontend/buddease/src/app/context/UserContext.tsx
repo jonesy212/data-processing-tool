@@ -1,9 +1,9 @@
 //UserContext.tsx
-import { DataSharingPreferences } from '@/app/components/settings/PrivacySettings';
+import { DataSharingPreferences } from '@/app/settings/PrivacySettings';
 import useAuthentication from "@/app/hooks/useAuthentication";
 import { refreshUI } from '@/app/snapshots/refreshUI';
 import { User } from "@/app/users/User";
-import useSocialAuthentication from "@/components/hooks/commHooks/useSocialAuthentication";
+import useSocialAuthentication from "@/app/hooks/commHooks/useSocialAuthentication";
 import UserRoles from "@/users/UserRoles";
 import React, { createContext, useContext, useEffect, useState } from "react";
 

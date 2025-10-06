@@ -1,8 +1,8 @@
 // // SnapshotStoreMethod.tsx
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import { Snapshot } from "@/app/snapshots";
+import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Subscription } from "@/app/subscriptions/Subscription";
 import {
   BaseDataEntity,
@@ -12,7 +12,7 @@ import {
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotContainerType } from './SnapshotContainer';
+import { SnapshotContainerType } from '@/SnapshotContainer';
 import { SnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";

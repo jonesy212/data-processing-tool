@@ -1,21 +1,21 @@
 // VersionGenerator.tsx
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 
 import { apiNotificationMessages, handleApiErrorAndNotify } from "@/app/api/ApiData";
-import DocumentPermissions from '@/app/components/documents/DocumentPermissions';
-import { BaseData } from "@/app/components/models/data/Data";
-import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { BaseData } from '@/app/models/data/Data';
 import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
+import DocumentPermissions from '@/app/documents/DocumentPermissions';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { TaskLogger } from "@/app/libraries/logging/Logger";
-import { Snapshot } from "@/app/snapshots";
+import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import Version from "@/app/versions/Version";
+import { Version } from "@/app/versions/Version";
 import getAppPath from "@/config/appStructure/appPath";
+import { ExtendedVersionData } from '@/app/versionsVersionData';
 import { AxiosError } from "axios";
-import { ExtendedVersionData } from './VersionData';
 
 const { notify } = useNotification();
   

@@ -1,9 +1,9 @@
 // OnboardingManager.tsx
 import ProfileSetupPhase from '@/app/components/phases/onboarding/ProfileSetupPhase';
 import React, { useState } from 'react';
-import { OnboardingPhase } from './OnboardingPhase';
-import RegistrationPhase from './RegistrationPhase';
-import WelcomePage from './WelcomePage';
+import { OnboardingPhase } from '@/OnboardingPhase';
+import RegistrationPhase from '@/RegistrationPhase';
+import WelcomePage from '@/WelcomePage';
 
 const OnboardingManager: React.FC = () => {
   const [currentPhase, setCurrentPhase] = useState<OnboardingPhase>(OnboardingPhase.WELCOME);

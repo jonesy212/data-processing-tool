@@ -1,9 +1,7 @@
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { BaseData } from "@/app/models/data/Data";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/s/BaseConfig";
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { InitializedConfig } from "./SnapshotStoreConfig";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
 import { Attachment } from "@/components/documents/Attachment/attachment";
+import { InitializedConfig } from "./SnapshotStoreConfig";
 
 interface SnapshotInitialization<
   T extends BaseDataEntity,

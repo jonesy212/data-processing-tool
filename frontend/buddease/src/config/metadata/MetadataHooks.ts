@@ -1,17 +1,16 @@
 // config/metadata/MetadataHooks.ts
-import { SharedRelationshipData } from "@/app/components/models/data/Data";
-import { createEventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { VersionData, VersionHistory } from "@/app/versions/VersionData";
-import { AppStructureItem } from "@/configs/appStructure/AppStructure";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { SharedRelationshipData } from '@/app/models/data/Data';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { createEventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { UserConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { HistoryEntry } from '@/app/state/stores/HistoryStore';
 import { UserData } from "@/app/users/User";
-import { BaseDataRoot } from "@/config/BaseConfig";
+import { VersionData, VersionHistory } from "@/app/versions/VersionData";
+import { AppStructureItem } from "@/config/appStructure/AppStructure";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import { useState } from 'react';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Client-side metadata state interfaces
 interface MetaState<

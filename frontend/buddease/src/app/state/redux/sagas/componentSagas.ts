@@ -1,6 +1,6 @@
-import { ComponentActions } from '@/app/components/libraries/ui/components/ComponentActions';
-import { apiComponent } from '@/app/components/libraries/api/apiComponent';
-import ApiConfigComponent from '@/app/configs/ApiConfigComponent';
+import { ComponentActions } from '@/app/libraries/ui/components/ComponentActions';
+import { apiComponent } from '@/app/libraries/api/apiComponent';
+import ApiConfigComponent from '@/config//ApiConfigComponent';
 //componentSagas.ts
 
 import { call, put } from "redux-saga/effects";

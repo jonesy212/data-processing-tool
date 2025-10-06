@@ -1,7 +1,7 @@
 // FormBuilder.tsx
 
 import DocumentBuilder from "@/app/documents/editing/DocumentBuilder";
-import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentBuilderProps } from "@/app/components/documents/SharedDocumentProps";
 import useFilePath from "@/app/hooks/useFilePath";
 import { DocumentSize, ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";

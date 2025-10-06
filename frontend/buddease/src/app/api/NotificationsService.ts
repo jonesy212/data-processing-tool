@@ -1,14 +1,14 @@
 // NotificationsService.ts
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import {
     NotificationType,
     NotificationTypeEnum,
     useNotification,
 } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { Attachment } from '@/app/models/data/Attachment';
-import { NotificationData } from "@/app/support/NofiticationsSlice";
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Define API base URL
 const API_BASE_URL = endpoints.notifications;

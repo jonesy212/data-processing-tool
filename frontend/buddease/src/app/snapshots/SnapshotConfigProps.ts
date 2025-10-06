@@ -1,16 +1,15 @@
-import { Snapshot } from "@/app/snapshots";
+import { BaseEntity } from "@/app/components/routing/FuzzyMatch";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { CategoryProperties } from './../../pages/personas/ScenarioBuilder';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
 import { SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotContainer } from "./SnapshotContainer";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
-import { ExcludedFields } from "@/app/data_analysis/frontend/buddease/src/app/components/routing/Fields";
-import { BaseEntity } from "@/app/data_analysis/frontend/buddease/src/app/components/routing/FuzzyMatch";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
 
 // SnapshotCommonProps for properties specific to snapshots, extending BaseEntity for common properties
 interface SnapshotCommonProps<T extends BaseDataEntity,

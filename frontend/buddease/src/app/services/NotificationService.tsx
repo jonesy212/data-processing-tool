@@ -165,7 +165,7 @@ const useNotificationManagerService = (): NotificationContainer => {
         completionMessageLog: logData,
         sendStatus: "confirmed" as "Sent" | "Delivered" | "Read" | "Error",
         notificationType:
-          "/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/context/NotificationContext" as NotificationType,
+          "/data_analysis/frontend/buddease/src/app/components/context/NotificationContext" as NotificationType,
       })
     );
     // Send push notification on button click

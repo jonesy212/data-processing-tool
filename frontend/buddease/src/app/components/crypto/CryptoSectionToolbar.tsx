@@ -1,6 +1,6 @@
 // CryptoSectionToolbar.tsx
+import ToolbarItem from '@/documents/ToolbarItem';
 import React from 'react';
-import ToolbarItem from '../documents/ToolbarItem';
 
 interface CryptoSectionToolbarProps {
   onTradeClick: () => void; // Function to handle trade button click

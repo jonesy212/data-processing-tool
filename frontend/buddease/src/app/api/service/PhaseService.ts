@@ -1,4 +1,4 @@
-import { Phase } from './Phase'; // Assuming Phase and CustomPhaseHooks are defined in a separate file
+import { Phase } from '@/Phase'; // Assuming Phase and CustomPhaseHooks are defined in a separate file
 
 class PhaseService {
   private phases: Phase[];

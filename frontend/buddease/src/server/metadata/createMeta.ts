@@ -1,5 +1,5 @@
 // createMeta.ts
-import { BaseData } from "@/app/components/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
 import { StructuredMetadata } from "@/app/StructuredMetadata";
 

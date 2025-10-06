@@ -1,9 +1,9 @@
 import axiosInstance from '@/app/api/csrfToken';
 import { AppStructureItem } from "@/app/appStructure/AppStructure";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/BaseConfig";
-import { BaseData } from '@/app/components/models/data/Data';
-import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
-import { Permission } from '@/app/components/users/Permission';
+import { BaseData } from '@/app/models/data/Data';
+import { UserConfigData } from "@/app/models/data/dataStoreMethods";
+import { Permission } from '@/app/users/Permission';
 import { DataVersions } from "@/app/DataVersionsConfig";
 import { hashString } from "@/app/generators/HashUtils";
 import { UserData } from "@/app/users/User";
@@ -43,8 +43,10 @@ const userConfigData: UserConfigData<MyData, MyExtendedData, MyMetadata> = {
 export default class FrontendStructure<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K>  = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > implements AppStructureItem {
   [key: string]: any;
   
@@ -381,7 +383,7 @@ export default class FrontendStructure<
         timestamp: latestVersionData.timestamp,
         history,
         currentVersion,
-      } as VersionHistory;
+      } as VersionHistory<T, K>;
     });
     return frontendStructureItemsWithVersions;
   }

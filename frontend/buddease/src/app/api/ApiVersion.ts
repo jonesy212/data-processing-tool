@@ -1,11 +1,11 @@
 // ApiVersion.ts
 
 import axiosInstance from "@/app/api/csrfToken"; // Ensure this is set up correctly for API calls
-import { BaseData } from "@/app/components/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { YourResponseType } from "@/app/components/typings/types";
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from "axios";
 import { endpoints } from "./ApiEndpoints";

@@ -1,9 +1,9 @@
-import { Project, ProjectData } from '@/app/components/projects/Project';
-import DatabaseClient from '@/app/components/todos/tasks/DatabaseClient';
-import { Snapshot } from "@/app/snapshots";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { DatabaseService } from '@/app/configs/DatabaseConfig';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/BaseConfig";
+import { Project, ProjectData } from '@/app/projects/Project';
+import DatabaseClient from '@/app/todos/tasks/DatabaseClient';
+import { DatabaseService } from '@/config//DatabaseConfig';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 
 type AppProject = Project<
   ProjectEntity,

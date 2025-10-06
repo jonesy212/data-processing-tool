@@ -1,11 +1,11 @@
 // containerMethods.ts
 
-import { SnapshotData, SnapshotContainer } from "..";
-import { Category } from "@/app/data_analysis/frontend/buddease/src/app/components/libraries/categories/generateCategoryProperties";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
-import { CategoryProperties } from "@/app/data_analysis/frontend/buddease/src/app/pages/personas/ScenarioBuilder";
-import { CriteriaType } from "@/app/data_analysis/frontend/buddease/src/app/pages/searchs/CriteriaType";
+import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import SnapshotStore from "@/app/snapshotstore";
+import { SnapshotContainer, SnapshotData } from "..";
 
 // src/methods/containerMethods.ts
 export const ContainerMethodsImplementation = {

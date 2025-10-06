@@ -1,6 +1,6 @@
 // BlogPosts.tsx
  import React from 'react';
-import { BlogPost } from './BlogPost';
+import { BlogPost } from '@/BlogPost';
  
 
 interface BlogPostsProps  {

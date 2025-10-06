@@ -1,7 +1,7 @@
 import { version } from '@/app/versions/Version';
 import { createLastUpdated, VersionData, VersionHistory } from "./VersionData";
-import { BaseData } from '@/app/components/models/data/Data';
-import { AppStructureItem } from "@/configs/appStructure/AppStructure";
+import { BaseData } from '@/app/models/data/Data';
+import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import VersionImpl from "@/app/versions/Version";
 import { T, K } from "@/app/components/models/data/dataStoreMethods";
 import { data } from '@/app/snapshots/SnapshotWithCriteria';

@@ -1,7 +1,7 @@
 import {
   SubscriptionActions
 } from "@/app/actions/SubscriptionActions";
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { CustomSnapshotData, Snapshot, SnapshotContainerData } from "@/app/snapshots";
 import { Callback } from "@/app/snapshots/subscribeToSnapshotsImplementation";
@@ -9,7 +9,7 @@ import { LiveEvent } from "@refinedev/core";
 import { useEffect, useState } from "react";
 import { useDispatch } from 'react-redux';
 
-import { Subscriber } from "@/app/users/Subscriber";
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { fetchPortfolioUpdatesLastUpdated } from "@/app/utils/trading/TradingUtils";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { createAction } from "@reduxjs/toolkit";

@@ -1,68 +1,68 @@
 // createSnapshotStoreOptions.ts
+import { FetchSnapshotPayload } from '@/FetchSnapshotPayload';
+import { SnapshotContainerType } from '@/SnapshotContainer';
+import { InitializedData } from '@/SnapshotStoreOptions';
 import { isInitializedSnapshot } from "@/app/api/ApiDataAnalysis";
 import { getCurrentSnapshot } from '@/app/api/SnapshotApi';
 import { getSubscribersAPI } from '@/app/api/subscriberApi';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { K, Meta } from '@/app/components/models/data/dataStoreMethods';
-import { DataStore, InitializedState, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { baseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { createMeta } from '@/app/configs/metadata/createMetadataState';
-import { useMeta } from '@/config/useMeta';
 import useSecureStoreId from '@/app/hooks/useSecureStoreId';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { CombinedEvents, SnapshotManager, SnapshotStoreOptions, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { getCategoryProperties } from "@/app/libraries/categories/CategoryManager";
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { allCategories } from '@/app/models/data/DataStructureCategories';
 import { StatusType } from "@/app/models/data/StatusType";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import { DataStore, InitializedState, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Callback, createSnapshotConfig, CustomSnapshotData, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteria, subscribeToSnapshotImpl } from '@/app/snapshots';
 import {
-    SnapshotsArray,
-    SnapshotsObject,
-    SnapshotUnion
+  SnapshotsArray,
+  SnapshotsObject,
+  SnapshotUnion
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
 import handleSnapshotStoreOperation from '@/app/snapshots/handleSnapshotStoreOperation';
 import { subscribeToSnapshotsImpl } from '@/app/snapshots/subscribeToSnapshotsImplementation';
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { getSubscription } from '@/app/subscriptions/subscriptionServiceInstance';
-import { Subscriber } from "@/app/users/Subscriber";
+import { SnapshotEvent } from '@/app/typings/eventTypes';
 import { convertToSubscriberCollection } from '@/app/utils/SubscriberUtils';
 import { addToSnapshotList, generateSnapshotId, isSnapshot } from "@/app/utils/snapshotUtils";
 import { versionData } from '@/app/versions/Version';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
+import { SnapshotWithData } from '@/calendar/CalendarApp';
+import { CalendarEvent } from '@/calendar/CalendarEvent';
+import { LanguageEnum } from '@/communications/LanguageEnum';
+import { baseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { createMeta } from '@/config/metadata/MetadataHooks';
+import { useMeta } from '@/config/useMeta';
 import { useMetadata } from "@/config/useMetadata";
 import { UnifiedMetaDataOptions } from '@/configs/database/MetaDataOptions';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import baseMeta from '@/server/database/baseMeta';
-import { Tag } from 'sanitize-html';
-import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { CreateSnapshotsPayload } from '@/server/database/Payload';
-import { SnapshotWithData } from '../calendar/CalendarApp';
-import { CalendarEvent } from '../calendar/CalendarEvent';
-import { LanguageEnum } from '../communications/LanguageEnum';
-import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
-import { displayToast } from '../models/display/ShowToast';
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-import { ExcludedFields } from '../routing/Fields';
-import { SubscriberCollection } from '../users/SubscriberCollection';
-import Version from '../versions/Version';
-import { createDefaultVersionData } from '../versions/VersionData';
-import { FetchSnapshotPayload } from './FetchSnapshotPayload';
-import { Snapshots } from "./LocalStorageSnapshotStore";
-import { SnapshotContainerType } from './SnapshotContainer';
-import SnapshotStore from "./SnapshotStore";
-import { InitializedData } from './SnapshotStoreOptions';
 import {
-    createBasicSnapshot,
-    createCompleteSnapshot
-} from './createSnapshot';
-import { handleSnapshotOperation } from './handleSnapshotOperation';
-import { getCategory } from './snapshotContainerUtils';
+  createBasicSnapshot,
+  createCompleteSnapshot
+} from '@/createSnapshot';
+import { UnsubscribeDetails } from '@/app//event/DynamicEventHandlerExample';
+import { handleSnapshotOperation } from '@/handleSnapshotOperation';
+import { displayToast } from '@/models/display/ShowToast';
+import { ExcludedFields } from '@/routing/Fields';
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { CreateSnapshotsPayload } from '@/server/database/Payload';
+import baseMeta from '@/server/database/baseMeta';
+import { getCategory } from '@/snapshotContainerUtils';
+import { SubscriberCollection } from '@/users/SubscriberCollection';
+import Version from '@/versions/Version';
+import { createDefaultVersionData } from '@/versions/VersionData';
+import { Tag } from 'sanitize-html';
+import { Snapshots } from "./LocalStorageSnapshotStore";
+import SnapshotStore from "./SnapshotStore";
 ;
 
 
@@ -1505,8 +1505,8 @@ function convertSnapshotsObjectToArray<
 
 
 export {
-    convertSnapshotsObjectToArray, convertToArray, createSnapshotStoreOptions, getCurrentSnapshotStoreOptions,
-    isCompatibleSnapshot, isSnapshotArrayState, isSnapshotsArray,
-    isSnapshotStoreOptions, isSnapshotUnion, toSnapshotsArray
+  convertSnapshotsObjectToArray, convertToArray, createSnapshotStoreOptions, getCurrentSnapshotStoreOptions,
+  isCompatibleSnapshot, isSnapshotArrayState, isSnapshotsArray,
+  isSnapshotStoreOptions, isSnapshotUnion, toSnapshotsArray
 };
 

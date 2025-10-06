@@ -1,8 +1,8 @@
 // advancedTransform.ts
 
-import { Snapshot } from "..";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/s/BaseConfig";
 import SnapshotStore from "@/app/snapshotstore";
+import { Snapshot } from "..";
 
 // ✅ Keep this as a standalone utility function (not in TransformMethods)
 export function transformSubscriberAdvanced<

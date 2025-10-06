@@ -1,6 +1,6 @@
 // UserRoleActions.ts
 import { createAction } from "@reduxjs/toolkit";
-import { User } from "./User";
+import { User } from '@/app/users/User';
 
 export const UserRoleActions = {
   

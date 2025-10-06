@@ -1,14 +1,12 @@
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import SecurityAudit from "@/server/security/SecurityAudit";
-import { baseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import metadata from '@/app/layout';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { UserRole } from '@/components/users/UserRole';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { useAuth } from '@/context/AuthContext';
-import { useMemo, useState } from "react";
-import { BaseData } from "@/app/components/models/data/Data";
-import { UserRole } from '../components/users/UserRole';
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import SecurityAudit from "@/server/security/SecurityAudit";
 import UserRoles, { UserRoleEnum } from '@/users/UserRoles';
-import { createLastUpdatedWithVersion, createLatestVersion } from '../versions/createLatestVersion';
+import { createLastUpdatedWithVersion, createLatestVersion } from '@/versions/createLatestVersion';
+import { useMemo, useState } from "react";
 import { StructuredMetadata } from "./StructuredMetadata";
 
 

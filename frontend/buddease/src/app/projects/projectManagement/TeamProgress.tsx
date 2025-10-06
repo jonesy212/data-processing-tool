@@ -1,4 +1,4 @@
-import TeamProgressBar from './TeamProgressBar';
+import TeamProgressBar from '@/TeamProgressBar';
 import React from "react";
 
 const TeamProgress = () => {

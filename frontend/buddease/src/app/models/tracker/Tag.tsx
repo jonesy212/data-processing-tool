@@ -1,13 +1,11 @@
 import { BaseEntityProperties, SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
-import { SpecificMetadata, StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import React from 'react';
-import { ExcludedFields } from '@/app/components/routing/Fields';
-import { TagsRecord } from '@/app/snapshots';
-import { AllTypes } from '@/app/components/typings/PropTypes';
-import { BaseData } from '../data/Data';
-import { DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { AllTypes } from '@/app/typings/PropTypes';
+import { SpecificMetadata, StructuredMetadata } from '@/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
+import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import React from 'react';
 
 
 

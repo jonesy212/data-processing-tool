@@ -3,7 +3,7 @@
 import '@testing-library/jest-dom/extend-expect'; // For additional matchers
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
-import UserFormComponent from './UserFormComponent'; // Adjust the import path as needed
+import UserFormComponent from '@/UserFormComponent'; // Adjust the import path as needed
 // Mock external dependencies and context providersimport { useNotification } from "@/app/context/NotificationContext";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 

@@ -1,14 +1,14 @@
 import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
-import { convertEventsToRecord } from '@/app/typings/convertSnapshotEvents';
 import { Snapshot } from "@/app/types"; // adjust path to where Snapshot<T,K> lives
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from './BaseConfig';
+import { convertEventsToRecord } from '@/app/typings/convertSnapshotEvents';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import SnapshotStore from "@/app/snapshotstore";
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { SnapshotUnion, SnapshotsArray } from '../LocalStorageSnapshotStore';
+import { SnapshotUnion, SnapshotsArray } from '@/LocalStorageSnapshotStore';
 
 // utilMethods.ts
 

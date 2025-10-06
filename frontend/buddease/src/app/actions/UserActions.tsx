@@ -1,5 +1,5 @@
 // user/UserActions.ts
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { Persona } from "@/app/pages/personas/Persona";
 import { UserProfile } from "@/app/snapshots/userSnapshotData";
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";

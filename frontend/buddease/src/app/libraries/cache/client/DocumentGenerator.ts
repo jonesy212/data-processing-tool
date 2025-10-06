@@ -1,9 +1,9 @@
 'use client';
 
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
-import { BaseData } from "@/app/components/models/data/Data";
-import { DocumentOptions } from '@/app/components/documents/DocumentOptions';
-import {DocumentTypeEnum, DocumentStatusEnum} from '@/typings/documments'
+import { BaseData } from '@/app/models/data/Data';
+import { DocumentOptions } from '@/app/documents/DocumentOptions';
+import {DocumentTypeEnum } from '@/app/typings/documents'
 
 export class ClientDocumentGenerator {
   async createTextDocument(
@@ -32,29 +32,6 @@ export class ClientDocumentGenerator {
     } catch (error: any) {
       console.error("Error creating text document:", error);
       throw new Error("Error creating text document: " + error.message);
-    }
-  }
-
-  async createFinancialReport(options: DocumentOptions, documents: DocumentData<BaseData<any>>): Promise<string> {
-    try {
-      // Call server API to generate financial report
-      const response = await fetch('/api/documents/financial-report', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ options, documents }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to generate financial report');
-      }
-
-      const result = await response.json();
-      return result.message || 'Financial Report created successfully.';
-    } catch (error) {
-      console.error("Error creating financial report:", error);
-      throw new Error("Error creating financial report.");
     }
   }
 

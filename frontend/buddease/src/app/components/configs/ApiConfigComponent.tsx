@@ -1,10 +1,10 @@
 // ApiConfigComponent.tsx
 import axiosInstance from '@/app/api/csrfToken';
 import ConfigurationServiceComponent from "@/app/components/configs/ConfigurationServiceComponent/ConfigurationServiceComponent";
-import { ComponentActions } from "@/app/components/libraries/ui/components/ComponentActions";
-import CreateComponentForm from "@/app/components/libraries/ui/components/CreateComponentForm";
-import DeleteComponent from "@/app/components/libraries/ui/components/DeleteComponent";
-import UpdateComponent from "@/app/components/libraries/ui/components/UpdateComponent";
+import { ComponentActions } from "@/app/actions/ComponentActions";
+import CreateComponentForm from "@/app/libraries/ui/components/CreateComponentForm";
+import DeleteComponent from "@/app/libraries/ui/components/DeleteComponent";
+import UpdateComponent from "@/app/libraries/ui/components/UpdateComponent";
 import TaskTrackingComponent from "@/app/components/models/tracker/TaskTrackingComponent";
 import { TrackerProps } from "@/app/components/models/tracker/Tracker";
 import { Phase } from "@/app/components/phases/Phase";
@@ -17,6 +17,7 @@ import ErrorBoundary from "@/app/shared/ErrorBoundary";
 import { selectApiConfigs } from "@/app/state/redux/slices/ApiSlice";
 import { User, UserData } from "@/app/users/User";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import FileData from '@/components/models/data/FileData';
 import { ApiConfig } from "@/config/ConfigurationService";
 import { frontendConfig } from "@/config/FrontendConfig";
 import MainConfig from "@/config/MainConfig";
@@ -29,7 +30,6 @@ import BackendStructure from '@/server/database/BackendStructure';
 import { Form, Input } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import FileData from '../components/models/data/FileData';
 import getAppPath from "./appStructure/appPath";
  
 

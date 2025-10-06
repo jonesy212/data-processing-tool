@@ -1,14 +1,13 @@
 // useSnapshotOperations.ts
 // hooks/useSnapshotOperations.ts
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { useCallback, useRef } from 'react';
-import { BaseDataEntity, DefaultExcludedFields, IncludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 import {
   clearSnapshotFailure,
   configureSnapshot,
   createMockSnapshot,
   getChildIds,
-  getLatestSnapshot,
   getParentId,
   getSnapshot,
   getSnapshotById,
@@ -18,15 +17,15 @@ import {
   handleSnapshot,
   mapSnapshots,
   removeSnapshot,
+  SnapshotOperations,
   takeSnapshot,
   updateSnapshot,
-  validateSnapshot,
-  SnapshotOperations
+  validateSnapshot
 } from '@/app//components/snapshots/snapshotOperations';
-import { Attachment } from "@/documents/Attachment/attachment";
-import { Snapshot } from "@/app/snapshots";
-import { Subscriber } from '@/app/users/Subscriber';
-import { SnapshotStore } from './SnapshotStore';
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { SnapshotStore } from '@/SnapshotStore';
 
 const useSnapshotOperations = <
   T extends BaseDataEntity,

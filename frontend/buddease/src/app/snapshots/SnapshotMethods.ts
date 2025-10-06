@@ -1,52 +1,57 @@
+import { SnapshotContainer } from '@/app/snapshots';
 // SnapshotMethods.ts
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { Content } from '@/app/components/models/content/AddContent';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { Tag } from '@/app/components/models/tracker/Tag';
-import { DataStoreMethods } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-import CalendarManagerStoreClass from '@/app/components/state/stores/CalendarManagerStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { NotificationType } from '@/app/context/NotificationContext';
 import { CombinedEvents, SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { DataDetails } from "@/app/models/data/Data";
+import { DataDetails } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import { CreateSnapshotsPayload, Payload } from "@/app/server/database/Payload";
-import { Callback, SnapshotContainer, SnapshotItem } from '@/app/snapshots';
+import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { CreateSnapshotsPayload, Payload } from "@/server/database/Payload";
+import { SnapshotItem } from '@/app/snapshots/SnapshotList';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { Callback } from '@/app/snapshots/subscribeToSnapshotsImplementation';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotEvents } from "@/app/snapshots/SnapshotEvents";
 import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { Subscriber } from "@/app/users/Subscriber";
 import { SubscriberCollection } from '@/app/users/SubscriberCollection';
-import { Attachment } from "@/components/documents/Attachment/attachment";
-import { IHydrateResult } from "mobx-persist";
-import { SnapshotData, SnapshotDataType, SnapshotWithCriteria } from ".";
+import { SnapshotWithData } from '@/calendar/CalendarApp';
+import { Attachment } from "@/documents/Attachment/attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { FetchSnapshotPayload } from '@/snapshot/FetchSnapshotPayload';
+import { WrappedU } from '@/app/isCompatibleTempData';
 import { UpdateSnapshotPayload } from '@/server/database/Payload';
-import { SnapshotWithData } from '../calendar/CalendarApp';
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import Version from '../versions/Version';
-import { FetchSnapshotPayload } from './FetchSnapshotPayload';
-import { WrappedU } from './isCompatibleTempData';
+import { SnapshotActionType } from '@/app/snapshots/SnapshotActionType';
+import { SnapshotHierarchyMethods } from '@/app/snapshots/SnapshotData';
+import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
+import { InitializedData, InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
+import { SnapshotSubscriberManagement } from '@/app/snapshots/SnapshotSubscriberManagement';
+import { UpdateSnapshotParams } from '@/UpdateSnapshotParams';
+import { Version } from '@/versions/Version';
+import { IHydrateResult } from "mobx-persist";
+import { SnapshotDataType } from "@/app/snapshots/SnapshotContainer";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import {
-    Result,
-    Snapshots,
-    SnapshotUnion
+  Result,
+  Snapshots,
+  SnapshotUnion
 } from "./LocalStorageSnapshotStore";
 import { Snapshot } from "./Snapshot";
-import { SnapshotActionType } from './SnapshotActionType';
 import { SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotHierarchyMethods } from './SnapshotData';
-import { SnapshotDataParams } from './SnapshotDataParams';
 import { default as SnapshotStore } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { InitializedData, InitializedDataStore } from './SnapshotStoreOptions';
-import { SnapshotSubscriberManagement } from './SnapshotSubscriberManagement';
-import { UpdateSnapshotParams } from './UpdateSnapshotParams';
 ;
 
 

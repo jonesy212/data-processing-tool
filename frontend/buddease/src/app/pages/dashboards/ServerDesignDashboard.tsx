@@ -1,5 +1,5 @@
 // ServerDesignDashboard.ts
-import { ApiConfig } from '@/app/configs/ConfigurationService';
+import { ApiConfig } from '@/config//ConfigurationService';
 import { DesignDashboardBaseProps } from '@/app/pages/dashboards/DesignDashboard';
 
 import Documentation from "@/app/components/styling/Documentation";

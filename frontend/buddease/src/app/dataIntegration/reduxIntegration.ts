@@ -1,14 +1,14 @@
-import { useDispatch } from 'react-redux';
-import { ProjectManagementActions } from '../actions/ProjectManagementActions';
-import { TaskActions } from '../actions/TaskActions';
-import { CryptoActions } from '../actions/CryptoActions';
-import { SnapshotActions } from './SnapshotActions';
-import { addNotification } from '../features/support/NotificationsSlice';
+import { CryptoActions } from '@/app/actions/CryptoActions';
+import { ProjectManagementActions } from '@/app/actions/ProjectManagementActions';
+import { TaskActions } from '@/app/actions/TaskActions';
 import { BaseDataEntity, DefaultMeta } from '@/app/components/configs/BaseConfig';
-import { Attachment } from '../documents/Attachment/attachment';
-import { NotificationData, NotificationType } from '../models/display/ShowToast';
-import { Subscriber } from '../users/Subscriber';
-import { Snapshots, Snapshot } from './LocalStorageSnapshotStore';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { addNotification } from '@/features/support/NotificationsSlice';
+import { Snapshot, Snapshots } from '@/LocalStorageSnapshotStore';
+import { NotificationData } from '@/models/display/ShowToast';
+import { SnapshotActions } from '@/SnapshotActions';
+import { Subscriber } from '@/users/Subscriber';
+import { useDispatch } from 'react-redux';
 
 // Types for Redux integration
 export interface ReduxDispatchConfig {

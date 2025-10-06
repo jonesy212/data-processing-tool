@@ -1,62 +1,62 @@
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 // DetailsListStore.ts
 import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/components/context/NotificationContext";
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { PhaseData } from "@/app/components/phases/Phase";
-import { Data } from "@/app/models/data/Data";
+import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { Data } from '@/app/models/data/Data';
 import { Team } from "@/app/models/teams/Team";
 import { Participant } from "@/app/pages/management/ParticipantManagementPage";
 import { Phase } from "@/app/phases/Phase";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { makeAutoObservable } from "mobx";
 import { FC } from "react";
 
 import { CommunicationActionTypes } from "@/app/community/CommunicationActions";
-import { Attachment } from "@/app/components/documents/Attachment/attachment";
 import { DocumentStatus } from "@/app/components/documents/types";
 import { Tag } from '@/app/components/models/tracker/Tag';
-import { DataDetails } from "@/app/models/data/Data";
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { DataDetails } from '@/app/models/data/Data';
 import {
-    DataStatus,
-    MeetingStatus,
-    PriorityTypeEnum,
-    ProductStatus,
-    StatusType,
-    TaskStatus,
-    TeamStatus,
-    TodoStatus,
+  DataStatus,
+  MeetingStatus,
+  PriorityTypeEnum,
+  ProductStatus,
+  StatusType,
+  TaskStatus,
+  TeamStatus,
+  TodoStatus,
 } from "@/app/models/data/StatusType";
 import { Project } from "@/app/models/projects/Project";
 import { Member, TeamMember } from "@/app/models/teams/TeamMembers";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { data, SnapshotConfig, SnapshotDataType, TagsRecord } from "@/app/snapshots";
 import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 ;
 
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { InitializedConfig, } from "@/app/snapshots/SnapshotStoreConfig";
 
+import { Label } from '@/app/branding/BrandingSettings';
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import { Label } from '@/app/components/projects/branding/BrandingSettings';
-import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
+import { ExcludedFields } from '@/app/routing/Fields';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { createSnapshotStoreOptions } from "@/app/typings/YourSpecificSnapshotType";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
+import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { ExcludedFields } from '@/app/components/routing/Fields';
 
 const { notify } = useNotification();
 const { latestVersion = createLatestVersion<T, K>(), ...rest } = data;

@@ -1,6 +1,6 @@
 // SnapshotStoreReference.tsx
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SnapshotStore } from './SnapshotStore';
+import { SnapshotStore } from '@/SnapshotStore';
 
 
 // Define a more abstract interface to represent snapshot stores

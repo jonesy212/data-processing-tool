@@ -3,7 +3,7 @@ import { AllStatus } from "@/app/stores/DetailsListStore";
 import { MobXRootState } from "@/app/stores/RootStores";
 import { updateTaskPosition } from "@/app/api/TasksApi";
 import { ScheduledData } from "@/app/components/calendar/ScheduledData";
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { Task } from "@/app/components/models/tasks/Task";
 import { Tag } from "@/app/components/models/tracker/Tag";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";

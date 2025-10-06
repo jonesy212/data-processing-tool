@@ -1,16 +1,15 @@
 // Community.tsx
+import ProjectManagementApp from '@/app/projects/projectManagement/ProjectManagementApp';
+import ProjectManagementSimulation from '@/app/projects/projectManagement/ProjectManagementSimulation';
+import BlogComponent from '@/blogs/BlogComponent';
+import CommunityDetails from '@/CommunityDetails';
+import CommunityProjectsPage from '@/CommunityProjectsPage';
+import { Team } from '@/models/teams/Team';
+import { TeamMember } from '@/models/teams/TeamMembers';
+import { Product } from '@/products/Product';
+import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } from '@/web3/dAppAdapter/IPFS';
+import WeThePeoplePage from '@/WeThePeoplePage';
 import React from 'react';
-import BlogComponent from '../blogs/BlogComponent';
-import { Team } from '../models/teams/Team';
-import { TeamMember } from '../models/teams/TeamMembers';
-import { Product } from '../products/Product';
-import Project from '../projects/Project';
-import ProjectManagementApp from '../projects/projectManagement/ProjectManagementApp';
-import ProjectManagementSimulation from '../projects/projectManagement/ProjectManagementSimulation';
-import { ExtendedDAppAdapter, ExtendedDAppAdapterConfig, ExtendedDappProps } from '../web3/dAppAdapter/IPFS';
-import CommunityDetails from './CommunityDetails';
-import CommunityProjectsPage from './CommunityProjectsPage';
-import WeThePeoplePage from './WeThePeoplePage';
 
 
 const CommunityPulse: React.FC = () => {

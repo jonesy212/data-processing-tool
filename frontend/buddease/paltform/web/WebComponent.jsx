@@ -1,8 +1,7 @@
 // WebComponent.jsx
 
-import React from 'react';
-import SharedButton from '../shared/SharedButton'; // Import the shared button component
-import './WebComponent.css'; // Import the CSS file for platform-specific styles
+import SharedButton from '@/shared/SharedButton'; // Import the shared button component
+import '@/WebComponent.css'; // Import the CSS file for platform-specific styles
 
 const WebComponent = () => {
   return (

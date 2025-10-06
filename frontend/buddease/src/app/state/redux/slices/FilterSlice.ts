@@ -2,7 +2,7 @@ import {
   CodingLanguageEnum,
   LanguageEnum,
 } from "@/app/communications/LanguageEnum";
-import { FileTypeEnum } from "@/app/components/documents/FileType";
+import { FileTypeEnum } from "@/app/documents/FileType";
 import FormatEnum from "@/app/components/form/FormatEnum";
 import { StatusTrackable, Timestamped } from "@/app/models/CommonData";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";

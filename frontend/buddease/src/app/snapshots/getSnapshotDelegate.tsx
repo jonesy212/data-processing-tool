@@ -1,6 +1,6 @@
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { Snapshot } from "@/app/snapshots";
-import { SnapshotContainer } from './SnapshotContainer';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotContainer } from '@/SnapshotContainer';
 
 interface DelegateType<T, K, Meta, ExcludedFields> {
     processSnapshot: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;

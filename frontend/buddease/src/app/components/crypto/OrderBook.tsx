@@ -1,6 +1,6 @@
 // OrderBook.tsx
 import React, { useEffect } from 'react';
-import { subscribeToOrderBookUpdates, unsubscribeFromOrderBookUpdates } from './exchangeIntegration';
+import { subscribeToOrderBookUpdates, unsubscribeFromOrderBookUpdates } from '@/app//exchangeIntegration';
 
 
 interface OrderBookProps {

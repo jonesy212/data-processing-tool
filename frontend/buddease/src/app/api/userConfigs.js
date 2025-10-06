@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserConfigs = void 0;
-var UserPreferences_1 = require("../configs/UserPreferences");
-var UserSettings_1 = require("../configs/UserSettings");
+var UserPreferences_1 = require(from "@/configs/UserPreferences");
+var UserSettings_1 = require(from "@/configs/UserSettings");
 // userConfigs.ts
 exports.UserConfigs = {
     apiUrl: 'https://user.api.com',

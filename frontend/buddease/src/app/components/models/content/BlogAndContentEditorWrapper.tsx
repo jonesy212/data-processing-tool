@@ -1,13 +1,12 @@
 // BlogAndContentEditorWrapper.tsx
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import BlogAndContentEditor from './BlogAndContentEditor'; // Import the BlogAndContentEditor component
-import { BlogActions } from '../blogs/BlogAction';
 import { blogApiService } from '@/app/api/BlogAPI';
-import { ContentItem } from './ContentItem';
 import ContentType from '@/app/components/typings/ContentType';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
+import { BlogActions } from '@/blogs/BlogAction';
 import { EditorState } from 'draft-js';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import BlogAndContentEditor from '@/BlogAndContentEditor'; // Import the BlogAndContentEditor component
 
 const BlogAndContentEditorWrapper = async () => {
   const dispatch = useDispatch();

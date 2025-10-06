@@ -1,6 +1,6 @@
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { K, T } from "@/app/models/data/dataStoreMethods";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { Snapshot, SnapshotContainer, SnapshotsArray, SnapshotStoreConfig, TagsRecord } from "@/app/snapshots";

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import RandomWalkVisualization from '@/app/hooks/userInterface/RandomWalkVisualization';
 import { CollaborationPreferences } from '@/app/components/interfaces/settings/CollaborationPreferences';
-import TeamData from './TeamData';
+import TeamData from '@/TeamData';
 
 const TeamManagementApp: React.FC = () => {
   const [teamData, setTeamData] = useState<TeamData>({

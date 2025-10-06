@@ -10,12 +10,12 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 
-import * as snapshotApi from '@/app/components/api/SnapshotApi';
-import { BaseData } from "@/app/models/data/Data";
+import * as snapshotApi from '@/app/api/SnapshotApi';
+import { BaseData } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
-import { processExchangeData } from '../models/data/fetchExchangeData';
+import { processExchangeData } from '@/models/data/fetchExchangeData';
 import { StatusType } from "@/app/models/data/StatusType";
-import { RealtimeData, RealtimeDataItem } from '../models/realtime/RealtimeData';
+import { RealtimeData, RealtimeDataItem } from '@/models/realtime/RealtimeData';
 import { updateSnapshot } from '@/app/snapshots';
 import { DEXEnum, ExchangeEnum } from "./../crypto/exchangeIntegration";
 import { createSnapshotOptions, UpdateSnapshotPayload } from "./@/app/snapshots/LocalStorageSnapshotStore";

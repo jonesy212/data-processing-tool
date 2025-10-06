@@ -13,22 +13,22 @@ import * as snapshotApi from "@/app/api/SnapshotApi";
 import { addSnapshot, apiCall, getSnapshotId, handleOtherStatusCodes, mergeSnapshots, updateSnapshotStore } from "@/app/api/SnapshotApi";
 import { SnapshotWithData } from "@/app/calendar/CalendarApp";
 import { ContentItem } from '@/app/cards/DummyCardLoader';
-import { SharedMetadata } from '@/app/configs/metadata/createMetadataState';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { Version } from "@/app/components/versions/Version";
+import { SharedMetadata } from '@/config//metadata/MetadataHooks';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { NotificationType, NotificationTypeEnum } from "@/app/context/NotificationContext";
-import { Version } from "@/app/data_analysis/frontend/buddease/src/app/components/versions/Version";
 import { Attachment } from "@/app/documents/Attachment/attachment";
 import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Content } from "@/app/models/content/AddContent";
-import { BaseData, DataDetails } from "@/app/models/data/Data";
+import { BaseData, DataDetails } from '@/app/models/data/Data';
 import { K } from '@/app/models/data/dataStoreMethods';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { criteria } from "@/app/pages/searchs/FilterCriteria";
-import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { convertStoreId } from '@/app/snapshots/convertSnapshot';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
@@ -39,8 +39,8 @@ import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { Callback } from '@/app/snapshots/subscribeToSnapshotsImplementation';
 import { clearSnapshot } from "@/app/state/redux/slices/SnapshotSlice";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Subscription } from "@/app/subscriptions/Subscription";
-import { Subscriber } from "@/app/users/Subscriber";
 import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 import { isSnapshotDataType, notify } from "@/app/utils/snapshotUtils";
 import { VersionData } from "@/app/versions/VersionData";
@@ -48,31 +48,31 @@ import { Tag } from '@/appp/models/tracker/Tag';
 import { AppConfig, getAppConfig } from "@/config/AppConfig";
 import configData from "@/config/configData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/configs/BaseConfig";
+import { FetchSnapshotPayload, fetchSnapshotPayload } from '@/FetchSnapshotPayload';
+import { BaseEntity } from '@/routing/FuzzyMatch';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { SnapshotContainerType } from '@/SnapshotContainer';
+import { addSnapshotSuccess, batchFetchSnapshots, batchFetchSnapshotsFailure, batchFetchSnapshotsRequest, batchFetchSnapshotsSuccess, batchTakeSnapshot, batchTakeSnapshotsRequest, batchUpdateSnapshots, batchUpdateSnapshotsFailure, batchUpdateSnapshotsRequest, createSnapshotFailure, createSnapshotStore, createSnapshotSuccess, fetchSnapshot, getAllSnapshots, initSnapshot, notifySubscribers, onSnapshot, onSnapshots, updateSnapshot, updateSnapshotFailure, updateSnapshots, updateSnapshotsSuccess, updateSnapshotSuccess } from '@/snapshotHandlers';
+import { snapshotStoreConfigInstance } from '@/snapshotStoreConfigInstance';
+import { SnapshotSubscriberManagement } from '@/SnapshotSubscriberManagement';
+import { data, SnapshotWithCriteria, TagsRecord } from '@/SnapshotWithCriteria';
 import { SnapshotEvent } from "@/typings/eventTypes";
+import { SnapshotStoreProps } from '@/useSnapshotStore';
 import { AxiosError } from "axios";
-import { BaseEntity } from '../routing/FuzzyMatch';
 import { createSnapshot } from "./createSnapshot";
 import { createSnapshotInstance, flatMap } from "./defaultSnapshotBuilder";
-import { FetchSnapshotPayload, fetchSnapshotPayload } from './FetchSnapshotPayload';
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "./LocalStorageSnapshotStore";
 import { getData, setData } from "./methods/dataMethods";
 import { createSnapshotStores } from "./newStoreUtils";
 import { snapshot, Snapshot } from "./Snapshot";
 import { SnapshotOperation } from "./SnapshotActions";
 import { ConfigureSnapshotStorePayload, createSnapshotConfig, SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotContainerType } from './SnapshotContainer';
 import { CustomSnapshotData, SnapshotData, SnapshotRelationships } from "./SnapshotData";
 import { SnapshotDataParams } from "./SnapshotDataParams";
-import { addSnapshotSuccess, batchFetchSnapshots, batchFetchSnapshotsFailure, batchFetchSnapshotsRequest, batchFetchSnapshotsSuccess, batchTakeSnapshot, batchTakeSnapshotsRequest, batchUpdateSnapshots, batchUpdateSnapshotsFailure, batchUpdateSnapshotsRequest, createSnapshotFailure, createSnapshotStore, createSnapshotSuccess, fetchSnapshot, getAllSnapshots, initSnapshot, notifySubscribers, onSnapshot, onSnapshots, updateSnapshot, updateSnapshotFailure, updateSnapshots, updateSnapshotsSuccess, updateSnapshotSuccess } from './snapshotHandlers';
 import { SnapshotMethods } from "./SnapshotMethods";
 import { clearSnapshotFailure, configureSnapshot, getChildIds, getParentId, getSnapshot, getSnapshotById, getSnapshotContainer, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot, takeSnapshot } from "./snapshotOperations";
 import { InitializedConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { snapshotStoreConfigInstance } from './snapshotStoreConfigInstance';
 import { InitializedData, SnapshotStoreOptions } from "./SnapshotStoreOptions";
-import { SnapshotSubscriberManagement } from './SnapshotSubscriberManagement';
-import { data, SnapshotWithCriteria, TagsRecord } from './SnapshotWithCriteria';
-import { SnapshotStoreProps } from './useSnapshotStore';
 
 const API_BASE_URL = endpoints.snapshots
 
@@ -80,7 +80,7 @@ const API_BASE_URL = endpoints.snapshots
 type SnapshotDataType<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -1706,7 +1706,7 @@ export const snapshotContainer = <
 };
 
 export type {
-    ItemUnion, SnapshotBase,
-    SnapshotContainer, SnapshotContainerData, SnapshotContainerType, SnapshotDataType
+  ItemUnion, SnapshotBase,
+  SnapshotContainer, SnapshotContainerData, SnapshotContainerType, SnapshotDataType
 };
 

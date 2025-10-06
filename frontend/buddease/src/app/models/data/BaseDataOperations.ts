@@ -1,7 +1,7 @@
 // BaseDataOperations
 import { fetchApiData } from '@/app/api/ApiData';
-import { BaseData } from '@/app/components/models/data/Data';
-import { Snapshot } from "@/app/snapshots";
+import { BaseData } from '@/app/models/data/Data';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import {
   addData as addDataAction,
   fetchDataFailure,

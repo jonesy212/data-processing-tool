@@ -1,42 +1,42 @@
 // CollaborationSlice.ts
-import { Communication } from "@/app/communications/chat/Communication";
-import CommunityContribution from "@/app/crypto/CommunityContribution";
-import { Whiteboard } from "@/app/whiteboard/Whiteboard";
-import { Document } from "@/app/stores/DocumentStore";
-import { useUIManager } from "@/app/stores/UISlice";
 import { WritableDraft } from "@/app/ReducerGenerator";
 import UserService, {
-    userId,
-    userService,
+  userId,
+  userService,
 } from "@/app/api/ApiUser";
+import { Communication } from "@/app/communications/chat/Communication";
 import Milestone from "@/app/components/calendar/CalendarSlice";
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import { CryptoHolding } from "@/app/components/crypto/CryptoHolding";
 import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
-import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import { DocumentBuilderOptions } from "@/app/components/documents/DocumentOptions";
-import DocumentPermissions from '@/app/components/documents/DocumentPermissions';
 import { Change } from "@/app/components/documents/NoteData";
 import { mergeChanges } from "@/app/components/documents/editing/autosave";
 import { CollaborationOptions } from "@/app/components/interfaces/options/CollaborationOptions";
-import { BaseData, Data } from '@/app/components/models/data/Data';
+import { BaseData, Data } from '@/app/models/data/Data';
 import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { Task } from "@/app/components/models/tasks/Task";
 import { Member } from "@/app/components/models/teams/TeamMembers";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import { Project } from "@/app/components/projects/Project";
 import { SecurityMeasure } from "@/app/components/security/SecurityMeasures";
 import { Todo } from "@/app/components/todos/Todo";
 import { Idea } from "@/app/components/users/Ideas";
-import { VersionData } from "@/app/versions/VersionData";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import CommunityContribution from "@/app/crypto/CommunityContribution";
+import { DocumentBuilderOptions } from "@/app/documents/DocumentOptions";
+import DocumentPermissions from '@/app/documents/DocumentPermissions';
+import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
+import { Feedback } from "@/app/features/support/Feedback";
 import { StatusType } from "@/app/models/data/StatusType";
 import CollaborationSettings from "@/app/pages/community/CollaborationSettings";
 import { MentorshipRequest } from "@/app/pages/community/MentorshipRequest";
 import { Participant } from '@/app/pages/management/ParticipantManagementPage';
-import { Feedback } from "@/app/features/support/Feedback";
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { Project } from "@/app/projects/Project";
+import { Document } from "@/app/stores/DocumentStore";
+import { useUIManager } from "@/app/stores/UISlice";
+import { VersionData } from "@/app/versions/VersionData";
+import { Whiteboard } from "@/app/whiteboard/Whiteboard";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { RootState } from "@/state/redux/slices/RootSlice";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 ;
 interface Resource {
   id: string;

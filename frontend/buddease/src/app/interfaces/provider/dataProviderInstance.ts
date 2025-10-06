@@ -1,4 +1,4 @@
-import { } from './../../models/data/dataContracts';
+import { } from '@/models/data/dataContracts';
 // dataProviderInstance.ts
 import {
     BaseRecord,

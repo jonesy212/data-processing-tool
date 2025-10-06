@@ -6,9 +6,9 @@ import CalendarEventTimingOptimization, { ExtendedCalendarEvent } from "@/app/ca
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { AssignBaseStoreLogger } from "@/app/libraries/logging/Logger";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { Team } from "@/app/models/teams/Team";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { Todo, UserAssignee } from "@/app/todos/Todo";
 import { todoService } from "@/app/todos/TodoService";

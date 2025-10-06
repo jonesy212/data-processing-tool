@@ -1,7 +1,7 @@
 // auditMiddleware.ts
-import { MiddlewareFunction, MiddlewareContext } from '../types';
-import { AuditEntry, BaseDataEntity, DefaultMeta } from '@/app/configs/ConfigurationService';
-import { User } from '@/app/components/models/data/Data'; // Adjust import path as needed
+import { MiddlewareFunction, MiddlewareContext } from '@/types';
+import { AuditEntry, BaseDataEntity, DefaultMeta } from '@/config//ConfigurationService';
+import { User } from '@/app/models/data/Data'; // Adjust import path as needed
 
 export interface AuditMiddlewareConfig<
   T extends BaseDataEntity = any,

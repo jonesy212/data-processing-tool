@@ -1,6 +1,6 @@
-import { useAuth } from '@/app/components/auth/AuthContext';
-import ProjectTimelineDashboard from '@/app/components/projects/projectManagement/ProjectTimelineDashboard';
-import { User } from '@/app/components/users/User';
+import { useAuth } from '@/app/context/AuthContext';
+import ProjectTimelineDashboard from '@/app/projects/projectManagement/ProjectTimelineDashboard';
+import { User } from '@/app/users/User';
 import React from 'react';
 import { Link } from 'react-router-dom';
 

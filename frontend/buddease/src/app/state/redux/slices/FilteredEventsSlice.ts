@@ -1,7 +1,7 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { ExtendedCalendarEvent } from "@/app/components/calendar/CalendarEventTimingOptimization";
 import HighlightEvent from "@/app/components/documents/screenFunctionality/HighlightEvent";
-import { BaseData, Data } from "@/app/components/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { T } from "@/app/components/models/data/dataStoreMethods";
 import { Member } from "@/app/components/models/teams/TeamMembers";
 import { Tag } from "@/app/components/models/tracker/Tag";

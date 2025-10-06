@@ -1,9 +1,9 @@
 // subscribeToSnapshotsImplementation.ts
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
 
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { Subscriber } from "@/app/users/Subscriber";
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { DefaultExcludedFields } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Snapshots, SnapshotsArray, SnapshotUnion } from "./LocalStorageSnapshotStore";

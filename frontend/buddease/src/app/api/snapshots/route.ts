@@ -1,7 +1,7 @@
 // Server-side only
 import { NextRequest, NextResponse } from 'next/server';
 import DatabaseClient from '@/app/lib/server/DatabaseClient'; // Server version
-import { DatabaseConfig } from '@/app/configs/DatabaseConfig';
+import { DatabaseConfig } from '@/config//DatabaseConfig';
 
 export async function POST(request: NextRequest) {
   try {

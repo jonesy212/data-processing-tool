@@ -1,4 +1,4 @@
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import endpointConfigurations, { EndpointConfig } from "./endpointConfigurations";
 import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';

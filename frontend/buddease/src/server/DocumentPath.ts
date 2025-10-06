@@ -1,22 +1,26 @@
 // DocumentPath.ts
+import { Content } from "@/app/models/content/AddContent";
+import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
 import { CommonData } from "@/app/models/CommonData";
-import { Content } from "@/app/components/models/content/AddContent";
-import { DatasetModel } from "@/app/components/todos/tasks/DataSetModel";
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
 import { DocumentBase } from "@/app/state/stores/DocumentStore";
 import AccessHistory from "@/app/versions/AccessHistory";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
-import { AppStructurePermissions } from "@/configs/appStructure/AppStructure";
+import { AppStructurePermissions } from "@/config/appStructure/AppStructure";
+import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
 
 
 interface DocumentPath<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends DocumentBase, 
-CommonData<T, K, Meta>, 
-DatasetModel<T, K, Meta> {
+  CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  DatasetModel<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+{
   id: string;
   _id: string;
   title: string;

@@ -1,5 +1,5 @@
 // loggingMiddleware.ts
-import { MiddlewareFunction, MiddlewareContext } from '../types';
+import { MiddlewareFunction, MiddlewareContext } from '@/types';
 
 export const loggingMiddleware: MiddlewareFunction = async (context, next) => {
   const { operation, payload, timestamp, store } = context;

@@ -2,7 +2,7 @@
 import { endpoints } from "@/app/api/ApiEndpoints";
 import axiosInstance from '@/app/api/csrfToken';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import CustomBox from "@/app/containers/CustomBox";
 import useFileUpload from "@/app/hooks/commHooks/useFileUpload";
 import DynamicInputFields from "@/app/hooks/userInterface/DynamicInputFieldsProps";

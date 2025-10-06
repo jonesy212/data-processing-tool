@@ -1,4 +1,4 @@
-import { FollowUpAction } from "@/app/components/models/data/EventPriorityClassification";
+import { FollowUpAction } from "@/app/models/data/EventPriorityClassification";
 
 // CalendarEventFollowUpActionSuggestion.ts
 interface CalendarEventFollowUpActionSuggestion extends FollowUpAction {

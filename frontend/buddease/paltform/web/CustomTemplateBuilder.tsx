@@ -5,12 +5,12 @@ import React, { useState } from "react";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import axiosInstance from '@/app/api/csrfToken';
 import { ChatSettingsPanel } from "@/app/components/communications/chat/ChatSettingsPanel";
-import RichTextEditor from "@/app/components/documents/RichTextEditor";
+import RichTextEditor from "@/app/documents/RichTextEditor";
 import {
   ToolbarOptionsComponent,
   ToolbarOptionsProps
 } from "@/app/components/documents/ToolbarOptions";
-import { getTextBetweenOffsets } from "@/app/components/documents/getTextBetweenOffsets";
+import { getTextBetweenOffsets } from "@/app/documents/getTextBetweenOffsets";
 import { usePanelContents } from "@/app/generators/usePanelContents";
 import ResizablePanels from "@/app/hooks/userInterface/ResizablePanels";
 import useResizablePanels from "@/app/hooks/userInterface/useResizablePanels";

@@ -1,4 +1,4 @@
-import { Presentation } from "@/app/components/documents/Presentation";
+import { Presentation } from "@/app/documents/Presentation";
 
 // Function to generate JSON from a Presentation object
 function generatePresentationJSON(presentation: Presentation): string {

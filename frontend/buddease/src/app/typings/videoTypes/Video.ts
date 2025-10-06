@@ -1,8 +1,6 @@
 
-import { BaseData } from '@/app/components/models/data/Data';
-import { Video } from "@/app/state/stores/VideoStore";
-import { Label } from '@/app/components/projects/branding/BrandingSettings';
-import { SharedTimestamps, SharedStatusFlags, SharedIdentifiers } from '@/app/components/documents/RelatedProps';
+import { Label } from '@/app/branding/BrandingSettings';
+import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
 
 interface VideoData<
   T extends BaseDataEntity,
@@ -106,5 +104,5 @@ interface VideoData<
   };
 
 
-  export type { VideoData }
+  export type { VideoData };
   

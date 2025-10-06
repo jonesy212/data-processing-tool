@@ -1,9 +1,9 @@
 // ContentIDGenerator.ts
 import { NotificationType, NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { v4 as uuidV4 } from 'uuid'; // Import the uuid library or use your preferred UUID generator
-import { Data, DataDetails } from '../components/models/data/Data';
+import { Data, DataDetails } from '@/components/models/data/Data';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
-import UniqueIDGenerator from './GenerateUniqueIds';
+import UniqueIDGenerator from '@/GenerateUniqueIds';
 
 export class ContentIDGenerator {
   static generateContentID(title: string, description: string, type: NotificationType): string {

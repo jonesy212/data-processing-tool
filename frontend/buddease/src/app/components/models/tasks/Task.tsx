@@ -1,11 +1,11 @@
 // Task.ts
 import { ScheduledData } from "@/app/components/calendar/ScheduledData";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import { SharedDetails } from '@/app/components/models/data/Details';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { PhaseData, PhaseMeta } from "@/app/components/phases/Phase";
 import { Permission } from '@/app/components/users/Permission';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { User } from "@/app/users/User";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { SharedMetadata } from "@/config/metadata/MetadataHooks";
@@ -25,8 +25,8 @@ import { AllTypes } from "@/app/typings/PropTypes";
 import { Idea } from "@/app/users/Ideas";
 import { VideoData } from "@/app/video/Video";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { TaskMetadata, UnifiedMetaDataOptions } from '@/configs/database/MetaDataOptions';
 import { AppMetadata } from "@/server/database/MetaDataOptions";
-import { TaskMetadata, UnifiedMetaDataOptions } from './../../../configs/database/MetaDataOptions';
 
 export type TaskData = BaseData<any, any, StructuredMetadata<any, any>, Attachment>;
  
@@ -49,10 +49,12 @@ interface TaskEntity
 
 
 interface Task<
-  T extends  BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends Omit<TaskMetadata<T, K>, 'tags'>,
   SharedDetails<T, K, Meta>,
   SharedTimestamps,

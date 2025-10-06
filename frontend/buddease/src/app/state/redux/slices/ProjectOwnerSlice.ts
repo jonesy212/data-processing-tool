@@ -1,15 +1,15 @@
 // ProjectOwnerSlice.ts
 import { Meeting } from "@/app/communications/scheduler/Meeting";
-import { ProjectDetails } from "@/app/components/projects/Project";
 import {
-    NotificationTypeEnum,
-    useNotification,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
 import { DeveloperPersona } from "@/app/pages/personas/DeveloperPersona";
+import { ProjectDetails } from "@/app/projects/Project";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";

@@ -1,13 +1,13 @@
 import { useAuth } from '@/app/components/auth/AuthContext';
-import { Data } from '@/app/components/models/data/Data';
+import { Data } from '@/app/models/data/Data';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { useNotification } from "@/app/context/NotificationContext";
 import { fetchDataWithToken } from '@/app/components/users/ExternalApiAuth';
 import React, { useState } from 'react';
 import generateTimeBasedCode from '@/app/components/models/realtime/TimeBasedCodeGenerator';
-import CourseLearningPhase from './CourseLearningPhase';
-import CoursePlanningPhase from './CoursePlanningPhase';
-import CourseSetupPhase from './CourseSetupPhase';
+import CourseLearningPhase from '@/CourseLearningPhase';
+import CoursePlanningPhase from '@/CoursePlanningPhase';
+import CourseSetupPhase from '@/CourseSetupPhase';
 
 
 // Define course development phases

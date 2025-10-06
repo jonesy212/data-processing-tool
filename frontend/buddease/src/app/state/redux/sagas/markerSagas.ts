@@ -1,10 +1,10 @@
 // markerSagas.ts
+import { MarkerActions } from '@/app/actions/MarkerActions';
+import NOTIFICATION_MESSAGES from '@/app/components/features/support/NotificationMessages';
+import { markerService } from '@/app/components/marker/MarkerService';
 import { Marker } from '@/app/components/models/data/Marker';
 import axios, { AxiosResponse } from 'axios';
 import { Effect, call, put, takeLatest } from 'redux-saga/effects';
-import NOTIFICATION_MESSAGES from '@/app/components/features/support/NotificationMessages';
-import { MarkerActions } from '../actions/MarkerActions';
-import { markerService } from '@/app/components/marker/MarkerService';
 
 
 // Replace 'yourApiEndpoint' with the actual API endpoint

@@ -1,21 +1,21 @@
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
-import CommunityProjectsPage from "@/app/pages/community/CommunityProjectsPage";
 import { Team } from "@/app/components/models/teams/Team";
 import ProgressBar, {
   Progress,
   ProgressPhase,
 } from "@/app/components/models/tracker/ProgressBar";
-import TeamProgressBar from "@/app/projects/projectManagement/TeamProgressBar";
 import { default as SearchResult, default as SearchResultComponent, SearchResultWithQuery } from "@/app/components/routing/SearchResult";
-import Version from "@/app/versions/Version";
-import { AppStructureItem } from "@/configs/appStructure/AppStructure";
-import { BorderStyle, DocumentSize } from "@/app/models/data/StatusType";
 import { useSearch } from "@/app/context/SearchContext";
+import { BorderStyle, DocumentSize } from "@/app/models/data/StatusType";
+import CommunityProjectsPage from "@/app/pages/community/CommunityProjectsPage";
+import TeamProgressBar from "@/app/projects/projectManagement/TeamProgressBar";
 import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
 import { Settings } from "@/app/state/stores/SettingsStore";
 import {
   DocumentTypeEnum
 } from "@/app/typings/documents";
+import { Version } from "@/app/versions/Version";
+import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import { ContentState } from "draft-js";
 import React, { useState } from "react";
 

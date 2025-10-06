@@ -1,14 +1,14 @@
 // ProjectManagementApp.js
 import { useDispatch, useSelector } from 'react-redux';
-import CommunicationHub from './CommunicationHub';
-import DashboardOverview from './DashboardOverview';
-import DataAnalysisSection from './DataAnalysisSection';
-import { addNotification, selectNotifications } from './NotificationSlice';
-import PhasesNavigation from './PhasesNavigation';
-import ProjectManagerComponent from './ProjectManager';
-import ProjectTimelineDashboard from './ProjectTimelineDashboard';
-import ProjectWorkspace from './ProjectWorkspace';
-import RandomWalkVisualization from './RandomWalkVisualization';
+import CommunicationHub from '@/CommunicationHub';
+import DashboardOverview from '@/DashboardOverview';
+import DataAnalysisSection from '@/DataAnalysisSection';
+import { addNotification, selectNotifications } from '@/NotificationSlice';
+import PhasesNavigation from '@/PhasesNavigation';
+import ProjectManagerComponent from '@/ProjectManager';
+import ProjectTimelineDashboard from '@/ProjectTimelineDashboard';
+import ProjectWorkspace from '@/ProjectWorkspace';
+import RandomWalkVisualization from '@/RandomWalkVisualization';
 
 const ProjectManagementApp = () => {
   // Redux state and dispatch setup

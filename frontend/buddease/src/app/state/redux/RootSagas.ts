@@ -2,24 +2,24 @@
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { all, fork } from 'redux-saga/effects';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { apiSagas } from './sagas/apiSagas';
-import { calendarSagas } from './sagas/calendarSagas';
-import { clientSagas } from './sagas/clientSaga';
-import { dataAnalysisSagas } from './sagas/dataAnalysisSagas';
-import { dataSagas } from './sagas/dataSaga';
-import { detailsSagas } from './sagas/detailsSaga';
-import { documentSagas } from './sagas/documentSagas';
-import { markerSagas } from './sagas/markerSagas';
-import { phaseSagas } from './sagas/personaSagas/phaseSaga';
-import promptSagas from './sagas/promptSagas';
-import { snapshotSagas } from './sagas/snapshotSagas';
-import { taskSagas } from './sagas/taskSagas';
-import { teamSagas } from './sagas/teamSagas';
-import { tenantSagas } from './sagas/tenantSags';
-import { todoSagas } from './sagas/todoSagas';
-import { undoRedoSagas } from './sagas/UndoRedoSaga';
-import { userSagas } from './sagas/userSagas';
-import { videoSagas } from './sagas/videoSagas';
+import { apiSagas } from '@/sagas/apiSagas';
+import { calendarSagas } from '@/sagas/calendarSagas';
+import { clientSagas } from '@/sagas/clientSaga';
+import { dataAnalysisSagas } from '@/sagas/dataAnalysisSagas';
+import { dataSagas } from '@/sagas/dataSaga';
+import { detailsSagas } from '@/sagas/detailsSaga';
+import { documentSagas } from '@/sagas/documentSagas';
+import { markerSagas } from '@/sagas/markerSagas';
+import { phaseSagas } from '@/sagas/personaSagas/phaseSaga';
+import promptSagas from '@/sagas/promptSagas';
+import { snapshotSagas } from '@/sagas/snapshotSagas';
+import { taskSagas } from '@/sagas/taskSagas';
+import { teamSagas } from '@/sagas/teamSagas';
+import { tenantSagas } from '@/sagas/tenantSags';
+import { todoSagas } from '@/sagas/todoSagas';
+import { undoRedoSagas } from '@/sagas/UndoRedoSaga';
+import { userSagas } from '@/sagas/userSagas';
+import { videoSagas } from '@/sagas/videoSagas';
 
 // Add more sagas as needed...
 

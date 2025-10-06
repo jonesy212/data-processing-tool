@@ -9,7 +9,7 @@ import { EventData } from "@/app/state/stores/AssignEventStore";
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { SharedMetadata } from "@/config/metadata/MetadataHooks";

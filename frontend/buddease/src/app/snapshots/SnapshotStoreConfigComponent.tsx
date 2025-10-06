@@ -1,5 +1,5 @@
 // SnapshotStoreConfigComponent.tsx
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { useEffect, useState } from 'react';
 import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/SnapshotActions";

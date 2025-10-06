@@ -2,7 +2,7 @@ import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 import CommonDetails from "@/app/models/CommonData";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { Phase } from "@/app/phases/Phase";
 import axiosInstance from '@/app/api/csrfToken';
 import { useDetailsListStore } from "@/app/state/stores/DetailsListStore";

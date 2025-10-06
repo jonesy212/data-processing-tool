@@ -1,7 +1,7 @@
 import { ContentState, EditorState } from 'draft-js';
 import { useCallback, useEffect, useState } from 'react';
-import useWebSocket from './useWebSocket'; // Custom hook for managing WebSocket connections
-import useEditorState from '../state/useEditorState';
+import useWebSocket from '@/useWebSocket'; // Custom hook for managing WebSocket connections
+import useEditorState from '@/state/useEditorState';
 
 const useRealtimeEditing = (documentId: any) => {
   const { editorState: initialEditorState, handleEditorStateChange } = useEditorState();

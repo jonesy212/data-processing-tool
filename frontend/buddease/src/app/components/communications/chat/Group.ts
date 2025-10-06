@@ -1,5 +1,5 @@
 import { BlogPost } from "@/app/pages/blog/BlogPost";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { Member } from "@/app/models/teams/TeamMembers";
 
 // Group.ts

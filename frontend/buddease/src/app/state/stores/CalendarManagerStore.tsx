@@ -5,37 +5,37 @@ import * as snapshotApi from "@/app/api/SnapshotApi";
 import * as subscriptionApi from "@/app/api/subscriberApi";
 import { createSubscriber } from '@/app/components/crypto/exchangeIntegration';
 import {
-    getDefaultDocumentOptions,
-} from "@/app/components/documents/DocumentOptions";
+  getDefaultDocumentOptions,
+} from "@/app/documents/DocumentOptions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import {
-    PriorityTypeEnum,
-    StatusType,
+  PriorityTypeEnum,
+  StatusType,
 } from "@/app/models/data/StatusType";
 import { Member } from "@/app/models/teams/TeamMembers";
 import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
 import useModalFunctions from "@/app/pages/dashboards/ModalFunctions";
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { SnapshotData } from '@/app/snapshots';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { getSnapshotDelegate } from '@/app/snapshots/getSnapshotDelegate';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import ScheduleEventModal from "@/app/ts/ScheduleEventModal";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { VideoData } from "@/app/video/Video";
+import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import {
-    NotificationTypeEnum,
-    useNotification
+  NotificationTypeEnum,
+  useNotification
 } from "@/context/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import {
-    AssignEventStore,
-    ReassignEventResponse,
-    useAssignEventStore,
+  AssignEventStore,
+  ReassignEventResponse,
+  useAssignEventStore,
 } from "./AssignEventStore";
-import { BaseDataEntity, DefaultExcludedFields } from './BaseConfig';
 import CalendarSettingsPage from "./CalendarSettingsPage";
 import { implementThen } from "./CommonEvent";
 import { AllStatus } from "./DetailsListStore";
@@ -47,32 +47,34 @@ import { getSnapshotConfig } from "@/app/api/SnapshotApi";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { combinedEvents } from "@/app/event/Event";
 import {
-    createSnapshotStore,
-    SnapshotStoreOptions,
-    useSnapshotManager,
+  createSnapshotStore,
+  SnapshotStoreOptions,
+  useSnapshotManager,
 } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Snapshot, SnapshotContainer, snapshotContainer } from "@/app/snapshots";
 import {
-    SnapshotOperation,
-    SnapshotOperationType,
+  SnapshotOperation,
+  SnapshotOperationType,
 } from "@/app/snapshots/SnapshotActions";
 import {
-    AddEventPayload,
-    CalendarActionPayload,
-    CalendarActionType,
-    RemoveEventPayload,
-    SetEventStatusPayload,
-    UpdateEventPayload,
+  AddEventPayload,
+  CalendarActionPayload,
+  CalendarActionType,
+  RemoveEventPayload,
+  SetEventStatusPayload,
+  UpdateEventPayload,
 } from "@/server/database/CalendarActionPayload";
 import { useDispatch } from "react-redux";
 
 import { EventRecord } from "@/app/@/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { dataStoreMethods, K, T } from '@/app/components/models/data/dataStoreMethods';
+import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import {
-    defaultCalendarEventManager
+  defaultCalendarEventManager
 } from '@/app/dataIntegration/calendarIntegration/calendarEventManager';
 import {
-    defaultScheduleCoordinator
+  defaultScheduleCoordinator
 } from '@/app/dataIntegration/calendarIntegration/scheduleCoordinator';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CategoryKeys, getCategoryProperties } from "@/app/libraries/categories/CategoryManager";
@@ -85,8 +87,6 @@ import { configureSnapshot } from '@/app/snapshots/snapshotOperations';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { id } from 'ethers';
-import { dataStoreMethods, K, T } from '@/app/components/models/data/dataStoreMethods';
-import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { Document, DocumentStore } from "./DocumentStore";
 import { MobXRootState } from "./RootStores";
 

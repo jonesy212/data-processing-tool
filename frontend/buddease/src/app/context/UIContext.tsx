@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { createContext, ReactNode, useContext } from 'react';
 import UIStore from '@/app/state/stores/UIStore';
-import { displayToast } from '../components/models/display/ShowToast';
+import { displayToast } from '@/components/models/display/ShowToast';
  
 
 interface StoreProviderProps {

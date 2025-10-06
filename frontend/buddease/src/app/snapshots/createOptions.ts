@@ -1,38 +1,38 @@
-import { fetchSnapshotById } from "@/app/api/SnapshotApi";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { fetchSnapshotById } from "@/app/api/SnapshotApi";
 import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { displayToast } from "@/app/models/display/ShowToast";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { DataStore, EventRecord, useDataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import axiosInstance from '@/app/api/csrfToken';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Subscription } from "@/app/subscriptions/Subscription";
-import { Subscriber } from "@/app/users/Subscriber";
-import { convertSnapshotsObjectToArray } from './createSnapshotStoreOptions';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { convertSnapshotsObjectToArray } from '@/createSnapshotStoreOptions';
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { handleSnapshotOperation } from "./handleSnapshotOperation";
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "./LocalStorageSnapshotStore";
 
+import { SnapshotContainer, SnapshotContainerType } from '@/SnapshotContainer';
 import { Snapshot } from "./Snapshhot";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotContainer, SnapshotContainerType } from './SnapshotContainer';
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreMethod } from "./SnapshotStoreMethod";
 import {
-    InitializedDelegate,
-    MetaDataOptions,
-    SnapshotStoreOptions
+  InitializedDelegate,
+  MetaDataOptions,
+  SnapshotStoreOptions
 } from "./SnapshotStoreOptions";
 import { addToSnapshotList } from "./snapshotUtils";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";

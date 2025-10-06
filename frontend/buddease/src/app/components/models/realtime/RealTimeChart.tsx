@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import useRealtimeData from '@/app/hooks/commHooks/useRealtimeData';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { RealtimeActions } from '@/app/actions/RealtimeActions';
-import { RealtimeDataItem } from './RealtimeData';
+import { RealtimeDataItem } from '@/RealtimeData';
 
 interface RealTimeChartProps {
   user: string;

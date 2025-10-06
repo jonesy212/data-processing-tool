@@ -1,4 +1,4 @@
-import { BaseData } from "@/app/components/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { UserConfig } from "@/app/snapshots";
 import { UserData } from "@/app/users/User";
 import { StructuredMetadata } from "@/config/StructuredMetadata";

@@ -1,7 +1,7 @@
 //  DataStoreMethods.ts
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData } from '@/app/models/data/Data';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { SnapshotContainer, SnapshotData } from '@/app/snapshots';
@@ -10,7 +10,7 @@ import { Snapshot } from "@/app/snapshots/Snapshot";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreMethod } from "@/app/snapshots/SnapshotStoreMethod";
-import { Subscriber } from "@/app/users/Subscriber";
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { DataStore } from "./DataStore";

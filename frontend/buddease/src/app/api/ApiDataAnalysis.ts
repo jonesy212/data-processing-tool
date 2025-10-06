@@ -1,29 +1,28 @@
 // ApiDataAnalysis.ts
 import axiosInstance from "@/app/api/csrfToken";
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { BaseData } from "@/app/components/models/data/Data";
-import { DataAnalysisResult } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisResult";
-import { YourResponseType } from "@/app/components/typings/types";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification
 } from "@/app/context/NotificationContext";
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { BaseData } from '@/app/models/data/Data';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { Snapshot } from "@/app/snapshots";
+import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { convertResponseToSnapshot } from "@/app/snapshots/InitializedSnapshotTypes";
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { InitializedSnapshot } from "@/app/snapshots/SnapshotStoreOptions";
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { isSnapshotStore, isYourResponseType } from "@/app/typings/YourSpecificSnapshotType";
+import { YourResponseType } from "@/app/typings/types";
 import { isSnapshot } from "@/app/utils/snapshotUtils";
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { AxiosError, AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
-import { T } from '../components/models/data/dataStoreMethods';
 import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 

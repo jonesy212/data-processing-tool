@@ -1,8 +1,8 @@
 // dataAnalysisSagas.ts
 import DataFrameAPI from "@/app/api/DataframeApi";
-import { DataAnalysis } from "@/app/components/projects/DataAnalysisPhase/DataAnalysis";
-import { DataAnalysisActions } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisActions";
-import { dataAnalysisService } from "@/app/components/typings/dataAnalysisTypes";
+import { DataAnalysis } from "@/app/projects/DataAnalysisPhase/DataAnalysis";
+import { DataAnalysisActions } from "@/app/projects/DataAnalysisPhase/DataAnalysisActions";
+import { dataAnalysisService } from "@/app/typings/dataAnalysisTypes";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";

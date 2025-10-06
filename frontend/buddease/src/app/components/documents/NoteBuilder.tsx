@@ -1,10 +1,10 @@
 import { addNoteAPI, updateNoteAPI } from "@/app/api/ApiNote";
-import { VersionHistory } from "@/app/versions/VersionData";
-import { createMetaState } from '@/app/configs/metadata/createMetadataState';
+import { createMetaState } from '@/config//metadata/MetadataHooks';
 import { Collaborator } from "@/app/models/teams/TeamMembers";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { UserData } from "@/app/users/User";
-import Version from "@/app/versions/Version";
+import { Version } from "@/app/versions/Version";
+import { VersionHistory } from "@/app/versions/VersionData";
 import { Editor, EditorState, RichUtils } from "draft-js";
 import "draft-js/dist/Draft.css";
 import React, { useState } from "react";

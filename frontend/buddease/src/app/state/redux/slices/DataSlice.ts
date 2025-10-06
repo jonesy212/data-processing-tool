@@ -1,5 +1,5 @@
 // DataSlice.ts
-import { Data } from "@/app/components/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { DataStatus } from "@/app/models/data/StatusType";
 import { VideoData } from "@/app/components/video/Video";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";

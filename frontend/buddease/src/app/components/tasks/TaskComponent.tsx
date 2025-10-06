@@ -1,7 +1,7 @@
 
 import { FilterActions } from '@/app/actions/FilterActions';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
-import { FileTypeEnum } from '@/app/components/documents/FileType';
+import { FileTypeEnum } from '@/app/documents/FileType';
 import TaskList from '@/app/components/lists/TaskList';
 import DataFilterForm from '@/app/components/models/data/DataFilterForm';
 import { Task } from '@/app/components/models/tasks/Task';

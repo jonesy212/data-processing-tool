@@ -1,27 +1,27 @@
 // DApp.tsx
-import { BaseData, CommonRelationship } from "@/app/models/data/Data";
-import { UserData } from "@/app/users/User";
 import appTreeApiService from "@/app/api/appTreeApi";
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
 import { AquaChat } from "@/app/components/communications/chat/AquaChat";
-import LoadAquaState from "@/app/dashboards/LoadAquaState";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
 import { ThemeEnum } from "@/app/components/libraries/ui/theme/Theme";
 import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
-import { SharedRelationshipData } from "@/app/components/models/data/Data";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { SharedRelationshipData } from '@/app/models/data/Data';
 import { DAppAdapterProps } from "@/app/crossPlatformLayer/src/src/platform/DAppAdapter";
+import LoadAquaState from "@/app/dashboards/LoadAquaState";
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
+import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import FluenceConnection from "@/app/fluenceProtocoIntegration/FluenceConnection";
 import useSocialAuthentication from "@/app/hooks/commHooks/useSocialAuthentication";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { DataLogger } from "@/app/libraries/logging/Logger";
+import { BaseData, CommonRelationship } from '@/app/models/data/Data';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import FluencePlugin from "@/app/pluginSystem/plugins/fluencePlugin";
+import { UserData } from "@/app/users/User";
 import YourClass from "@/app/utils/YourClass";
 import { AquaConfig } from "@/app/webConfigs/AquaConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { authToken } from "@/server/auth/authToken";
 import Connection from "@/server/database/Connection";
 import isValidAuthToken from "@/server/security/AuthValidation";
@@ -474,7 +474,7 @@ class CustomDAppAdapter<
       case "ChartComponent":
         return import("@/app/components/charts/ChartComponent");
       case "UserFormComponent":
-        return import("../../../pages/forms/UserFormComponent");
+        return import("@/pages/forms/UserFormComponent");
       // Add more cases as needed
       default:
         return null;
@@ -489,7 +489,7 @@ class CustomDAppAdapter<
         component = await import("@/app/components/charts/ChartComponent");
         break;
       case "UserFormComponent":
-        component = await import("../../../pages/forms/UserFormComponent");
+        component = await import("@/pages/forms/UserFormComponent");
         break;
       case "authToken":
         component = await import("@/server/auth/authToken");

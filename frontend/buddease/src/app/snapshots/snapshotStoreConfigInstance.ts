@@ -8,46 +8,48 @@ import { FileCategory } from "@/app/documents/FileType";
 import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import determineFileCategory, { fetchFileSnapshotData } from "@/app/libraries/categories/determineFileCategory";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { K, T } from "@/app/models/data/dataStoreMethods";
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { CreateSnapshotStoresPayload } from "@/app/server/database/Payload";
+import { CustomSnapshotData, SnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotStoreProps } from "@/app/snapshots/SnapshotStoreProps";
+import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { AuditRecord, Subscriber } from "@/app/users/Subscriber";
+import { AuditRecord, Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 import { generateSnapshotId } from "@/app/utils/snapshotUtils";
 import { getCommunityEngagement, getMarketUpdates, getTradeExecutions } from "@/app/utils/trading/TradingUtils";
 import { portfolioUpdates, triggerIncentives } from "@/app/utils/web3/applicationUtils";
 import { ExtendedVersionData } from "@/app/versions/VersionData";
 import { NotificationType } from "@/context/NotificationContext";
-import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { Payload, UpdateSnapshotPayload } from "@/server/database/Payload";
 import { Subscription } from 'react-redux';
-import { CustomSnapshotData, SnapshotData, SnapshotStoreProps, SnapshotWithCriteria } from ".";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { Snapshots, SnapshotsArray, SnapshotUnion, } from "./LocalStorageSnapshotStore";
-import { transformDelegate, transformSubscriber } from "./methods/transformMethods";
+import { TransformMethods } from "./methods/transformMethods";
 import { Snapshot, snapshotConfig } from "./Snapshot";
 import { SnapshotContainer } from "./SnapshotContainer";
 import { SnapshotStoreReference } from "./SnapshotStoreReference";
 
 import { fetchData } from "@/app/api/ApiData";
-import { ExcludedFields } from '@/app/components/routing/Fields';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Meta } from "@/app/data_analysis/frontend/buddease/src/app/components/models/data/dataStoreMethods";
-import { DataStoreMethods } from "@/app/data_analysis/frontend/buddease/src/app/components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import {
-    AppEntity, AppExcludedFields, AppK, AppMeta,
-    AppParams,
-    AppSnapshot,
-    AppSnapshotsArray,
-    AppSnapshotStoreConfig
-} from '@/web3/dAppAdapter/AppEntity';
+import { Meta } from "@/app/models/data/dataStoreMethods";
+import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { ExcludedFields } from '@/app/routing/Fields';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import {
+  AppEntity, AppExcludedFields, AppK, AppMeta,
+  AppParams,
+  AppSnapshot,
+  AppSnapshotsArray,
+  AppSnapshotStoreConfig
+} from '@/web3/dAppAdapter/AppEntity';
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotConfigParams } from "./SnapshotConfigBuilder";
 import { batchFetchSnapshotsFailure, batchFetchSnapshotsSuccess, batchTakeSnapshot, batchTakeSnapshotsRequest, batchUpdateSnapshotsFailure, batchUpdateSnapshotsRequest, batchUpdateSnapshotsSuccess, handleSnapshotSuccess } from "./snapshotHandlers";
@@ -820,8 +822,8 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
         dataItems: [],
         newData: undefined,
         subscribeToSnapshot: subscribeToSnapshotImpl,
-        transformSubscriber: transformSubscriber,
-        transformDelegate: transformDelegate,
+        transformSubscriber: TransformMethods.transformSubscriber,
+        transformDelegate: TransformMethods.transformDelegate,
         initializedState: undefined,
         getAllKeys: function (): Promise<string[]> {
           throw new Error("Function not implemented.");
@@ -2042,9 +2044,9 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
 export { createSnapshotStoreConfig, snapshotStoreConfigInstance };
 
   export type {
-        AppEntity, AppExcludedFields, AppK,
-        AppMeta, AppSnapshot, AppSnapshotsArray, AppSnapshotStoreConfig
-    };
+    AppEntity, AppExcludedFields, AppK,
+    AppMeta, AppSnapshot, AppSnapshotsArray, AppSnapshotStoreConfig
+  };
 
 
 

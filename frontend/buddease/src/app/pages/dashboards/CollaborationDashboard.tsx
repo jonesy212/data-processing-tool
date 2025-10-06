@@ -1,15 +1,15 @@
 // CollaborationDashboard.tsx
 import Stopwatch from "@/app/components/calendar/Stopwatch";
-import { ChatRoom } from "@/app/components/communications";
+import { ChatRoom } from "@/app/communications/chatRoom";
 import EditorWithPrompt from "@/app/components/documents/EditorWithPrompt";
 import DynamicNamingConventions from "@/app/utils/DynamicNamingConventions";
-import { CollaborationProvider } from "@/app/components/phases/collaborationPhase/CollaborationContext";
-import ProjectManagementSimulation from "@/app/components/projects/projectManagement/ProjectManagementSimulation";
-import ProjectTimelineDashboard from "@/app/components/projects/projectManagement/ProjectTimelineDashboard";
+import { CollaborationProvider } from "@/app/context/CollaborationContext";
+import ProjectManagementSimulation from "@/app/projects/projectManagement/ProjectManagementSimulation";
+import ProjectTimelineDashboard from "@/app/dashboards/ProjectTimelineDashboard";
 import ColorPalette from "@/app/components/styling/ColorPalette";
 import PaletteManager from "@/app/components/styling/PaletteManager";
 import UsageExamplesBox from "@/app/components/styling/UsageExamplesBox";
-import { AquaConfig } from "@/app/components/web3/webConfigs/AquaConfig";
+import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { useThemeConfig } from "@/app/hooks/userInterface/ThemeConfigContext";

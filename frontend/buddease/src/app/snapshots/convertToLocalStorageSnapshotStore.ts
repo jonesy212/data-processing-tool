@@ -1,4 +1,4 @@
-import { BaseData } from "@/app/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { LocalStorageSnapshotStore } from "./LocalStorageSnapshotStore";
 

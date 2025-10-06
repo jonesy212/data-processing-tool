@@ -1,15 +1,10 @@
-import { SecurityMeasureType } from './SecurityMeasureTypes';
-import { Permission } from "@/app/data_analysis/frontend/buddease/src/app/components/users/Permission";
-import { AuditRecord } from "@/app/ysis/frontend/buddease/src/app/users/Subscriber";
+import { Permission } from "@/app/components/users/Permission";
 import { AppStructurePermissions } from "@/app/ysis/frontend/buddease/src/app/configs/appStructure/AppStructure";
-import { 
-  SecurityMeasureUnion, 
+import { AuditRecord } from "@/app/ysis/frontend/buddease/src/app/users/Subscriber";
+import {
   SecurityMeasure,
-SecurityMeasureHeader,
-SecurityScanResult,
-SecurityReport,
-SecurityMeasureLogger
-} from './SecurityMeasureTypes'
+  SecurityMeasureHeader, SecurityMeasureLogger, SecurityMeasureType, SecurityMeasureUnion, SecurityReport, SecurityScanResult
+} from '@/SecurityMeasureTypes';
  
 // SnapshotSecurity.ts
 interface SnapshotSecurity {
@@ -188,4 +183,4 @@ const defaultSnapshotSecurity: SnapshotSecurity = {
   // ... other method implementations
 };
 
-export type { SnapshotSecurity }
+export type { SnapshotSecurity };

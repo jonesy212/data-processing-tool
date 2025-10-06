@@ -1,7 +1,7 @@
 // DynamicPromptPhaseHook.ts
 
+import createDynamicHook, { DynamicHookParams } from '@/dynamicHooks/dynamicHookGenerator';
 import { useEffect, useState } from 'react';
-import createDynamicHook, { DynamicHookParams } from '../dynamicHooks/dynamicHookGenerator';
 
 export type DynamicPromptPhaseHookConfig = {
   condition: () => boolean | Promise<boolean>;

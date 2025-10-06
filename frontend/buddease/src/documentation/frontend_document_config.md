@@ -61,7 +61,7 @@ Copy code
 // DesignDashboard.tsx
 
 import React from 'react';
-import FrontendDocumentConfig from './FrontendDocumentConfig';
+import FrontendDocumentConfig from '@/configs/FrontendDocumentConfig';
 
 const DesignDashboard: React.FC = () => {
   // Your design dashboard logic here

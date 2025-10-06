@@ -1,20 +1,20 @@
 // ApiNotes.ts
 import axiosInstance from "@/app/api/csrfToken";
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import { ModifiedDate } from "@/app/components/documents/DocType";
 import { NoteData } from "@/app/components/documents/NoteData";
-import { BaseData } from '@/app/components/models/data/Data';
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import FolderData from "@/app/components/models/data/FolderData";
-import { Tag } from '@/app/components/models/tracker/Tag';
-import { Encryption } from "@/app/components/security/Encryption";
-import { YourResponseType } from "@/app/components/typings/types";
+import { BaseData } from '@/app/models/data/Data';
+import { K, T } from "@/app/models/data/dataStoreMethods";
+import FolderData from "@/app/models/data/FolderData";
+import { Tag } from '@/app/models/tracker/Tag';
+import { Encryption } from "@/server/security/Encryption";
+import { YourResponseType } from "@/app/typings/responseTypes";
 import {
-    useNotification
+  useNotification
 } from "@/app/context/NotificationContext";
+import { ModifiedDate } from "@/app/documents/DocType";
 import AccessHistory from "@/app/versions/AccessHistory";
 import SearchHistory from "@/app/versions/SearchHistory";
-import Version from "@/app/versions/Version";
+import { Version } from "@/app/versions/Version";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from "axios";
 import { endpoints } from "./ApiEndpoints";
@@ -124,7 +124,8 @@ export const handleNoteApiErrorAndNotify = (
       errorMessageId,
       errorMessageText,
       new Date(),
-      "NoteError" as NotificationTypeEnum
+      "NoteError" as NotificationType,
+      "top-right" as NotificationPosition
     );
   }
 };

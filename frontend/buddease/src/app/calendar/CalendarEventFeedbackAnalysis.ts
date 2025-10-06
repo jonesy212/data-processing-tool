@@ -1,4 +1,4 @@
-import { EventFeedbackAnalysis } from "@/app/components/models/data/EventPriorityClassification";
+import { EventFeedbackAnalysis } from "@/app/models/data/EventPriorityClassification";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 
 // CalendarEventFeedbackAnalysis.ts

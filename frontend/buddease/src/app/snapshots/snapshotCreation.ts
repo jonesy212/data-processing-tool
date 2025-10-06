@@ -1,22 +1,18 @@
 // snapshotCreation.ts
 // In snapshotOperations/snapshotCreation.ts
-import { 
-  createBasicSnapshot, 
-  enhanceSnapshotWithMethods, 
-  createCompleteSnapshot 
-} from './createSnapshot';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/components/models/content/AddContent';
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import {
+  createCompleteSnapshot
+} from '@/createSnapshot';
 
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 
-import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/snaphots/Snapshot";
-import { SnapshotStoreConfig } from "@/app/snapshotstoreConfig";
 
 export const takeSnapshot = async <
   T extends BaseDataEntity,

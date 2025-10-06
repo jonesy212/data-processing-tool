@@ -1,5 +1,5 @@
 // useSecurityAudit.ts
-import { useSecureUserId as fetchSecureUserId } from './useSecureUserId';
+import { useSecureUserId as fetchSecureUserId } from '@/useSecureUserId';
 
 export const useSecurityAudit = () => {
     // Reuse the secure user ID logic from useSecureUserId.ts

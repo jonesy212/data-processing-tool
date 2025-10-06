@@ -1,4 +1,4 @@
-import { DataAnalysis } from "@/app/components/projects/DataAnalysisPhase/DataAnalysis";
+import { DataAnalysis } from "@/app/projects/DataAnalysisPhase/DataAnalysis";
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface DataAnalysisState {

@@ -2,8 +2,8 @@
 // CollaborationPhaseHooks.ts
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
-import { DynamicHookParams } from '../dynamicHooks/dynamicHookGenerator';
-import DynamicPromptPhaseHookConfig, { createDynamicPromptPhaseHook } from './DynamicPromptPhaseHook';
+import { DynamicHookParams } from '@/dynamicHooks/dynamicHookGenerator';
+import DynamicPromptPhaseHookConfig, { createDynamicPromptPhaseHook } from '@/DynamicPromptPhaseHook';
 
 
 type DynamicPromptPhaseHookConfig = {

@@ -1,6 +1,6 @@
 import DynamicContentProps from '@/app/components/cards/DummyCardLoader';
+import { PersonaTypeEnum } from '@/PersonaBuilder';
 import React from "react";
-import { PersonaTypeEnum } from '../PersonaBuilder';
 import { PersonaData } from "./PersonaData";
 
 interface PersonaPanelProps {

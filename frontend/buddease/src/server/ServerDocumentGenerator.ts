@@ -2,12 +2,12 @@
 // ServerDocumentGenerator.ts
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import Docxtemplater from "docxtemplater";
-import { BaseData } from "@/app/components/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import PizZip from "pizzip";
-import { DocumentOptions } from '@/app/components/documents/DocumentOptions';
+import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { generateFinancialReportContent } from '@/app/components/documents/documentation/report/generateFinancialReportContent';
 import { DocumentTypeEnum } from '@/typings/documments';
-import { ServerFileSystem } from './serverFileSystem';
+import { ServerFileSystem } from '@/server/FileSystem';
 
 export class ServerDocumentGenerator {
   private fileSystem: ServerFileSystem;

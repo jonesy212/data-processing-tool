@@ -1,5 +1,5 @@
 // phases/usePhaseSlice.ts
-import { CustomPhaseHooks } from "@/app/components/phases/Phase";
+import { CustomPhaseHooks } from "@/app/phases/Phase";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // Define the initial state for the phases

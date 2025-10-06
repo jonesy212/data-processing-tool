@@ -1,26 +1,26 @@
 // SnapshotSubscriberManagement.ts
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
+import { NotificationType } from '@/app/context/NotificationContext';
+import { NotificationPosition } from "@/app/models/data/StatusType";
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Callback, SnapshotConfig, SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
 import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { Subscriber } from '@/app/users/Subscriber';
+import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
+import { Content } from '@/models/content/AddContent';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { NotificationType } from '@/app/context/NotificationContext';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { SnapshotContainerType } from '@/SnapshotContainer';
+import { SnapshotLifecycleMethods } from '@/SnapshotMethods';
+import { SubscriberCallbackType, Subscription } from '@/subscriptions/Subscription';
 import { SnapshotWithCriteria } from '.';
-import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
-import { Content } from '../models/content/AddContent';
-import { NotificationPosition } from "@/app/models/data/StatusType";
-import { DataStoreMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-import { SubscriberCallbackType, Subscription } from '../subscriptions/Subscription';
-import { SnapshotContainerType } from './SnapshotContainer';
-import { SnapshotLifecycleMethods } from './SnapshotMethods';
 
 
 interface SnapshotContext<

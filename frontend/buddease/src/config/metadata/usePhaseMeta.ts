@@ -1,5 +1,5 @@
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData } from '@/app/models/data/Data';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { createMeta } from "@/config/metadata/MetadataHooks";
 import { useMetadata } from "@/config/useMetadata";
 import { createMetadata } from '@/server/metadata/createMetadata';

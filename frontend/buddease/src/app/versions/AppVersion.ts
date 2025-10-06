@@ -1,4 +1,4 @@
-import getAppPath from '@/app/configs/appStructure/appPath';
+import getAppPath from '@/config//appStructure/appPath';
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { DocumentTypeEnum } from "@/app/typings/documents";
 import { getCurrentAppInfo } from '@/app/versions/VersionGenerator';

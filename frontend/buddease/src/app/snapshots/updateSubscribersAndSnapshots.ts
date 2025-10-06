@@ -7,7 +7,7 @@
 // import { useParams } from "react-router-dom";
 // import { ModifiedDate } from "@/app/documents/DocType";
 // import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
-// import { BaseData } from "@/app/models/data/Data";
+// import { BaseData } from '@/app/models/data/Data';
 // import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
 // import { NotificationTypeEnum, NotificationType } from "@/context/NotificationContext";
 // import { getTradeExecutions, getMarketUpdates, getCommunityEngagement } from "@/app/utils/trading/TradingUtils";
@@ -18,7 +18,7 @@
 // import { K, T } from "./SnapshotConfig";
 // import SnapshotStore from "./SnapshotStore";
 // import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-// import * as snapshotApi from '@/app/components/api/SnapshotApi';
+// import * as snapshotApi from '@/app/api/SnapshotApi';
 // // Example of asynchronous function using async/await
 // const updateSubscribersAndSnapshots = async (
 //     snapshotId: string,

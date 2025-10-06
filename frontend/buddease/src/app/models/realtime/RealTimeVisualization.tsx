@@ -1,8 +1,8 @@
 
 // RealTimeVisualization.tsx
 import React, { useEffect, useState } from 'react';
-import { useRealTimeDataStore } from './RealTimeDataStore';
-import { RealtimeDataItem } from './RealtimeData';
+import { useRealTimeDataStore } from '@/RealTimeDataStore';
+import { RealtimeDataItem } from '@/RealtimeData';
 
 interface RealTimeVisualizationProps {}
 

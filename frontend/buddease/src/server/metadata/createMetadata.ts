@@ -1,17 +1,37 @@
+import crypto from 'crypto';
 import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import crypto from 'crypto';
-import { BaseData } from "@/app/components/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { UnifiedMetaDataOptions } from '@/server/database/MetaDataOptions';
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { SecureFieldManager } from '@/server/security/SecureFieldManager'
+import { useSecurityAudit } from "@/app/hooks/useSecurityAudit";
 
-interface DashboardMeta<T extends BaseData<any>, K extends T = T>
-  extends StructuredMetadata<T, K> {
+
+interface DashboardMeta<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>
+  extends StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   createdBy: string;
   // Other dashboard-specific fields here
 }
 
-interface ProfileMeta<T extends BaseData<any>, K extends T = T>
-  extends StructuredMetadata<T, K> {
+interface ProfileMeta<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>
+  extends StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   createdBy: string;
   updatedBy?: string;
   updatedAt?: Date;
@@ -41,7 +61,7 @@ export const createMetadata = <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  options: Partial<UnifiedMetaDataOptions<T, K>> & {
+  options: Partial<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> & {
     // Security options
     enableEncryption?: boolean;
     enableSanitization?: boolean;

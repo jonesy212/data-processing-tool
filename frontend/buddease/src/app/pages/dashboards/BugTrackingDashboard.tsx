@@ -4,9 +4,9 @@ import { useEffect } from 'react';
 import React from'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchBugData } from '@/app/components/api/api'; // Function to fetch bug data from API
-import BugFilter from './BugFilter';
-import BugSort from './BugSort';
-import BugTable from './BugTable';
+import BugFilter from '@/BugFilter';
+import BugSort from '@/BugSort';
+import BugTable from '@/BugTable';
 import useErrorHandling from '@/app/hooks/useErrorHandling';
 import { usePagination } from '@/app/hooks/userInterface/usePagination';
 import useSearchPagination from '@/app/hooks/commHooks/useSearchPagination';

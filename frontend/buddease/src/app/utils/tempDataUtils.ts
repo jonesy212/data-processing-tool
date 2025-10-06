@@ -1,8 +1,8 @@
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { SnapshotStoreConfig } from "./snapshotStoreConfig";
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 
 export function storeTempData<
 T extends  BaseData<any>,

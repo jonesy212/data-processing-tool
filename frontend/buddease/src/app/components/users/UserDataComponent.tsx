@@ -1,7 +1,6 @@
-import React from 'react';
-import generateTimeBasedCode from '../models/realtime/TimeBasedCodeGenerator';
-import UserDetails, { User } from './User';
-import UserRoles from './UserRoles';
+import generateTimeBasedCode from '@/models/realtime/TimeBasedCodeGenerator';
+import UserDetails, { User } from '@/User';
+import UserRoles from '@/UserRoles';
 
 const UserDataComponent = () => {
   const timeBasedCode = generateTimeBasedCode();

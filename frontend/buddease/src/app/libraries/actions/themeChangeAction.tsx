@@ -1,9 +1,8 @@
-import { BrandingSettings } from '@/app/components/projects/branding/BrandingSettings';
-import { createAction } from '@reduxjs/toolkit';
-import { useDispatch } from 'react-redux';
-import { Theme } from '../libraries/ui/theme/Theme';
+import { BrandingSettings } from '@/app/branding/BrandingSettings';
 import { DocumentFormattingOptions } from '@/app/components/documents/ DocumentFormattingOptionsComponent';
 import { ColorSwatchProps } from '@/app/components/styling/ColorPalette';
+import { createAction } from '@reduxjs/toolkit';
+import { useDispatch } from 'react-redux';
 
 
 

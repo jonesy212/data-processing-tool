@@ -1,8 +1,7 @@
 // components/Details.tsx
 
+import { Label } from '@/app/branding/BrandingSettings';
 import { SharedIdentifiers } from '@/app/components/documents/RelatedProps';
-import { Label } from '@/app/components/projects/branding/BrandingSettings';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import { CommonData, Customizations } from "@/app/models/CommonData";
@@ -11,11 +10,12 @@ import { Phase } from "@/app/phases/Phase";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import CommonEvent from "@/app/state/stores/CommonEvent";
 import { DetailsItemExtended } from "@/app/state/stores/DetailsListStore";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { SharedMetadata } from "@/config/metadata/MetadataHooks";
 import { observer } from "mobx-react-lite";
 import React from "react";
-import ListGenerator from "./../../../../app/generators/ListGenerator";
+import ListGenerator from "@/app/generators/ListGenerator";
 import { Comment } from "./Comments";
 import { Data } from "./Data";
 

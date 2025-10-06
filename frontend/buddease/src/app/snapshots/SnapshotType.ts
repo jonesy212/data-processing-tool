@@ -7,9 +7,9 @@ import {
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import * as snapshotApi from '@/app/api/SnapshotApi'
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig, snapshotFunction } from ".";
-import { Category } from "@/app/data_analysis/frontend/buddease/src/app/components/libraries/categories/generateCategoryProperties";
+import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
 import { BaseData } from "@/app/ysis/frontend/buddease/src/app/components/models/data/Data";
 import { isSnapshot, snapshotId, isSnapshotDataType } from "@/app/ysis/frontend/buddease/src/app/utils/snapshotUtils";
 import useSecureStoreId from "@/app/ysis/frontend/buddease/src/app/components/utils/useSecureStoreId";
@@ -18,7 +18,7 @@ import { SnapshotData } from "./SnapshotData";
 import snapshotDelegate from "./snapshotDelegate";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { SnapshotContainerType } from './SnapshotContainer';
+import { SnapshotContainerType } from '@/SnapshotContainer';
 
 const snapshotType = <
   T extends BaseDataEntity,

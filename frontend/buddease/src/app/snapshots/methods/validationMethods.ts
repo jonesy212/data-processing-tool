@@ -1,14 +1,14 @@
 // validationMethods.ts
 import { CoreSnapshot } from '@/app/snapshots/LocalStorageSnapshotStore';
 
-import { Snapshot } from "..";
-import { Category } from "@/app/data_analysis/frontend/buddease/src/app/components/libraries/categories/generateCategoryProperties";
-import { RealtimeDataItem } from "@/app/data_analysis/frontend/buddease/src/app/components/models/realtime/RealtimeData";
-import { SearchCriteria } from "@/app/data_analysis/frontend/buddease/src/app/components/routing/SearchCriteria";
-import { SubscriberCollection } from "@/app/data_analysis/frontend/buddease/src/app/users/SubscriberCollection";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
+import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
+import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+import { SearchCriteria } from "@/app/components/routing/SearchCriteria";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { SubscriberCollection } from "@/app/users/SubscriberCollection";
 import SnapshotStore from "@/app/snapshotstore";
 import { SnapshotWithCriteriaAsBase } from "@/app/snapshotstoreOptions";
+import { Snapshot } from "..";
 
 // validationMethods.ts
 export const ValidationMethods = {

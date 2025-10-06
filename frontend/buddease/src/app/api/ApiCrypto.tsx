@@ -4,8 +4,8 @@ import { AxiosError } from 'axios';
 import { observable, runInAction } from 'mobx';
 import { markTaskAsComplete, markTodoAsComplete } from '@/app/state/redux/slices/ApiSlice';
 import NOTIFICATION_MESSAGES from '@/app/support/NotificationMessages';
-import { ApiActions } from './ApiActions';
-import { endpoints } from './ApiEndpoints';
+import { ApiActions } from '@/ApiActions';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken'
 
 const API_BASE_URL = endpoints.crypto;

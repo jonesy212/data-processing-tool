@@ -1,6 +1,6 @@
 // Example of applying branding in a React component using a Theme provider
 import { useContext } from 'react';
-import { ThemeContext } from './Theme';
+import { ThemeContext } from '@/Theme';
 import React from "react";
 
 const AppHeader: React.FC = () => {

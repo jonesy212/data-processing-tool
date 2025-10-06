@@ -1,34 +1,34 @@
 import { Content } from '@/app/components/models/content/AddContent';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { SnapshotContainerType } from './SnapshotContainer';
+import { SnapshotContainerType } from '@/SnapshotContainer';
 
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
+import { ProjectMetadata, StructuredMetadata } from '@/config/StructuredMetadata';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { SnapshotStoreConfig } from '@/app/snapshots';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { ProjectMetadata, StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from '../projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-import { SimulatedDataSource } from "./createSnapshotOptions";
 import {
   ConfigureSnapshotStorePayload, MultipleEventsCallbacks, Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotOperation, SnapshotOperationType, Snapshots,
   SnapshotStoreMethod, SnapshotStoreProps,
   SnapshotWithCriteria
-} from './index';
+} from '@/index';
+import { SimulatedDataSource } from "./createSnapshotOptions";
 
+import { SharedIdentifiers } from "@/app/documents/RelatedProps";
+import { DataStore, EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { SchemaField } from '@/server/database/SchemaField';
-import { SharedIdentifiers } from "@/app/documents/RelatedProps";
-import { RealtimeDataItem } from '../models/realtime/RealtimeData';
-import { DataStore, EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { Subscription } from '../subscriptions/Subscription';
-import { Subscriber } from '../users/Subscriber';
-import { SnapshotStoreCore } from './SnapshotCore';
+import { SnapshotStoreCore } from '@/SnapshotCore';
+import { Subscription } from '@/subscriptions/Subscription';
+import { Subscriber } from '@/users/Subscriber';
 
 
 type UnifiedConfigOption<

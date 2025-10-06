@@ -1,9 +1,9 @@
 // YourDocumentGeneratorComponent.tsx
+import { createPdfDocument } from '@/documents/DocumentCreationUtils';
 import React, { useState } from 'react';
-import { createPdfDocument } from './DocumentCreationUtils';
 
 import ResizablePanels from '@/app/hooks/userInterface/ResizablePanels';
-import DocumentFormattingOptionsComponent, { DocumentFormattingOptions } from './ DocumentFormattingOptionsComponent';
+import DocumentFormattingOptionsComponent, { DocumentFormattingOptions } from '@/ DocumentFormattingOptionsComponent';
 
 const YourDocumentGeneratorComponent: React.FC = () => { 
   const [loading, setLoading] = useState(false);

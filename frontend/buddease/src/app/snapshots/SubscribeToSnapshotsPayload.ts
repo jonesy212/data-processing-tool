@@ -1,8 +1,8 @@
 import { BaseDataEntity } from '@/config/BaseConfig';
 // SubscribeToSnapshotsPayload.ts
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { BaseData } from "@/app/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 
 interface SubscribeToSnapshotsPayload<T extends BaseDataEntity = any> {
     snapshotIds: string[]; // List of snapshot IDs to subscribe to

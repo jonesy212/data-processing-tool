@@ -1,11 +1,11 @@
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { DocumentMetadata } from '@/app/state/stores/DocumentStore';
-import React, { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
 import { DetailsItem } from '@/app/components/state/stores/DetailsListStore';
-import { DocumentContent } from '../CommonData';
-import { Data } from './Data';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { DocumentMetadata } from '@/app/state/stores/DocumentStore';
+import { DocumentContent } from '@/CommonData';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Data } from '@/Data';
+import React, { Dispatch, ReactNode, SetStateAction, createContext, useContext, useState } from 'react';
 
 // Define the shape of your context data
 

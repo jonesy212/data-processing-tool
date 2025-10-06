@@ -1,9 +1,8 @@
-import { Category } from "@/app/data_analysis/frontend/buddease/src/app/components/libraries/categories/generateCategoryProperties";
-import { ProjectPhaseTypeEnum, StatusType } from "@/app/components/models/data/StatusType";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { ProjectPhaseTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { Task } from "@/app/components/models/tasks/Task";
-import { Phase, PhaseData } from "@/app/components/phases/Phase";
-import { AllTypes } from "@/app/components/typings/PropTypes";
-import { User } from "@/app/components/users/User";
+import { AllTypes } from "@/app/typings/PropTypes";
+import { User } from "@/app/users/User";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 
 export interface SnapshotIdentity<

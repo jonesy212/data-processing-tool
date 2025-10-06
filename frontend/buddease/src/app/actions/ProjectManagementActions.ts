@@ -1,15 +1,16 @@
 // ProjectManagementActions.ts
-import { BaseData, Data } from '@/app/components/models/data/Data';
+import { BaseData, Data } from '@/app/models/data/Data';
 import { createAction } from "@reduxjs/toolkit";
-import { CustomSnapshotData } from '@/app/snapshots';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 
 
 export const ProjectManagementActions = <
   T extends  BaseData<any> = BaseData<any, any>, 
   K extends T = T,
   ExcludedFields extends T = never,
-  S extends CustomSnapshotData<T, K> = CustomSnapshotData<T, K>,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  S extends CustomSnapshotData<T, K> = CustomSnapshotData<T, K>,  
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >() => ({
   // Tenant-related actions
   addTenantToProject: createAction<{ projectId: number, tenantId: number }>("addTenantToProject"),

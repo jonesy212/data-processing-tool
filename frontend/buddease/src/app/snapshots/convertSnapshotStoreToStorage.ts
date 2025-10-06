@@ -1,8 +1,8 @@
 // // convertSnapshotStoreToStorage.ts
 // import SnapshotStoreOptions from "@/app/hooks/SnapshotStoreOptions";
 // import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-// import { Data } from "@/app/models/data/Data";
-// import { Snapshot } from "@/app/snapshots";
+// import { Data } from '@/app/models/data/Data';
+// import { Snapshot } from '@/app/snapshots/Snapshot';
 // import { SnapshotOperation } from "./SnapshotActions";
 // import SnapshotStore from "./SnapshotStore";
 // import { SnapshotStoreConfig } from "./SnapshotStoreConfig";

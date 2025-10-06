@@ -1,6 +1,6 @@
 // PlanningSubPhase.tsx
 // Assuming you have necessary imports here
-import { SubPhase, PhaseData } from './types'; // Adjust imports as necessary
+import { SubPhase, PhaseData } from '@/types'; // Adjust imports as necessary
 
 export class PlanningSubPhase extends SubPhase {
   private planningData: PhaseData;

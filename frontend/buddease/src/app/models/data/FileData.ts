@@ -1,9 +1,9 @@
 // FileData.ts
 
 import { ScheduledData } from '@/app/components/calendar/ScheduledData';
-import { Attachment } from '@/app/components/documents/Attachment/attachment'
 import { User } from '@/app/components/users/User';
-import { BaseData } from './Data';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { BaseData } from '@/Data';
 
 // Define the interface for FileData
 interface FileData<T extends BaseData<any>> extends ScheduledData<T> {

@@ -1,12 +1,11 @@
 // DataAnalysisResult.ts
-import { BaseData } from '@/app/components/models/data/Data';
 import { Phase } from '@/app/components/phases/Phase';
-import { SnapshotStoreReference } from '@/app/snapshots/SnapshotStore';
+import { Attachment } from "@/app/documents/Attachment/attachment";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
+import { SnapshotStoreReference } from '@/app/snapshots/SnapshotStore';
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
-import { AnalysisTypeEnum } from "./AnalysisType";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Attachment } from "@/app/data_analysis/frontend/buddease/src/app/components/documents/Attachment/attachment";
+import { AnalysisTypeEnum } from "./AnalysisType";
 
 export interface DataAnalysisResult<
   T extends BaseDataEntity,

@@ -1,11 +1,11 @@
 import { ExtendedUser, User } from '@/app/components/users/User';
-import userSettings from '@/app/configs/UserSettings';
+import userSettings from '@/config//UserSettings';
 import { NotificationType } from "@/app/context/NotificationContext";
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import PersonaTypeEnum from '@/app/pages/personas/PersonaBuilder';
 import { ActivityStatus } from '@/app/pages/profile/Profile';
-import { DataSharingPreferences } from '../settings/PrivacySettings';
-import UserRoles from './UserRoles';
+import { DataSharingPreferences } from '@/settings/PrivacySettings';
+import UserRoles from '@/UserRoles';
 
 // Function to transform friends into the required format
 const transformFriends = (friends: User[]): User[] => {

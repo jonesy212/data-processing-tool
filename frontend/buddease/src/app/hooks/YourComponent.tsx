@@ -3,7 +3,7 @@ import appTreeApiService from "@/app/api/appTreeApi";
 import { getSnapshotId } from "@/app/api/SnapshotApi";
 import CalendarManagerStoreClass, { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import useDocumentManagement from '@/app/hooks/documents/useDocumentManagement';
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { SnapshotStoreProps } from '@/app/snapshots';

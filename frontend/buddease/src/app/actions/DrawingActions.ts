@@ -2,7 +2,7 @@
 import { createAction } from "@reduxjs/toolkit";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import TextType from "@/app/documents/TextType";
-import Milestone from "@/app/calendar/CalendarSlice";
+import Milestone from '@/app/state/redux/slices/CalendarSlice';
 
 export const DrawingActions = {
 

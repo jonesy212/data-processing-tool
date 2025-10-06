@@ -1,7 +1,7 @@
 // BlogGenerator.tsx
 import { Post } from '@/app/components/community/DiscussionForumComponent';
 import React from 'react';
-import { BlogPost } from './BlogPost';
+import { BlogPost } from '@/BlogPost';
 
 
 interface BlogGeneratorProps {

@@ -1,14 +1,13 @@
 // SearchComponent.tsx
-import { ModifiedDate } from "@/app/components/documents/DocType";
+import { DocumentOptions, getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
+import { Data } from '@/app/models/data/Data';
+import { ModifiedDate } from "@/app/documents/DocType";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import { DocumentOptions, getDefaultDocumentOptions } from "@/app/components/documents/DocumentOptions";
-import { Data } from "@/app/components/models/data/Data";
 import {
-    DocumentStatusEnum,
-    DocumentTypeEnum
+  DocumentTypeEnum
 } from "@/app/typings/documents";
-import React, { useEffect, useState } from "react";
 import { useSearch } from "@/context/SearchContext";
+import React, { useEffect, useState } from "react";
 
 type DocumentDataPartial = Partial<DocumentData<Data>>;
 

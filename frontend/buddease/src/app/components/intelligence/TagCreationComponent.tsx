@@ -1,8 +1,7 @@
 // TagCreationComponent.ts
-import React from 'react';
-import { useDispatch } from 'react-redux';
 import { TagOptions } from '@/appp/models/tracker/Tag';
-import { createTag } from '../state/redux/slices/useTagManagerSlice';
+import { createTag } from '@/state/redux/slices/useTagManagerSlice';
+import { useDispatch } from 'react-redux';
 // Example usage in a component or action creator
 const TagCreationComponent = () => {
   const dispatch = useDispatch();

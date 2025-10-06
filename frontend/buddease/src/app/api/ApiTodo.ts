@@ -2,13 +2,13 @@
 "use client";
 
 import axiosInstance from '@/app/api/csrfToken';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { AxiosError } from 'axios';
-import { Todo } from '../components/todos/Todo';
-import { endpoints } from './ApiEndpoints';
+import { Todo } from '@/todos/Todo';
+import { endpoints } from '@/app/api/endpointConfigurations';
 
 // Define the API base URL for todos
 const API_BASE_URL = endpoints.todos.list

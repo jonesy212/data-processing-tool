@@ -1,28 +1,28 @@
 import { getSnapshotId } from "@/app/api/SnapshotApi";
-import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
-import { Subscriber } from '@/app/users/Subscriber';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { useContext } from "react";
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData, Data, DataDetails } from "@/app/models/data/Data";
+import { BaseData, Data, DataDetails } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
-import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStore, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { CustomSnapshotData, InitializedConfig, snapshot, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteria } from '@/app/snapshots';
 import { CoreSnapshot, Snapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
 import { default as SnapshotStore } from "@/app/snapshots/SnapshotStore";
+import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { createSnapshotStoreOptions } from '@/app/snapshots/createSnapshotStoreOptions';
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { useContext } from "react";
 
-import { SnapshotContext } from "@/app/context/SnapshotContext";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
+import { SnapshotContext } from "@/app/context/SnapshotContext";
 import { SnapshotContent } from "@/app/snapshots/SnapshotContent";
 import { convertBaseDataToK } from "@/app/snapshots/convertSnapshot";
 import {
-    Callback
+  Callback
 } from "@/app/snapshots/subscribeToSnapshotsImplementation";
 import { generateSnapshotId, isSnapshot } from "@/app/utils/snapshotUtils";
 
@@ -30,15 +30,12 @@ import { generateSnapshotId, isSnapshot } from "@/app/utils/snapshotUtils";
 import { T } from "@/app/models/data/dataStoreMethods";
 
 import { additionalHeaders } from "@/app/api/headers/generateAllHeaders";
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { Subscription } from "react-redux";
-import { SchemaField } from "@/app/server/database/SchemaField";
 import { ExcludedFields } from "@/app/routing/Fields";
-import { createSnapshot } from "@/app/snapshots/createSnapshot";
+import { SchemaField } from "@/app/server/database/SchemaField";
 import { createSnapshotStoreConfig } from "@/app/snapshots/snapshotStoreConfigInstance";
-import Version from "@/app/versions/Version";
 import { ExtendedVersionData } from "@/app/versions/VersionData";
+import { Subscription } from "react-redux";
 import { YourResponseType } from "./types";
 
 
@@ -855,8 +852,8 @@ const convertSnapshotStoreToSnapshot = <T extends  BaseData<any>, K extends T = 
 export { YourSpecificSnapshotType };
 
 const convertSnapshotData =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  snapshotConfigData: SnapshotDataType<T, K> 
-): SnapshotDataType<T, K> => {
+  snapshotConfigData: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+): SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return snapshotConfigData
 };
 
@@ -1302,7 +1299,7 @@ K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K
 >(
   map: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   timestamp: string | number | Date | undefined
-): SnapshotDataType<T, K> | null  {
+): SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null  {
   
   const snapshotMap = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
 
@@ -2076,10 +2073,10 @@ function isCoreSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends 
 
 
 export {
-    convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
-    convertSnapshotData, convertSnapshotMap, convertSnapshotStoreConfig,
-    convertSnapshotStoreItemToT,
-    convertSnapshotStoreToMap, convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
-    createSnapshotStoreConfig, createSnapshotStoreOptions, enrichSnapshotStore, isCoreSnapshot, isSnapshotStore, isYourResponseType, normalizeSnapshot, snapshotType, transformResponse
+  convertMapToSnapshot, convertMapToSnapshotStore, convertSnapshoStoretData, convertSnapshotContainerToStore, convertSnapshotContent,
+  convertSnapshotData, convertSnapshotMap, convertSnapshotStoreConfig,
+  convertSnapshotStoreItemToT,
+  convertSnapshotStoreToMap, convertSnapshotStoreToSnapshot, convertSnapshotToMap, convertSnapshotToStore, convertToDataSnapshot, convertToDataStore, convertToSnapshot, convertToSnapshotStoreConfig,
+  createSnapshotStoreConfig, createSnapshotStoreOptions, enrichSnapshotStore, isCoreSnapshot, isSnapshotStore, isYourResponseType, normalizeSnapshot, snapshotType, transformResponse
 };
 

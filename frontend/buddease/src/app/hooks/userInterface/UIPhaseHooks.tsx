@@ -14,7 +14,7 @@ import {
 import { LogData } from "@/app/models/LogData";
 import { isUserLoggedIn } from "@/app/pages/forms/utils/CommonLoginLogic";
 import { createPhaseHook } from "@/app/phaseHooks/PhaseHooks";
-import { NotificationData } from "@/app/support/NofiticationsSlice";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import useDarkModeToggle from "./useDarkModeToggle";
 
 const usePhaseUI = <

@@ -1,7 +1,7 @@
 // SecurityConfiguration.ts
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 
-import LazyLoadScriptConfigImpl from '@/app/configs/LazyLoadScriptConfig';
+import LazyLoadScriptConfigImpl from '@/config//LazyLoadScriptConfig';
 import { ApiConfig, ConfigurationOptions, ConfigurationService } from "@/config/ConfigurationService";
 import LoggerConfig from "@/config/LoggerConfig";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { FileTypeEnum } from "@/app/components/documents/FileType";
+import { FileTypeEnum } from "@/app/documents/FileType";
 import { BaseData } from "@/app/data/Data";
 import useFiltering from "@/app/hooks/useFiltering";
 import { Project, reassignProject } from "@/app/models/projects/Project";
@@ -13,13 +13,13 @@ import { TeamData } from "./TeamData";
 import {
   LanguageEnum
 } from "@/app/communications/LanguageEnum";
-import { Attachment } from "@/app/components/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/Attachment/attachment";
 import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
 import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
 import { RealtimeDataItem } from "@/app/realtime/RealtimeData";
 import { SortCriteria } from "@/app/settings/SortCriteria";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
-import { SubscriberCollection } from "@/app/users/SubscriberCollection";
+import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 
 
@@ -150,7 +150,7 @@ const updateProgress = async (teamId: string, projectUpdates?: Array<{
 
 // Dynamically import CommonDetails
 const CommonDetails = dynamic(
-  () => import("../CommonData"),
+  () => import(from "@/CommonData"),
   { ssr: false, loading: () => <div>Loading...</div> }
 );
 

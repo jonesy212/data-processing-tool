@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx';
-import { RootStores } from './RootStores';
-import { useAppDispatch } from './useAppDispatch';
-import generateStoreKey from './StoreKeyGenerator';
+import { RootStores } from '@/RootStores';
+import { useAppDispatch } from '@/useAppDispatch';
+import generateStoreKey from '@/StoreKeyGenerator';
 import { useEffect } from 'react';
 
 export interface IconStore {

@@ -55,7 +55,7 @@ The `DocumentOptions` interface defines a comprehensive set of properties that c
 ## Usage Examples
 
 ```typescript
-import { DocumentOptions, getDefaultDocumentOptions } from './documentOptions';
+import { DocumentOptions, getDefaultDocumentOptions } from '@/documentOptions';
 
 // Initialize default document options
 const defaultOptions: DocumentOptions = getDefaultDocumentOptions();
@@ -104,7 +104,7 @@ Inherits all properties from DocumentOptions.
 Usage Example
 typescript
 Copy code
-import { DocumentBuilderOptions, getDefaultDocumentBuilderOptions } from './documentOptions';
+import { DocumentBuilderOptions, getDefaultDocumentBuilderOptions } from '@/documentOptions';
 
 // Initialize default document builder options
 const builderOptions: DocumentBuilderOptions = getDefaultDocumentBuilderOptions();

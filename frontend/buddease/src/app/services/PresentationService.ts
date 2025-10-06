@@ -1,7 +1,7 @@
 // PresentationService.ts
 // Import necessary dependencies and interfaces
 
-import { Presentation, Slide } from "@/app/components/documents/Presentation";
+import { Presentation, Slide } from "@/app/documents/Presentation";
 
 // Define a service to handle presentation-related operations
 class PresentationService {

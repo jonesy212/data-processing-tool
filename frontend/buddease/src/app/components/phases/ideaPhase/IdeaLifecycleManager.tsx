@@ -1,9 +1,9 @@
 // IdeaLifecycleManager.tsx
 import React, { useState } from 'react';
-import ConceptDevelopment from '@/app/components/users/userJourney/ConceptDevelopment';
-import IdeaValidation from '@/app/components/users/userJourney/IdeaValidation';
-import ProofOfConcept from '@/app/components/users/userJourney/ProofOfConcept';
-import { IdeaLifecyclePhase } from './IdeaLifecyclePhase';
+import ConceptDevelopment from '@/app/users/userJourney/ConceptDevelopment';
+import IdeaValidation from '@/app/users/userJourney/IdeaValidation';
+import ProofOfConcept from '@/app/users/userJourney/ProofOfConcept';
+import { IdeaLifecyclePhase } from '@/IdeaLifecyclePhase';
 
 
 const IdeaLifecycleManager: React.FC = () => {

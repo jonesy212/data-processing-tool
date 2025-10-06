@@ -1,9 +1,9 @@
 // generateCache.ts
- import { FileTypeEnum } from "@/app/components/documents/FileType";
-import { BaseData } from '@/app/components/models/data/Data';
+ import { FileTypeEnum } from "@/app/documents/FileType";
+import { BaseData } from '@/app/models/data/Data';
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { Data } from "@/app/components/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { RealtimeData } from "@/app/components/models/realtime/RealtimeData";
 import {
     useBrainstormingPhase,

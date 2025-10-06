@@ -1,6 +1,6 @@
-// import { Data } from "@/app/models/data/Data";
+// import { Data } from '@/app/models/data/Data';
 // import { generateSnapshotId } from "@/app/utils/snapshotUtils";
-// import { Snapshot } from "@/app/snapshots";
+// import { Snapshot } from '@/app/snapshots/Snapshot';
 
 // class SnapshotImplementation<T> {
 //   data: T | null;

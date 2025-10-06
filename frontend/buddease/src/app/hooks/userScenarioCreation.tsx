@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getDefaultDocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentBuilderProps } from "@/app/documents/SharedDocumentProps";
 import { Phase } from "@/app/phases/Phase";
 import PhaseManager from "@/app/phases/PhaseManager";
@@ -15,24 +15,6 @@ type DocK = DocEntity;
 type DocMeta = DefaultMeta<DocEntity, DocK>;
 type DocExcludedFields = DefaultExcludedFields<DocEntity>;
 
-// ---------------------------
-// DocumentData with generics
-// ---------------------------
-export interface DocumentData<
-  T extends BaseDataEntity = DocEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DocMeta,
-  ExcludedFields extends keyof T = DocExcludedFields
-> {
-  id: number | string;
-  title: string;
-  content: string;
-  topics: string[];
-  highlights: string[];
-  files: string[];
-  documentType?: string;
-  documentOptions?: DocumentWithBuilderProps<T, K, Meta, ExcludedFields>;
-}
 
 // ---------------------------
 // DocumentWithBuilderProps interface

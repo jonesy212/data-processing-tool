@@ -2,7 +2,7 @@
 import { fetchData } from '@/app/api/ApiData';
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { DocumentActionTypes } from '@/app/tokens/DocumentActions';
 import { TokenActionTypes } from '@/app/tokens/TokenActions';
 import { Dispatch, useEffect, useState } from 'react';

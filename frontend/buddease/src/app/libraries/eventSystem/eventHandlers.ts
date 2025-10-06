@@ -1,13 +1,13 @@
-import { EventEmitter } from './eventEmitter';
+import { EventEmitter } from '@/app/eventEmitter';
 import { 
   SnapshotEvent, 
   BatchSnapshotEvent, 
   ErrorEvent, 
   SubscriptionEvent,
   EventContext 
-} from '../types/eventTypes';
-import { Snapshot, Snapshots } from '../types/snapshotTypes';
-import { Subscriber } from '../types/subscriptionTypes';
+} from '@/types/eventTypes';
+import { Snapshot, Snapshots } from '@/types/snapshotTypes';
+import { Subscriber } from '@/types/subscriptionTypes';
 
 export interface SnapshotEventMap<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   'snapshot:added': SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;

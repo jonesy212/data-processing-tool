@@ -3,12 +3,10 @@ import {
   CodingLanguageEnum,
   LanguageEnum,
 } from "@/app/communications/LanguageEnum";
-import { ModifiedDate } from "@/app/components/documents/DocType";
-import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { Section } from "@/app/components/documents/Section";
 import { UserIdea } from "@/app/components/users/Ideas";
-import Version from "@/app/versions/Version";
-import { VersionData } from "@/app/versions/VersionData";
+import { ModifiedDate } from "@/app/documents/DocType";
 import {
   BorderStyle,
   DocumentSize,
@@ -17,6 +15,8 @@ import {
 import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
 import { Settings } from "@/app/state/stores/SettingsStore";
 import { DocumentTypeEnum } from "@/app/typings/documents";
+import { Version } from "@/app/versions/Version";
+import { VersionData } from "@/app/versions/VersionData";
 import BackendStructure from "@/server/database/BackendStructure";
 import { IHydrateResult } from "mobx-persist";
 import { StructuredMetadata } from "./StructuredMetadata";

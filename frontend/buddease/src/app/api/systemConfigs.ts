@@ -1,6 +1,6 @@
-import BackendStructure from "@/@/config/FrontendConfigkendStructure";
+import BackendStructure from "@/config/FrontendConfigkendStructure";
 import LazyLoadScriptConfig from "@/app/components/configs/LazyLoadScriptConfig";
-import { AquaConfig } from "@/app/components/web3/webConfigs/AquaConfig";
+import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
 import { BackendConfig } from "@/config/BackendConfig";
 import { DataVersions } from "@/configs/DataVersionsConfig";
 import { FrontendConfig } from "@/configs/FrontendConfig";

@@ -1,8 +1,8 @@
 // decryptedData.ts
 import * as crypto from 'crypto';
 import { CipherKey } from 'crypto';
-import { generateDecryptionKey } from './decryptionKey';
-import { Encryption } from './Encryption';
+import { generateDecryptionKey } from '@/decryptionKey';
+import { Encryption } from '@/app/encryption';
 
 
 

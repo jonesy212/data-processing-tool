@@ -7,20 +7,16 @@ import React, { SetStateAction, useState } from "react";
 import { Navigator, Routes } from "react-router-dom";
 import { v4 as uuidVFour } from "uuid"; // Import the uuid library or use your preferred UUID generator
 
-import { AuthProvider } from "@/app/components/auth/AuthContext";
 import BlogComponent from "@/app/components/blogs/BlogComponent";
 import ChartComponent from "@/app/components/charts/ChartComponent";
 import ConfirmationModal from "@/app/components/communications/ConfirmationModal";
-import { Lesson } from "@/app/components/documents/CourseBuilder";
 import EditorWithPrompt from "@/app/components/documents/EditorWithPrompt";
 import Toolbar from "@/app/components/documents/Toolbar";
 import { LogData } from "@/app/components/models/LogData";
 import ContentItemComponent from "@/app/components/models/content/ContentItem";
-import { BaseData, Data } from "@/app/components/models/data/Data";
 import OnboardingComponent from "@/app/components/onboarding/OnboardingComponent";
-import { CustomPhaseHooks, Phase } from "@/app/components/phases/Phase";
-import undoLastAction from "@/app/projects/projectManagement/ProjectManager";
-import { DynamicPromptProvider } from "@/app/components/prompts/DynamicPromptContext";
+import { AuthProvider } from "@/app/context/AuthContext";
+import { Lesson } from "@/app/documents/editing/CourseBuilder";
 import NotificationManager from "@/app/features/support/NotificationManager";
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { generateUtilityFunctions } from "@/app/generators/GenerateUtilityFunctions";
@@ -37,12 +33,16 @@ import {
     default as defaultThemeConfig,
 } from "@/app/hooks/userInterface/ThemeCustomization";
 import BrandingSettings from "@/app/libraries/theme/BrandingService";
+import { BaseData, Data } from '@/app/models/data/Data';
+import { CustomPhaseHooks, Phase } from "@/app/phases/Phase";
+import undoLastAction from "@/app/projects/projectManagement/ProjectManager";
+import { DynamicPromptProvider } from "@/app/prompts/DynamicPromptContext";
 import DynamicErrorBoundary from "@/app/shared/DynamicErrorBoundary";
 import ErrorBoundaryProvider from "@/app/shared/ErrorBoundaryProvider";
 import ErrorHandler from "@/app/shared/ErrorHandler";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { StoreProvider } from "@/app/state/stores/StoreProvider";
-import { NotificationData } from "@/app/support/NofiticationsSlice";
 import { DocumentTree } from "@/app/users/User";
 import {
     NotificationProvider,
@@ -70,16 +70,16 @@ import { ChatSidebarProvider } from "@/app/api/ChatSidebarProvider";
 import DetermineFileType from "@/app/components/configs/DetermineFileType";
 import FilePreview from "@/app/components/documents/FilePreview";
 import { ToolbarOptions } from "@/app/components/documents/ToolbarOptions";
-import { authProvider } from "@/app/components/interfaces/provider/authProviderInstance";
-import ToolbarItemsContext from "@/app/components/libraries/toolbar/ToolbarItemsProvider";
-import useNotificationManagerService from "@/app/services/NotificationService";
 import StepComponent from "@/app/components/phases/steps/StepComponent";
-import steps from "@/app/components/phases/steps/steps";
-import RouteGuard from "@/app/components/routing/RouteGuard";
 import { NotificationType } from "@/app/context/NotificationContext";
 import StepProvider, { useStepContext } from "@/app/context/StepContext";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
+import { authProvider } from "@/app/interfaces/provider/authProviderInstance";
+import ToolbarItemsContext from "@/app/libraries/toolbar/ToolbarItemsProvider";
+import steps from "@/app/phases/steps/steps";
+import { RouteGuard } from "@/app/routing/RouteGuard";
+import useNotificationManagerService from "@/app/services/NotificationService";
 import { ThemeState } from "@/app/state/redux/slices/ThemeSlice";
 import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/versions/createLatestVersion";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
@@ -147,6 +147,8 @@ const phases: Phase[] = [
         metadata: {
           author: "Author Name",
           timestamp: new Date(), // Phase-level timestamp for creation
+           area: 'phase-area', 
+           metadataEntries: []
         },
         releaseDate: "2024-11-24", // Original release date may now reflect a phase-specific release
         major: 1, // Phase-level semantic versioning
@@ -194,6 +196,7 @@ const contentItem: DetailsItem<Data<BaseData>> = {
   title: "Sample Content",
   description: "This is a sample content item.",
   analysisResults: [],
+  startDate: new Date(),
   updatedAt: new Date(),
   subtitle: "This is a sample subtitle",
   value: "This is a sample value",
@@ -304,7 +307,7 @@ async function MyApp({
       completionMessageLog: {} as LogData,
       status: undefined,
       sendStatus: "Sent",
-      notificationType: NotificationTypeEnum.NewNotification,
+      notificationType: NotificationTypeEnum.NEW_NOTIFICATION,
       topics: [],
       highlights: [],
       files: [],
@@ -386,7 +389,7 @@ async function MyApp({
         config: undefined,
         initialState: undefined,
         operation: {
-          operationType: "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/SnapshotActions".CreateSnapshot,
+          operationType: "./data_analysis/frontend/buddease/src/app/snapshots/SnapshotActions".CreateSnapshot,
           query: undefined,
           action: undefined,
           criteria: undefined,

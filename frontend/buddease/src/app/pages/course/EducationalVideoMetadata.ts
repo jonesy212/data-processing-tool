@@ -1,7 +1,7 @@
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { UserData } from '@/app/components/users/User';
-import { StructuredMetadata, VideoMetadata } from '@/app/configs/StructuredMetadata';
+import { StructuredMetadata, VideoMetadata } from '@/config/StructuredMetadata';
 
 // EducationalVideoMetadata.ts
 interface EducationalVideoMetadata<

@@ -1,5 +1,5 @@
-import { UserRole } from './../components/users/UserRole';
-import { BaseData } from "@/app/components/models/data/Data";
+import { UserRole } from '@/components/users/UserRole';
+import { BaseData } from '@/app/models/data/Data';
 import { Task } from "@/app/components/models/tasks/Task";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { CreationPhase } from "./appTypes";

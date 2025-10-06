@@ -1,5 +1,5 @@
 import { handleApiError } from "@/app/api/ApiLogs";
-import { sanitizeInput } from "@/app/components/security/SanitizationFunctions";
+import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions";
 import { SharedConfig } from '@/config/BaseConfig';
 import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
@@ -51,12 +51,12 @@ class ConfigManager {
     this.currentConfig = { ...this.currentConfig, ...sanitizedConfig };
     // Notify about config update
     this.notificationContext.notify(
-      // "configId",
+      "configId",
       "Config Updated",
       "API configuration updated successfully.",
       new Date,
       NOTIFICATION_MESSAGES.Config.CONFIG_UPDATED,
-      NotificationTypeEnum.Configuration
+      NotificationTypeEnum.CONFIGURATION
     );
   }
 
@@ -64,7 +64,7 @@ class ConfigManager {
     this.currentConfig = { ...defaultConfig };
     // Notify about config rollback
     this.notificationContext.notify(
-      // "config rollback",
+      "config rollback",
       "Config Rolled Back",
       "API configuration rolled back to default.",
       new Date,

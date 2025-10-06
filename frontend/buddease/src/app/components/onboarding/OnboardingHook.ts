@@ -9,7 +9,7 @@ import { Tracker } from '@/app/models/tracker/Tracker';
 import { rootStores } from '@/app/state/stores/RootStores';
 import TrackerStore from '@/app/state/stores/TrackerStore';
 import { DocumentData } from '@/components/documents/DocumentBuilder';
-import { User } from '../users/User.jsx';
+import { User } from '@/users/User.jsx';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 class OnboardingPhase {

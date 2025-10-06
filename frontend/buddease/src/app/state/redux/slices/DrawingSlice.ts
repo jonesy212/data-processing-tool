@@ -19,7 +19,7 @@ import Milestone from "@/app/components/calendar/CalendarSlice";
 import { saveAs } from "@/app/components/documents/editing/autosave";
 import TextType from "@/app/components/documents/TextType";
 import { Content } from "@/app/components/models/content/AddContent";
-import { BaseData, SharedRelationshipData } from '@/app/components/models/data/Data';
+import { BaseData, SharedRelationshipData } from '@/app/models/data/Data';
 import { K } from '@/app/components/models/data/dataStoreMethods';
 import FileData from "@/app/components/models/data/FileData";
 import {

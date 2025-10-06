@@ -1,40 +1,39 @@
 import { InitializedState } from "@/app/@/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { ScheduledData } from "@/app/calendar/ScheduledData";
-import CommonDetails, { CommonData } from "@/app/models/CommonData";
-import { Attachment } from "@/app/components/documents/Attachment/attachment";
 import {
-    SharedIdentifiers,
-    SharedStatusFlags,
-    SharedTimestamps,
+  SharedIdentifiers,
+  SharedStatusFlags,
+  SharedTimestamps,
 } from "@/app/components/documents/RelatedProps";
-import { Phase, PhaseData } from "@/app/components/phases/Phase";
+import { Phase } from "@/app/components/phases/Phase";
 import { Content } from "@/app/content/AddContent";
 import { CustomTransaction } from "@/app/crypto/SmartContractInteraction";
+import { Attachment } from "@/app/documents/Attachment/attachment";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { createCustomTransaction } from "@/app/hooks/dynamicHooks/createCustomTransaction";
 import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import CommonDetails, { CommonData } from "@/app/models/CommonData";
 import { Persona } from "@/app/pages/personas/Persona";
 import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { taskService } from "@/app/services/TaskService";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import {
-    Snapshots,
-    SnapshotsArray,
+  Snapshots,
+  SnapshotsArray,
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import SnapshotStore, {
-    SnapshotStoreReference,
+  SnapshotStoreReference,
 } from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import {
-    SnapshotWithCriteria,
-    TagsRecord,
+  SnapshotWithCriteria,
+  TagsRecord,
 } from "@/app/snapshots/SnapshotWithCriteria";
 import { ExtendedTodo } from "@/app/state/AssignBaseStore";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
@@ -49,6 +48,7 @@ import { Team } from "@/app/teams/Team";
 import { Collaborator, Member } from "@/app/teams/TeamMembers";
 import TodoImpl, { Todo, UserAssignee } from "@/app/todos/Todo";
 import { TrackerProps } from "@/app/tracker/Tracker";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { AllTypes } from "@/app/typings/PropTypes";
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
@@ -56,17 +56,17 @@ import { cleanEmptyStrings } from "@/app/utils/cleanEmptyStrings";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { VideoData } from "@/app/video/Video";
 import {
-    BaseDataEntity,
-    DefaultExcludedFields,
-    DefaultMeta,
+  BaseDataEntity,
+  DefaultExcludedFields,
+  DefaultMeta,
 } from "@/config/BaseConfig";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
 import userSettings from "@/config/UserSettings";
 import {
-    fetchUserAreaDimensions,
-    UnifiedMetadata,
+  fetchUserAreaDimensions,
+  UnifiedMetadata,
 } from "@/server/database/MetaDataOptions";
 import UserRoles from "@/users/UserRoles";
 import { AxiosResponse } from "axios";
@@ -75,10 +75,10 @@ import { Comment } from "./Comments";
 import { K, T } from "./dataStoreMethods";
 import FileData from "./FileData";
 import {
-    PriorityTypeEnum,
-    ProjectPhaseTypeEnum,
-    StatusType,
-    SubscriptionTypeEnum,
+  PriorityTypeEnum,
+  ProjectPhaseTypeEnum,
+  StatusType,
+  SubscriptionTypeEnum,
 } from "./StatusType";
 
 interface SharedRelationshipData<K> {
@@ -1636,16 +1636,16 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
 };
 
 export type {
-    BaseData,
-    ChildRelationship,
-    CommonRelationship,
-    Data,
-    DataDetails,
-    DataDetailsComponent,
-    DataDetailsProps, DataEntity, DataExcludedFields, DataK,
-    DataMeta, DataWithOmittedFields,
-    SharedRelationshipData,
-    TodoSubtasks
+  BaseData,
+  ChildRelationship,
+  CommonRelationship,
+  Data,
+  DataDetails,
+  DataDetailsComponent,
+  DataDetailsProps, DataEntity, DataExcludedFields, DataK,
+  DataMeta, DataWithOmittedFields,
+  SharedRelationshipData,
+  TodoSubtasks
 };
 
 // Clean the coreData to replace empty strings with null

@@ -9,23 +9,21 @@ import {
   updateSnapshotStore
 } from "@/app/api/SnapshotApi";
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import { Snapshot } from "@/app/snapshots";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
-import React, { useEffect, useRef, useState } from "react";
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import useStorageManager from "@/app/hooks/useStorageManager";
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { Task } from "@/app/models/tasks/Task";
-import { SnapshotContainer, SnapshotStoreConfig, SnapshotStoreProps } from "@/app/snapshots";
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { Snapshot, SnapshotContainer, SnapshotStoreConfig, SnapshotStoreProps } from "@/app/snapshots";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import {
   deleteSnapshot,
   updateSnapshot,
 } from "@/app/snapshots/snapshotHandlers";
 import { useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
+import React, { useEffect, useRef, useState } from "react";
 
 // -------------------- Project Phases --------------------
 enum ProjectPhase {
@@ -248,4 +246,4 @@ const ProjectManagerComponent: React.FC<ProjectManagerProps> = ({ storeProps }) 
 };
 
 export default ProjectManagerComponent;
-export type { ProjectPhase }
+export type { ProjectPhase };

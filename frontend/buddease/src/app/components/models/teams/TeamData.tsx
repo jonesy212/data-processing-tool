@@ -1,5 +1,5 @@
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData } from '@/app/models/data/Data';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { BrainstormingSettings } from "@/app/interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "@/app/interfaces/settings/CollaborationPreferences";

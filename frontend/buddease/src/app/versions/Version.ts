@@ -13,12 +13,12 @@ import UserRoles from '@/users/UserRoles';
 
 import { snapshotContainer } from '@/app/snapshots/SnapshotContainer';
       
-import { SharedRelationshipData } from "@/app/components/models/data/Data";
+import { SharedRelationshipData } from '@/app/models/data/Data';
 import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import FrontendStructure, { frontendStructure } from "@/config/appStructure/FrontendStructure";
 import { sharedMetadata } from "@/config/metadata/MetadataHooks";
-import { AppStructureItem } from "@/configs/appStructure/AppStructure";
+import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import BackendStructure, { backendStructure } from '@/server/database/BackendStructure';
 import { fetchUserAreaDimensions } from "@/server/database/MetaDataOptions";
 
@@ -28,7 +28,7 @@ import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { createBaseData } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Taggable } from '@/app/models/CommonData';
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { K, T } from "@/app/models/data/dataStoreMethods";
 import { Member } from "@/app/models/teams/TeamMembers";
 import { Persona } from "@/app/pages/personas/Persona";
@@ -60,11 +60,12 @@ interface BuildVersion {
 }
 
 interface Version<
-  T extends BaseDataEntity,  
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   id: number;
   versionData?: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null; // Adjust based on actual type

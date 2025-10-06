@@ -1,6 +1,6 @@
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";

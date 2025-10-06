@@ -1,6 +1,6 @@
 // components/PhaseList.tsx
+import { Phase } from '@/phases/Phase';
 import React from 'react';
-import { Phase } from '../phases/Phase';
 
 interface PhaseListProps {
   phases: Phase[];

@@ -1,14 +1,14 @@
 // SnapshotOptions.tsx
 
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/confgs/BaseConfig';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData } from '@/app/models/data/Data';
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/confgs/BaseConfig';
 
   interface CreateOptions<
     T extends BaseDataEntity,
@@ -162,10 +162,8 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/confgs
 
 
   export type {
-    CreateOptions,
-    FetchAllOptions,
-    FindSubscriberOptions,
-    GetConfigOptions,
-    FetchOptions
-  };
+  CreateOptions,
+  FetchAllOptions, FetchOptions, FindSubscriberOptions,
+  GetConfigOptions
+};
 

@@ -1,11 +1,11 @@
 //AppConfig
 import { Theme } from "@/app/components/libraries/ui/theme/Theme";
-import { Data } from "@/app/components/models/data/Data";
 import { UserRole } from "@/app/components/users/UserRole";
-import { AppVersion, currentAppName } from "@/app/versions/AppVersion";
-import Version from "@/app/versions/Version";
-import { NotificationData } from "@/app/support/NofiticationsSlice";
+import { Data } from '@/app/models/data/Data';
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { User } from "@/app/users/User";
+import { AppVersion, currentAppName } from "@/app/versions/AppVersion";
+import { Version } from "@/app/versions/Version";
 import { current } from "immer";
 import { ApiConfig, CacheConfig, RetryConfig, configServiceInstance } from "./ConfigurationService";
 import { AppStructureItem } from "./appStructure/AppStructure";

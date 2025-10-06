@@ -1,43 +1,50 @@
 // CalendarApp.tsx
 "use client";
 
+import * as snapshotApi from '@/api/SnapshotApi';
 import { findSnapshotStoresById, snapshotContainer } from '@/app/api/SnapshotApi';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import CalendarDetails from "@/app/components/models/data/CalendarDetails";
-import { BaseData, Data, DataDetails } from "@/app/components/models/data/Data";
-import { DataDetailsComponent, Team, TeamDetails } from "@/app/components/models/teams/Team";
+import { BaseData, Data, DataDetails } from '@/app/models/data/Data';
+import { Team, TeamDetails } from "@/app/components/models/teams/Team";
+import { DataDetailsComponent } from '@/app/models/data/Data';
 import { Member, TeamMember } from "@/app/components/models/teams/TeamMembers";
-import AnalyzeData from "@/app/components/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
-import { DataAnalysisResult } from "@/app/components/projects/DataAnalysisPhase/DataAnalysisResult";
-import { Project, ProjectType } from "@/app/components/projects/Project";
-import { Todo } from "@/app/components/todos/Todo";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import AnalyzeData from "@/app/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
+import { Todo } from "@/app/todos/Todo";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import CommonDetails, { CommonData } from "@/app/models/CommonData";
 import { CalendarStatus, MeetingStatus, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import {
-    DataStore,
-    useDataStore,
+  DataStore,
+  useDataStore,
 } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SnapshotContainer, SnapshotData, SnapshotStoreProps, SnapshotWithCriteria } from '@/app/snapshots';
+import { Project, ProjectType } from "@/app/projects/Project";
+import { SnapshotData, SnapshotStoreProps } from '@/app/snapshots';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import {
-    snapshotFunction,
-    SnapshotsArray,
-    SnapshotsObject,
-    SnapshotUnion
+  snapshotFunction,
+  SnapshotsArray,
+  SnapshotsObject,
+  SnapshotUnion
 } from "@/app/snapshots/LocalStorageSnapshotStore";
+import { SnapshotContainer, SnapshotContainerData } from '@/app/snapshots/SnapshotContainer';
+
+import { SnapshotContainerData } from '@/app/snapshots/SnapshotContainer';
+
 import { refreshUI } from '@/app/snapshots/refreshUI';
 import {
-    Snapshot
+  Snapshot
 } from "@/app/snapshots/Snapshot";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import {
-    default as SnapshotStore,
-    default as useSnapshotStore,
+  default as SnapshotStore,
+  default as useSnapshotStore,
 } from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
@@ -45,15 +52,16 @@ import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { snapshotType } from "@/app/typings/YourSpecificSnapshotType";
 import { User } from "@/app/users/User";
 import { addToSnapshotList, castToSnapshot, isSnapshotContainer } from '@/app/utils/snapshotUtils';
+import { AppUnifiedMetadata } from "@/app/utils/web3/dAppAdapter/AppEntity";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { createMeta } from "@/config/metadata/MetadataHooks";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMetadata } from "@/config/useMetadata";
 import { UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import UserRoles from "@/users/UserRoles";
-import { AppUnifiedMetadata } from "@/web3/dAppAdapter/AppEntity";
+import { processSnapshotData } from '@/utils/versionUtils';
 import { useEffect, useState } from "react";
-import * as snapshotApi from '../api/SnapshotApi';
-import { processSnapshotData } from '../utils/versionUtils';
+;
 
 
 // Define SnapshotWithData to include only essential properties and methods

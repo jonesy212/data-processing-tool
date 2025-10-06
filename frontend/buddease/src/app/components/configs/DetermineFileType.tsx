@@ -1,5 +1,5 @@
 import React from "react";
-import { FileTypeEnum } from "@/app/components/documents/FileType";
+import { FileTypeEnum } from "@/app/documents/FileType";
 
 interface DetermineFileTypeProps {
   filePath: string;

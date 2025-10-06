@@ -2,7 +2,7 @@
 
 import { BlogPost } from "@/app/community/DiscussionForumComponent";
 import Version from "./Version";
-import { HistoryEntry } from './components/state/stores/HistoryStore'
+import { HistoryEntry } from '@/components/state/stores/HistoryStore'
 
 interface BlogPostHistory extends BlogPost {
   version: Version<T, K>;// Reference to the version of the post

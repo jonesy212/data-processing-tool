@@ -4,7 +4,7 @@ import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { UpdateSnapshotPayload } from "@/app/server/database/Payload";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from './BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 interface UpdateSnapshotParams<
   T extends BaseDataEntity, 

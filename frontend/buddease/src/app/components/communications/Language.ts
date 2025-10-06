@@ -1,4 +1,4 @@
-import { LanguageEnum } from "../../communications/LanguageEnum";
+import { LanguageEnum } from "@/communications/LanguageEnum";
 
 interface Language {
   code: string;

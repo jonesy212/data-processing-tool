@@ -1,8 +1,8 @@
 
 import RandomWalkSuggestions from '@/app/hooks/userInterface/RandomWalkSuggestions';
-import { Data } from '@/app/components/models/data/Data';
+import { Data } from '@/app/models/data/Data';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import configServiceInstance from '@/app/configs/ConfigurationService';
+import configServiceInstance from '@/config//ConfigurationService';
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import ReactDOM from 'react-dom';
 

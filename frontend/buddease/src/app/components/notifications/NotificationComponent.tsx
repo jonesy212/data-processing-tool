@@ -4,7 +4,7 @@ import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { randomBytes } from "ethers";
 import React from "react";
-import './NotificationComponent.css'; // Assuming styles are defined here
+import '@/NotificationComponent.css'; // Assuming styles are defined here
 import useNotificationManagerService from "./NotificationService";
 
 interface CustomNotificationProps {

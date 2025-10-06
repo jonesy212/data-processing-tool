@@ -1,13 +1,13 @@
-import { BackendConfig } from '@/app/configs/BackendConfig';
-import { DataVersions } from '@/app/configs/DataVersionsConfig';
-import { FrontendConfig } from '@/app/configs/FrontendConfig';
-import { UserSettings } from '@/app/configs/UserSettings';
-import BackendStructure from '@/app/configs/appStructure/BackendStructure';
-import FrontendStructure from '@/app/configs/appStructure/FrontendStructure';
+import { BackendConfig } from '@/config/BackendConfig';
+import { DataVersions } from '@/configs/DataVersionsConfig';
+import { FrontendConfig } from '@/config/FrontendConfig';
+import { UserSettings } from '@/config/UserSettings';
+import BackendStructure from '@/config/appStructure/BackendStructure';
+import FrontendStructure from '@/config/appStructure/FrontendStructure';
 import { AsyncHook } from 'async_hooks';
 import axios from 'axios';
-import { RealtimeData } from '../models/realtime/RealtimeData';
-import { CustomPhaseHooks } from '../phases/Phase';
+import { RealtimeData } from '@/models/realtime/RealtimeData';
+import { CustomPhaseHooks } from '@/phases/Phase';
 import { CalendarEvent } from '@/app/state/stores/CalendarEvent';
 import { VersionHistory } from '@/app/versions/VersionData';
 

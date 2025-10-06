@@ -1,11 +1,11 @@
 // import { SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
 
-// import { Snapshot } from "@/app/snapshots";
+// import { Snapshot } from '@/app/snapshots/Snapshot';
 
 // import { Data } from '@/app/models/data/Data';
 // import { K, T } from '@/app/models/data/dataStoreMethods';
 // import SnapshotStore from "./SnapshotStore";
-// import { snapshotStoreConfigInstance } from './snapshotStoreConfigInstance';
+// import { snapshotStoreConfigInstance } from '@/snapshotStoreConfigInstance';
 
 // // createSnapshotExample.tsp
 

@@ -1,10 +1,10 @@
 // InstagramAPI.ts
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { Note, handleNoteApiErrorAndNotify } from '@/ApiNote';
+import axiosInstance from '@/app/api/csrfToken';
+import { headersConfig } from '@/components/shared/SharedHeaders';
+import { authToken } from '@/server/auth/authToken';
 import axios, { AxiosError } from 'axios';
-import { authToken } from '../components/auth/authToken';
-import { headersConfig } from '../components/shared/SharedHeaders';
-import { endpoints } from './ApiEndpoints';
-import { Note, handleNoteApiErrorAndNotify } from './ApiNote';
-import axiosInstance from '@/app/api/csrfToken'
 
 const INSTAGRAM_API_BASE_URL = 'https://api.instagram.com/v1'; // Adjust the base URL accordingly
 

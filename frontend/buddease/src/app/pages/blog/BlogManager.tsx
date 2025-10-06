@@ -1,12 +1,12 @@
 import { logData } from '@/app/services/NotificationService';
-import { addNotification } from '@/app/components/support/NofiticationsSlice';
+import { addNotification } from '@/app/state/redux/slices/NofiticationsSlice'
 import { NotificationContext, NotificationType } from "@/app/context/NotificationContext";
 import React, { useContext } from 'react';
 import { useDispatch } from 'react-redux';
-import { AndroidBlogPosts } from './AIoSBlogPosts';
-import BlogOverview from './BlogOverview';
-import NewBlogPostForm from './NewBlogPostForm';
-import NotificationDisplay from './NotificationDisplay';
+import { AndroidBlogPosts } from '@/AIoSBlogPosts';
+import BlogOverview from '@/BlogOverview';
+import NewBlogPostForm from '@/NewBlogPostForm';
+import NotificationDisplay from '@/NotificationDisplay';
 
 interface BlogManagerProps { }
 

@@ -1,5 +1,5 @@
 // DataDashboard.tsx
-import { Data } from "@/app/components/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import DataFilterForm, {
   DataFilterFormProps,
 } from "@/app/components/models/data/DataFilterForm";

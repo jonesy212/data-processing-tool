@@ -1,7 +1,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { FileSystemService } from '@/app/configs/AppStructure'; // Import the interface
-import AppStructure from '@/app/configs/AppStructure'; // Import your AppStructure class
+import { FileSystemService } from '@/config//AppStructure'; // Import the interface
+import AppStructure from '@/config//AppStructure'; // Import your AppStructure class
 
 // Server-specific file system implementation
 export const nodeFileSystem: FileSystemService = {

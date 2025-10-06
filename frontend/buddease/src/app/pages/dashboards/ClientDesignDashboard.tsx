@@ -1,10 +1,10 @@
 import { ChatRoom } from "@/app/components/communications";
 import connectToChatWebSocket from '@/app/components/communications/WebSocket';
-import { TodoList } from '@/app/components/lists/TodoList';
-import ProjectManagementSimulation from "@/app/components/projects/projectManagement/ProjectManagementSimulation";
+import { TodoList } from '@/todos/lists/TodoList';
+import ProjectManagementSimulation from "@/app/projects/projectManagement/ProjectManagementSimulation";
 import InviteFriends from "@/app/components/referrals/InviteFriends";
 import ColorPalette from "@/app/components/styling/ColorPalette";
-import { NotificationData } from '@/app/components/support/NofiticationsSlice';
+import { NotificationData } from '@/app/state/redux/slices/NofiticationsSlice';
 import TaskManagerComponent from "@/app/components/tasks/TaskManagerComponent";
 import { NotificationType } from '@/app/context/NotificationContext';
 import NotificationManager from "@/app/features/support/NotificationManager";

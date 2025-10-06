@@ -3,8 +3,8 @@ import responsiveDesignStore from "@/app/components/styling/ResponsiveDesign";
 import { backendConfig } from "@/config/BackendConfig";
 import { traverseFrontendDirectory } from "@/server/traverseFrontend";
 import getAppPath from "./appPath";
-import { AppStructureItem } from './AppStructure';
-import BackendStructure from './BackendStructure';
+import { AppStructureItem } from '@/AppStructure';
+import BackendStructure from '@/BackendStructure';
 
 class ExtendedBackendStructure extends BackendStructure {
   // Re-declare private field from parent class

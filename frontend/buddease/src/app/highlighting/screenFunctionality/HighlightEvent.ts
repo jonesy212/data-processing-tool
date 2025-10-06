@@ -1,7 +1,7 @@
 // HighlightEvent.ts
 
 import CommonEvent from "@/app/state/stores/CommonEvent";
-import { DocumentData } from '../DocumentBuilder';
+import { DocumentData } from '@/DocumentBuilder';
 
 interface HighlightEvent extends CommonEvent {
     id: string;

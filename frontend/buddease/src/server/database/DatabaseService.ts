@@ -1,7 +1,7 @@
 // DatabaseService.ts
 // SERVER-SIDE ONLY - This goes in /server/ directory
 import { Client, Pool } from 'pg';
-import { DatabaseConfig, DatabaseQuery, DatabaseService } from '@/app/configs/DatabaseTypes';
+import { DatabaseConfig, DatabaseQuery, DatabaseService } from '@/config/DatabaseTypes';
 import { getAuthToken } from "@/server/auth/getAuthToken";
 import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions";
 import performDatabaseOperation from "@/server/database/DatabaseOperations";

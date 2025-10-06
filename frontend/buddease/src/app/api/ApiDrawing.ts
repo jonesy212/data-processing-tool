@@ -1,8 +1,8 @@
 // ApiDrawing.ts
 import axiosInstance from "@/app/api/csrfToken";
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import { BaseData } from "@/app/components/models/data/Data";
-import { YourResponseType } from "@/app/components/typings/types";
+import { BaseData } from '@/app/models/data/Data';
+import { YourResponseType } from "@/app/typings/responseTypes";
 import {
     NotificationType,
     NotificationTypeEnum,
@@ -56,7 +56,7 @@ export const handleDrawingApiErrorAndNotify = (
       errorMessageText,
       null,
       new Date(),
-      NotificationTypeEnum.ApiClientError,
+      NotificationTypeEnum.API_CLIENT_ERROR,
       "ApiClientError" as NotificationType
     );
   }

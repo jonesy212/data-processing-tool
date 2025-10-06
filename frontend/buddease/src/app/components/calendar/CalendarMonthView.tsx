@@ -1,16 +1,12 @@
 // MonthView.jsx
-import TaskList from "@/app/components/lists/TaskList";
-import { Project } from "@/app/components/projects/Project";
-import { NotificationPosition } from "@/app/models/data/StatusType";
-import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
-import { Action, Dispatch, ThunkAction } from "@reduxjs/toolkit";
-import React from "react";
-import { useDispatch } from "react-redux";
-import { CommonCalendarProps } from "@/app/calendar/Calendar";
 import { TaskActions } from "@/app/actions/TaskActions";
+import { CommonCalendarProps } from "@/app/calendar/Calendar";
+import TaskList from "@/app/components/lists/TaskList";
 import CryptoTransaction from "@/app/crypto/CryptoTransaction";
 import { ContentPost } from "@/app/models/content/ContentPost";
+import { NotificationPosition } from "@/app/models/data/StatusType";
 import { Task } from "@/app/models/tasks/Task";
+import { Project } from "@/app/projects/Project";
 import { updateTask } from "@/app/state/redux/slices/CollaborationSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import {
@@ -19,8 +15,12 @@ import {
   updateTaskPositionAsync,
 } from "@/app/state/redux/slices/TaskSlice";
 import { rootStores } from "@/app/state/stores/RootStores";
+import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
+import { Action, Dispatch, ThunkAction } from "@reduxjs/toolkit";
+import React from "react";
+import { useDispatch } from "react-redux";
 import CalendarMonth from "./CalendarMonth";
-// import CalendarMonth from './CalendarMonthView';
+// import CalendarMonth from '@/CalendarMonthView';
  import * as taskApi from "@/app/api/TasksApi";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { TaskState } from "@/app/state/redux/slices/TaskSlice";

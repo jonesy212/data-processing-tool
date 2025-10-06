@@ -1,4 +1,4 @@
-import { AccessRecord } from "@/app/components/documents/DocumentOptions";
+import { AccessRecord } from "@/app/documents/DocumentOptions";
 
 // AccessHistory.ts
 class AccessHistory {

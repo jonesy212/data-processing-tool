@@ -1,7 +1,7 @@
 // ScheduledData.ts
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Task } from '@/app/components/models/tasks/Task';
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import TodoImpl, { UserAssignee } from "@/app/todos/Todo";

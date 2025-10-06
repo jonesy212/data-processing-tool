@@ -2,11 +2,11 @@ import { Attendee } from "@/app/calendar/Attendee";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { DayOfWeekProps } from "@/app/components/calendar/DayOfWeek";
 import { Month } from "@/app/components/calendar/Month";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { ReassignEventResponse } from "@/app/state/stores/AssignEventStore";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { User } from "@/app/users/User";
+import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
 
 interface ExtendedCalendarEvent<
   T extends BaseDataEntity,

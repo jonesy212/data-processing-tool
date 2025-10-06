@@ -1,12 +1,12 @@
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import HighlightEvent from '@/components/documents/screenFunctionality/HighlightEvent';
+import { headersConfig } from '@/components/shared/SharedHeaders';
+import { YourResponseType } from '@/components/typings/types';
 import { AxiosError, AxiosResponse } from 'axios';
-import HighlightEvent from '../components/documents/screenFunctionality/HighlightEvent';
-import { headersConfig } from '../components/shared/SharedHeaders';
-import { YourResponseType } from '../components/typings/types';
-import { handleApiErrorAndNotify, removeData, updateData } from './ApiData';
-import { endpoints } from './ApiEndpoints';
+import { handleApiErrorAndNotify, removeData, updateData } from '@/ApiData';
+import { endpoints } from '@/app/api/endpointConfigurations';
 
 const API_BASE_URL = endpoints.highlights;
 

@@ -1,5 +1,7 @@
 import { createSnapshot } from '@/app/api/SnapshotApi';
-import { snapshot, SnapshotOperation, SnapshotStoreProps } from '@/app/snapshots';
+import { snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { useCallback } from 'react';
 
@@ -11,38 +13,28 @@ import { processSnapshotsByCategory } from "@/app/libraries/categories/fileCateg
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriberManagement";
 import { getCategory } from '@/app/snapshots/snapshotContainerUtils';
-import { getSnapshot, SnapshotOperations } from '@/app/snapshots/snapshotOperations';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from "axios";
 import { useDispatch } from 'react-redux';
 
-import { Content } from "@/app/components/models/content/AddContent";
-import { BaseData } from "@/app/components/models/data/Data";
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { Member } from "@/app/components/models/teams/TeamMembers";
-import { DataStoreMethods } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-import { ProjectType } from "@/app/components/projects/Project";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import {
-  PriorityTypeEnum,
-  ProjectStateEnum
-} from "@/app/models/data/StatusType";
+import { Content } from "@/app/models/content/AddContent";
+import { BaseData } from '@/app/models/data/Data';
+import { PriorityTypeEnum, ProjectStateEnum } from "@/app/models/data/StatusType";
 import { defaultCategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { sendToAnalytics } from '@/app/projects/DataAnalysisPhase/sendToAnalytics';
-import { ConfigureSnapshotStorePayload, SnapshotConfig, SnapshotData, SnapshotDataType, SnapshotStoreConfig, SnapshotWithCriteria, useSnapshotStore } from "@/app/snapshots";
+import { ProjectType } from "@/app/projects/Project";
+import { ConfigureSnapshotStorePayload, SnapshotConfig } from "@/app/snapshots/SnapshotConfig";
+import { SnapshotDataType } from "@/app/snapshots/SnapshhotContainer";
+import { useSnapshotStore } from "@/app/snapshots/useSnapshotStore";
+import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import {SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { snapshotFunction, Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { Snapshot } from "@/app/snapshots/Snapshot";
-import { SnapshotContainer, SnapshotContainerData } from "@/app/snapshots/SnapshotContainer";
-import SnapshotList from "@/app/snapshots/SnapshotList";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { isSnapshotFunction } from '@/app/snapshots/SnapshotStoreMap';
-import { isValidFileCategory } from "@/app/snapshots/isValidFileCategory";
-import { updateUIWithSnapshotStore } from '@/app/snapshots/updateUIWithSnapshotStore';
-import { FilterState } from "@/app/state/redux/slices/FilterSlice";
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { Subscription } from '@/app/subscriptions/Subscription';
-import { isSnapshot } from "@/app/utils/snapshotUtils";
 
 import { constructTarget, Target } from "@/app//api/EndpointConstructor";
 import { handleApiError } from "@/app/api/ApiLogs";
@@ -58,6 +50,7 @@ import createCacheHeaders from "@/app/api/headers/cacheHeaders";
 import createContentHeaders from "@/app/api/headers/contentHeaders";
 import generateCustomHeaders from "@/app/api/headers/customHeaders";
 import createRequestHeaders from "@/app/api/headers/requestHeaders";
+import SnapshotApiService from '@/app/api/service/SnapshotApiService';
 import {
   NotificationTypeEnum,
   useNotification,
@@ -65,20 +58,46 @@ import {
 import useSecureStoreId from '@/app/hooks/useSecureStoreId';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { CreateOptions } from '@/app/snapshots/SnapshotOptions';
-import { Subscriber } from '@/app/users/Subscriber';
-import { addToSnapshotList } from "@/app/utils/snapshotUtils";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotContainer, SnapshotContainerData } from "@/app/snapshots/SnapshotContainer";
+import SnapshotList from "@/app/snapshots/SnapshotList";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { isSnapshotFunction } from '@/app/snapshots/SnapshotStoreMap';
+import { isValidFileCategory } from "@/app/snapshots/isValidFileCategory";
+import { updateUIWithSnapshotStore } from '@/app/snapshots/updateUIWithSnapshotStore';
+import { FilterState } from "@/app/state/redux/slices/FilterSlice";
+import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { Subscription } from '@/app/subscriptions/Subscription';
+import { addToSnapshotList, isSnapshot } from "@/app/utils/snapshotUtils";
 import { unsubscribe } from '@/app/utils/web3/applicationUtils';
 import { Meta } from '@/components/models/data/dataStoreMethods';
 import { ExcludedFields } from '@/components/routing/Fields';
 import { AppConfig, getAppConfig } from "@/config/AppConfig";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import configData from "@/config/configData";
-import { UnifiedMetaDataOptions } from '@/configs/database/MetaDataOptions';
+import { UnifiedMetaDataOptions } from '@/server/database/MetaDataOptions';
 import { SnapshotEvent } from '@/typings/eventTypes';
 import { createDefaultVersionData } from '@/versions/VersionData';
 import { createLatestVersion } from '@/versions/createLatestVersion';
-import SnapshotApiService from '@/app/api/service/SnapshotApiService';
+
+
+
+// React-friendly functional wrappers
+// app/api/snapshotApi.ts
+import { 
+  takeSnapshot, 
+  getSnapshot, 
+  updateSnapshot, 
+  removeSnapshot,
+  getSnapshots,
+  getSnapshotItems,
+  getSnapshotContainer,
+  validateSnapshot,
+  createMockSnapshot,
+  // ... import other operations
+} from '@/app/snapshots/snapshotOperations';
+import { CreateOptions, FetchAllOptions, GetConfigOptions } from '@/app/snapshots/SnapshotOptions';
 
 const API_BASE_URL = endpoints.snapshots.list; // Assigning string value directly
 const dispatch = useDispatch()
@@ -104,11 +123,14 @@ interface SnapshotStoreIdResponse {
 
 // Extending Snapshot to add optional properties (Extras) for specific contexts
 type SnapshotWithExtras<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  Extras = {}> = Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & Extras;
+  IncludedFields extends keyof T = keyof T,
+  Extras = {}
+  > = Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & Extras;
 
 
 const handleSnapshotApiError = (
@@ -180,9 +202,12 @@ const createHeaders = (additionalHeaders?: Record<string, string>) => {
 
 // API call function
 const apiCall = <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   url: string,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE',
@@ -213,45 +238,142 @@ const apiCall = <
 };
 
 
+class SnapshotApi {
+  // Core CRUD Operations
+  async create<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    options?: CreateOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+    return takeSnapshot(
+      snapshot.content,
+      new Date(),
+      snapshot.projectType,
+      snapshot.projectId,
+      snapshot.projectState,
+      snapshot.projectMembers
+    );
+  }
 
+  async fetchById<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    id: string,
+    storeId: number,
+    additionalHeaders?: Record<string, string>
+  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+    return getSnapshot(id, storeId, null as any, 'fetch', null as any, null as any, additionalHeaders);
+  }
 
-// api/snapshotApi.ts
-const snapshotApi = new SnapshotApiService();
+  async update<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    snapshotId: string,
+    data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    payload: UpdateSnapshotPayload<Data<T, K, StructuredMetadata<T, K>>>
+  ): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }> {
+    return updateSnapshot(
+      snapshotId,
+      snapshotId,
+      data,
+      newData,
+      undefined,
+      undefined,
+      undefined,
+      payload
+    );
+  }
 
-// React-friendly functional wrappers
-// React-friendly functional wrappers
-export const useSnapshotApi = () => {
-  const createSnapshot = useCallback(
-    async <
-      T extends BaseData<any, any, any, any, any>, // Provide all required type arguments
-      K extends T = T
-    >(
-      snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      options?: CreateOptions
-    ) => {
-      return snapshotApi.create(snapshot, options);
-    },
-    []
-  );
+  async delete<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    snapshotToRemove: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<void> {
+    return removeSnapshot(snapshotToRemove);
+  }
 
-  // Wrap other methods as needed for React
-  return {
-    createSnapshot,
-    fetchById: snapshotApi.fetchById.bind(snapshotApi),
-    // ... other methods
-  };
-};
+  // Batch Operations
+  async fetchAll<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    options?: FetchAllOptions<T, K>
+  ): Promise<Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+    // Implementation using getSnapshots operation
+    return getSnapshots(options?.criteria?.category || 'default', []);
+  }
 
+  // Utility Operations
+  async validate<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<boolean> {
+    return validateSnapshot(snapshot);
+  }
+
+  // Container Operations
+  async getContainer<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
+    id: string | number,
+    snapshotFetcher: (id: string | number) => Promise<any>
+  ): Promise<any> {
+    return getSnapshotContainer(id, snapshotFetcher);
+  }
+
+  // Mock data for development
+  createMockSnapshot = createMockSnapshot;
+}
 // incorproate in to the above snapshotApi
 
 function getSnapshotData<
-  T extends BaseData<any>, 
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotId: string | number | null,
   additionalHeaders?: Record<string, string>
-): Promise<SnapshotDataType<T, K> | undefined> {
+): Promise<SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
   return apiCall<T, K>(
     `${API_BASE_URL}/snapshot/${snapshotId}`,
     'GET',
@@ -288,7 +410,7 @@ function getSnapshotData<
           if (isSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(processedSnapshot)) {
             // Narrowing snapshotId to not include null here
             if (processedSnapshot.snapshotId !== null) {
-              return processedSnapshot as SnapshotDataType<T, K>;
+              return processedSnapshot as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
             } else {
               console.warn('Processed snapshot has null snapshotId', processedSnapshot);
               return undefined;
@@ -304,14 +426,18 @@ function getSnapshotData<
     .catch((error) => {
       console.error('Error fetching snapshot data:', error);
       return undefined;
-    }) as Promise<SnapshotDataType<T, K> | undefined>
+    }) as Promise<SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined>
 }
 
 
-
-
-
-const findSubscriberById = async   <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const findSubscriberById = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   subscriberId: string,
   category: Category | undefined,
   endpointCategory: string | number
@@ -334,10 +460,12 @@ const findSubscriberById = async   <T extends  BaseData<any>, K extends T = T, M
 
 // Create snapshot
 const postSnapshotToAPI = async <
-  T extends BaseDataEntity, 
-  K extends T = T, 
+  T extends BaseDataEntity,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
   Extras = {}
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -359,7 +487,7 @@ const postSnapshotToAPI = async <
     const headers = Object.assign({}, ...headersArray);
 
     // Combine snapshot with any extra properties
-    const fullSnapshot = { ...snapshot, ...snapshotExtras } as SnapshotWithExtras<T, K, Extras>;
+    const fullSnapshot = { ...snapshot, ...snapshotExtras } as SnapshotWithExtras<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, Extras>;
 
     const response = await axiosInstance.post("/snapshots", fullSnapshot, {
       headers: headers as Record<string, string>,
@@ -377,10 +505,13 @@ const postSnapshotToAPI = async <
 };
 
 // Function to determine category from a Snapshot
-const determineCategory = <
-  T extends BaseData<any>,
+const determineCategory = < 
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): string => {
@@ -389,9 +520,12 @@ const determineCategory = <
 };
 
 const getSnapshotsAndCategory = async <
-  T extends BaseData<any>, 
-  K extends T = T
-  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   category: Category | undefined,
   snapshotId: string,
@@ -459,7 +593,14 @@ const getSnapshotsAndCategory = async <
 
 
 
-const findSnapshotsBySubscriber = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const findSnapshotsBySubscriber = async <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   subscriberId: string,
   category: Category | undefined,  endpointCategory: string | number,
   snapshotConfig: SnapshotConfig<T, K>
@@ -496,7 +637,7 @@ const findSnapshotsBySubscriber = async <T extends  BaseData<any>, K extends T =
          : { 'Content-Type': 'application/json' };
    
     const response = await axiosInstance.get(target.url, { headers });
-    const snapshotsData: SnapshotDataType<T, K>[] = response.data;
+    const snapshotsData: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = response.data;
 
     const mapSnapshotEntryToSnapshot = (entry: any): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null => {
       if (!entry || typeof entry !== 'object') return null;
@@ -1891,7 +2032,7 @@ function createSnapshotContainer<
       storeProps: SnapshotStoreProps<T, K>,
       snapshotId?: string | number | null,
       storeId?: number
-    ): Promise<SnapshotDataType<T, K>> => {
+    ): Promise<SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
       return new Promise((resolve, reject) => {
         try {
           if (id === undefined || id === null) {
@@ -1910,7 +2051,7 @@ function createSnapshotContainer<
           mappedSnapshotData.set(idStr, updatedData);
 
           // Process the snapshot data
-          const processedSnapshotData: SnapshotDataType<T, K> = {
+          const processedSnapshotData: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
             id,
             snapshotId,
             data: updatedData,
@@ -2941,16 +3082,6 @@ const mapSnapshots = async <
 };
  
 
-export {
-  addSnapshot,
-  addSnapshotSuccess,
-  apiCall, categorizeSnapshotData, createHeaders, createSnapshotContainer, deleteSnapshot, deleteSnapshotStore, extractCriteria, fetchAllSnapshots, fetchSnapshotById,
-  fetchSnapshotIds, fetchSnapshotStoreData, findSnapshotsBySubscriber, findSnapshotStoresById, findSubscriberById,
-  getCurrentSnapshot, getSnapshot, getSnapshotConfig, getSnapshotConfigData,
-  getSnapshotContainer, getSnapshotCriteria, getSnapshotData,
-  getSnapshotId, getSnapshots, getSnapshotsAndCategory, getSnapshotStore, getSnapshotStoreConfig,
-  getSnapshotStoreConfigData, getSnapshotStoreId, getSortedList,
-  handleOtherApplicationLogic, handleOtherStatusCodes, handleSpecificStatusCode, mapSnapshotData, mapSnapshots, mergeSnapshots, postSnapshotToAPI, removeSnapshot, retrieveSnapshots, saveSnapshotToDatabase, searchSnapshotData,
-  snapshotContainer, sortSnapshotData, takeSnapshot, updateSnapshotStore
-};
-
+// Singleton instance
+export const snapshotApi = new SnapshotApi();
+export default snapshotApi;

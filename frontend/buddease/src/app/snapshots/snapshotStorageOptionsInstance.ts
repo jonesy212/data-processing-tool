@@ -1,48 +1,48 @@
 // snapshotStorageOptionsInstance.ts
-import { Data } from '@/app/components/models/data/Data';
+import { Data } from '@/app/models/data/Data';
 import { Result } from '@/app/snapshots';
-import { SnapshotContainerType } from './SnapshotContainer';
+import { SnapshotContainerType } from '@/SnapshotContainer';
 
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { Payload } from '@/server/database/Payload';
 
 import { SnapshotWithData } from "@/app/calendar/CalendarApp";
 import { Content } from '@/app/components/models/content/AddContent';
 import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
 import { NotificationPosition } from '@/app/components/models/data/StatusType';
-import { ExcludedFields } from '@/app/components/routing/Fields';
+import { ExcludedFields } from '@/app/routing/Fields';
 import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData, DataDetails } from "@/app/models/data/Data";
+import { BaseData, DataDetails } from '@/app/models/data/Data';
 import { PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, ExtendedBaseDataPayload } from "@/app/server/database/Payload";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { Subscriber } from "@/app/users/Subscriber";
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
-import { VersionHistory } from "@/app/versions/VersionData";
-import { NotificationType } from "@/context/NotificationContext";
-import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { CustomSnapshotData, data, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotStoreProps, SnapshotWithCriteria } from ".";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
+import { SubscriberCollection } from '@/app/users/SubscriberCollection';
+import { VersionHistory } from "@/app/versions/VersionData";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { NotificationType } from "@/context/NotificationContext";
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { SnapshotDataParams } from '@/SnapshotDataParams';
+import SnapshotStoreSubset from '@/SnapshotStoreSubset';
+import { CustomSnapshotData, data, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotStoreProps, SnapshotWithCriteria } from ".";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { CoreSnapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
 import { Snapshot } from "./Snapshot";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { SnapshotActionType } from "./SnapshotActionType";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotDataParams } from './SnapshotDataParams';
 import { SnapshotItem } from "./SnapshotList";
 import SnapshotStore from "./SnapshotStore";
 import { InitializedConfig, SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import SnapshotStoreSubset from './SnapshotStoreSubset';
 import { Callback, MultipleEventsCallbacks } from "./subscribeToSnapshotsImplementation";
 
 // Define a specific set of options for snapshot storage
@@ -1389,6 +1389,6 @@ const snapshotConfigOptions: SnapshotConfigOptions<Data, BaseData> = {
 
 
 export {
-    snapshotConfigOptions
+  snapshotConfigOptions
 };
 

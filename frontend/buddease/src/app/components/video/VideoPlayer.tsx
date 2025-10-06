@@ -1,7 +1,7 @@
 // app/features/video/components/VideoPlayer.tsx
-import React, { useRef, useEffect } from 'react';
-import VideoPlayerToolbar from './VideoPlayerToolbar';
-import useVideoPlayer from '../hooks/useVideoPlayer';
+import useVideoPlayer from '@/hooks/useVideoPlayer';
+import React, { useEffect } from 'react';
+import VideoPlayerToolbar from '@/VideoPlayerToolbar';
 
 interface VideoPlayerProps {
   videoUrl: string;

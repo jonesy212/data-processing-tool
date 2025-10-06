@@ -1,15 +1,15 @@
 // SnapshotConfigBuilder.ts
 
-import { SnapshotStoreConfig } from ".";
-import { EventStore } from "@/app/data_analysis/frontend/buddease/src/app/components/event/EventStore";
-import { SnapshotManager } from "@/app/data_analysis/frontend/buddease/src/app/hooks/useSnapshotManager";
-import { BaseDataEntity, BaseDataRoot, DefaultMeta, DefaultExcludedFields } from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
+import { EventStore } from "@/app/components/event/EventStore";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import baseMeta from "@/app/data_analysis/frontend/buddease/src/server/database/baseMeta";
+import { SnapshotStoreConfig } from ".";
 import { SnapshotUnion } from "./LocalStorageSnapshotStore";
 import { SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotContainer } from "./SnapshotContainer";
 import { SnapshotEvents } from "./SnapshotEvents";
-import { SnapshotInstanceProps, InitializedData } from "./SnapshotStoreOptions";
+import { InitializedData, SnapshotInstanceProps } from "./SnapshotStoreOptions";
 import { storeProps } from "./SnapshotStoreProps";
 import { SnapshotSubscriberManagement } from "./SnapshotSubscriberManagement";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
@@ -66,7 +66,7 @@ export interface SnapshotConfigBuilder<
 }
 
 
-export type { SnapshotConfigParams }
+export type { SnapshotConfigParams };
 
 
 // Initialize builder

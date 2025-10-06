@@ -62,11 +62,11 @@ var NotificationContext_1 = require("@/app/context/NotificationContext");
 var retrieveSnapshotData_1 = require("@/app/utils/retrieveSnapshotData");
 var mobx_1 = require("mobx");
 var react_1 = require("react");
-var AuthContext_1 = require("../auth/AuthContext");
-var ShowToast_1 = require("../models/display/ShowToast");
+var AuthContext_1 = require("@/app/auth/context/AuthContext");
+var ShowToast_1 = require("@/app/models/display/ShowToast");
 var NotificationMessages_1 = require("@/app/support/NotificationMessages");
 var NotificationProvider_1 = require("@/app/support/NotificationProvider");
-var SnapshotConfig_1 = require("./SnapshotConfig");
+var SnapshotConfig_1 = require("@/app/snapshots/SnapshotConfig");
 var notify = (0, NotificationContext_1.useNotification)().notify;
 // Define a helper function to create a typed snapshot object
 var createTypedSnapshot = function (taskId, tasks, notify) {

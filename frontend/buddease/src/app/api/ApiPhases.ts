@@ -1,9 +1,10 @@
 import axios, { AxiosError } from 'axios';
-import { Phase } from '../components/phases/Phase';
-import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
-import { endpoints } from './ApiEndpoints';
-import { handleApiError } from './ApiLogs';
-import headersConfig from './headers/HeadersConfig';
+import { Phase } from '@/app/models/phases/Phase';
+import { useNotification } from '@/context/NotificationContext';
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { handleApiError } from '@/app/api/ApiLogs';
+import headersConfig from '@/app/api/headers/HeadersConfig';
+
 // Base URL for your API
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const API_BASE_URL = endpoints.phases;
@@ -39,7 +40,7 @@ const handleApiErrorAndNotify= (
       errorMessageText,
       null,
       new Date(),
-      "PhaseApiError"  as NotificationTypeEnum
+      "PhaseApiError" as NotificationTypeEnum
     );
   }
 }

@@ -1,36 +1,36 @@
 // EventService.ts
 import { EventActions } from '@/app/actions/EventActions';
-import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields } from "./snapshotStoreConfigInstance";
 import { UIActions } from "@/app/actions/UIActions";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { BaseData } from '@/app/components/models/data/Data';
-import { createMetaState } from '@/server/metadata/MetadataStateManager';
-import { StructuredMetadata } from '@/app/config/StructuredMetadata';
-import { getDefaultDocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { BaseData } from '@/app/models/data/Data';
+import { StructuredMetadata } from '@/config//StructuredMetadata';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 import { Member } from "@/app/models/teams/TeamMembers";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
-import { Snapshot } from '@/app/snapshots';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { implementThen } from "@/app/state/stores/CommonEvent";
-import Version from "@/app/versions/Version";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { Version } from "@/app/versions/Version";
 import { VersionHistory } from "@/app/versions/VersionData";
 import { VideoData } from "@/app/video/Video";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { createMetaState } from '@/server/metadata/MetadataStateManager';
 import {
-    BaseSyntheticEvent,
-    ModifierKey,
-    MouseEvent,
-    SyntheticEvent,
+  BaseSyntheticEvent,
+  ModifierKey,
+  MouseEvent,
+  SyntheticEvent,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CustomEventExtension } from "./BaseCustomEvent";
+import { AppEntity, AppExcludedFields, AppK, AppMeta, AppAttachment, AppIncludeField } from "@/app/utils/web3/dAppAdapter/AppEntity";
 
 
 interface CustomMouseEvent<T = Element>

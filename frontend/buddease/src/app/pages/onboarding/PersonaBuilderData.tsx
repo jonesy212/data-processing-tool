@@ -1,15 +1,15 @@
 // PersonaBuilderData.ts
 import ChatSettings from "@/app/components/communications/chat/ChatSettingsPanel";
 import { RealtimeUpdates } from "@/app/components/community/ActivityFeedComponent";
+import { CommonDetails } from '@/app/components/models/CommonDetails';
 import { Task } from "@/app/components/models/tasks/Task";
 import { Team } from "@/app/components/models/teams/Team";
 import { TeamMember } from "@/app/components/models/teams/TeamMembers";
-import { Project } from "@/app/components/projects/Project";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
+import { Project } from "@/app/projects/Project";
 import { DocumentTree, User, UserData, VisualizationData } from "@/app/users/User";
-import { CommonDetails } from '@/app/components/models/CommonDetails';
 import { Question } from "./Question";
 
 const { notify } = useNotification(); 

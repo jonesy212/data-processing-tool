@@ -1,11 +1,11 @@
-import { Attachment } from "@/app/data_analysis/frontend/buddease/src/app/components/documents/Attachment/attachment";
-import { Category } from "@/app/data_analysis/frontend/buddease/src/app/components/libraries/categories/generateCategoryProperties";
-import { BaseData, Data } from "@/app/data_analysis/frontend/buddease/src/app/components/models/data/Data";
-import { InitializedState } from "@/app/data_analysis/frontend/buddease/src/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { SubscriberCollection } from "@/app/data_analysis/frontend/buddease/src/app/users/SubscriberCollection";
-import { BaseDataEntity, BaseDataRoot, DefaultMeta, DefaultExcludedFields } from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
-import { StructuredMetadata } from "@/app/data_analysis/frontend/buddease/src/app/configs/StructuredMetadata";
-import { SchemaField } from "@/app/data_analysis/frontend/buddease/src/server/database/SchemaField";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { BaseData, Data } from '@/app/models/data/Data';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { StructuredMetadata } from "@/config/s/StructuredMetadata";
+import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { SubscriberCollection } from "@/app/users/SubscriberCollection";
+import { SchemaField } from "@/server/database/SchemaField";
+import { Attachment } from "@/app/documents/Attachment/attachment";
 import { SnapshotUnion, SnapshotsArray } from "./LocalStorageSnapshotStore";
 import { Snapshot } from "./Snapshot";
 import { SnapshotData } from "./SnapshotData";
@@ -25,7 +25,7 @@ function safeCastSnapshotStore<
     useSimulatedDataSource: boolean;
     simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   }
-): SnapshotStore<T, K, Meta, ExcludedFields> {
+): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Destructure and get delegates from the context
   const { simulatedDataSource } = context;
 
@@ -193,4 +193,4 @@ function safeCastSnapshotStore<
   };
 }
 
-export { safeCastSnapshotStore } 
+export { safeCastSnapshotStore };

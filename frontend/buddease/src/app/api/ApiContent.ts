@@ -1,5 +1,5 @@
 // ApiContent.ts
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 
 import axiosInstance from "@/app/api/csrfToken";

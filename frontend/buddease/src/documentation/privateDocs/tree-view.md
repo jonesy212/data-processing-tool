@@ -52,14 +52,16 @@ const MyComponent = () => {
 };
 
 export default MyComponent;
-Features
-Search
+```
+
+# Features
+## Search
 The TreeView component allows users to search for specific nodes within the tree. Simply type the search query in the search input field, and the tree will filter the nodes accordingly.
 
-Pagination
+## Pagination
 When dealing with a large dataset, the TreeView component supports pagination to improve performance and user experience. You can navigate between pages using the pagination controls.
 
-Example:
+**Example:**
 
 Click on "Next" to move to the next page.
 Click on "Previous" to go back to the previous page.
@@ -67,11 +69,12 @@ Use "First" and "Last" buttons to quickly navigate to the first and last pages, 
 Node Interaction
 Users can interact with individual nodes by clicking on them. This can be useful for expanding/collapsing nodes or triggering specific actions associated with the nodes.
 
-Example
+### Example
 Consider a scenario where you have a directory structure representing files and folders. You want to display this structure in a TreeView component, allowing users to search for files/folders, navigate through pages, and view details of each item.
 
 jsx
 Copy code
+```typescript
 import TreeView from '@/app/components/TreeView';
 
 const DirectoryExplorer = () => {
@@ -95,6 +98,8 @@ const DirectoryExplorer = () => {
 };
 
 export default DirectoryExplorer;
+```
+
 In this example, users can search for specific files or folders, navigate through pages if the directory is large, and click on individual nodes to view details or perform actions.
 
 css

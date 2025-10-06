@@ -1,6 +1,6 @@
 // Connection.ts
 import {Client as PostgresClient} from "./Client";
-import { ClientConfig } from './Client';
+import { ClientConfig } from '@/Client';
 
 class Connection {
   private client: PostgresClient | null = null;

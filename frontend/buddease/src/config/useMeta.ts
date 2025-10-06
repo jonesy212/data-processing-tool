@@ -1,16 +1,14 @@
-import { Snapshot } from "@/app/snapshots";
-import { useMemo } from "react";
-import { BaseData } from "@/app/components/models/data/Data";
-import { BaseConfig } from '@/config/BaseConfig';
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { BaseData } from '@/app/models/data/Data';
 import { PhaseData } from "@/app/components/phases/Phase";
 import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { default as Version, default as VersionImpl } from "@/app/versions/Version";
-import { StructuredMetadata } from "./StructuredMetadata";
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { backendStructure } from "@/server/database/BackendStructure";
+import { useMemo } from "react";
 import { frontendStructure } from "./appStructure/FrontendStructure";
-import { BaseDataEntity, BaseDataRoot, DefaultMeta } from '@/config/BaseConfig';
-import { DefaultExcludedFields } from '@/config/BaseConfig';
-import { Attachment } from "@/app/data_analysis/frontend/buddease/src/app/components/documents/Attachment/attachment";
+import { StructuredMetadata } from "./StructuredMetadata";
 
 function useMeta<
   T extends BaseDataEntity,

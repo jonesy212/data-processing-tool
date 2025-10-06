@@ -1,6 +1,6 @@
 // baseMeta.ts
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
-import { createMetadata } from '@/app/configs/metadata/createMetadata'
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { createMetadata } from '@/config/metadata/createMetadata'
 
 export const baseMeta = createMetadata<any, string, StructuredMetadata<any, string>>({
   area: 'dashboard',

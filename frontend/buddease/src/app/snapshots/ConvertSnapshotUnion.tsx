@@ -1,12 +1,12 @@
 // ConvertSnapshotUnion.tsx
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { ConvertMeta } from '@/app/components/models/data/dataStoreMethods';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { Snapshot } from './Snapshot';
+import { Snapshot } from '@/Snapshot';
 import { SnapshotWithCriteriaAsBase } from "./SnapshotStoreOptions";
 
 type ConvertSnapshotWithCriteria<

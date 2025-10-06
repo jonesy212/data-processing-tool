@@ -1,13 +1,13 @@
 // handleSnapshotOperation.ts
 import * as snapshotApi from "@/app/api/SnapshotApi";
-import { Snapshot } from "@/app/snapshots";
+import { ExcludedFields } from "@/app/components/routing/Fields";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreActions } from "@/app/snapshots/SnapshotActions";
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
-import { ExcludedFields } from "@/app/data_analysis/frontend/buddease/src/app/components/routing/Fields";
 import SnapshotStore from "./SnapshotStore";
+import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 
 // First, extract the sorting logic to a shared utility function
@@ -248,5 +248,5 @@ const handleSnapshotStoreOperation = async <
   return config;
 };
 
-  export { handleMapOperation, handleSnapshotOperation, handleSnapshotStoreConfigOperation, sortByTimestamp, handleSnapshotStoreOperation };
+  export { handleMapOperation, handleSnapshotOperation, handleSnapshotStoreConfigOperation, handleSnapshotStoreOperation, sortByTimestamp };
 

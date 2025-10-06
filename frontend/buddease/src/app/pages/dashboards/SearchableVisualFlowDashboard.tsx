@@ -2,8 +2,8 @@
 
 import { User } from '@/app/components/users/User';
 import React, { useState } from 'react';
-import TreeView from './TreeView'; // Assuming you have the TreeView component
-import VisualFlowDashboard from './VisualFlowDashboard';
+import TreeView from '@/TreeView'; // Assuming you have the TreeView component
+import VisualFlowDashboard from '@/VisualFlowDashboard';
 
 const SearchableVisualFlowDashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');

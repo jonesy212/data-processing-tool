@@ -1,9 +1,9 @@
 // DataComponent.tsx
+import { useAuth } from '@/app/components/auth/AuthContext';
+import { RootState } from '@/app/components/state/redux/slices/RootSlice';
+import DocumentFormattingOptions from '@/app/documents/DocumentFormattingOptions';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useAuth } from '@/app/components/auth/AuthContext';
-import DocumentFormattingOptions from '@/app/components/documents/DocumentFormattingOptions';
-import { RootState } from '@/app/components/state/redux/slices/RootSlice';
 
 const DataComponent: React.FC = () => {
   const { state: authState } = useAuth();

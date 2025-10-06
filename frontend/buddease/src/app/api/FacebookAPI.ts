@@ -1,13 +1,12 @@
-import { socialMediaIntegrationService } from './../components/socialMedia/SocialMediaIntegrationService';
 // FacebookAPI.ts
 
 // Import necessary modules and types
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { Note, handleNoteApiErrorAndNotify } from '@/ApiNote';
+import axiosInstance from '@/app/api/csrfToken';
+import { headersConfig } from '@/components/shared/SharedHeaders';
+import { authToken } from '@/server/auth/authToken';
 import axios, { AxiosError } from 'axios';
-import { Note, handleNoteApiErrorAndNotify } from './ApiNote';
-import axiosInstance from '@/app/api/csrfToken'
-import { headersConfig } from '../components/shared/SharedHeaders';
-import { authToken } from '../components/auth/authToken';
-import { endpoints } from './ApiEndpoints';
 
 // Define the base URL for Facebook API
 const FACEBOOK_API_BASE_URL = 'https://graph.facebook.com/v12.0';

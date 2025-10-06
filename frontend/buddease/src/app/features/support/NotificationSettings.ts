@@ -1,5 +1,5 @@
 import { NotificationChannels } from '@/app/components/settings/NotificationChannels';
-import { NotificationTypes } from './NotificationTypes';
+import { NotificationTypes } from '@/NotificationTypes';
 
 interface BaseNotificationSettings {
   enabled: boolean;

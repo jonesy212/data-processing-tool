@@ -1,7 +1,7 @@
 // SnapshotApiService.ts
 
 import { useCallback } from 'react';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { Snapshot, SnapshotDataType } from '@/app/snapshots';
 
 import {

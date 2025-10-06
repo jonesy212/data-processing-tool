@@ -1,9 +1,9 @@
 // CategoryApi.ts
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { handleApiError } from '@/app/api/ApiLogs';
+import axiosInstance from '@/app/api/csrfToken';
+import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
 import { AxiosError } from 'axios';
-import { endpoints } from './ApiEndpoints';
-import axiosInstance from '@/app/api/csrfToken'
-import { handleApiError } from './ApiLogs';
-import { CategoryProperties } from '../pages/personas/ScenarioBuilder';
 
 const API_BASE_URL = endpoints.categories; // Adjust based on your API endpoint configuration
 

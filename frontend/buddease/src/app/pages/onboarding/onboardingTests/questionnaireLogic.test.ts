@@ -1,6 +1,6 @@
 // questionnaireLogic.test.ts
 import axios from 'axios';
-import { handleQuestionnaireSubmit, initializeUserData } from './questionnaireLogic';
+import { handleQuestionnaireSubmit, initializeUserData } from '@/questionnaireLogic';
 
 jest.mock('axios');
 

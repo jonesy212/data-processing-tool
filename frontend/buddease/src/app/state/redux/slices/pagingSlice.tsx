@@ -1,7 +1,7 @@
 import { PagingState } from "@/app/pages/Paging";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { ApiManagerState } from "./ApiSlice";
-import { PromptPageProps } from "@/app/components/prompts/PromptPage";
+import { PromptPageProps } from "@/app/prompts/PromptPage";
 
 const initialState: PagingState = {
   currentPage: {} as WritableDraft<PromptPageProps>,
@@ -42,7 +42,7 @@ export type {PagingState}
 
 // example usage
 // import { useDispatch, useSelector } from 'react-redux';
-// import { setCurrentPage, setPageSize } from './path/to/pagingSlice';
+// import { setCurrentPage, setPageSize } from '@/path/to/pagingSlice';
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
 
 // // Example usage in a component

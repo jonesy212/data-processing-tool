@@ -1,5 +1,5 @@
 // determineFileCategoryLogger.ts
-import { FileCategory, fileMapping } from "@/app/components/documents/FileType";
+import { FileCategory, fileMapping } from "@/app/documents/FileType";
 import {fileCategoryMapping} from '@/app/libraries//categories/fileCategoryMapping'
 
 // Function to determine file category and log any conflicts

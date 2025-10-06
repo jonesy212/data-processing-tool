@@ -1,19 +1,19 @@
 import { Meta } from '@/app/components/models/data/dataStoreMethods';
-import { Snapshot } from "@/app/snapshots";
-import { BaseMetaDataOptions } from "@/server/database/MetaDataOptions";
-import { NotificationType, useNotification } from '@/context/NotificationContext';
-import React, { useEffect, useState } from 'react';
-import { BlogData } from '../lists/BlogList';
-import { Content } from '../models/content/AddContent';
 import { BaseData, Data } from '@/app/models/data/Data';
-import Tracker from '@/appp/models/tracker/Tracker';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CustomSnapshotData, SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import { Subscription } from '../subscriptions/Subscription';
-import { Subscriber, SubscriberCallback } from '../users/Subscriber';
-import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '../utils/applicationUtils';
 import { snapshotId } from '@/app/utils/snapshotUtils';
-import * as subscriberApi from './../../api/subscriberApi';
+import Tracker from '@/appp/models/tracker/Tracker';
+import { NotificationType, useNotification } from '@/context/NotificationContext';
+import { BlogData } from '@/lists/BlogList';
+import { Content } from '@/models/content/AddContent';
+import { BaseMetaDataOptions } from "@/server/database/MetaDataOptions";
+import { Subscription } from '@/subscriptions/Subscription';
+import { Subscriber, SubscriberCallback } from '@/users/Subscriber';
+import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from '@/utils/applicationUtils';
+import React, { useEffect, useState } from 'react';
+import * as subscriberApi from '@/api/subscriberApi';
 
 type BlogContentType<T extends BaseData<any>, K extends T = T> = {
   body: string;                     // Main content of the blog post

@@ -1,12 +1,12 @@
+import { TaskActions } from '@/app/actions/TaskActions';
 import endpointConfigurations from '@/app/api/endpointConfigurations';
 import { Task } from '@/app/components/models/tasks/Task';
+import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { SearchOptions } from '@/app/pages/searchs/SearchOptions';
+import { RootState } from '@/state/redux/slices/RootSlice';
 import { Action, ThunkAction } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { Dispatch, useState } from 'react';
-import { TaskActions } from '@/app/actions/TaskActions';
-import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { RootState } from '../state/redux/slices/RootSlice';
 
 
 // Reusable filtering logic

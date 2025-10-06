@@ -1,15 +1,15 @@
 // DocumentSlice.tsx
 import { WritableDraft } from "@/app/ReducerGenerator";
 import { fetchDocumentById, fetchDocumentByIdAPI } from "@/app/api/ApiDocument";
-import { ModifiedDate } from "@/app/components/documents/DocType";
-import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
 import { DocumentStatus } from "@/app/components/documents/types";
 import {
-    NotificationTypeEnum,
-    useNotification,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/context/NotificationContext";
+import { ModifiedDate } from "@/app/documents/DocType";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import DocumentBuilder, {
-    DocumentData, WritableTodoSubtasks
+  DocumentData, WritableTodoSubtasks
 } from "@/app/documents/editing/DocumentBuilder";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useDataExport from "@/app/hooks/dataHooks/useDataExport";
@@ -20,17 +20,17 @@ import { DocumentStatusEnum, DocumentTypeEnum } from "@/app/typings/documents";
 import Version, { version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import FrontendStructure, { frontend, frontendStructure } from "@/config/appStructure/FrontendStructure";
-import { AppStructureItem } from "@/configs/appStructure/AppStructure";
 import { AppThunk } from "@/configs/appThunk";
 import { backend, backendStructure } from '@/server/database/BackendStructure';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "@/state/redux/slices/RootSlice";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
-import DocumentPermissions from "@/app/components/documents/DocumentPermissions";
-import { BaseData } from "@/app/components/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
+import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import getAppPath from "@/config/appStructure/appPath";
 import { ClientInformation } from '@/server/database/ClientInformation';

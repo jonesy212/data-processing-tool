@@ -1,23 +1,23 @@
 // convertSnapshot.ts
 import * as snapshotApi from "@/app/api/SnapshotApi";
-import { Snapshot, SnapshotDataType } from '@/app/snapshots';
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, ExcludedFields } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { CategoryProperties } from "@/app/app/pages/personas/ScenarioBuilder";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { T } from '@/app/models/data/dataStoreMethods';
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { DataStore, useDataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { Snapshot, SnapshotDataType } from '@/app/snapshots';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { Subscription } from "@/app/subscriptions/Subscription";
 import { convertSnapshotData, convertSnapshotMap } from "@/app/typings/YourSpecificSnapshotType";
-import { Subscriber } from '../users/Subscriber';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { SnapshotContainerType } from '@/SnapshotContainer';
+import { Subscriber } from '@/users/Subscriber';
 import { createSnapshotStoreOptions } from "./createSnapshotStoreOptions";
 import { SnapshotConfig, SnapshotStoreConfig, SnapshotStoreMethod, SnapshotStoreProps } from "./index";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
-import { SnapshotContainerType } from './SnapshotContainer';
 import SnapshotStore from "./SnapshotStore";
 
 function convertBaseDataToK<

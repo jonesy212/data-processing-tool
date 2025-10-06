@@ -1,13 +1,13 @@
 import axiosInstance from '@/app/api/csrfToken';
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { useNotification } from '@/app/context/NotificationContext';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { NotificationTypeEnum } from '@/app/models/data/StatusType';
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { ApiConfig } from "@/config/ConfigurationService";
+import { handleApiError, handleSnapshotApiError } from '@/app//errorHandlers';
 import { AxiosResponse } from 'axios';
-import { handleApiError, handleSnapshotApiError } from './errorHandlers';
 
 // API Configuration
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '/api';

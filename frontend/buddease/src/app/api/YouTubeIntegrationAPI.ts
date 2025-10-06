@@ -1,5 +1,5 @@
     // Import necessary modules and types
-    import { headersConfig } from '../components/shared/SharedHeaders'; // Assuming you have shared headers configuration
+    import { headersConfig } from '@/components/shared/SharedHeaders'; // Assuming you have shared headers configuration
     import axiosInstance from '@/app/api/csrfToken'
 
     // Define the base URL for YouTube API

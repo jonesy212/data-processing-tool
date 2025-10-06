@@ -2,18 +2,18 @@
 import { endpoints } from '@/app/api/ApiEndpoints';
 import { handleApiError } from '@/app/api/ApiLogs';
 import headersConfig from '@/app/api/headers/HeadersConfig';
-import { UserSettings } from '@/app/configs/UserSettings';
+import { UserSettings } from '@/config//UserSettings';
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import ErrorHandler from '@/app/shared/ErrorHandler';
 import { AxiosError } from 'axios';
 import dotProp from 'dot-prop';
 import { ErrorInfo } from 'react';
-import { UIActions } from '../actions/UIActions';
-import safeParseData, { DataWithComment } from '../crypto/SafeParseData';
-import { ParsedData } from '../crypto/parseData';
+import { UIActions } from '@/app/actions/UIActions';
+import safeParseData, { DataWithComment } from '@/crypto/SafeParseData';
+import { ParsedData } from '@/crypto/parseData';
 import useErrorHandling from '@/app/hooks/useErrorHandling';
 import axiosInstance from '@/app/api/csrfToken';
-import { UserData } from './User';
+import { UserData } from '@/User';
 
 // Define the API base URL for UI
 const UI_API_BASE_URL = endpoints.ui;

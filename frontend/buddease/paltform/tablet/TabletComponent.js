@@ -1,8 +1,7 @@
 // TabletComponent.js
 
-import React from 'react';
+import SharedButton from '@/shared/SharedButton'; // Import shared component
 import { StyleSheet, Text, View } from 'react-native';
-import SharedButton from '../shared/SharedButton'; // Import shared component
 
 const TabletComponent = () => {
   // Implement tablet-specific behaviors here

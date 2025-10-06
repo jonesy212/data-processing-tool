@@ -1,5 +1,5 @@
 import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
-import { EventPriorityClassification } from "@/app/components/models/data/EventPriorityClassification";
+import { EventPriorityClassification } from "@/app/models/data/EventPriorityClassification";
 
 // CalendarEventPriorityClassification.ts
 interface CalendarEventPriorityClassification extends WritableDraft<EventPriorityClassification>{

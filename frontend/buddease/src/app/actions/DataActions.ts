@@ -1,10 +1,10 @@
 // data/DataActions.ts
-import { Snapshot } from "@/app/snapshots";
-import { createAction, PayloadAction } from "@reduxjs/toolkit";
+import { Attachment } from "@/app/documents/Attachment/attachment";
 import { StatusType } from "@/app/models/data/StatusType";
-import { DataProcessing, DataProcessingResult } from "./DataProcessing/DataProcessingService";
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Attachment } from "@/app/data_analysis/frontend/buddease/src/app/components/documents/Attachment/attachment";
+import { createAction, PayloadAction } from "@reduxjs/toolkit";
+import { DataProcessing, DataProcessingResult } from "@/api/service/DataProcessingService";
 
 /**
  * Factory function that creates a set of strongly-typed Redux actions for data management.

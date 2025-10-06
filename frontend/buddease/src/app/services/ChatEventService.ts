@@ -2,7 +2,7 @@
 import { AxiosResponse } from 'axios';
 import axiosInstance from '@/app/api/csrfToken'
 import ChatEvent from '@/app/state/stores/ChatEvent';
-import ChatMessage from '../components/communications/chat/ChatMessage';
+import ChatMessage from '@/components/communications/chat/ChatMessage';
 
 class ChatEventService {
   private static API_BASE_URL = 'https://example.com/api/chat';

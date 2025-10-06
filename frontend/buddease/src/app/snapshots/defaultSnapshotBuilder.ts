@@ -1,10 +1,4 @@
 // createSnapshotInstance.ts
-import { SnapshotContainer, SnapshotData, SnapshotUnion, SnapshotWithCriteria } from '.';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { DataStoreMethods } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { Subscription } from 'react-redux';
-import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import {
   BaseDataEntity,
   BaseDataRoot,
@@ -12,22 +6,19 @@ import {
   DefaultMeta,
   ExcludedFields
 } from '@/config/BaseConfig';
-import { SnapshotContainerType } from './SnapshotContainer';
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { SnapshotContainer, SnapshotUnion, SnapshotWithCriteria } from '.';
 
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { internalCache } from './../../utils/InternalCache';
 
+import { Subscribers } from '@/app/subscribers/Subscriber';
+import { SnapshotConfigBuilder } from '@/SnapshotConfigBuilder';
+import { SnapshotEvents } from '@/SnapshotEvents';
+import { SnapshotStoreConfig } from '@/SnapshotStoreConfig';
+import { SnapshotStoreProps } from '@/useSnapshotStore';
 import { Snapshot } from "./Snapshot";
 import { default as SnapshotStore } from "./SnapshotStore";
-import { SnapshotStoreConfig } from './SnapshotStoreConfig';
-import { Callback } from './subscribeToSnapshotsImplementation';
-import { SnapshotStoreProps } from './useSnapshotStore';
-import { Subscribers } from '@/app/users/Subscriber';
-import { SnapshotConfigBuilder } from './SnapshotConfigBuilder';
-import { SnapshotEvents } from './SnapshotEvents';
 
 // Utility: flatten map
 function flatMap<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
@@ -125,4 +116,4 @@ function defaultSnapshotBuilder<
 }
 
 
-export { defaultSnapshotBuilder, flatMap, compareSnapshots }
+export { compareSnapshots, defaultSnapshotBuilder, flatMap };

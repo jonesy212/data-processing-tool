@@ -1,11 +1,10 @@
 // defaultSubscribeToSnapshots.ts
-import { DefaultMeta, DefaultExcludedFields } from './BaseConfig';
-import { BaseDataEntity } from '@/config/BaseConfig';
-import * as snapshotApi from '@/app/components/api/SnapshotApi';
-import { BaseData } from "@/app/models/data/Data";
-import { Subscriber } from "@/app/users/Subscriber";
+import * as snapshotApi from '@/app/api/SnapshotApi';
+import { BaseData } from '@/app/models/data/Data';
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { createMockSnapshot } from '@/snapshotOperations';
 import { Snapshot } from "./Snapshot";
-import { createMockSnapshot } from './snapshotOperations';
 
 
 export const defaultSubscribeToSnapshots = <

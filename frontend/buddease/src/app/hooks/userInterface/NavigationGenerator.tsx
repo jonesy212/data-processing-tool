@@ -1,6 +1,6 @@
 // NavigationGenerator.tsx
+import createDynamicHook from '@/dynamicHooks/dynamicHookGenerator';
 import React, { useEffect, useState } from 'react';
-import createDynamicHook from '../dynamicHooks/dynamicHookGenerator';
 
 interface NavigationItem {
   label: string;

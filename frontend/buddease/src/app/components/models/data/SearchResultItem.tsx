@@ -2,7 +2,7 @@
 import ListGenerator from '@/app/generators/ListGenerator';
 import React from 'react';
 import { DetailsItem } from '@/app/components/state/stores/DetailsListStore';
-import { Data } from './Data';
+import { Data } from '@/Data';
 import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
 
 

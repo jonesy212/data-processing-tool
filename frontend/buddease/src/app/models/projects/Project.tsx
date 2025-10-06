@@ -1,6 +1,7 @@
 // projects/Project.ts (CLIENT-SIDE ONLY)
 import { ScheduledData } from "@/app/components/calendar/ScheduledData";
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { Collaborator } from '@/app/components/models/teams/TeamMembers';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { Exchange } from "@/app/crypto/Exchange";
@@ -8,34 +9,34 @@ import { Attachment } from "@/app/documents/Attachment/attachment";
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import CommonDetails, { CommonData } from "@/app/models/CommonData";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
+import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { StatusType } from "@/app/models/data/StatusType";
 import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import { Member } from "@/app/models/teams/TeamMembers";
 import {
-  CustomPhaseHooks, Phase,
-  PhaseData,
-  PhaseEntity,
-  PhaseExcluded,
-  PhaseK,
-  PhaseMeta,
-  PhaseMetaType
+    CustomPhaseHooks, Phase,
+    PhaseData,
+    PhaseEntity,
+    PhaseExcluded,
+    PhaseK,
+    PhaseMeta,
+    PhaseMetaType
 } from "@/app/phases/Phase";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { default as Comment, default as TodoImpl } from "@/app/todos/Todo";
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
 import { VideoData } from "@/app/video/Video";
-import { DefaultExcludedFields, DefaultMeta, baseConfig } from '@/config/BaseConfig';
+import { DefaultExcludedFields, BaseDataEntity, DefaultMeta, baseConfig } from '@/config/BaseConfig';
 import { sharedBaseData, sharedMetadata } from '@/config/metadata/MetadataHooks';
 import { SharedTimestamps } from '@/RelatedProps';
+import { ExcludedFields } from '@/routing/Fields';
 import React, { ReactNode, useEffect, useState } from "react";
-import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
-import { ExcludedFields } from '../routing/Fields';
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { DataAnalysisResult } from "./DataAnalysisPhase/DataAnalysisResult";
 import { UpdatedProjectDetailsProps } from "./UpdateProjectDetails";
 
@@ -595,16 +596,34 @@ export interface ProjectData<
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = never,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends Project, SharedTimestamps {
+> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    Project,
+    SharedTimestamps {
+  // Project-specific properties
   project: Project;
   projects: Project[];
   phases: Phase[];
   transitionToNextPhase: () => void;
-    currentPhase: ProjectPhase;
-  tasks: Task<any, any>[];
-
+  currentPhase: ProjectPhase;
+  projectStatus: ProjectStatus;
+  priority: ProjectPriority;
+  tasks: Task<T, K>[];
+  
+  // Project management
+  timeline: ProjectTimeline;
+  budget: ProjectBudget;
+  resources: ProjectResource[];
+  risks: ProjectRisk[];
+  metrics: ProjectMetrics;
+  
+  // Team and stakeholders
+  projectManager: string;
+  teamMembers: Member[];
+  stakeholders: string[];
+  
+  // Project metadata
   projectMetadata?: {
     id: number;
     projectName: Project["name"];
@@ -621,19 +640,18 @@ export interface ProjectData<
       fileSharing: boolean;
       realTimeEditing: boolean;
     };
-    metadata: {
-      createdBy: string;
-      createdAt: Date;
-      updatedBy: string;
-      updatedAt: Date;
-    };
+    metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     exchangeData: ExchangeData[];
     averagePrice: number;
 
+    // Conversion metadata
     convertedFromSnapshot?: boolean;
     snapshotId?: string;
     conversionTimestamp?: string;
     originalSnapshotType?: string;
+    projectTemplate?: string;
+    industry?: string;
+    complexity?: 'simple' | 'moderate' | 'complex';
     [key: string]: any;
   };
 }

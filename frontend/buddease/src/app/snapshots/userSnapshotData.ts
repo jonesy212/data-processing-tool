@@ -1,8 +1,8 @@
 // userSnapshotData.ts
-import MyPromise from '@/app/components/utils/MyPromise';
+import MyPromise from '@/app/utils/MyPromise';
 import useUserProfile from '@/app/hooks/useUserProfile';
-import CommonDetails from '../models/CommonDetails';
-import { User, UserData } from '../users/User';
+import CommonDetails from '@/models/CommonDetails';
+import { User, UserData } from '@/users/User';
 import UserRoles from '@/users/UserRoles';
 
 export type UserProfile = UserData & User;

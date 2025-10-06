@@ -1,11 +1,11 @@
 // ApiVideo.ts
 import { VideoActions } from "@/app/actions/VideoActions";
 import axiosInstance from "@/app/api/csrfToken";
-import { Attachment } from "@/app/components/documents/Attachment/attachment";
 import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
-import { ExcludedFields } from '@/app/components/routing/Fields';
+import { ExcludedFields } from '@/app/routing/Fields';
 import { VideoData } from "@/app/components/video/Video";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
+import { Attachment } from "@/app/documents/Attachment/attachment";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useVideoStore, { Video } from "@/app/state/stores/VideoStore";
 import { VideoMetadata } from "@/config/StructuredMetadata";

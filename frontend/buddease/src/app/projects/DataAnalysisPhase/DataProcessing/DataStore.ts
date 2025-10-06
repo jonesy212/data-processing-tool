@@ -6,16 +6,14 @@ import { endpoints } from '@/app/api/endpointConfigurations';
 import headersConfig from '@/app/api/headers/HeadersConfig';
 import { currentAppVersion } from '@/app/api/headers/authenticationHeaders';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
-import { getCategoryProperties } from '@/app/libraries/categories/CategoryManager';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { BaseData, Data } from "@/app/components/models/data/Data";
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { SearchCriteria } from '@/app/components/routing/SearchCriteria';
-import { convertMapToSnapshot, convertSnapshotStoreToSnapshot, isSnapshotStore } from '@/app/typings/YourSpecificSnapshotType';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationType } from "@/app/context/NotificationContext";
 import storeProps from '@/app/hooks/YourComponent';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { getCategoryProperties } from '@/app/libraries/categories/CategoryManager';
+import { BaseData, Data } from '@/app/models/data/Data';
 import { allCategories } from '@/app/models/data/DataStructureCategories';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { ConfigureSnapshotStorePayload, SnapshotConfig, snapshotContainer, SnapshotData, SnapshotItem, SnapshotStoreMethod, SnapshotStoreProps } from '@/app/snapshots';
@@ -39,21 +37,21 @@ import { Callback } from '@/app/snapshots/subscribeToSnapshotsImplementation';
 import transformDataToSnapshot from '@/app/snapshots/transformDataToSnapshot';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { store } from '@/app/state/stores/useAppDispatch';
+import { Subscriber } from '@/app/subscribers/Subscriber';
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { Subscriber } from '@/app/users/Subscriber';
+import { convertMapToSnapshot, convertSnapshotStoreToSnapshot, isSnapshotStore } from '@/app/typings/YourSpecificSnapshotType';
 import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 import { isSnapshot, isSnapshotOfType } from "@/app/utils/snapshotUtils";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { CreateSnapshotStoresPayload, Payload, UpdateSnapshotPayload } from '@/server/database/Payload';
 
 
+import { DataStoreMethods } from '@/ DataStoreMethods';
 import { DataActions } from '@/app/actions/DataActions';
 import * as apiData from "@/app/api/ApiData";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { getCurrentAppInfo } from '@/app/versions/VersionGenerator';
-import { createVersionInfo } from '@/app/versions/createVersionInfo';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
 import { DataContext } from '@/app/context/DataContext';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { MixedCriteria } from '@/app/pages/searchs/CriteriaOptions';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
@@ -61,11 +59,13 @@ import { FilterCriteria } from '@/app/pages/searchs/FilterCriteria';
 import { defaultSubscribeToSnapshot } from '@/app/snapshots/defaultSnapshotSubscribeFunctions';
 import { defaultSubscribeToSnapshots } from '@/app/snapshots/defaultSubscribeToSnapshots';
 import { returnsSnapshotStore } from '@/app/snapshots/responsetUtils';
+import { getCurrentAppInfo } from '@/app/versions/VersionGenerator';
+import { createVersionInfo } from '@/app/versions/createVersionInfo';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { AxiosResponse } from "axios";
 import { IHydrateResult } from 'mobx-persist';
 import { useContext } from 'react';
 import { useDispatch } from "react-redux";
-import { DataStoreMethods } from './ DataStoreMethods';
 
 const dispatch = useDispatch()
 
@@ -914,7 +914,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K, Meta, AttachmentTyp
     const newData = data.get(id.toString());
 
     if (newData) {
-      let initialState: SnapshotDataType<T, K> | null | undefined = null;
+      let initialState: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined = null;
       let initialConfig: SnapshotConfig<T, K> | null | undefined = null;
       if (newData.initialState instanceof SnapshotStore) {
         // Convert SnapshotStore to Snapshot
@@ -1333,7 +1333,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K, Meta, AttachmentTyp
               topic: '',
               date: undefined,
               operation: {
-                operationType: "/Users/dixiejones/data_analysis/frontend/buddease/src/app/snapshots/SnapshotActions".CreateSnapshot
+                operationType: "./data_analysis/frontend/buddease/src/app/snapshots/SnapshotActions".CreateSnapshot
               },
               title: '',
               category: undefined,

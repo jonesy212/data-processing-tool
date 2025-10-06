@@ -1,6 +1,6 @@
 // ContentHelpers.ts
-import { BaseData } from '@/app/components/models/data/Data';
-import { Snapshot } from "@/app/snapshots";
+import { BaseData } from '@/app/models/data/Data';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Task } from "@/app/models/tasks/Task";
 import { Project } from "@/app/models/projects/Project";
 import { SnapshotData } from "@/app/snapshots";

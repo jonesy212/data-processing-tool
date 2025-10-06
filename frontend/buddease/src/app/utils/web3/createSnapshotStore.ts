@@ -1,16 +1,16 @@
 import { getSnapshotId } from "@/app/api/SnapshotApi";
-import { SnapshotData } from '@/app/snapshots';
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData } from "@/app/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
+import { SnapshotData } from '@/app/snapshots';
 import { Snapshot, SnapshotsArray, SnapshotUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { SnapshotEvents } from "@/app/snapshots/SnapshotEvents";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { Subscriber } from "@/app/users/Subscriber";
+import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from "@/app/users/SubscriberCollection";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { CategoryProperties } from "./../../pages/personas/ScenarioBuilder";
 
 // createSnapshotStore.ts

@@ -1,3 +1,7 @@
+
+import { DefaultExcludedFields, BaseDataEntity, DefaultMeta, baseConfig } from '@/config/BaseConfig';
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+
 // AppEntity.ts
 type AppEntity = BaseDataEntity;
 type AppK = AppEntity;
@@ -67,7 +71,7 @@ type ApplyFieldFilters<
 
 type PublicUser = ApplyFieldFilters<UserEntity, "password" | "secret", "id" | "name" | "email">;
 
-export { 
+export type { 
   AppEntity,
   AppK,
   AppMeta,

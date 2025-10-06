@@ -1,6 +1,6 @@
 // EventListenerComponent.tsx
 import React, { useEffect } from 'react';
-import { DocumentOptions } from '@/app/components/documents/DocumentOptions';
+import { DocumentOptions } from '@/app/documents/DocumentOptions';
 
 const EventListenerComponent: React.FC<{ documentOptions: DocumentOptions }> = ({ documentOptions }) => {
   useEffect(() => {

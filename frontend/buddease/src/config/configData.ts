@@ -3,18 +3,18 @@ import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { NotificationTypeEnum } from "@/context/NotificationContext";
 import Logger from "@/app/libraries/logging/Logger";
 import { AppVersion } from "@/app/versions/AppVersion";
-import Version from "@/app/versions/Version";
+import { Version } from "@/app/versions/Version";
 import { database } from "@/app/generators/GenerateDatabase";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import ApiConfig from "./ApiConfigComponent";
-import dataVersions from "./DataVersionsConfig";
-import LazyLoadScriptConfig from './LazyLoadScriptConfig';
-import { userPreferences } from "./UserPreferences";
-import userSettings from "./UserSettings";
+import ApiConfig from "@/app/components/configs/ApiConfigComponent";
+import dataVersions from "@/app/components/configs/DataVersionsConfig";
+import LazyLoadScriptConfig from '@/app/components/configs/LazyLoadScriptConfig';
+import { userPreferences } from "@/config/UserPreferences";
+import userSettings from "@/config/UserSettings";
 import BackendStructure from "@/server/database/BackendStructure";
 import FrontendStructure from "./appStructure/FrontendStructure";
-import getAppPath from "./appStructure/appPath";
-import detailsConfig from './detailsConfig';
+import getAppPath from "@/config/appStructure/appPath";
+import detailsConfig from '@/config/detailsConfig';
 
 
 

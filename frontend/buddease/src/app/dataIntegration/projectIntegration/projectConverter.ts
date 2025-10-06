@@ -1,5 +1,5 @@
 // projectConverter.ts
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { ProjectDataManagement, ProjectPhase } from "./projectManagement";
 import { Logger } from "./activityLogger";
 

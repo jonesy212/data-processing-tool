@@ -1,5 +1,4 @@
-// src/services/dataAnalysisService.ts
-import { DataAnalysis } from '@/app/components/projects/DataAnalysisPhase/DataAnalysis';
+import { DataAnalysis } from '@/app/projects/DataAnalysisPhase/DataAnalysis';
 
 class DataAnalysisService {
   private baseUrl: string;
@@ -8,6 +7,7 @@ class DataAnalysisService {
     this.baseUrl = baseUrl;
   }
 
+  // Existing methods
   async fetchDataAnalysis(): Promise<DataAnalysis[]> {
     const response = await fetch(`${this.baseUrl}/api/data-analysis`, {
       method: 'GET',
@@ -54,7 +54,91 @@ class DataAnalysisService {
     return response.json();
   }
 
-  // For database operations, call your API route
+  // New database operation methods
+  async removeData(tableName: string, id: number | string): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/api/database`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'remove',
+        tableName,
+        id,
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to remove data');
+    }
+    
+    return response.json();
+  }
+
+  async shareData(tableName: string, shareData: any): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/api/database`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'share',
+        tableName,
+        data: shareData,
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to share data');
+    }
+    
+    return response.json();
+  }
+
+  async updateData(tableName: string, updateData: any, conditions?: string, params?: any[]): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/api/database`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'update',
+        tableName,
+        updateData,
+        conditions,
+        params,
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to update data');
+    }
+    
+    return response.json();
+  }
+
+  async selectData(tableName: string, conditions?: string, params?: any[]): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/api/database`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        action: 'select',
+        tableName,
+        conditions,
+        params,
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to select data');
+    }
+    
+    return response.json();
+  }
+
+  // Generic query execution
   async executeQuery(query: string, params: any[] = []): Promise<any> {
     const response = await fetch(`${this.baseUrl}/api/database`, {
       method: 'POST',

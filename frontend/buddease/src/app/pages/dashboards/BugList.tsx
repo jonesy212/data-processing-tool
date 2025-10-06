@@ -1,7 +1,7 @@
 // BugList.ts
 import React from 'react';
 import ListGenerator from '@/app/generators/ListGenerator';
-import { Data } from '@/app/components/models/data/Data';
+import { Data } from '@/app/models/data/Data';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 
 interface BugListProps {

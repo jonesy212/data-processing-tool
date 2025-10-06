@@ -1,6 +1,6 @@
 // StorageManager.tsx
 import { useLocalStorage } from "@/app/hooks/useLocalStorage";
-import { BaseData } from "@/app/components/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { forwardRef, useImperativeHandle } from "react";
 
 

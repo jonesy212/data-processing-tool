@@ -1,26 +1,26 @@
 // SnapshotStore.ts
 import { SnapshotCategory } from "@/app/api/getSnapshotEndpoint";
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
-import { Data } from '@/app/components/models/data/Data';
+import { Data } from '@/app/models/data/Data';
 import { bindAllMethods } from '@/methodBinder'
-import { Label } from '@/app/components/projects/branding/BrandingSettings';
+import { Label } from '@/app/branding/BrandingSettings';
 import { Snapshot } from "@/app/snapshots/Snapshot";
-import { AllTypes } from '@/app/components/typings/PropTypes';
-import { U, WrappedU } from './isCompatibleTempData';
+import { AllTypes } from '@/app/typings/PropTypes';
+import { U, WrappedU } from '@/isCompatibleTempData';
 import { SnapshotStoreReference } from "./SnapshotStoreReference";
-import { UpdateSnapshotParams } from './UpdateSnapshotParams';
+import { UpdateSnapshotParams } from '@/UpdateSnapshotParams';
 
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { InitializedConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { Subscriber } from '@/app/users/Subscriber';
+import { Subscriber } from '@/app/subscribers/Subscriber';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { CoreSnapshot } from './CoreSnapshot';
-import { SnapshotMethodsImplementation } from './methods/snapshotMethods';
-import { ValidationMethods } from './methods/validationMethods'
+import { CoreSnapshot } from '@/app/snapshots/CoreSnapshot';
+import { SnapshotMethodsImplementation } from '@/methods/snapshotMethods';
+import { ValidationMethods } from '@/app/snapshots/methods/validationMethods'
 import { getSnapshotStoreConfig } from "@/app/api/SnapshotApi";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { getConfigPromise } from "@/configs/getConfigPromise";
+import { getConfigPromise } from "@/config/getConfigPromise";
 import { ProjectMetadata, StructuredMetadata } from "@/config/StructuredMetadata";
 import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
@@ -35,10 +35,9 @@ import { Video } from "@/app/state/stores/VideoStore";
 import { IHydrateResult } from "mobx-persist";
 import getConfig from "next/config";
 
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { prop } from "node_modules/cheerio/lib/esm/api/attributes";
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { CreateSnapshotStoresPayload, CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/app/server/database/Payload";
-import { SchemaField } from "@/app/server/database/SchemaField";
+import { SchemaField } from "@/server/database/SchemaField";
 import { DocumentTypeEnum } from "@/app/typings/documents";
 import { SnapshotWithData } from "@/app/calendar/CalendarApp";
 import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
@@ -50,28 +49,28 @@ import { CombinedEvents, SnapshotManager, SnapshotStoreOptions, useSnapshotManag
 import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Content } from "@/app/models/content/AddContent";
-import { BaseData, DataDetails } from "@/app/models/data/Data";
+import { BaseData, DataDetails } from '@/app/models/data/Data';
 import { dataStoreMethods } from "@/app/models/data/dataStoreMethods";
 import { BookmarkStatus, CalendarStatus, DataStatus, DevelopmentPhaseEnum, NotificationPosition, NotificationStatus, PriorityTypeEnum, PrivacySettingEnum, ProjectPhaseTypeEnum, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "@/app/models/data/StatusType";
 import { DebugInfo, TempData } from "@/app/models/data/TempData";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
-import { ContentManagementPhaseEnum } from "@/app/phases/ContentManagementPhase";
+import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/phases/FeedbackPhase";
 import { TaskPhaseEnum } from "@/app/phases/TaskProcess";
-import { TenantManagementPhaseEnum } from "@/app/phases/TenantManagementPhase";
+import { TenantManagementPhaseEnum } from "@/app/components/phases/TenantManagementPhase";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { CommonDataStoreMethods, DataStore, EventRecord, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SearchCriteria } from "@/app/routing/SearchCriteria";
 import { SecurityFeatureEnum } from "@/app/security/SecurityFeatureEnum";
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { convertSnapshotStoreToSnapshot, convertToDataStore, isSnapshotStore, snapshotType } from "@/app/typings/YourSpecificSnapshotType";
-import { AuditRecord } from "@/app/users/Subscriber";
-import { SubscriberCollection } from "@/app/users/SubscriberCollection";
+import { AuditRecord } from "@/app/subscribers/Subscriber";
+import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { IdeaCreationPhaseEnum } from "@/app/users/userJourney/IdeaCreationPhase";
 import { addToSnapshotList, convertToSnapshotArray, isSnapshot, isSnapshotStoreConfig, snapshotId } from "@/app/utils/snapshotUtils";
-import Version from "@/app/versions/Version";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from './BaseConfig';
+import { Version } from "@/app/versions/Version";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { defaultSubscribeToSnapshot } from "./defaultSnapshotSubscribeFunctions";
 import { defaultSubscribeToSnapshots } from "./defaultSubscribeToSnapshots";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
@@ -81,7 +80,7 @@ import {
   SnapshotsArray,
   SnapshotsObject
 } from "./LocalStorageSnapshotStore";
-import { ConfigMethods, applyStoreConfig } from './methods/configMethods';
+import { ConfigMethods, applyStoreConfig } from '@/methods/configMethods';
 import  { UtilMethods } from "./methods/utilMethods";
 
 import { createSnapshotStores } from "./newStoreUtils";
@@ -104,8 +103,8 @@ import { LifecycleMethods } from "./methods/lifecycleMethods";
 import { SnapshotEvent } from "@/typings/eventTypes";
 import { snapshot, SnapshotWithCriteria } from ".";
 import { ConvertSnapshotWithCriteria  } from "./ConvertSnapshotUnion";
-import { options } from "@/app/data_analysis/frontend/buddease/src/app/documents/editing/DocumentBuilder";
-import { notify } from "@/app/data_analysis/frontend/buddease/src/app/utils/snapshotUtils";
+import { options } from "@/app/documents/editing/DocumentBuilder";
+import { notify } from "@/app/utils/snapshotUtils";
 import { transformSubscriberAdvanced, transformSubscriberMappedAdvanced } from "./methods/advancedTransform";
 import { BatchMethods } from "./methods/batchMethods";
 import * as DataMethods from "./methods/dataMethods";
@@ -115,20 +114,20 @@ import { SubscriptionMethods } from "./methods/subscriptionMethods";
 import * as TransformMethods from "./methods/transformMethods";
 import { SnapshotStoreConfigWithCore } from "./methods/transformMethods";
 import * as VersionMethods from "./methods/versionMethods";
-import { SnapshotSubscriptionMethods } from './SnapshotMethods';
-import { SnapshotStoreConfig } from './SnapshotStoreConfig';
+import { SnapshotSubscriptionMethods } from '@/SnapshotMethods';
+import { SnapshotStoreConfig } from '@/SnapshotStoreConfig';
 import { SnapshotContext } from "./SnapshotSubscriberManagement";
-import { store } from "@/app/data_analysis/frontend/buddease/src/app/components/state/stores/useAppDispatch";
+import { store } from "@/app;
 import { SnapshotDataParams } from "./SnapshotDataParams";
 import { SnapshotSecurity } from "./SnapshotSecurity";
-import { ChatRoom } from "@/app/data_analysis/frontend/buddease/src/app/components/calendar/CalendarSlice";
-import { Sender } from "@/app/data_analysis/frontend/buddease/src/app/components/communications/chat/Communication";
-import { getAllSnapshotEntries } from "@/app/data_analysis/frontend/buddease/src/app/snapshots/getSnapshotEntries";
-import { Message } from "@/app/data_analysis/frontend/buddease/src/app/generators/GenerateChatInterfaces";
+import { ChatRoom } from "@/app
+import { Sender } from "@/appation";
+import { getAllSnapshotEntries } from "@/app/snapshots/getSnapshotEntries";
+import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { MapMethods } from "./methods/mappingMethods";
-import { BaseEntity } from "@/app/data_analysis/frontend/buddease/src/app/components/routing/FuzzyMatch";
-import { searchAPI } from "@/app/data_analysis/frontend/buddease/src/app/api/ApiSearch";
-import { SearchResult } from "@/app/data_analysis/frontend/buddease/src/app/components/routing/SearchResult";
+import { BaseEntity } from "@/app
+import { searchAPI } from "@/app/api/ApiSearch";
+import { SearchResult } from "@/app
 
 interface UnsubscribeEvent<T extends BaseDataEntity, K extends T = T> extends UnsubscribeDetails {
   id: string;
@@ -5987,17 +5986,17 @@ private transformSnapshot<U extends Data<U>, T extends BaseDataEntity>(
   }
 
   async addDebugInfo(configId: string, message: string, operation?: string): Promise<void> {
-    const { addDebugInfo } = await import("../utils/debugInfoUtils");
+    const { addDebugInfo } = await import(from "@/utils/debugInfoUtils");
     addDebugInfo(this.configs, configId, message, operation);
   }
 
   async storeTempData(configId: string, tempResults: T[]): Promise<void> {
-    const { storeTempData } = await import("../utils/tempDataUtils");
+    const { storeTempData } = await import(from "@/utils/tempDataUtils");
     storeTempData(this.configs, configId, tempResults);
   }
 
   async getTempData(configId: string): Promise<T[] | undefined> {
-    const { getTempData } = await import("../utils/tempDataUtils");
+    const { getTempData } = await import(from "@/utils/tempDataUtils");
     return getTempData(this.configs, configId);
   }
 }

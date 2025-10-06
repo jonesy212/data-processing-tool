@@ -1,6 +1,6 @@
 // UserPreferencesDashboard.tsx
 import React from "react";
-import userPreferences, { UserPreferences } from '@/app/configs/UserPreferences';
+import userPreferences, { UserPreferences } from '@/config//UserPreferences';
 
 const UserPreferencesDashboard: React.FC = () => {
   // Extract the required properties from UserPreferences

@@ -2,9 +2,9 @@
 
 import axiosInstance from '@/app/api/csrfToken';
 import React, { useEffect, useState } from 'react';
-import BlogGenerator from './BlogGenerator'; // Assuming BlogGenerator is located in the same directory
- import BlogPostList from './BlogPosts';
- import { BlogPost } from './BlogPost';
+import BlogGenerator from '@/BlogGenerator'; // Assuming BlogGenerator is located in the same directory
+ import BlogPostList from '@/BlogPosts';
+ import { BlogPost } from '@/BlogPost';
 
 const AndroidBlogPosts: React.FC = () => {
   const [androidPosts, setAndroidPosts] = useState<BlogPost[]>([]);

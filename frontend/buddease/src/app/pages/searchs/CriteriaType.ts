@@ -1,5 +1,5 @@
 import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
-import { FileTypeEnum } from "@/app/components/documents/FileType";
+import { FileTypeEnum } from "@/app/documents/FileType";
 import FormatEnum from "@/app/components/form/FormatEnum";
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";

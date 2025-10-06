@@ -1,13 +1,13 @@
 import { SubscriptionPayload } from "@/app/actions/SubscriptionActions";
-import { BaseDataEntity, DefaultMeta } from './BaseConfig';
-import { Payload, UpdateSnapshotPayload } from "@/server/database/Payload";
-import { CustomSnapshotData } from "./SnapshotData";
-import { Subscriber } from '@/app/users/Subscriber';
-import { notifyEventSystem, updateProjectState, logActivity, triggerIncentives } from "@/app/utils/web3/applicationUtils";
-import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
-import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { determineCategory } from "@/app/libraries/categories/determineCategory";
+import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
+import { logActivity, notifyEventSystem, triggerIncentives, updateProjectState } from "@/app/utils/web3/applicationUtils";
+import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import { Payload } from "@/server/database/Payload";
+import { CustomSnapshotData } from "./SnapshotData";
 
 type SubscriptionPayloadActions = SubscriptionPayload<any, any> & Payload
 
@@ -59,5 +59,6 @@ const convertSubscriptionPayloadToSubscriber = <
 };
 
 
-export type { SubscriptionPayloadActions }
-export { convertSubscriptionPayloadToSubscriber }
+export { convertSubscriptionPayloadToSubscriber };
+export type { SubscriptionPayloadActions };
+

@@ -1,19 +1,20 @@
 // InitializedStateExample.ts
 
-import { Snapshot } from ".";
-import { UnsubscribeDetails } from "@/app/data_analysis/frontend/buddease/src/app/components/event/DynamicEventHandlerExample";
-import { CombinedEvents } from "@/app/data_analysis/frontend/buddease/src/app/hooks/useSnapshotManager";
-import { Category } from "@/app/data_analysis/frontend/buddease/src/app/components/libraries/categories/generateCategoryProperties";
-import { T } from "@/app/data_analysis/frontend/buddease/src/app/components/models/data/dataStoreMethods";
-import { RealtimeDataItem } from "@/app/data_analysis/frontend/buddease/src/app/components/models/realtime/RealtimeData";
-import { InitializedState, initializeState } from "@/app/data_analysis/frontend/buddease/src/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import CalendarManagerStoreClass from "@/app/data_analysis/frontend/buddease/src/app/components/state/stores/CalendarManagerStore";
-import { SubscriberCallbackType } from "@/app/data_analysis/frontend/buddease/src/app/subscriptions/Subscription";
-import { SubscriberCollection } from "@/app/data_analysis/frontend/buddease/src/app/users/SubscriberCollection";
-import { category } from "@/app/data_analysis/frontend/buddease/src/app/utils/snapshotUtils";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/data_analysis/frontend/buddease/src/app/configs/BaseConfig";
-import { StructuredMetadata } from "@/app/data_analysis/frontend/buddease/src/app/configs/StructuredMetadata";
-import { UpdateSnapshotPayload } from "@/app/data_analysis/frontend/buddease/src/server/database/Payload";
+import { UnsubscribeDetails } from "@/app/components/event/DynamicEventHandlerExample";
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { T } from "@/app/models/data/dataStoreMethods";
+import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
+import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { StructuredMetadata } from "@/config//StructuredMetadata";
+import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
+import { InitializedState, initializeState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { SubscriberCallbackType } from "@/app/subscriptions/Subscription";
+import { SubscriberCollection } from "@/app/users/SubscriberCollection";
+import { category } from "@/app/utils/snapshotUtils";
+import { UpdateSnapshotPayload } from "@/server/database/Payload";
+import { AppEntity, AppExcludedFields, AppK, AppMeta, AppAttachment, AppIncludeField } from "@/app/utils/web3/dAppAdapter/AppEntity";
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import { SnapshotsArray } from "./LocalStorageSnapshotStore";
 import { SnapshotContainer } from "./SnapshotContainer";
 import { SnapshotData } from "./SnapshotData";
@@ -21,8 +22,8 @@ import { SnapshotEvents } from "./SnapshotEvents";
 import { SnapshotIdentity } from "./SnapshotIdentity";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { AppEntity, AppK, AppMeta, AppExcludedFields, AppIncludedFields, AppUnifiedMetadata } from "@/web3/dAppAdapter/AppEntity";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
+;
 
 // Helper function to generate unique IDs
 export function generateId(prefix: string = 'snapshot'): string {

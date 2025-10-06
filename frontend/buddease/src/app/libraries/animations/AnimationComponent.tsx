@@ -4,7 +4,7 @@ import useIdleTimeout from '@/app/hooks/idleTimeoutHooks';
 import { useAuthToken } from '@/app/hooks/useAuthToken'; // Client-side hook
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { AnimatedComponentProps } from '@/app/components/styling/AnimationsAndTansitions';
-import DraggableAnimation from './DraggableAnimation';
+import DraggableAnimation from '@/DraggableAnimation';
 
 export interface AnimatedComponentRef extends DynamicHookResult {
   toggleActivation: (accessToken?: string | null) => void;

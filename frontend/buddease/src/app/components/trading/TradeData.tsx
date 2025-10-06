@@ -1,18 +1,26 @@
 // TradeData.tsx
-import React from 'react';
-import { T, K, Meta} from "@/app/components/models/data/dataStoreMethods";
+import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
 import CommonDetails from '@/app/models/CommonData';
-import { CommonData, Customizations } from '../models/CommonDetails';
 import { Data, DataDetailsProps } from '@/app/models/data/Data';
-import { Tag } from '@/appp/models/tracker/Tag';
-import { Phase } from '../phases/Phase';
-import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { DetailsItemExtended } from '@/app/state/stores/DetailsListStore';
+import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { Tag } from '@/appp/models/tracker/Tag';
+import { CommonData, Customizations } from '@/models/CommonDetails';
+import React from 'react';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Define the TradeData interface extending the CommonData interface
-interface TradeData 
-extends CommonData<T, K, Meta, ExcludedFields>, DataDetailsProps<Data> {
+interface TradeData<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  DataDetailsProps<Data> {
   uploadedAt: any;
   tradeId: string;
   tradeType: string;
@@ -28,8 +36,15 @@ extends CommonData<T, K, Meta, ExcludedFields>, DataDetailsProps<Data> {
   // Add more properties as needed
 }
 
-interface TradeDataProps {
-  trade: CommonData<T, K, Meta, ExcludedFields> & { data: TradeData };
+interface TradeDataProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>  {
+  trade: CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & { data: TradeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> };
   details: DetailsItemExtended<Data>;
 
 }

@@ -1,22 +1,22 @@
 // ApiData.ts
-// import { endpoints } from './ApiEndpoints';
+// import { endpoints } from '@/app/api/endpointConfigurations';
 import { K, T } from "@/app/components/models/data/dataStoreMethods";
 
 import { fetchUserIdsFromDatabase } from "@/app/api/ApiDatabase";
+import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
-import { addLog } from '@/app/state/redux/slices/LogSlice';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { notificationStore } from '@/app/features/support/NotificationProvider';
-import { AxiosError, AxiosResponse } from 'axios';
-import HighlightEvent from '../components/documents/screenFunctionality/HighlightEvent';
 import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { YourResponseType } from '../components/typings/types';
-import { Version } from '../versions/Version';
-import { handleApiError } from './ApiLogs';
-import { endpoints } from './endpointConfigurations';
-import headersConfig from './headers/HeadersConfig';
+import { addLog } from '@/app/state/redux/slices/LogSlice';
+import HighlightEvent from '@/components/documents/screenFunctionality/HighlightEvent';
+import { YourResponseType } from '@/components/typings/types';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { endpoints } from '@/app/endpointConfigurations';
+import headersConfig from '@/headers/HeadersConfig';
+import { Version } from '@/versions/Version';
+import { AxiosError, AxiosResponse } from 'axios';
 
 // Define the API base URL
 const { data: API_BASE_URL } = endpoints;

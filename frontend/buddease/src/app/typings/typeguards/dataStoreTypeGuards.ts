@@ -1,8 +1,8 @@
-import { Data } from '@/app/components/models/data/Data';
-import { BaseData } from "@/app/models/data/Data";
-import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { Data } from '@/app/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
+import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { SnapshotStoreMethod } from "@/app/snapshots";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 // Example type guard for checking data store methods
 function isDataStoreMethod<
   U extends BaseData,

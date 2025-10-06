@@ -1,8 +1,8 @@
 // DataProcessingService.ts
 import { endpoints } from '@/app/api/ApiEndpoints';
 import { Team } from "@/app/components/models/teams/Team";
-import { TransactionData } from '@/app/components/payment/Transaction';
-import { Project } from '@/app/components/projects/Project';
+import { TransactionData } from '@/app/payment/Transaction';
+import { Project } from '@/app/models/projects/Project';
 import { UserData } from "@/app/users/User";
 import { MyDataType } from "@/server/database/MetaDataOptions";
 

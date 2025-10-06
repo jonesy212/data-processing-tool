@@ -1,5 +1,5 @@
-import { Data } from "@/app/components/models/data/Data";
-import { DataActions } from "@/app/components/projects/DataAnalysisPhase/DataActions";
+import { Data } from '@/app/models/data/Data';
+import { DataActions } from "@/app/projects/DataAnalysisPhase/DataActions";
 import axios, { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
 import {

@@ -1,7 +1,7 @@
 // storeProvider.tsx
 
 import React, { createContext, useContext } from 'react';
-import { RootStores, rootStores } from './RootStores';
+import { RootStores, rootStores } from '@/RootStores';
 export const StoreContext = createContext<RootStores | undefined>(undefined);
 
 interface StoreProviderProp {

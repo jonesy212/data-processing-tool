@@ -1,11 +1,11 @@
 // useNotificationManagerSlice.ts
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { WritableDraft } from "@/app/ReducerGenerator";
-import { NotificationData } from "@/app/support/NofiticationsSlice";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { RootState } from "@/state/redux/slices/RootSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
-import { RootState } from "@/state/redux/slices/RootSlice";
 
 
 interface NotificationEntity extends BaseDataEntity {

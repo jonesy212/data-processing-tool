@@ -1,9 +1,9 @@
 import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
 import { DashboardPreferenceEnum } from "@/app/components/dashboards/DashboardSettings";
-import { FileTypeEnum } from "@/app/components/documents/FileType";
+import { FileTypeEnum } from "@/app/documents/FileType";
 import { FilterOptions } from "@/app/components/models/data/DataFilterForm";
 import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
-import { CalendarSettingsEnum } from "@/app/components/settings/CalendarSettingsEnum";
+import { CalendarSettingsEnum } from "@/app/settings/CalendarSettingsEnum";
 import { SortCriteria } from "@/app/settings/SortCriteria";
 import { PrivacySettingEnum } from "@/app/models/data/StatusType";
 import { SecurityFeatureEnum } from "@/server/security/SecurityFeatureEnum";

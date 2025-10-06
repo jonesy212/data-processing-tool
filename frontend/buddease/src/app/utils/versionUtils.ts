@@ -1,6 +1,6 @@
 // versionUtils.ts
 import { hasPriority } from '@/app/api/processSnapshotData';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Snapshot, SnapshotData } from '@/app/snapshots';
 import { StructuredMetadata } from "@/config/StructuredMetadata";

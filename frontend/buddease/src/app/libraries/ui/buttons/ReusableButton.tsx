@@ -1,6 +1,6 @@
 // ReusableButton.tsx
+import { BrandingSettings } from "@/app/branding/BrandingSettings";
 import { ChildComponentProps } from "@/app/hooks/ChildComponent";
-import { BrandingSettings } from "@/app/components/projects/branding/BrandingSettings";
 import React from "react";
 
 interface ButtonProps {

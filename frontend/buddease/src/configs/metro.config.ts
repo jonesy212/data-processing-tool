@@ -1,4 +1,5 @@
-// metro.config.tsimport { getDefaultConfig } from 'metro-config';
+// metro.config.ts
+import { getDefaultConfig } from 'metro-config';
 
 export default (async () => {
   const {

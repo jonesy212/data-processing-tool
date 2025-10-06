@@ -8,8 +8,8 @@ import {
   SnapshotEvent,
   ErrorEvent
 } from '@/app/types/eventTypes';
-import { BaseDataEntity, DefaultMeta } from '../types/baseTypes';
-import { Attachment } from '../types/attachmentTypes';
+import { BaseDataEntity, DefaultMeta } from '@/types/baseTypes';
+import { Attachment } from '@/types/attachmentTypes';
 
 export const useEventSystem = <
   T extends BaseDataEntity = BaseDataEntity,

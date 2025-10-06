@@ -1,8 +1,8 @@
 // Import necessary dependencies and constants
 import useApiUserPreferences from '@/app/api/preferences/ApiUserPreferences';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { UserPreferences } from '@/app/configs/UserPreferences';
-import { UserVisualPreferencesActions } from '@/app/configs/UserPreferencesActions';
+import { UserPreferences } from '@/config//UserPreferences';
+import { UserVisualPreferencesActions } from '@/config//UserPreferencesActions';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put, takeLatest } from 'redux-saga/effects';
 

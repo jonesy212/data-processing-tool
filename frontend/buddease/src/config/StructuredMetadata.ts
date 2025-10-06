@@ -1,39 +1,39 @@
 // StructuredMetadata.ts
 
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { BaseDataEntity } from '@/config/BaseConfig';
-import { Snapshot } from '@/app/snapshots';
 let fs: any;
 if (typeof window === 'undefined') {
   fs = require('fs');
 }
 
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
-import { Taggable } from '@/app/models/CommonData';
-import { BaseData, SharedRelationshipData } from '@/app/components/models/data/Data';
-import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { BaseData, SharedRelationshipData } from '@/app/models/data/Data';
 import { Permission } from "@/app/components/users/Permission";
-import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/versions/createLatestVersion";
-import { Version } from '@/app/versions/Version';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { Taggable } from '@/app/models/CommonData';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
 import { CustomComment } from '@/app/state/redux/slices/BlogSlice';
 import { Video } from '@/app/state/stores/VideoStore';
+import { createLastUpdatedWithVersion, createLatestVersion } from "@/app/versions/createLatestVersion";
+import { Version } from '@/app/versions/Version';
+import { LanguageEnum } from '@/communications/LanguageEnum';
+import { Attachment } from '@/components/documents/Attachment/attachment';
+import { Comment } from '@/components/models/data/Comments';
+import { Data } from '@/components/models/data/Data';
+import { K, T } from '@/components/models/data/dataStoreMethods';
+import { Task } from '@/components/models/tasks/Task';
+import { Contributor } from '@/components/models/teams/TeamMembers';
+import { BaseConfig, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { MyDataType } from '@/database/MetaDataOptions';
+import { SharedMetadata } from '@/metadata/createMetadataState';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { SchemaField } from '@/server/database/SchemaField';
+import { VersionData, VersionHistory } from '@/versions/VersionData';
 import * as path from 'path';
 import { useState } from 'react';
-import { LanguageEnum } from '../communications/LanguageEnum';
-import { Attachment } from '../components/documents/Attachment/attachment';
-import { Comment } from '../components/models/data/Comments';
-import { Data } from '../components/models/data/Data';
-import { K, T } from '../components/models/data/dataStoreMethods';
-import { Task } from '../components/models/tasks/Task';
-import { Contributor } from '../components/models/teams/TeamMembers';
-import { VersionData, VersionHistory } from '../versions/VersionData';
-import { BaseConfig, DefaultExcludedFields, DefaultMeta } from './BaseConfig';
-import { MyDataType } from './database/MetaDataOptions';
-import { SharedMetadata } from './metadata/createMetadataState';
 
 // Full 4-argument version (recommended)
 interface SpecificMetadata<

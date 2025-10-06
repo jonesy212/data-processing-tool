@@ -1,22 +1,22 @@
+import { Label } from "@/app/branding/BrandingSettings";
 import { ChatRoom } from "@/app/calendar/CalendarSlice";
 import { ContentItem } from "@/app/cards/DummyCardLoader";
 import { Sender } from "@/app/communications/chat/Communication";
 import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
-import { Label } from "@/app/components/projects/branding/BrandingSettings";
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { User } from "@/app/users/User";
 import { createMessage, MessageProps } from "@/app/utils/web3/createMessage";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { InitializedData } from '@/SnapshotStoreOptions';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { InitializedData } from './SnapshotStoreOptions';
 import { SnapshotStoreProps } from "./useSnapshotStore";
 
 

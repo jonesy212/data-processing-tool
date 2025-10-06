@@ -1,5 +1,5 @@
 // useTestPhaseHooks.tsx
-import { TestPhaseHooks, TestPhaseHookConfig, CustomPhaseHooks } from './types'; // Assuming the necessary types are imported from respective files
+import { TestPhaseHooks, TestPhaseHookConfig, CustomPhaseHooks } from '@/types'; // Assuming the necessary types are imported from respective files
 
 // Define additional methods for managing test phases
 const useTestPhaseHooks = (): TestPhaseHooks => {

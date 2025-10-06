@@ -1,8 +1,8 @@
 import axiosInstance from '@/app/api/csrfToken';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import {
     removeAllEvents,
     removeEvent,

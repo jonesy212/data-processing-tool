@@ -1,7 +1,7 @@
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { BaseData } from "@/app/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { Snapshot, Snapshots, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";
 import { SnapshotData } from "./SnapshotData";

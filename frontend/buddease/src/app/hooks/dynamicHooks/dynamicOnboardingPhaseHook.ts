@@ -1,6 +1,6 @@
 // dynamicOnboardingPhaseHook.ts
 
-import createDynamicHook from './dynamicHookGenerator';
+import createDynamicHook from '@/dynamicHookGenerator';
 
 interface DynamicOnboardingPhaseHookConfig {
   condition: (idleTimeoutDuration: number) => Promise<boolean>;

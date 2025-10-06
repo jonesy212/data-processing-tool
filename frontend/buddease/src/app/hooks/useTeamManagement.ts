@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import {Team} from '../models/teams/Team';
+import {Team} from '@/models/teams/Team';
 import { useTeamManagerStore } from '@/app/state/stores/TeamStore';
 import { useDispatch } from 'react-redux';
 import { AxiosError } from 'axios'; // Assuming Axios is used for API calls

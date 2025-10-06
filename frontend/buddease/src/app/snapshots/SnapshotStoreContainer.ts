@@ -6,15 +6,15 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Category, generateCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import {
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta,
 } from "@/config/BaseConfig";
-import { SimulatedDataSource } from './createSnapshotOptions';
+import { SimulatedDataSource } from '@/createSnapshotOptions';
 import { SnapshotContainer } from "./SnapshotContainer";
-import { snapshotConfig } from './snapshotContainerUtils';
+import { snapshotConfig } from '@/snapshotContainerUtils';
 import { getSnapshotContainer } from "./snapshotOperations";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";

@@ -1,29 +1,40 @@
 // SubscriptionActions.ts
 import { Content } from '@/app/components/models/content/AddContent';
-import { BaseData, Data } from '@/app/components/models/data/Data';
-import { Project } from '@/app/components/projects/Project';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData, Data } from '@/app/models/data/Data';
 import { NotificationPosition, ProjectStateEnum } from "@/app/models/data/StatusType";
-import { Callback, CustomSnapshotData, Snapshot, SnapshotContainerData } from "@/app/snapshots";
-import { Subscriber } from "@/app/users/Subscriber";
+import { Project } from '@/app/models/projects/Project';
+import { SnapshotContainerData } from '@/app/snapshots/SnapshotContainer';
+import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { Callback } from "@/app/snapshots/subscribeToSnapshotsImplementation";
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { category } from '@/app/utils/snapshotUtils';
 import { LogActivityParams, TriggerIncentivesParams } from '@/app/utils/web3/applicationUtils';
 import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createAction } from "@reduxjs/toolkit";
-;
- 
+
+
+interface SimplifiedBaseData {
+  id: string;
+  // Add only the absolutely necessary properties
+}
+
+
 interface SubscriptionPayload<
   // ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  T extends  BaseData<any> = BaseData<any, any>, 
+  T extends SimplifiedBaseData = SimplifiedBaseData,
   K extends T = T,
-  ExcludedFields extends Data<T> = never,
-  S extends CustomSnapshotData<T, K> = CustomSnapshotData<T, K>,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  ExcludedFields extends keyof T = never,
+  S extends CustomSnapshotData<T, K> = CustomSnapshotData<T, K>,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 > {
   error: string | undefined;
   meta: {
     name: string,
     timestamp: Date,
-    type: NotificationTypeEnum.INFO,
+    type: NotificationTypeEnum,
     startDate: Date,
     endDate: Date,
     status: string,
@@ -91,7 +102,7 @@ interface SubscriptionPayload<
   email: string;  // email address for notifications
   subscribe: () => void;  // function to handle subscribe action
   value: number;  // value associated with the subscription
-  category: string;  // category for filtering subscriptions
+  category: Category;  // category for filtering subscriptions
   unsubscribe: (
     subscriberId: string,
     unsubscribeDetails: {
@@ -121,12 +132,14 @@ interface SubscriptionPayload<
   type?: "info" | "success" | "error" | "warning";  // type for message categorization
 }
 
+type SubscriptionKType<T extends BaseData<any>> = T & CustomSnapshotData<T, any>;
 
 
 export const SubscriptionActions = <
   T extends BaseData<any> = BaseData<any, any>,
-  K extends T & CustomSnapshotData<T, K, StructuredMetadata<T, K>> = T & CustomSnapshotData<T, T, StructuredMetadata<T, T>>,
-  Meta extends StructuredMetadata<T, any> = StructuredMetadata<T, any>,
+  //from: K extends T & CustomSnapshotData<T, K, StructuredMetadata<T, K>> = T & CustomSnapshotData<T, T, StructuredMetadata<T, T>>,
+  K extends SubscriptionKType<T> = SubscriptionKType<T>, 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
 >() => {
   const actions = {
     // Action to add a new subscriber

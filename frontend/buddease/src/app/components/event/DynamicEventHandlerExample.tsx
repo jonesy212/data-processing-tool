@@ -12,7 +12,7 @@ import { SelectActions } from "@/app/actions/SelectActions";
 import { TooltipActions } from "@/app/actions/TooltipActions";
 import { FetchUserDataPayload, UIActions } from "@/app/actions/UIActions";
 import { ZoomActions } from "@/app/actions/ZoomActions";
-import * as ApiAnalysis from "@/app/api/ApiAnalysisService";
+import * as ApiAnalysis from "@/app/api/service/ApiAnalysisService";
 import { endpoints } from "@/app/api/ApiEndpoints";
 import { searchAPI } from "@/app/api/ApiSearch";
 import { constructTarget } from "@/app/api/EndpointConstructor";

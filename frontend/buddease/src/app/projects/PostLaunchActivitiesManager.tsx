@@ -1,7 +1,7 @@
 // PostLaunchActivitiesPhase.tsx
+import CollaborationSettingsPhase from '@/phases/collaborationPhase/CollaborationSettingsPhase';
 import React, { useState } from 'react';
-import CollaborationSettingsPhase from '../phases/collaborationPhase/CollaborationSettingsPhase';
-import RefactoringRebrandingPhase from './RefactoringRebrandingPhase';
+import RefactoringRebrandingPhase from '@/RefactoringRebrandingPhase';
 
 export enum PostLaunchActivitiesPhase {
   REFACTORING_REBRANDING,

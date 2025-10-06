@@ -22,7 +22,7 @@ interface BaseTransaction {
 // `Transaction` extends `BaseTransaction` with specific fields
 interface Transaction extends BaseTransaction {
   amount?: number | null;
-  transactionType: number;
+  transactionType: number | null;
   currency: string;
   timestamp: Date;
   status: 'pending' | 'completed' | 'failed';

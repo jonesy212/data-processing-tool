@@ -1,4 +1,4 @@
-import { NotificationData } from '@/app/components/support/NofiticationsSlice';
+import { NotificationData } from '@/app/state/redux/slices/NofiticationsSlice'
 import React from 'react';
 
 interface NotificationDisplayProps {

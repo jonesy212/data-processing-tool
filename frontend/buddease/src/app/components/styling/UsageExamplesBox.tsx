@@ -15,7 +15,7 @@ import { AnimatedComponentRef } from "@/app/libraries/animations/AnimationCompon
 import AnimationControls from "@/app/libraries/animations/AnimationControls";
 import DynamicSelectionControls from "@/app/libraries/animations/DynamicSelectionControls";
 import responsiveDesignStore from "./ResponsiveDesign";
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 
 interface UsageExamplesBoxProps {
   // Add any specific props needed for the UsageExamplesBox

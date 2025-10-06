@@ -1,12 +1,13 @@
 // projects/ProjectActions.ts
-import { K, T } from '@/app/components/models/data/dataStoreMethods';
+import { K, T } from '@/app/models/data/dataStoreMethods';
 import { createAction } from "@reduxjs/toolkit";
-import Milestone from "@/app/calendar/CalendarSlice";
+import Milestone from "@/app/state/redux/slices/CalendarSlice";
 import { Task } from "@/app/models/tasks/Task";
 import { Phase } from "@/app/phases/Phase";
 import { Product } from "@/app/products/Product";
 import { Project, ProjectDetails } from "@/app/models/projects/Project";
 import { User } from "@/app/users/User";
+
 export const ProjectActions = {
   // Standard actions
   add: createAction<Project>("addProject"),

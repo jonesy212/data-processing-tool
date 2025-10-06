@@ -1,5 +1,5 @@
 declare function require(path: string): any;
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Presentation } from '@/app/components/documents/Presentation';
 
 interface MyPropertiesOptions extends DocumentOptions {
@@ -33,7 +33,7 @@ declare global {
 
 
 
-declare module './sharedErrorHandling' {
+declare module '@/sharedErrorHandling' {
   export class NamingConventionsError extends Error {
     constructor(errorType: string, details: string);
   }

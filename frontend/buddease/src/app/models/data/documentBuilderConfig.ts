@@ -1,5 +1,5 @@
 import { CodingLanguageEnum, LanguageEnum } from "@/app/communications/LanguageEnum";
-import { LinksType } from "@/app/components/documents/DocumentOptions";
+import { LinksType } from "@/app/documents/DocumentOptions";
 import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
 import { DocumentTypeEnum } from "@/app/typings/documents";
 import { VersionData } from "@/app/versions/VersionData";

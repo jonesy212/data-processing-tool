@@ -1,7 +1,7 @@
 import React from 'react';
 import { generateNFT } from '@/app/generators/NFTGenerator';
-import UserRoles from './UserRoles';
-import { UserRole } from './UserRole';
+import UserRoles from '@/UserRoles';
+import { UserRole } from '@/UserRole';
 
 const PermissionsEditor: React.FC = () => {
   const assignNFT = () => {

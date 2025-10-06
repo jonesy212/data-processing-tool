@@ -1,4 +1,4 @@
-import IdeationPhase from '@/app/components/users/userJourney/IdeationPhase';
+import IdeationPhase from '@/app/users/userJourney/IdeationPhase';
 import { createAction } from "@reduxjs/toolkit";
 
 export const IdeationPhaseActions = {

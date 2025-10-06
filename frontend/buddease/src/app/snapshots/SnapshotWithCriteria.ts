@@ -1,15 +1,14 @@
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { SnapshotContext } from './SnapshotSubscriberManagement';
+import { SnapshotContext } from '@/SnapshotSubscriberManagement';
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { Tag } from '@/app/components/models/tracker/Tag';
-import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { useDataContext } from "@/app/context/DataContext";
 import { NotificationType } from '@/app/context/NotificationContext';
 import { CombinedEvents, SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Taggable } from '@/app/models/CommonData';
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataStore, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
@@ -17,8 +16,9 @@ import { SearchCriteria } from "@/app/routing/SearchCriteria";
 import { Callback, SnapshotConfig, SnapshotData, SnapshotItem, SnapshotStoreProps } from '@/app/snapshots';
 import { InitializedDelegate, SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { Subscriber } from "@/app/subscribers/Subscriber";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { Subscriber } from "@/app/users/Subscriber";
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { sharedMetadata } from "@/config/metadata/MetadataHooks";
 import { MetadataEntriesType } from "@/config/StructuredMetadata";
 import { Payload, UpdateSnapshotPayload } from '@/server/database/Payload';
@@ -29,20 +29,20 @@ import { handleSnapshotSuccess } from "./snapshotHandlers";
 import SnapshotStore, { SnapshotStoreReference } from "./SnapshotStore";
 
 import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { FilterCriteria } from "@/app/pages/searchs/FilterCriteria";
-import Version from "@/app/versions/Version";
+import { Version } from "@/app/versions/Version";
+import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
+import { ExcludedFields } from '@/routing/Fields';
 import { SchemaField } from "@/server/database/SchemaField";
-import { Attachment } from '../documents/Attachment/attachment';
-import { RealtimeDataItem } from '../models/realtime/RealtimeData';
-import { ExcludedFields } from '../routing/Fields';
-import { SubscriberCallbackType } from '../subscriptions/Subscription';
-import { SubscriberCollection } from '../users/SubscriberCollection';
-import { VersionData } from '../versions/VersionData';
+import { SnapshotEvents } from '@/SnapshotEvents';
+import { SubscriberCallbackType } from '@/subscriptions/Subscription';
+import { SubscriberCollection } from '@/users/SubscriberCollection';
+import { VersionData } from '@/versions/VersionData';
 import { SnapshotOperation } from "./SnapshotActions";
-import { SnapshotEvents } from './SnapshotEvents';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 

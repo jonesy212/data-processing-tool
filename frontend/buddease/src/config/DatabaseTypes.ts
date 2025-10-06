@@ -1,12 +1,12 @@
 // DatabaseTypes.ts
 // Frontend-safe types and interfaces only - NO pg imports!
 
-export interface DatabaseQuery {
+interface DatabaseQuery {
   query: string;
   params?: any[];
 }
 
-export interface DatabaseConfig {
+interface DatabaseConfig {
   url: string;
   host: string;
   username: string;
@@ -17,7 +17,7 @@ export interface DatabaseConfig {
   saveUserProfiles?(userProfiles: any[]): Promise<void>;
 }
 
-export interface DatabaseService {
+interface DatabaseService {
   createDatabase(config: DatabaseConfig, databaseQuery: string): Promise<any>;
   insertData(config: DatabaseConfig, operation: string, databaseQuery: string): Promise<any>;
   updateData(config: DatabaseConfig, operation: string, databaseQuery: string): Promise<any>;
@@ -41,4 +41,4 @@ export interface DatabaseService {
 }
 
 
-export { DatabaseConfig, DatabaseQuery, DatabaseService };
+export type { DatabaseConfig, DatabaseQuery, DatabaseService };

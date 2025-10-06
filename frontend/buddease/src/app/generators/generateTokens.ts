@@ -1,7 +1,7 @@
 // generateTokens.ts
 import * as jwt from 'jsonwebtoken';
 import { Scope } from '@/app/state/stores/Scopes';
-import { User } from '../components/users/User';
+import { User } from '@/app/users/User';
 
 interface TokenOptions {
   creationTime?: number;       // Timestamp for when the token was created

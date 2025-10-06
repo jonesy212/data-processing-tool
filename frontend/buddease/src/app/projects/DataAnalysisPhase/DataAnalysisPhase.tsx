@@ -1,14 +1,14 @@
-import { useAuth } from "@/context/AuthContext";
+import Visualization from "@/app/hooks/userInterface/Visualization";
 import { PhaseProps } from "@/app/pages/development/PlanningPhase";
-import { sendDataToBackend } from "@/app/services/dataAnalysisService";
+import { sendDataToBackend } from "@/app/services/dataAnalysisOrchestrator";
 import {
   DataAnalysisAction,
   DataAnalysisState,
-} from "@/app/typings/dataAnalysisTypes";
+} from "@/app/typings/phases/dataAnalysisTypes";
+import { fetchData } from "@/app/utils/web3/dataAnalysisUtils";
+import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import React, { useEffect, useReducer, useState } from "react";
-import Visualization from "@/app/hooks/userInterface/Visualization";
-import { fetchData } from "@/app/utils/web3/dataAnalysisUtils";
 
 enum DataAnalysisSubPhase {
   DEFINE_OBJECTIVE = "DEFINE_OBJECTIVE",
@@ -37,7 +37,7 @@ const dataAnalysisReducer = (
 };
 
 const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
-  const { state: authState } = useAuth(); // Renamed to authState
+  const { state: authState } = useAuth();
 
   const [allWalks, setAllWalks] = useState<number[][]>([]);
 
@@ -101,31 +101,43 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
   const handleSubPhaseCompletion = async () => {
     switch (currentSubPhase) {
       case DataAnalysisSubPhase.DEFINE_OBJECTIVE:
-        // Logic for completing the "Define Objective" sub-phase
+        // Logic for completing "Define Objective"
         break;
+
       case DataAnalysisSubPhase.DATA_COLLECTION:
-        // Logic for completing the "Data Collection" sub-phase
+        // Logic for completing "Data Collection"
         break;
+
       case DataAnalysisSubPhase.CLEAN_DATA:
-        // Logic for completing the "Clean Data" sub-phase
+        // Logic for completing "Clean Data"
         break;
+
       case DataAnalysisSubPhase.DATA_ANALYSIS:
-        // Logic for completing the "Data Analysis" sub-phase
+        // Logic for completing "Data Analysis"
         break;
+
       case DataAnalysisSubPhase.DATA_VISUALIZATION:
-        // Logic for completing the "Data Visualization" sub-phase
+        // Logic for completing "Data Visualization"
         break;
+
       case DataAnalysisSubPhase.TRANSFORM_INSIGHTS:
-        // Logic for completing the "Transform Insights" sub-phase
+        // Logic for completing "Transform Insights"
         break;
+
       default:
         break;
     }
 
-    const nextSubPhase = currentSubPhase + 1;
-    setCurrentSubPhase(nextSubPhase);
+    // ✅ New, type-safe way to move to the next sub-phase
+    const subPhases = Object.values(DataAnalysisSubPhase);
+    const currentIndex = subPhases.indexOf(currentSubPhase);
+    const nextIndex = currentIndex + 1;
+    const nextSubPhase = subPhases[nextIndex] as DataAnalysisSubPhase | undefined;
 
-    if (nextSubPhase > DataAnalysisSubPhase.TRANSFORM_INSIGHTS) {
+    if (nextSubPhase) {
+      setCurrentSubPhase(nextSubPhase);
+    } else {
+      // ✅ All sub-phases complete
       sendDataToBackend(dataState.userSpecificData);
       onSubmit();
     }
@@ -216,4 +228,4 @@ const DataAnalysisPhase: React.FC<DataAnalysisPhaseProps> = ({ onSubmit }) => {
 };
 
 export default DataAnalysisPhase;
-export {DataAnalysisSubPhase}
+export { DataAnalysisSubPhase };

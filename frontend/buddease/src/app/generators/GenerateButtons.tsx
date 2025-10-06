@@ -1,23 +1,23 @@
 // ButtonGenerator.tsx
 import { fetchEventData } from '@/app/api/ApiEvent';
 import userService from "@/app/api/ApiUser";
+import { Label } from '@/app/branding/BrandingSettings';
 import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
 import { useDynamicComponents } from "@/app/components/DynamicComponentsContext";
 import {
-    startVoiceRecognition,
-    stopVoiceRecognition,
+  startVoiceRecognition,
+  stopVoiceRecognition,
 } from "@/app/components/intelligence/VoiceControl";
-import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
 import { RealtimeDataComponent } from "@/app/components/models/realtime/RealtimeData";
-import useNotificationManagerService from "@/app/services/NotificationService";
 import { Phase } from "@/app/components/phases/Phase";
-import { Label } from '@/app/components/projects/branding/BrandingSettings';
 import { brandingSettings } from "@/app/libraries/theme/BrandingService";
+import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
 import {
-    nextPhase,
-    previousPhase,
+  nextPhase,
+  previousPhase,
 } from "@/app/models/phases/PhaseTransitions";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
+import useNotificationManagerService from "@/app/services/NotificationService";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
@@ -38,7 +38,7 @@ startVoiceRecognition;
  * import { ButtonGenerator, ButtonGeneratorProps } from "./path/to/ButtonGenerator";
  *
  * import NotificationManager from '@/app/support/NotificationManager';
- * import NotificationManager from '../components/notifications/NotificationManager';
+ * import NotificationManager from '@/components/notifications/NotificationManager';
  * import { buttonGeneratorProps } from '@/app/generators/GenerateButtons';
 import { Router } from 'react-router-dom';
 

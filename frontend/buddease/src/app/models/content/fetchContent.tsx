@@ -1,7 +1,8 @@
 import { handleApiErrorAndNotify } from '@/app/api/ApiData';
 import { endpoints } from '@/app/api/endpointConfigurations';
-import axios, { AxiosError } from 'axios';
-
+import { AxiosError } from 'axios';
+import { DataNotificationMessages } from '@/app/api/ApiData'
+import axiosInstance from '@/app/api/csrfToken';
 
 // Define the response type for the content API
 interface ContentResponseType {
@@ -11,32 +12,19 @@ interface ContentResponseType {
   // Add other content properties as needed
 }
 
-interface ContentNotificationMessages {
-  FETCH_CONTENT_ERROR: string
+interface ContentNotificationMessages extends DataNotificationMessages {
+  FETCH_CONTENT_ERROR: string;
+  // Add other content-specific messages
+  UPDATE_CONTENT_ERROR: string;
+  DELETE_CONTENT_ERROR: string;
 }
 
 
 
 // Function to fetch content by contentId
+
+import { contentApiService } from './contentApiService';
+
 export const fetchContentById = async (contentId: number): Promise<ContentResponseType | null> => {
-  try {
-    // Construct the API endpoint using the contentId
-    const endpoint = `${endpoints.content.base}/${contentId}`;
-
-    // Make the API request
-    const response = await axios.get<ContentResponseType>(endpoint);
-
-    // Return the content data if the request is successful
-    return response.data;
-  } catch (error) {
-    // Log and handle the error using your notification system
-    handleApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      `Failed to fetch content with ID: ${contentId}`,
-      'FETCH_CONTENT_ERROR' as keyof ContentNotificationMessages // Add this key to DataNotificationMessages
-    );
-
-    // Return null if there was an error
-    return null;
-  }
+  return await contentApiService.fetchContentById(contentId);
 };

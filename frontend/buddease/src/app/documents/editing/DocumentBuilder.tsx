@@ -4,18 +4,22 @@ import {
   createContentStateFromText,
   fetchContentIdFromAPI
 } from "@/app/api/ApiContent";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { ExcludedFields } from '@/app/components/routing/Fields';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { ExcludedFields } from '@/app/routing/Fields';
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 
-import { endpoints } from "@/app/api/endpointConfigurations";
 import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from "@/app/api/endpointConfigurations";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
-import { BaseData } from '@/app/components/models/data/Data';
-import PromptViewer from "@/app/prompts/PromptViewer";
+import { ToolbarOptionsComponent, ToolbarOptionsProps } from "@/app/components/documents/ToolbarOptions";
+import { getTextBetweenOffsets } from "@/app/components/documents/getTextBetweenOffsets";
+import { BaseData } from '@/app/models/data/Data';
 import { selectedmetadata } from "@/app/components/routing/MetadataComponent";
 import SharingOptions from "@/app/components/shared/SharingOptions";
+import {
+  getFormattedOptions
+} from "@/app/documents/DocumentCreationUtils";
 import { usePanelContents } from "@/app/generators/usePanelContents";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import ResizablePanels from "@/app/hooks/userInterface/ResizablePanels";
@@ -25,7 +29,7 @@ import { determineDocumentType } from "@/app/libraries/categories/determineDocum
 import { CustomContentState } from "@/app/libraries/ui/CustomContentState";
 import { CommonData } from "@/app/models/CommonData";
 import { Content } from "@/app/models/content/AddContent";
-import { Data, TodoSubtasks } from "@/app/models/data/Data";
+import { Data, TodoSubtasks } from '@/app/models/data/Data';
 import FileData from "@/app/models/data/FileData";
 import FolderData from "@/app/models/data/FolderData";
 import { DocumentSize, ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
@@ -33,6 +37,7 @@ import { K, Meta, T, } from "@/app/models/data/dataStoreMethods";
 import { Team } from "@/app/models/teams/Team";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { Phase } from "@/app/phases/Phase";
+import PromptViewer from "@/app/prompts/PromptViewer";
 import { TagsRecord } from "@/app/snapshots";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import {
@@ -52,7 +57,7 @@ import AccessHistory, {
   convertAccessRecordToHistory,
 } from "@/app/versions/AccessHistory";
 import AppVersionImpl from "@/app/versions/AppVersion";
-import Version from "@/app/versions/Version";
+import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { BaseDataEntity, DefaultExcludedFields } from "@/config/BaseConfig";
@@ -79,9 +84,6 @@ import { versions } from "process";
 import React, { useState, version } from "react";
 import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
 import { ModifiedDate } from "./DocType";
-import {
-  getFormattedOptions
-} from "@/app/components/documents/DocumentCreationUtils";
 import { DocumentOptions } from "./DocumentOptions";
 import DocumentPermissions from "./DocumentPermissions";
 import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
@@ -89,9 +91,7 @@ import {
   DocumentAnimationOptions,
   DocumentBuilderProps,
 } from "./SharedDocumentProps";
-import { ToolbarOptionsComponent, ToolbarOptionsProps } from "@/app/components/documents/ToolbarOptions";
 import { ResearchReport, TechnicalReport } from "./documentation/report/Report";
-import { getTextBetweenOffsets } from "@/app/components/documents/getTextBetweenOffsets";
 
 const API_BASE_URL = endpoints.apiBaseUrl;
 
@@ -115,6 +115,14 @@ type ContentStructuredMetadata<
 // Define a mapped type to convert TodoSubtasks to WritableDraft equivalent
 type WritableTodoSubtasks = WritableDraft<TodoSubtasks>;
 
+
+
+// ---------------------------
+// Specialized Document Interfaces
+// ---------------------------
+
+// Main DocumentData interface
+
 interface DocumentData<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
@@ -122,17 +130,17 @@ interface DocumentData<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> 
-  extends DocumentBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-          CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-          DatasetModel<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
-{
+> extends DocumentBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    DatasetModel<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  
+  // DocumentData specific properties
   id: string | number;
   _id: string;
   title: string;
   content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   documents: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[];
-  permissions: DocumentPermissions | undefined;
+  permissions?: DocumentPermissions;
   topics?: string[];
   highlights?: string[];
   keywords?: string[];
@@ -151,7 +159,7 @@ interface DocumentData<
   timestamp?: Date;
   source?: string;
   report?: FinancialReport | TechnicalReport | ResearchReport;
-  options: DocumentOptions | undefined;
+  options?: DocumentOptions;
   folderPath: string;
   previousContent?: string | ContentState;
   currentContent?: ContentState;
@@ -160,75 +168,25 @@ interface DocumentData<
   previousMetadata?: UnifiedMetadata<T, K, Meta, ExcludedFields>;
   currentMetadata: UnifiedMetadata<T, K, Meta, ExcludedFields>;
   accessHistory: AccessHistory[];
-  documentPhase?:
-    | string
-    | {
-        name?: string;
-        originalPath?: string;
-        alternatePaths?: string[];
-        fileType?: string;
-        title?: string;
-        description?: string;
-        keywords?: string[];
-        authors?: string[];
-        contributors?: string[];
-        publisher?: string;
-        copyright?: string;
-        license?: string;
-        links?: string[];
-        tags?: TagsRecord<T, K, Meta, ExcludedFields> | string[];
-        phaseType: ProjectPhaseTypeEnum;
-        customProp1: string;
-        customProp2: number;
-        onChange: (phase: ProjectPhaseTypeEnum) => void;
-      };
-  version: Version<T, K, Meta, ExcludedFields> | undefined | null;
-  versionData: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+  documentPhase?: DocumentPhase<T, K, Meta, ExcludedFields>;
+  version?: Version<T, K, Meta, ExcludedFields> | null;
+  versionData?: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   visibility: AllTypes;
   url?: string;
   updatedDocument?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   documentSize: DocumentSize;
-  lastModifiedDate: ModifiedDate | undefined;
+  lastModifiedDate?: ModifiedDate;
   lastModifiedBy: string;
   lastModifiedByTeamId?: number | null;
   lastModifiedByTeam?: Team;
-  name: string | undefined;
+  name?: string;
   descriptionRenamed?: string | null;
-  createdByRenamed: string | undefined;
-  createdDate: string | Date | undefined;
+  createdByRenamed?: string;
+  createdDate?: string | Date;
   documentType: string | DocumentTypeEnum;
   documentData?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  document: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
-  _rev: string | undefined;
-  _attachments?: Record<string, any>;
-  _links?: Record<string, any>;
-  _etag?: string;
-  _local?: boolean;
-  _revs?: string[];
-  _source?: Record<string, any>;
-  _shards?: Record<string, any>;
-  _size?: number;
-  _version?: number;
-  _version_conflicts?: number;
-  _seq_no?: number;
-  _primary_term?: number;
-  _routing?: string;
-  _parent?: string;
-  _parent_as_child?: boolean;
-  _slices?: any[];
-  _highlight?: Record<string, any>;
-  _highlight_inner_hits?: Record<string, any>;
-  _source_as_doc?: boolean;
-  _source_includes?: string[];
-  _routing_keys?: string[];
-  _routing_values?: string[];
-  _routing_values_as_array?: string[];
-  _routing_values_as_array_of_objects?: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key?: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key_and_value?: Record<string, any>[];
-  _routing_values_as_array_of_objects_with_key_and_value_and_value?: Record<string, any>[];
+  document?: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
-
 
 interface RevisionOptions {
   enabled: boolean;

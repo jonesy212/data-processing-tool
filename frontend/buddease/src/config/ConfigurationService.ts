@@ -1,22 +1,22 @@
 import { SystemConfigs } from "@/app/api/systemConfigs";
 import { UserConfigs } from "@/app/api/userConfigs";
-import { AquaConfig } from "@/app/components/web3/webConfigs/AquaConfig";
+import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
 import { useNotification } from "@/app/context/NotificationContext";
 import { Project, isProjectInSpecialPhase } from "@/app/projects/Project";
 import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
 import {
-    BackendConfig,
-    backendConfig,
+  BackendConfig,
+  backendConfig,
 } from "./BackendConfig";
 
-import fs from 'fs';
-import { getConfigsData } from '../api/getConfigsApi';
-import LazyLoadScriptConfigImpl from "../app/components/configs/LazyLoadScriptConfig";
+import { getConfigsData } from '@/api/getConfigsApi';
+import LazyLoadScriptConfigImpl from "@/app/components/configs/LazyLoadScriptConfig";
 import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import dataVersions from "../configs/DataVersionsConfig";
-import { VersionHistory } from '../versions/VersionData';
-import { API_VERSION_HEADER } from './AppConfig';
-import { BaseDataEntity, BaseDataRoot, DefaultMeta } from './BaseConfig';
+import { API_VERSION_HEADER } from '@/AppConfig';
+import { BaseDataEntity, BaseDataRoot, DefaultMeta } from '@/config/BaseConfig';
+import dataVersions from "@/configs/DataVersionsConfig";
+import { VersionHistory } from '@/versions/VersionData';
+import fs from 'fs';
 import { frontendConfig } from "./FrontendConfig";
 import { ModuleType, userPreferences } from "./UserPreferences";
 import userSettings from "./UserSettings";
@@ -410,7 +410,7 @@ async getSystemConfigs(): Promise<typeof SystemConfigs> {
   
   getDataPath(): string { 
     // Return the data path
-    const DATA_PATH = './data';
+    const DATA_PATH = '@/data';
     return DATA_PATH;
   }
 

@@ -1,17 +1,17 @@
 // User.tsx
-import { Attachment } from "@/app/components/documents/Attachment/attachment";
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
-import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
-import { SecuritySettings } from "@/app/components/settings/SecuritySettings";
-import { Data } from "@/app/models/data/Data";
+import { K, Meta, T } from "@/app/models/data/dataStoreMethods";
+import { SecuritySettings } from "@/app/settings/SecuritySettings";
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Data } from '@/app/models/data/Data';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
 import { UserPreferences } from "@/config/UserPreferences";
 import { UserSettings } from "@/config/UserSettings";
 import {
-    fetchUserAreaDimensions,
-    UnifiedMetadata
+  fetchUserAreaDimensions,
+  UnifiedMetadata
 } from "@/server/database/MetaDataOptions";
 
 import { NotificationPreferences } from "@/app/communications/chat/ChatSettingsModal";
@@ -19,14 +19,14 @@ import ChatSettings from "@/app/communications/chat/ChatSettingsPanel";
 import { RealtimeUpdates } from "@/app/community/ActivityFeedComponent";
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import {
-    CustomTransaction,
-    SmartContractInteraction,
+  CustomTransaction,
+  SmartContractInteraction,
 } from "@/app/crypto/SmartContractInteraction";
 import { CryptoDocumentManager } from "@/app/documents/cryptoDocumentManager";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import CommonDetails from "@/app/models/CommonData";
-import { BaseData, SharedRelationshipData } from "@/app/models/data/Data";
+import { BaseData, SharedRelationshipData } from '@/app/models/data/Data';
 import { ActivityActionEnum, ActivityTypeEnum, BookmarkStatus, BorderStyle, CalendarStatus, CalendarViewType, ChatType, CollaborationOptionType, ComponentStatus, DataStatus, DocumentPhaseEnum, DocumentSize, IncludeType, Layout, MeetingStatus, NotificationPosition, NotificationStatus, Orientation, OutcomeType, PriorityTypeEnum, PrivacySettingEnum, ProductStatus, ProjectStateEnum, SortingType, StatusType, SubscriberTypeEnum, SubscriptionTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "@/app/models/data/StatusType";
 import { Project } from "@/app/models/projects/Project";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
@@ -45,7 +45,7 @@ import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { TwitterData } from "@/app/socialMedia/TwitterIntegration";
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
 import {
-    DocumentTypeEnum
+  DocumentTypeEnum
 } from "@/app/typings/documents";
 import { AllTypes } from "@/app/typings/PropTypes";
 import { SharedVersionData } from "@/app/versions/VersionData";

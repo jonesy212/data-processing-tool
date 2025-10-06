@@ -2,8 +2,8 @@ import UserRoles from '@/users/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
 import { User } from "@/app/users/User";
 import { UserRole } from "@/app/users/UserRole";
-import { Team } from './Team';
-import { Task } from '../tasks/Task';
+import { Team } from '@/Team';
+import { Task } from '@/tasks/Task';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 export interface Member extends User {

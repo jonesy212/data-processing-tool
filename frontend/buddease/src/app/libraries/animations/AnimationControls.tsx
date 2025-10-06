@@ -1,6 +1,6 @@
 // AnimationControls.tsx
 import React, { useRef } from 'react';
-import {AnimatedComponent, AnimatedComponentRef} from './AnimationComponent'; // Replace with your actual AnimatedComponent import
+import {AnimatedComponent, AnimatedComponentRef} from '@/AnimationComponent'; // Replace with your actual AnimatedComponent import
 
 const AnimationControls: React.FC = () => {
   const animatedComponentRef = useRef<AnimatedComponentRef>(null);

@@ -2,10 +2,10 @@
 
 import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { BaseData } from "@/app/models/data/Data";
+import { BaseData } from '@/app/models/data/Data';
 import { FetchOptions, fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CustomPhaseHooks, Phase, PhaseData, PhaseMeta } from "@/app/phases/Phase";
-import { createMeta } from "@/config/metadata/MetadataHooks";
+import { createMeta } from "@/server/metadata/MetadataHooks";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMetadata } from "@/config/useMetadata";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";

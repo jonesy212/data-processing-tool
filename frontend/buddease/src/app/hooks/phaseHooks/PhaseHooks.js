@@ -74,10 +74,10 @@ exports.initializeAllPhases = exports.generalCommunicationFeaturesPhaseHook = ex
 var UserSettings_1 = require("@/configs/UserSettings");
 var configData_1 = require("@/configs/configData");
 var react_1 = require("react");
-var ipfsConfig_1 = require("../../../configs/ipfsConfig");
+var ipfsConfig_1 = require("@/configs/ipfsConfig");
 var AuthContext_1 = require("@/server/auth/AuthContext");
-var IPFS_1 = require("../../web3/dAppAdapter/IPFS");
-var dynamicHookGenerator_1 = require("../dynamicHooks/dynamicHookGenerator");
+var IPFS_1 = require("@/web3/dAppAdapter/IPFS");
+var dynamicHookGenerator_1 = require("@/app/hooks/dynamicHooks/dynamicHookGenerator");
 // Define additional methods for managing test phases
 // Define additional methods for managing test phases
 var useTestPhaseHooks = function () {

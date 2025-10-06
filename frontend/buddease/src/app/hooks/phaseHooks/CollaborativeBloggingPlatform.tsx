@@ -1,7 +1,7 @@
 // CollaborativeBloggingPlatform.tsx
 import CollaborationDashboard from '@/app/pages/dashboards/CollaborationDashboard';
 import React, { useState } from 'react';
-import DynamicContent from '@/app/components/documents/DynamicContent';
+import DynamicContent from '@/app/documents/DynamicContent';
 import BlogAndContentEditor from '@/app/components/models/content/BlogAndContentEditor';
 import AdapterContent from '@/app/components/web3/dAppAdapter/AdapterContent';
 import { ColorSwatchProps } from '@/app/components/styling/ColorPalette';

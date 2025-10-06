@@ -1,11 +1,11 @@
 // // //RetrieveSnapshotData.tsx
 // import { StructuredMetadata } from "@/configs/StructuredMetadata";
 // import { RetrievedSnapshot } from '@/app/utils/retrieveSnapshotData';
-// import { BaseData } from '../data/Data';
+// import { BaseData } from '@/data/Data';
 // import axiosInstance from '@/app/api/csrfToken';
-// import { Snapshot } from "@/app/snapshots";
-// import { SnapshotData } from './SnapshotData';
-// import SnapshotStoreComponent from './SnapshotStoreComponent';
+// import { Snapshot } from '@/app/snapshots/Snapshot';
+// import { SnapshotData } from '@/SnapshotData';
+// import SnapshotStoreComponent from '@/SnapshotStoreComponent';
 
 
 // // // Define the API endpoint for retrieving snapshot data

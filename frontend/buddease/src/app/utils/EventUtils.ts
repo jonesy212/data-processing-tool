@@ -1,6 +1,6 @@
 import { BaseEvent, TaskEvent, UserEvent } from "@/app/typings/eventTypes";
-import { EventAttendance } from '../calendar/AttendancePrediction';
-import { SystemEvent } from '../components/event/BaseEvent';
+import { EventAttendance } from '@/calendar/AttendancePrediction';
+import { SystemEvent } from '@/components/event/BaseEvent';
 
   // Check if the event is a Task Event
   function isTaskEvent<T, K>(event: BaseEvent): event is TaskEvent<T, K> {

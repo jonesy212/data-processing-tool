@@ -1,6 +1,6 @@
 // useUserProfile.test.tsx
 import { renderHook, act } from '@testing-library/react-hooks';
-import useUserProfile from './useUserProfile';
+import useUserProfile from '@/useUserProfile';
 
 describe('useUserProfile', () => {
   it('should update user profile', async () => {

@@ -120,6 +120,6 @@ class ApiService extends BaseApiService {
 
 
 export default ApiService;
-export { getUserByUsername, readCache };
+export { initializeAppData };
 export type { CustomStyle };
 

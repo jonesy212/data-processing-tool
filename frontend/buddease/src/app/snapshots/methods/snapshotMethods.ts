@@ -1,26 +1,26 @@
 // snapshotMethods.ts
-import { RealtimeDataItem } from '/Users/dixiejones/data_analysis/frontend/buddease/src/app/components/models/realtime/RealtimeData';
-import { SnapshotData } from '.';
-import { Subscriber } from '@/app/users/Subscriber';
-import { Snapshot } from "./Snapshot";
+import { RealtimeDataItem } from '@/app/models/realtime/RealtimeData';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { Snapshot } from "@/app/snapshots/Snapshot";
 import { isSnapshot } from '@/app/utils/snapshotUtils';
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import SnapshotStore from "@/app/snapshotstore";
 import { SnapshotConfig, SnapshotContainer, SnapshotStoreConfig, SnapshotStoreProps } from '..';
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { BaseData } from '@/app/components/models/data/Data';
-import { SnapshotsArray, SnapshotUnion } from '../LocalStorageSnapshotStore';
-import { SnapshotContainerType } from '../SnapshotContainer';
-import { SnapshotEvents } from '../SnapshotEvents';
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '../@/configs/BaseConfig';
-import { DataStoreMethods } from '@/app/components/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { BaseData } from '@/app/models/data/Data';
+import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods';
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Subscription } from '@/app/subscriptions/Subscription';
-import { UnifiedMetadata } from '../@/configs/database/MetaDataOptions';
+import { UnifiedMetadata } from '@/server/database/MetaDataOptions';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { createSnapshot } from '../createSnapshot';
-import { T, K, Meta } from '@/app/components/models/data/dataStoreMethods';
-import { ExcludedFields } from '@/app/components/routing/Fields';
+import { createSnapshot } from '@/app/snapshots/createSnapshot';
+import { T, K, Meta } from '@/app/models/data/dataStoreMethods';
+import { ExcludedFields } from '@/app/routing/Fields';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 
 export const SnapshotMethodsImplementation = {

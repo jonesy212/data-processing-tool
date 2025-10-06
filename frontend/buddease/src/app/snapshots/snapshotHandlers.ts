@@ -1,61 +1,60 @@
 // snapshotHandlers.ts
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { isSnapshotStore } from "@/app/typings/YourSpecificSnapshotType";
+import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from "@/app/api/endpointConfigurations";
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import updateUI from '@/app/documents/editing/updateUI';
+import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { useSecureStoreId } from '@/app/hooks/useSecureStoreId';
+import { SnapshotManager, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { BaseData, Data } from '@/app/models/data/Data';
 import { allCategories } from '@/app/models/data/DataStructureCategories';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotData } from '@/app/snapshots';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
-import { UpdateSnapshotPayload } from "@/server/database/Payload";
-import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
-import axiosInstance from '@/app/api/csrfToken';
-import useErrorHandling from "@/app/hooks/useErrorHandling";
-import { SnapshotManager, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
-import { BaseData, Data } from "@/app/models/data/Data";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
+import { isSnapshotStore } from "@/app/typings/YourSpecificSnapshotType";
+import { SubscriberCollection } from '@/app/users/SubscriberCollection';
+import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
+import { UpdateSnapshotPayload } from "@/server/database/Payload";
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import updateUI from '@/app/documents/editing/updateUI';
-import { RealtimeDataItem } from '../models/realtime/RealtimeData';
-import { endpoints } from "@/app/api/endpointConfigurations";
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 
-import { getSubscribersAPI } from "@/app/api/subscriberApi";
-import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import {
-    NotificationTypeEnum,
-    useNotification
-} from "@/app/context/NotificationContext";
-import useSecureSnapshotId from '@/app/hooks/useSecureSnapshotId';
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { createSnapshotStoreOptions } from "@/app/typings/YourSpecificSnapshotType";
-import { Subscriber } from "@/app/users/Subscriber";
-import { addToSnapshotList, generateSnapshotId } from "@/app/utils/snapshotUtils";
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import * as snapshotApi from '@/app/api/SnapshotApi';
+import { getSubscribersAPI } from "@/app/api/subscriberApi";
+import {
+  NotificationTypeEnum,
+  useNotification
+} from "@/app/context/NotificationContext";
 import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
+import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
+import useSecureSnapshotId from '@/app/hooks/useSecureSnapshotId';
 import { getCategoryProperties } from '@/app/libraries/categories/CategoryManager';
-import useSnapshotSlice  from '../state/redux/slices/SnapshotSlice';
-import { FetchSnapshotPayload } from './FetchSnapshotPayload';
-import { Snapshots } from './LocalStorageSnapshotStore';
-import { Snapshot } from './Snapshot';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { createSnapshotStoreOptions } from "@/app/typings/YourSpecificSnapshotType";
+import { addToSnapshotList, generateSnapshotId } from "@/app/utils/snapshotUtils";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { FetchSnapshotPayload } from '@/FetchSnapshotPayload';
+import { Snapshots } from '@/LocalStorageSnapshotStore';
+import { Snapshot } from '@/Snapshot';
+import SnapshotManagerOptions from '@/SnapshotManagerOptions';
+import useSnapshotSlice from '@/state/redux/slices/SnapshotSlice';
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { createSnapshotItem, SnapshotItem } from "./SnapshotList";
-import SnapshotManagerOptions from './SnapshotManagerOptions';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 import { getStoreId } from '@/app/api/ApiData';
-import { ExcludedFields } from '@/app/components/routing/Fields';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { snapshotCache } from '@/app/utils/cache/InternalCache';
 import { CriteriaType } from '@/app/app/pages/searchs/CriteriaType';
 import { SnapshotEvent } from '@/app/app/typings/eventTypes';
+import { ExcludedFields } from '@/app/routing/Fields';
 import { Payload } from '@/app/server/database/Payload';
+import { snapshotCache } from '@/app/utils/cache/InternalCache';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { data, SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { useSnapshotStore } from "./useSnapshotStore";
-import { BaseDataRoot } from "@/config/BaseConfig";
 
 const { notify } = useNotification();
 const dispatch = useDispatch()

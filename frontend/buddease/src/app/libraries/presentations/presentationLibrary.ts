@@ -1,8 +1,8 @@
 // presentationLibrary.ts
-import { Data, DataDetails } from '@/app/components/models/data/Data';
+import { Data, DataDetails } from '@/app/models/data/Data';
 import { BaseMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { Presentation, Slide } from "@/app/components/documents/Presentation";
+import { Presentation, Slide } from "@/app/documents/Presentation";
 import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
 import { generatePresentationJSON } from "./generatePresentationJSON";
 

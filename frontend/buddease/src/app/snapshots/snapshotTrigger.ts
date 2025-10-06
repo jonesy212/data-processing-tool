@@ -1,6 +1,6 @@
 import { NotificationType } from '@/app/context/NotificationContext';
 
-import { Snapshot } from '@/app/snapshots';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 
 import { BaseDataEntity } from '@/config/BaseConfig';
 import {
@@ -12,8 +12,8 @@ import {
     updateSnapshotMetrics
 } from '@/app/utils/snapshotUtils';
 import { useNotification } from '@/context/NotificationContext';
-import { archiveSnapshot } from './ArchiveService';
-import { validateSnapshot } from './snapshotOperations';
+import { archiveSnapshot } from '@/ArchiveService';
+import { validateSnapshot } from '@/snapshotOperations';
 
 const { notify } = useNotification()
 

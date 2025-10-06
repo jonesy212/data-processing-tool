@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { manageSubscriptionsServer } from '../exchangeIntegrationServer';
+import { manageSubscriptionsServer } from '@/app/exchangeIntegrationServer';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getSubscriberId, getSubscribersAPI } from '../subscriberApi';
-import { manageSubscriptionsServer } from '../exchangeIntegrationServer';
+import { getSubscriberId, getSubscribersAPI } from '@/subscriberApi';
+import { manageSubscriptionsServer } from '@/app/exchangeIntegrationServer';
 
 export async function POST(request: NextRequest) {
   try {

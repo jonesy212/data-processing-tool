@@ -2,16 +2,17 @@
 import { MeetingData } from "@/app/calendar/MeetingData";
 import { ScheduledData } from "@/app/calendar/ScheduledData";
 import { SharedIdentifiers, SharedTimestamps } from '@/app/components/documents/RelatedProps';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationType } from '@/app/context/NotificationContext';
-import { CryptoData } from "@/app/crypto/parseData";
+import { CryptoData } from "@/app/dataIntegration/parseData";
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { DocumentData } from "@/app/documents/DocumentBuilder";
 import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
 import { ProjectData } from "@/app/models/projects/Project";
-import { Snapshot, TagsRecord } from "@/app/snapshots";
+import {  Snapshot } from "@/app/snapshots/Snapshot";
+import {  TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Todo } from "@/app/todos/Todo";
 import { TradeData } from "@/app/trading/TradeData";
@@ -20,17 +21,17 @@ import { DocumentTypeEnum } from "@/app/typings/documents";
 import { UserData } from "@/app/users/User";
 import { DappProps } from "@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
 import AccessHistory from "@/app/versions/AccessHistory";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { SharedMetadata } from "@/config/metadata/MetadataHooks";
+import { SharedMetadata } from "@/app/shared/MetadataHooks";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { createDefaultVersionData } from '@/versions/VersionData';
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { Attachment } from '../documents/Attachment/attachment';
-import { createDefaultVersionData } from '../versions/VersionData';
 import { CommunityData } from "./CommunityData";
 import { LogData } from "./LogData";
 import { BaseData, DataDetails, DataWithOmittedFields } from "./data/Data";
-import DetailsProps from "./data/Details";
+import DetailsProps from "@/app/components/models/data/Details";
 import FolderData from "./data/FolderData";
 import { BookmarkStatus, CalendarStatus, DataStatus, NotificationStatus, PriorityTypeEnum, TaskStatus, TeamStatus, TodoStatus } from "./data/StatusType";
 import { RealtimeDataComponent } from "./realtime/RealtimeData";
@@ -77,8 +78,10 @@ interface UserOwned<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends SharedTimestamps, SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields> {
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  > extends SharedTimestamps,
+  SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   assignedUser?: string | null;
   documentOwner?: string;
 }
@@ -89,7 +92,8 @@ interface Taggable<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
   categories?: string[];
@@ -125,12 +129,13 @@ type ConditionalCommonData<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = T extends DappProps<T, K, Meta, AttachmentType, ExcludedFields>
-  ? CommonData<T, K, Meta, AttachmentType, never>  
+  ? CommonData<T, K, Meta, AttachmentType, never, keyof T>  
   : T extends SupportedData<any>
-  ? Common<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
-  : Common<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  ? CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+  : CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 // Define a generic type for data
 interface CommonData<
@@ -141,15 +146,15 @@ interface CommonData<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+  UserOwned<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  Taggable<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   Identifiable,
-  UserOwned<T, K, Meta, AttachmentType, ExcludedFields>,
   Describable,
   Timestamped,
-  Taggable<T, K, Meta, AttachmentType, ExcludedFields>,
   DocumentContent,
   AccessControlled,
-  CounterTrackable,
-  SharedMetadata<T, K, Meta>
+  CounterTrackable
 {  
   // Keep only properties that are truly unique to CommonData
   blockNumber?: number | undefined;
@@ -165,9 +170,9 @@ interface CommonData<
   collaborationOptions?: CollaborationOptions[] | undefined;
   participants?: Member[];
   members?: Member[];
-  metadata?: UnifiedMetadata<T, K>;
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   details?: DetailsItem<T>;
-  data?: DataWithOmittedFields<T, K, Meta, ExcludedFields>; 
+  data?: DataWithOmittedFields<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     
   projectId?: string;
   categories?: string[];
@@ -236,11 +241,13 @@ type CommonDataTypes<
 type AdditionalDataTypes<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = 
 | CommunityData
-| ProjectData<T, K, Meta, ExcludedFields>
+| ProjectData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 | TeamData<T, K, Meta>
 | ScheduledData<T>
 | MeetingData

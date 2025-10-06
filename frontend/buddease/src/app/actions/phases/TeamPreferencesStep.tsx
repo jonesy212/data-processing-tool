@@ -1,6 +1,7 @@
 // TeamPreferencesStep.tsx
+
 import React from 'react';
-import PreferencesStep from './PreferencesStep';
+import PreferencesStep from '@/app/actions/phases/PreferencesStep';
 
 const TeamPreferencesStep: React.FC<{ onSubmit: (preferences: any) => void }> = ({ onSubmit }) => {
   return (

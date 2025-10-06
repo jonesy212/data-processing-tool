@@ -1,13 +1,13 @@
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { StatusType } from "@/app/models/data/StatusType";
-import { Snapshot } from '@/app/snapshots';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { isSnapshot } from '@/app/utils/snapshotUtils';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotsArray } from '@/snapshots/LocalStorageSnapshotStore';
-import { SnapshotUnion } from '../LocalStorageSnapshotStore';
+import { SnapshotUnion } from '@/LocalStorageSnapshotStore';
 import { SnapshotItem } from "./SnapshotList";
-import SnapshotStore from './SnapshotStore';
+import SnapshotStore from '@/SnapshotStore';
 
 export function addDataSnapshot<
   T extends BaseDataEntity, 

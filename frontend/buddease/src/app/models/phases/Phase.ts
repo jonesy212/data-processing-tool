@@ -1,24 +1,22 @@
 import { addPhase } from "@/app/api/ApiPhases";
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { BaseData } from '@/app/models/data/Data';
 import { Label } from '@/app/branding/BrandingSettings';
-import { SharedProperties } from "@/app/snapshots/SnapshotEvents";
-import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/configs/BaseConfig';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
-import { FC } from "react";
-import { DocumentTypeEnum } from "@/app/typings/documents";
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { Lesson } from "@/app/documents/editing/CourseBuilder";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import { CommonData } from "@/app/models/CommonData";
-import { Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { Task } from "@/app/models/tasks/Task";
 import { Member } from "@/app/models/teams/TeamMembers";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import { TagsRecord } from "@/app/snapshots";
+import { SharedProperties } from "@/app/snapshots/SnapshotEvents";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { VersionData } from "@/app/versions/VersionData";
+import { DocumentTypeEnum } from "@/app/typings/documents";
+import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { FC } from "react";
 
 
   interface PhaseData<
@@ -55,16 +53,6 @@ interface PhaseMeta<
   
   [key: string]: any; // flexible extra metadata
 }
-
-type DataWithOmittedFields<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> = Omit<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ExcludedFields>;
-
 
 interface PhaseLite {
   id?: string;               // Identifier for the phase
@@ -134,6 +122,7 @@ export class PhaseImpl<
     isActive: false,
     progress: null,
     condition: async () => true,
+    canTransitionTo: ""
   };
   data: any;
   duration: number = 0;

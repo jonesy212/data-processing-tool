@@ -1,43 +1,66 @@
 // createSnapshots.ts
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { SnapshotConfigParams } from '@/SnapshotConfigBuilder';
+import {
+  addData,
+  fetchData,
+  getBackendVersion,
+  getDataVersions,
+  getFrontendVersion
+} from "@/app/api/ApiData";
+import { addSnapshot, getSnapshotId, mergeSnapshots } from "@/app/api/SnapshotApi";
 import { CreateSnapshotStoresPayload } from "@/app/database/Payload";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
+import useSubscription from "@/app/hooks/useSubscription";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { Data } from "@/app/models/data/Data";
-import { defaultSubscribeToSnapshots } from "./defaultSubscribeToSnapshots";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { clearSnapshot, clearSnapshots } from "@/app/state/redux/slices/SnapshotSlice";
+import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import { notify } from "@/app/utils/snapshotUtils";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import * as SubscriptionMethods from '@/methods/subscriptionMethods';
 import { SnapshotConfig } from "./SnapshotConfig";
-import { getChildIds, getParentId, getSnapshot, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot, takeSnapshot, validateSnapshot } from "./snapshotOperations";
-import { SnapshotConfigParams } from './SnapshotConfigBuilder';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta, mappedSnapshot } from '@/config/BaseConfig';
-import { TransformMethods } from "./methods/transformMethods";
-import {
-  getDataVersions, getBackendVersion, getFrontendVersion,
-  fetchData, addData
-} from "@/app/data_analysis/frontend/buddease/src/app/api/ApiData";
-import { addSnapshot, mergeSnapshots, getSnapshotId } from "@/app/data_analysis/frontend/buddease/src/app/api/SnapshotApi";
-import { clearSnapshots, clearSnapshot } from "@/app/data_analysis/frontend/buddease/src/app/state/redux/slices/SnapshotSlice";
-import { notify } from "@/app/data_analysis/frontend/buddease/src/app/utils/snapshotUtils";
 import { flatMap } from "./defaultSnapshotBuilder";
 import { defaultSubscribeToSnapshot } from "./defaultSnapshotSubscribeFunctions";
+import { defaultSubscribeToSnapshots } from "./defaultSubscribeToSnapshots";
 import {
-  getAllKeys, getAllItems, addDataStatus, removeData, updateData,
-  updateDataTitle, updateDataDescription, updateDataStatus,
-  addDataSuccess, getData, setData
+  addDataStatus,
+  addDataSuccess,
+  getAllItems,
+  getAllKeys,
+  getData,
+  removeData,
+  setData,
+  updateData,
+  updateDataDescription, updateDataStatus,
+  updateDataTitle
 } from "./methods/dataMethods";
-import * as SnapshotMethodsImplementation from "./methods/snapshotMethods"
-import * as VersionMethods from "./methods/snapshotMethods"
+import * as VersionMethods from "./methods/snapshotMethods";
+import { TransformMethods } from "./methods/transformMethods";
 import { UtilMethods } from "./methods/utilMethods";
 import {
-  addSnapshotSuccess, getDelegate, determinePrefix, createInitSnapshot, updateSnapshots,
-  updateSnapshotsSuccess, initSnapshot, notifySubscribers, getAllSnapshots,
-  batchFetchSnapshots, batchTakeSnapshotsRequest, batchUpdateSnapshotsRequest,
-  batchFetchSnapshotsSuccess, batchFetchSnapshotsFailure, batchUpdateSnapshotsSuccess,
-  batchUpdateSnapshotsFailure, batchTakeSnapshot, handleSnapshotSuccess, fetchSnapshot,
-  updateSnapshotSuccess, createSnapshotFailure, createSnapshotSuccess, onSnapshot, onSnapshots
+  addSnapshotSuccess,
+  batchFetchSnapshots,
+  batchFetchSnapshotsFailure,
+  batchFetchSnapshotsSuccess,
+  batchTakeSnapshot,
+  batchTakeSnapshotsRequest,
+  batchUpdateSnapshotsFailure,
+  batchUpdateSnapshotsRequest,
+  batchUpdateSnapshotsSuccess,
+  createInitSnapshot,
+  createSnapshotFailure, createSnapshotSuccess,
+  determinePrefix,
+  fetchSnapshot,
+  getAllSnapshots,
+  getDelegate,
+  handleSnapshotSuccess,
+  initSnapshot, notifySubscribers,
+  onSnapshot, onSnapshots,
+  updateSnapshots,
+  updateSnapshotsSuccess,
+  updateSnapshotSuccess
 } from "./snapshotHandlers";
-import * as SubscriptionMethods from './methods/subscriptionMethods'
-import useSubscription from "@/app/hooks/useSubscription";
+import { getChildIds, getParentId, getSnapshot, getSnapshotItems, getSnapshots, handleSnapshot, mapSnapshots, removeSnapshot, takeSnapshot, validateSnapshot } from "./snapshotOperations";
 
 type Params<
   T extends BaseDataEntity,

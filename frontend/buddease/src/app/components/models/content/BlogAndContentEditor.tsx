@@ -4,8 +4,8 @@ import { EditorState } from "draft-js";
 import React, { useState } from "react";
 import Toolbar from "@/app/components/documents/Toolbar";
 import { ToolbarOptions } from "@/app/components/documents/ToolbarOptions";
-import ContentType from "@/app/typings/ContentType";
-import { Data } from "@/app/data/Data";
+import ContentType from "@/app/typings/contentTypes";
+import { Data } from "@/app/models/data/Data";
 
 export type ActiveDashboardType =
   | "tasks"
@@ -19,6 +19,7 @@ export type ActiveDashboardType =
   | "ui"
   | "onEditorStateChange"
   | "content";
+
 interface BlogAndContentEditorProps {
   contentItemId: string | DetailsItemCommon<Data> ;
   editorState: EditorState;

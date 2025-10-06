@@ -1,7 +1,7 @@
 // FormBuilder.tsx
 
 import React, { useState } from 'react';
-import FormInput from './FormInput';
+import FormInput from '@/FormInput';
 
 const FormBuilder: React.FC = () => {
   const [formFields, setFormFields] = useState<{ [key: string]: string }>({});

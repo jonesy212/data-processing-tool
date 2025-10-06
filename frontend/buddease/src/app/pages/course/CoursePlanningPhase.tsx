@@ -1,6 +1,6 @@
 // CoursePlanningPhase.tsx
 import React, { useState } from 'react';
-import { CourseDevelopmentPhase } from './CourseDevelopmentPage';
+import { CourseDevelopmentPhase } from '@/CourseDevelopmentPage';
 
 interface CoursePlanningPhasePros {
     onNext: () => void;

@@ -1,5 +1,5 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
 
 // ExternalCalendarOverlay.ts
 interface ExternalCalendarOverlay {

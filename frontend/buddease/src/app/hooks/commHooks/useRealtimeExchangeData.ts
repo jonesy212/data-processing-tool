@@ -1,4 +1,4 @@
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import { useEffect } from "react";
 import { ExchangeEnum } from "@/app/crypto/exchangeIntegration";

@@ -1,7 +1,7 @@
 // DynamicPromptHook.ts
-import { useEffect } from 'react';
 import createDynamicHook, { DynamicHookParams } from '@/app/hooks/dynamicHooks/dynamicHookGenerator';
-import { processAutoGPTOutputWithSpaCy } from '../intelligence/AutoGPTSpaCyIntegration';
+import { processAutoGPTOutputWithSpaCy } from '@/intelligence/AutoGPTSpaCyIntegration';
+import { useEffect } from 'react';
 
 interface DynamicPromptConfig {
   condition: () => boolean;

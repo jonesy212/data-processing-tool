@@ -1,12 +1,12 @@
 // userPreferences.ts
 import { apiService } from "@/app/api/ApiDetails";
+import { NotificationPreferences } from "@/app/cards/modal/chat/ChatSettingsModal";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
-import { NotificationPreferences } from "@/app/components/communications/chat/ChatSettingsModal";
-import FileData from "@/app/components/models/data/FileData";
-import FolderData from "@/app/components/models/data/FolderData";
-import { CommonTrackerProps } from "@/app/components/models/tracker/Tracker";
-import { PrivacySettings } from "@/app/components/settings/PrivacySettings";
-import { NotificationData } from "@/app/support/NofiticationsSlice";
+import FileData from "@/app/models/data/FileData";
+import FolderData from "@/app/models/data/FolderData";
+import { CommonTrackerProps } from "@/app/models/tracker/Tracker";
+import { PrivacySettings } from "@/app/settings/PrivacySettings";
+import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { User } from "@/app/users/User";
 
 type NotificationTypeString = 'priceAlerts' | 'tradeConfirmation' | 'marketNews';

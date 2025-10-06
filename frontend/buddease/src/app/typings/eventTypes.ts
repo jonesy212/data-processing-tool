@@ -1,10 +1,10 @@
 // eventTypes.ts
+import { Attachment } from "@/app/documents/Attachment/attachment";
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
-import { Subscriber } from '@/app/users/Subscriber';
+import { Subscriber } from '@/app/subscribers/Subscriber';
 import { DefaultMeta } from "@/config/BaseConfig";
-import { Attachment } from "@/documents/Attachment/attachment";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 // Simplified generic structure to match your function signature

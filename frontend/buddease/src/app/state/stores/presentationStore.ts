@@ -1,17 +1,17 @@
-import { ExtendedCalendarEvent } from './../../calendar/CalendarEventTimingOptimization';
-import { Data } from '@/app/components/models/data/Data';
+import { ExtendedCalendarEvent } from '@/calendar/CalendarEventTimingOptimization';
+import { Data } from '@/app/models/data/Data';
 // presentationStore.ts
 import { headersConfig } from "@/app/components/shared/SharedHeaders";
 import { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";
-import { Presentation } from "@/app/components/documents/Presentation";
-import { sanitizeData } from "@/app/components/crypto/SanitizationFunctions";
+import { Presentation } from "@/app/documents/editing/Presentation";
+import { sanitizeData } from "@/app/crypto/SanitizationFunctions";
 import { AssignBaseStore } from "@/app/AssignBaseStore";
-import { WritableDraft } from "@/app/redux/ReducerGenerator";
-import { AssignTaskStore } from "./AssignTaskStore";
-import { useAssignTeamMemberStore } from "./AssignTeamMemberStore";
-import { userManagerStore } from "./UserStore";
+import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
+import { AssignTaskStore } from "@/app/state/stores/AssignTaskStore";
+import { useAssignTeamMemberStore } from "@/app/state/stores/AssignTeamMemberStore";
+import { userManagerStore } from "@/app/state/stores/UserStore";
 
 // Define the necessary types and interfaces
 type PresentationStoreSubset = Pick<

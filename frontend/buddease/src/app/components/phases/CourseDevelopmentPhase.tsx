@@ -1,13 +1,13 @@
 // CourseDevelopmentPhase.tsx
 import { useNotification } from "@/app/context/NotificationContext";
-import React, { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
-import generateTimeBasedCode from '../models/realtime/TimeBasedCodeGenerator';
+import generateTimeBasedCode from '@/models/realtime/TimeBasedCodeGenerator';
+import React, { useState } from 'react';
 
 // Import sub-phase components as needed
-import CourseLearningPhase from './CourseLearningPhase';
-import CoursePlanningPhase from './CoursePlanningPhase';
-import CourseSetupPhase from './CourseSetupPhase';
+import CourseLearningPhase from '@/CourseLearningPhase';
+import CoursePlanningPhase from '@/CoursePlanningPhase';
+import CourseSetupPhase from '@/CourseSetupPhase';
 
 // Define course development phases
 export enum CourseDevelopmentPhase {

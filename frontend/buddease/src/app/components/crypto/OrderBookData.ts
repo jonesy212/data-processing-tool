@@ -1,5 +1,5 @@
 // OrderBookData.ts
-import { Data } from "@/app/models/data/Data";
+import { Data } from '@/app/models/data/Data';
 
 
 

@@ -1,11 +1,11 @@
-import { BaseData, Data } from '@/app/components/models/data/Data';
+import { BaseData, Data } from '@/app/models/data/Data';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig, snapshotStoreConfigs } from '@/app/snapshots/SnapshotStoreConfig';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { K, T } from '@/app/models/data/dataStoreMethods';
-import { FetchSnapshotPayload } from './FetchSnapshotPayload';
-import { SnapshotWithCriteria } from './SnapshotWithCriteria';
+import { FetchSnapshotPayload } from '@/FetchSnapshotPayload';
+import { SnapshotWithCriteria } from '@/SnapshotWithCriteria';
 
 
 

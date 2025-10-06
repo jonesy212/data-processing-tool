@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tracker } from './Tracker';
+import { Tracker } from '@/app/models/Tracker';
 
 interface TaskTrackingComponentProps {
   tracker: Tracker;

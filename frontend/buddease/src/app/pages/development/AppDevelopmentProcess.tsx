@@ -1,5 +1,5 @@
+import { AndroidBlogPosts, IoSBlogPosts } from '@/blog/AIoSBlogPosts';
 import React from 'react';
-import { AndroidBlogPosts, IoSBlogPosts } from '../blog/AIoSBlogPosts';
 
 const AppDevelopmentProcess: React.FC = () => {
   return (

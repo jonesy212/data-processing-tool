@@ -1,9 +1,8 @@
 // DocumentList.tsx
-import React from "react";
+import { DocumentData } from '@/documents/DocumentBuilder';
+import { WritableDraft } from '@/state/redux/ReducerGenerator';
+import { addDocument, selectDocuments } from '@/state/redux/slices/DocumentSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { DocumentData } from '../documents/DocumentBuilder';
-import { WritableDraft } from '../state/redux/ReducerGenerator';
-import { addDocument, selectDocuments } from '../state/redux/slices/DocumentSlice';
 
 const DocumentList = () => {
   const documents = useSelector(selectDocuments);

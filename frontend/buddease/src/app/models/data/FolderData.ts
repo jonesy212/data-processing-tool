@@ -1,8 +1,8 @@
 // FolderData.ts
 
 import { ScheduledData } from '@/app/components/calendar/ScheduledData';
-import { Attachment } from '@/app/components/documents/Attachment/attachment'
-import { User } from '@/app/components/users/User'
+import { User } from '@/app/components/users/User';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 
 interface FolderData extends ScheduledData<T, K, S> {
   folderSize: number; // Size of the folder in bytes

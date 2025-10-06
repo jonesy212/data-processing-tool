@@ -1,9 +1,13 @@
-import { BaseData } from '@/app/components/models/data/Data';
-import { Snapshot, SnapshotConfig, SnapshotData } from '@/app/snapshots';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData } from '@/app/models/data/Data';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotConfig } from '@/app/snapshots/';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CategoryKeys } from "@/app/libraries/categories/CategoryManager";
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 type CategoryIdentifier = string | symbol;
 type Category = CategoryKeys | CategoryIdentifier | CategoryProperties | undefined;
@@ -217,7 +221,7 @@ function getCategoryLabelForSnapshot(context: string): CategoryKeys | null {
     case "board":
       return "boardItems";
     case "community":
-      return "communiity"
+      return "community"
     case "teams":
       return "teams" 
     case "todos":
@@ -240,7 +244,14 @@ function getCategoryLabelForSnapshot(context: string): CategoryKeys | null {
   }
 }
 
-function getOrSetCategoryForSnapshot <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function getOrSetCategoryForSnapshot <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshotId: string,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   type: string,
@@ -317,7 +328,14 @@ function getOrSetCategoryForSnapshot <T extends  BaseData<any>, K extends T = T,
 
 
 // Update the logic to handle ID assignment and verification
-function generateOrVerifySnapshotId <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function generateOrVerifySnapshotId <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   id: string | number | undefined,
   snapshotData: SnapshotData<T, K>,
   category: Category

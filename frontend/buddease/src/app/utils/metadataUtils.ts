@@ -1,5 +1,5 @@
 // metadataUtils.ts
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { ContentState } from "draft-js";

@@ -1,13 +1,13 @@
 // subscriberTypeGuads.ts
 import { SnapshotStoreConfig } from '@/app/snapshots';
 
-import { BaseData } from '@/app/components/models/data/Data';
-import { Subscriber } from "@/app/users/Subscriber";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { BaseData } from '@/app/models/data/Data';
 import { SnapshotStoreOptions } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { SnapshotData, SnapshotsArray } from "@/app/snapshots";
 import { SnapshotSubscriberManagement } from "@/app/snapshots/SnapshotSubscriberManagement";
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 // Type guard to differentiate between SnapshotSubscriberManagement and SnapshotStoreOptions
 function isSnapshotSubscriberManagement<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
@@ -58,5 +58,6 @@ function handleSubscription<T extends  BaseData<any>, K extends T = T, Meta exte
 
 
 export {
-    handleSubscription, isSnapshotSubscriberManagement
+  handleSubscription, isSnapshotSubscriberManagement
 };
+

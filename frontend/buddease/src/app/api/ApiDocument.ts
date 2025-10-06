@@ -2,10 +2,11 @@
 import axiosInstance from "@/app/api/csrfToken";
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
-import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
-import { Presentation } from "@/app/components/documents/Presentation";
-import { BaseData } from '@/app/components/models/data/Data';
-import Collaborator from "@/app/components/models/TeamMembers";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
+import { Presentation } from "@/app/documents/editing/Presentation";
+import { NotificationTypeEnum } from '@/app/models/data/StatusType';
+import { BaseData } from '@/app/models/data/Data';
+import Collaborator from "@/app/models/teams/TeamMembers";
 import {
     useNotification
 } from "@/app/context/NotificationContext";
@@ -15,22 +16,22 @@ import {
     DocumentStatusEnum,
     DocumentTypeEnum,
 } from "@/app/typings/documents";
-import { DatabaseConfig } from "@/config/DatabaseConfig";
+import { DatabaseConfig } from "@/config/DatabaseTypes";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
 import { current } from "immer";
-import { K, T } from './../components/models/data/dataStoreMethods';
-import { handleApiError } from "./ApiLogs";
+
+import { handleApiError } from "@/app/api/ApiLogs";
 
 
-import { ClientInformation, CustomMediaSession } from '@/app/components/server/database/ClientInformation';
+import { ClientInformation, CustomMediaSession } from '@/app/server/database/ClientInformation';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { Document } from '@/app/state/stores/DocumentStore';
-import { DocumentData } from '../components/documents/DocumentBuilder';
-import { Content } from '../components/models/content/AddContent';
-import FileData from '../components/models/data/FileData';
-import { StructuredMetadata } from '../configs/StructuredMetadata';
-import { endpoints } from './endpointConfigurations';
+import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
+import { Content } from '@/app/models/content/AddContent';
+import FileData from '@/app/models/data/FileData';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { endpoints } from '@/app/api/endpointConfigurations';
 // Define the API base URL
 const API_BASE_URL = endpoints.data.documents;
 
@@ -238,10 +239,7 @@ const fakeApiCall = (documentId: number): Promise<DocumentObject<T, K>> => {
 };
 
 // Define an async thunk action creator to update the document name
-const updateDocumentName = createAsyncThunk<
-  DocumentObject<T, K>, 
-  { documentId: number; newName: string }
->(
+const updateDocumentName = createAsyncThunk<DocumentObject<T, K>, { documentId: number; newName: string }>(
   "documents/updateDocumentName",
    ({ documentId, newName }, { dispatch }) => {
     return new Promise<DocumentObject<T, K>>((resolve, reject) => {
@@ -315,6 +313,11 @@ const createDraftDocument = <
   const isCommentObject = (obj: unknown): obj is Comment => {
     return typeof obj === 'object' && obj !== null && 'id' in obj;
   }
+  
+  const isCommentArray = (obj: unknown): obj is Comment[] => {
+    return Array.isArray(obj) && obj.every(item => isCommentObject(item));
+  };
+
   const languages: string[] = [...window.navigator.languages];
   const supportedLanguages = languages.filter(lang =>
     Object.values(LanguageEnum).includes(lang as LanguageEnum)
@@ -2202,7 +2205,6 @@ const backupDocuments = async (): Promise<any> => {
     const errorMessage = "Failed to backup documents";
     handleDocumentApiErrorAndNotify(
       error as AxiosError<unknown>,
-
       "BACKUP_DOCUMENTS_ERROR"
     );
     throw error;

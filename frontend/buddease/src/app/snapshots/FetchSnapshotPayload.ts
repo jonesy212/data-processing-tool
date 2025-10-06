@@ -1,14 +1,13 @@
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { ExcludedFields } from '@/app/components/routing/Fields';
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { StatusType } from "@/app/models/data/StatusType";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { simulateFetch } from "@/app/simulate/simulateFetch";
-import { Snapshot } from "@/app/snapshots";
-import { Subscriber } from "@/app/users/Subscriber";
-import { DefaultExcludedFields } from '@/config/BaseConfig';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 
 interface FetchSnapshotPayload<

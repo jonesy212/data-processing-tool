@@ -1,12 +1,12 @@
 import { Content } from '@/app/components/models/content/AddContent';
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
-import { Snapshot } from "@/app/snapshots";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import ListGenerator from "@/app/generators/ListGenerator";
 import React from "react";
-import { Data, SharedRelationshipData } from "@/app/models/data/Data";
+import { Data, SharedRelationshipData } from '@/app/models/data/Data';
 import { Phase } from "@/app/phases/Phase";
  
 // Define a type representing the data structure for blog posts

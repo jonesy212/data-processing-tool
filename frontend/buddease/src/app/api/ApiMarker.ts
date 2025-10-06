@@ -3,9 +3,9 @@
 import { Marker } from '@/app/components/models/data/Marker';
 import { AxiosResponse } from 'axios';
 import { Effect, call, put, takeLatest } from 'redux-saga/effects';
-import { MarkerActions } from '../components/state/redux/actions/MarkerActions';
+import { MarkerActions } from '@/components/state/redux/actions/MarkerActions';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { endpoints } from './ApiEndpoints';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken'
 
 const API_BASE_URL = endpoints.marker

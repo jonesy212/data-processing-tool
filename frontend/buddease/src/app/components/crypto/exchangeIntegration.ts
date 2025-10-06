@@ -1,26 +1,20 @@
-import { ModifiedDate } from "@/app/components/documents/DocType";
-import { getAppSubscriberId, getSubscribersAPI } from '@/app/api/subscriberApi';
-import { Snapshot } from "@/app/snapshots";
-import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
-import { data } from '@/app/snapshots/SnapshotWithCriteria';
+import { getAppSubscriberId } from '@/app/api/subscriberApi';
 import updateUI, { updateUIWithSearchResults } from "@/app/documents/editing/updateUI";
-import { BaseData, Data } from "@/app/models/data/Data";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { ExchangeData } from "@/app/models/data/ExchangeData";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { updateUIWithSnapshotStore } from "@/app/snapshots/updateUIWithSnapshotStore";
-import { OrderBookData } from "./OrderBookData";
+import {
+  DEXEnum,
+  ExchangeDataTypeEnum,
+  ExchangeEnum
+} from "@/app/typings/exchangeTypes";
 import OrderBookUpdater from "./OrderBookUpdater";
 import TickerUpdater from "./TickerUpdater";
-import { 
-  ExchangeDataTypeEnum, 
-  DEXEnum, 
-  ExchangeEnum 
-} from "@/app/typings/exchangeTypes";
 
-import { 
-  ExchangeSnapshot,
-  ExchangeSubscriber,
-  OrderBookSnapshot,
-  OrderBookEntity
+import {
+  OrderBookEntity,
+  OrderBookSnapshot
 } from '@/app/typings/ExchangeTypes';
 
 // Client-side instances
@@ -400,12 +394,8 @@ const exampleUsage = () => {
 // Export everything
 export default integrateExchange;
 export {
-  ExchangeDataTypeEnum,
-  DEXEnum,
-  ExchangeEnum,
-  updateOrderBook,
-  updateTicker,
-  handleOrderBookUpdateUI,
+  DEXEnum, ExchangeDataTypeEnum, ExchangeEnum, handleOrderBookUpdateUI,
   subscribeToOrderBookUpdates,
-  unsubscribeFromOrderBookUpdates
+  unsubscribeFromOrderBookUpdates, updateOrderBook,
+  updateTicker
 };

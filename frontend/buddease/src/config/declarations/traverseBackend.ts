@@ -1,10 +1,10 @@
 import * as apiFile from '@/api/ApiFiles';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import * as path from 'path';
-import { AppStructureItem } from '../appStructure/AppStructure';
-import { frontend } from '../appStructure/FrontendStructure';
-import { backend } from '../appStructure/BackendStructure';
-import DocumentPermissions from '@/app/components/documents/DocumentPermissions';
+import { AppStructureItem } from '@/appStructure/AppStructure';
+import { frontend } from '@/appStructure/FrontendStructure';
+import { backend } from '@/appStructure/BackendStructure';
+import DocumentPermissions from '@/app/documents/DocumentPermissions';
 
 
 interface BackendStructure {

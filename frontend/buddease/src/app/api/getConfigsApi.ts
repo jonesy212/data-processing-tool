@@ -1,11 +1,11 @@
-import { configServiceInstance } from '../configs/ConfigurationService';
+import { configServiceInstance } from '@/configs/ConfigurationService';
 import axiosInstance from '@/app/api/csrfToken'
-import { SystemConfigs } from './systemConfigs';
-import { UserConfigs } from './userConfigs';
-import { ExtendedDappProps } from '../components/web3/dAppAdapter/IPFS';
-import { ipfsConfig } from '../configs/ipfsConfig';
+import { SystemConfigs } from '@/systemConfigs';
+import { UserConfigs } from '@/userConfigs';
+import { ExtendedDappProps } from '@/components/web3/dAppAdapter/IPFS';
+import { ipfsConfig } from '@/configs/ipfsConfig';
 import { DocumentSize } from '@/app/models/data/StatusType';
-import { DocumentOptions } from '../components/documents/DocumentOptions';
+import { DocumentOptions } from '@/documents/DocumentOptions';
 import { fluenceApiKey } from '@/app/utils/web3/dAppAdapter/DApp';
 import { PoolConfig } from 'mysql';
 

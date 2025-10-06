@@ -1,30 +1,29 @@
 // lifecycleMethods.ts
 // snapshotStore/methods/LifecycleMethods.ts
+import { createSnapshot } from '@//createSnapshot';
 import { Content } from '@/app/components/models/content/AddContent';
+import { T } from '@/app/components/models/data/dataStoreMethods';
+import { NotificationType } from "@/app/context/NotificationContext";
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { isSnapshot } from '@/app/utils/snapshotUtils';
-import { NotificationType } from "@/app/context/NotificationContext";
 import type {
-    Category,
-    CategoryProperties,
-    CreateSnapshotsPayload,
-    Snapshot,
-    SnapshotManager,
-    SnapshotStoreProps,
-    SnapshotUnion,
-    Subscriber,
-    Subscription,
+  Category,
+  CategoryProperties,
+  CreateSnapshotsPayload,
+  Snapshot,
+  SnapshotManager,
+  SnapshotStoreProps,
+  SnapshotUnion,
+  Subscriber,
+  Subscription,
 } from "@/app/types";
-import { createSnapshot } from './/createSnapshot';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from './BaseConfig';
-import { convertToSnapshotUnion } from "./ConvertSnapshotUnion";
-import SnapshotStore from './SnapshotStore';
-import { SnapshotStoreReference } from "./SnapshotStoreReference";
-import { createSnapshots as createSnapshotsUtil } from './createSnapshots';
-import { T } from '@/app/components/models/data/dataStoreMethods';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { SnapshotConfig } from '../SnapshotConfig';
+import { isSnapshot } from '@/app/utils/snapshotUtils';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { SnapshotConfig } from '@/SnapshotConfig';
+import SnapshotStore from '@/SnapshotStore';
+import { convertToSnapshotUnion } from "./ConvertSnapshotUnion";
+import { SnapshotStoreReference } from "./SnapshotStoreReference";
 
 
 export const LifecycleMethods = {

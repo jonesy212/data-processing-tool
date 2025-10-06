@@ -1,14 +1,14 @@
 // SnapshotDataParams.ts
+import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { FilterCriteria } from '@/app/pages/searchs/FilterCriteria';
-import { SnapshotsArray } from "."
-import { Category } from "@/app/libraries/categories/generateCategoryProperties"
-import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore"
-import { Subscriber } from "@/app/users/Subscriber"
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/config/BaseConfig"
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder"
-import { SnapshotEvent } from "@/app/typings/eventTypes"
-import SnapshotStore from "./SnapshotStore"
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig"
+import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { Subscriber } from "@/app/subscribers/Subscriber";
+import { SnapshotEvent } from "@/app/typings/eventTypes";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { SnapshotsArray } from ".";
+import SnapshotStore from "./SnapshotStore";
+import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
 interface SnapshotDataParams<T extends BaseDataEntity, 
     K extends T = T,
@@ -44,4 +44,4 @@ interface SnapshotDataParams<T extends BaseDataEntity,
 
 
 
-export type { SnapshotDataParams }
+export type { SnapshotDataParams };

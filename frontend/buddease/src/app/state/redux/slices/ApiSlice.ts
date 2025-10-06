@@ -1,19 +1,19 @@
 import { WritableDraft } from "@/app/ReducerGenerator";
 import CommunicationAPI from "@/app/api/CommunicationAPI";
-import { CrossCulturalCommunication, Language, TimeZone } from "@/app/components/communications/Language";
-import { DataAnalysisTool, Decision, VisualizationResult } from "@/app/components/interfaces/options/CollaborationOptions";
-import { CloudStorageProvider } from "@/app/components/interfaces/provider/CloudStorageProvider";
-import { BaseData, Data } from "@/app/components/models/data/Data";
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import { Task } from "@/app/components/models/tasks/Task";
-import { Phase } from "@/app/components/phases/Phase";
-import { AnalyticsTool } from "@/app/components/projects/DataAnalysisPhase/AnalyticsTool";
+import { CrossCulturalCommunication, Language, TimeZone } from "@/app/communications/Language";
+import { DataAnalysisTool, Decision, VisualizationResult } from "@/app/interfaces/options/CollaborationOptions";
+import { CloudStorageProvider } from "@/app/interfaces/provider/CloudStorageProvider";
+import { BaseData, Data } from '@/app/models/data/Data';
+import { K, T } from "@/app/models/data/dataStoreMethods";
+import { Task } from "@/app/models/tasks/Task";
+import { Phase } from "@/app/phases/Phase";
+import { AnalyticsTool } from "@/app/projects/DataAnalysisPhase/AnalyticsTool";
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { EncryptionSetting, Permission } from "@/app/components/users/Permission";
+import { EncryptionSetting, Permission } from "@/app/users/Permission";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { DetailsItem } from "@/app/stores/DetailsListStore";
 import { Payment, Revenue, SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
-import Version, { version } from "@/app/versions/Version";
+import { Version, version } from "@/app/versions/Version";
 import { VersionHistory } from "@/app/versions/VersionData";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { ApiConfig } from "@/config/ConfigurationService";
@@ -238,7 +238,7 @@ export const useApiManagerSlice = createSlice({
         isActive: false,
         tags: {},
         version: mutableVersion,
-        lastUpdated: {} as WritableDraft<VersionHistory>,
+        lastUpdated: {} as WritableDraft<VersionHistory<T, K>>,
         config: {} as WritableDraft<Record<string, any>>,
         permissions: [],
 
@@ -725,12 +725,16 @@ export const {
 
 // Extend the method to mark tasks as complete
 function convertToWritableMetadata<
-  T extends BaseData<any>,
-  K extends T
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
-  metadata: UnifiedMetadata<T, K, StructuredMetadata<T, K>, never>
-): WritableDraft<UnifiedMetaDataOptions<BaseData<any>, BaseData<any>, StructuredMetadata<any>, never>> {
-  const mutableMetadata: WritableDraft<UnifiedMetaDataOptions<BaseData<any>, BaseData<any>, StructuredMetadata<any>, never>> = {
+  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): WritableDraft<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+  const mutableMetadata: WritableDraft<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
     ...metadata,
     childIds: metadata.childIds?.map((child) => ({ ...child } as WritableDraft<BaseData<any>>)),
   };

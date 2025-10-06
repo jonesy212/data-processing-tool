@@ -1,14 +1,14 @@
 // EventApi.ts
-import { NotificationType, useNotification } from "@/app/context/NotificationContext";
-import { NotificationTypeEnum } from '@/app/models/data/StatusType';
-import { AxiosError } from 'axios';
-import { addLog } from '@/app/state/redux/slices/LogSlice';
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { handleApiError } from '@/app/api/ApiLogs';
+import axiosInstance from '@/app/api/csrfToken';
+import { useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
-import { endpoints } from './ApiEndpoints';
-import { handleApiError } from './ApiLogs';
-import axiosInstance from '@/app/api/csrfToken'
-import headersConfig from './headers/HeadersConfig';
+import { NotificationTypeEnum } from '@/app/models/data/StatusType';
+import { addLog } from '@/app/state/redux/slices/LogSlice';
 import { ReassignEventResponse } from '@/app/state/stores/AssignEventStore';
+import headersConfig from '@/headers/HeadersConfig';
+import { AxiosError } from 'axios';
 
 const API_BASE_URL = endpoints.events; // Directly access the events endpoint
 
@@ -132,4 +132,4 @@ export const createEvent = async (newEventData: any): Promise<void> => {
 };
 
 
-export { fetchEventId, processEventsWithHandlers }
+export { fetchEventId, processEventsWithHandlers };

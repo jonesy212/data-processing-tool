@@ -18,7 +18,7 @@ generateComponent(
   undefined,
   undefined,
   undefined,
-  './src/app/custom-components',
+  '@/src/app/custom-components',
   'Custom prompting content'
 );
 

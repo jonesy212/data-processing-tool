@@ -1,7 +1,7 @@
 // ChatMessage.tsx
 import { ChatApi } from "@/app/api/ChatApi";
 import { refreshUI } from '@/app/snapshots/refreshUI';
-import { AquaConfig } from "@/app/components/web3/webConfigs/AquaConfig";
+import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import GeolocationService from "@/app/services/GeolocationService";

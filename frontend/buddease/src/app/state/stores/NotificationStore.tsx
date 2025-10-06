@@ -1,21 +1,22 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { DocumentOptions } from "@/app/components/documents/DocumentOptions";
-import { BaseData } from '@/app/components/models/data/Data';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData } from '@/app/models/data/Data';
+import { LogData } from '@/app/components/models/LogData';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { NotificationContextProps, NotificationType, NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { AuthNotificationTypes } from '@/app/features/support/NotificationTypes';
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { NotificationData } from '@/app/support/NofiticationsSlice';
+import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/utils/web3/dAppAdapter/AppEntity";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
-import { AppStructuredMetadata, AppUnifiedMetadata } from "@/web3/dAppAdapter/AppEntity";
 import { action, makeObservable, observable } from 'mobx';
 import { createContext } from 'react';
-import { LogData } from '@/app/components/models/LogData';
+;
 
 
 // Define the type for notification messages
@@ -77,21 +78,16 @@ class NotificationStore {
     this.channelHelper = new NotificationChannelHelperImpl(channels);
   }
 
-  
   @action
   getState = () => {
     return this.notifications;
   };
-
-
-  
 
   @action
   addNotification = (notification: NotificationData<T, K>) => {
     this.notifications.push(notification);
   };
 
-  
   @action
   removeNotification = (notificationId: string) => {
     this.notifications = this.notifications.filter((notification) => notification.id !== notificationId);

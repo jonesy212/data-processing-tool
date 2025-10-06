@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { FileType } from "@/app/components/documents/Attachment/attachment";
-import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Data } from "@/app/data/Data";
+import { FileType } from "@/app/documents/Attachment/attachment";
 import { StatusType } from "@/app/models/data/StatusType";
+import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Tag } from "@/app/tracker/Tag";
+import React, { useState } from "react";
 
 // Check if the tag is an instance of Tag
 function isTagObject(tag: string | Tag<any>): tag is Tag<any> {

@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axiosInstance from '@/app/api/csrfToken';
 import { useState } from 'react';
 import { useNotification } from '@/context/NotificationContext';
 
@@ -8,7 +8,7 @@ const useSocialAuthentication = () => {
 
   const fetchSocialAuthProviders = async () => {
     try {
-      const response = await axios.get("/api/social-auth-providers");
+      const response = await axiosInstance.get("/api/social-auth-providers");
       const providers = response.data.providers;
       setSocialAuthProviders(providers);
     } catch (error: any) {

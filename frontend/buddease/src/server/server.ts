@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
 import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
-import authService from './auth/AuthService';
-import { DatabasePool } from './database/DatabasePool';
+import authService from '@/auth/AuthService';
+import { DatabasePool } from '@/database/DatabasePool';
 
 const app = express();
 const server = createServer(app);

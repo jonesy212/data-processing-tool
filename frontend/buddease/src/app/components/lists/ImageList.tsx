@@ -1,5 +1,5 @@
+import ClickableList from '@/app/actions/ClickableList';
 import React from 'react';
-import ClickableList from '../actions/ClickableList';
 
 const ImageList: React.FC = () => {
   const items = [

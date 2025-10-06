@@ -1,5 +1,5 @@
 // CommonDetails.tsx
-import { BaseData } from '@/app/components/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import React, { useState } from "react";
 import { CommonData } from "./CommonData";

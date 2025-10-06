@@ -1,6 +1,6 @@
-import { readCache, writeCache } from '../utils/ReadAndWriteCache';
-import { generateUniqueApiId } from './generateNewApiConfig';
-import { CacheData } from '../generators/GenerateCache'; // Import CacheData type
+import { readCache, writeCache } from '@/utils/ReadAndWriteCache';
+import { generateUniqueApiId } from '@/generateNewApiConfig';
+import { CacheData } from '@/generators/GenerateCache'; // Import CacheData type
 
 export async function generateInterfaces(backendModelPaths: string[]): Promise<void> {
   backendModelPaths.forEach(async (backendModelPath) => {

@@ -4,30 +4,30 @@ import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import * as snapshotApi from '@/app/api/SnapshotApi';
-import { StatusType } from "@/app/models/data/StatusType";
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { isSnapshot } from "@/app/utils/snapshotUtils";
-import { useMetadata } from '@/config/useMetadata';
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { EventStore } from '@/app/components/event/EventStore';
-import { Category } from '../@/libraries/categories/generateCategoryProperties';
-import { BaseData, Data } from "@/app/models/data/Data";
 import { K, T } from '@/app/components/models/data/dataStoreMethods';
-import { Member } from "@/app/models/teams/TeamMembers";
 import { AnalysisTypeEnum } from '@/app/components/projects/DataAnalysisPhase/AnalysisType';
+import { convertToDataSnapshot } from '@/app/components/typings/YourSpecificSnapshotType';
+import { Subscriber } from '@/app/components/users/Subscriber';
+import { BaseData, Data } from '@/app/models/data/Data';
+import { StatusType } from "@/app/models/data/StatusType";
+import { Member } from "@/app/models/teams/TeamMembers";
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotData, SnapshotStoreConfig } from '@/app/snapshots';
 import { FetchSnapshotPayload } from '@/app/snapshots/FetchSnapshotPayload';
 import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { snapshotStoreConfigInstance } from '@/app/snapshots/snapshotStoreConfigInstance';
 import { SnapshotWithCriteria, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
 import { Callback } from '@/app/snapshots/subscribeToSnapshotsImplementation';
-import { convertToDataSnapshot } from '@/app/components/typings/YourSpecificSnapshotType';
-import { Subscriber } from '@/app/components/users/Subscriber';
+import { isSnapshot } from "@/app/utils/snapshotUtils";
 import { ExtendedVersionData } from '@/app/versions/VersionData';
 import { VideoData } from "@/app/video/Video";
+import { useMetadata } from '@/config/useMetadata';
 
 interface CommonEvent<
   T extends BaseData<any>,

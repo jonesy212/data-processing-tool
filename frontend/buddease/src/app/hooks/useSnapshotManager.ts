@@ -2,19 +2,18 @@
 import { getStoreId } from '@/app/api/ApiData';
 import { fetchEventId } from '@/app/api/ApiEvent';
 import { createSnapshot } from '@/app/api/SnapshotApi';
-import { Attachment } from '@/app/components/documents/Attachment/attachment';
-import { BaseData } from '@/app/components/models/data/Data';
-import { ConfigurableSnapshotStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from '@/app/configs/StructuredMetadata';
+import { BaseData } from '@/app/models/data/Data';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import {
   useNotification
 } from "@/app/context/NotificationContext";
+import { Attachment } from '@/app/documents/Attachment/attachment';
 import { Category, generateOrVerifySnapshotId } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from "@/app/models/content/AddContent";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods";
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
+import { ConfigurableSnapshotStore, DataStore, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { processSnapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreProps } from '@/app/snapshots';
 import { Snapshot, Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/SnapshotActions";
@@ -26,16 +25,16 @@ import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
-import { SubscriberCollection } from '@/app/users/SubscriberCollection';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { isSnapshotWithCriteria } from '@/app/utils/snapshotUtils';
-import { createMetadata } from '@/server/metadata/createMetadata';
-import { DataStore, useDataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { UpdateSnapshotPayload } from "@/server/database/Payload";
+import { createMetadata } from '@/server/metadata/createMetadata';
+import { SnapshotStoreMap } from '@/SnapshotMethods';
+import { SubscriberCallbackType, Subscription } from '@/subscriptions/Subscription';
 import { useEffect, useState } from "react";
-import { UnsubscribeDetails } from '../event/DynamicEventHandlerExample';
-import { SubscriberCallbackType, Subscription } from '../subscriptions/Subscription';
-import { SnapshotStoreMap } from './SnapshotMethods';
 import { SnapshotStoreReference } from "./SnapshotStoreReference";
 import { LibraryAsyncHook } from "./useAsyncHookLinker";
 

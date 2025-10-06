@@ -1,194 +1,265 @@
-import { NestedEndpoints } from "@/app/api/ApiEndpoints";
-import { SearchNotesResponse } from "@/app/api/ApiNote";
+import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
+import { DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { Attachment } from "@/app/features/support/SupportTicketComponent";
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
+import { ApiPagination } from '@/app/typings/apiTypes'
 
-import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { CalendarManagerStore } from "@/app/state/stores/CalendarManagerStore";
-import { Snapshot, SnapshotStoreUnion } from "@/app/snapshots";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { Exchange } from "@/app/crypto/Exchange";
-import { DataWithComment } from "@/app/crypto/SafeParseData";
-import HighlightEvent from "@/app/documents/screenFunctionality/HighlightEvent";
-import { ExchangeData } from "@/app/models/data/ExchangeData";
-import { Task } from "@/app/models/tasks/Task";
-import { Team } from "@/app/models/teams/Team";
-import { Phase } from "@/app/phases/Phase";
-import { DataAnalysisResult } from '../projects/DataAnalysisPhase/DataAnalysisResult';
-import { Project } from "@/app/models/projects/Project";
-import BrowserCheckStore from "@/app/state/stores/BrowserCheckStore";
-
-import { Attendee } from "@/app/calendar/Attendee";
-import { IconStore } from "@/app/state/stores/IconStore";
-import { Settings } from "@/app/state/stores/SettingsStore";
-import { TaskManagerStore } from "@/app/state/stores/TaskStore ";
-import { TodoManagerStore } from "@/app/state/stores/TodoStore";
-import { TrackerStore } from "@/app/state/stores/TrackerStore";
-import { Todo } from "@/app/todos/Todo";
-import { User } from "@/app/users/User";
-
-
-export interface TodoType {
-  id: string;                  // Unique identifier for the todo
-  title: string;               // Title of the todo
-  description?: string;        // Optional description
-  isCompleted: boolean;        // Status of the todo
-  dueDate?: Date;              // Optional due date
-  priority?: 'low' | 'medium' | 'high'; // Priority level
-  tags?: string[];             // Tags associated with the todo
-}
-
-
-
-export interface TaskType {
-  id: string;                  // Unique identifier for the task
-  title: string;               // Title of the task
-  description?: string;        // Optional description
-  assignee?: string;           // User assigned to the task
-  status: 'todo' | 'in-progress' | 'done'; // Status of the task
-  dueDate?: Date;              // Optional due date
-  priority?: 'low' | 'medium' | 'high'; // Priority level
-  subtasks?: TodoType[];       // Subtasks associated with the task
-  tags?: string[];             // Tags associated with the task
-  relatedProjectId?: string;   // ID of the related project
-}
-
-
-export interface CalendarEventType {
-  id: string;                      // Unique identifier for the calendar event
-  title: string;                   // Title of the calendar event
-  description?: string;            // Optional description of the event
-  startDate: Date;                 // Start date and time of the event
-  endDate: Date;                   // End date and time of the event
-  location?: string;               // Optional location of the event
-  attendees?: Attendee[];            // List of attendees (could be emails, names, or user IDs)
-  recurrence?: 'none' | 'daily' | 'weekly' | 'monthly'; // Recurrence pattern
-  reminders?: {                    // Optional reminders for the event
-    type: 'email' | 'notification'; // Type of reminder
-    timeBefore: number;            // Time before the event (in minutes)
-  }[];
-  isAllDay?: boolean;              // Indicates if the event lasts the entire day
-  tags?: string[];                 // Tags associated with the event
-  relatedTaskId?: string;          // If the event is related to a task, reference the task ID
-}
-
-
-export interface SnapshotStoreType<T> {
-  id: string;                  // Unique identifier for the snapshot store
-  name: string;                // Name of the snapshot store
-  data: T[];                   // Array of snapshots
-  createdAt: Date;             // Creation date of the snapshot store
-  updatedAt?: Date;            // Last update date
-  version?: string;            // Current version of the snapshot store
-  metadata?: Record<string, any>; // Additional metadata
-}
-
-
-
-interface YourSettingsResponseType<
+// Base response structure that all API responses should extend
+export interface BaseResponseType<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends Settings, YourResponseType<T, K, Meta, AttachmentType, ExcludedFields> {
-  calendarEventTypes: CalendarEventType[];
-  todoTypes: TodoType[];
-  taskTypes: TaskType[];
-  snapshotStoreTypes: SnapshotStoreType<T, K, Meta, AttachmentType, ExcludedFields>[];
-}
-
-
-interface YourSettingsResponseType<
-T extends BaseDataEntity, 
-K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-> extends Settings, YourResponseType<T, K, Meta>
-    //, 
-// Omit<YourResponseType, 'calendarEvents' | 'todos' | 'tasks' | 'snapshotStores'> 
-{
-    // Additional properties specific to YourSettingsResponseType
-    calendarEventTypes: CalendarEventType[];
-    todoTypes: TodoType[];
-    taskTypes: TaskType[];
-    snapshotStoreTypes: SnapshotStoreType<T>[];
-}
-
-
-
-type UserDataResponseType<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> = User &
-  BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields> &
-  YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields>;
-
-
-// Define the structure of YourResponseType based on the actual response from the backend
-interface YourResponseType<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields>>,
-          BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields>,
-          DataWithComment<T, K, Meta, AttachmentType, ExcludedFields>,
-          SearchNotesResponse {
-  id?: string;
-  forEach?: (arg0: (notification: Notification<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) => void;
-  length?: number;
-  calendarEvents: CalendarEvent[];
-  todos: Todo<T, K, Meta, AttachmentType, ExcludedFields>[];
-  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields>[];
-  snapshotStores: SnapshotStore<SnapshotStoreUnion<T, K, Meta, AttachmentType, ExcludedFields>, K, Meta, AttachmentType, ExcludedFields>[];
-  currentPhase: Phase | null;
-  comment: string;
-  excludedData?: ExcludedFields;
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
+> {
+  // Core response metadata
+  success: boolean;
+  status: number;
+  message: string;
+  timestamp: Date;
   
-  // Root stores
-  browserCheckStore: BrowserCheckStore;
-  trackerStore: TrackerStore;
-  todoStore: TodoManagerStore<T, K, Meta, AttachmentType, ExcludedFields>;
-  taskManagerStore: TaskManagerStore<T, K, Meta, AttachmentType, ExcludedFields>;
-  iconStore: IconStore;
-  calendarStore: CalendarManagerStore;
-
-  prototype?: any;
-  browsers?: any;
-  endpoints: NestedEndpoints;
-  highlights: HighlightEvent[];
-
-  data: Initialized<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-
-  projectInfo?: {
-    id: number;
-    projectName: Project<T, K, Meta, AttachmentType, ExcludedFields>["name"];
-    description: Project<T, K, Meta, AttachmentType, ExcludedFields>["description"];
-    teamMembers: Team["members"];
-    exchange: Exchange;
-    communication: {
-      audio: boolean;
-      video: boolean;
-      text: boolean;
-    };
-    collaborationOptions: {
-      brainstorming: boolean;
-      fileSharing: boolean;
-      realTimeEditing: boolean;
-    };
-    metadata: {
-      createdBy: string;
-      createdAt: Date;
-      updatedBy: string;
-      updatedAt: Date;
-    };
-    exchangeData: ExchangeData[];
-    averagePrice: number;
+  // Pagination support (optional)
+  pagination?: ApiPagination;
+  
+  // Data payload - the main content of the response
+  data?: T | T[] | K | K[] | null;
+  
+  // Error handling
+  error?: {
+    code: string;
+    details?: string;
+    validationErrors?: Array<{
+      field: string;
+      message: string;
+    }>;
   };
-
-  analysisResults?: string | DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields>[];
+  
+  // Metadata about the response data  
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+  
+  // Links for HATEOAS-style APIs
+  links?: {
+    self: string;
+    first?: string;
+    previous?: string;
+    next?: string;
+    last?: string;
+    related?: string[];
+  };
+  
+  // Cache information
+  cache?: {
+    cached: boolean;
+    expiresAt?: Date;
+    etag?: string;
+  };
+  
+  // Rate limiting information
+  rateLimit?: {
+    limit: number;
+    remaining: number;
+    resetTime: Date;
+  };
+  
+  // Request context
+  requestId: string;
+  correlationId?: string;
+  
+  // Generic metadata that can be extended
+  customMetadata?: Record<string, any>;
 }
-export type { BaseResponseType, UserDataResponseType, YourResponseType, YourSettingsResponseType };
 
+// Helper functions for BaseResponseType
+export const createSuccessResponse = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
+>(
+  data: T | T[] | K | K[],
+  message: string = "Success",
+  status: number = 200
+): BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+  return {
+    success: true,
+    status,
+    message,
+    timestamp: new Date(),
+    data,
+    requestId: generateRequestId(),
+  };
+};
+
+export const createErrorResponse = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  message: string,
+  status: number = 500,
+  errorCode?: string,
+  validationErrors?: Array<{ field: string; message: string }>
+): BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+  return {
+    success: false,
+    status,
+    message,
+    timestamp: new Date(),
+    data: null,
+    error: {
+      code: errorCode || `ERR_${status}`,
+      details: message,
+      validationErrors,
+    },
+    requestId: generateRequestId(),
+  };
+};
+
+export const createPaginatedResponse = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  data: T[] | K[],
+  page: number,
+  pageSize: number,
+  totalItems: number,
+  message: string = "Success"
+): BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+  const totalPages = Math.ceil(totalItems / pageSize);
+  
+  return {
+    success: true,
+    status: 200,
+    message,
+    timestamp: new Date(),
+    data,
+    pagination: {
+      page,
+      pageSize,
+      totalItems,
+      totalPages,
+      hasNext: page < totalPages,
+      hasPrevious: page > 1,
+    },
+    requestId: generateRequestId(),
+  };
+};
+
+// Validation functions
+export const isValidResponse = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  response: any
+): response is BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+  return (
+    response &&
+    typeof response.success === 'boolean' &&
+    typeof response.status === 'number' &&
+    typeof response.message === 'string' &&
+    response.timestamp instanceof Date &&
+    typeof response.requestId === 'string'
+  );
+};
+
+export const isSuccessResponse = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  response: BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): boolean => {
+  return response.success && response.status >= 200 && response.status < 300;
+};
+
+export const hasData = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  response: BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): boolean => {
+  return response.data !== null && response.data !== undefined;
+};
+
+// Utility functions
+const generateRequestId = (): string => {
+  return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
+// Response transformer for consistent formatting
+export const transformToBaseResponse = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  data: any,
+  options: {
+    success?: boolean;
+    status?: number;
+    message?: string;
+    pagination?: any;
+    metadata?: any;
+  } = {}
+): BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+  return {
+    success: options.success ?? true,
+    status: options.status ?? 200,
+    message: options.message ?? "Success",
+    timestamp: new Date(),
+    data,
+    pagination: options.pagination,
+    metadata: options.metadata,
+    requestId: generateRequestId(),
+  };
+};
+
+// Type guards for specific response types
+export const isSingleItemResponse = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  response: BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): response is BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & { data: T | K } => {
+  return hasData(response) && !Array.isArray(response.data);
+};
+
+export const isArrayResponse = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  response: BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): response is BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & { data: T[] | K[] } => {
+  return hasData(response) && Array.isArray(response.data);
+};

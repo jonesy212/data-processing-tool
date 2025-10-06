@@ -1,7 +1,7 @@
 // fileCategoryMapping.ts
-import { BaseData } from '@/app/components/models/data/Data';
-import { Snapshot } from "@/app/snapshots";
-import { FileCategory, fileMapping } from "@/app/components/documents/FileType";
+import { BaseData } from '@/app/models/data/Data';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { FileCategory, fileMapping } from "@/app/documents/FileType";
 import { determineFileCategoryLogger } from "@/app/libraries/logging/determineFileCategoryLogger";
 import { T } from "@/app/models/data/dataStoreMethods";
 import { getAllSnapshotEntries } from "@/app/snapshots/getSnapshotEntries";
