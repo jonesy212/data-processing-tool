@@ -1,5 +1,5 @@
 // DashboardConfigCard.tsx
-import { ApiConfig } from "@/config/ConfigurationService";
+import { ApiConfig } from "@/app/services/ConfigurationService";
 import React, { useEffect } from "react";
 
 interface DashboardConfigCardProps {

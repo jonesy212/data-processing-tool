@@ -32,7 +32,7 @@ import { User } from "@/app/users/User";
 import { isSnapshotStoreConfig } from "@/app/utils/snapshotUtils";
 import { updateFileMetadata } from "@/app/utils/web3/fileUtils";
 import { useMeta } from "@/config/useMeta";
-import { SnapshotConfigParams } from '@/SnapshotConfigBuilder';
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
 import UserRoles from "@/users/UserRoles";
 import { Signature } from "ethers";
 import {

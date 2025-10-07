@@ -1,7 +1,7 @@
 // ApiUser.ts
 import { UserRoleActions } from "@/app/actions/UserRoleActions";
 import { createHeaders } from "@/app/api/ApiClient";
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
 import { UserActions } from "@/app/components/users/UserActions";
 import { UserRole } from "@/app/components/users/UserRole";

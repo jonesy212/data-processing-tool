@@ -46,8 +46,8 @@ export interface DocumentBuilderProps<
     } | undefined;
   currentContent?: ContentState
   previousContent?: string | ContentState;
-  previousMetadata?: UnifiedMetadata<T, K> | undefined;
-  currentMetadata: UnifiedMetadata<T, K>
+  previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+  currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     accessHistory: AccessHistory[];
   lastModifiedDate: ModifiedDate | undefined;
   versionData: VersionData | undefined;

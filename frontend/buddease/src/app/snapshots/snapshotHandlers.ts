@@ -39,8 +39,8 @@ import { addToSnapshotList, generateSnapshotId } from "@/app/utils/snapshotUtils
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { FetchSnapshotPayload } from '@/FetchSnapshotPayload';
 import { Snapshots } from '@/LocalStorageSnapshotStore';
-import { Snapshot } from '@/Snapshot';
-import SnapshotManagerOptions from '@/SnapshotManagerOptions';
+import { Snapshot } from '@/app/snapshots/Snapshpshot';
+import SnapshotManagerOptions from '@/app/snapshots/SnapshpshotManagerOptions';
 import useSnapshotSlice from '@/state/redux/slices/SnapshotSlice';
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { createSnapshotItem, SnapshotItem } from "./SnapshotList";

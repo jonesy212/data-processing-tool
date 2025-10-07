@@ -29,29 +29,208 @@ export const createHeaders = (): typeof HeadersConfig => {
 };
 
 
+// Helper function to get message with fallback
+const getNotificationMessage = (key: keyof ClientNotificationMessages): string => {
+  const message = NOTIFICATION_MESSAGES.Client[key as keyof typeof NOTIFICATION_MESSAGES.Client];
+  if (message) return message;
+  
+  // Fallback messages for any missing ones
+  const fallbackMessages: Partial<ClientNotificationMessages> = {
+    CONNECT_WITH_TENANT_SUCCESS: "Successfully connected with tenant",
+    CONNECT_WITH_TENANT_ERROR: "Failed to connect with tenant",
+    CREATE_FILE_VERSION_SUCCESS: "File version created successfully",
+    CREATE_FILE_VERSION_ERROR: "Failed to create file version",
+    // Add fallbacks for any other missing messages
+  };
+  
+  return fallbackMessages[key] || `${key} message not configured`;
+};
+
+
+// Then use it in your clientNotificationMessages
 interface ClientNotificationMessages {
+  // Existing messages
   FETCH_CLIENT_DETAILS_SUCCESS: string;
   FETCH_CLIENT_DETAILS_ERROR: string;
   UPDATE_CLIENT_DETAILS_SUCCESS: string;
   UPDATE_CLIENT_DETAILS_ERROR: string;
   REMOVE_CALENDAR_EVENT_ERROR: string;
-  GENERIC_GET_ERROR: string,
+  GENERIC_GET_ERROR: string;
 
-  // Add more keys as needed
+  // New success messages needed
+  CONNECT_WITH_TENANT_SUCCESS: string;
+  SEND_MESSAGE_TO_TENANT_SUCCESS: string;
+  LIST_CONNECTED_TENANTS_SUCCESS: string;
+  LIST_MESSAGES_SUCCESS: string;
+  CREATE_TASK_SUCCESS: string;
+  REMOVE_CALENDAR_EVENT_SUCCESS: string;
+  LIST_TASKS_SUCCESS: string;
+  SUBMIT_PROJECT_PROPOSAL_SUCCESS: string;
+  PARTICIPATE_IN_COMMUNITY_CHALLENGES_SUCCESS: string;
+  LIST_REWARDS_SUCCESS: string;
+  LIST_FILES_SUCCESS: string;
+  GET_FILE_CONTENT_SUCCESS: string;
+  START_COLLABORATIVE_EDIT_SUCCESS: string;
+
+
+  CREATE_FILE_VERSION_SUCCESS: string;
+  RECEIVE_FILE_UPDATE_SUCCESS: string;
+  FETCH_FILE_VERSIONS_SUCCESS: string;
+  SHARE_FILE_SUCCESS: string;
+  REQUEST_ACCESS_TO_FILE_SUCCESS: string;
+  EXPORT_FILE_SUCCESS: string;
+  ARCHIVE_FILE_SUCCESS: string;
+  DETERMINE_FILE_TYPE_SUCCESS: string;
+  IMPORT_FILE_SUCCESS: string;
+  
+  // File operation error messages (you may already have some of these)
+  CREATE_FILE_VERSION_ERROR: string;
+  RECEIVE_FILE_UPDATE_ERROR: string;
+  FETCH_FILE_VERSIONS_ERROR: string;
+  SHARE_FILE_ERROR: string;
+  REQUEST_ACCESS_TO_FILE_ERROR: string;
+  EXPORT_FILE_ERROR: string;
+  ARCHIVE_FILE_ERROR: string;
+  DETERMINE_FILE_TYPE_ERROR: string;
+  IMPORT_FILE_ERROR: string;
+  // Add other success messages as needed
 }
 
-const clientNotificationMessages: ClientNotificationMessages = {
-  FETCH_CLIENT_DETAILS_SUCCESS: NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_SUCCESS,
-  FETCH_CLIENT_DETAILS_ERROR: NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_ERROR,
-  UPDATE_CLIENT_DETAILS_SUCCESS: NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_SUCCESS,
-  UPDATE_CLIENT_DETAILS_ERROR: NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_ERROR,
-  REMOVE_CALENDAR_EVENT_ERROR: NOTIFICATION_MESSAGES.Client.REMOVE_CALENDAR_EVENT_ERROR,
-  GENERIC_GET_ERROR: NOTIFICATION_MESSAGES.Client.GENERIC_GET_ERROR,
 
-  // Add more properties as needed
+// Helper function to get message with fallback
+const getNotificationMessage = (key: keyof ClientNotificationMessages): string => {
+  const message = NOTIFICATION_MESSAGES.Client[key as keyof typeof NOTIFICATION_MESSAGES.Client];
+  if (message) return message;
+  
+  // Fallback messages for any missing ones
+  const fallbackMessages: Partial<ClientNotificationMessages> = {
+    // Existing client messages
+    FETCH_CLIENT_DETAILS_SUCCESS: "Client details fetched successfully",
+    FETCH_CLIENT_DETAILS_ERROR: "Failed to fetch client details",
+    UPDATE_CLIENT_DETAILS_SUCCESS: "Client details updated successfully",
+    UPDATE_CLIENT_DETAILS_ERROR: "Failed to update client details",
+    REMOVE_CALENDAR_EVENT_ERROR: "Failed to remove calendar event",
+    GENERIC_GET_ERROR: "Failed to fetch data",
+
+    // Tenant and communication messages
+    CONNECT_WITH_TENANT_SUCCESS: "Successfully connected with tenant",
+    CONNECT_WITH_TENANT_ERROR: "Failed to connect with tenant",
+    SEND_MESSAGE_TO_TENANT_SUCCESS: "Message sent to tenant successfully",
+    SEND_MESSAGE_TO_TENANT_ERROR: "Failed to send message to tenant",
+    LIST_CONNECTED_TENANTS_SUCCESS: "Connected tenants listed successfully",
+    LIST_CONNECTED_TENANTS_ERROR: "Failed to list connected tenants",
+
+    // Task and project messages
+    LIST_MESSAGES_SUCCESS: "Messages listed successfully",
+    LIST_MESSAGES_ERROR: "Failed to list messages",
+    CREATE_TASK_SUCCESS: "Task created successfully",
+    CREATE_TASK_ERROR: "Failed to create task",
+    REMOVE_CALENDAR_EVENT_SUCCESS: "Calendar event removed successfully",
+    LIST_TASKS_SUCCESS: "Tasks listed successfully",
+    LIST_TASKS_ERROR: "Failed to list tasks",
+    SUBMIT_PROJECT_PROPOSAL_SUCCESS: "Project proposal submitted successfully",
+    SUBMIT_PROJECT_PROPOSAL_ERROR: "Failed to submit project proposal",
+    PARTICIPATE_IN_COMMUNITY_CHALLENGES_SUCCESS: "Successfully participated in community challenges",
+    PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR: "Failed to participate in community challenges",
+
+    // Rewards and files
+    LIST_REWARDS_SUCCESS: "Rewards listed successfully",
+    LIST_REWARDS_ERROR: "Failed to list rewards",
+    LIST_FILES_SUCCESS: "Files listed successfully",
+    LIST_FILES_ERROR: "Failed to list files",
+    GET_FILE_CONTENT_SUCCESS: "File content retrieved successfully",
+    GET_FILE_CONTENT_ERROR: "Failed to get file content",
+    START_COLLABORATIVE_EDIT_SUCCESS: "Collaborative edit started successfully",
+    START_COLLABORATIVE_EDIT_ERROR: "Failed to start collaborative edit",
+
+    // File operations
+    CREATE_FILE_VERSION_SUCCESS: "File version created successfully",
+    CREATE_FILE_VERSION_ERROR: "Failed to create file version",
+    RECEIVE_FILE_UPDATE_SUCCESS: "File update received successfully",
+    RECEIVE_FILE_UPDATE_ERROR: "Failed to receive file update",
+    FETCH_FILE_VERSIONS_SUCCESS: "File versions fetched successfully",
+    FETCH_FILE_VERSIONS_ERROR: "Failed to fetch file versions",
+    SHARE_FILE_SUCCESS: "File shared successfully",
+    SHARE_FILE_ERROR: "Failed to share file",
+    REQUEST_ACCESS_TO_FILE_SUCCESS: "File access requested successfully",
+    REQUEST_ACCESS_TO_FILE_ERROR: "Failed to request file access",
+    EXPORT_FILE_SUCCESS: "File exported successfully",
+    EXPORT_FILE_ERROR: "Failed to export file",
+    ARCHIVE_FILE_SUCCESS: "File archived successfully",
+    ARCHIVE_FILE_ERROR: "Failed to archive file",
+    DETERMINE_FILE_TYPE_SUCCESS: "File type determined successfully",
+    DETERMINE_FILE_TYPE_ERROR: "Failed to determine file type",
+    IMPORT_FILE_SUCCESS: "File imported successfully",
+    IMPORT_FILE_ERROR: "Failed to import file",
+  };
+  
+  return fallbackMessages[key] || `${key} message not configured`;
 };
 
-class ClientApiService {
+// Updated clientNotificationMessages using the helper function
+const clientNotificationMessages: ClientNotificationMessages = {
+  // Existing client messages
+  FETCH_CLIENT_DETAILS_SUCCESS: getNotificationMessage('FETCH_CLIENT_DETAILS_SUCCESS'),
+  FETCH_CLIENT_DETAILS_ERROR: getNotificationMessage('FETCH_CLIENT_DETAILS_ERROR'),
+  UPDATE_CLIENT_DETAILS_SUCCESS: getNotificationMessage('UPDATE_CLIENT_DETAILS_SUCCESS'),
+  UPDATE_CLIENT_DETAILS_ERROR: getNotificationMessage('UPDATE_CLIENT_DETAILS_ERROR'),
+  REMOVE_CALENDAR_EVENT_ERROR: getNotificationMessage('REMOVE_CALENDAR_EVENT_ERROR'),
+  GENERIC_GET_ERROR: getNotificationMessage('GENERIC_GET_ERROR'),
+
+  // Tenant and communication messages
+  CONNECT_WITH_TENANT_SUCCESS: getNotificationMessage('CONNECT_WITH_TENANT_SUCCESS'),
+  CONNECT_WITH_TENANT_ERROR: getNotificationMessage('CONNECT_WITH_TENANT_ERROR'),
+  SEND_MESSAGE_TO_TENANT_SUCCESS: getNotificationMessage('SEND_MESSAGE_TO_TENANT_SUCCESS'),
+  SEND_MESSAGE_TO_TENANT_ERROR: getNotificationMessage('SEND_MESSAGE_TO_TENANT_ERROR'),
+  LIST_CONNECTED_TENANTS_SUCCESS: getNotificationMessage('LIST_CONNECTED_TENANTS_SUCCESS'),
+  LIST_CONNECTED_TENANTS_ERROR: getNotificationMessage('LIST_CONNECTED_TENANTS_ERROR'),
+
+  // Task and project messages
+  LIST_MESSAGES_SUCCESS: getNotificationMessage('LIST_MESSAGES_SUCCESS'),
+  LIST_MESSAGES_ERROR: getNotificationMessage('LIST_MESSAGES_ERROR'),
+  CREATE_TASK_SUCCESS: getNotificationMessage('CREATE_TASK_SUCCESS'),
+  CREATE_TASK_ERROR: getNotificationMessage('CREATE_TASK_ERROR'),
+  REMOVE_CALENDAR_EVENT_SUCCESS: getNotificationMessage('REMOVE_CALENDAR_EVENT_SUCCESS'),
+  LIST_TASKS_SUCCESS: getNotificationMessage('LIST_TASKS_SUCCESS'),
+  LIST_TASKS_ERROR: getNotificationMessage('LIST_TASKS_ERROR'),
+  SUBMIT_PROJECT_PROPOSAL_SUCCESS: getNotificationMessage('SUBMIT_PROJECT_PROPOSAL_SUCCESS'),
+  SUBMIT_PROJECT_PROPOSAL_ERROR: getNotificationMessage('SUBMIT_PROJECT_PROPOSAL_ERROR'),
+  PARTICIPATE_IN_COMMUNITY_CHALLENGES_SUCCESS: getNotificationMessage('PARTICIPATE_IN_COMMUNITY_CHALLENGES_SUCCESS'),
+  PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR: getNotificationMessage('PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR'),
+
+  // Rewards and files
+  LIST_REWARDS_SUCCESS: getNotificationMessage('LIST_REWARDS_SUCCESS'),
+  LIST_REWARDS_ERROR: getNotificationMessage('LIST_REWARDS_ERROR'),
+  LIST_FILES_SUCCESS: getNotificationMessage('LIST_FILES_SUCCESS'),
+  LIST_FILES_ERROR: getNotificationMessage('LIST_FILES_ERROR'),
+  GET_FILE_CONTENT_SUCCESS: getNotificationMessage('GET_FILE_CONTENT_SUCCESS'),
+  GET_FILE_CONTENT_ERROR: getNotificationMessage('GET_FILE_CONTENT_ERROR'),
+  START_COLLABORATIVE_EDIT_SUCCESS: getNotificationMessage('START_COLLABORATIVE_EDIT_SUCCESS'),
+  START_COLLABORATIVE_EDIT_ERROR: getNotificationMessage('START_COLLABORATIVE_EDIT_ERROR'),
+
+  // File operations
+  CREATE_FILE_VERSION_SUCCESS: getNotificationMessage('CREATE_FILE_VERSION_SUCCESS'),
+  CREATE_FILE_VERSION_ERROR: getNotificationMessage('CREATE_FILE_VERSION_ERROR'),
+  RECEIVE_FILE_UPDATE_SUCCESS: getNotificationMessage('RECEIVE_FILE_UPDATE_SUCCESS'),
+  RECEIVE_FILE_UPDATE_ERROR: getNotificationMessage('RECEIVE_FILE_UPDATE_ERROR'),
+  FETCH_FILE_VERSIONS_SUCCESS: getNotificationMessage('FETCH_FILE_VERSIONS_SUCCESS'),
+  FETCH_FILE_VERSIONS_ERROR: getNotificationMessage('FETCH_FILE_VERSIONS_ERROR'),
+  SHARE_FILE_SUCCESS: getNotificationMessage('SHARE_FILE_SUCCESS'),
+  SHARE_FILE_ERROR: getNotificationMessage('SHARE_FILE_ERROR'),
+  REQUEST_ACCESS_TO_FILE_SUCCESS: getNotificationMessage('REQUEST_ACCESS_TO_FILE_SUCCESS'),
+  REQUEST_ACCESS_TO_FILE_ERROR: getNotificationMessage('REQUEST_ACCESS_TO_FILE_ERROR'),
+  EXPORT_FILE_SUCCESS: getNotificationMessage('EXPORT_FILE_SUCCESS'),
+  EXPORT_FILE_ERROR: getNotificationMessage('EXPORT_FILE_ERROR'),
+  ARCHIVE_FILE_SUCCESS: getNotificationMessage('ARCHIVE_FILE_SUCCESS'),
+  ARCHIVE_FILE_ERROR: getNotificationMessage('ARCHIVE_FILE_ERROR'),
+  DETERMINE_FILE_TYPE_SUCCESS: getNotificationMessage('DETERMINE_FILE_TYPE_SUCCESS'),
+  DETERMINE_FILE_TYPE_ERROR: getNotificationMessage('DETERMINE_FILE_TYPE_ERROR'),
+  IMPORT_FILE_SUCCESS: getNotificationMessage('IMPORT_FILE_SUCCESS'),
+  IMPORT_FILE_ERROR: getNotificationMessage('IMPORT_FILE_ERROR'),
+};
+
+
+class ClientApiService<TMessages extends Record<string, string>> {
   notify: (
     id: string,
     message: string,
@@ -72,6 +251,8 @@ class ClientApiService {
       date: Date,
       type: NotificationType
     ) => void,
+    private notificationMessages: TMessages,
+
     updateCalendarEvent: (
       eventId: number,
       updatedEvent: any
@@ -85,58 +266,42 @@ class ClientApiService {
   private async requestHandler(
     request: () => Promise<AxiosResponse>,
     errorMessage: string,
-    successMessageId: keyof ClientNotificationMessages, // Specify the type as keyof ClientNotificationMessages
-    errorMessageId: string,
+    successMessageId: keyof TMessages,
+    errorMessageId: keyof TMessages, // Use the enum key
     notificationData: any = null
   ): Promise<AxiosResponse> {
     try {
       const response: AxiosResponse = await request();
-
-      // Manage headers in response
-      if (response.headers) {
-        // Access and manage response headers here using headersConfig
-        headersConfig['Authorization'] = response.headers['authorization'];
-      }
-
+      
       if (successMessageId) {
         const successMessage = clientNotificationMessages[successMessageId];
-        this.notify(
-          successMessageId,
-          successMessage,
-          notificationData,
-          new Date(),
-          "ClientSuccess" as NotificationType
-        );
+        this.notify(successMessageId, successMessage, notificationData, new Date(), "success");
       }
-
+      
       return response;
     } catch (error: any) {
-      handleApiError(error as AxiosError<unknown, any>, errorMessage);
+      handleApiError(error as AxiosError<unknown>, errorMessage);
 
+      // ✅ FIXED: Use the actual error message from your messages object
       if (errorMessageId) {
-        const errorMessage = {} as ClientNotificationMessages[keyof ClientNotificationMessages];
-        this.notify(
-          errorMessageId,
-          errorMessage,
-          notificationData,
-          new Date(),
-          "ClientError" as NotificationType
-        );
+        const errorMessageText = clientNotificationMessages[errorMessageId];
+        this.notify(errorMessageId, errorMessageText, notificationData, new Date(), "error");
       }
       throw error;
     }
   }
 
-
   async get<T = any>(
     url: string,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
+    successMessageId?: keyof TMessages,
+    errorMessageId?: keyof TMessages
   ): Promise<AxiosResponse<T>> {
     return this.requestHandler(
       () => axiosInstance.get<T>(url, config),
       "GET request failed",
-      "GenericGetError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.GENERIC_GET_ERROR
+      successMessageId || "GENERIC_GET_ERROR" as keyof TMessages,
+      errorMessageId || "GENERIC_GET_ERROR" as keyof TMessages
     );
   }
 
@@ -155,98 +320,43 @@ class ClientApiService {
       return undefined;
     }
   }
-
-  
+    
   async fetchClientDetails(clientId: number): Promise<any> {
-    try {
-      const clientDetailsUrl = (API_BASE_URL as any).client.fetchClientDetails(
-        clientId
-      );
-
-      // Use axiosInstance with the headers configuration
-      const response: AxiosResponse = await axiosInstance.get(
-        clientDetailsUrl,
-        {
-          headers: headersConfig, // Pass headers configuration in the request
-        }
-      );
-      const clientDetails = response.data;
-
-      // Notify success message
-      this.notify(
-        "FetchClientDetailsSuccessId",
-        NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_SUCCESS,
-        { clientId },
-        new Date(),
-        NotificationTypeEnum.SUCCESS
-      );
-
-      return clientDetails;
-    } catch (error) {
-      // Handle error and notify failure message
-      const errorMessage = "Failed to fetch client details";
-      handleApiError(error as AxiosError<unknown>, errorMessage);
-      this.notify(
-        "FetchClientDetailsErrorId",
-        NOTIFICATION_MESSAGES.Client.FETCH_CLIENT_DETAILS_ERROR,
-        { clientId, error: errorMessage },
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
-
-      throw error;
-    }
+    return await this.requestHandler(
+      () => axiosInstance.get(
+        `${API_BASE_URL}/clients/${clientId}`,
+        { headers: headersConfig }
+      ),
+      "Failed to fetch client details", // For handleApiError logging
+      "FETCH_CLIENT_DETAILS_SUCCESS" as keyof ClientNotificationMessages, // Success notification key
+      "FETCH_CLIENT_DETAILS_ERROR" as keyof ClientNotificationMessages, // Error notification key  
+      { clientId } // Data passed to notifications
+    ).then(response => response.data);
   }
+
   async updateClientDetails(
     clientId: number,
     updatedDetails: any
   ): Promise<any> {
-    try {
-      const clientDetailsUrl = `${API_BASE_URL}/clients/${clientId}`;
-  
-      // Integrate header management
-      const headers = headersConfig; // Assuming headersConfig is defined and contains the necessary headers
-      const response: AxiosResponse = await axiosInstance.put(
-        clientDetailsUrl,
+    return await this.requestHandler(
+      () => axiosInstance.put(
+        `${API_BASE_URL}/clients/${clientId}`,
         updatedDetails,
-        { headers }
-      );
-  
-      const updatedClientDetails = response.data;
-  
-      // Notify success message
-      this.notify(
-        "UpdateClientDetailsSuccessId",
-        NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_SUCCESS,
-        { clientId },
-        new Date(),
-        NotificationTypeEnum.SUCCESS
-      );
-  
-      return updatedClientDetails;
-    } catch (error) {
-      // Handle error and notify failure message
-      const errorMessage = "Failed to update client details";
-      handleApiError(error as AxiosError<unknown>, errorMessage);
-      this.notify(
-        "UpdateClientDetailsErrorId",
-        NOTIFICATION_MESSAGES.Client.UPDATE_CLIENT_DETAILS_ERROR,
-        { clientId, error: errorMessage },
-        new Date(),
-        NotificationTypeEnum.ERROR
-      );
-  
-      throw error;
-    }
+        { headers: headersConfig }
+      ),
+      "Failed to update client details",
+      "UPDATE_CLIENT_DETAILS_SUCCESS" as keyof ClientNotificationMessages,
+      "UPDATE_CLIENT_DETAILS_ERROR" as keyof ClientNotificationMessages,
+      { clientId }
+    ).then(response => response.data);
   }
-  
 
   async connectWithTenant(tenantId: number): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.post(`${API_BASE_URL}/connect/${tenantId}`), // Using client endpoint
+      () => axiosInstance.post(`${API_BASE_URL}/connect/${tenantId}`),
       "Failed to connect with tenant",
-      "ConnectWithTenantError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.CONNECT_WITH_TENANT_ERROR,
+      "CONNECT_WITH_TENANT_SUCCESS" as keyof ClientNotificationMessages, // Added success message
+      "CONNECT_WITH_TENANT_ERROR" as keyof ClientNotificationMessages,
       { tenantId }
     );
   }
@@ -256,21 +366,20 @@ class ClientApiService {
     message: string
   ): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () =>
-        axiosInstance.post(`${API_BASE_URL}/message/${tenantId}`, { message }), // Using client endpoint
+      () => axiosInstance.post(`${API_BASE_URL}/message/${tenantId}`, { message }),
       "Failed to send message to tenant",
-      "SendMessageToTenantError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.SEND_MESSAGE_TO_TENANT_ERROR,
+      "SEND_MESSAGE_TO_TENANT_SUCCESS" as keyof ClientNotificationMessages, // Added success message
+      "SEND_MESSAGE_TO_TENANT_ERROR" as keyof ClientNotificationMessages,
       { tenantId, message }
     );
   }
 
   async listConnectedTenants(): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () => axiosInstance.get(`${API_BASE_URL}/connected-tenants`), // Using client endpoint
+      () => axiosInstance.get(`${API_BASE_URL}/connected-tenants`),
       "Failed to list connected tenants",
-      "ListConnectedTenantsError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.LIST_CONNECTED_TENANTS_ERROR
+      "LIST_CONNECTED_TENANTS_SUCCESS" as keyof ClientNotificationMessages, // Added success message
+      "LIST_CONNECTED_TENANTS_ERROR" as keyof ClientNotificationMessages
     );
   }
 
@@ -278,8 +387,8 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.get("/api/client/messages"),
       "Failed to list messages",
-      "ListMessagesError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.LIST_MESSAGES_ERROR
+      "LIST_MESSAGES_SUCCESS" as keyof ClientNotificationMessages, // Added success message
+      "LIST_MESSAGES_ERROR" as keyof ClientNotificationMessages
     );
   }
 
@@ -287,8 +396,8 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.post("/api/client/tasks/create", taskData),
       "Failed to create task",
-      "CreateTaskError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.CREATE_TASK_ERROR
+      "CREATE_TASK_SUCCESS" as keyof ClientNotificationMessages, // Added success message
+      "CREATE_TASK_ERROR" as keyof ClientNotificationMessages
     );
   }
 
@@ -296,8 +405,8 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.delete(`/api/client/calendar/${eventId}`),
       "Failed to remove calendar event",
-      "RemoveCalendarEventError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.REMOVE_CALENDAR_EVENT_ERROR
+      "REMOVE_CALENDAR_EVENT_SUCCESS" as keyof ClientNotificationMessages, // Added success message
+      "REMOVE_CALENDAR_EVENT_ERROR" as keyof ClientNotificationMessages
     );
   }
 
@@ -305,21 +414,17 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.get("/api/client/tasks"),
       "Failed to list tasks",
-      "ListTasksError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.LIST_TASKS_ERROR
+      "LIST_TASKS_SUCCESS" as keyof ClientNotificationMessages, // Added success message
+      "LIST_TASKS_ERROR" as keyof ClientNotificationMessages
     );
   }
 
   async submitProjectProposal(proposalData: any): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () =>
-        axiosInstance.post(
-          "/api/client/projects/submit-proposal",
-          proposalData
-        ),
+      () => axiosInstance.post("/api/client/projects/submit-proposal", proposalData),
       "Failed to submit project proposal",
-      "SubmitProjectProposalError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.SUBMIT_PROJECT_PROPOSAL_ERROR
+      "SUBMIT_PROJECT_PROPOSAL_SUCCESS" as keyof ClientNotificationMessages, // Added success message
+      "SUBMIT_PROJECT_PROPOSAL_ERROR" as keyof ClientNotificationMessages
     );
   }
 
@@ -327,14 +432,10 @@ class ClientApiService {
     challengeData: any
   ): Promise<AxiosResponse> {
     return await this.requestHandler(
-      () =>
-        axiosInstance.post(
-          "/api/client/community/challenges/participate",
-          challengeData
-        ),
+      () => axiosInstance.post("/api/client/community/challenges/participate", challengeData),
       "Failed to participate in community challenges",
-      "ParticipateInCommunityChallengesError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR
+      "PARTICIPATE_IN_COMMUNITY_CHALLENGES_SUCCESS" as keyof ClientNotificationMessages, // Added success message
+      "PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR" as keyof ClientNotificationMessages
     );
   }
 
@@ -342,8 +443,8 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.get("/api/client/rewards"),
       "Failed to list rewards",
-      "ListRewardsError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.LIST_REWARDS_ERROR
+      "LIST_REWARDS_SUCCESS" as keyof ClientNotificationMessages, // Added success message
+      "LIST_REWARDS_ERROR" as keyof ClientNotificationMessages
     );
   }
 
@@ -351,37 +452,29 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.get(`/api/files/${dir}`),
       "Failed to list files",
-      "ListFilesError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.LIST_FILES_ERROR
+      "LIST_FILES_SUCCESS" as keyof ClientNotificationMessages, // Added success message
+      "LIST_FILES_ERROR" as keyof ClientNotificationMessages
     );
   }
 
   async getFileContent(filePath: string): Promise<AxiosResponse> {
-    // Check if this.requestHandler is defined before calling it
-    if (typeof this.requestHandler === 'function') {
-      return await this.requestHandler(
-        () => axiosInstance.get(`/api/files/${filePath}`),
-        "Failed to get file content",
-        "GetFileContentError" as keyof ClientNotificationMessages,
-        NOTIFICATION_MESSAGES.Client.GET_FILE_CONTENT_
-      );
-    } else {
-      // Handle the case where this.requestHandler is undefined
-      throw new Error('requestHandler is not defined');
-    }
-  };
-  
+    return await this.requestHandler(
+      () => axiosInstance.get(`/api/files/${filePath}`),
+      "Failed to get file content",
+      "GET_FILE_CONTENT_SUCCESS" as keyof ClientNotificationMessages, // Added success message
+      "GET_FILE_CONTENT_ERROR" as keyof ClientNotificationMessages
+    );
+  }
 
-  async startCollaborativeEdit(
-    fileId: string): Promise<AxiosResponse> {
+  async startCollaborativeEdit(fileId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/collaborative-edit`),
       "Failed to start collaborative edit",
-      "StartCollaborativeEditError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.START_COLLABORATIVE_EDIT_ERROR,
-    )
+      "START_COLLABORATIVE_EDIT_SUCCESS" as keyof ClientNotificationMessages, // Added success message
+      "START_COLLABORATIVE_EDIT_ERROR" as keyof ClientNotificationMessages
+    );
   }
-
+    
   async createFileVersion<
     T extends BaseDataEntity,
     K extends T,
@@ -396,9 +489,10 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/versions`, versionData),
       "Failed to create file version",
-      "CreateFileVersionError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.CREATE_FILE_VERSION_ERROR,
-    )
+      "CREATE_FILE_VERSION_SUCCESS" as keyof ClientNotificationMessages,
+      "CREATE_FILE_VERSION_ERROR" as keyof ClientNotificationMessages,
+      { fileId }
+    );
   }
 
   async receiveFileUpdate(
@@ -408,32 +502,31 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/updates`, updateData),
       "Failed to receive file update",
-      "ReceiveFileUpdateError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.RECEIVE_FILE_UPDATE_ERROR,
-    )
+      "RECEIVE_FILE_UPDATE_SUCCESS" as keyof ClientNotificationMessages,
+      "RECEIVE_FILE_UPDATE_ERROR" as keyof ClientNotificationMessages,
+      { fileId }
+    );
   }
 
-
-
-  async fetchFileVersions(
-    fileId: string): Promise<AxiosResponse> {
+  async fetchFileVersions(fileId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.get(`/api/files/${fileId}/versions`),
       "Failed to fetch file versions",
-      "FetchFileVersionsError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.FETCH_FILE_VERSIONS_ERROR
-    )
+      "FETCH_FILE_VERSIONS_SUCCESS" as keyof ClientNotificationMessages,
+      "FETCH_FILE_VERSIONS_ERROR" as keyof ClientNotificationMessages,
+      { fileId }
+    );
   }
-  
+
   async shareFile(fileId: string, shareData: any): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/share`, shareData),
       "Failed to share file",
-      "ShareFileError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.SHARE_FILE_ERROR
+      "SHARE_FILE_SUCCESS" as keyof ClientNotificationMessages,
+      "SHARE_FILE_ERROR" as keyof ClientNotificationMessages,
+      { fileId, shareData }
     );
   }
-
 
   async requestAccessToFile(
     fileId: string,
@@ -442,61 +535,53 @@ class ClientApiService {
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/${fileId}/access`, accessData),
       "Failed to request access to file",
-      "RequestAccessToFileError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.REQUEST_ACCESS_TO_FILE_ERROR
-    )
+      "REQUEST_ACCESS_TO_FILE_SUCCESS" as keyof ClientNotificationMessages,
+      "REQUEST_ACCESS_TO_FILE_ERROR" as keyof ClientNotificationMessages,
+      { fileId, accessData }
+    );
   }
 
-
-  async exportFile(
-    fileId: string,
-
-  ): Promise<AxiosResponse> { 
+  async exportFile(fileId: string): Promise<AxiosResponse> { 
     return await this.requestHandler(
       () => axiosInstance.get(`/api/files/${fileId}/export`),
       "Failed to export file",
-      "ExportFileError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.EXPORT_FILE_ERROR,
-    )
+      "EXPORT_FILE_SUCCESS" as keyof ClientNotificationMessages,
+      "EXPORT_FILE_ERROR" as keyof ClientNotificationMessages,
+      { fileId }
+    );
   }
 
-  
-  async archiveFile(
-    fileId: string): Promise<AxiosResponse> {
+  async archiveFile(fileId: string): Promise<AxiosResponse> {
     return await this.requestHandler(
       () => axiosInstance.delete(`/api/files/${fileId}`),
       "Failed to archive file",
-      "ArchiveFileError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.ARCHIVE_FILE_ERROR
-    )
+      "ARCHIVE_FILE_SUCCESS" as keyof ClientNotificationMessages,
+      "ARCHIVE_FILE_ERROR" as keyof ClientNotificationMessages,
+      { fileId }
+    );
   }
 
   async determineFileType(fileId: string): Promise<AxiosResponse> { 
     return await this.requestHandler(
       () => axiosInstance.get(`/api/files/${fileId}/type`),
       "Failed to determine file type",
-      "DetermineFileTypeError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.DETERMINE_FILE_TYPE_ERROR
-    )
+      "DETERMINE_FILE_TYPE_SUCCESS" as keyof ClientNotificationMessages,
+      "DETERMINE_FILE_TYPE_ERROR" as keyof ClientNotificationMessages,
+      { fileId }
+    );
   }
 
-
-  async importFile(
-    fileData: typeof FileImportData
-  ): Promise<AxiosResponse> { 
+  async importFile(fileData: typeof FileImportData): Promise<AxiosResponse> { 
     return await this.requestHandler(
       () => axiosInstance.post(`/api/files/import`, fileData),
       "Failed to import file",
-      "ImportFileError" as keyof ClientNotificationMessages,
-      NOTIFICATION_MESSAGES.Client.IMPORT_FILE_ERROR
-    )
+      "IMPORT_FILE_SUCCESS" as keyof ClientNotificationMessages,
+      "IMPORT_FILE_ERROR" as keyof ClientNotificationMessages,
+      { fileData }
+    );
   }
 
-
-  
-  
   // Additional client API methods can be added here...
-
 }
 
 

@@ -58,7 +58,7 @@ interface CommonEvent<
   language?: string;
   agenda?: string;
   collaborationTool?: string;
-  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   // Implement the `then` function using the reusable function
   then?: <T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
@@ -262,7 +262,7 @@ export function implementThen<
   return snapshot;
 }
 
-const metadata: UnifiedMetadata<T, K> = useMetadata<BaseData<any>>(area);
+const metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<BaseData<any>>(area);
 
 // Define the `defaultCommonEvent` object using the `CommonEvent` interface
 const defaultCommonEvent: CommonEvent = {

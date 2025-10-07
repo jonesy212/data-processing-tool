@@ -256,7 +256,6 @@ calendarManagerState.events !== undefined && Object.keys(calendarManagerState.ev
     : "day";
 
   
-
   const calendar = (
     <Calendar
       projectId={projectId}

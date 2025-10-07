@@ -86,7 +86,7 @@ class CourseBuilder {
     });
 
     // Use `useMetadata` with appropriate type arguments for UnifiedMetaDataOptions
-    const currentMetadata: UnifiedMetadata<T, K, StructuredMetadata<T, K>> = 
+    const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = 
       useMetadata<T, K, Meta>({ area: 'phase-area' });
 
     

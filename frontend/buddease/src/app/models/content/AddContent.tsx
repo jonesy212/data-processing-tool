@@ -1,31 +1,29 @@
 // AddContent.tsx
 import { BaseData } from '@/app/models/data/Data';
-
-import ContentItemComponent, {
-    ContentItem,
-} from "@/app/components/models/content/ContentItem";
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { StatusType } from "@/app/models/data/StatusType";
-import { Persona } from "@/app/pages/personas/Persona";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import {
-    CustomSnapshotData,
-    ItemUnion,
-    SnapshotWithCriteria,
-} from "@/app/snapshots";
-import { TaskData } from "@/app/tasks/Task";
-import { createLatestVersion } from "@/app/versions/createLatestVersion";
+import { BaseConfig } from '@/config/BaseConfig';
+import ContentItemComponent, { ContentItem } from '@/app/components/models/content/ContentItem';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { StatusType } from '@/app/models/data/StatusType';
+import { Persona } from '@/app/pages/personas/Persona';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { ItemUnion } from '@/app/snapshots/SnapshotContainer';
+import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
+import { TaskData } from '@/app/models/tasks/Task';
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import {
     BaseDataEntity,
     DefaultExcludedFields,
     DefaultMeta,
-} from "@/config/BaseConfig";
-import { SharedMetadata } from "@/config/metadata/MetadataHooks";
-import { TaskMetadata } from "@/server/database/MetaDataOptions";
-import UserRoles from "@/users/UserRoles";
-import React, { FormEvent, useState } from "react";
-import ContentDetailsListItem from "./ContentDetailsListItem";
-import ContentToolbar from "./ContentToolbar";
+} from '@/config/BaseConfig';
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
+import { TaskMetadata } from '@/server/database/MetaDataOptions';
+import UserRoles from '@/users/UserRoles';
+import React, { FormEvent, useState } from 'react';
+import ContentDetailsListItem from '@/app/components/models/content/ContentDetailsListItem';
+import ContentToolbar from '@/app/components/models/content/ContentToolbar';
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataRoot, BaseConfig } from "@/config/BaseConfig";
 
 interface Content<
   T extends BaseDataEntity = BaseDataRoot,
@@ -35,7 +33,7 @@ interface Content<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    BaseConfig<T, K, Meta, ExcludedFields> {
   id: string | number | undefined;
   title: string;
   description: string;
@@ -67,15 +65,15 @@ type DefaultContent = Content<BaseData<any>, BaseData<any>>;
 const AddContent: React.FC<{
   onComplete: (content: DefaultContent) => void;
 }> = ({ onComplete }) => {
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Validate input fields
     if (!title.trim() || !description.trim()) {
-      alert("Please fill in all fields");
+      alert('Please fill in all fields');
       return;
     }
 
@@ -84,9 +82,9 @@ const AddContent: React.FC<{
       id: Math.floor(Math.random() * 1000),
       title,
       description,
-      subscriberId: "",
+      subscriberId: '',
       category: undefined,
-      timestamp: "",
+      timestamp: '',
       length: 0,
       data: undefined,
       categoryProperties: undefined,
@@ -97,11 +95,11 @@ const AddContent: React.FC<{
     };
 
     // Send new content to server or perform other actions
-    console.log("New content:", newContent);
+    console.log('New content:', newContent);
 
     // Clear input fields
-    setTitle("");
-    setDescription("");
+    setTitle('');
+    setDescription('');
   };
   const handleBoldClick = () => {
     // Get the selection range
@@ -109,7 +107,7 @@ const AddContent: React.FC<{
     if (!selection || selection.isCollapsed) return;
 
     // Create a <strong> element to represent bold text
-    const boldElement = document.createElement("strong");
+    const boldElement = document.createElement('strong');
 
     // Surround the selected content with the <strong> element
     const range = selection.getRangeAt(0);
@@ -122,7 +120,7 @@ const AddContent: React.FC<{
     if (!selection || selection.isCollapsed) return;
 
     // Create an <i> element to represent italic text
-    const italicElement = document.createElement("i");
+    const italicElement = document.createElement('i');
 
     // Surround the selected content with the <i> element
     const range = selection.getRangeAt(0);
@@ -135,7 +133,7 @@ const AddContent: React.FC<{
     if (!selection || selection.isCollapsed) return;
 
     // Create a <u> element to represent underline
-    const underlineElement = document.createElement("u");
+    const underlineElement = document.createElement('u');
 
     // Surround the selected content with the <u> element
     const range = selection.getRangeAt(0);
@@ -148,7 +146,7 @@ const AddContent: React.FC<{
     if (!selection || selection.isCollapsed) return;
 
     // Create a <strike> element to represent strike-through
-    const strikeThroughElement = document.createElement("strike");
+    const strikeThroughElement = document.createElement('strike');
 
     // Surround the selected content with the <strike> element
     const range = selection.getRangeAt(0);
@@ -161,8 +159,8 @@ const AddContent: React.FC<{
     if (!selection || selection.isCollapsed) return;
 
     // Create a <span> element to represent the highlight
-    const highlightSpan = document.createElement("span");
-    highlightSpan.style.backgroundColor = "yellow";
+    const highlightSpan = document.createElement('span');
+    highlightSpan.style.backgroundColor = 'yellow';
 
     // Surround the selected content with the <span> element
     const range = selection.getRangeAt(0);
@@ -175,8 +173,8 @@ const AddContent: React.FC<{
     if (!selection) return;
 
     // Create a <div> element to represent left alignment
-    const alignmentDiv = document.createElement("div");
-    alignmentDiv.style.textAlign = "left";
+    const alignmentDiv = document.createElement('div');
+    alignmentDiv.style.textAlign = 'left';
 
     // Surround the selected content with the <div> element
     const range = selection.getRangeAt(0);
@@ -189,8 +187,8 @@ const AddContent: React.FC<{
     if (!selection) return;
 
     // Create a <div> element to represent center alignment
-    const alignmentDiv = document.createElement("div");
-    alignmentDiv.style.textAlign = "center";
+    const alignmentDiv = document.createElement('div');
+    alignmentDiv.style.textAlign = 'center';
 
     // Surround the selected content with the <div> element
     const range = selection.getRangeAt(0);
@@ -203,8 +201,8 @@ const AddContent: React.FC<{
     if (!selection) return;
 
     // Create a <div> element to represent the right alignment
-    const alignmentDiv = document.createElement("div");
-    alignmentDiv.style.textAlign = "right";
+    const alignmentDiv = document.createElement('div');
+    alignmentDiv.style.textAlign = 'right';
 
     // Surround the selected content with the <div> element
     const range = selection.getRangeAt(0);
@@ -217,8 +215,8 @@ const AddContent: React.FC<{
     if (!selection) return;
 
     // Create a <div> element to represent full justification
-    const justificationDiv = document.createElement("div");
-    justificationDiv.style.textAlign = "justify";
+    const justificationDiv = document.createElement('div');
+    justificationDiv.style.textAlign = 'justify';
 
     // Surround the selected content with the <div> element
     const range = selection.getRangeAt(0);
@@ -231,14 +229,14 @@ const AddContent: React.FC<{
     if (!selection) return;
 
     // Create a new <ul> element
-    const unorderedList = document.createElement("ul");
+    const unorderedList = document.createElement('ul');
 
     // Get the parent node of the selected range
     const parentNode = selection.anchorNode?.parentNode as HTMLElement;
     if (!parentNode) return;
 
     // Create a new <li> element
-    const listItem = document.createElement("li");
+    const listItem = document.createElement('li');
 
     // Append the selected range to the <li> element
     listItem.appendChild(selection.getRangeAt(0).cloneContents());
@@ -256,14 +254,14 @@ const AddContent: React.FC<{
     if (!selection) return;
 
     // Create a new <ol> element
-    const orderedList = document.createElement("ol");
+    const orderedList = document.createElement('ol');
 
     // Get the parent node of the selected range
     const parentNode = selection.anchorNode?.parentNode as HTMLElement;
     if (!parentNode) return;
 
     // Create a new <li> element
-    const listItem = document.createElement("li");
+    const listItem = document.createElement('li');
 
     // Append the selected range to the <li> element
     listItem.appendChild(selection.getRangeAt(0).cloneContents());
@@ -281,8 +279,8 @@ const AddContent: React.FC<{
     if (!selection) return;
 
     // Create a <div> element to represent the indentation
-    const indentation = document.createElement("div");
-    indentation.style.marginLeft = "20px"; // Adjust the indentation as needed
+    const indentation = document.createElement('div');
+    indentation.style.marginLeft = '20px'; // Adjust the indentation as needed
 
     // Surround the selected content with the <div> element
     const range = selection.getRangeAt(0);
@@ -312,7 +310,7 @@ const AddContent: React.FC<{
     if (!selection || selection.isCollapsed) return;
 
     // Create a span element to wrap the selected text
-    const span = document.createElement("span");
+    const span = document.createElement('span');
     span.style.color = color;
 
     // Surround the selected text with the span element
@@ -326,7 +324,7 @@ const AddContent: React.FC<{
     if (!selection || selection.isCollapsed) return;
 
     // Create a span element to wrap the selected text
-    const span = document.createElement("span");
+    const span = document.createElement('span');
     span.style.backgroundColor = color;
 
     // Surround the selected text with the span element
@@ -340,7 +338,7 @@ const AddContent: React.FC<{
     if (!selection || selection.isCollapsed) return;
 
     // Create a span element to wrap the selected text
-    const span = document.createElement("span");
+    const span = document.createElement('span');
     span.style.fontSize = `${fontSize}px`;
 
     // Surround the selected text with the span element
@@ -350,7 +348,7 @@ const AddContent: React.FC<{
 
   const handleFontFamilyChange = (fontFamily: string) => {
     // Change the font family of the selected text
-    document.execCommand("fontName", false, fontFamily);
+    document.execCommand('fontName', false, fontFamily);
   };
 
   const handleImageInsert = () => {
@@ -365,12 +363,12 @@ const AddContent: React.FC<{
 
   const handleUndoClick = () => {
     // Undo the last action
-    document.execCommand("undo");
+    document.execCommand('undo');
   };
 
   const handleRedoClick = () => {
     // Redo the last undone action
-    document.execCommand("redo");
+    document.execCommand('redo');
   };
 
   return (
@@ -407,26 +405,26 @@ const AddContent: React.FC<{
       {/* Render ContentDetailsListItem */}
       <ContentDetailsListItem
         item={{
-          _id: "new",
-          id: "new",
-          title: "Sample Title",
-          description: "Sample Description",
-          status: "Sample Status",
+          _id: 'new',
+          id: 'new',
+          title: 'Sample Title',
+          description: 'Sample Description',
+          status: 'Sample Status',
           updatedAt: new Date(),
           participants: [
             {
-              teamId: "1",
-              roleInTeam: "Member",
-              _id: "123",
-              id: "123",
-              memberName: "memberName",
-              username: "username",
-              email: "email",
-              tier: "tier",
+              teamId: '1',
+              roleInTeam: 'Member',
+              _id: '123',
+              id: '123',
+              memberName: 'memberName',
+              username: 'username',
+              email: 'email',
+              tier: 'tier',
               uploadQuota: 0,
-              fullName: "fullName",
-              bio: "bio",
-              userType: "userType",
+              fullName: 'fullName',
+              bio: 'bio',
+              userType: 'userType',
               hasQuota: false,
               profilePicture: null,
               processingTasks: [],
@@ -441,8 +439,8 @@ const AddContent: React.FC<{
               isVerified: false,
               isAdmin: false,
               isActive: false,
-              firstName: "",
-              lastName: "",
+              firstName: '',
+              lastName: '',
               friends: [],
               blockedUsers: [],
               settings: null,
@@ -455,9 +453,9 @@ const AddContent: React.FC<{
               hobbies: [],
               skills: [],
               achievements: [],
-              profileVisibility: "",
+              profileVisibility: '',
               profileAccessControl: undefined,
-              activityStatus: "",
+              activityStatus: '',
               isAuthorized: false,
             },
           ],
@@ -471,35 +469,35 @@ const AddContent: React.FC<{
       {/* Render ContentItem */}
       <ContentItemComponent
         item={{
-          _id: "new",
-          id: "0",
-          title: "Sample Title",
-          description: "Sample Description",
-          status: "Sample Status",
+          _id: 'new',
+          id: '0',
+          title: 'Sample Title',
+          description: 'Sample Description',
+          status: 'Sample Status',
           updatedAt: new Date(),
-          subtitle: "Sample Subtitle",
-          value: "Sample Value",
+          subtitle: 'Sample Subtitle',
+          value: 'Sample Value',
           participants: [
             {
-              _id: "123",
-              id: "123",
-              teamId: "1",
+              _id: '123',
+              id: '123',
+              teamId: '1',
               roles: [],
               storeId: 9009,
-              roleInTeam: "Member",
-              memberName: "memberName",
-              username: "username",
-              email: "email",
-              tier: "tier",
+              roleInTeam: 'Member',
+              memberName: 'memberName',
+              username: 'username',
+              email: 'email',
+              tier: 'tier',
               uploadQuota: 0,
-              fullName: "fullName",
-              bio: "bio",
-              userType: "userType",
+              fullName: 'fullName',
+              bio: 'bio',
+              userType: 'userType',
               hasQuota: false,
               profilePicture: null,
               processingTasks: [],
               role: UserRoles.Administrator,
-              bannerUrl: "",
+              bannerUrl: '',
               persona: {} as Persona,
               snapshots: [],
               token: null,
@@ -514,8 +512,8 @@ const AddContent: React.FC<{
               isVerified: false,
               isAdmin: false,
               isActive: false,
-              firstName: "",
-              lastName: "",
+              firstName: '',
+              lastName: '',
               friends: [],
               blockedUsers: [],
               settings: null,
@@ -528,9 +526,9 @@ const AddContent: React.FC<{
               hobbies: [],
               skills: [],
               achievements: [],
-              profileVisibility: "",
+              profileVisibility: '',
               profileAccessControl: undefined,
-              activityStatus: "",
+              activityStatus: '',
               isAuthorized: false,
               childIds: [],
               relatedData: [],
@@ -544,25 +542,25 @@ const AddContent: React.FC<{
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="title">Title:</label>
+          <label htmlFor='title'>Title:</label>
           <input
-            type="text"
-            id="title"
+            type='text'
+            id='title'
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
 
         <div>
-          <label htmlFor="description">Description:</label>
+          <label htmlFor='description'>Description:</label>
           <textarea
-            id="description"
+            id='description'
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
         </div>
 
-        <button type="submit">Submit</button>
+        <button type='submit'>Submit</button>
       </form>
     </div>
   );
@@ -573,44 +571,44 @@ export { taskContent };
 export type { Content, ContentProps };
 
 const taskContent: Content<TaskData, TaskMetadata<T, K, Sub>> = {
-  id: "task-001",
-  title: "Develop Feature X",
-  description: "Implement the new feature as per the requirements.",
-  subscriberId: "user-001",
-  category: "Development",
-  categoryProperties: "Frontend",
+  id: 'task-001',
+  title: 'Develop Feature X',
+  description: 'Implement the new feature as per the requirements.',
+  subscriberId: 'user-001',
+  category: 'Development',
+  categoryProperties: 'Frontend',
   timestamp: new Date(),
   length: 3,
   items: [
     {
-      id: "update-001",
-      title: "Initial Task Created",
-      body: "The task was initially created and assigned to John.",
-      heading: "Task Created",
-      type: "text",
+      id: 'update-001',
+      title: 'Initial Task Created',
+      body: 'The task was initially created and assigned to John.',
+      heading: 'Task Created',
+      type: 'text',
       status: StatusType.Pending,
-      userId: "user-001",
-      updatedAt: new Date("2023-01-01"),
+      userId: 'user-001',
+      updatedAt: new Date('2023-01-01'),
     },
     {
-      id: "update-002",
-      title: "Task Status Updated",
-      body: "The status of the task has been changed to 'In Progress'.",
-      heading: "Status Update",
-      type: "text",
+      id: 'update-002',
+      title: 'Task Status Updated',
+      body: 'The status of the task has been changed to 'In Progress'.',
+      heading: 'Status Update',
+      type: 'text',
       status: StatusType.InProgress,
-      userId: "user-002",
-      updatedAt: new Date("2023-01-05"),
+      userId: 'user-002',
+      updatedAt: new Date('2023-01-05'),
     },
     {
-      id: "update-003",
-      title: "Task Completed",
-      body: "The task has been completed successfully.",
-      heading: "Completion",
-      type: "text",
+      id: 'update-003',
+      title: 'Task Completed',
+      body: 'The task has been completed successfully.',
+      heading: 'Completion',
+      type: 'text',
       status: StatusType.Completed,
-      userId: "user-001",
-      updatedAt: new Date("2023-01-10"),
+      userId: 'user-001',
+      updatedAt: new Date('2023-01-10'),
     },
   ],
   data: null,
@@ -618,7 +616,7 @@ const taskContent: Content<TaskData, TaskMetadata<T, K, Sub>> = {
   // relatedData: [],
   phase: null,
   metadata: undefined,
-  username: "",
-  storeId: "",
-  role: "",
+  username: '',
+  storeId: '',
+  role: '',
 };

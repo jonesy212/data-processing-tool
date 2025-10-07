@@ -8,15 +8,16 @@ import { action, observable } from "mobx";
 import { observer, useLocalStore } from "mobx-react-lite";
 import React, { useState } from "react";
 import { ColorSwatchProps } from "./ColorPalette";
- 
+ import { Attachment } from "@/app/documents/Attachment/attachment";
+import { BaseDataRoot } from "@/config/BaseConfig";
+
 // Usage of getCurrentAppInfo
 interface CustomDivProps extends React.HTMLAttributes<HTMLDivElement> {
   ariaLabel?: string;
   dataTip?: string;
 }
-let currentIndex: number; // Declare currentIndex before using it
-let indexToUpdate: number | null = null; // Declare the variable
-let newExample: ResponsiveExample | null = null; // Declare the variable
+
+// let newExample: ResponsiveExample | null = null; // Declare the variable
 
 const { versionNumber, appVersion } = getCurrentAppInfo();
 const projectPath = getAppPath(versionNumber, appVersion);
@@ -139,7 +140,14 @@ export interface ResponsiveExample {
   description: string;
 }
 
-class ResponsiveDesignStore {
+class ResponsiveDesignStore<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>  {
   @observable
   examples: ResponsiveExample[] = [];
 
@@ -147,12 +155,22 @@ class ResponsiveDesignStore {
   addExample(example: ResponsiveExample) {
     this.examples.push(example);
   }
+  
+  @observable
+  currentIndex: number = -1;
+
+  @observable
+  indexToUpdate: number | null = null; // Track index for updates
+
+  @observable
+  newExample: ResponsiveExample | null = null; // Track new example being created
 
   @observable
   colors: string[] = [];
 
   @observable
-  frontendStructure: FrontendStructure = new FrontendStructure(projectPath);
+  frontendStructure: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = 
+    new FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(projectPath);
 
   @observable
   backendStructure: BackendStructure = new BackendStructure(projectPath);
@@ -161,9 +179,11 @@ class ResponsiveDesignStore {
   onColorChange: (color: ColorSwatchProps) => void = () => {};
   
 
-  @observable structure: FrontendStructure & BackendStructure = Object.assign(
-    this.frontendStructure, this.backendStructure);
-  
+  @observable 
+  structure: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & 
+             BackendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = 
+    Object.assign(this.frontendStructure, this.backendStructure);
+
   @observable
   responsiveProps: ResponsiveDesignProps = {
     breakpoints: {

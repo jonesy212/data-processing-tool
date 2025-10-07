@@ -1,5 +1,5 @@
 // SnapshotStoreProps.ts
-import { SnapshotEventBase } from '@/SnapshotEvents';
+import { SnapshotEventBase } from '@/app/snapshots/SnapshpshotEvents';
 import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from '@/app/components/documents/RelatedProps';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
 import { BaseData } from '@/app/models/data/Data';

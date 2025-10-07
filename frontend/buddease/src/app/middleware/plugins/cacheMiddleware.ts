@@ -1,7 +1,6 @@
-import { MiddlewareFunction, MiddlewareContext } from '@/types';
+import { MiddlewareContext, MiddlewareFunction } from '@/types';
 
-import { MiddlewareFunction, MiddlewareContext } from '@/types';
-import { ConfigurationService, type CacheConfig as AppCacheConfig } from '@/config//ConfigurationService';
+import { ConfigurationService } from '@/app/services/ConfigurationService';
 
 export interface CacheMiddlewareConfig {
   enabled: boolean;

@@ -3,6 +3,8 @@
 import axiosInstance from '@/app/api/csrfToken';
 import dataProcessingService, { DataProcessing, DataProcessingResult } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataProcessingService";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from "@/app/documents/Attachment/attachment";
 
 export const sendDataToBackend = async (data: any) => {
   try {
@@ -16,7 +18,14 @@ export const sendDataToBackend = async (data: any) => {
 
 
 // Function to initiate data analysis process
-export const initiateDataAnalysis = async (event: CalendarEvent) => {
+export const initiateDataAnalysis = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
+>(event: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
   try {
     // Step 1: Fetch Original Data
     const originalData = await fetchDataForAnalysis(event);
@@ -44,7 +53,14 @@ export const initiateDataAnalysis = async (event: CalendarEvent) => {
 };
 
 // Function to fetch original data for analysis
-export const fetchDataForAnalysis = async (event: CalendarEvent): Promise<any> => { 
+export const fetchDataForAnalysis = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
+>(event: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<any> => { 
   try {
     const response = await axiosInstance.get("/api/data/" + event.id);
     return response.data;

@@ -7,11 +7,11 @@ import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { SnapshotConfig } from '@/SnapshotConfig';
-import { SnapshotContainer } from '@/SnapshotContainer';
-import SnapshotStore from '@/SnapshotStore';
-import { SnapshotStoreConfig } from '@/SnapshotStoreConfig';
-import { SnapshotStoreDataResponse } from '@/SnapshotStoreDataResponse';
+import { SnapshotConfig } from '@/app/snapshots/SnapshpshotConfig';
+import { SnapshotContainer } from '@/app/snapshots/SnapshpshotContainer';
+import SnapshotStore from '@/app/snapshots/SnapshpshotStore';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshpshotStoreConfig';
+import { SnapshotStoreDataResponse } from '@/app/snapshots/SnapshpshotStoreDataResponse';
 import { SnapshotStoreProps } from '@/useSnapshotStore';
 
 function handleSnapshot<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshot: Snapshot<any, any>) {

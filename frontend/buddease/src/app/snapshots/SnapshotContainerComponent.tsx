@@ -6,7 +6,7 @@ import { fetchAllSnapshots } from '@/app/api/SnapshotApi';
 import { endpoints } from '@/app/components/api/endpointConfigurations';
 import useErrorHandling from '@/app/hooks/userInterface/automation_process';
 import { Data } from '@/app/models/data/Data';
-import SnapshotList from '@/SnapshotList'; // Use the existing SnapshotList class
+import SnapshotList from '@/app/snapshots/SnapshpshotList'; // Use the existing SnapshotList class
 
 interface SnapshotContainerProps {
   target: Target;

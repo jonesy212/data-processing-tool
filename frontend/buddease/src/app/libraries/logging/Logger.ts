@@ -1,5 +1,5 @@
 // Logger.ts
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { BaseData } from '@/app/models/data/Data';
 import { LogData } from "@/app/components/models/LogData";
 import { Task } from "@/app/components/models/tasks/Task";

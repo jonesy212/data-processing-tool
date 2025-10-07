@@ -1,3 +1,4 @@
+// MappingConfig.ts
 import { CryptoData, ParsedData } from "@/app/components/crypto/parseData";
 import { SupportedData } from "@/app/models/CommonData";
 import { CommonData } from "@/app/components/models/CommonDetails";
@@ -5,6 +6,59 @@ import { StatusType } from "@/app/models/data/StatusType";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 
+export interface MappingConfig<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  // Field mapping configuration
+  fieldMappings: {
+    [key in keyof CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>]?: {
+      sourceField: string | string[];
+      transform?: (value: any, sourceData: any) => any;
+      required?: boolean;
+      defaultValue?: any;
+    };
+  };
+
+  // Type-specific mappings
+  typeMappings: {
+    [typeName: string]: {
+      dataFields: (keyof T)[];
+      customTransform?: (data: any) => Partial<T>;
+      validationRules?: {
+        field: keyof T;
+        validator: (value: any) => boolean;
+        errorMessage?: string;
+      }[];
+    };
+  };
+
+  // Global mapping options
+  options: {
+    strictMode: boolean;
+    autoMapCommonFields: boolean;
+    preserveUnknownFields: boolean;
+    caseSensitive: boolean;
+    arrayHandling: 'first' | 'concat' | 'merge';
+  };
+
+  // Validation configuration
+  validation: {
+    enable: boolean;
+    skipInvalid: boolean;
+    logErrors: boolean;
+  };
+
+  // Transformation hooks
+  hooks: {
+    preMap?: (sourceData: any) => any;
+    postMap?: (mappedData: CommonData<T, K, Meta>, sourceData: any) => CommonData<T, K, Meta>;
+  };
+}
 
 const mapParsedDataToCommonData = <
   T extends SupportedData<any, any, StructuredMetadata<any, any>>,

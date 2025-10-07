@@ -146,7 +146,7 @@ export interface DataStore<
 {
   id: string | number | undefined
   data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   dataStore?: InitializedDataStore<T> | undefined
   storage?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined;
   config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
@@ -477,9 +477,11 @@ type InitializedState<
   | SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  | { state: string; data: any[] } 
+  | Record<string, any> 
+  | any[] 
   | null
   | undefined;
-  
   
   
   const initializeState = <

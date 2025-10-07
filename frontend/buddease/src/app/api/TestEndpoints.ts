@@ -1,4 +1,4 @@
-import { endpoints } from "./ApiEndpoints";
+import { endpoints } from "@/app/api/endpointConfigurations";
 
 const singleTaskEndpoint = (taskId: number): string => `https://nofomoe/api/tasks/${taskId}`;
 const removeTaskEndpoint = (taskId: number): string => `https://nofomoe/api/tasks/${taskId}`;

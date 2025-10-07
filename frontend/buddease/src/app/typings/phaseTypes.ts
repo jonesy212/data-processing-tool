@@ -1,5 +1,4 @@
 // phaseTypes.ts
-// app/types/phase-types.ts
 
 // Phase-specific type parameters
 type PhaseEntity = BaseDataEntity;
@@ -56,6 +55,45 @@ type CustomPhaseHooksDefault = CustomPhaseHooks<
   PhaseBaseParams['IncludedFields']
 >;
 
+
+// Phase Metadata Types
+type PhaseUnifiedMetadata = UnifiedMetadata<
+  PhaseBaseParams['T'],
+  PhaseBaseParams['K'], 
+  PhaseBaseParams['Meta'],
+  PhaseBaseParams['AttachmentType'],
+  PhaseBaseParams['ExcludedFields'],
+  PhaseBaseParams['IncludedFields']
+>;
+
+type PhaseStructuredMetadata = StructuredMetadata<
+  PhaseBaseParams['T'],
+  PhaseBaseParams['K'],
+  PhaseBaseParams['Meta'],
+  PhaseBaseParams['AttachmentType'],
+  PhaseBaseParams['ExcludedFields'],
+  PhaseBaseParams['IncludedFields']
+>;
+
+
+
+type AppPhase = Phase<
+  PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields
+>;
+
+type AppPhaseData = PhaseData<
+  PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields
+>;
+
+type AppPhaseMeta = PhaseMeta<
+  PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields
+>;
+
+type CustomAppPhaseHooks = CustomPhaseHooks<
+  PhaseEntity, PhaseK, PhaseMeta, PhaseAttachment, PhaseExcludedFields, PhaseIncludedFields
+>;
+
+
 // Helper for creating phase instances
 const createDefaultPhase = (options: Partial<PhaseDefault> = {}): PhaseDefault => ({
   id: options.id || generateId(),
@@ -71,3 +109,18 @@ const createDefaultPhase = (options: Partial<PhaseDefault> = {}): PhaseDefault =
 
 // Empty/default phase
 const emptyPhase: PhaseDefault = createDefaultPhase();
+
+
+export type {
+  PhaseEntity,
+  PhaseK, 
+  PhaseMeta,
+  PhaseAttachment,
+  PhaseExcludedFields,
+  PhaseIncludedFields,
+  PhaseBaseParams,
+  AppPhase,          
+  AppPhaseData,      
+  AppPhaseMeta,      
+  CustomAppPhaseHooks
+};

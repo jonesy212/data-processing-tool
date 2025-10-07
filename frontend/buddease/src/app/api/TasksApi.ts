@@ -194,7 +194,7 @@ const updateTaskPosition = async <
   }
 };
 
-const addTask = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(newTask: Omit<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 'id'>): Promise<void> => {
+const addTaskApi = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(newTask: Omit<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 'id'>): Promise<void> => {
   try {
     const addTaskEndpoint = `${API_BASE_URL}.add`;
     const response = await axiosInstance.post(addTaskEndpoint, newTask);
@@ -215,7 +215,7 @@ const addTask = async <T extends  BaseData<any>, K extends T = T, Meta extends S
     throw error;
   }
 };
-const removeTask = async (taskId: number): Promise<void> => {
+const removeTaskApi = async (taskId: number): Promise<void> => {
   try {
     const removeTaskEndpoint = `${API_BASE_URL}.remove.${taskId}`;
     const response = await axiosInstance.delete(removeTaskEndpoint);
@@ -328,7 +328,7 @@ const getTaskHistoryFromDatabase = async (taskId: string) => {
   }
 };
 
-const unassignTask = async (taskId: number): Promise<void> => {
+const unassignTaskApi = async (taskId: number): Promise<void> => {
   try {
     const unassignTaskEndpoint = `${API_BASE_URL}.unassign.${taskId}`;
     await axiosInstance.post(unassignTaskEndpoint);
@@ -373,22 +373,22 @@ const fetchTaskData = <
 };
 
 
-const createTask = <
+// ✅ Rename to avoid naming conflicts
+export const createTaskApi = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(newTask: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void> => {
-  return new Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void>(async (resolve, reject) => {
-
+>(
+  newTask: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void> => {
+  return new Promise(async (resolve, reject) => {
     try {
       const createTaskEndpoint = `${API_BASE_URL}.add`;
       const response = await axiosInstance.post(createTaskEndpoint, newTask);
-
       response.data ? resolve(response.data) : resolve();
-
       return response.data;
     } catch (error) {
       console.error("Error creating task:", error);
@@ -397,15 +397,14 @@ const createTask = <
         "Failed to create task",
         "CREATE_TASK_ERROR"
       );
-
-      reject(error)
+      reject(error);
       throw error;
     }
-  })
-}
+  });
+};
 
 
-const deleteTask = async (taskId: number): Promise<void> => {
+const deleteTaskApi = async (taskId: number): Promise<void> => {
   try {
     const deleteTaskEndpoint = `${API_BASE_URL}.delete.${taskId}`;
     await axiosInstance.delete(deleteTaskEndpoint);

@@ -1,5 +1,5 @@
 import React from'react';
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { useEffect, useState } from "react";
 import axiosInstance from '@/app/api/csrfToken';
 

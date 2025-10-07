@@ -6,7 +6,7 @@ import { K, T } from '@/app/models/data/dataStoreMethods';
 import { FileMetadata } from '@/app/components/models/file/FileManager';
 import { Task } from '@/app/components/models/tasks/Task';
 import { TransactionData } from '@/app/payment/Transaction';
-import { PhaseMeta } from '@/app/phases/Phase';
+import { PhaseMeta } from '@/app/models/phases/Phase';
 import TodoImpl from '@/app/todos/Todo';
 import { CoreMetadata, SharedMetadata } from '@/config/metadata/MetadataHooks';
 import { MetadataEntriesType, MetadataEntry, projectMetadata, ProjectMetadata, StructuredMetadata, VideoMetadata } from '@/config/StructuredMetadata';
@@ -24,10 +24,11 @@ import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { baseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { useMeta } from '@/config/useMeta';
 import { SchemaField } from '@/server/database/SchemaField';
-import { AppStructurePermissions } from '@/appStructure/AppStructure';
-import { PriorityTypeEnum } from '@/models/data/StatusType';
-import { AllStatus } from '@/state/stores/DetailsListStore';
-import { User } from '@/users/User';
+import { AppStructurePermissions } from '@/config/AppStructure';
+import { PriorityTypeEnum } from '@/app/models/data/StatusType';
+import { AllStatus } from '@/app/state/stores/DetailsListStore';
+import { User } from '@/app/users/User';
+import { Attachment } from "@/app/documents/Attachment/attachment";
 
 export type BaseAudit<T = any, K = any> = AuditEntry<T, K, StructuredMetadata<T, K>>;
 
@@ -77,6 +78,15 @@ interface AppMetadata<
 > {
   createdBy?: string;
   updatedBy?: string;
+    // App-specific metadata properties
+  appVersion: string;
+  appId: string;
+  environment: 'development' | 'staging' | 'production';
+  featureFlags: Record<string, boolean>;
+  
+  // Task-specific metadata (if needed)
+  taskMetadata?: TaskMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
   version?: number;
   tags?: string[];
   relatedEntities?: Array<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
@@ -140,7 +150,7 @@ interface StructuralMetadata<T extends BaseDataEntity, K extends T> {
 
 // Current state properties
 interface CurrentStateMetadata<T extends BaseDataEntity, K extends T> {
-  currentMetadata?: UnifiedMetadata<T, K>;
+  currentMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   currentMeta?: StructuredMetadata<T, K> | undefined;
 }
 
@@ -192,7 +202,8 @@ interface TaskMetadata<
   T extends BaseDataEntity,
   K extends T = T,
   Sub = Task<T, K> | TodoImpl<any, any, any>
-> extends TaskMetaDataOptions<T, K>, SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+> extends TaskMetaDataOptions<T, K>, 
+SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   taskId: string,
   taskName: string,
   _id?: string
@@ -244,6 +255,7 @@ type UnifiedMetadata<
   count?: number;
   generatedAt?: Date;
   dataSource?: string;
+  initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 
 interface UnifiedMetaDataOptions<
@@ -281,7 +293,7 @@ interface UnifiedMetaDataOptions<
 function transformProjectToUnifiedMetadata<
   T extends BaseDataEntity,
   K extends T = T
->(projectMetadata: ProjectMetadata<T, K>): UnifiedMetadata<T, K> {
+>(projectMetadata: ProjectMetadata<T, K>): UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   const { versionNumber, appVersion } = getCurrentAppInfo();
 
   // Get version data from project metadata
@@ -892,6 +904,9 @@ const dynamicMediaMetadata = createMediaMetadata(
 
 
 const task: Task<MyDataType, MyDataType> = {
+
+  progress, participants, uploadedAt, phase,
+
   id: "task123",
   title: "Sample Task",
   description: "This is a sample task.",
@@ -946,46 +961,6 @@ const task: Task<MyDataType, MyDataType> = {
 };
 
 
-// Dynamically create TaskMetadata based on the Task interface
-export const taskMetadata = <T extends BaseDataEntity, K extends T = T>(
-  task: Task<T, K>
-): TaskMetadata<T, K> => {
-  return {
-    subtasks: task.dependencies || [],
-    scheduledDate: task.scheduled?.startDate || undefined, // Dynamically assign scheduledDate
-    taskId: task.taskId,
-    taskName: task.taskName,
-    _id: task._id,
-    priority: task.priority,
-    assignedTo: task.assignedTo,
-    id: task.id,
-    createdBy: task.createdBy,
-    name: task.name,
-    category: task.category,
-    timestamp: task.timestamp,
-
-    metadataEntries: task.metadataEntries,
-    version: task.version || undefined,
-    isActive: task.isActive,
-    config: task.config,
-    keywords: task.keywords,
-    permissions: task.permissions,
-    customFields: task.customFields,
-    versionData: task.versionData,
-    latestVersion: task.latestVersion,
-    apiEndpoint: task.apiEndpoint,
-    apiKey: task.apiKey,
-    timeout: task.timeout,
-    retryAttempts: task.retryAttempts,
-    metadata: task.metadata,
-    initialState: task.initialState,
-    meta: task.meta,
-    mappedSnapshot: task.mappedSnapshot,
-    events: task.events,
-    // Add other dynamic properties here as needed
-  };
-};
-
 const { latestVersion = createLatestVersion<T, K>(), ...rest } = data;
 
 // console.log(area);  // Output: "1920x1080"
@@ -1006,7 +981,6 @@ const myMetaData: UnifiedMetadata<BaseDataEntity> = {
     sessionId: 'session123',
     status: 'active'
   },
-  currentMeta: currentMeta,
   fileMetadata: {
     fileName: 'example.txt',
     fileSize: 1024,

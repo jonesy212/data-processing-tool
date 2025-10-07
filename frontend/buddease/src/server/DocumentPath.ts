@@ -7,7 +7,8 @@ import AccessHistory from "@/app/versions/AccessHistory";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { AppStructurePermissions } from "@/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 
 
 interface DocumentPath<

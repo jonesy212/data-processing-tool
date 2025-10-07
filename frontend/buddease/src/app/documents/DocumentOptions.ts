@@ -360,7 +360,7 @@ export interface DocumentOptions<
     right: number;
   };
   visibility: AllTypes;
-  updatedDocument?: DocumentData<T, K, Meta>;
+  updatedDocument?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   fontSize: number;
   font: string;
   textColor: string;
@@ -494,8 +494,8 @@ export interface DocumentOptions<
   };
   previousMeta: StructuredMetadata<T, K> | undefined;
   currentMeta: StructuredMetadata<T, K>;
-  previousMetadata?: UnifiedMetadata<T, K> | undefined;
-  currentMetadata?: UnifiedMetadata<T, K> | undefined;
+  previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+  currentMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   currentContent: ContentState
   previousContent: ContentState | undefined
   lastModifiedDate: ModifiedDate | undefined;

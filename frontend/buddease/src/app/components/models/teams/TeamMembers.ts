@@ -2,9 +2,11 @@ import UserRoles from '@/users/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
 import { User } from "@/app/users/User";
 import { UserRole } from "@/app/users/UserRole";
-import { Team } from '@/Team';
-import { Task } from '@/tasks/Task';
+import { Team } from '@/app/models/teams/Team';
+import { Task } from '@/app/models/tasks/Task';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { BaseDataRoot } from "@/config/BaseConfig";
 
 export interface Member extends User {
   teamId: string;
@@ -13,11 +15,6 @@ export interface Member extends User {
   teams?: Team[];
   host?: boolean;
   // Add other member-specific properties here
-}
-
-export interface Collaborator extends Member {
-  collaborations: number; // Number of collaborations
-  // Add any other properties specific to Collaborator
 }
 
 export interface Contribution {
@@ -35,86 +32,201 @@ interface Contributor extends Member {
   active?: boolean;
 }
 
-// Define the MemberData interface extending Member
-interface MemberData<
-  T extends BaseDataEntity, 
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T> 
-> extends Member {
-  datasets?: string;
-  tasks?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  questionnaireResponses?: any;
-  userType: string
-  // Add other fields specific to MemberData
+
+  interface TeamMember<
+  T extends BaseDataEntity = MemberEntity,
+  K extends T = MemberK,
+  Meta extends DefaultMeta<T, K> = MemberMeta,
+  AttachmentType extends Attachment = MemberAttachment,
+  ExcludedFields extends keyof T = MemberExcludedFields,
+  IncludedFields extends keyof T = MemberIncludedFields
+> extends MemberData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  // Team-specific additional properties
+  teamRole?: string;
+  joinDate?: Date;
+  permissions?: TeamPermissions;
+  isTeamAdmin?: boolean;
+  teamSpecificSettings?: TeamMemberSettings;
+  contributionScore?: number;
+  lastTeamActivity?: Date;
 }
-interface TeamMember extends MemberData {
-    id: number;
-    username: string;
-    email: string;
-    tier: string;
-    upload_quota: number;
-  user_type: string;
-  role: UserRole
-    // Add other TeamMember-related fields as needed
-  }
-  
+
+// Team permissions type
+interface TeamPermissions {
+  canManageTeam?: boolean;
+  canInviteMembers?: boolean;
+  canRemoveMembers?: boolean;
+  canCreateProjects?: boolean;
+  canDeleteProjects?: boolean;
+  canAssignTasks?: boolean;
+  canViewAnalytics?: boolean;
+}
+
+// Team member settings
+interface TeamMemberSettings {
+  notificationPreferences?: {
+    teamAnnouncements?: boolean;
+    projectUpdates?: boolean;
+    taskAssignments?: boolean;
+    mentionNotifications?: boolean;
+  };
+  visibilitySettings?: {
+    showEmail?: boolean;
+    showActivity?: boolean;
+    showSkills?: boolean;
+  };
+  collaborationPreferences?: {
+    preferredCommunication?: 'chat' | 'email' | 'video';
+    availabilityStatus?: 'available' | 'busy' | 'away';
+    workingHours?: {
+      start: string;
+      end: string;
+      timezone: string;
+    };
+  };
+}
+
 
   const DEFAULT_REFRESH_UI = () => {};
 
-  const memberData: MemberData = {
-    bannerUrl: "", 
-    roles: [], 
-    followers: [], 
+// Option 1: Using the exact MemberEntity generic parameters
+const memberData: MemberData<
+  MemberEntity,
+  MemberK, 
+  MemberMeta,
+  MemberAttachment,
+  MemberExcludedFields,
+  MemberIncludedFields
+> = {
+    bannerUrl: "https://example.com/default-banner.jpg", 
+    roles: ["member", "contributor"], 
+    followers: ["user123", "user456"], 
     preferences: {
       refreshUI: DEFAULT_REFRESH_UI,
+      theme: "dark",
+      language: "en",
+      notifications: true,
+      emailUpdates: false
     }, 
-    storeId: 0,
-    id: 1,
+    storeId: 12345,
+    id: "member-001",
     username: 'member1',
     email: 'member1@example.com',
-    teamId: "",
-    roleInTeam: "",
-    _id: "",
-    tier: "",
-    uploadQuota: 0,
-    fullName: null,
-    bio: null,
-    userType: "",
-    hasQuota: false,
-    profilePicture: null,
-    processingTasks: [],
-    role: {} as UserRole,
-    timeBasedCode: "",
-    memberName: "",
-    persona: {} as Persona,
+    teamId: "team-001",
+    roleInTeam: "developer",
+    _id: "mongo-member-001",
+    tier: "premium",
+    uploadQuota: 1024,
+    fullName: "John Doe",
+    bio: "Experienced software developer with 5+ years in web development",
+    userType: "premium_user",
+    hasQuota: true,
+    profilePicture: "https://example.com/avatars/member1.jpg",
+    processingTasks: ["task-001", "task-002"],
+    role: {
+      id: "role-001",
+      name: "Developer",
+      permissions: ["read", "write", "delete"],
+      level: 2
+    } as UserRole,
+    timeBasedCode: "TBC-123456",
+    memberName: "John Doe",
+    persona: {
+      id: "persona-001",
+      type: "developer",
+      traits: ["analytical", "creative", "collaborative"],
+      preferences: ["code_reviews", "pair_programming"]
+    } as Persona,
     snapshots: [],
-    token: null,
-    avatarUrl: null,
-    createdAt: new Date(),
-    updatedAt: undefined,
-    isVerified: false,
+    token: "auth-token-xyz-123",
+    avatarUrl: "https://example.com/avatars/member1.jpg",
+    createdAt: new Date("2023-01-15"),
+    updatedAt: new Date("2024-01-20"),
+    isVerified: true,
     isAdmin: false,
-    isActive: false,
-    firstName: "",
-    lastName: "",
-    friends: [],
+    isActive: true,
+    firstName: "John",
+    lastName: "Doe",
+    friends: ["user123", "user456", "user789"],
     blockedUsers: [],
-    settings: null,
-    interests: [],
-    privacySettings: undefined,
-    notifications: undefined,
-    activityLog: [],
-    socialLinks: undefined,
-    relationshipStatus: null,
-    hobbies: [],
-    skills: [],
-    achievements: [],
-    profileVisibility: "",
-    profileAccessControl: undefined,
-    activityStatus: "",
-    isAuthorized: false
-  };
+    settings: {
+      privacy: "public",
+      emailNotifications: true,
+      pushNotifications: false,
+      twoFactorAuth: true
+    },
+    interests: ["programming", "gaming", "photography", "hiking"],
+    privacySettings: {
+      profileVisibility: "public",
+      emailVisibility: "friends_only",
+      activityVisibility: "public",
+      friendListVisibility: "friends_only"
+    },
+    notifications: {
+      email: true,
+      push: false,
+      sms: false,
+      frequency: "daily"
+    },
+    activityLog: [
+      {
+        id: "activity-001",
+        type: "login",
+        timestamp: new Date("2024-01-20T10:00:00"),
+        details: "User logged in successfully"
+      }
+    ],
+    socialLinks: {
+      github: "https://github.com/johndoe",
+      twitter: "https://twitter.com/johndoe",
+      linkedin: "https://linkedin.com/in/johndoe"
+    },
+    relationshipStatus: "single",
+    hobbies: ["coding", "gaming", "reading", "traveling"],
+    skills: ["JavaScript", "TypeScript", "React", "Node.js", "Python"],
+    achievements: [
+      {
+        id: "achieve-001",
+        title: "First Project",
+        description: "Completed first major project",
+        date: new Date("2023-03-15")
+      }
+    ],
+    profileVisibility: "public",
+    profileAccessControl: {
+      canViewProfile: true,
+      canSendMessages: true,
+      canSeeFriends: true,
+      canSeeActivity: true
+    },
+    activityStatus: "online",
+    isAuthorized: true,
+    // MemberData specific fields
+    datasets: "user-dataset-001,user-dataset-002",
+    tasks: [
+      {
+        id: "task-001",
+        title: "Complete onboarding",
+        status: "completed",
+        priority: "high",
+        dueDate: new Date("2024-01-25")
+      } as Task<MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields>
+    ],
+    questionnaireResponses: {
+      onboarding: {
+        completed: true,
+        responses: {
+          experience: "5 years",
+          skills: ["JavaScript", "React"]
+        }
+      }
+    },
+    joinDate: new Date("2023-01-15"),
+    lastActive: new Date("2024-01-20T14:30:00"),
+    status: "active",
+    projects: ["project-001", "project-002"],
+    permissions: ["read", "write", "comment"]
+};
   
   const teamMember: TeamMember = {
     id: 1,

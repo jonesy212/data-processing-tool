@@ -1,10 +1,10 @@
 // components/DynamicNamingConventions.tsx
 import { default as handleDynamicNotificationMessage, default as NOTIFICATION_MESSAGES } from '@/app/features/support/NotificationMessages';
-import { configServiceInstance } from '@/config/ConfigurationService';
+import { configServiceInstance } from '@/app/services/ConfigurationService';
 import { NotificationTypeEnum, useNotification } from '@/context/NotificationContext';
+import { useDynamicComponents } from '@/DynamicComponentsContext';
 import { NamingConventionsError } from '@/shared/sharedError';
 import React from 'react';
-import { useDynamicComponents } from '@/DynamicComponentsContext';
 
 interface DynamicNamingConventionsProps {
   dynamicContent?: boolean; // Use this prop to determine dynamic or static rendering

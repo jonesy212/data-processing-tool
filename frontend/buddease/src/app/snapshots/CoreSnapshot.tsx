@@ -12,7 +12,7 @@ import { Content } from "@/app/models/content/AddContent";
 import { ChatRoom } from '@/calendar/CalendarSlice';
 import { Sender } from '@/communications/chat/Communication';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { SnapshotIdentity } from '@/SnapshotIdentity';
+import { SnapshotIdentity } from '@/app/snapshots/SnapshpshotIdentity';
 import { SnapshotBase, SnapshotData } from ".";
 
 import { Label } from "@/app/branding/BrandingSettings";

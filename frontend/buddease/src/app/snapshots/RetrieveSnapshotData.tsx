@@ -4,8 +4,8 @@
 // import { BaseData } from '@/data/Data';
 // import axiosInstance from '@/app/api/csrfToken';
 // import { Snapshot } from '@/app/snapshots/Snapshot';
-// import { SnapshotData } from '@/SnapshotData';
-// import SnapshotStoreComponent from '@/SnapshotStoreComponent';
+// import { SnapshotData } from '@/app/snapshots/SnapshpshotData';
+// import SnapshotStoreComponent from '@/app/snapshots/SnapshpshotStoreComponent';
 
 
 // // // Define the API endpoint for retrieving snapshot data

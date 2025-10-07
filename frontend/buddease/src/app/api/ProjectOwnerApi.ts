@@ -1,16 +1,16 @@
 // projectOwnerApi.ts
 import { ProjectOwnerActions } from "@/app/actions/ProjectOwnerActions";
 import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import MemberData from "@/app/components/models/teams/TeamMembers";
 import {
-  NotificationTypeEnum,
-  useNotification,
+    NotificationTypeEnum,
+    useNotification,
 } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Project, ProjectData } from "@/app/projects/Project";
 import { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
-import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 
 const API_BASE_URL = endpoints.projectOwner.base;

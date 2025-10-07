@@ -32,7 +32,7 @@ class ExtendedBackendStructure extends BackendStructure {
   }
 
   // Override traverseDirectory with custom implementation
-  async traverseDirectory(dir: string): Promise<AppStructureItem[]> {
+  async traverseDirectory(dir: string): Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     // Check if parent method exists before calling
     if (super.traverseDirectory) {
       const result = await super.traverseDirectory(dir);
@@ -107,17 +107,17 @@ async function initializeBackendStructure(): Promise<ExtendedBackendStructure> {
       const files = await traverseFrontendDirectory(
         getAppPath(backendConfig.versionNumber, backendConfig.appVersion)
       );
-      files.forEach((file: AppStructureItem) => {
+      files.forEach((file: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         structure[file.path] = file;
       });
       return structure;
     }
 
-    public getStructureAsArray(): AppStructureItem[] {
+    public getStructureAsArray(): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
       return Object.values(this.structure || {});
     }
 
-    public async traverseDirectory(dir: string): Promise<AppStructureItem[]> {
+    public async traverseDirectory(dir: string): Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
       const result = await super.traverseDirectory(dir);
       return result || [];
     }

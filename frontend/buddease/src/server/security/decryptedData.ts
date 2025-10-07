@@ -1,12 +1,8 @@
 // decryptedData.ts
 import * as crypto from 'crypto';
 import { CipherKey } from 'crypto';
-import { generateDecryptionKey } from '@/decryptionKey';
-import { Encryption } from '@/app/encryption';
-
-
-
-// Decryption function
+import { generateDecryptionKey } from '@/server/securiity/decryptionKey';
+import { Encryption } from '@/server/security/Encryption';
 
 // Decryption function
 export const decryptedData = (encryptedData: string, encryptionParams: Encryption): string => {

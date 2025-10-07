@@ -41,9 +41,8 @@ export type UserConfigData<
   IncludedFields extends keyof T = keyof T
 > = 
   UserConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  // &
-  // UserData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-
+  
+  
 type Meta<T extends BaseDataEntity, K extends T> = StructuredMetadata<T, K>;
 
 type ConvertMeta<

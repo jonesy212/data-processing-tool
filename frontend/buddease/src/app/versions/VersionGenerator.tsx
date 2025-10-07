@@ -40,8 +40,12 @@ interface VersionNotificationMessages {
 
 
 interface VersionResult<
-T extends BaseData<any>,
-K extends T = T,
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   version: Version<T, K>;
   versionInfo: ExtendedVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -61,9 +65,16 @@ const getCurrentAppInfo = (): { versionNumber: string; appVersion: string } => {
 };
 
 class VersionGenerator {
-  static async generateVersion<T extends BaseData<any>, K extends T = T>(
+  static async generateVersion<  
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     config: VersionGeneratorConfig
-  ): Promise<VersionResult<T, K>> {
+  ): Promise<VersionResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     try {
       // Retrieve real-time data
       const data = await config.getData();
@@ -93,7 +104,7 @@ class VersionGenerator {
         message, // content
         null, // notificationMessage (set to null as per your interface)
         new Date(), // date
-        NotificationTypeEnum.GeneratedID, // type
+        NotificationTypeEnum.GENERATED_ID, // type
         undefined, // notificationType (optional)
         undefined, // options (optional)
         undefined // userName (optional)
@@ -127,14 +138,14 @@ class VersionGenerator {
       TaskLogger.logTaskCompleted(
         "existingTaskId",
         "Version Generation Task",
-        "TaskSuccess" as NotificationTypeEnum,
+        "TaskSuccess" as NotificationType,
         (message: string, type: string, date: Date, id: string) => {
           notify(
             id, // First parameter is id
             message, // Second is content
             null, // Third is notificationMessage
             date, // Fourth is date
-            NotificationTypeEnum.TaskBoardID, // Fifth is type
+            NotificationTypeEnum.TASK_BOARD_ID, // Fifth is type
             undefined, // Sixth is notificationType (optional)
             undefined, // Seventh is options (optional)
             undefined // Eighth is userName (optional)

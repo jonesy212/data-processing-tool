@@ -142,7 +142,7 @@ const versionInfo: Version<T, K> = {
   workspaceAdmins: [],
   workspaceMembers: [],
   data: [],
-  _structure: {} as Record<string, AppStructureItem[]>,
+  _structure: {} as Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
   versionHistory: {
     versionData: {}
   },

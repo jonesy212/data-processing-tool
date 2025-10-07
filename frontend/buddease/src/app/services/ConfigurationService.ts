@@ -7,7 +7,7 @@ import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
 import {
   BackendConfig,
   backendConfig,
-} from "./BackendConfig";
+} from "../../config/BackendConfig";
 
 import { getConfigsData } from '@/api/getConfigsApi';
 import LazyLoadScriptConfigImpl from "@/app/components/configs/LazyLoadScriptConfig";
@@ -17,9 +17,9 @@ import { BaseDataEntity, BaseDataRoot, DefaultMeta } from '@/config/BaseConfig';
 import dataVersions from "@/configs/DataVersionsConfig";
 import { VersionHistory } from '@/versions/VersionData';
 import fs from 'fs';
-import { frontendConfig } from "./FrontendConfig";
-import { ModuleType, userPreferences } from "./UserPreferences";
-import userSettings from "./UserSettings";
+import { frontendConfig } from "../../config/FrontendConfig";
+import { ModuleType, userPreferences } from "../../config/UserPreferences";
+import userSettings from "../../config/UserSettings";
 
 interface BaseRetryConfig {
   maxRetries?: number;
@@ -71,6 +71,7 @@ export interface ApiConfig {
   } | string;
   withCredentials: boolean;
   onLoad?: (response: any) => void;
+  apiKeys?: Record<string, string>;
 }
 
 interface ConfigurationOptions<

@@ -18,7 +18,7 @@ import { SnapshotData } from "./SnapshotData";
 import snapshotDelegate from "./snapshotDelegate";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { SnapshotContainerType } from '@/SnapshotContainer';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
 
 const snapshotType = <
   T extends BaseDataEntity,

@@ -1,5 +1,6 @@
-import UsageExamplesBox  from '@/app/components/styling/UsageExamplesBox';
 // NotificationTypes.ts
+import { NotificationType } from '@/app/context/NotificationContext';
+import UsageExamplesBox  from '@/app/components/styling/UsageExamplesBox';
 
 // Base types - System & Technical
 export const BaseNotificationTypes = {
@@ -45,6 +46,8 @@ export const ChatNotificationTypes = {
   CHAT_MESSAGE_ID: 'ChatMessageID',
   CHAT_THREAD_ID: 'ChatThreadID',
   DIRECT_MESSAGE: 'DirectMessage',
+  
+  
 } as const;
 
 // Operations & System Actions
@@ -131,7 +134,7 @@ export const CustomNotificationTypes = {
   UNSUBSCRIBED: 'Unsubscribed',
   MILESTONE: 'Milestone',
   CONTRIBUTION_ID: 'ContributionID',
-  IDEATION_BRAINSTORMING: 'Ideation:Brainstorming',
+  IDEATION_BRAINSTORMING: 'IdeationBrainstorming',
   DOCUMENT_EDIT_ID: 'DocumentEditID',
   API_CLIENT_ERROR: 'ApiClientError',
   __FILE_PATH__: 'filePath',
@@ -139,7 +142,9 @@ export const CustomNotificationTypes = {
 
 // Onboarding & Setup (for your phases)
 export const OnboardingNotificationTypes = {
-  PROFILE_SETUP: 'ProfileSetup',
+  PROFILE_SETUP_START: 'ProfileSetupStart',
+  PROFILE_SETUP_COMPLETE: 'ProfileSetupComplete',
+  PROFILE_SETUP_SKIPPED: 'ProfileSetupSkipped',
   REGISTRATION_COMPLETE: 'RegistrationComplete',
   ONBOARDING_COMPLETE: 'OnboardingComplete',
   INITIAL_SETUP_COMPLETE: 'InitialSetupComplete',
@@ -167,6 +172,8 @@ export const PhaseNotificationTypes = {
   USER_SUPPORT_CLOSURE_START: 'UserSupportClosureStart',
   USER_SUPPORT_CLOSURE_COMPLETE: 'UserSupportClosureComplete',
 
+  PROFILE_PHASE_START: 'ProfilePhaseStart', 
+  PROFILE_PHASE_COMPLETE: 'ProfilePhaseComplete',
   // Progress Phases
   PROGRESS_IDEATION_START: 'ProgressIdeationStart',
   PROGRESS_IDEATION_COMPLETE: 'ProgressIdeationComplete',
@@ -291,10 +298,10 @@ export const PhaseNotificationTypes = {
 
   TRADING_ENTHUSIAST_PROFILE_START: 'TradingEnthusiastProfileStart',
   TRADING_ENTHUSIAST_PROFILE_COMPLETE: 'TradingEnthusiastProfileComplete',
-  TRADING_FOLLOW_TRADERS_START: 'Trading',
+  TRADING_FOLLOW_TRADERS_START: 'TradingFollowTradersStart',
   TRADING_FOLLOW_TRADERS_COMPLETE: 'TradingFollowTradersComplete',
-  TRADING_DO_YOUR_OWN_RESEARCH_START: 'Trading',
-  TRADING_DO_YOUR_OWN_RESEARCH_COMPLETE: 'TradingDYORComplete',
+  TRADING_DO_YOUR_OWN_RESEARCH_START: 'TradingDoYourOwnResearchStart',
+  TRADING_DO_YOUR_OWN_RESEARCH_COMPLETE: 'TradingDoYourOwnResearchComplete',
   TRADING_PARTICIPATE_CALLS_CONFERENCES_START: 'TradingParticipateCallsConferencesStart',
   TRADING_PARTICIPATE_CALLS_CONFERENCES_COMPLETE: 'TradingParticipateCallsConferencesComplete',
   TRADING_ADD_CONTENT_START: 'TradingAddContentStart',
@@ -343,9 +350,6 @@ export const NOTIFICATION_TYPES = {
   ...OnboardingNotificationTypes,
    ...PhaseNotificationTypes, 
 } as const;
-
-export type NotificationType = typeof NOTIFICATION_TYPES[keyof typeof NOTIFICATION_TYPES];
-
 
 
 // UsageExample

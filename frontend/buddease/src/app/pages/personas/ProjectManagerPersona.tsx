@@ -260,7 +260,7 @@ const ProjectManagerPersona: React.FC<ProjectManagerPersonaProps> = ({
               setFrontendAndBackendStructure: function (): Promise<void> {
                 throw new Error("Function not implemented.");
               },
-              getStructure: function (): Record<string, AppStructureItem[]> {
+              getStructure: function (): Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
                 throw new Error("Function not implemented.");
               }
             },

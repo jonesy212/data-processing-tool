@@ -323,7 +323,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
 
 
 const area = fetchUserAreaDimensions().toString();
-const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area);
+const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area);
 const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area);
 
 const coreData: Data<T, K, StructuredMetadata<T, K>> = {

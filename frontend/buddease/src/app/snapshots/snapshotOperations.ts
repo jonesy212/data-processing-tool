@@ -20,8 +20,8 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { UpdateSnapshotPayload } from "@/server/database/Payload";
 import { SchemaField } from '@/server/database/SchemaField';
-import { InitializedData, SnapshotStoreOptions } from '@/SnapshotStoreOptions';
-import { SnapshotWithCriteria } from '@/SnapshotWithCriteria';
+import { InitializedData, SnapshotStoreOptions } from '@/app/snapshots/SnapshpshotStoreOptions';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshpshotWithCriteria';
 import { UpdateSnapshotParams } from '@/UpdateSnapshotParams';
 import { SubscriberCollection } from '@/users/SubscriberCollection';
 import { VersionData } from '@/versions/VersionData';

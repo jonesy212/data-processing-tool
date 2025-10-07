@@ -50,7 +50,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.url = exports.fetchUserRequest = void 0;
 // ApiUser.ts
 var ApiClient_1 = require("@/app/api/ApiClient");
-var ApiEndpoints_1 = require("@/app/api/ApiEndpoints");
+var ApiEndpoints_1 = require('@/app/api/endpointConfigurations');
 var axiosInstance_1 = require("@/app/api/axiosInstance");
 var Logger_1 = require("@/app/libraries/logging/Logger");
 var dot_prop_1 = require("dot-prop");

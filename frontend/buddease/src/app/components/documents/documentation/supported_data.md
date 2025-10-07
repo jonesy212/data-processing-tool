@@ -16,7 +16,7 @@ type SupportedData<
   Todo<T, K, Meta> &
   Task<T, K, Meta> &
   CommunityData &
-  DocumentData<T, K, Meta> &
+  DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
   ProjectData &
   TeamData<T, K, Meta> &
   CacheData &

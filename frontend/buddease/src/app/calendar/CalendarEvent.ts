@@ -134,7 +134,7 @@ interface CalendarEvent<
   changes?: string[];
   date: string | Date | undefined;
   tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined; 
-  meta: UnifiedMetadata<T, K> | undefined;
+  meta: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
 
   options?: {
     // ...
@@ -163,7 +163,7 @@ interface CalendarEvent<
   pinned?: boolean;
   archived?: boolean;
   documentReleased?: boolean;
-  metadata?: UnifiedMetadata<T, K>
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   getSnapshotStoreData?: () => Promise<CalendarEventWithCriteria[]> ;
 
   getData?: () => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;

@@ -22,8 +22,8 @@ import { NotificationType, NotificationTypeEnum, useNotification } from '@/conte
 import { FetchSnapshotPayload } from '@/FetchSnapshotPayload';
 import { mapToSnapshotStore } from '@/mappings/mapToSnapshotStore';
 import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
-import { SnapshotContainer } from '@/SnapshotContainer';
-import { SnapshotStoreConfig } from '@/SnapshotStoreConfig';
+import { SnapshotContainer } from '@/app/snapshots/SnapshpshotContainer';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshpshotStoreConfig';
 import { Callback } from '@/subscribeToSnapshotsImplementation';
 import { Subscription } from '@/subscriptions/Subscription';
 import { Subscriber } from '@/users/Subscriber';

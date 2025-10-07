@@ -51,7 +51,7 @@ class BackendStructureWrapper {
 
   // Add other methods as needed
 
-  async traverseExposedDirectory(dir: string): Promise<AppStructureItem[]> {
+  async traverseExposedDirectory(dir: string): Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     // Implement logic to control what is exposed during traversal
     // Example: Exclude files in a certain directory
     const excludedDirectory = "excludeThisDirectory";
@@ -63,7 +63,7 @@ class BackendStructureWrapper {
     }
 
     console.log(NOTIFICATION_MESSAGES.BackendStructure.DEFAULT);
-    const filteredFiles = files.filter((file: AppStructureItem) => {
+    const filteredFiles = files.filter((file: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
       try {
         const filePath = file.path;
         if (!filePath.includes(excludedDirectory)) {

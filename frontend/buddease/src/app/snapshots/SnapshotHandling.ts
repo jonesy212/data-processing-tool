@@ -3,8 +3,8 @@ import { Data } from '@/app/models/data/Data';
 import { CategoryProperties } from '@/app/components/pages/personas/ScenarioBuilder';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { Snapshot, Snapshots, SnapshotsArray, SnapshotsObject } from '@/LocalStorageSnapshotStore';
-import SnapshotStore from '@/SnapshotStore';
-import { SnapshotStoreConfig } from '@/SnapshotStoreConfig';
+import SnapshotStore from '@/app/snapshots/SnapshpshotStore';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshpshotStoreConfig';
 
 
 interface SnapshotHandling<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {

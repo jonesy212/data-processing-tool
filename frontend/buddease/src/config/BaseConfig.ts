@@ -9,7 +9,7 @@ import { Taggable } from '@/app/models/CommonData';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { K, T, Meta } from "@/app/components/models/data/dataStoreMethods";
 import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, } from "./ConfigurationService";
+import { BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, } from "../app/services/ConfigurationService";
 import { BaseMetadata } from '@/database/MetaDataOptions';
 import { StructuredMetadata } from "./StructuredMetadata";
 import { useMeta } from "./useMeta";
@@ -73,7 +73,7 @@ interface BaseConfig<
 interface ProjectManagementConfig<
   T extends  BaseDataEntity,
   K extends T = T
-> extends BaseConfig<T, K> {
+> extends BaseConfig<T, K, Meta, ExcludedFields> {
   taskPhases: string[];
   maxCollaborators: number;
   notificationPreferences: {
@@ -85,7 +85,7 @@ interface ProjectManagementConfig<
 // Specific configuration for the crypto module
 interface CryptoConfig<
   T extends  BaseDataEntity,
-  K extends T = T> extends BaseConfig<T, K> {
+  K extends T = T> extends BaseConfig<T, K, Meta, ExcludedFields> {
   supportedCurrencies: string[];
   defaultCurrency: string;
   marketDataRefreshInterval: number;
@@ -101,7 +101,7 @@ const mappedSnapshot: Map<string, Snapshot<T, K, DefaultMeta<T, K>, never>> = ne
   Array.from(useSnapshot<T, K, StructuredMetadata<T, K>, never>().snapshotMap)
 );
 
-const baseConfig: BaseConfig<T, K> = {
+const baseConfig: BaseConfig<T, K, Meta, ExcludedFields>; = {
   id: "snapshot1",
   category: "example category",
   timestamp: new Date(),

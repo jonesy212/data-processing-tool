@@ -2,7 +2,7 @@
 
 import { BaseDataRoot } from "@/config/BaseConfig";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SnapshotConfigBuilder } from '@/SnapshotConfigBuilder';
+import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshpshotConfigBuilder';
 
 // Conditional Utility Types
 export type SnapshotConfigArgs<

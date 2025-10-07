@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { sanitizeData } from '@/security/SanitizationFunctions';
 import { Sender } from '@/communications/chat/Communication';
-import { User } from '@/users/User';
+import { User } from '@/app/users/User';
 import {
   StudentSender, CryptoSender, ProjectOwnerSender,
   ClientSender,

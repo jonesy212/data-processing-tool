@@ -1,9 +1,9 @@
-import axiosInstance from '@/app/api/csrfToken'
+import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from "@/app/api/endpointConfigurations";
 import { HeadersConfig } from "@/app/api/headers/HeadersConfig";
-import { AxiosError, AxiosResponse } from "axios";
 import { headersConfig } from "@/app/components/shared/SharedHeaders";
 import { UserSettings } from "@/config/UserSettings";
-import { endpoints } from "./ApiEndpoints";
+import { AxiosError, AxiosResponse } from "axios";
 import { handleApiError } from "./ApiLogs";
 
 const API_BASE_URL = endpoints.client;
@@ -177,3 +177,4 @@ class ApiUserSettingsService {
 export default ApiUserSettingsService;
 export { userSettingsNotificationMessages };
 export type { UserSettingsNotificationMessages };
+

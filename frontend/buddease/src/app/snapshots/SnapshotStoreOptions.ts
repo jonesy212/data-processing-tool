@@ -1,6 +1,6 @@
 import { Content } from '@/app/components/models/content/AddContent';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { SnapshotContainerType } from '@/SnapshotContainer';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
 
 import { BaseData } from '@/app/models/data/Data';
 import { ProjectMetadata, StructuredMetadata } from '@/config/StructuredMetadata';
@@ -26,7 +26,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/Bas
 import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { SchemaField } from '@/server/database/SchemaField';
-import { SnapshotStoreCore } from '@/SnapshotCore';
+import { SnapshotStoreCore } from '@/app/snapshots/SnapshpshotCore';
 import { Subscription } from '@/subscriptions/Subscription';
 import { Subscriber } from '@/users/Subscriber';
 

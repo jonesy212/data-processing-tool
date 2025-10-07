@@ -1,4 +1,4 @@
-import { NestedEndpoints } from "@/app/api/ApiEndpoints";
+import { NestedEndpoints } from '@/app/api/endpointConfigurations';
 import { DefaultCalendarEvent } from "@/app/actions/CalendarEventActions";
 import { Highlight } from "@/app/documents/NoteData";
 import CustomFile from "@/app/documents/File";

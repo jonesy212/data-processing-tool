@@ -148,7 +148,7 @@ export default class MobXEntityStore {
       appVersion: "",
       id: 0,
       content: "",
-      frontendStructure: {} as Promise<AppStructureItem[]>,
+      frontendStructure: {} as Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
       data: [],
       hash: function(value: string): string {
         return crypto.createHash("sha256").update(value).digest("hex");
@@ -198,7 +198,7 @@ export default class MobXEntityStore {
       isNewer: function (otherVersion: Version<T, K>): boolean {
         return this.compare?.(otherVersion) === 1;
       },
-      hashStructure: function(structure: AppStructureItem[]): string {
+      hashStructure: function(structure: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): string {
         return this.hash(JSON.stringify(structure));
       },
 

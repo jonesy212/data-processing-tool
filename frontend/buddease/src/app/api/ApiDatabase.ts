@@ -5,8 +5,8 @@ import {
 } from "@/app/context/NotificationContext";
 import { User } from "@/app/users/User";
 import { AxiosError } from "axios";
-import { handleApiError } from "./ApiLogs";
-  
+import { handleApiError } from "@/app/api/ApiLogs";
+
 // Define API notification messages for user fetch operations
 const userApiNotificationMessages = {
   FETCH_USERS_SUCCESS: "Users fetched successfully",

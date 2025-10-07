@@ -1,5 +1,5 @@
 // SecurityMeasureTypes.ts
-import { SnapshotSecurity } from '@/SnapshotSecurity'
+import { SnapshotSecurity } from '@/app/snapshots/SnapshpshotSecurity'
 
 
 export enum SecurityMeasureType {

@@ -16,8 +16,8 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/Bas
 import { Snapshots, SnapshotsArray, SnapshotUnion } from '@/LocalStorageSnapshotStore';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { SchemaField } from '@/server/database/SchemaField';
-import { InitializedData, UnifiedConfigOption } from '@/SnapshotStoreOptions';
-import { TagsRecord } from '@/SnapshotWithCriteria';
+import { InitializedData, UnifiedConfigOption } from '@/app/snapshots/SnapshpshotStoreOptions';
+import { TagsRecord } from '@/app/snapshots/SnapshpshotWithCriteria';
 import { ExtendedVersionData } from '@/versions/VersionData';
 import { MultipleEventsCallbacks } from "./subscribeToSnapshotsImplementation";
 

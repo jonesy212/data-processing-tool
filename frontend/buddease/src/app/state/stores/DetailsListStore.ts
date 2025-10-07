@@ -61,7 +61,7 @@ import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 const { notify } = useNotification();
 const { latestVersion = createLatestVersion<T, K>(), ...rest } = data;
 const area = fetchUserAreaDimensions().toString()
-const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
+const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area)
 const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
 
 // Union type of all status enums

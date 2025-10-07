@@ -1,9 +1,9 @@
 
+import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import RandomWalkSuggestions from '@/app/hooks/userInterface/RandomWalkSuggestions';
 import { Data } from '@/app/models/data/Data';
+import configServiceInstance from '@/app/services/ConfigurationService';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
-import configServiceInstance from '@/config//ConfigurationService';
-import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import ReactDOM from 'react-dom';
 
 

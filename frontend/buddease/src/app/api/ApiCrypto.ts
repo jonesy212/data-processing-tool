@@ -1,6 +1,7 @@
 // ApiCrypto.ts
 
 import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import { headersConfig } from "@/app/components/shared/SharedHeaders";
 import {
     NotificationType,
@@ -8,7 +9,6 @@ import {
     useNotification,
 } from "@/context/NotificationContext";
 import { AxiosError } from "axios";
-import { endpoints } from "./ApiEndpoints";
 
 const API_BASE_URL = endpoints.crypto;
 

@@ -3,7 +3,7 @@ import { SnapshotConfig } from '.';
 import { DebugInfo, TempData } from "@/app/models/data/TempData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { UnifiedConfigOption } from '@/SnapshotStoreOptions';
+import { UnifiedConfigOption } from '@/app/snapshots/SnapshpshotStoreOptions';
 
 interface SnapshotConfiguration<
   T extends BaseDataEntity,

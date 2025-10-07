@@ -188,7 +188,7 @@ interface VideoMetadata<
   thumbnailUrl: string;
   metadataSource: string;
   data?: Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   childIds: K[]; // Add childIds
   relatedData: K[]; // Add relatedData
 }

@@ -5,7 +5,7 @@ import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { FetchSnapshotPayload } from '@/FetchSnapshotPayload';
-import { SnapshotWithCriteria } from '@/SnapshotWithCriteria';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshpshotWithCriteria';
 
 
 

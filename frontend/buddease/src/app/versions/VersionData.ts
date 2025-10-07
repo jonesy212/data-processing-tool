@@ -222,9 +222,9 @@ interface VersionData<
   services?: Record<string, any>;
 
   // App structure
-  _structure?: Record<string, AppStructureItem[]>;
-  frontendStructure?: Promise<AppStructureItem[]>;
-  backendStructure?: Promise<AppStructureItem[]>;
+  _structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+  frontendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+  backendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
 
   // Backend/Frontend
   backend?: BackendStructure | undefined;
@@ -360,7 +360,7 @@ const createDefaultVersionData = <
     latestVersion: undefined,
     data: undefined,
     _structure: {},
-    transformToStructureItems: (data: any): AppStructureItem[] =>
+    transformToStructureItems: (data: any): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] =>
       Object.values(transformToStructureItems(data)),
     getVersionNumber: () => "0.0.0",
     updateStructureHash: async () => { },

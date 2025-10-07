@@ -36,7 +36,7 @@ export interface BaseResponseType<
   };
   
   // Metadata about the response data  
-  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   // Links for HATEOAS-style APIs
   links?: {

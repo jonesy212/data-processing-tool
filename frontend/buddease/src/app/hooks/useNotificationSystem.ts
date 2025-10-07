@@ -6,7 +6,18 @@ import { displayToast, showErrorMessage, showToast } from '@/utils/notifications
 import ErrorHandler from '@/utils/ErrorHandler';
 import { NotificationOptions } from '@/context/NotificationContext'
 
-export interface NotificationData {
+
+export interface NotificationData<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  
+  // Core notification properties
   id: string;
   message: string | Message;
   type: NotificationOptions['type'];
@@ -14,24 +25,37 @@ export interface NotificationData {
   read: boolean;
   metadata?: any;
   
-  // Your additional properties
+  // Additional properties from both interfaces
   dataId?: string;
   error?: string;
   createdAt?: Date;
   updatedAt?: Date;
   content?: any;
-  sendStatus?: boolean;
-  completionMessageLog?: any; // Using any for LogData since it's not defined here
+  sendStatus?: SendStatus | boolean;
+  completionMessageLog?: LogData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   date?: Date;
   email?: string;
-  status?: string; // Using string for AllStatus since it's not defined here
+  status?: AllStatus;
   inApp?: boolean;
-  notificationType?: string;
+  notificationType?: NotificationTypeEnum | string;
+  
+  // Options
   options?: {
     additionalOptions?: readonly string[] | string | number | any[] | undefined;
-    additionalDocumentOptions?: any;
+    additionalDocumentOptions?: DocumentOptions;
     additionalOptionsLabel?: string;
   };
+
+  // CalendarEvent properties that might be needed
+  rsvpStatus?: string;
+  participants?: Record<string, any>;
+  teamMemberId?: string;
+
+  // Data properties that might be needed
+  topics?: string[];
+  highlights?: string[];
+  files?: string[];
+  meta?: StructuredMetadata<T, K>;
 }
 
 

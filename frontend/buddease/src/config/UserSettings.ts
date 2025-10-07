@@ -1,4 +1,4 @@
-import { NestedEndpoints } from "@/app/api/ApiEndpoints";
+import { NestedEndpoints } from '@/app/api/endpointConfigurations';
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { CodingLanguageEnum, LanguageEnum } from '@/app/communications/LanguageEnum';
 import HighlightEvent from "@/app/documents/screenFunctionality/HighlightEvent";

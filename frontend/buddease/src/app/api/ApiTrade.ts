@@ -1,10 +1,10 @@
 // ApiTrade.ts
 import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { NotificationType, NotificationTypeEnum, useNotification } from "@/context/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { observable } from "mobx";
-import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 
 const API_BASE_URL = endpoints.apiConfig

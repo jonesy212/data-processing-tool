@@ -6,7 +6,7 @@ import { Attachment } from '@/app/documents/Attachment/attachment';
 import { addNotification } from '@/features/support/NotificationsSlice';
 import { Snapshot, Snapshots } from '@/LocalStorageSnapshotStore';
 import { NotificationData } from '@/models/display/ShowToast';
-import { SnapshotActions } from '@/SnapshotActions';
+import { SnapshotActions } from '@/app/snapshots/SnapshpshotActions';
 import { Subscriber } from '@/users/Subscriber';
 import { useDispatch } from 'react-redux';
 

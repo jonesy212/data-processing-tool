@@ -1,17 +1,20 @@
 // DApp.tsx
 import appTreeApiService from "@/app/api/appTreeApi";
+import { DatabaseType } from '@/app/typings/database'
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
 import { AquaChat } from "@/app/components/communications/chat/AquaChat";
+import { SupportedData } from '@/app/models/CommonData';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
-import { ThemeEnum } from "@/app/components/libraries/ui/theme/Theme";
-import { ThemeConfig } from "@/app/components/libraries/ui/theme/ThemeConfig";
+import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
+import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
 import { SharedRelationshipData } from '@/app/models/data/Data';
 import { DAppAdapterProps } from "@/app/crossPlatformLayer/src/src/platform/DAppAdapter";
 import LoadAquaState from "@/app/dashboards/LoadAquaState";
 import { Attachment } from '@/app/documents/Attachment/attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import FluenceConnection from "@/app/fluenceProtocoIntegration/FluenceConnection";
+import FluenceConnection from "@/app/utils/fluenceProtocoIntegration/FluenceConnection";
 import useSocialAuthentication from "@/app/hooks/commHooks/useSocialAuthentication";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { DataLogger } from "@/app/libraries/logging/Logger";
@@ -20,7 +23,7 @@ import { DocumentSize } from "@/app/models/data/StatusType";
 import FluencePlugin from "@/app/pluginSystem/plugins/fluencePlugin";
 import { UserData } from "@/app/users/User";
 import YourClass from "@/app/utils/YourClass";
-import { AquaConfig } from "@/app/webConfigs/AquaConfig";
+import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { authToken } from "@/server/auth/authToken";
 import Connection from "@/server/database/Connection";
@@ -30,7 +33,7 @@ import React, { FC } from "react";
 import winston from "winston";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
 import { manageDocuments } from "./functionality/DocumentManagement";
-import { AppEntity } from "./snapshotStoreConfigInstance";
+import { AppEntity } from "@/app/typings/entities/AppEntity";
 
 
 
@@ -38,7 +41,9 @@ export type CustomDocumentOptionProps<
   T extends BaseDataEntity = AppEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = DocumentOptions & DappProps<T, K, Meta, ExcludedFields>;
 
 interface CustomApp<
@@ -76,33 +81,36 @@ const { handleError } = useErrorHandling()
 
 
 class CustomDAppAdapter<
-  T extends DappProps, 
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
+  DAppPropsType extends DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 > extends YourClass {
   private adapter: FC<DAppAdapterProps>;
-  private config: DAppAdapterConfig<T>;
+  private config: DAppAdapterConfig<DAppPropsType>;
   private database = new FluenceConnection();
-  private databaseConnections: Map<DatabaseType, any>; // Use Map to store different database connections
-  private _appData?: CustomApp; // Private variable to hold appData
-  private _apiKey?: string; // Private variable to hold apiKey
+  private databaseConnections: Map<DatabaseType, any>;
+  private _appData?: CustomApp;
+  private _apiKey?: string;
 
-  constructor(config: DAppAdapterConfig<T>) {
+  constructor(config: DAppAdapterConfig<DAppPropsType>) {
     super();
     this.config = config;
-    this.databaseConnections = new Map(); // Initialize databaseConnections as a new Map
+    this.databaseConnections = new Map();
     this.initDatabaseConnections();
     this.implementAnalytics();
     
     interface AdapterProps extends DAppAdapterProps {
       appName: string;
       appVersion: string;
-      dappProps: T;
+      dappProps: DAppPropsType;
     }
 
     const AdapterComponent: FC<AdapterProps> = (props) => {
       const { appName, appVersion, dappProps, ...rest } = props;
-      // Use the useSocialAuthentication hook
       const socialAuth = useSocialAuthentication();
 
       // Your component logic here
@@ -110,7 +118,7 @@ class CustomDAppAdapter<
       manageDocuments(
         {
           /* newDocument */
-        } as DocumentData<T, K>,
+        } as DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         dappProps
       );
       // Use initiateSocialLogin from useSocialAuthentication
@@ -423,7 +431,7 @@ class CustomDAppAdapter<
     console.log("Data synchronization in progress...");
 
 
-    const userData: Partial<UserData> = {
+    const userData: Partial<UserData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
       id: "123",
       username: "John Doe",  
       role: UserRoles.Administrator,
@@ -437,7 +445,7 @@ class CustomDAppAdapter<
       this.config.dappProps.currentUser = {
         ...userData,
         id: userData.id!, // non-null assertion, since we checked above
-      } as Required<Pick<UserData, "id" | "username">> & Partial<UserData>;
+      } as Required<Pick<UserData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "username">>  & Partial<UserData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
     } else {
       throw new Error("User ID is required");
     }
@@ -504,10 +512,13 @@ class CustomDAppAdapter<
 
 
   manageDocuments<
-    T extends SupportedData<any, any> = SupportedData<any, any>, 
+    T extends BaseDataEntity = BaseDataEntity,
     K extends T = T,
-    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-  >(newDocument: DocumentData<T, K, Meta>) {
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T,
+  >(newDocument: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
     // Implement your logic here for document management
     console.log("Document management functionality enabled");
 
@@ -539,7 +550,7 @@ class CustomDAppAdapter<
 
   
   // Method to integrate analytics
-  integrateAnalytics(dappProps: DappProps): CustomDAppAdapter<T> {
+  integrateAnalytics(dappProps: DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): CustomDAppAdapter<T> {
     try {
       // Implement your logic here for analytics integration
       winston.info("Analytics integration in progress...");
@@ -623,7 +634,7 @@ class CustomDAppAdapter<
     }
   }
 
-  customizeTheme(themeConfig: ThemeConfig, dappProps: DappProps): YourClass {
+  customizeTheme(themeConfig: ThemeConfig, dappProps: DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): YourClass {
     try {
       console.log("Theme customization in progress...");
 
@@ -691,7 +702,7 @@ if (yourClassInstance.customizeTheme) {
   console.error('customizeTheme method not found on yourClassInstance');
 }
 // Example usage
-const dappConfig: DAppAdapterConfig<DappProps> = {
+const dappConfig: DAppAdapterConfig<DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
   appName: "Project Management App",
   appVersion: "1.0",
   dappProps: {
@@ -722,7 +733,7 @@ const dappConfig: DAppAdapterConfig<DappProps> = {
       gasPrice: 1000000000,
       contractAddress: "0x...",
     },
-    aquaConfig: {} as DappProps["aquaConfig"],
+    aquaConfig: {} as DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["aquaConfig"],
     realtimeCommunicationConfig: {
       audio: true,
       video: true,
@@ -783,7 +794,7 @@ const dappConfig: DAppAdapterConfig<DappProps> = {
 
 export { CustomDAppAdapter };
 export type { CustomApp };
-const customDapp = new CustomDAppAdapter<DappProps>(dappConfig);
+const customDapp = new CustomDAppAdapter<DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(dappConfig);
 
 // Enable realtime collaboration and chat functionality
 customDapp.enableRealtimeCollaboration().enableChatFunctionality();

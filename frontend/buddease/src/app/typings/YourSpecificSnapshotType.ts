@@ -874,7 +874,7 @@ function convertToDataSnapshot <T extends  BaseData<any>, K extends T = T, Meta 
       callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
       dataStore: DataStore<T, K>,
       dataStoreMethods: DataStoreMethods<T, K>,
-      metadata: UnifiedMetadata<T, K>,
+      metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       subscriberId: string, // Add subscriberId here
       endpointCategory: string | number, // Add endpointCategory here
       storeProps: SnapshotStoreProps<T, K>,

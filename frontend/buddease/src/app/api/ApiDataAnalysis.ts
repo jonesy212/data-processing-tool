@@ -1,10 +1,11 @@
 // ApiDataAnalysis.ts
 import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import {
-  NotificationType,
-  NotificationTypeEnum,
-  useNotification
+    NotificationType,
+    NotificationTypeEnum,
+    useNotification
 } from "@/app/context/NotificationContext";
 import { Attachment } from '@/app/documents/Attachment/attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
@@ -23,7 +24,6 @@ import { isSnapshot } from "@/app/utils/snapshotUtils";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { AxiosError, AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
-import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 
 const dispatch = useDispatch();

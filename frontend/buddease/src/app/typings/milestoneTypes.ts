@@ -1,5 +1,8 @@
+import { DetailsListStore } from './../state/stores/DetailsListStore';
 // milestoneTypes.ts
-import { AllStatus, StatusType } from '@/app/models/data/StatusType';
+import { StatusType } from '@/app/models/data/StatusType';
+import { AllStatus } from '@/app/state/stores/DetailsListStore';
+import { Reminder } from '@/app/components/calendar'
 
 // -------------------- Core Milestone Interface --------------------
 export interface Milestone {

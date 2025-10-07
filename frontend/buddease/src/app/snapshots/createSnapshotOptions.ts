@@ -16,7 +16,7 @@ import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { addToSnapshotList, category } from '@/app/utils/snapshotUtils';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { SharedIdentifiers } from '@/SharedIdentifiers';
-import { SnapshotContainerType } from '@/SnapshotContainer';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
 import { snapshotStoreConfigInstance } from '@/snapshotStoreConfigInstance';
 import { SubscribeResult } from '@/users/Subscriber';
 import { SnapshotData } from ".";

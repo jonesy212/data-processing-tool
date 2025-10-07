@@ -1,9 +1,10 @@
 import { BaseData } from '@/app/models/data/Data';
 // fetchSnapshotsForCategory.ts
 import internalApiService from "@/app/api/ApiClient";
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 /**
  * Fetches snapshots for a specific category asynchronously.//+

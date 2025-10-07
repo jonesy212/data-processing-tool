@@ -1,6 +1,6 @@
 // CalendarEvent.tsx
 
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import * as subscriptionApi from "@/app/api/subscriberApi";
 import { createSubscriber } from '@/app/components/crypto/exchangeIntegration';

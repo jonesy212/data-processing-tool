@@ -1,4 +1,4 @@
-import { Endpoints, endpoints } from "./ApiEndpoints";
+import { Endpoints, endpoints } from "@/app/api/endpointConfigurations";
 
 interface Target {
   endpoint: string;

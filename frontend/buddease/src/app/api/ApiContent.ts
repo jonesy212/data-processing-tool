@@ -9,7 +9,7 @@ import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from "axios";
 import { ContentState } from "draft-js";
-import { endpoints } from "./ApiEndpoints";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import { handleApiError } from "./ApiLogs";
 
 // Define the API base URL

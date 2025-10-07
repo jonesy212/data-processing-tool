@@ -2,6 +2,7 @@
 import { TeamActions } from "@/app/actions/TeamActions";
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import { useTeamContext } from "@/app/components/context/TeamContext";
 import { Team } from "@/app/components/models/teams/Team";
 import {
@@ -17,7 +18,6 @@ import { useTeamManagerStore } from "@/app/state/stores/TeamStore";
 import { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
 import { getStoreId } from "./ApiData";
-import { endpoints } from "./ApiEndpoints";
 import { getEndpoint } from "./getEndpoint";
 
 const API_BASE_URL = endpoints.teamManagement; // Update to the correct endpoint

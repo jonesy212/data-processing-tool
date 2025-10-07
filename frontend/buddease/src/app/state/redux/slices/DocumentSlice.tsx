@@ -42,14 +42,17 @@ const {versionNumber, appVersion} = getCurrentAppInfo()
 const API_BASE_URL = getAppPath(versionNumber, appVersion);
 
 interface DocumentSliceState<
-  T extends  BaseData<any>, 
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
-  documentList: DocumentObject<T, K, Meta>[]; // Specify type arguments for DocumentObject
-  selectedDocument: DocumentData<T, K, Meta> | null; // Specify type arguments for DocumentData
-  filteredDocuments: DocumentData<T, K, Meta>[]; // Specify type arguments for DocumentData
-  searchResults: DocumentData<T, K, Meta>[]; // Specify type arguments for DocumentData
+  documentList: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Specify type arguments for DocumentObject
+  selectedDocument: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null; // Specify type arguments for DocumentData
+  filteredDocuments: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Specify type arguments for DocumentData
+  searchResults: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Specify type arguments for DocumentData
   loading: boolean; // Add this line to include the initial state for loading
   error: Error | null; // Add this line to include the initial state for error
   changes?: boolean | string | string[];
@@ -80,14 +83,17 @@ interface ArtworkItem {
 }
 
 
-interface DocumentObject<
-    T extends  BaseData,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-  >
-  extends Document<T, K, Meta>, 
-  DocumentData<T, K, Meta>, 
-  DocumentSliceState<T, K, Meta> {
+interface DocumentObject<  
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>
+  extends Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+  DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+  DocumentSliceState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Optionally add additional fields here if needed
   description?: string | null; // Reintroduce with the original name
   createdBy: string | undefined; // Reintroduce with the original name
@@ -147,8 +153,8 @@ const initialState: DocumentObject<BaseData, BaseData> = {
   keywords: [],
   options: {} as DocumentOptions,
   folderPath: "",
-  previousMetadata: {} as UnifiedMetadata<T, K>,
-  currentMetadata: {} as UnifiedMetadata<T, K>,
+  previousMetadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  currentMetadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   accessHistory: [],
   folders: [],
   lastModifiedDate: {} as WritableDraft<ModifiedDate>,
@@ -440,10 +446,10 @@ function createNewDocument<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   documentId: string
-): DocumentObject<T, K, Meta> {
+): DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   const now = new Date();
 
-  const newDocument: DocumentObject<T, K, Meta> = {
+  const newDocument: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     // _id: uuidv4(),
     id: documentId,
     title: "New Document",
@@ -677,7 +683,7 @@ function createNewDocument<
           frontendVersions: [], 
           getStructureAsArray: async () => [],
           traverseDirectoryPublic: async () => [],
-          getStructure:  async () => ({} as Record<string, AppStructureItem<T, K, Meta, ExcludedFields>>),
+          getStructure:  async () => ({} as Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>),
           getStructureChecksum: async () => ""
         } as FrontendStructure<T, K, Meta, ExcludedFields>,
       },
@@ -1135,7 +1141,7 @@ export const restoreDocument = (state: WritableDraft<DocumentSliceState>, action
     const documentId = action.payload;
     const newDocument = createNewDocument(String(documentId));
     const newDocumentObject = toObject(newDocument as DocumentObject);
-    state.documentList?.push(newDocumentObject as WritableDraft<DocumentObject<T, K, Meta>>);
+    state.documentList?.push(newDocumentObject as WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>);
     
     state.loading = false;  // Update loading state
     state.error = null;  // Clear error state
@@ -1228,7 +1234,7 @@ export const downloadDocument = createAsyncThunk(
     try {
       const fetchedDocument = await fetchDocumentByIdAPI(
         documentId,
-        (data: WritableDraft<DocumentObject<T, K, Meta>>) => {
+        (data: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
           data.status = DocumentStatusEnum.Draft;
           data.type = DocumentTypeEnum.Document;
         }
@@ -1249,7 +1255,7 @@ export const downloadDocumentAsync = createAsyncThunk(
       // Fetch document data based on the document ID
       const fetchedDocument = await fetchDocumentByIdAPI(
         documentId,
-        (data: WritableDraft<DocumentObject<T, K, Meta>>) => {
+        (data: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
           // Call the dispatch function to update the state with the fetched document data
           dispatch(setDownloadedDocument(data));
         }
@@ -1404,9 +1410,9 @@ const applyTransformation = <
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
-  document: WritableDraft<DocumentObject<T, K, Meta>>,
+  document: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   documentTag: string,
-  transformation: (doc: WritableDraft<DocumentObject<T, K, Meta>>, value: string) => void,
+  transformation: (doc: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, value: string) => void,
   value: string
 ) => {
   transformation(document, value);
@@ -1965,7 +1971,7 @@ export const useDocumentManagerSlice = createSlice({
   initialState,
   reducers: {
     createDocument: {
-      reducer: (state, action: PayloadAction<WritableDraft<DocumentObject<T, K, Meta>>>) => {
+      reducer: (state, action: PayloadAction<WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>) => {
         state.selectedDocument = action.payload;
         state.documentList?.push(action.payload);
       },
@@ -1983,7 +1989,7 @@ export const useDocumentManagerSlice = createSlice({
           updatedBy: "Mattt Smooth", 
           documentPhase: "",
           createdByRenamed: "",
-          document: {} as WritableDraft<DocumentObject<T, K, Meta>>,
+          document: {} as WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
           documentList: [],
 
           // Add other properties as needed
@@ -2472,12 +2478,12 @@ export const useDocumentManagerSlice = createSlice({
 
     addDocument: (
       state,
-      action: PayloadAction<WritableDraft<DocumentObject<T, K, Meta>>>
+      action: PayloadAction<WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>
     ) => {
       state.documentList?.push(action.payload);
     },
 
-    addDocumentSuccess: (state, action: PayloadAction<{ id: string; title: string; documentList: WritableDraft<DocumentObject<T, K, Meta>>[]  }>) => {
+    addDocumentSuccess: (state, action: PayloadAction<{ id: string; title: string; documentList: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]  }>) => {
       const documentIndex = state.documentList?.findIndex(doc => doc.id === action.payload.id);
       if (documentIndex !== -1) {
         state.documentList![documentIndex!].title = action.payload.title;
@@ -3471,7 +3477,7 @@ export const useDocumentManagerSlice = createSlice({
 //     // Implement document restoring functionality
 //     const newDocument = createNewDocument(String(documentId));
 //     const newDocumentObject = toObject(newDocument as DocumentObject); // Convert the new document to a plain object
-//     state.documentList?.push(newDocumentObject as WritableDraft<DocumentObject<T, K, Meta>>); // Add the new document object to the state array
+//     state.documentList?.push(newDocumentObject as WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>); // Add the new document object to the state array
 
 //     // Notify success
 //     useNotification().notify(
@@ -3930,7 +3936,7 @@ export const useDocumentManagerSlice = createSlice({
     tagDocument: (
       state,
       action: PayloadAction<{
-        document: WritableDraft<DocumentObject<T, K, Meta>>;
+        document: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
         documentId: number;
         tag: string;
       }>

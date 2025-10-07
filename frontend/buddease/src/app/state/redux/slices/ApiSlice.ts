@@ -4,19 +4,19 @@ import { CrossCulturalCommunication, Language, TimeZone } from "@/app/communicat
 import { DataAnalysisTool, Decision, VisualizationResult } from "@/app/interfaces/options/CollaborationOptions";
 import { CloudStorageProvider } from "@/app/interfaces/provider/CloudStorageProvider";
 import { BaseData, Data } from '@/app/models/data/Data';
+import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { K, T } from "@/app/models/data/dataStoreMethods";
 import { Task } from "@/app/models/tasks/Task";
 import { Phase } from "@/app/phases/Phase";
 import { AnalyticsTool } from "@/app/projects/DataAnalysisPhase/AnalyticsTool";
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { EncryptionSetting, Permission } from "@/app/users/Permission";
-import { PriorityTypeEnum } from "@/app/models/data/StatusType";
+import { ApiConfig } from "@/app/services/ConfigurationService";
 import { DetailsItem } from "@/app/stores/DetailsListStore";
 import { Payment, Revenue, SubscriptionPlan } from "@/app/subscriptions/SubscriptionPlan";
+import { EncryptionSetting, Permission } from "@/app/users/Permission";
 import { Version, version } from "@/app/versions/Version";
 import { VersionHistory } from "@/app/versions/VersionData";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
-import { ApiConfig } from "@/config/ConfigurationService";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMetadata } from "@/config/useMetadata";
 import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
@@ -156,7 +156,7 @@ const dispatch = useDispatch();
 
 
 const area = fetchUserAreaDimensions().toString()
-const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
+const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area)
 
 const initializedState: InitializedState<T, K> = {
   metadata: currentMetadata,

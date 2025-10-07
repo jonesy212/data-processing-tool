@@ -2,11 +2,10 @@
 import { endpoints } from '@/app/api/ApiEndpoints';
 import { handleApiError } from '@/app/api/ApiLogs';
 import headersConfig from '@/app/api/headers/HeadersConfig';
-import { UserSettings } from '@/config//UserSettings';
+import { UserSettings } from '@/config/UserSettings';
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import ErrorHandler from '@/app/shared/ErrorHandler';
-import { AxiosError } from 'axios';
-import dotProp from 'dot-prop';
+import { AxiosError, AxiosResponse } from 'axios';
 import { ErrorInfo } from 'react';
 import { UIActions } from '@/app/actions/UIActions';
 import safeParseData, { DataWithComment } from '@/crypto/SafeParseData';
@@ -14,14 +13,11 @@ import { ParsedData } from '@/crypto/parseData';
 import useErrorHandling from '@/app/hooks/useErrorHandling';
 import axiosInstance from '@/app/api/csrfToken';
 import { UserData } from '@/User';
+import internalApiService from "./ApiClient";
 
 // Define the API base URL for UI
 const UI_API_BASE_URL = endpoints.ui;
 
-// Define the allowed gesture formats
-const allowedGestureFormats = ['tap', 'swipe', 'pinch'];
-
-// Define UIAPI notification messages
 // Define UI API notification messages
 interface UINotificationMessages {
     FETCH_INTERFACE_CONTENT_ERROR: string;
@@ -44,10 +40,9 @@ interface UINotificationMessages {
     UPDATE_USER_AVATAR_ERROR: string;
     FETCH_USER_SETTINGS_ERROR: string;
     UPDATE_USER_SETTINGS_ERROR: string;
-    // Add more keys as needed
-  }
-  
-  const uiApiNotificationMessages: UINotificationMessages = {
+}
+
+const uiApiNotificationMessages: UINotificationMessages = {
     FETCH_INTERFACE_CONTENT_ERROR: 'Failed to fetch interface content',
     UPDATE_INTERFACE_SETTINGS_ERROR: 'Failed to update interface settings',
     FETCH_USER_DASHBOARD_ERROR: 'Failed to fetch user dashboard',
@@ -68,187 +63,298 @@ interface UINotificationMessages {
     UPDATE_USER_AVATAR_ERROR: 'Failed to update user avatar',
     FETCH_USER_SETTINGS_ERROR: 'Failed to fetch user settings',
     UPDATE_USER_SETTINGS_ERROR: 'Failed to update user settings',
-    // Add more properties as needed
-  };
-  
+};
+
+// ✅ NEW: Create UIApiService class following the same pattern
+class UIApiService {
+    notify: (
+        id: string,
+        message: string,
+        data: any,
+        date: Date,
+        type: string
+    ) => void;
+
+    constructor(
+        notify: (
+            id: string,
+            message: string,
+            data: any,
+            date: Date,
+            type: string
+        ) => void
+    ) {
+        this.notify = notify;
+    }
+
+    // ✅ ADD: Request handler following the same pattern
+    private async requestHandler(
+        request: () => Promise<AxiosResponse>,
+        successMessageId: keyof UINotificationMessages,
+        errorMessageId: keyof UINotificationMessages
+    ): Promise<AxiosResponse> {
+      try {
+          const response: AxiosResponse = await request();
+          this.notify(
+              successMessageId,
+              uiApiNotificationMessages[successMessageId],
+              response.data,
+              new Date(),
+              "Success"
+          );
+          return response;
+      } catch (error: any) {
+          handleApiError(error, uiApiNotificationMessages[errorMessageId]);
+          throw error;
+      }
+    }
+
+    // ✅ UPDATE: Use internalApiService for user data
+    // In your UIApiService methods, update to use the endpoints:
+async fetchUserData(userId: string): Promise<UserData> {
+  try {
+    const endpoint = endpoints.ui.userData(userId);
+    const response = await this.requestHandler(
+      () => internalApiService.get(endpoint.path),
+      "FETCH_USER_SETTINGS_SUCCESS" as keyof UINotificationMessages,
+      "FETCH_USER_SETTINGS_ERROR"
+    );
+    return response.data;
+  } catch (error) {
+    const { handleError } = useErrorHandling();
+    handleError('Failed to fetch user data');
+    throw error;
+  }
+}
+
+async updateUserSettings(userId: string, settings: UserSettings): Promise<void> {
+  try {
+    const endpoint = endpoints.ui.updateUserSettings(userId);
+    await this.requestHandler(
+      () => internalApiService.put(endpoint.path, settings),
+      "UPDATE_USER_SETTINGS_SUCCESS" as keyof UINotificationMessages,
+      "UPDATE_USER_SETTINGS_ERROR"
+    );
+    
+    UIActions.setNotification({
+      message: 'User settings updated successfully',
+      type: 'success',
+    });
+  } catch (error) {
+    const { handleError } = useErrorHandling();
+    handleError('Failed to update user settings');
+    throw error;
+  }
+}
+
+
+  // ✅ UPDATE: Use internalApiService for user settings
+  async updateUserSettings(userId: string, settings: UserSettings): Promise<void> {
+    try {
+        await this.requestHandler(
+            () => internalApiService.put(`${UI_API_BASE_URL}/user/${userId}/settings`, settings),
+            "UPDATE_USER_SETTINGS_SUCCESS" as keyof UINotificationMessages,
+            "UPDATE_USER_SETTINGS_ERROR"
+        );
+        
+        UIActions.setNotification({
+            message: 'User settings updated successfully',
+            type: 'success',
+        });
+    } catch (error) {
+        const { handleError } = useErrorHandling();
+        handleError('Failed to update user settings');
+        throw error;
+    }
+  }
+
+  // ✅ UPDATE: Use internalApiService for UI data
+  async fetchUIData(endpoint: string, requestData: any): Promise<any> {
+    try {
+        const response = await this.requestHandler(
+            () => internalApiService.post(endpoint, requestData),
+            "FETCH_INTERFACE_CONTENT_SUCCESS" as keyof UINotificationMessages,
+            "FETCH_INTERFACE_CONTENT_ERROR"
+        );
+        return response.data;
+    } catch (error: any) {
+        console.error('Error fetching UI data:', error.message);
+        throw error;
+    }
+  }
+
+  // ✅ UPDATE: Use internalApiService for branding data
+  async fetchBrandingData(): Promise<any> {
+    try {
+        const response = await this.requestHandler(
+            () => internalApiService.get(`${UI_API_BASE_URL}/branding`),
+            "FETCH_INTERFACE_CONTENT_SUCCESS" as keyof UINotificationMessages,
+            "FETCH_INTERFACE_CONTENT_ERROR"
+        );
+        return response.data;
+    } catch (error: any) {
+        console.error('Error fetching branding data:', error.message);
+        throw error;
+    }
+  }
+
+  // ✅ ADD: User dashboard methods
+  async fetchUserDashboard(userId: string): Promise<any> {
+    try {
+        const response = await this.requestHandler(
+            () => internalApiService.get(`${UI_API_BASE_URL}/user/${userId}/dashboard`),
+            "FETCH_USER_DASHBOARD_SUCCESS" as keyof UINotificationMessages,
+            "FETCH_USER_DASHBOARD_ERROR"
+        );
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+  }
+
+  // ✅ ADD: User widgets methods
+  async fetchUserWidgets(userId: string): Promise<any> {
+    try {
+        const response = await this.requestHandler(
+            () => internalApiService.get(`${UI_API_BASE_URL}/user/${userId}/widgets`),
+            "FETCH_USER_WIDGETS_SUCCESS" as keyof UINotificationMessages,
+            "FETCH_USER_WIDGETS_ERROR"
+        );
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+  }
+
+  // ✅ ADD: User themes methods
+  async fetchUserThemes(): Promise<any> {
+    try {
+        const response = await this.requestHandler(
+            () => internalApiService.get(`${UI_API_BASE_URL}/themes`),
+            "FETCH_USER_THEMES_SUCCESS" as keyof UINotificationMessages,
+            "FETCH_USER_THEMES_ERROR"
+        );
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+  }
+
+  // ✅ ADD: User preferences methods
+  async fetchUserPreferences(userId: string): Promise<any> {
+    try {
+        const response = await this.requestHandler(
+            () => internalApiService.get(`${UI_API_BASE_URL}/user/${userId}/preferences`),
+            "FETCH_USER_PREFERENCES_SUCCESS" as keyof UINotificationMessages,
+            "FETCH_USER_PREFERENCES_ERROR"
+        );
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+  }
+
+  // ✅ ADD: Update user preferences
+  async updateUserPreferences(userId: string, preferences: any): Promise<void> {
+    try {
+        await this.requestHandler(
+            () => internalApiService.put(`${UI_API_BASE_URL}/user/${userId}/preferences`, preferences),
+            "UPDATE_USER_PREFERENCES_SUCCESS" as keyof UINotificationMessages,
+            "UPDATE_USER_PREFERENCES_ERROR"
+        );
+    } catch (error) {
+        throw error;
+    }
+  }
+
+  // ✅ ADD: Dark mode toggle
+  async toggleDarkMode(userId: string, darkMode: boolean): Promise<void> {
+    try {
+        await this.requestHandler(
+            () => internalApiService.put(`${UI_API_BASE_URL}/user/${userId}/dark-mode`, { darkMode }),
+            "UPDATE_USER_PREFERENCES_SUCCESS" as keyof UINotificationMessages,
+            "TOGGLE_DARK_MODE_ERROR"
+        );
+    } catch (error) {
+        throw error;
+    }
+  }
+
+  // ✅ ADD: User avatar methods
+  async fetchUserAvatar(userId: string): Promise<any> {
+      try {
+          const response = await this.requestHandler(
+              () => internalApiService.get(`${UI_API_BASE_URL}/user/${userId}/avatar`),
+              "FETCH_USER_AVATAR_SUCCESS" as keyof UINotificationMessages,
+              "FETCH_USER_AVATAR_ERROR"
+          );
+          return response.data;
+      } catch (error) {
+          throw error;
+      }
+  }
+
+  async updateUserAvatar(userId: string, avatarData: any): Promise<void> {
+    try {
+        await this.requestHandler(
+            () => internalApiService.put(`${UI_API_BASE_URL}/user/${userId}/avatar`, avatarData),
+            "UPDATE_USER_AVATAR_SUCCESS" as keyof UINotificationMessages,
+            "UPDATE_USER_AVATAR_ERROR"
+        );
+    } catch (error) {
+        throw error;
+    }
+  }
+}
+
+// Function to safely parse data with error handling
+const parseDataWithErrorHandling = <T extends DataWithComment>(
+    data: T[],
+    threshold: number
+): ParsedData<T>[] => {
+    try {
+        return safeParseData<T>(data, threshold);
+    } catch (error: any) {
+        const errorMessage = "Error parsing data";
+        const errorInfo: ErrorInfo = { componentStack: error.stack };
+        ErrorHandler.logError(new Error(errorMessage), errorInfo);
+        return [];
+    }
+};
 
 // Function to handle UIAPI errors and notify
 const handleUiApiErrorAndNotify = (
     error: AxiosError<any>,
     errorMessage: string,
-    errorMessageId: string
-  ) => {
+    errorMessageId: keyof UINotificationMessages
+) => {
     handleApiError(error, errorMessage);
     if (errorMessageId) {
-      const errorMessageText = dotProp.getProperty(uiApiNotificationMessages, errorMessageId);
-      useNotification().notify(
-        errorMessageId,
-        errorMessageText as unknown as string,
-        null,
-        new Date(),
-        'UIAPIError' as NotificationTypeEnum
-      );
+        const errorMessageText = uiApiNotificationMessages[errorMessageId];
+        useNotification().notify(
+            errorMessageId,
+            errorMessageText,
+            null,
+            new Date(),
+            'UIAPIError' as NotificationTypeEnum
+        );
     }
-  };
-
-
-
-// Function to safely parse data with error handling
-
-const parseDataWithErrorHandling = <T extends DataWithComment>(
-  data: T[],
-  threshold: number
-): ParsedData<T>[] => {
-  try {
-    return safeParseData<T>(data, threshold);
-  } catch (error: any) {
-    const errorMessage = "Error parsing data";
-    const errorInfo: ErrorInfo = { componentStack: error.stack };
-    ErrorHandler.logError(new Error(errorMessage), errorInfo);
-    return [];
-  }
 };
-  
-// Updated UIApi with error handling and logging
-export const UIApi = {
-  fetchUserData: async (userId: string): Promise<UserData> => {
-    try {
-      const userDataEndpoint = `${`${UI_API_BASE_URL}`}/user/${userId}`;
-      const response = await axiosInstance.get<UserData>(userDataEndpoint, {
-        headers: headersConfig,
-      });
-      return response.data;
-    } catch (error) {
-      // Handle error using useErrorHandling hook
-      const { handleError } = useErrorHandling();
-      handleError('Failed to fetch user data');
-      throw error;
-    }
-  },
 
-  updateUserSettings: async (userId: string, settings: UserSettings): Promise<void> => {
-    try {
-      const updateUserSettingsEndpoint = `${UI_API_BASE_URL}/user/${userId}/settings`;
-      await axiosInstance.put(updateUserSettingsEndpoint, settings, {
-        headers: headersConfig,
-      });
-      // Optionally, you can notify the user that settings were updated successfully
-      UIActions.setNotification({
-        message: 'User settings updated successfully',
-        type: 'success',
-      });
-    } catch (error) {
-      // Handle error using useErrorHandling hook
-      const { handleError } = useErrorHandling();
-      handleError('Failed to update user settings');
-      throw error;
-    }
-  },  // Add more UI API functions as needed
-  
+// ✅ CREATE: Instance of UIApiService
+const uiApiService = new UIApiService(useNotification);
 
-  // Define the fetchUIData function to fetch additional data or perform an API call
-  fetchUIData: async (endpoint: string, requestData: any) => {
-    try {
-      // Perform API call using fetch or axios
-      const response = await fetch(endpoint, {
-        method: 'POST', // Adjust the method as needed
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData),
-      });
+// ✅ EXPORT: The service instance and legacy functions for backward compatibility
+export default uiApiService;
 
-      // Check if the request was successful
-      if (!response.ok) {
-        throw new Error('Failed to fetch UI data');
-      }
-
-      // Parse the response data as needed
-      const responseData = await response.json();
-
-      // Handle the response data, update state, dispatch actions, etc.
-      console.log('Fetched UI data:', responseData);
-    } catch (error: any) {
-      console.error('Error fetching UI data:', error.message);
-      // Optionally, handle the error and notify the user
-    }
-  },
-
-  fetchBrandingData: async () => {
-    try {
-      const brandingDataEndpoint = `${UI_API_BASE_URL}/branding`;
-      const response = await fetch(brandingDataEndpoint, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if (!response.ok) {
-        throw new Error('Failed to fetch branding data');
-      }
-      const responseData = await response.json();
-      console.log('Fetched branding data:', responseData);
-      return responseData;
-    } catch (error: any) {
-      console.error('Error fetching branding data:', error.message);
-      // Optionally, handle the error and notify the user
-    }
-  }
+// Legacy exports for backward compatibility
+export {
+    uiApiService as UIApi,
+    uiApiService as fetchUserData,
+    uiApiService as updateUserSettings,
+    uiApiService as fetchUIData,
+    uiApiService as fetchBrandingData,
+    parseDataWithErrorHandling,
+    handleUiApiErrorAndNotify,
+    uiApiNotificationMessages
 };
-  
-
-
-
-
-
-// // Define the component function
-// const YourComponent: React.FC = () => {
-//   // Define state using useState hook
-//   const [pointerPosition, setPointerPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-
-//   // Define the handlePointerDown function
-//   const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-//     // Logic for pointer down event
-//     console.log('Pointer down');
-
-//     // Example: Set isPointerDown state to true
-//     UIActions.setIsPointerDown(true);
-
-//     // Example 1: Change the background color of the div
-//     event.currentTarget.style.backgroundColor = 'lightblue';
-
-//     // Example 2: Fetch additional data or perform an API call
-   
-//     // Example 3: Update the state to track the pointer position
-//     const newPointerPosition = { x: event.clientX, y: event.clientY };
-//     setPointerPosition(newPointerPosition);
-
-//     // Example 4: Trigger a navigation or route change
-//     // history.push('/new-route');
-
-//     // Example 5: Dispatch a Redux action
-//     // dispatch({ type: 'POINTER_DOWN', payload: { event } });
-//   };
-
-//   // Define the handlePointerMove function
-//   const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-//     // Logic for pointer move event
-//     console.log('Pointer moved');
-
-//     // Example: Track pointer position
-//     const newPointerPosition = {
-//       x: event.clientX,
-//       y: event.clientY,
-//     };
-
-//     // Example: Update pointer position state using action
-//     UIActions.setPointerPosition(newPointerPosition);
-
-//     // Example: Call UIActions to update pointer position
-//     // UIActions.setPointerPosition(newPointerPosition);
-
-//     // Prevent default pointer behavior like text selection
-//     event.preventDefault();
-//     // Additional logic for pointer move event
-  // }
-// }

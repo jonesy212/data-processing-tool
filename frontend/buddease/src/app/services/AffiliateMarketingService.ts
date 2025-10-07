@@ -1,5 +1,5 @@
 import { action, makeAutoObservable } from "mobx";
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 
 const API_BASE_URL = endpoints.affiliateMarketing;
 

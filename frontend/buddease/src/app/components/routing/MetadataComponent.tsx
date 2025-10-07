@@ -8,7 +8,7 @@ import { UnifiedMetadata } from '@/app/components/configs/database/MetaDataOptio
 
 
 
-const selectedmetadata: UnifiedMetadata<T, K> = {
+const selectedmetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   videoMetadata: {
     title: "",
     url: "",
@@ -79,7 +79,7 @@ const selectedmetadata: UnifiedMetadata<T, K> = {
   const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetaDataOptions<T, K>(selectedmetadata);
 
   // If you need to update the metadata, for example on a user action or API call
-  const updateMetadata = (newMetadata: UnifiedMetadata<T, K>) => {
+  const updateMetadata = (newMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     // Save current metadata as previous before updating
     setPreviousMetadata(currentMetadata);
     // Update the current metadata
@@ -90,7 +90,7 @@ const selectedmetadata: UnifiedMetadata<T, K> = {
     // Example logic if metadata changes come from external sources like API
     // Call to fetch metadata, then set the metadata state
     const fetchMetadata = async () => {
-      const fetchedMetadata: UnifiedMetadata<T, K> = await getMetadataFromAPI(); // Replace with real API call
+      const fetchedMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = await getMetadataFromAPI(); // Replace with real API call
       updateMetadata(fetchedMetadata);
     };
     fetchMetadata();

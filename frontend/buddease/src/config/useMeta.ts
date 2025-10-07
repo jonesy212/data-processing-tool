@@ -102,7 +102,7 @@ function useMeta<
       latestVersion: {},
       version: dynamicVersion,
       mappedSnapshot: undefined,
-      baseConfig: {} as BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      baseConfig: {} as BaseConfig<T, K, Meta, ExcludedFields>;,
       sharedMetadata: {} as SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       sharedBaseData: {} as SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       taggable: {} as Taggable<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

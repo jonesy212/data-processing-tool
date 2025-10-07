@@ -12,7 +12,7 @@ import {
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { SnapshotConfig } from "./SnapshotConfig";
-import { SnapshotContainerType } from '@/SnapshotContainer';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
 import { SnapshotData } from "./SnapshotData";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";

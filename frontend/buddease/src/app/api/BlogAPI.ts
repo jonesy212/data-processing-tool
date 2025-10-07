@@ -1,4 +1,5 @@
 import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { addLog } from "@/app/state/redux/slices/LogSlice";
@@ -6,7 +7,6 @@ import { User } from "@/app/users/User";
 import { useNotification } from "@/context/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
-import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 
 

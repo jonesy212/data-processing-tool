@@ -1,4 +1,4 @@
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { useEffect, useState } from "react";
 import React from "react";

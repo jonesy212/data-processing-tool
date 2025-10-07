@@ -1,4 +1,4 @@
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { makeAutoObservable } from "mobx";
 import { useState } from "react";

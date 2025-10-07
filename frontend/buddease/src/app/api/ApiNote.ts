@@ -1,23 +1,23 @@
 // ApiNotes.ts
 import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import { NoteData } from "@/app/components/documents/NoteData";
+import {
+    useNotification
+} from "@/app/context/NotificationContext";
+import { ModifiedDate } from "@/app/documents/DocType";
 import { BaseData } from '@/app/models/data/Data';
 import { K, T } from "@/app/models/data/dataStoreMethods";
 import FolderData from "@/app/models/data/FolderData";
 import { Tag } from '@/app/models/tracker/Tag';
-import { Encryption } from "@/server/security/Encryption";
 import { YourResponseType } from "@/app/typings/responseTypes";
-import {
-  useNotification
-} from "@/app/context/NotificationContext";
-import { ModifiedDate } from "@/app/documents/DocType";
 import AccessHistory from "@/app/versions/AccessHistory";
 import SearchHistory from "@/app/versions/SearchHistory";
 import { Version } from "@/app/versions/Version";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { Encryption } from "@/server/security/Encryption";
 import { AxiosError } from "axios";
-import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 import { SearchResponseData } from "./ApiSearch";
 

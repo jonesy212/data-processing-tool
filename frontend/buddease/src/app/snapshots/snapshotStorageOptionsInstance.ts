@@ -1,7 +1,7 @@
 // snapshotStorageOptionsInstance.ts
 import { Data } from '@/app/models/data/Data';
 import { Result } from '@/app/snapshots';
-import { SnapshotContainerType } from '@/SnapshotContainer';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
 
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { Payload } from '@/server/database/Payload';
@@ -31,8 +31,8 @@ import { VersionHistory } from "@/app/versions/VersionData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationType } from "@/context/NotificationContext";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { SnapshotDataParams } from '@/SnapshotDataParams';
-import SnapshotStoreSubset from '@/SnapshotStoreSubset';
+import { SnapshotDataParams } from '@/app/snapshots/SnapshpshotDataParams';
+import SnapshotStoreSubset from '@/app/snapshots/SnapshpshotStoreSubset';
 import { CustomSnapshotData, data, SnapshotContainer, SnapshotData, SnapshotDataType, SnapshotStoreProps, SnapshotWithCriteria } from ".";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { CoreSnapshot, Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion, UpdateSnapshotPayload } from "./LocalStorageSnapshotStore";

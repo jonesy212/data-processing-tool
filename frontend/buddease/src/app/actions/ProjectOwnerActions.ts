@@ -1,7 +1,7 @@
 import { Project, ProjectData } from '@/app/models/projects/Project';
 import { Team } from '@/models/teams/Team';
 import MemberData, { TeamMember } from '@/models/teams/TeamMembers';
-import { User } from '@/users/User';
+import { User } from '@/app/users/User';
 import { createAction } from '@reduxjs/toolkit';
 
 export const ProjectOwnerActions = {

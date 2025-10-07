@@ -1,17 +1,17 @@
 // ApiProject.ts
 import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import { MeetingData } from "@/app/components/calendar/MeetingData";
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
-import FileData from "@/app/models/data/FileData";
 import { Task } from "@/app/components/models/tasks/Task";
-import { Project, ProjectData } from "@/app/projects/Project";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
+import FileData from "@/app/models/data/FileData";
+import { Project, ProjectData } from "@/app/projects/Project";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { User } from "@/app/users/User";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { AxiosError } from "axios";
 import { observable } from "mobx";
-import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 
 

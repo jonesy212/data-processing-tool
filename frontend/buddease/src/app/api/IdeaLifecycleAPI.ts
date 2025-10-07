@@ -25,54 +25,6 @@ export interface IdeaTimeline {
   milestones?: Milestone[];
 }
 
-export interface Milestone {
-  // Core Identification
-  id: string;
-  name: string;
-  title: string; // Alias for name for compatibility
-  
-  // Dates
-  date: Date; // Primary milestone date
-  dueDate: Date | null; // Optional specific due date
-  startDate: Date | null; // Optional start date for milestone period
-  completedDate?: Date; // When milestone was actually completed
-  estimatedDate?: Date; // Original estimated completion date
-  
-  // Status & Progress
-  status: AllStatus;
-  completed: boolean; // Simple completion flag
-  progress: number; // 0-100 percentage
-  
-  // Description & Details
-  description: string;
-  deliverables: string[]; // What needs to be delivered
-  successCriteria: string[]; // How we know it's done
-  
-  // Dependencies & Relationships
-  dependencies: string[]; // IDs of milestones this depends on
-  dependentMilestones: string[]; // IDs of milestones that depend on this
-  projectId: string; // Parent project ID
-  phaseId?: string; // Optional phase association
-  
-  // Metadata
-  priority: 'low' | 'medium' | 'high' | 'critical';
-  tags: string[];
-  createdBy: string;
-  createdAt: Date;
-  updatedAt: Date;
-  
-  // Resource Information
-  assignedTo?: string; // Person/team responsible
-  requiredResources: string[]; // Resources needed
-  budgetAllocation?: number; // Budget for this milestone
-  
-  // Risk & Impact
-  riskLevel: 'low' | 'medium' | 'high';
-  impact: 'low' | 'medium' | 'high' | 'critical';
-  blockers: string[]; // Current blocking issues
-}
-
-
 export type IdeaStatus = 'draft' | 'submitted' | 'under_review' | 'approved' | 'rejected' | 'in_progress' | 'completed' | 'archived';
 export type IdeaPriority = 'low' | 'medium' | 'high' | 'critical';
 

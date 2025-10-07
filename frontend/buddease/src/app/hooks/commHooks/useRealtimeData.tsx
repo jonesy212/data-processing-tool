@@ -1,5 +1,5 @@
 // useRealtimeData.tsx
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { RealtimeData, RealtimeDataItem } from "@/app/models/realtime/RealtimeData";

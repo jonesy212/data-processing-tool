@@ -1,5 +1,5 @@
 import DatabaseClient from "@/api/DatabaseClient";
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from '@/app/api/csrfToken';
 import headersConfig from "@/app/api/headers/HeadersConfig";

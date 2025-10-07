@@ -1,5 +1,5 @@
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { SnapshotContext } from '@/SnapshotSubscriberManagement';
+import { SnapshotContext } from '@/app/snapshots/SnapshpshotSubscriberManagement';
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
@@ -38,7 +38,7 @@ import { Version } from "@/app/versions/Version";
 import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
 import { ExcludedFields } from '@/routing/Fields';
 import { SchemaField } from "@/server/database/SchemaField";
-import { SnapshotEvents } from '@/SnapshotEvents';
+import { SnapshotEvents } from '@/app/snapshots/SnapshpshotEvents';
 import { SubscriberCallbackType } from '@/subscriptions/Subscription';
 import { SubscriberCollection } from '@/users/SubscriberCollection';
 import { VersionData } from '@/versions/VersionData';

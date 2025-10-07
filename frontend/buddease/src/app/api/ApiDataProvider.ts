@@ -1,12 +1,12 @@
 // ApiDataProvider.ts
 import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import {
     NotificationTypeEnum,
     useNotification,
 } from "@/app/context/NotificationContext";
 import { AxiosError } from "axios";
-import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 
 const API_BASE_URL = endpoints.dataProviders;

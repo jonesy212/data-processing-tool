@@ -15,7 +15,7 @@ import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { User } from "@/app/users/User";
 import { createMessage, MessageProps } from "@/app/utils/web3/createMessage";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { InitializedData } from '@/SnapshotStoreOptions';
+import { InitializedData } from '@/app/snapshots/SnapshpshotStoreOptions';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
 

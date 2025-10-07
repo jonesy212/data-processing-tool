@@ -1,4 +1,4 @@
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
 import { DocumentPhaseTypeEnum } from "@/app/components/documents/DocumentPhaseType";
 import { BaseData } from '@/app/models/data/Data';
@@ -273,9 +273,6 @@ interface DocumentAdditionalProps <T extends  BaseData<any>, K extends T = T, Me
 }
 
 
-
-
-
 // Document interface (extends DocumentBase)
 interface Document<
   T extends BaseDataEntity = BaseDataEntity,
@@ -406,7 +403,7 @@ const useDocumentStore = <
     try {
       const response = await axiosInstance.get(`/api/calendar-events/${eventId}/document-content`);
       const meta: StructuredMetadata<T, K> = useMeta<T, K>(area);
-      const metadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area);
+      const metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area);
 
       return {
         eventId,

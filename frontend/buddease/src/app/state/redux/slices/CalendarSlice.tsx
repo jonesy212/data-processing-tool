@@ -1,7 +1,7 @@
 import { CalendarActions } from "@/app/actions/CalendarEventActions";
 import { NotificationActions } from "@/app/actions/NotificationActions";
 import calendarApiService from "@/app/api/ApiCalendar";
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { fetchEventData } from "@/app/api/ApiEvent";
 import { AttendancePrediction } from "@/app/calendar/AttendancePrediction";
 import CalendarEventAgendaItem from "@/app/calendar/CalendarEventAgendaItem";

@@ -1,6 +1,5 @@
 // app/configs/BackendStructure.ts
 import Logger from "@/app/libraries/logging/Logger";
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import { SecureField, SecureMetadata } from '@/app/components/security/SecureField';
 import SecureFieldManager from '@/app/components/security/SecureFieldManager';
 import SecurityAudit from "@/server/security/SecurityAudit";
@@ -16,6 +15,9 @@ import * as path from "path";
 import getAppPath from "./appPath";
 import { AppStructureItem } from "./AppStructure";
 import { frontend } from "./FrontendStructure";
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 
 interface StructuredBackend {
@@ -37,8 +39,15 @@ interface ServiceSchema extends Schema {
 interface StructureSchema extends Schema {
 }
 
-export default class BackendStructure {
-  protected structure?: Record<string, AppStructureItem> = {};
+export default class BackendStructure <
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  protected structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
   #structureHash: string | undefined;
   public globalState: any; // Add globalState property
 
@@ -85,19 +94,19 @@ export default class BackendStructure {
     return this.services;
   }
 
-  public async getStructure(): Promise<Record<string, AppStructureItem>> {
+  public async getStructure(): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     return { ...this.structure };
   }
 
 
-  public getStructureAsArray(): AppStructureItem[] {
+  public getStructureAsArray(): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     return Object.values(this.structure || {});
   }
 
   public async traverseDirectoryPublic(
     dir: string,
     fs: typeof import("fs")
-  ): Promise<AppStructureItem[]> {
+  ): Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     return this.traverseDirectory ? this.traverseDirectory(dir) : [];
   }
 
@@ -148,12 +157,12 @@ export default class BackendStructure {
   }
 
 
-  async traverseDirectory?(dir: string): Promise<AppStructureItem[]> {
-    const result: AppStructureItem[] = [];
+  async traverseDirectory?(dir: string): Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+    const result: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
     try {
       const files = await fs.readdir(dir);
-      const result: AppStructureItem[] = [];
+      const result: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
       for (const file of files) {
         // You can add logic here to process each file and convert it into AppStructureItem as needed.

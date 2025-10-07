@@ -32,11 +32,18 @@ type Tasks<T extends BaseData<any>, K extends T = T> =
   TasksArray<T, K> | TasksObject<T, K>;
 
 
+
+export interface TaskEntityExtended extends TaskEntity {
+  permissions: Permission[];
+  ownerId: string;
+}
+
   export type {
     Tasks, TasksArray,
     TasksObject,
     TaskStoreObject,
-    TaskStoreUnion, TaskUnion
+    TaskStoreUnion, TaskUnion,
+    TaskEntityExtended
 };
 
 

@@ -22,11 +22,13 @@ import { Data } from "./Data";
 export type DataAndEventDetails = Data<any, any, any> | CommonEvent;
 
 interface SharedDetails<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends SharedMetadata<T, K, ExcludedFields>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           SharedIdentifiers<T, K, Meta, ExcludedFields> {
   participants: Participant[];
   uploadedAt: Date;

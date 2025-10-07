@@ -3,7 +3,6 @@ import { sendEmail } from "@/api/sendEmail";
 import { sendSMS } from "@/api/sendSMS";
 import * as articleApi from '@/app/api/articleApi';
 import { ApiNotificationsService } from "@/app/api/NotificationsService";
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
 import {
   NotificationTypeEnum,
   useNotification,
@@ -25,6 +24,9 @@ import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import { AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
+import { Attachment } from '@/app/documents/Attachment/attachment';
+
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 
 import NotificationManager from "@/app/components/support/NotificationManager";
 import { useSecureUserId } from "@/app/hooks/useSecureUserId";
@@ -126,7 +128,7 @@ const notifyEventSystem = <
 ) => {
   const area = fetchUserAreaDimensions().toString()
   const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
-  const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
+  const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area)
   // Logic to notify the event system
   console.log(`Event '${eventType}' occurred from ${source}. Data:`, eventData);
   // Additional logic to trigger any necessary actions based on the event

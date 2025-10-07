@@ -1,6 +1,6 @@
 // parameterCustomization.ts
 
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import ApiService from "@/app/api/ApiService";
 import { AxiosResponse } from "axios";
 

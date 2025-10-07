@@ -15,6 +15,8 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/Bas
 import { SharedMetadata } from "@/config/metadata/MetadataHooks";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { BaseDataRoot } from "@/config/BaseConfig";
 
 
 interface BaseRealtimeData<

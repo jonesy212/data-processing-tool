@@ -1,5 +1,5 @@
 // useFileUpload.tsx
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import CustomFile from "@/app/components/documents/File";

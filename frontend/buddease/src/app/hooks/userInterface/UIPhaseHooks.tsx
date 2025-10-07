@@ -1,7 +1,7 @@
 import UserService from "@/api/ApiUser";
 import { UIActions } from "@/app/actions/UIActions";
 import { fetchData } from "@/app/api/ApiData";
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import * as userApi from "@/app/api/UsersApi";
 import useNotificationBar from "@/app/commHooks/useNotificationBar";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";

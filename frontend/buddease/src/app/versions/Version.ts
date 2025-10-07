@@ -73,8 +73,8 @@ interface Version<
   isActive: boolean;
   previousVersion?: Version<T, K, Meta> | null;
   releaseDate: string | Date | undefined;
-  transformToStructureItems(data: any): AppStructureItem<T, K, Meta, ExcludedFields>[]; // Required
-  getStructure?: () => Promise<Record<string, AppStructureItem<T, K, Meta, ExcludedFields>> | undefined>; // Mark as optional
+  transformToStructureItems(data: any): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Required
+  getStructure?: () => Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined>; // Mark as optional
   bumpVersion: (type: "major" | "minor" | "patch", notes?: string) => Version<T, K, Meta>;
   
   versionNotes: string[];
@@ -90,7 +90,7 @@ interface Version<
   content: string;
   description: string;
   buildNumber: number | string;
-  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versions: Versions<T, K> | null; // Adjust based on actual type
   appVersion: string;
   checksum: string;
@@ -121,7 +121,7 @@ interface Version<
   workspaceAdmins: any[]; // Adjust based on actual type
   workspaceMembers: any[];
   data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined,
-  _structure: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>[]>;
+  _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   versionHistory: VersionHistory<T, K>;
   getVersionNumber: (() => string) | undefined;
   updateStructureHash(): Promise<void>;
@@ -167,7 +167,7 @@ const { latestVersion = createLatestVersion(), ...rest } = data;
       category: "Default Category",
       timestamp: new Date(),
       createdBy: "Unknown",
-      metadata: {} as UnifiedMetadata<T, K>,
+      metadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       initialState: {} as InitializedState<T, K>, // Fixed
       meta: {} as StructuredMetadata<T, K>, // Fixed
       mappedSnapshot: new Map<string, Snapshot<T, K, StructuredMetadata<T, K>, never>>(), 
@@ -507,7 +507,7 @@ class VersionImpl<
   draft: boolean;
   userId: string;
   buildNumber: number | string;
-  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versions: Versions<T, K, Meta> | null
   
   // Add other properties as needed
@@ -541,26 +541,26 @@ class VersionImpl<
   createdAt?: string | Date | undefined;
   updatedAt?: string | Date | undefined;
   deletedAt?: string | Date | undefined;
-  frontendStructure?: Promise<AppStructureItem<T, K, Meta, ExcludedFields>[]>;
-  backendStructure?: Promise<AppStructureItem<T, K, Meta, ExcludedFields>[]>;
+  frontendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+  backendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
   getVersion?: () => Promise<string | null>;
 
-  _structure: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>[]> = {}; // Define private property _structure
+  _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> = {}; // Define private property _structure
   versionHistory: VersionHistory<T, K>; // Add version history property
 
   currentHash: string;
   structureData: string; // Data to be hashed
 
   // Method to set structure (private)
-  private setStructure?(structure: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>[]>): void {
+  private setStructure?(structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>): void {
     this._structure = structure;
   }
 
   private mergeStructures?(
-    baseStructure: AppStructureItem<T, K, Meta, ExcludedFields>[],
-    additionalStructure: AppStructureItem<T, K, Meta, ExcludedFields>[]
-  ): AppStructureItem<T, K, Meta, ExcludedFields>[] {
+    baseStructure: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    additionalStructure: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  ): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     // Deep copy the base structure to avoid mutation
     const mergedStructure = JSON.parse(JSON.stringify(baseStructure));
 
@@ -610,7 +610,7 @@ class VersionImpl<
       data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
       name: string;
       url: string;
-      metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+      metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       versions: Versions<T, K> | null;
       versionHistory: VersionHistory<T, K>;
       userId: string;
@@ -665,9 +665,9 @@ class VersionImpl<
       workspaceViewers: string[];
       workspaceAdmins: string[];
       workspaceMembers: string[];
-      _structure?: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>[]>;
-      frontendStructure?: Promise<AppStructureItem<T, K, Meta, ExcludedFields>[]>;
-      backendStructure?: Promise<AppStructureItem<T, K, Meta, ExcludedFields>[]>;
+      _structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+      frontendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+      backendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
     }
   ): VersionImpl<T, K> {
        // Convert documentId to string if it's a number
@@ -764,7 +764,7 @@ class VersionImpl<
     data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
     name: string;
     url: string;
-    metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+    metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     versions: Versions<T, K, Meta> | null;
     versionHistory: VersionHistory<T, K>;
     userId: string;
@@ -823,9 +823,9 @@ class VersionImpl<
     workspaceAdmins: string[];
     workspaceMembers: string[];
 
-    _structure?: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>[]>; // Added here
-    frontendStructure?: Promise<AppStructureItem<T, K, Meta, ExcludedFields>[]>; // Added here
-    backendStructure?: Promise<AppStructureItem<T, K, Meta, ExcludedFields>[]>; // Added here
+    _structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>; // Added here
+    frontendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>; // Added here
+    backendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>; // Added here
   }
   ) {
 
@@ -1045,7 +1045,7 @@ class VersionImpl<
 
 
   // Make the method public
-  public transformToStructureItems(data: any): AppStructureItem<T, K, Meta, ExcludedFields>[] {
+  public transformToStructureItems(data: any): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     const { user } = useAuth();
 
     if (!user) {
@@ -1071,7 +1071,7 @@ class VersionImpl<
 
     if (mergedStructure && this.setStructure) {
       this.setStructure({
-        merged: Object.values(mergedStructure).flat() as AppStructureItem<T, K, Meta, ExcludedFields>[],
+        merged: Object.values(mergedStructure).flat() as AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
       });
     }
   }
@@ -1083,7 +1083,7 @@ class VersionImpl<
         const parsedData = JSON.parse(this.structureData);
 
         // Step 2: Transform the parsed data into AppStructureItem array
-        const structureItems: AppStructureItem<T, K, Meta, ExcludedFields>[] = this.transformToStructureItems(parsedData);
+        const structureItems: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = this.transformToStructureItems(parsedData);
 
         // Step 3: Convert the array to a Record<string, AppStructureItem>
         const structureRecord: Record<string, AppStructureItem> = {};
@@ -1102,8 +1102,8 @@ class VersionImpl<
 
   // Inside the Version class
   public mergeAndHashStructures?(
-    baseStructure: AppStructureItem<T, K, Meta, ExcludedFields>[],
-    additionalStructure: AppStructureItem<T, K, Meta, ExcludedFields>[]
+    baseStructure: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    additionalStructure: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
   ): Promise<string> {
     const mergedStructure =
       this.mergeStructures?.(baseStructure, additionalStructure) || [];
@@ -1545,7 +1545,7 @@ async getVersionData?(): Promise<VersionData<T, K, Meta, AttachmentType, Exclude
     return Boolean(this.compare && this.compare(otherVersion) === 1);
   }
 
-  hashStructure?(structure: AppStructureItem<T, K, Meta, ExcludedFields>[]): string {
+  hashStructure?(structure: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): string {
     return crypto
       .createHash("sha1")
       .update(JSON.stringify(structure))

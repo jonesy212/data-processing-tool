@@ -1,4 +1,4 @@
-import { ApiConfig, configServiceInstance } from '@/config//ConfigurationService';
+import { ApiConfig, configServiceInstance } from '@/app/services/ConfigurationService';
 import React from 'react';
 
 

@@ -2,6 +2,7 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { AppNotificationData } from '@/app/typings/entities/CommonEntities'
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { createAction } from "@reduxjs/toolkit";
 import { default as CustomFile, default as File } from "@/app/documents/File";
@@ -318,13 +319,11 @@ export const CalendarActions = {
   offerDevelopmentService: createAction('monetization/offerDevelopmentService'),
   requestCustomAppProject: createAction('monetization/requestCustomAppProject'),
 
-
-
   updateTaskPosition: createAction<{
     taskId: string;
     newPosition: { [key: string]: number };
   }>('tasks/updateTaskPosition'),
-  dispatchNotification: createAction<NotificationData>('communication/dispatchNotification'),
+  dispatchNotification: createAction<AppNotificationData>('communication/dispatchNotification'),
   updateChatRoomTopics: createAction<{
     chatRoomId: string;
     topics: string[];

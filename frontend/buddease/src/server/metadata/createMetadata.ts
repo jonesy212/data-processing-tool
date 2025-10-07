@@ -1,14 +1,16 @@
 import crypto from 'crypto';
 import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { createLatestVersion } from '@/versions/createLatestVersion';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { BaseData } from '@/app/models/data/Data';
 import { Attachment } from "@/app/documents/Attachment/attachment";
 import { UnifiedMetaDataOptions } from '@/server/database/MetaDataOptions';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SecureFieldManager } from '@/server/security/SecureFieldManager'
+import SecureFieldManager from '@/server/security/SecureFieldManager'
 import { useSecurityAudit } from "@/app/hooks/useSecurityAudit";
+import { BaseDataRoot } from "@/config/BaseConfig";
 
 
 interface DashboardMeta<
@@ -18,7 +20,7 @@ interface DashboardMeta<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>
-  extends StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+extends StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   createdBy: string;
   // Other dashboard-specific fields here
 }
@@ -163,7 +165,7 @@ export const createMetadata = <
     relatedData: [],
     currentMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     structuredMetadata: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    latestVersion: createLatestVersion<T, K>(),
+    latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     apiEndpoint: "https://default-api-endpoint.com",
     apiKey: undefined,
     timeout: 3000,
@@ -174,7 +176,7 @@ export const createMetadata = <
     timestamp: new Date(),
     createdBy: "system",
     metadata: {} as any,
-    initialState: { state: "initialized", data: [] } as InitializedState<T, K>,
+    initialState: { state: "initialized", data: [] } as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     events: {} as EventManager<T, K>,
   };
 

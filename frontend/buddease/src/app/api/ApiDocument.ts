@@ -1,12 +1,15 @@
 // ApiDocument.ts
+import { NotificationType } from '@/app/context/NotificationContext';
 import axiosInstance from "@/app/api/csrfToken";
+import { AxiosResponse } from "axios";
+import { SnapshotStore } from "@/app/snapshots/SnapshotStore";
 import headersConfig from "@/app/api/headers/HeadersConfig";
+import { DocumentFull } from '@/app/typings/entities/DocumentEntity';
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { Presentation } from "@/app/documents/editing/Presentation";
-import { NotificationTypeEnum } from '@/app/models/data/StatusType';
 import { BaseData } from '@/app/models/data/Data';
-import Collaborator from "@/app/models/teams/TeamMembers";
+import { Collaborator } from "@/app/collaborators/Collaborator";
 import {
     useNotification
 } from "@/app/context/NotificationContext";
@@ -15,7 +18,7 @@ import { DocumentActions } from "@/app/tokens/DocumentActions";
 import {
     DocumentStatusEnum,
     DocumentTypeEnum,
-} from "@/app/typings/documents";
+} from "@/app/typnigs/documentTypes";
 import { DatabaseConfig } from "@/config/DatabaseTypes";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";
@@ -218,31 +221,33 @@ const handleDocumentApiErrorAndNotify = (
       'Document error',
       null,
       new Date(),
-      "DocumentError" as NotificationTypeEnum
+      "DocumentError" as NotificationType
     );
   }
 };
 
 
-const fakeApiCall = (documentId: number): Promise<DocumentObject<T, K>> => {
-  // Simulate an API call
+const fakeApiCall = (documentId: number): Promise<DocumentFull> => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        id: documentId,
+        id: documentId.toString(),
+        title: `Document ${documentId}`,
+        content: 'Sample content',
         status: DocumentStatusEnum.Draft,
         type: DocumentTypeEnum.Document,
-        // Other properties as needed
-      } as DocumentObject<T, K>);
+        lastModified: new Date(),
+        isPublished: false
+      } as DocumentFull);
     }, 1000);
   });
 };
 
 // Define an async thunk action creator to update the document name
-const updateDocumentName = createAsyncThunk<DocumentObject<T, K>, { documentId: number; newName: string }>(
+const updateDocumentName = createAsyncThunk<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, { documentId: number; newName: string }>(
   "documents/updateDocumentName",
-   ({ documentId, newName }, { dispatch }) => {
-    return new Promise<DocumentObject<T, K>>((resolve, reject) => {
+  ({ documentId, newName }, { dispatch }) => {
+    return new Promise<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>((resolve, reject) => {
       axiosInstance
         .put(
           `${API_BASE_URL}/documents/${documentId}/name`,
@@ -251,22 +256,21 @@ const updateDocumentName = createAsyncThunk<DocumentObject<T, K>, { documentId: 
             headers: headersConfig,
           }
         )
-        .then((response) => {
+        .then((response: AxiosResponse<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
           // Dispatch success notification
           useNotification().notify(
             "UPDATE_DOCUMENT_NAME_SUCCESS",
             apiNotificationMessages.UPDATE_DOCUMENT_NAME_SUCCESS,
             null,
             new Date(),
-            "DocumentSuccess" as NotificationTypeEnum
+            "DocumentSuccess" as NotificationType
           );
-          resolve(response.data as DocumentObject<T, K>);
+          resolve(response.data);
         })
-        .catch((error) => {
-          
+        .catch((error: AxiosError<unknown>) => {
           console.error("Error updating document name:", error);
           handleDocumentApiErrorAndNotify(
-            error as AxiosError<unknown>,
+            error,
             "UPDATE_DOCUMENT_NAME_ERROR"
           );
           reject(error);
@@ -276,23 +280,21 @@ const updateDocumentName = createAsyncThunk<DocumentObject<T, K>, { documentId: 
 );
 
 // Define an async thunk action creator to fetch a document by ID
-const fetchDocumentById = createAsyncThunk<DocumentObject<T, K>, number>(
+const fetchDocumentById = createAsyncThunk<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, number>(
   "documents/fetchDocumentById",
   (documentId: number, { dispatch }) => {
-    return new Promise<DocumentObject<T, K>>((resolve, reject) => {
+    return new Promise<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>((resolve, reject) => {
       axiosInstance
         .get(`${API_BASE_URL}/documents/${documentId}`, {
           headers: headersConfig,
         })
-        .then((response) => {
-          resolve(response.data as DocumentObject<T, K>);
+        .then((response: AxiosResponse<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
+          resolve(response.data);
         })
-        .catch((error) => {
+        .catch((error: AxiosError<unknown>) => {
           console.error("Error fetching document:", error);
-          const errorMessage = "Failed to fetch document";
           handleDocumentApiErrorAndNotify(
-            error as AxiosError<unknown>,
-      
+            error,
             "FETCH_DOCUMENT_ERROR"
           );
           reject(error);
@@ -303,11 +305,15 @@ const fetchDocumentById = createAsyncThunk<DocumentObject<T, K>, number>(
 
 // Function to convert documentData to WritableDraft<DocumentObject>
 const createDraftDocument = <
-  T extends  BaseData<any>,
-  K extends T = T
-  >(
-  data: WritableDraft<DocumentObject<T, K>>,
-): WritableDraft<DocumentObject<T, K>> => {
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  data: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+): WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   
   // Type guard for Comment object
   const isCommentObject = (obj: unknown): obj is Comment => {
@@ -364,7 +370,7 @@ const createDraftDocument = <
       : undefined,
     supportedLanguages: supportedLanguages.length > 0 ? supportedLanguages : ["en"],
     doctype: data.doctype ? { ...data.doctype } as unknown as WritableDraft<DocumentType> : null,
-    ownerDocument: data.ownerDocument ? { ...data.ownerDocument } as unknown as WritableDraft<Document<T, K>> : null,
+    ownerDocument: data.ownerDocument ? { ...data.ownerDocument } as unknown as WritableDraft<Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> : null,
     scrollingElement: data.scrollingElement ? { ...data.scrollingElement } as unknown as WritableDraft<Element> : null,
     body: data.body as unknown as WritableDraft<HTMLElement> | undefined,
     documentData: {
@@ -375,22 +381,25 @@ const createDraftDocument = <
         assignedTo: subtask.assignedTo ? { ...subtask.assignedTo } : null,
         tags: subtask.tags ? Object.values(subtask.tags).map((tag) => ({ ...tag })) : [],
       })) || undefined,
-    } as WritableDraft<DocumentData<T, K>>,
+    } as WritableDraft<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     comments: processedComments,
     content: data.content as WritableDraft<Content<T, K>>,
-    selectedDocuments: data.selectedDocuments ? data.selectedDocuments.map(doc => ({ ...doc } as WritableDraft<DocumentData<T, K, StructuredMetadata<T, K>>>)) : undefined,
+    selectedDocuments: data.selectedDocuments ? data.selectedDocuments.map(doc => ({ ...doc } as WritableDraft<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>)) : undefined,
     defaultView: data.defaultView as Window | undefined,
-  } as WritableDraft<DocumentObject<T, K>>;
+  } as WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
 };
 
-const convertToDocumentObject = <
-  T extends BaseData<any>, 
+const convertToDocumentObject = <    
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
-  draft: WritableDraft<DocumentObject<T, K>>
-): DocumentObject<T, K, Meta> => {  
+  draft: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+): DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {  
   
   return {
     ...draft,
@@ -416,7 +425,7 @@ const convertToDocumentObject = <
       doctype: draft.doctype
       ? { ...draft.doctype } as unknown as DocumentType
       : null,
-    ownerDocument: draft.ownerDocument ? { ...draft.ownerDocument } as Document<T, K> : null,
+    ownerDocument: draft.ownerDocument ? { ...draft.ownerDocument } as Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> : null,
     scrollingElement: draft.scrollingElement
     ? { ...draft.scrollingElement } as unknown as Element
       : null,
@@ -437,30 +446,37 @@ const convertToDocumentObject = <
       : undefined,
       currentMeta: draft.currentMeta,
     defaultView: draft.defaultView as Window | undefined,
-  } as DocumentObject<T, K, Meta>;
+  } as DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 
 
 
 // Mock API function for fetching a document by ID
-const fetchDocumentByIdAPI = <T extends BaseData<any>, K extends T = T>(
+const fetchDocumentByIdAPI = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   documentId: number,
-  updateDocument: (data: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>) => void
-): Promise<DocumentObject<T, K, StructuredMetadata<T, K>>> => {
+  updateDocument: (data: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void
+): Promise<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   return new Promise(async (resolve, reject) => {  // Wrap in a new Promise
     try {
       // Use axios to fetch the document by ID
       const response = await axiosInstance.get(`/api/documents/${documentId}`);
       
       // Parse the document data from the response
-      const documentData: DocumentObject<T, K, StructuredMetadata<T, K>> = response.data;
+      const documentData: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = response.data;
 
       // Create a draft document for updates
-      const draftDocument: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>> = createDraftDocument(documentData as WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>);
+      const draftDocument: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = createDraftDocument(documentData as WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>);
       updateDocument(draftDocument);
 
-      // Convert draftDocument back to DocumentObject<T, K> before resolving
-      const finalDocument: DocumentObject<T, K, StructuredMetadata<T, K>> = convertToDocumentObject<T, K, StructuredMetadata<T, K>>(
+      // Convert draftDocument back to DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> before resolving
+      const finalDocument: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = convertToDocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
         current(draftDocument) // Convert draft to an immutable state
       );      
       // Resolve the promise with the updated document data
@@ -551,7 +567,7 @@ const updateDocumentNameAPI = async (
       apiNotificationMessages.UPDATE_DOCUMENT_NAME_SUCCESS,
       null,
       new Date(),
-      "DocumentSuccess" as NotificationTypeEnum
+      "DocumentSuccess" as NotificationType
     );
 
     // Return the response data
@@ -569,15 +585,17 @@ const updateDocumentNameAPI = async (
 
 
 const addDocumentAPI = (
-  documentData: DocumentObject<T, K>
-): Promise<DocumentObject<T, K>> => {
+  documentData: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): Promise<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   const addDocumentEndpoint = `${API_BASE_URL}/documents`;
 
   return new Promise((resolve, reject) => {
     axiosInstance
       .post(addDocumentEndpoint, documentData, { headers: headersConfig })
-      .then((response) => resolve(response.data as DocumentObject<T, K>))
-      .catch((error) => {
+        .then((response: AxiosResponse<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
+          resolve(response.data);
+        })
+        .catch((error: AxiosError<unknown>) => {
         console.error("Error adding document:", error);
         handleDocumentApiErrorAndNotify(
           error as AxiosError<unknown>,
@@ -592,7 +610,7 @@ const addDocumentAPI = (
 
 
 const loadPresentationFromDatabase = async (
-  presentationId: DocumentObject<T, K>
+  presentationId: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<Presentation> => {
   try {
     // Make a GET request to the API endpoint
@@ -761,7 +779,7 @@ const downloadDocument = async (
 const listDocuments = async <
   T extends  BaseData<any>,
   K extends T = T
->(): Promise<Document<T, K>[]> => {
+>(): Promise<Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}/api/documents`);
     return response.data;
@@ -918,7 +936,7 @@ const unlockDocument = async (documentId: string): Promise<any> => {
 };
 
 // Add document API
-const addDocument = async (newDocument: Document<T, K>): Promise<Document<T, K>> => {
+const addDocument = async (newDocument: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     const response = await axiosInstance.post(
       `${API_BASE_URL}/api/documents`,
@@ -945,8 +963,8 @@ const updateDocument = async <
   T extends  BaseData<any>,
   K extends T = T>(
   documentId: string,
-  updatedDocument: Document<T, K>
-): Promise<Document<T, K>> => {
+  updatedDocument: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): Promise<Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     const response = await axiosInstance.put(
       `${API_BASE_URL}/api/documents/${documentId}`,
@@ -2074,8 +2092,8 @@ const generateDocument = <
   K extends T = T>(
   documentData: any,
   options: DocumentOptions
-): Promise<DocumentObject<T, K>> => {
-  return new Promise<DocumentObject<T, K>>(async (resolve, reject) => {
+): Promise<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+  return new Promise<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(async (resolve, reject) => {
     try {
       const response = await axiosInstance.post(
         `${API_BASE_URL}/api/documents/generate`,

@@ -89,28 +89,30 @@ const dataProcessingService = observable({
     }
   },
 
-  processDataForAnalysis: async (data: DataProcessing): Promise<DataProcessingResult> => {
-    try {
-      const response: AxiosResponse<DataProcessingResult> = await axiosInstance.post(
-        `${API_BASE_URL}/process`,
-        data
-      );
+processDataForAnalysis: async (data: DataProcessing): Promise<DataProcessingResult> => {
+  try {
+    const response: AxiosResponse<DataProcessingResult> = await axiosInstance.post(
+      `${API_BASE_URL}/process`,
+      data
+    );
 
-      runInAction(() => {
-        AppDataActions.processDataForAnalysisSuccess({ result: response.data });
-      });
-    } catch (error) {
-      const errorMessage = String(error);
-      console.error(`Error processing data for analysis: ${errorMessage}`);
+    runInAction(() => {
+      AppDataActions.processDataForAnalysisSuccess({ result: response.data });
+    });
 
-      runInAction(() => {
-        AppDataActions.processDataForAnalysisFailure({ error: errorMessage });
-      });
-
-      throw error;
-    }
+    // ✅ Return inside the try block, where `response` is defined
     return response.data;
-  },
+  } catch (error) {
+    const errorMessage = String(error);
+    console.error(`Error processing data for analysis: ${errorMessage}`);
+
+    runInAction(() => {
+      AppDataActions.processDataForAnalysisFailure({ error: errorMessage });
+    });
+
+    throw error;
+  }
+}
 });
 
 export default dataProcessingService;

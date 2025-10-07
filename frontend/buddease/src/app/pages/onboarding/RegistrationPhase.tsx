@@ -1,4 +1,4 @@
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import EmailSetupForm from "@/app/components/communications/email/EmailSetUpForm";
 import { sanitizeInput } from "@/app/components/crypto/SanitizationFunctions"; // Import sanitizeInput function
 import useIdleTimeout from "@/app/hooks/idleTimeoutHooks";

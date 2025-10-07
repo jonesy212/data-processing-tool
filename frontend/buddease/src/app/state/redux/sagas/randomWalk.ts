@@ -1,4 +1,4 @@
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
 import { RandomWalkActions } from "@/app/hooks/userInterface/RandomWalkActions";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";

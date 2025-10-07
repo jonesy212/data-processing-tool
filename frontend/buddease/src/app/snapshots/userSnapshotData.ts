@@ -2,10 +2,23 @@
 import MyPromise from '@/app/utils/MyPromise';
 import useUserProfile from '@/app/hooks/useUserProfile';
 import CommonDetails from '@/models/CommonDetails';
-import { User, UserData } from '@/users/User';
+import { User, UserData } from '@/app/users/User';
 import UserRoles from '@/users/UserRoles';
 
-export type UserProfile = UserData & User;
+export type UserProfile<
+  T extends BaseDataEntity = UserEntity,
+  K extends T = UserK,
+  Meta extends DefaultMeta<T, K> = UserMeta,
+  AttachmentType extends Attachment = UserAttachment,
+  ExcludedFields extends keyof T = UserExcludedFields,
+  IncludedFields extends keyof T = UserIncludedFields
+> = UserData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & User & {
+  // Additional profile-specific fields
+  isPublic?: boolean;
+  profileCompletion?: number;
+  lastProfileUpdate?: Date;
+  verificationStatus?: 'verified' | 'pending' | 'unverified';
+};
 
 const saveProfile = (profileData: UserProfile) => {
   // Assuming an asynchronous operation to save profile data

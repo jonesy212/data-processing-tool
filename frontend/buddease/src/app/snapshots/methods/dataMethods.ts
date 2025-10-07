@@ -7,7 +7,7 @@ import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { SnapshotsArray } from '@/snapshots/LocalStorageSnapshotStore';
 import { SnapshotUnion } from '@/LocalStorageSnapshotStore';
 import { SnapshotItem } from "./SnapshotList";
-import SnapshotStore from '@/SnapshotStore';
+import SnapshotStore from '@/app/snapshots/SnapshpshotStore';
 
 export function addDataSnapshot<
   T extends BaseDataEntity, 

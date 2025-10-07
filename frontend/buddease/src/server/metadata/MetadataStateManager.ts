@@ -174,7 +174,7 @@ export const createMeta = <
     category: '',
     timestamp: new Date(),
     createdBy: '',
-    metadata: {} as UnifiedMetadata<T, K>,
+    metadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     initialState: {} as InitializedState<T, K>,
     meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     mappedSnapshot: new Map(),

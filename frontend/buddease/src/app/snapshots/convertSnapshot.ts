@@ -13,7 +13,7 @@ import { Subscription } from "@/app/subscriptions/Subscription";
 import { convertSnapshotData, convertSnapshotMap } from "@/app/typings/YourSpecificSnapshotType";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { SnapshotContainerType } from '@/SnapshotContainer';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
 import { Subscriber } from '@/users/Subscriber';
 import { createSnapshotStoreOptions } from "./createSnapshotStoreOptions";
 import { SnapshotConfig, SnapshotStoreConfig, SnapshotStoreMethod, SnapshotStoreProps } from "./index";

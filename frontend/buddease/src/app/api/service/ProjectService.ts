@@ -1,5 +1,5 @@
 import { ProjectActions } from "@/app/actions/ProjectActions";
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
 import { Task } from "@/app/components/models/tasks/Task";
 import { Phase } from "@/app/components/phases/Phase";

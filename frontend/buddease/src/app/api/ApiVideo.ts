@@ -1,18 +1,18 @@
 // ApiVideo.ts
 import { VideoActions } from "@/app/actions/VideoActions";
 import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
-import { ExcludedFields } from '@/app/routing/Fields';
 import { VideoData } from "@/app/components/video/Video";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import { Attachment } from "@/app/documents/Attachment/attachment";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { ExcludedFields } from '@/app/routing/Fields';
 import useVideoStore, { Video } from "@/app/state/stores/VideoStore";
 import { VideoMetadata } from "@/config/StructuredMetadata";
 import axios, { AxiosError } from "axios";
 import { observable, runInAction } from "mobx";
 import { Partial } from "react-spring";
-import { endpoints } from "./ApiEndpoints";
 
 const API_BASE_URL = endpoints.videos.list;
 

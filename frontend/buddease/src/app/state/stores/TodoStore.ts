@@ -2,7 +2,7 @@ import { NotificationType } from "@/app/context/NotificationContext";
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { generateSnapshotId } from '@/app/utils/snapshotUtils';
 // TodoManagerStore.ts
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { BaseData } from '@/app/models/data/Data';
 import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
 import { StructuredMetadata } from '@/config/StructuredMetadata';

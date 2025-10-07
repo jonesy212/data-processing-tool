@@ -4,6 +4,28 @@ import useSearchOptions from "@/app/pages/searchs/useSearchOptions";
 import { BASE_URL } from "./baseUrl";
 import mergeConfigurations from "./mergeConfigurations";
 
+// Create API config instance
+export const apiConfig = createApiConfig(endpointConfigurations, endpoints);
+
+// Helper function to get endpoint info
+export const getApiEndpoint = <T extends keyof EndpointConfigurations>(
+  category: T,
+  endpointKey: keyof EndpointConfigurations[T],
+  ...params: any[]
+) => {
+  return apiConfig.getEndpointInfo(category, endpointKey, ...params);
+};
+
+// Helper function to get endpoint URL
+export const getApiEndpointUrl = <T extends keyof EndpointConfigurations>(
+  category: T,
+  endpointKey: keyof EndpointConfigurations[T],
+  ...params: any[]
+) => {
+  return apiConfig.getEndpointUrl(category, endpointKey, ...params);
+};
+
+
 interface EndpointConfig {
   path: string;
   method: "GET" | "POST" | "PUT" | "DELETE";
@@ -64,6 +86,8 @@ interface EndpointConfigurations {
     updateHighlight: EndpointConfig;
     deleteHighlight: EndpointConfig;
     uploadData: EndpointConfig;
+    hypothesisTest: EndpointConfig;
+
   };
 
   documents: {
@@ -218,6 +242,58 @@ interface EndpointConfigurations {
     bulkRemove: EndpointConfig;
     bulkUpdate: EndpointConfig;
   };
+  ui: {
+    // User Data & Settings
+    userData: (userId: string) => EndpointConfig;
+    userSettings: (userId: string) => EndpointConfig;
+    updateUserSettings: (userId: string) => EndpointConfig;
+    
+    // Dashboard
+    userDashboard: (userId: string) => EndpointConfig;
+    updateDashboardLayout: (userId: string) => EndpointConfig;
+    
+    // Widgets
+    userWidgets: (userId: string) => EndpointConfig;
+    customizeWidget: (userId: string, widgetId: string) => EndpointConfig;
+    
+    // Themes
+    userThemes: EndpointConfig;
+    switchTheme: (userId: string) => EndpointConfig;
+    
+    // Preferences
+    userPreferences: (userId: string) => EndpointConfig;
+    updateUserPreferences: (userId: string) => EndpointConfig;
+    
+    // Notifications
+    userNotifications: (userId: string) => EndpointConfig;
+    markNotificationRead: (userId: string, notificationId: string) => EndpointConfig;
+    clearAllNotifications: (userId: string) => EndpointConfig;
+    
+    // Messages
+    userMessages: (userId: string) => EndpointConfig;
+    sendMessage: (userId: string) => EndpointConfig;
+    
+    // Appearance
+    toggleDarkMode: (userId: string) => EndpointConfig;
+    
+    // Avatars
+    userAvatar: (userId: string) => EndpointConfig;
+    updateUserAvatar: (userId: string) => EndpointConfig;
+    
+    // Branding & Interface
+    branding: EndpointConfig;
+    interfaceContent: EndpointConfig;
+    updateInterfaceSettings: EndpointConfig;
+    
+    // UI Components
+    fetchComponents: EndpointConfig;
+    updateComponentState: (componentId: string) => EndpointConfig;
+    
+    // Layout Management
+    saveLayout: (userId: string) => EndpointConfig;
+    loadLayout: (userId: string) => EndpointConfig;
+    resetLayout: (userId: string) => EndpointConfig;
+  };
   version: {
     getVersion: EndpointConfig;
     updateVersion: EndpointConfig;
@@ -324,6 +400,7 @@ const endpointConfigurations: EndpointConfigurations = {
     updateHighlight: { path: "/api/highlights/{highlightId}", method: "PUT" },
     deleteHighlight: { path: "/api/highlights/{highlightId}", method: "DELETE" },
     uploadData: { path: "/api/data/upload", method: "POST" },
+    hypothesisTest: { path: `${BASE_URL}/api/data/hypothesis-test`, method: "POST" },
   },
 
   documents: {
@@ -570,6 +647,140 @@ const endpointConfigurations: EndpointConfigurations = {
     bulkAdd: { path: "/api/snapshots/bulk-add", method: "POST" },
     bulkRemove: { path: "/api/snapshots/bulk-remove", method: "POST" },
     bulkUpdate: { path: "/api/snapshots/bulk-update", method: "POST" },
+  },
+
+  ui: {
+    // User Data & Settings
+    userData: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/data`,
+      method: "GET",
+    }),
+    userSettings: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/settings`,
+      method: "GET",
+    }),
+    updateUserSettings: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/settings`,
+      method: "PUT",
+    }),
+    
+    // Dashboard
+    userDashboard: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/dashboard`,
+      method: "GET",
+    }),
+    updateDashboardLayout: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/dashboard/layout`,
+      method: "PUT",
+    }),
+    
+    // Widgets
+    userWidgets: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/widgets`,
+      method: "GET",
+    }),
+    customizeWidget: (userId: string, widgetId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/widgets/${widgetId}/customize`,
+      method: "PUT",
+    }),
+    
+    // Themes
+    userThemes: { 
+      path: `${BASE_URL}/api/ui/themes`, 
+      method: "GET" 
+    },
+    switchTheme: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/theme`,
+      method: "PUT",
+    }),
+    
+    // Preferences
+    userPreferences: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/preferences`,
+      method: "GET",
+    }),
+    updateUserPreferences: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/preferences`,
+      method: "PUT",
+    }),
+    
+    // Notifications
+    userNotifications: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/notifications`,
+      method: "GET",
+    }),
+    markNotificationRead: (userId: string, notificationId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/notifications/${notificationId}/read`,
+      method: "PUT",
+    }),
+    clearAllNotifications: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/notifications/clear`,
+      method: "DELETE",
+    }),
+    
+    // Messages
+    userMessages: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/messages`,
+      method: "GET",
+    }),
+    sendMessage: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/messages/send`,
+      method: "POST",
+    }),
+    
+    // Appearance
+    toggleDarkMode: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/dark-mode`,
+      method: "PUT",
+    }),
+    
+    // Avatars
+    userAvatar: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/avatar`,
+      method: "GET",
+    }),
+    updateUserAvatar: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/avatar`,
+      method: "PUT",
+    }),
+    
+    // Branding & Interface
+    branding: { 
+      path: `${BASE_URL}/api/ui/branding`, 
+      method: "GET" 
+    },
+    interfaceContent: { 
+      path: `${BASE_URL}/api/ui/interface/content`, 
+      method: "GET" 
+    },
+    updateInterfaceSettings: { 
+      path: `${BASE_URL}/api/ui/interface/settings`, 
+      method: "PUT" 
+    },
+    
+    // UI Components
+    fetchComponents: { 
+      path: `${BASE_URL}/api/ui/components`, 
+      method: "GET" 
+    },
+    updateComponentState: (componentId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/components/${componentId}/state`,
+      method: "PUT",
+    }),
+    
+    // Layout Management
+    saveLayout: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/layout/save`,
+      method: "POST",
+    }),
+    loadLayout: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/layout/load`,
+      method: "GET",
+    }),
+    resetLayout: (userId: string): EndpointConfig => ({
+      path: `${BASE_URL}/api/ui/user/${userId}/layout/reset`,
+      method: "DELETE",
+    }),
   },
   tasks: {
     create: { path: "/api/tasks/create", method: "POST" },
@@ -918,6 +1129,37 @@ const updatedEndpoints = {
     search: generateEndpointUrl("todos", "search"),
     bulkAssign: generateEndpointUrl("todos", "bulkAssign"),
     bulkUnassign: generateEndpointUrl("todos", "bulkUnassign"),
+  }),
+
+
+  ui: mergeConfigurations(endpointConfigurations.ui, {
+    userData: (userId: string) => generateEndpointUrl("ui", "userData", { userId }),
+    userSettings: (userId: string) => generateEndpointUrl("ui", "userSettings", { userId }),
+    updateUserSettings: (userId: string) => generateEndpointUrl("ui", "updateUserSettings", { userId }),
+    userDashboard: (userId: string) => generateEndpointUrl("ui", "userDashboard", { userId }),
+    updateDashboardLayout: (userId: string) => generateEndpointUrl("ui", "updateDashboardLayout", { userId }),
+    userWidgets: (userId: string) => generateEndpointUrl("ui", "userWidgets", { userId }),
+    customizeWidget: (userId: string, widgetId: string) => generateEndpointUrl("ui", "customizeWidget", { userId, widgetId }),
+    userThemes: generateEndpointUrl("ui", "userThemes"),
+    switchTheme: (userId: string) => generateEndpointUrl("ui", "switchTheme", { userId }),
+    userPreferences: (userId: string) => generateEndpointUrl("ui", "userPreferences", { userId }),
+    updateUserPreferences: (userId: string) => generateEndpointUrl("ui", "updateUserPreferences", { userId }),
+    userNotifications: (userId: string) => generateEndpointUrl("ui", "userNotifications", { userId }),
+    markNotificationRead: (userId: string, notificationId: string) => generateEndpointUrl("ui", "markNotificationRead", { userId, notificationId }),
+    clearAllNotifications: (userId: string) => generateEndpointUrl("ui", "clearAllNotifications", { userId }),
+    userMessages: (userId: string) => generateEndpointUrl("ui", "userMessages", { userId }),
+    sendMessage: (userId: string) => generateEndpointUrl("ui", "sendMessage", { userId }),
+    toggleDarkMode: (userId: string) => generateEndpointUrl("ui", "toggleDarkMode", { userId }),
+    userAvatar: (userId: string) => generateEndpointUrl("ui", "userAvatar", { userId }),
+    updateUserAvatar: (userId: string) => generateEndpointUrl("ui", "updateUserAvatar", { userId }),
+    branding: generateEndpointUrl("ui", "branding"),
+    interfaceContent: generateEndpointUrl("ui", "interfaceContent"),
+    updateInterfaceSettings: generateEndpointUrl("ui", "updateInterfaceSettings"),
+    fetchComponents: generateEndpointUrl("ui", "fetchComponents"),
+    updateComponentState: (componentId: string) => generateEndpointUrl("ui", "updateComponentState", { componentId }),
+    saveLayout: (userId: string) => generateEndpointUrl("ui", "saveLayout", { userId }),
+    loadLayout: (userId: string) => generateEndpointUrl("ui", "loadLayout", { userId }),
+    resetLayout: (userId: string) => generateEndpointUrl("ui", "resetLayout", { userId }),
   }),
 
   users: mergeConfigurations(endpointConfigurations.users, {

@@ -21,7 +21,7 @@ import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { handleSnapshotOperation } from "./handleSnapshotOperation";
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "./LocalStorageSnapshotStore";
 
-import { SnapshotContainer, SnapshotContainerType } from '@/SnapshotContainer';
+import { SnapshotContainer, SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
 import { Snapshot } from "./Snapshhot";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";

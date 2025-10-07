@@ -16,7 +16,7 @@ import { createLastUpdatedWithVersion, createLatestVersion } from "./versions/cr
 
 
 const area = fetchUserAreaDimensions().toString()
-const metadata: UnifiedMetadata<T, K> = useMetadata<BaseData<any>>(area);
+const metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<BaseData<any>>(area);
 const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
 
 const { snapshotMap } = useSnapshot<T, K, StructuredMetadata<T, K>, keyof T>();

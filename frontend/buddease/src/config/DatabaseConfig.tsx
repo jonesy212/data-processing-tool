@@ -1,7 +1,6 @@
 // DatabaseConfig.tsx
 import { DatabaseConfig } from '@/config/DatabaseTypes';
-import { DatabaseType } from '@/app/utils/web3/dAppAdapter/DApp'
-
+import { DatabaseType } from '@/app/config/DatabaseType'
 export interface EnhancedDatabaseConfig extends DatabaseConfig {
   type: DatabaseType;
 }

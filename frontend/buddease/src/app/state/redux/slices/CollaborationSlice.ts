@@ -80,7 +80,7 @@ interface CollaborationState<
   isBrainstorming: boolean;
   brainstormingTopic: string;
   brainstormingIdeas: Idea[];
-  documents: Document<T, K>[];
+  documents: Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   comments: Feedback[];
   todos: Progress[];
   resources: Resource[];
@@ -931,13 +931,14 @@ export const useCollaborationSlice = createSlice({
       };
     },
 
-    createTask: (state, action) => {
-      const { task } = action.payload;
-
+    createCollaborationTask: (state, action) => {
+      const { task, teamId, projectId } = action.payload;
       state.tasks.push(task);
-
-      return state;
+      // Collaboration-specific logic
+      state.teamActivity[teamId].tasksCreated++;
+      state.projectCollaboration[projectId].activeTasks++;
     },
+
     updateTask: (state, action) => {
       const { task } = action.payload;
 
@@ -1233,7 +1234,7 @@ export const {
   updateCollaborationSettings,
 
   // Task actions
-  createTask,
+  createCollaborationTask,
   updateTask,
   deleteTask,
   getTaskDetails,

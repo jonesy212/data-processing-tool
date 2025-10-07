@@ -1,4 +1,4 @@
-import { NestedEndpoints } from "@/app/api/ApiEndpoints";
+import { NestedEndpoints } from '@/app/api/endpointConfigurations';
 import CustomFile from "@/app/documents/File";
 import { Highlight } from "@/app/documents/NoteData";
 import { Snapshot } from '@/app/snapshots/Snapshot';

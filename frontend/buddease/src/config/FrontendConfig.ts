@@ -1,4 +1,4 @@
-import { ApiConfig, CacheConfig, RetryConfig } from "./ConfigurationService";
+import { ApiConfig, CacheConfig, RetryConfig } from "../app/services/ConfigurationService";
 
 interface FrontendConfig {
   appName: string;

@@ -84,7 +84,12 @@ const BlogAndContentEditor: React.FC<BlogAndContentEditorProps> = ({
           label: "Editor Progress",
           current: 50,
           max: 100,
-          percentage: 0,
+          percentage: 50,
+          name: "Editor Progress",
+          color: "blue",
+          description: "Tracks the progress of content editing",
+          min: 0,
+          done: false
         }}
         editorState={editorState}
         onEditorStateChange={handleEditorStateChange}

@@ -1,13 +1,13 @@
 import { uiStore } from '@/components/state/stores/UIStore';
 // ChatApi.ts
 import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import { CalendarManagerState, ChatRoom } from "@/app/components/calendar/CalendarSlice";
 import ChatMessage from "@/app/components/communications/chat/ChatMessage";
 import Group from "@/app/components/communications/chat/Group";
 import { PrivacySettings } from "@/app/settings/PrivacySettings";
 import { User } from "@/app/users/User";
 import { AxiosResponse } from "axios";
-import { endpoints } from "./ApiEndpoints";
 
 
 class ChatApi {

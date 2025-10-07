@@ -51,11 +51,11 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/configs/Ba
 import { FetchSnapshotPayload, fetchSnapshotPayload } from '@/FetchSnapshotPayload';
 import { BaseEntity } from '@/routing/FuzzyMatch';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { SnapshotContainerType } from '@/SnapshotContainer';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
 import { addSnapshotSuccess, batchFetchSnapshots, batchFetchSnapshotsFailure, batchFetchSnapshotsRequest, batchFetchSnapshotsSuccess, batchTakeSnapshot, batchTakeSnapshotsRequest, batchUpdateSnapshots, batchUpdateSnapshotsFailure, batchUpdateSnapshotsRequest, createSnapshotFailure, createSnapshotStore, createSnapshotSuccess, fetchSnapshot, getAllSnapshots, initSnapshot, notifySubscribers, onSnapshot, onSnapshots, updateSnapshot, updateSnapshotFailure, updateSnapshots, updateSnapshotsSuccess, updateSnapshotSuccess } from '@/snapshotHandlers';
 import { snapshotStoreConfigInstance } from '@/snapshotStoreConfigInstance';
-import { SnapshotSubscriberManagement } from '@/SnapshotSubscriberManagement';
-import { data, SnapshotWithCriteria, TagsRecord } from '@/SnapshotWithCriteria';
+import { SnapshotSubscriberManagement } from '@/app/snapshots/SnapshpshotSubscriberManagement';
+import { data, SnapshotWithCriteria, TagsRecord } from '@/app/snapshots/SnapshpshotWithCriteria';
 import { SnapshotEvent } from "@/typings/eventTypes";
 import { SnapshotStoreProps } from '@/useSnapshotStore';
 import { AxiosError } from "axios";

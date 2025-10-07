@@ -4,6 +4,8 @@ import { useNotification } from '@/context/NotificationContext';
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { handleApiError } from '@/app/api/ApiLogs';
 import headersConfig from '@/app/api/headers/HeadersConfig';
+import { AppPhase } from '@/app/entities/PhaseEntity';
+import { NotificationType } from "@/context/NotificationContext";
 
 // Base URL for your API
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
@@ -40,7 +42,7 @@ const handleApiErrorAndNotify= (
       errorMessageText,
       null,
       new Date(),
-      "PhaseApiError" as NotificationTypeEnum
+      "PhaseApiError" as NotificationType
     );
   }
 }
@@ -60,31 +62,24 @@ const handlePhaseApiError = (
 };
 
 
+
 // Function to fetch phases
-const fetchPhases = async (): Promise<Phase[]> => {
+const fetchPhases = async (): Promise<AppPhase[]> => {
   try {
-    // Make the API request using axios with headers
-    const response = await axios.get<Phase[]>(`${API_BASE_URL}`, {
+    const response = await axios.get<AppPhase[]>(`${API_BASE_URL}`, {
       headers: headersConfig,
     });
-
-    // Return the data from the response
     return response.data;
   } catch (error) {
     const errorMessage = "Error fetching phases";
-
-    // Handle the error using the provided error handler
     handlePhaseApiError(
       error as AxiosError<unknown>,
       errorMessage,
       "FetchPhaseErrorId"
     );
-
-    // Throw the error to be caught by the caller
     throw error;
   }
 };
-
 
 const bulkAssignPhases= async (phaseIds: number[], teamId: number): Promise<void> => {
   const url = endpoints?.phases?.bulkAssign; // Assuming endpoints are imported and structured properly
@@ -103,7 +98,7 @@ const bulkAssignPhases= async (phaseIds: number[], teamId: number): Promise<void
 }
 
 // Function to add a new phase
-export const addPhase = async (newPhase: Phase): Promise<void> => {
+export const addPhase = async (newPhase: AppPhase): Promise<void> => {
   try {
     const endpoint = `${BASE_URL}/phases`; // Replace with your actual endpoint
     const response = await axios.post(endpoint, newPhase);
@@ -117,11 +112,11 @@ export const addPhase = async (newPhase: Phase): Promise<void> => {
 
 // Function to get a phase by name
 
-export const getPhaseByName = (phaseName: string): Promise<Phase | null> => {
-  return new Promise<Phase | null>(async (resolve, reject) => {
+export const getPhaseByName = (phaseName: string): Promise<AppPhase | null> => {
+  return new Promise<AppPhase | null>(async (resolve, reject) => {
     try {
       const endpoint = `${BASE_URL}/phases/${phaseName}`; // Replace with your actual endpoint
-      const response = await axios.get<Phase>(endpoint, { headers: headersConfig });
+      const response = await axios.get<AppPhase>(endpoint, { headers: headersConfig });
       console.log(`Fetched phase ${phaseName} successfully:`, response.data);
       resolve(response.data);
     } catch (error) {
@@ -153,7 +148,7 @@ export const removePhase = async (phaseId: string): Promise<void> => {
 };
 
 // Function to update a phase
-export const updatePhase = async (phaseId: string, updatedPhase: Phase): Promise<void> => {
+export const updatePhase = async (phaseId: string, updatedPhase: AppPhase): Promise<void> => {
   try {
     const endpoint = `${BASE_URL}/phases/${phaseId}`; // Replace with your actual endpoint
     const response = await axios.put(endpoint, updatedPhase);

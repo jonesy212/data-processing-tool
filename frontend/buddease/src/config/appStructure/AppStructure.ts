@@ -1,6 +1,6 @@
 import * as apiFile from '@/api/ApiFiles';
 import SecurityAPI from '@/app/api/SecurityAPI';
-import { Content } from '@/app/components/models/content/AddContent';
+import { Content } from '@/app/models/content/AddContent';
 import { SecuritySettings } from '@/app/settings/SecuritySettings';
 import { Permission } from "@/app/users/Permission";
 import { FileType } from "@/app/documents/Attachment/attachment";
@@ -10,15 +10,19 @@ import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { DataVersions } from '@/configs/DataVersionsConfig';
 import getAppPath from "./appPath";
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 const userId = useSecureUserId()
 
 // Define the interface for AppStructureItem
-interface AppStructureItem<
-  T extends BaseDataEntity,
+interface AppStructureItem <
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   id: string;
   userId: string;
@@ -31,9 +35,9 @@ interface AppStructureItem<
   versions: DataVersions | undefined;
   versionData: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   items?: {
-    [key: string]: AppStructureItem<T, K, Meta, ExcludedFields> 
+    [key: string]: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
   };
-  getStructure?(): Promise<Record<string, AppStructureItem<T, K, Meta, ExcludedFields>>>;
+  getStructure?(): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>;
 }
 
 interface AppStructurePermissions extends Permission {
@@ -51,13 +55,15 @@ interface FileSystemService {
 }
 
 export default class AppStructure<
-  T extends BaseDataEntity = BaseDataRoot, 
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   
-  private structure: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>> = {};
+  private structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
   private fileSystem: FileSystemService;
 
   constructor(type: "backend" | "frontend", fileSystem?: FileSystemService) {
@@ -114,10 +120,10 @@ export default class AppStructure<
       isDirectory: boolean;
     },
     versions: {
-      backend: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>>;
-      frontend: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>>;
+      backend: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
+      frontend: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
     }
-  ): AppStructureItem<T, K, Meta, ExcludedFields> {
+  ): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     return {
       id: baseProps.id,
       userId: baseProps.userId,
@@ -167,8 +173,8 @@ export default class AppStructure<
     return defaultPermissions;
   }
 
-  private async traverseDirectory(dir: string, type: "backend" | "frontend"): Promise<Record<string, AppStructureItem<T, K, Meta, ExcludedFields>>> {
-    const structure: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>> = {};
+  private async traverseDirectory(dir: string, type: "backend" | "frontend"): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
+    const structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
     
     try {
       const files = await this.fileSystem.readdir(dir);
@@ -195,7 +201,7 @@ export default class AppStructure<
           structure[file] = this.createAppStructureItem(
             {
               id: file,
-              userId: userId,
+              userId: userId ?? 'unknown-user',
               name: file,
               type: "directory",
               path: filePath,
@@ -219,7 +225,7 @@ export default class AppStructure<
             structure[file] = this.createAppStructureItem(
               {
                 id: file,
-                userId: userId,
+                userId: userId ?? 'unknown-user',
                 name: file,
                 type: fileType,
                 path: filePath,
@@ -242,14 +248,14 @@ export default class AppStructure<
     return structure;
   }
 
-  private async fetchBackendStructure(filePath: string): Promise<Record<string, AppStructureItem<T, K, Meta, ExcludedFields>>> {
+  private async fetchBackendStructure(filePath: string): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     try {
       const stat = await this.fileSystem.stat(filePath);
       const isDirectory = stat.isDirectory;
       const fileName = filePath.split('/').pop() || filePath;
 
-      let backendStructure: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>> = {};
-      let frontendStructure: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>> = {};
+      let backendStructure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
+      let frontendStructure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
 
       if (isDirectory) {
         backendStructure = await this.traverseDirectory(filePath, "backend");
@@ -260,7 +266,7 @@ export default class AppStructure<
       const item = this.createAppStructureItem(
         {
           id: fileName,
-          userId: userId,
+          userId: userId ?? 'unknown-user',
           name: fileName,
           type: isDirectory ? "directory" : "file",
           path: filePath,
@@ -281,14 +287,14 @@ export default class AppStructure<
     }
   }
 
-  private async fetchFrontendStructure(filePath: string): Promise<Record<string, AppStructureItem<T, K, Meta, ExcludedFields>>> {
+  private async fetchFrontendStructure(filePath: string): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     try {
       const stat = await this.fileSystem.stat(filePath);
       const isDirectory = stat.isDirectory;
       const fileName = filePath.split('/').pop() || filePath;
 
-      let backendStructure: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>> = {};
-      let frontendStructure: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>> = {};
+      let backendStructure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
+      let frontendStructure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {};
 
       if (isDirectory) {
         frontendStructure = await this.traverseDirectory(filePath, "frontend");
@@ -299,7 +305,7 @@ export default class AppStructure<
       const item = this.createAppStructureItem(
         {
           id: fileName,
-          userId: userId,
+          userId: userId ?? 'unknown-user',
           name: fileName,
           type: isDirectory ? "directory" : "file",
           path: filePath,
@@ -320,19 +326,19 @@ export default class AppStructure<
     }
   }
 
-  public async getBackendStructure(filePath: string): Promise<Record<string, AppStructureItem<T, K, Meta, ExcludedFields>>> {
+  public async getBackendStructure(filePath: string): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     return this.fetchBackendStructure(filePath);
   }
 
-  public async getFrontendStructure(filePath: string): Promise<Record<string, AppStructureItem<T, K, Meta, ExcludedFields>>> {
+  public async getFrontendStructure(filePath: string): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     return this.fetchFrontendStructure(filePath);
   }
 
-  getStructure(): Record<string, AppStructureItem<T, K, Meta, ExcludedFields>> {
+  getStructure(): Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     return { ...this.structure };
   }
 
-  async getStructureAsArray(): Promise<AppStructureItem<T, K, Meta, ExcludedFields>[]> {
+  async getStructureAsArray(): Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     return this.structure ? Object.values(this.structure) : [];
   }
 

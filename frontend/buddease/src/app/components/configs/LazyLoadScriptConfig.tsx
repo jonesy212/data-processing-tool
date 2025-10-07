@@ -11,6 +11,9 @@ import { traverseFrontendDirectory } from "@/server/traverseFrontend";
 import { BackendConfig, backendConfig } from "./BackendConfig";
 import { FrontendConfig, frontendConfig } from "./FrontendConfig";
 import { AppStructureItem } from "./appStructure/AppStructure";
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataRoot } from "@/config/BaseConfig";
 
 interface LazyLoadScriptConfig {
   configureScript(): unknown;
@@ -37,7 +40,14 @@ interface LazyLoadScriptConfig {
   // Add more properties as needed
 }
 
-class LazyLoadScriptConfigImpl implements LazyLoadScriptConfig {
+class LazyLoadScriptConfigImpl<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> implements LazyLoadScriptConfig {
   configureScript(): unknown {
     // Implementation logic for configuring the script
     return {};
@@ -112,8 +122,8 @@ class LazyLoadScriptConfigImpl implements LazyLoadScriptConfig {
       apiConfig?: ApiConfig;
       namingConventions?: string[];
       projectPath?: string;
-        traverseDirectory: (path: string) => Promise<AppStructureItem[]>;
-        configureScript: (item: AppStructureItem) => void;
+        traverseDirectory: (path: string) => Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+        configureScript: (item: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
       appStructureItem: AppStructureItem;
     }
   ) {

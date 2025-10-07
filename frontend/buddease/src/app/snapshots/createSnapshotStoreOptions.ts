@@ -1,7 +1,7 @@
 // createSnapshotStoreOptions.ts
 import { FetchSnapshotPayload } from '@/FetchSnapshotPayload';
-import { SnapshotContainerType } from '@/SnapshotContainer';
-import { InitializedData } from '@/SnapshotStoreOptions';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
+import { InitializedData } from '@/app/snapshots/SnapshpshotStoreOptions';
 import { isInitializedSnapshot } from "@/app/api/ApiDataAnalysis";
 import { getCurrentSnapshot } from '@/app/api/SnapshotApi';
 import { getSubscribersAPI } from '@/app/api/subscriberApi';
@@ -63,7 +63,9 @@ import { createDefaultVersionData } from '@/versions/VersionData';
 import { Tag } from 'sanitize-html';
 import { Snapshots } from "./LocalStorageSnapshotStore";
 import SnapshotStore from "./SnapshotStore";
-;
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/Attachment/attachment';
+import { BaseDataRoot } from '@/config/BaseeConfiig'
 
 
 interface Difference<T> {
@@ -1320,7 +1322,9 @@ const isSnapshotStoreOptions = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 >(obj: any): obj is SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return obj && typeof obj === 'object' && 'data' in obj && 'initialState' in obj;
 };
@@ -1329,7 +1333,9 @@ const getCurrentSnapshotStoreOptions = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T  
 >(
   snapshotStoreOptions: any
 ): SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null => {
@@ -1340,7 +1346,9 @@ const convertToArray = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 >(
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -1348,7 +1356,14 @@ const convertToArray = <
   return Array.isArray(snapshot) ? snapshot as SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> : [snapshot] as SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 
-// const handleSingleSnapshot = <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+// const handleSingleSnapshot = <
+  // T extends BaseDataEntity,
+  // K extends T = T,
+  // Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  // AttachmentType extends Attachment = Attachment,
+  // ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  // IncludedFields extends keyof T = keyof T
+  // >(
 //   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //   callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 // ) => {
@@ -1378,7 +1393,14 @@ const convertToArray = <
 //   }
 // };
 
-// const handleSnapshotsArray =  <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+// const handleSnapshotsArray =  <
+  // T extends BaseDataEntity,
+  // K extends T = T,
+  // Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  // AttachmentType extends Attachment = Attachment,
+  // ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  // IncludedFields extends keyof T = keyof T
+// >(
 //   snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //   callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 // ) => {
@@ -1412,7 +1434,14 @@ const convertToArray = <
 
 
 
-function isSnapshotsArray<T extends BaseDataEntity>(
+function isSnapshotsArray<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   obj: any
 ): obj is SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return Array.isArray(obj) && obj.every(item => isSnapshot(item));
@@ -1423,7 +1452,9 @@ const isSnapshotArrayState = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 >(state: any): state is Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] => {
   // Logic to determine if it's a Snapshot array
   return Array.isArray(state) && state.every((item: any) => isSnapshot(item));
@@ -1440,7 +1471,9 @@ function isCompatibleSnapshot<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T 
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): snapshot is Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & { storeConfig: { tempData: any } } {
@@ -1460,7 +1493,9 @@ function isSnapshotUnion<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   obj: any
 ): obj is SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
@@ -1481,7 +1516,9 @@ function convertSnapshotsObjectToArray<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
   snapshotsObject: SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {

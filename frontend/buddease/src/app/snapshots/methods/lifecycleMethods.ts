@@ -20,8 +20,8 @@ import type {
 import { SnapshotEvent } from '@/app/typings/eventTypes';
 import { isSnapshot } from '@/app/utils/snapshotUtils';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SnapshotConfig } from '@/SnapshotConfig';
-import SnapshotStore from '@/SnapshotStore';
+import { SnapshotConfig } from '@/app/snapshots/SnapshpshotConfig';
+import SnapshotStore from '@/app/snapshots/SnapshpshotStore';
 import { convertToSnapshotUnion } from "./ConvertSnapshotUnion";
 import { SnapshotStoreReference } from "./SnapshotStoreReference";
 

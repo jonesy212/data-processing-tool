@@ -5,7 +5,7 @@ import { StatusType } from "@/app/components/models/data/StatusType";
 import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
 import CalendarManagerStoreClass from "@/app/components/state/stores/CalendarManagerStore";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { SnapshotStoreMap } from '@/SnapshotMethods';
+import { SnapshotStoreMap } from '@/app/snapshots/SnapshpshotMethods';
 import { Snapshot, SnapshotStoreConfig } from ".";
 import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";

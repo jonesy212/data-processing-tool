@@ -1,7 +1,5 @@
 // ApiData.ts
-// import { endpoints } from '@/app/api/endpointConfigurations';
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
-
+// ApiData.ts
 import { fetchUserIdsFromDatabase } from "@/app/api/ApiDatabase";
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
@@ -17,10 +15,11 @@ import { endpoints } from '@/app/endpointConfigurations';
 import headersConfig from '@/headers/HeadersConfig';
 import { Version } from '@/versions/Version';
 import { AxiosError, AxiosResponse } from 'axios';
+import internalApiService from "./ApiClient"; // ✅ ADD THIS
 
 // Define the API base URL
 const { data: API_BASE_URL } = endpoints;
-export let setDynamicData: React.Dispatch<React.SetStateAction<any>>; // Define setDynamicData globally
+export let setDynamicData: React.Dispatch<React.SetStateAction<any>>;
 
 interface DataNotificationMessages {
   FETCH_DATA_DETAILS_SUCCESS: string;
@@ -30,7 +29,7 @@ interface DataNotificationMessages {
   ERROR_WRITING_TO_CACHE: string;
   FETCH_DEX_DATA_ERROR: string;
   FETCH_EXCHANGE_DATA_ERROR: string;
-  GENERATE_VERSION_ERROR_ID: string; // Add this key
+  GENERATE_VERSION_ERROR_ID: string;
 }
 
 // Define API notification messages
@@ -45,346 +44,278 @@ const apiNotificationMessages: DataNotificationMessages = {
   GENERATE_VERSION_ERROR_ID: NOTIFICATION_MESSAGES.Version.GENERATE_VERSION_ERROR_ID
 };
 
-// Function to handle API errors and notify
-const handleApiErrorAndNotify = (
-  error: AxiosError<unknown>,
-  errorMessage: string,
-  errorMessageId: keyof DataNotificationMessages
-) => {
-  handleApiError(error, errorMessage);
-  if (errorMessageId) {
-    const errorMessageText = apiNotificationMessages[errorMessageId];
-    useNotification().notify(
-      errorMessageId,
-      errorMessageText,
-      new Date(),
-      "ApiClientError" as NotificationType
-    );
+// ✅ NEW: Create DataApiService class following CalendarApiService pattern
+class DataApiService {
+  notify: (
+    id: string,
+    message: string,
+    data: any,
+    date: Date,
+    type: string
+  ) => void;
+
+  constructor(
+    notify: (
+      id: string,
+      message: string,
+      data: any,
+      date: Date,
+      type: string
+    ) => void
+  ) {
+    this.notify = notify;
   }
-};
 
-// Handle the error and notify
-const errorMessage = 'Failed to generate version';
-const errorKey: keyof DataNotificationMessages = 'GENERATE_VERSION_ERROR_ID'; // Use the correct key
-
-handleApiErrorAndNotify(
-  error as AxiosError<unknown>,
-  errorMessage,
-  errorKey
-);
-
-
-const fetchData = async (
-  endpoint: string,
-  id?: number
-): Promise<{ data: YourResponseType<T, K, StructuredMetadata<T, K>> } | null> => {
-  try {
-    let url = endpoint;
-    if (id !== undefined) url += `/${id}`; // append id only if provided
-
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("Network response was not ok");
-
-    const data = await response.json();
-    return { data };
-  } catch (error) {
-    console.error("Failed to fetch data:", error);
-    return null;
-  }
-};
-
-
-
-const getBackendVersion = async (): Promise<string> => {
-  try {
-    const response = await axiosInstance.get(endpoints.version.backend);
-    return response.data;
-  } catch (error: any) {
-    console.error("Error fetching backend version:", error);
-    return "unknown";
-  }
-};
-
-
-// Use fetchData to fetch highlights
-const fetchHighlights = async (id: number): Promise<HighlightEvent[]> => {
-  try {
-    const endpoint = endpoints.highlights.list;
-    
-    if (typeof endpoint !== "string") {
-      throw new Error("Endpoint is not a string");
-    }
-
-    const response = await fetchData(endpoint, id);
-    if (!response || !response.data) {
-      throw new Error("Response or response.data is null");
-    }
-    
-    const highlights = response.data.highlights as HighlightEvent[];
-
-    // Fetch user IDs if highlights contain user references
-    for (const highlight of highlights) {
-      // Convert taskId to string when calling fetchUserIdsFromDatabase
-      const userIds = await fetchUserIdsFromDatabase(highlight.taskId.toString());
-
-      // If userIds is an array of strings or numbers, assign it directly to highlight.userIds
-      highlight.userIds = userIds.map(id => Number(id)); // Convert each userId to a number
-
-    }
-
-    return highlights;
-  } catch (error: any) {
-    handleApiError(
-      error,
-      NOTIFICATION_MESSAGES.Error.FETCH_HIGHLIGHTS_ERROR
-    );
-    throw error;
-  }
-};
-
-
-
-const addData = async (newData: Omit<any, 'id'>, highlight: Omit<HighlightEvent, 'id'>): Promise<void> => {
-  try {
-    // Ensure the endpoint is accessed correctly using dot notation
-    const addDataEndpoint = `${API_BASE_URL}.addData`; 
-    const response = await axiosInstance.post(addDataEndpoint, newData);
-
-    if (response.status === 200 || response.status === 201) {
-      const createdData = response.data;
-      addLog(`Data added: ${JSON.stringify(createdData)}`); // Log successful data addition
-
-      const dataStore = useDataStore();
-      dataStore.addDataSuccess({ data: createdData });
-    } else {
-      console.error('Failed to add data:', response.statusText);
-    }
-  } catch (error) {
-    console.error('Error adding data:', error);
-    handleApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      'Failed to add data',
-      'AddDataErrorId' as keyof DataNotificationMessages
-    );
-  }
-};
-
-
-const removeData = async (dataId: number): Promise<void> => {
-  try {
-    const deleteDataEndpoint = `${API_BASE_URL}.deleteData.${dataId}`;
-    if (deleteDataEndpoint) {
-      await axiosInstance.delete(deleteDataEndpoint);
-    } else {
-      throw new Error(`Delete endpoint not found for data ID: ${dataId}`);
-    }
-  } catch (error) {
-    console.error('Error removing data:', error);
-    handleApiErrorAndNotify(error as AxiosError<unknown>,
-      'Failed to remove data',
-      'RemoveDataErrorId' as keyof DataNotificationMessages
-    );
-  }
-};
-
-const getDataVersions = async (
-  versionId: number
-): Promise<Version<T, K>[]> => {
-  try {
-    const versionsEndpoint = `${API_BASE_URL}.getDataVersions.${versionId}`;
-
-    if (!versionsEndpoint) {
-      throw new Error(
-        `Versions endpoint not found for version ID: ${versionId}`
+  // ✅ ADD: Request handler following CalendarApiService pattern
+  private async requestHandler(
+    request: () => Promise<AxiosResponse>,
+    successMessageId: keyof DataNotificationMessages,
+    errorMessageId: keyof DataNotificationMessages
+  ): Promise<AxiosResponse> {
+    try {
+      const response: AxiosResponse = await request();
+      this.notify(
+        successMessageId,
+        apiNotificationMessages[successMessageId],
+        response.data,
+        new Date(),
+        "Success"
       );
+      return response;
+    } catch (error: any) {
+      handleApiError(error, apiNotificationMessages[errorMessageId]);
+      throw error;
     }
-    const response:AxiosResponse = await axiosInstance.get<Version<T, K>[]>(versionsEndpoint);
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching versions:", error);
-    handleApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      "Failed to fetch versions",
-      "FetchVersionsErrorId" as keyof DataNotificationMessages
-    );
-    return []; // Return an empty array in case of error
   }
-};
 
+  // ✅ UPDATE: Use internalApiService for data operations
+  async fetchData(endpoint: string, id?: number): Promise<{ data: YourResponseType<any, any, StructuredMetadata<any, any>> } | null> {
+    try {
+      let url = endpoint;
+      if (id !== undefined) url += `/${id}`;
 
-// Function to update data
-const updateData = async (dataId: number, newData: any): Promise<any> => {
-  try {
-    const dataUpdateUrl = `${API_BASE_URL}.updateData.${dataId}`;
-    if (!dataUpdateUrl) {
-      throw new Error(`Update data endpoint not found for data ID: ${dataId}`);
+      const response = await this.requestHandler(
+        () => internalApiService.get(url), // ✅ Use internalApiService
+        "FETCH_DATA_DETAILS_SUCCESS",
+        "FETCH_DATA_DETAILS_ERROR"
+      );
+
+      return { data: response.data };
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      return null;
     }
+  }
 
-    // Fetch necessary user IDs before proceeding with the update
-    const userIds = await fetchUserIdsFromDatabase(newData.taskId); // Assuming newData has taskId
-    newData.userIds = userIds; // Attach user IDs to new data
+  // ✅ UPDATE: Use internalApiService for highlights
+  async fetchHighlights(id: number): Promise<HighlightEvent[]> {
+    try {
+      const endpoint = `${API_BASE_URL}/highlights`;
+      
+      const response = await this.requestHandler(
+        () => internalApiService.get(endpoint, { params: { id } }), // ✅ Use internalApiService
+        "FETCH_DATA_DETAILS_SUCCESS",
+        "FETCH_DATA_DETAILS_ERROR"
+      );
 
-    const response = await axiosInstance.put(
-      dataUpdateUrl,
-      newData,
-      { headers: headersConfig }
-    );
+      const highlights = response.data.highlights as HighlightEvent[];
 
-    // Notify success message
-    const successMessage = apiNotificationMessages.UPDATE_DATA_DETAILS_ERROR;
-    if (!successMessage) {
-      throw new Error('Success message not found for update data operation');
+      // Fetch user IDs if highlights contain user references
+      for (const highlight of highlights) {
+        const userIds = await fetchUserIdsFromDatabase(highlight.taskId.toString());
+        highlight.userIds = userIds.map(id => Number(id));
+      }
+
+      return highlights;
+    } catch (error: any) {
+      handleApiError(error, NOTIFICATION_MESSAGES.Error.FETCH_HIGHLIGHTS_ERROR);
+      throw error;
     }
-    
-    // Notify success
-    useNotification().notify(
-      'UpdateDataSuccessId',
-      successMessage,
-      { dataId },
-      new Date(),
-      NotificationTypeEnum.SUCCESS,
-      {}
-    );
-
-    addLog(`Data updated: ${JSON.stringify(response.data)}`);
-    return response.data;
-  } catch (error: any) {
-    const errorMessage = 'Failed to update data';
-    handleApiError(error, errorMessage);
-    const errorMessageId = apiNotificationMessages.UPDATE_DATA_DETAILS_ERROR;
-    
-    useNotification().notify(
-      'UpdateDataErrorId',
-      errorMessageId,
-      { dataId, error: errorMessage },
-      new Date(),
-      NotificationTypeEnum.ERROR
-    );
-
-    throw error;
   }
-};
 
+  // ✅ UPDATE: Use internalApiService for adding data
+  async addData(newData: Omit<any, 'id'>, highlight: Omit<HighlightEvent, 'id'>): Promise<void> {
+    try {
+      const response = await this.requestHandler(
+        () => internalApiService.post(`${API_BASE_URL}/data`, newData), // ✅ Use internalApiService
+        "UPDATE_DATA_DETAILS_SUCCESS",
+        "UPDATE_DATA_DETAILS_ERROR"
+      );
 
+      if (response.status === 200 || response.status === 201) {
+        const createdData = response.data;
+        addLog(`Data added: ${JSON.stringify(createdData)}`);
 
-const getStoreIds = async (storeId: number): Promise<void> => {
-  try {
-    const storeIdEndpoint = `${API_BASE_URL}/store/${storeId}`;
-    const response = await axiosInstance.get(storeIdEndpoint);
-    
-    // Assuming response.data contains the necessary data to notify
-    const storeData = response.data;
-    const storeIdKey = `storeId_${storeId}`;
-    const notificationContent = `Store ID: ${storeId}, Data: ${JSON.stringify(storeData)}`;
-    const notificationDate = new Date();
-    const notificationType = NotificationTypeEnum.GetStoreSuccess;
-
-    // Assuming you have a singleton instance of NotificationStore
-    notificationStore.notify(
-      storeIdKey,
-      notificationContent,
-      notificationDate,
-      notificationType
-    );
-  } catch (error) {
-    console.error('Error fetching store ID:', error);
-    handleApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      'Failed to fetch store ID',
-      'FetchStoreIdError' as keyof DataNotificationMessages
-    );
-    throw error;
+        const dataStore = useDataStore();
+        dataStore.addDataSuccess({ data: createdData });
+      }
+    } catch (error) {
+      console.error('Error adding data:', error);
+      throw error;
+    }
   }
-};
 
-
-
-
-const getStoreId = async (storeId: number): Promise<void> => {
-  try {
-    const storeIdEndpoint = `${API_BASE_URL}/store/${storeId}`;
-    const response = await axiosInstance.get(storeIdEndpoint);
-    
-    // Assuming response.data contains the necessary data to notify
-    const storeData = response.data;
-    const storeIdKey = `storeId_${storeId}`;
-    const notificationContent = `Store ID: ${storeId}, Data: ${JSON.stringify(storeData)}`;
-    const notificationDate = new Date();
-    const notificationType = NotificationTypeEnum.GetStoreSuccess;
-
-    // Assuming you have a singleton instance of NotificationStore
-    notificationStore.notify(
-      storeIdKey,
-      notificationContent,
-      notificationDate,
-      notificationType
-    );
-  } catch (error) {
-    console.error('Error fetching store ID:', error);
-    handleApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      'Failed to fetch store ID',
-      'FetchStoreIdError' as keyof DataNotificationMessages
-    );
-    throw error;
+  // ✅ UPDATE: Use internalApiService for removing data
+  async removeData(dataId: number): Promise<void> {
+    try {
+      await this.requestHandler(
+        () => internalApiService.delete(`${API_BASE_URL}/data/${dataId}`), // ✅ Use internalApiService
+        "UPDATE_DATA_DETAILS_SUCCESS", 
+        "UPDATE_DATA_DETAILS_ERROR"
+      );
+    } catch (error) {
+      console.error('Error removing data:', error);
+      throw error;
+    }
   }
-};
 
-
-
-// Function to fetch updated dynamic data from API
-const fetchUpdatedDynamicData = async () => {
-  try {
-    const updatedDynamicDataEndpoint = `${API_BASE_URL}/your-api-endpoint`; // Update with your API endpoint
-    const response = await axiosInstance.get(updatedDynamicDataEndpoint);
-    const updatedData = response.data;
-    setDynamicData(updatedData);
-  } catch (error: any) {
-    console.error('Error fetching updated dynamic data:', error);
-    // Handle error using the provided pattern
-    handleApiErrorAndNotify(error,
-      "Failed to fetch updated dynamic data",
-      "FetchUpdatedDynamicDataErrorId" as keyof DataNotificationMessages
-    );
+  // ✅ UPDATE: Use internalApiService for versions
+  async getDataVersions(versionId: number): Promise<Version<any, any>[]> {
+    try {
+      const response = await this.requestHandler(
+        () => internalApiService.get(`${API_BASE_URL}/versions/${versionId}`), // ✅ Use internalApiService
+        "FETCH_DATA_DETAILS_SUCCESS",
+        "FETCH_DATA_DETAILS_ERROR"
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching versions:", error);
+      return [];
+    }
   }
-};
 
+  // ✅ UPDATE: Use internalApiService for updating data
+  async updateData(dataId: number, newData: any): Promise<any> {
+    try {
+      // Fetch necessary user IDs before proceeding with the update
+      const userIds = await fetchUserIdsFromDatabase(newData.taskId);
+      newData.userIds = userIds;
 
-const getFrontendVersion = async (): Promise<string> => {
-  try {
-    // Adjust the endpoint path as necessary
-    const response = await axiosInstance.get(endpoints.version.frontend);
-    return response.data.version; // Assuming the response structure has a `version` field
-  } catch (error: any) {
-    console.error("Error fetching frontend version:", error);
-    handleApiErrorAndNotify(error, "Failed to fetch frontend version", "GetFrontendVersionErrorId" as keyof DataNotificationMessages)
-    return "unknown";
+      const response = await this.requestHandler(
+        () => internalApiService.put(`${API_BASE_URL}/data/${dataId}`, newData, { // ✅ Use internalApiService
+          headers: headersConfig
+        }),
+        "UPDATE_DATA_DETAILS_SUCCESS",
+        "UPDATE_DATA_DETAILS_ERROR"
+      );
+
+      addLog(`Data updated: ${JSON.stringify(response.data)}`);
+      return response.data;
+    } catch (error: any) {
+      console.error('Error updating data:', error);
+      throw error;
+    }
   }
-};
 
+  // ✅ UPDATE: Use internalApiService for store operations
+  async getStoreIds(storeId: number): Promise<void> {
+    try {
+      const response = await this.requestHandler(
+        () => internalApiService.get(`${API_BASE_URL}/store/${storeId}`), // ✅ Use internalApiService
+        "FETCH_DATA_DETAILS_SUCCESS",
+        "FETCH_DATA_DETAILS_ERROR"
+      );
+      
+      const storeData = response.data;
+      const storeIdKey = `storeId_${storeId}`;
+      const notificationContent = `Store ID: ${storeId}, Data: ${JSON.stringify(storeData)}`;
+      const notificationDate = new Date();
+      const notificationType = NotificationTypeEnum.GetStoreSuccess;
 
-const getAllKeys = async (): Promise<string[]> => {
-  try {
-    const allKeysEndpoint = `${API_BASE_URL}.getAllKeys`;
-    const response = await axiosInstance.get(allKeysEndpoint);
-    return response.data;
-  } catch (error: any) {
-    console.error("Error fetching all keys:", error);
+      notificationStore.notify(
+        storeIdKey,
+        notificationContent,
+        notificationDate,
+        notificationType
+      );
+    } catch (error) {
+      console.error('Error fetching store ID:', error);
+      throw error;
+    }
+  }
 
-    // Handle error using the provided pattern
-    handleApiErrorAndNotify(error, "Failed to fetch all keys", "GetAllKeysErrorId" as keyof DataNotificationMessages)
-    return [];
+  // ✅ ADD: Version methods using internalApiService
+  async getBackendVersion(): Promise<string> {
+    try {
+      const response = await this.requestHandler(
+        () => internalApiService.get(endpoints.version.backend), // ✅ Use internalApiService
+        "FETCH_DATA_DETAILS_SUCCESS",
+        "FETCH_DATA_DETAILS_ERROR"
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Error fetching backend version:", error);
+      return "unknown";
+    }
+  }
+
+  async getFrontendVersion(): Promise<string> {
+    try {
+      const response = await this.requestHandler(
+        () => internalApiService.get(endpoints.version.frontend), // ✅ Use internalApiService
+        "FETCH_DATA_DETAILS_SUCCESS",
+        "FETCH_DATA_DETAILS_ERROR"
+      );
+      return response.data.version;
+    } catch (error: any) {
+      console.error("Error fetching frontend version:", error);
+      return "unknown";
+    }
+  }
+
+  // ✅ ADD: Additional methods following the pattern
+  async getAllKeys(): Promise<string[]> {
+    try {
+      const response = await this.requestHandler(
+        () => internalApiService.get(`${API_BASE_URL}/keys`), // ✅ Use internalApiService
+        "FETCH_DATA_DETAILS_SUCCESS",
+        "FETCH_DATA_DETAILS_ERROR"
+      );
+      return response.data;
+    } catch (error: any) {
+      console.error("Error fetching all keys:", error);
+      return [];
+    }
+  }
+
+  async fetchUpdatedDynamicData(): Promise<any> {
+    try {
+      const response = await this.requestHandler(
+        () => internalApiService.get(`${API_BASE_URL}/dynamic-data`), // ✅ Use internalApiService
+        "FETCH_DATA_DETAILS_SUCCESS",
+        "FETCH_DATA_DETAILS_ERROR"
+      );
+      const updatedData = response.data;
+      if (setDynamicData) {
+        setDynamicData(updatedData);
+      }
+      return updatedData;
+    } catch (error: any) {
+      console.error('Error fetching updated dynamic data:', error);
+      throw error;
+    }
   }
 }
 
+// ✅ CREATE: Instance of DataApiService
+const dataApiService = new DataApiService(useNotification);
 
+// ✅ EXPORT: The service instance and individual functions for backward compatibility
+export default dataApiService;
 
-const fetchApiData = async <T>(endpoint: string): Promise<T[]> => {
-  const response = await axiosInstance.get<T[]>(endpoint);
-  return response.data;
-};
-
-
+// Legacy exports for backward compatibility
 export {
-    addData, apiNotificationMessages, fetchApiData, fetchData, fetchHighlights, fetchUpdatedDynamicData, getAllKeys, getBackendVersion, getDataVersions, getFrontendVersion, getStoreId, getStoreIds, handleApiErrorAndNotify, removeData, updateData
+  dataApiService as addData,
+  dataApiService as fetchData,
+  dataApiService as fetchHighlights,
+  dataApiService as removeData,
+  dataApiService as updateData,
+  dataApiService as getDataVersions,
+  dataApiService as getStoreIds,
+  dataApiService as getBackendVersion,
+  dataApiService as getFrontendVersion,
+  dataApiService as getAllKeys,
+  dataApiService as fetchUpdatedDynamicData,
+  apiNotificationMessages,
+  handleApiErrorAndNotify
 };

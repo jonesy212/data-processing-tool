@@ -5,7 +5,7 @@ import { endpoints } from '@/app/api/endpointConfigurations';
 import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
 import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import { Data } from '@/components/models/data/Data';
-import { Attachment } from '@/components/models/data/Attachment';
+import { Attachment } from "@/app/documents/Attachment/attachment";
 
 export class DetailsApiService extends BaseApiService {
   constructor() {

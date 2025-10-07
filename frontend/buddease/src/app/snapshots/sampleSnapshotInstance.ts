@@ -16,7 +16,7 @@ import { Tag } from '@/appp/models/tracker/Tag';
 import { NotificationType } from '@/context/NotificationContext';
 import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
 import { Payload } from '@/server/database/Payload';
-import { InitializedDataStore } from '@/SnapshotStoreOptions';
+import { InitializedDataStore } from '@/app/snapshots/SnapshpshotStoreOptions';
 import { SubscriberCollection } from '@/users/SubscriberCollection';
 
 

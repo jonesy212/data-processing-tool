@@ -1,22 +1,14 @@
+import { AppEntity } from '@/app/utils/web3/dAppAdapter/AppEntity';
 // notification/NotificationActions.ts
 import { createAction } from "@reduxjs/toolkit";
 import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
-import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from "@/app/snapshots/snapshotStoreConfigInstance";
+import { AppEntity, AppK, AppMeta, AppAttachment, AppExcludedFields, AppIncludedFields } from "@/app/typings/entities/AppEntity";
 import {
   BaseDataEntity,
   DefaultExcludedFields,
   DefaultMeta,
 } from "@/config/BaseConfig";
-
-// Create a type alias for your notification data
-type AppNotificationData = NotificationData<
-  AppEntity, 
-  AppK, 
-  AppMeta, 
-  AppAttachment, 
-  AppExcludedFields, 
-  AppIncludedFields
->;
+import { AppNotificationData } from '@/app/typings/entities/CommonEntities'
 
 export const NotificationActions = {
   // Single notification actions

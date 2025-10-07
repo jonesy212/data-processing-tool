@@ -1,7 +1,7 @@
 // useApiManager.ts
-import { ApiConfig } from '@/config//ConfigurationService';
-import { useEffect } from 'react';
 import { useApiManagerStore } from '@/app/api/ApiStore';
+import { ApiConfig } from '@/app/services/ConfigurationService';
+import { useEffect } from 'react';
 
 const useApiManager = () => {
   const apiManagerStore = useApiManagerStore();

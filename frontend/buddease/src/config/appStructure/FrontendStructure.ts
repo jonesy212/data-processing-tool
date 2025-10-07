@@ -1,10 +1,10 @@
 import axiosInstance from '@/app/api/csrfToken';
-import { AppStructureItem } from "@/app/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/app/BaseConfig";
+import { AppStructureItem } from "@/config/appStructure/AppStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { BaseData } from '@/app/models/data/Data';
 import { UserConfigData } from "@/app/models/data/dataStoreMethods";
 import { Permission } from '@/app/users/Permission';
-import { DataVersions } from "@/app/DataVersionsConfig";
+import { DataVersions } from "@/configs/DataVersionsConfig";
 import { hashString } from "@/app/generators/HashUtils";
 import { UserData } from "@/app/users/User";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
@@ -14,6 +14,7 @@ import getAppPath from "@/config/appStructure/appPath";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import UserRoles from '@/users/UserRoles';
 import * as path from "path";
+import { Attachment } from "@/app/documents/Attachment/attachment";
 
 
 interface MyData extends BaseData<any> {
@@ -64,9 +65,9 @@ export default class FrontendStructure<
   content: string;
   draft: boolean;
   permissions: Permission
-  items?: Record<string, AppStructureItem>;
+  items?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
-  private structure?: Record<string, AppStructureItem> | undefined = {};
+  private structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined = {};
   private structureHash: string = '';
 
   // Add versioning properties
@@ -114,14 +115,14 @@ export default class FrontendStructure<
   private async traverseDirectory?(
     dir: string,
     fs: typeof import("fs") | undefined
-  ): Promise<AppStructureItem[]> {
+  ): Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     if (!fs) {
       // Use axiosInstance to make HTTP requests to the backend API
       try {
         const response = await axiosInstance.get(
           `/api/traverse-directory?dir=${encodeURIComponent(dir)}`
         );
-        return response.data as AppStructureItem[];
+        return response.data as AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
       } catch (error) {
         console.error("Error traversing directory using backend API:", error);
         throw error;
@@ -129,7 +130,7 @@ export default class FrontendStructure<
     }
 
     const files = await fs!.promises.readdir(dir);
-    const items: AppStructureItem[] = [];
+    const items: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
     
     for (const file of files) {
       const filePath = path.join(dir, file);
@@ -178,7 +179,7 @@ export default class FrontendStructure<
     this.versions = { backend, frontend };
   }
 
-  async loadBackendVersions(): Promise<Record<string, AppStructureItem>> {
+  async loadBackendVersions(): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     // Simulated async logic to load backend versions
     return new Promise((resolve) => {
       resolve({
@@ -238,7 +239,7 @@ export default class FrontendStructure<
     });
   }
 
-  async loadFrontendVersions(): Promise<Record<string, AppStructureItem>> {
+  async loadFrontendVersions(): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     // Simulated async logic to load frontend versions
     return new Promise((resolve) => {
       resolve({
@@ -303,13 +304,13 @@ export default class FrontendStructure<
     return Promise.resolve(this.structureHash);
   }
   
-  getStructure(): Promise<Record<string, AppStructureItem>> {
+  getStructure(): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
     return new Promise((resolve, reject) => {
 
       // Use axiosInstance to make HTTP requests to the backend API
       axiosInstance.get(`/api/traverse-directory?dir=${encodeURIComponent(this.path)}`)
     .then((response) => {
-        const structure = response.data as Record<string, AppStructureItem>;
+        const structure = response.data as Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
         this.structure = structure;
         resolve(structure);
     })
@@ -320,10 +321,10 @@ export default class FrontendStructure<
     });
   }
 
-  async frontendVersions(): Promise<VersionHistory[]> {
+  async frontendVersions(): Promise<VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     const { versionNumber, appVersion } = getCurrentAppInfo();
     const projectPath = getAppPath(versionNumber, appVersion);
-    const frontendStructure: FrontendStructure<T, K> = new FrontendStructure(projectPath);
+    const frontendStructure: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = new FrontendStructure(projectPath);
     const frontendStructureItems = await frontendStructure.getStructureAsArray();
     const frontendStructureItemsWithVersions = frontendStructureItems.map((item) => {
     const { id, name, type, items, path, draft, content, permissions, versions, versionData } = item;
@@ -383,13 +384,14 @@ export default class FrontendStructure<
         timestamp: latestVersionData.timestamp,
         history,
         currentVersion,
-      } as VersionHistory<T, K>;
+        currentVersionIndex,
+      } as VersionHistory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     });
     return frontendStructureItemsWithVersions;
   }
 
 
-  public async getStructureAsArray(): Promise<AppStructureItem[]> {
+  public async getStructureAsArray(): Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     return Object.values(this.structure || {});
   }
 
@@ -419,7 +421,7 @@ export default class FrontendStructure<
   public async traverseDirectoryPublic?(
     dir: string,
     fs: typeof import("fs")
-  ): Promise<AppStructureItem[]> {
+  ): Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     return this.traverseDirectory!(dir, fs);
   }
 }

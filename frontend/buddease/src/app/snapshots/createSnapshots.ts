@@ -1,5 +1,5 @@
 // createSnapshots.ts
-import { SnapshotConfigParams } from '@/SnapshotConfigBuilder';
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
 import {
   addData,
   fetchData,

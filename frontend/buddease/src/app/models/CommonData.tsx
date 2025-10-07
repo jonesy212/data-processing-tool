@@ -266,7 +266,7 @@ type SupportedData<
 > =
   CommonDataTypes<T, K, Meta, ExcludedFields> & // Apply intersection to ensure core data is present
   AdditionalDataTypes<T, K, Meta, ExcludedFields> & // Include additional data types with flexibility
-  DocumentData<T, K, Meta> & // DocumentData can be part of the intersection, ensuring it's always there
+  DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & // DocumentData can be part of the intersection, ensuring it's always there
   {
     [key: string]: any; // Allow additional dynamic properties
     type?: AllTypes; // Include the 'type' property with AllTypes union

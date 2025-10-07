@@ -25,7 +25,7 @@ import {
 import { Attachment } from "@/app/documents/Attachment/attachment";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Subscriber } from '@/app/subscribers/Subscriber';
-import { SnapshotStore } from '@/SnapshotStore';
+import { SnapshotStore } from '@/app/snapshots/SnapshpshotStore';
 
 const useSnapshotOperations = <
   T extends BaseDataEntity,

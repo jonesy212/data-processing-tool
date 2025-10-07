@@ -1,0 +1,174 @@
+// teamTypes.ts
+
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { SnapshotStore } from '@/app/snapshots/SnapshotStore';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
+
+// Core Team type definitions
+interface TeamEntity extends BaseDataEntity {
+  id: string;
+  name: string;
+  description?: string;
+  members: string[]; // User IDs
+  ownerId: string;
+  createdDate: Date;
+  isActive: boolean;
+  settings: TeamSettings;
+  permissions: TeamPermissions;
+}
+
+type TeamK = TeamEntity;
+type TeamMeta = DefaultMeta<TeamEntity, TeamK>;
+type TeamAttachment = Attachment;
+type TeamExcludedFields = DefaultExcludedFields<TeamEntity>;
+type TeamIncludedFields = keyof TeamEntity;
+
+// Main parameters container
+type TeamBaseParams = {
+  T: TeamEntity;
+  K: TeamK;
+  Meta: TeamMeta;
+  AttachmentType: TeamAttachment;
+  ExcludedFields: TeamExcludedFields;
+  IncludedFields: TeamIncludedFields;
+};
+
+// ✅ CLEAN TYPE ALIASES
+type TeamFull = Team<
+  TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields
+>;
+
+type TeamSnapshotFull = Snapshot<
+  TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields
+>;
+
+type TeamSnapshotDataFull = SnapshotData<
+  TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields
+>;
+
+type TeamSnapshotStoreFull = SnapshotStore<
+  TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields
+>;
+
+type TeamSnapshotWithCriteriaFull = SnapshotWithCriteria<
+  TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields
+>;
+
+type TeamSubscriberCollectionFull = SubscriberCollection<
+  TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields
+>;
+
+type TeamRealtimeDataItemFull = RealtimeDataItem<
+  TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields
+>;
+
+// Configuration types
+type TeamSnapshotStoreConfigFull = SnapshotStoreConfig<
+  TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields
+>;
+
+type TeamSnapshotsArrayFull = SnapshotsArray<
+  TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields
+>;
+
+// PARAMS
+type TeamParams = SnapshotConfigParams<
+  TeamEntity, TeamK, TeamMeta, TeamAttachment, TeamExcludedFields, TeamIncludedFields
+>;
+
+// Utility types
+type TeamSnapshotFromParams<Params extends SnapshotConfigParams<any, any, any, any, any, any>> =
+  Snapshot<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
+
+type TeamSnapshotUnionFromParams<Params extends SnapshotConfigParams<any, any, any, any, any, any>> =
+  SnapshotUnion<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
+
+// Supporting types
+interface TeamSettings {
+  visibility: 'public' | 'private' | 'restricted';
+  joinPolicy: 'open' | 'invite' | 'approval';
+  maxMembers?: number;
+  notifications: TeamNotificationSettings;
+}
+
+interface TeamPermissions {
+  canInvite: boolean;
+  canRemove: boolean;
+  canEditSettings: boolean;
+  canManageProjects: boolean;
+}
+
+interface TeamNotificationSettings {
+  email: boolean;
+  push: boolean;
+  slack: boolean;
+  frequency: 'instant' | 'daily' | 'weekly';
+}
+
+// Helper for creating team instances
+const createDefaultTeam = (options: Partial<TeamFull> = {}): TeamFull => ({
+  id: options.id || generateId(),
+  name: options.name || 'Unnamed Team',
+  description: options.description || '',
+  members: options.members || [],
+  ownerId: options.ownerId || '',
+  createdDate: options.createdDate || new Date(),
+  isActive: options.isActive ?? true,
+  settings: options.settings || {
+    visibility: 'private',
+    joinPolicy: 'invite',
+    notifications: {
+      email: true,
+      push: true,
+      slack: false,
+      frequency: 'instant'
+    }
+  },
+  permissions: options.permissions || {
+    canInvite: true,
+    canRemove: true,
+    canEditSettings: true,
+    canManageProjects: true
+  },
+  ...options
+} as TeamFull);
+
+// Empty/default team
+const emptyTeam: TeamFull = createDefaultTeam();
+
+// ✅ EXPORT FOR REUSE
+export type {
+  TeamEntity,
+  TeamK, 
+  TeamMeta,
+  TeamAttachment,
+  TeamExcludedFields,
+  TeamIncludedFields,
+  TeamBaseParams,
+  TeamFull,                       // ✅ Clean alias
+  TeamSnapshotFull,               // ✅ Clean alias
+  TeamSnapshotDataFull,           // ✅ Clean alias
+  TeamSnapshotStoreFull,          // ✅ Clean alias
+  TeamSnapshotWithCriteriaFull,   // ✅ Clean alias
+  TeamSubscriberCollectionFull,   // ✅ Clean alias
+  TeamRealtimeDataItemFull,       // ✅ Clean alias
+  TeamSnapshotStoreConfigFull,    // ✅ Clean alias
+  TeamSnapshotsArrayFull,         // ✅ Clean alias
+  TeamParams,                     // ✅ Clean alias
+  TeamSettings,
+  TeamPermissions,
+  TeamNotificationSettings
+};
+
+export {
+  createDefaultTeam,
+  emptyTeam
+};

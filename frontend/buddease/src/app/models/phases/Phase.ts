@@ -9,7 +9,7 @@ import { BaseData, Data } from '@/app/models/data/Data';
 import { Task } from "@/app/models/tasks/Task";
 import { Member } from "@/app/models/teams/TeamMembers";
 import { Progress } from "@/app/models/tracker/ProgressBar";
-import { TagsRecord } from "@/app/snapshots";
+import { TagsRecord } from "@/app/snapshots/SnapshotWithCritria";
 import { SharedProperties } from "@/app/snapshots/SnapshotEvents";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { DocumentTypeEnum } from "@/app/typings/documents";
@@ -43,7 +43,7 @@ interface PhaseMeta<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedField> {
-  baseConfig: BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  baseConfig: BaseConfig<T, K, Meta, ExcludedFields>;;
   createdBy?: string;
   updatedBy?: string;
   archived?: boolean;
@@ -76,7 +76,7 @@ export interface Phase<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-    id: string;
+  id: string;
   index?: number;
   name: string;
   description: string | undefined
@@ -96,8 +96,15 @@ export interface Phase<
   type?: string;
   responsibleUsers?: string[]; // IDs of users responsible for the phase
   isComplete?: boolean;
-  createdAt?: undefined;
-  updatedAt?: undefined;
+  projectId: string;
+  // status: 'planned' | 'active' | 'completed' | 'cancelled';
+  progress?: number; // 0-100
+  dependencies?: Dependency[]; // Phase IDs this phase depends on
+  assignedTeamIds?: string[];
+  budget?: number;
+  actualCost?: number;
+  milestones?: PhaseMilestone[];
+  documents?: string[]; // Document IDs associated with this phase
   __typename?: "Phase";
 }
 
@@ -117,12 +124,12 @@ export class PhaseImpl<
   endDate?: Date;
   subPhases: string[] | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
   component!: FC<any>;
-  hooks: CustomPhaseHooks<T> = {
+  hooks: CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     resetIdleTimeout: async () => {},
     isActive: false,
     progress: null,
     condition: async () => true,
-    canTransitionTo: ""
+    canTransitionTo: (nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => false
   };
   data: any;
   duration: number = 0;
@@ -147,7 +154,7 @@ export class PhaseImpl<
   date: Date = new Date();
   collaborationOptions?: CollaborationOptions[];
   participants?: Member[];
-  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   details?: DetailsItem<any>;
   categories?: string[];
   documentType?: DocumentTypeEnum | string;
@@ -199,7 +206,7 @@ export class PhaseImpl<
     date?: Date;
     collaborationOptions?: CollaborationOptions[];
     participants?: Member[];
-    metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
+    metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     details?: DetailsItem<any>;
     categories?: string[];
     documentType?: DocumentTypeEnum | string;
@@ -239,39 +246,35 @@ export interface CustomPhaseHooks<
   // Add other methods if needed
 }
 
+
 export const customPhaseHooks = {
-  canTransitionTo: (
-    currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-    nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ) => {
-    // Ensure the next phase's start date is after the current phase's end date
-  const isValidTransition = currentPhase.endDate! < nextPhase.startDate!;
-  return isValidTransition;
+  // ✅ CLEAN: No repetitive 6 parameters
+  canTransitionTo: (currentPhase: AppPhase, nextPhase: AppPhase): boolean => {
+    return currentPhase.isComplete && !nextPhase.isActive;
   },
 
-  handleTransitionTo: async (  
-    currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-    nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ) => {
-   // Log the transition
-  console.log(`Transitioning from ${currentPhase.name} to ${nextPhase.name}`);
-
-  // Perform any necessary cleanup for the current phase
-  // (e.g., save data, reset states, etc.)
-  await saveCurrentPhaseData(currentPhase.data);
-
-  // Update the current phase reference
-  currentPhase = nextPhase;
-
-  // Optionally, notify the user or other components
-  notifyTransition(nextPhase);
-
+  onPhaseStart: (phase: AppPhase): void => {
+    console.log(`Starting phase: ${phase.name}`);
+    // Phase start logic
   },
 
-  resetIdleTimeout: async () => {
-    // reset idle timeout
-    await Promise.resolve();
+  onPhaseComplete: (phase: AppPhase): void => {
+    console.log(`Completing phase: ${phase.name}`);
+    // Phase completion logic
   },
+
+  validatePhase: (phase: AppPhase): ValidationResult => {
+    return {
+      isValid: !!phase.name && !!phase.id,
+      errors: phase.name ? [] : ['Phase name is required']
+    };
+  },
+
+  getNextPhase: (currentPhase: AppPhase, availablePhases: AppPhase[]): AppPhase | null => {
+    return availablePhases.find(phase => 
+      customPhaseHooks.canTransitionTo(currentPhase, phase)
+    ) || null;
+  }
 };
 
 const saveCurrentPhaseData = async <
@@ -322,7 +325,6 @@ export type { PhaseData, PhaseLite, PhaseMeta };
 
 
 
-
 export const createCustomPhaseHooks = <
   T extends BaseDataEntity,
   K extends T = T,
@@ -330,13 +332,25 @@ export const createCustomPhaseHooks = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(): CustomPhaseHooks<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => ({
+>() => ({
   canTransitionTo: (
     currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
     nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => {
-    if (!currentPhase.endDate || !nextPhase.startDate) return false;
+    // Enhanced validation with better error handling
+    if (!currentPhase.endDate || !nextPhase.startDate) {
+      console.warn('Missing date information for phase transition');
+      return false;
+    }
+
     const isValidTransition = currentPhase.endDate < nextPhase.startDate;
+    
+    // Additional validation: check if current phase is complete
+    if (currentPhase.isComplete !== true) {
+      console.warn(`Current phase "${currentPhase.name}" is not marked as complete`);
+      return false;
+    }
+
     return isValidTransition;
   },
 
@@ -344,16 +358,75 @@ export const createCustomPhaseHooks = <
     currentPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
     nextPhase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => {
-    console.log(`Transitioning from ${currentPhase.name} to ${nextPhase.name}`);
-    await saveCurrentPhaseData(currentPhase);
-    notifyTransition(nextPhase);
+    // Log the transition with more context
+    console.log(`Transitioning from "${currentPhase.name}" to "${nextPhase.name}" at ${new Date().toISOString()}`);
+
+    try {
+      // Perform any necessary cleanup for the current phase
+      if (currentPhase.data) {
+        await saveCurrentPhaseData(currentPhase.data);
+      }
+
+      // Update phase statuses (return new objects instead of mutating)
+      const updatedCurrentPhase = {
+        ...currentPhase,
+        isActive: false,
+        status: 'completed',
+        updatedAt: new Date()
+      };
+
+      const updatedNextPhase = {
+        ...nextPhase,
+        isActive: true,
+        status: 'active',
+        updatedAt: new Date()
+      };
+
+      // Notify the user or other components
+      await notifyTransition(updatedNextPhase);
+
+      // Log successful transition
+      console.log(`Successfully transitioned to phase: ${nextPhase.name}`);
+
+      return { 
+        previousPhase: updatedCurrentPhase, 
+        currentPhase: updatedNextPhase 
+      };
+
+    } catch (error) {
+      console.error(`Failed to transition from ${currentPhase.name} to ${nextPhase.name}:`, error);
+      throw new Error(`Phase transition failed: ${error.message}`);
+    }
   },
 
-  resetIdleTimeout: async () => {
-    await Promise.resolve();
+  resetIdleTimeout: async (phase?: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+    // Reset idle timeout with phase context
+    if (phase) {
+      console.log(`Resetting idle timeout for phase: ${phase.name}`);
+    }
+    
+    // Simulate async operation
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    console.log('Idle timeout reset successfully');
   },
-  isActive: false,
-  progress: null,
-  condition: async () => true
+
+  // Additional helper methods
+  validatePhaseDates: (phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+    if (phase.startDate && phase.endDate) {
+      return phase.startDate < phase.endDate;
+    }
+    return true; // phases without dates are valid
+  },
+
+  calculatePhaseProgress: (phase: Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+    if (!phase.startDate || !phase.endDate) return 0;
+    
+    const now = new Date();
+    const totalDuration = phase.endDate.getTime() - phase.startDate.getTime();
+    const elapsed = now.getTime() - phase.startDate.getTime();
+    
+    return Math.min(100, Math.max(0, (elapsed / totalDuration) * 100));
+  }
 });
 

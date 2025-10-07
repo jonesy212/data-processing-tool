@@ -1,5 +1,5 @@
 // ContentSlice.ts
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import * as ApiTask from "@/app/api/TasksApi";
 import axiosInstance from '@/app/api/csrfToken'
 import headersConfig from "@/app/api/headers/HeadersConfig";
@@ -900,7 +900,7 @@ export const useContentSlice = createSlice({
       state: WritableDraft<ContentManagerState<T, K, Meta, AttachmentType, ExcludedFields>>,
       action: PayloadAction<TaskDetails & {
         assignedTo?: User[];
-        dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+        dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
         previouslyAssignedTo?: User[];
         phase?: Phase;
         id: string;

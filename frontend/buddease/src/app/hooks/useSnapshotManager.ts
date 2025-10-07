@@ -32,7 +32,7 @@ import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { UpdateSnapshotPayload } from "@/server/database/Payload";
 import { createMetadata } from '@/server/metadata/createMetadata';
-import { SnapshotStoreMap } from '@/SnapshotMethods';
+import { SnapshotStoreMap } from '@/app/snapshots/SnapshpshotMethods';
 import { SubscriberCallbackType, Subscription } from '@/subscriptions/Subscription';
 import { useEffect, useState } from "react";
 import { SnapshotStoreReference } from "./SnapshotStoreReference";

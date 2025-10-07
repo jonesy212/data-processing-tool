@@ -115,8 +115,6 @@ type ContentStructuredMetadata<
 // Define a mapped type to convert TodoSubtasks to WritableDraft equivalent
 type WritableTodoSubtasks = WritableDraft<TodoSubtasks>;
 
-
-
 // ---------------------------
 // Specialized Document Interfaces
 // ---------------------------
@@ -746,7 +744,7 @@ const documentBuilderProps: DocumentBuilderProps<T, K, StructuredMetadata<T, K>,
               }
             })
           },
-          getStructureAsArray: function (): Promise<AppStructureItem[]> {
+          getStructureAsArray: function (): Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
             throw new Error("Function not implemented.");
           },
           frontendVersions: async () => [],
@@ -1240,7 +1238,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
 
 
     const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
-    const currentMetadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
+    const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area)
 
     const documentData: DocumentData<T, K, Meta<T, K>, ExcludedFields<T, K>> = {}
     // Create a document object

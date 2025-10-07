@@ -4,6 +4,7 @@ import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { useCallback } from 'react';
+import { Attachment } from "@/app/documents/Attachment/attachment";
 
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { subscriptionServiceInstance } from '@/app/hooks/dynamicHooks/dynamicHooks';

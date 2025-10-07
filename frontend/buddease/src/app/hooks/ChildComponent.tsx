@@ -1,4 +1,4 @@
-import { BrandingSettings } from '@/app/projects/branding/BrandingSettings';
+import { BrandingSettings } from '@/app/branding/BrandingSettings';
 import { Router } from 'next/router';
 import React from 'react';
 

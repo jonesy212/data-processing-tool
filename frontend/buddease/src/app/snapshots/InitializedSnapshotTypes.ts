@@ -3,8 +3,8 @@ import { enrichSnapshotStore, isSnapshotStore, isYourResponseType, normalizeSnap
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { YourResponseType } from '@/typings/types';
 import { isSnapshot } from '@/app/utils/snapshotUtils';
-import SnapshotStore from '@/SnapshotStore';
-import { InitializedSnapshot } from '@/SnapshotStoreOptions';
+import SnapshotStore from '@/app/snapshots/SnapshpshotStore';
+import { InitializedSnapshot } from '@/app/snapshots/SnapshpshotStoreOptions';
 
 /**
  * Converts API response data to an InitializedSnapshot with proper typing

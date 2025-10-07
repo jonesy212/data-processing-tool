@@ -4,14 +4,14 @@ import { getSnapshotId } from "@/app/api/SnapshotApi";
 import CalendarManagerStoreClass, { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import useDocumentManagement from '@/app/hooks/documents/useDocumentManagement';
 import { BaseData, Data } from '@/app/models/data/Data';
+import { K, T } from '@/app/models/data/dataStoreMethods';
 import { StatusType } from "@/app/models/data/StatusType";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
+import { ApiConfig } from "@/app/services/ConfigurationService";
 import { SnapshotStoreProps } from '@/app/snapshots';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { storeProps } from "@/app/snapshots/SnapshotStoreProps";
-import { ApiConfig } from "@/config/ConfigurationService";
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { K, T } from '@/app/models/data/dataStoreMethods';
 ;
 
 interface HooksObject {

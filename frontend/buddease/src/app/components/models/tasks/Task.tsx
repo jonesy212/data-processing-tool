@@ -30,84 +30,6 @@ import { AppMetadata } from "@/server/database/MetaDataOptions";
 
 export type TaskData = BaseData<any, any, StructuredMetadata<any, any>, Attachment>;
  
-// Base flat structure of a Task
-interface TaskEntity
-  extends BaseEntity<AppMetadata<BaseDataEntity>>, // ✅ Use BaseDataEntity for T
-    BaseData<any, any, StructuredMetadata<any, any>, Attachment> {
-  id: string;
-  title: string;
-  description?: string;
-  status?: AllStatus;
-  priority?: PriorityTypeEnum;
-  dueDate?: Date | null;
-  startDate?: Date | undefined;
-  endDate?: Date | undefined;
-  isComplete?: boolean;
-  userId?: number;
-  projectName?: string;
-}
-
-
-interface Task<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends Omit<TaskMetadata<T, K>, 'tags'>,
-  SharedDetails<T, K, Meta>,
-  SharedTimestamps,
-    SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  id: string;
-  title: string;
-  description: string;
-  selectedTask?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  progress: Progress;
-  position?: { x: number; y: number }; // Update `position` to be an object
-  property?: string;
-  projectName?: string;
-  scheduled?: ScheduledData<T>;
-  isScheduled?: boolean;
-  size?: number;
-  assignedTo: User | User[] | null;
-  assigneeId: User["id"];
-  dueDate: Date | null | undefined
-  payload?: any;
-  priority: PriorityTypeEnum | undefined;
-  type?: AllTypes | string;
-  status?: AllStatus;
-  isComplete?: boolean
-  estimatedHours?: number | null;
-  actualHours?: number | null;
-  completionDate?: Date | null;
-  dependencies?: Task<T, K>[] | null;
-  previouslyAssignedTo: User[];
-  done: boolean;
-  data: TaskData | undefined;
-  [Symbol.iterator]?(): Iterator<any, any, undefined>;
-  source: "user" | "system";
-  some?: (
-    callbackfn: (value: Task<T, K>, index: number, array: Task<T, K>[]) => unknown,
-    thisArg?: any
-  ) => boolean;
-  subtasks?: Array<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | TodoImpl<T, K, Meta, ExcludedFields>> | undefined;
-  details?: DetailsItem<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined;
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  isActive: boolean;
-  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
-  analysisType?: AnalysisTypeEnum;
-  analysisResults?: any[];
-  videoThumbnail?: string;
-  videoDuration?: number;
-  videoUrl?: string;
-  userId?: number; 
-  query?: string; 
-  getData: () => Promise<Task<T, K>>
-  // New Properties
-}
-
 
 export interface TaskEntityExtended extends TaskEntity {
   permissions: Permission[];
@@ -115,11 +37,11 @@ export interface TaskEntityExtended extends TaskEntity {
 }
 
 // using commong detais we genrate detais for components by mapping through the objects.
-const TaskDetails = <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>({
+const TaskDetails = Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
   task,
   completed,
 }: {
-  task: Task<T, K>;
+  task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   completed: boolean;
 }) => (
   <CommonDetails
@@ -128,7 +50,7 @@ const TaskDetails = <T extends BaseData<any>, K extends T = T, Meta extends Stru
       completed,
       label: task.label,
       currentMeta: task.currentMeta,
-      currentMetadata: task as unknown as SupportedData<T, K, Meta>["data"],
+      currentMetadata: task as unknown as SupportedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["data"],
       date: new Date(), 
       createdBy: task.createdBy,
       latestVersion: task.latestVersion
@@ -162,7 +84,7 @@ const TaskDetails = <T extends BaseData<any>, K extends T = T, Meta extends Stru
 );
 
 // Define the tasks data source as an object where keys are task IDs and values are task objects
-const tasksDataSource: Record<string, Task<T, K>> = {
+const tasksDataSource: Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
   "1": {
     taskId: "",
     metadataEntries: {},
@@ -200,7 +122,7 @@ const tasksDataSource: Record<string, Task<T, K>> = {
     done: false,
     data: {} as TaskData,
     source: "user",
-    some: (callbackfn: (value: Task<T, K>, index: number, array: Task<T, K>[]) => unknown, thisArg?: any) => false,
+    some: (callbackfn: (value: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, index: number, array: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => unknown, thisArg?: any) => false,
     startDate: new Date(),
     endDate: new Date(),
     isActive: true,
@@ -250,7 +172,7 @@ const tasksDataSource: Record<string, Task<T, K>> = {
             done: true,
             value: {
               _id: "taskData",
-              phase: {} as Phase<PhaseData<TaskData<T, K>>>,
+              phase: {} as Phase<PhaseData<TaskData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
               videoData: {} as VideoData<any, any>,
             },
           };
@@ -264,14 +186,14 @@ const tasksDataSource: Record<string, Task<T, K>> = {
       initialState:{},
       createdBy: "",
      
-      metadata: {} as UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, never>,
+      metadata: {} as UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>,
       apiKey: "",
       timeout: 300,
       retryAttempts: 3,
      
-      mappedMeta: {} as Map<string, Snapshot<T, K, StructuredMetadata<T, K>, never>>,
-      meta: {} as StructuredMetadata<T, K>,
-      events: {} as EventManager<T, K, StructuredMetadata<T, K>>,
+      mappedMeta: {} as Map<string, Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>,
+      meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      events: {} as EventManager<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
      
     id: "2",
     title: "Task 2",
@@ -316,7 +238,7 @@ const tasksDataSource: Record<string, Task<T, K>> = {
     done: false,
     data: {} as TaskData,
     source: "system",
-    some: (callbackfn: (value: Task<T, K>, index: number, array: Task<T, K>[]) => unknown, thisArg?: any) => false,
+    some: (callbackfn: (value: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, index: number, array: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => unknown, thisArg?: any) => false,
     startDate: new Date(),
     endDate: new Date(),
     isActive: true,
@@ -396,80 +318,6 @@ export default TaskDetails;
 export type { Task };
 
 
-// Dynamically create TaskMetadata based on the Task interface
-export const taskMetadata = <T extends BaseData<any>, K extends T = T>(
-  task: Task<T, K>
-): TaskMetadata<T, K> => {
-  return {
-    subtasks: task.dependencies || [],
-    scheduledDate: task.scheduled?.startDate || undefined, // Dynamically assign scheduledDate
-    taskId: task.taskId || "",
-    taskName: task.taskName || "",
-    _id: task._id,
-    priority: task.priority,
-    assignedTo: task.assignedTo,
-    id: task.id,
-    timestamp: task.timestamp,
-    schema: task.schema,
-    latestVersion: task.latestVersion,
-    isActive: task.isActive,
-    metadataEntries: task.metadataEntries,
-    keywords: task.keywords,
-    // Add other dynamic properties here as needed
-  };
-};
 
-
-
-const createTask = <T extends BaseData<any>, K extends T = T>(
-  taskData: Partial<Task<T, K>>
-): Task<T, K> => {
-  const defaultTask: Task<T, K> = {
-    id: "default-id",
-    title: "New Task",
-    description: "Task Description",
-    scheduled: undefined,
-    isScheduled: false,
-    assignedTo: null,
-    version: undefined,
-    assigneeId: "",
-    dueDate: null,
-    payload: undefined,
-    priority: undefined,
-    type: "general",
-    status: undefined,
-    isComplete: false,
-    estimatedHours: null,
-    actualHours: null,
-    completionDate: null,
-    dependencies: null,
-    previouslyAssignedTo: [],
-    done: false,
-    data: undefined,
-    source: "system",
-    details: undefined,
-    startDate: undefined,
-    endDate: undefined,
-    isActive: true,
-    tags: undefined,
-    analysisType: undefined,
-    analysisResults: [],
-    videoThumbnail: "",
-    videoDuration: undefined,
-    videoUrl: undefined,
-    userId: undefined,
-    query: undefined,
-    getData: async () => Promise.resolve(defaultTask),
-    selectedTask: {} as Task<TaskEntity, TaskEntity, StructuredMetadata<TaskEntity, TaskEntity>>,
-    ...taskData, // Merge provided data
-  };
-
-  return {
-    ...defaultTask,
-    metadata: taskMetadata(defaultTask), // Dynamically create metadata
-  } as Task<T, K>;
-};
-
-
-  export { createTask, tasksDataSource };
+  export { tasksDataSource };
 

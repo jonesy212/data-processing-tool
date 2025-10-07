@@ -21,9 +21,11 @@ export const MapMethods = {
     T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T 
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,  // ✅ Add this parameter
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  // ✅ Add this parameter
     storeIds: number[],
     snapshotId: string,
     category: Category | undefined,
@@ -31,9 +33,9 @@ export const MapMethods = {
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
     timestamp: string | number | Date | undefined,
     type: string,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: number,
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,  
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
     data: T,
     callback: (
       storeIds: number[],
@@ -43,12 +45,12 @@ export const MapMethods = {
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
       timestamp: string | number | Date | undefined,
       type: string,
-      event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+      event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       id: number,
-      snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,  
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
       data: K,
       index: number
-    ) => SnapshotsObject<T, K, Meta, ExcludedFields>
+    ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<SnapshotsArray<T, K, Meta>> {
     // Implementation using this.* for instance access
     if (!this.delegate || this.delegate.length === 0) {
@@ -79,17 +81,19 @@ export const MapMethods = {
     T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>  
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,  // ✅ Add this parameter
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  // ✅ Add this parameter
     storeId: number,
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,  
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
     snapshotId: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
     type: string,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void  
-  ): SnapshotWithData<T, K, Meta, ExcludedFields> | null {
+): SnapshotWithData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
   try {
     // Validate input
     if (!snapshot || !snapshotStore) {
@@ -134,13 +138,13 @@ export const MapMethods = {
       }
     }
 
-    return snapshotWithDetails;
+      return snapshotWithDetails;
 
-  } catch (error) {
-    console.error("Error in mapSnapshotWithDetails:", error);
-    return null;
+    } catch (error) {
+      console.error("Error in mapSnapshotWithDetails:", error);
+      return null;
+    }
   }
-}
 
-
+  // ADD MORE METHODS HERE
 }

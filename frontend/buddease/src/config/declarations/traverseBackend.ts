@@ -13,11 +13,11 @@ interface BackendStructure {
 
 }
 
-const backendStructure: AppStructureItem[] = [];
+const backendStructure: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
-export const traverseBackendDirectory = async (dir: string): Promise<AppStructureItem[]> => {
+export const traverseBackendDirectory = async (dir: string): Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   const files: string[] = await fetchFilesInDirectory(dir);
-  const result: AppStructureItem[] = [];
+  const result: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
   const docPermissions = new DocumentPermissions(true, true);
 
@@ -72,7 +72,7 @@ export const traverseBackendDirectory = async (dir: string): Promise<AppStructur
 // If you want to allow the method to be used outside the class as well, you can do the following:
 export const getStructureAsArray = (
   structure?: Record<string, AppStructureItem>
-): AppStructureItem[] => {
+): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] => {
   return structure ? Object.values(structure) : [];
 };
 

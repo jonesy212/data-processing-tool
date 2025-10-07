@@ -19,9 +19,9 @@ interface MetaState<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
-  _structure: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>[]>;
-  transformToStructureItems: (data: any) => AppStructureItem<T, K, Meta, ExcludedFields>[];
-  getStructure: () => Promise<Record<string, AppStructureItem<T, K, Meta, ExcludedFields>> | undefined>;
+  _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+  transformToStructureItems: (data: any) => AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  getStructure: () => Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined>;
   versionData?: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   latestVersion?: Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "author" | "schema">;
   history?: HistoryEntry[];
@@ -33,7 +33,7 @@ interface MyMetaState<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > extends VersionHistory<T, K> {
-  _structure: Record<string, AppStructureItem<T, K, Meta, ExcludedFields>[]>;
+  _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   latestVersion?: Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "author" | "schema">;
   timestamp: string | number | Date | undefined;
 }
@@ -81,7 +81,7 @@ export const useMeta = <
 };
 
 export const useMetadata = <T extends BaseDataEntity, K extends T = T>(
-  initialOptions: UnifiedMetadata<T, K>
+  initialOptions: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) => {
   const [options, setOptions] = useState<UnifiedMetaDataOptions<T, K>>(initialOptions);
 

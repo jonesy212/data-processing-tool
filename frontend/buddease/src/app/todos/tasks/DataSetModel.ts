@@ -7,7 +7,7 @@ import { Content } from "@/app/models/content/AddContent";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { Team } from "@/app/models/teams/Team";
 import { BaseEntity } from "@/app/routing/FuzzyMatch";
-import { TagsRecord } from "@/app/snapshots";
+import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentBase, PhaseTypeEnums } from "@/app/state/stores/DocumentStore";
@@ -49,7 +49,7 @@ interface DatasetModel<
   documents: WritableDraft<DocumentObject<T, K, Meta>>[];
   createdAt: string | Date | undefined;
   updatedAt?: string | Date; 
-  selectedDocument: DocumentData<T, K, Meta> | null; // Specify type arguments for DocumentData
+  selectedDocument: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null; // Specify type arguments for DocumentData
   selectedDocuments?: DocumentData<T, K>[];
   content: Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   phaseType: PhaseTypeEnums

@@ -4,7 +4,7 @@
 // import { Snapshot } from '@/app/snapshots/Snapshot';
 // import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 // import { BaseData } from '@/app/models/data/Data';
-// import { SnapshotStoreConfig } from '@/SnapshotStoreConfig';
+// import { SnapshotStoreConfig } from '@/app/snapshots/SnapshpshotStoreConfig';
 
 // const useSnapshotHandler = <T extends BaseDataEntity, K extends CustomSnapshotData>() => {
 //   const [snapshotStoreConfig, setSnapshotStoreConfig] = useState<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined>(undefined);

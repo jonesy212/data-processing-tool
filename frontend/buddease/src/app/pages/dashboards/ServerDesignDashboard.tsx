@@ -1,6 +1,6 @@
 // ServerDesignDashboard.ts
-import { ApiConfig } from '@/config//ConfigurationService';
 import { DesignDashboardBaseProps } from '@/app/pages/dashboards/DesignDashboard';
+import { ApiConfig } from '@/app/services/ConfigurationService';
 
 import Documentation from "@/app/components/styling/Documentation";
 import BatchProcessingAndCache from "@/app/utils/BatchProcessingAndCache";

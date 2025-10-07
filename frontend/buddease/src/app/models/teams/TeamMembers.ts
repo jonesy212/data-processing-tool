@@ -2,9 +2,10 @@ import UserRoles from '@/users/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
 import { User } from "@/app/users/User";
 import { UserRole } from "@/app/users/UserRole";
-import { Team } from '@/Team';
+import { Team } from '@/app/components/models/teams/Team';
 import { Task } from '@/tasks/Task';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/Attachment/attachment';
 
 export interface Member extends User {
   teamId: string;
@@ -15,40 +16,17 @@ export interface Member extends User {
   // Add other member-specific properties here
 }
 
-export interface Collaborator extends Member {
-  collaborations: number; // Number of collaborations
-  // Add any other properties specific to Collaborator
-}
 
-export interface Contribution {
-  projectId: string;       // or number if projects have IDs
-  projectName: string;
-  role?: string;           // e.g., "developer", "designer"
-  commits?: number;        // optional number of commits/contributions
-  details: { note: string; date?: string }[]
-  date?: string;
-}
 
-interface Contributor extends Member {
-  contributions: Contribution[]; // detailed breakdown per project
-  joinedAt?: Date;
-  active?: boolean;
-}
 
-// Define the MemberData interface extending Member
-interface MemberData<
-  T extends BaseDataEntity, 
+interface TeamMember<
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T> 
-> extends Member {
-  datasets?: string;
-  tasks?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  questionnaireResponses?: any;
-  userType: string
-  // Add other fields specific to MemberData
-}
-interface TeamMember extends MemberData {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends MemberData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     id: number;
     username: string;
     email: string;

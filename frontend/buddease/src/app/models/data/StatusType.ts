@@ -41,6 +41,7 @@ enum StatusType {
   Active = "active",
   Inactive = "inactive", 
   Archived = "archived" ,
+  Overdue = 'Overdue'
 }
 
 // Define the DocumentSize enum

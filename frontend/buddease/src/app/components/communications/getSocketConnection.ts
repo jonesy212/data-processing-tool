@@ -1,5 +1,5 @@
 // getSocketConnection.ts
-import { RetryConfig } from "@/config/ConfigurationService";
+import { RetryConfig } from "@/app/services/ConfigurationService";
 import { useEffect, useState } from "react";
 
 const getSocketConnection = (roomId: any, retryConfig: RetryConfig) => {

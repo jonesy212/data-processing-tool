@@ -1,14 +1,14 @@
+import { endpoints } from "@/app/api/endpointConfigurations";
 import FileData from "@/app/components/models/data/FileData";
 import { useNotification } from '@/app/context/NotificationContext';
 import useSecureStoreId from '@/app/hooks/useSecureStoreId';
+import { ConfigurationService } from "@/app/services/ConfigurationService";
 import { getBackendStructureFilePath, STORE_KEYS } from "@/app/utils/cache/CacheManager";
 import { CustomApp } from '@/app/utils/web3/dAppAdapter/DApp';
 import { currentAppName } from "@/app/versions/AppVersion";
-import { ConfigurationService } from "@/config/ConfigurationService";
 import { getAuthToken } from '@/server/auth/getAuthToken';
 import { AxiosRequestConfig } from "axios";
 import { Style as DocxStyle } from 'docx';
-import { endpoints } from "./ApiEndpoints";
 
 // Define the API base URL
 const API_BASE_URL = endpoints.data; // Assuming 'endpoints' has a property 'data' for the base URL

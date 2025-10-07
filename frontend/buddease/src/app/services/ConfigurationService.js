@@ -51,9 +51,9 @@ var NotificationContext_1 = require("@/app/context/NotificationContext");
 var systemConfigs_1 = require("../api/systemConfigs");
 var userConfigs_1 = require("../api/userConfigs");
 var Project_1 = require("@/app/components/projects/Project");
-var BackendConfig_1 = require("./BackendConfig");
+var BackendConfig_1 = require("../../config/BackendConfig");
 var DataVersionsConfig_1 = require("./DataVersionsConfig");
-var FrontendConfig_1 = require("./FrontendConfig");
+var FrontendConfig_1 = require("../../config/FrontendConfig");
 var notify = NotificationContext_1.useNotification;
 var ConfigurationService = /** @class */ (function () {
     function ConfigurationService() {

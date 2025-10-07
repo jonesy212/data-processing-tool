@@ -1,4 +1,4 @@
-import { NestedEndpoints }  from "./ApiEndpoints";
+import { NestedEndpoints } from "@/app/api/endpointConfigurations";
 
 //endpointPreferences.ts
 const BASE_URL = "https://your-api-base-url";

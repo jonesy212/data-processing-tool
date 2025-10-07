@@ -4,8 +4,9 @@ import axios, { AxiosResponse } from "axios";
 import { Effect, call, put, takeLatest } from "redux-saga/effects";
 import { TaskActions } from "@/app/@/app/actions/TaskActions";
 import { Task } from "@/app/models/tasks/Task";
-import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import EXTENDED_NOTIFICATION_MESSAGES from "@/app/features/support/ExtendedNotificationMessages";
 import * as taskApi from '@/app/api/TasksApi'
+
 // Replace 'yourApiEndpoint' with the actual API endpoint
 const fetchTasksAPI = () => axios.get('/api/tasks');
 
@@ -23,7 +24,7 @@ function* addTaskSaga(
   } catch (error) {
     yield put(
       TaskActions.addTaskFailure({
-        error: NOTIFICATION_MESSAGES.Tasks.TASK_ADD_ERROR,
+        error: EXTENDED_NOTIFICATION_MESSAGES.Tasks.TASK_ADD_ERROR,
       })
     );
   }
@@ -37,7 +38,7 @@ function* fetchTaskSaga(): Generator<Effect, void, any> {
   } catch (error) {
     yield put(
       TaskActions.fetchTasksFailure({
-        error: NOTIFICATION_MESSAGES.Tasks.TASK_FETCH_ERROR,
+        error: EXTENDED_NOTIFICATION_MESSAGES.Tasks.TASK_FETCH_ERROR,
       })
     );
   }
@@ -46,7 +47,7 @@ function* fetchTaskSaga(): Generator<Effect, void, any> {
 
 function* removeTaskSaga(
   action: ReturnType<typeof TaskActions.remove>
-): Generator {
+): Generator<Effect, void, any> {
   try {
     const { payload: taskId } = action;
     yield call(taskService.removeTask, taskId, "requestData");
@@ -54,7 +55,7 @@ function* removeTaskSaga(
   } catch (error) {
     yield put(
       TaskActions.removeTaskFailure({
-        error: NOTIFICATION_MESSAGES.Tasks.TASK_REMOVE_ERROR,
+        error: EXTENDED_NOTIFICATION_MESSAGES.Tasks.TASK_REMOVE_ERROR,
       })
     );
   }
@@ -67,17 +68,17 @@ function* updateTaskSuccessSaga(
     const { task } = action.payload;
     yield put(TaskActions.updateTasksSuccess({ tasks: [task] }));
   } catch (error) {
-    yield put(TaskActions.updateTaskFailure({ error: NOTIFICATION_MESSAGES.Tasks.TASK_UPDATE_ERROR }));
+    yield put(TaskActions.updateTaskFailure({ error: EXTENDED_NOTIFICATION_MESSAGES.Tasks.TASK_UPDATE_ERROR }));
   }
 }
 
-function* completeAllTasksSaga(): Generator {
+function* completeAllTasksSaga(): Generator<Effect, void, any> {
   try {
     yield call(taskService.completeAllTasks, "requestData");
     // Update the state or handle success if needed
     yield put(TaskActions.completeAllTasksSuccess());
   } catch (error) {
-    yield put(TaskActions.completeAllTasksFailure({ error: NOTIFICATION_MESSAGES.Tasks.COMPLETE_ALL_TASKS_ERROR }));
+    yield put(TaskActions.completeAllTasksFailure({ error: EXTENDED_NOTIFICATION_MESSAGES.Tasks.COMPLETE_ALL_TASKS_ERROR }));
   }
 }
 
@@ -93,7 +94,7 @@ function* fetchDataSaga(
   } catch (error) {
     yield put(
       TaskActions.fetchTasksFailure({
-        error: NOTIFICATION_MESSAGES.Tasks.TASK_FETCH_ERROR,
+        error: EXTENDED_NOTIFICATION_MESSAGES.Tasks.TASK_FETCH_ERROR,
       })
     );
   }
@@ -101,7 +102,7 @@ function* fetchDataSaga(
 
 function* toggleTaskSaga(
   action: ReturnType<typeof TaskActions.toggle>
-): Generator {
+): Generator<Effect, void, any> {
   try {
     const { payload: taskId } = action;
     const updatedTask = (yield call(taskService.toggleTask, taskId)) as Task;
@@ -110,13 +111,13 @@ function* toggleTaskSaga(
   } catch (error) {
     yield put(
       TaskActions.updateTaskFailure({
-        error: NOTIFICATION_MESSAGES.Tasks.TASK_TOGGLE_ERROR,
+        error: EXTENDED_NOTIFICATION_MESSAGES.Tasks.TASK_TOGGLE_ERROR,
       })
     );
   }
 }
 
-function* updateTaskSaga(action: ReturnType<typeof TaskActions.updateTask>): Generator {
+function* updateTaskSaga(action: ReturnType<typeof TaskActions.updateTask>): Generator<Effect, void, any> {
   try {
     const { payload: { taskId, newTitle } } = action;
     const response = yield call(taskService.updateTask, taskId, newTitle);
@@ -124,13 +125,13 @@ function* updateTaskSaga(action: ReturnType<typeof TaskActions.updateTask>): Gen
   } catch (error) {
     yield put(
       TaskActions.updateTaskFailure({
-        error: NOTIFICATION_MESSAGES.Tasks.TASK_UPDATE_ERROR,
+        error: EXTENDED_NOTIFICATION_MESSAGES.Tasks.TASK_UPDATE_ERROR,
       })
     );
   }
 }
 
-function* fetchTasksSaga(): Generator {
+function* fetchTasksSaga(): Generator<Effect, void, any> {
   try {
     yield put(TaskActions.fetchTasksRequest());
     const response = yield call(taskService.fetchTasks, "requestData");
@@ -138,7 +139,7 @@ function* fetchTasksSaga(): Generator {
   } catch (error) {
     yield put(
       TaskActions.fetchTasksFailure({
-        error: NOTIFICATION_MESSAGES.Tasks.TASK_FETCH_ERROR,
+        error: EXTENDED_NOTIFICATION_MESSAGES.Tasks.TASK_FETCH_ERROR,
       })
     );
   }
@@ -192,7 +193,7 @@ function* fetchTasksSuccessSaga(
   }
 }
 
-function* completeAllTasksSuccessSaga(): Generator {
+function* completeAllTasksSuccessSaga(): Generator<Effect, void, any> {
   try {
     // Reset some state variables
     yield put(resetStateVariables());
@@ -209,14 +210,48 @@ function* completeAllTasksSuccessSaga(): Generator {
   }
 }
 
+function* fetchTasksSuccessSaga(
+  action: ReturnType<typeof TaskActions.fetchTasksSuccess>
+): Generator<Effect, void, any> {
+  try {
+    const { tasks } = action.payload;
+    
+    // Use real actions
+    yield put(TaskActions.updateTasksState({ tasks }));
+    
+    // Add actual business logic here
+    if (tasks.length > 0) {
+      yield call(cacheTasks, tasks);
+      yield put(updateTaskMetrics(tasks));
+    }
+    
+  } catch (error) {
+    yield put(TaskActions.fetchTasksFailure({ error: String(error) }));
+  }
+}
 
-// Define your resetStateVariables action creator
+function* completeAllTasksSuccessSaga(): Generator<Effect, void, any> {
+  try {
+    // Use real actions
+    yield put(TaskActions.resetTaskState());
+    yield put(TaskActions.fetchTasksRequest()); // Refresh the list
+    
+    // Show success feedback
+    yield put(TaskActions.showNotification({
+      message: "All tasks completed successfully!",
+      type: "success"
+    }));
+    
+  } catch (error) {
+    yield put(TaskActions.completeAllTasksFailure({ error: String(error) }));
+  }
+
 function resetStateVariables() {
-  return { type: "RESET_STATE_VARIABLES_ACTION_TYPE" }; // Replace with your actual action type
+  return TaskActions.resetTaskState(); // Uses the actual action creator
 }
 
 // Define your fetchUpdatedData function
-function* fetchUpdatedData(taskId: number): Generator {
+function* fetchUpdatedData(taskId: number): Generator<Effect, void, any> {
   try {
     yield put(TaskActions.fetchTasksRequest());
     const response = yield call(taskService.fetchTaskData, taskId); // Assuming taskId is defined elsewhere
@@ -289,28 +324,192 @@ function* completeAllTasksFailureSaga(action: ReturnType<typeof TaskActions.comp
   }
 }
 
+
+function* assignTaskSaga(
+  action: ReturnType<typeof TaskActions.assignTask>
+): Generator<Effect, void, any> {
+  try {
+    const { projectId, taskId, assigneeId } = action.payload;
+    const response = yield call(taskService.assignTask, projectId, taskId, assigneeId);
+    yield put(TaskActions.updateTaskSuccess({ task: response }));
+  } catch (error) {
+    yield put(TaskActions.updateTaskFailure({ error: String(error) }));
+  }
+}
+
+function* unassignTaskSaga(
+  action: ReturnType<typeof TaskActions.unassignTask>
+): Generator<Effect, void, any> {
+  try {
+    const { taskId } = action.payload;
+    const response = yield call(taskService.unassignTask, taskId);
+    yield put(TaskActions.updateTaskSuccess({ task: response }));
+  } catch (error) {
+    yield put(TaskActions.updateTaskFailure({ error: String(error) }));
+  }
+}
+
+function* updateTaskPrioritySaga(
+  action: ReturnType<typeof TaskActions.updateTaskPriority>
+): Generator<Effect, void, any> {
+  try {
+    const { taskId, newPriority } = action.payload;
+    const response = yield call(taskService.updateTaskPriority, taskId, newPriority);
+    yield put(TaskActions.updateTaskPrioritySuccess({ 
+      taskId: String(taskId), 
+      priority: newPriority,
+      task: response 
+    }));
+  } catch (error) {
+    yield put(TaskActions.updateTaskPriorityFailure({ 
+      taskId: String(taskId), 
+      error: String(error) 
+    }));
+  }
+}
+
+function* markTaskAsCompleteSaga(
+  action: ReturnType<typeof TaskActions.markTaskAsComplete>
+): Generator<Effect, void, any> {
+  try {
+    const taskId = action.payload;
+    yield put(TaskActions.markTaskAsCompleteRequest(taskId));
+    const response = yield call(taskService.markTaskComplete, taskId);
+    yield put(TaskActions.markTaskAsCompleteSuccess(taskId));
+    yield put(TaskActions.updateTaskSuccess({ task: response }));
+  } catch (error) {
+    yield put(TaskActions.markTaskAsCompleteFailure({ 
+      taskId, 
+      error: String(error) 
+    }));
+  }
+}
+
+
+function* batchUpdateTasksSaga(
+  action: ReturnType<typeof TaskActions.batchUpdateTasksRequest>
+): Generator<Effect, void, any> {
+  try {
+    const { ids, newTitles } = action.payload;
+    const response = yield call(taskService.batchUpdateTasks, ids, newTitles);
+    yield put(TaskActions.batchUpdateTasksSuccess({ tasks: response }));
+  } catch (error) {
+    yield put(TaskActions.batchUpdateTasksFailure({ error: String(error) }));
+  }
+}
+
+function* batchRemoveTasksSaga(
+  action: ReturnType<typeof TaskActions.batchRemoveTasksRequest>
+): Generator<Effect, void, any> {
+  try {
+    const taskIds = action.payload;
+    yield call(taskService.batchRemoveTasks, taskIds);
+    yield put(TaskActions.batchRemoveTasksSuccess(taskIds));
+  } catch (error) {
+    yield put(TaskActions.batchRemoveTasksFailure({ error: String(error) }));
+  }
+}
+
+function* filterTasksByStatusSaga(
+  action: ReturnType<typeof TaskActions.filterTasksByStatus>
+): Generator<Effect, void, any> {
+  try {
+    const { status } = action.payload;
+    const filteredTasks = yield call(taskService.filterTasksByStatus, status);
+    yield put(TaskActions.fetchTasksSuccess({ tasks: filteredTasks }));
+  } catch (error) {
+    yield put(TaskActions.fetchTasksFailure({ error: String(error) }));
+  }
+}
+
+function* sortByDueDateSaga(): Generator<Effect, void, any> {
+  try {
+    const sortedTasks = yield call(taskService.sortTasksByDueDate);
+    yield put(TaskActions.fetchTasksSuccess({ tasks: sortedTasks }));
+  } catch (error) {
+    yield put(TaskActions.fetchTasksFailure({ error: String(error) }));
+  }
+}
+
+
+function* updateTaskIdeasSaga(
+  action: ReturnType<typeof TaskActions.updateTaskIdeas>
+): Generator<Effect, void, any> {
+  try {
+    const { taskId, ideas } = action.payload;
+    const response = yield call(taskService.updateTaskIdeas, taskId, ideas);
+    yield put(TaskActions.updateTaskSuccess({ task: response }));
+  } catch (error) {
+    yield put(TaskActions.updateTaskFailure({ error: String(error) }));
+  }
+}
+
+function* exportTasksToCSVSaga(): Generator<Effect, void, any> {
+  try {
+    const csvData = yield call(taskService.exportTasksToCSV);
+    yield call(downloadCSV, csvData, 'tasks.csv');
+    yield put(TaskActions.showNotification({
+      message: 'Tasks exported successfully!',
+      type: 'success'
+    }));
+  } catch (error) {
+    yield put(TaskActions.showNotification({
+      message: 'Export failed: ' + String(error),
+      type: 'error'
+    }));
+  }
+}
+
+function* getTaskCountByStatusSaga(): Generator<Effect, void, any> {
+  try {
+    const counts = yield call(taskService.getTaskCountByStatus);
+    // Dispatch to some analytics/store action
+    yield put(updateTaskCounts(counts));
+  } catch (error) {
+    console.error('Failed to get task counts:', error);
+  }
+}
   
 
 export function* watchTaskSagas() {
+  // Core CRUD
+  yield takeLatest(TaskActions.add.type, addTaskSaga);
+  yield takeLatest(TaskActions.remove.type, removeTaskSaga);
+  yield takeLatest(TaskActions.updateTask.type, updateTaskSaga);
+  yield takeLatest(TaskActions.toggle.type, toggleTaskSaga);
   
-  yield takeLatest(TaskActions.add.type, addTaskSaga),
-  yield takeLatest(TaskActions.remove.type, removeTaskSaga),
-    yield takeLatest(TaskActions.toggle.type, toggleTaskSaga),
-    yield takeLatest(TaskActions.fetchTaskData.type, fetchDataSaga),
-  yield takeLatest(TaskActions.updateTask.type, updateTaskSaga),
-  yield takeLatest(TaskActions.updateTaskSuccess.type, updateTaskSuccessSaga),
-  yield takeLatest(TaskActions.updateTasksSuccess.type, updateTasksSuccessSaga),
-  yield takeLatest(TaskActions.fetchTasksRequest.type, fetchTaskSaga), 
-  yield takeLatest(TaskActions.fetchTasksRequest.type, fetchTasksSaga),
-  yield takeLatest(TaskActions.fetchTasksRequest.type, fetchTasksRequestSaga),
-  yield takeLatest(TaskActions.fetchTasksSuccess.type, fetchTasksSuccessSaga),
-  yield takeLatest(TaskActions.fetchTasksFailure.type, fetchTasksFailureSaga),
-  yield takeLatest(TaskActions.completeAllTasksSuccess.type, completeAllTasksSuccessSaga),
-  yield takeLatest(TaskActions.completeAllTasksRequest.type, completeAllTasksRequestSaga),
-  yield takeLatest(TaskActions.completeAllTasksFailure.type, completeAllTasksFailureSaga)
-};  
-
-
+  // Fetch operations
+  yield takeLatest(TaskActions.fetchTasksRequest.type, fetchTasksSaga);
+  yield takeLatest(TaskActions.fetchTaskData.type, fetchTaskDataSaga);
+  
+  // Assignment operations
+  yield takeLatest(TaskActions.assignTask.type, assignTaskSaga);
+  yield takeLatest(TaskActions.unassignTask.type, unassignTaskSaga);
+  
+  // Status operations
+  yield takeLatest(TaskActions.markTaskAsComplete.type, markTaskAsCompleteSaga);
+  yield takeLatest(TaskActions.completeAllTasksRequest.type, completeAllTasksSaga);
+  
+  // Priority operations
+  yield takeLatest(TaskActions.updateTaskPriority.type, updateTaskPrioritySaga);
+  
+  // Batch operations
+  yield takeLatest(TaskActions.batchUpdateTasksRequest.type, batchUpdateTasksSaga);
+  yield takeLatest(TaskActions.batchRemoveTasksRequest.type, batchRemoveTasksSaga);
+  
+  // Filter/Sort operations
+  yield takeLatest(TaskActions.filterTasksByStatus.type, filterTasksByStatusSaga);
+  yield takeLatest(TaskActions.sortByDueDate.type, sortByDueDateSaga);
+  
+  // Export operations
+  yield takeLatest(TaskActions.exportTasksToCSV.type, exportTasksToCSVSaga);
+  
+  // Analytics operations
+  yield takeLatest(TaskActions.getTaskCountByStatus.type, getTaskCountByStatusSaga);
+  
+  // Ideas operations
+  yield takeLatest(TaskActions.updateTaskIdeas.type, updateTaskIdeasSaga);
+}
 export function* taskSagas()
 {
   yield watchTaskSagas()

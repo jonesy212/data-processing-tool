@@ -25,7 +25,7 @@ import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Attachment } from '@/app/documents/Attachment/attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
-import { SnapshotContext } from '@/SnapshotSubscriberManagement';
+import { SnapshotContext } from '@/app/snapshots/SnapshpshotSubscriberManagement';
 
 // SnapshotStoreSubset.ts
 interface SnapshotStoreSubset<

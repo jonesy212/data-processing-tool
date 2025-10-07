@@ -1,10 +1,7 @@
 // ApiConfigComponent.tsx
+import { ComponentActions } from "@/app/actions/ComponentActions";
 import axiosInstance from '@/app/api/csrfToken';
 import ConfigurationServiceComponent from "@/app/components/configs/ConfigurationServiceComponent/ConfigurationServiceComponent";
-import { ComponentActions } from "@/app/actions/ComponentActions";
-import CreateComponentForm from "@/app/libraries/ui/components/CreateComponentForm";
-import DeleteComponent from "@/app/libraries/ui/components/DeleteComponent";
-import UpdateComponent from "@/app/libraries/ui/components/UpdateComponent";
 import TaskTrackingComponent from "@/app/components/models/tracker/TaskTrackingComponent";
 import { TrackerProps } from "@/app/components/models/tracker/Tracker";
 import { Phase } from "@/app/components/phases/Phase";
@@ -13,12 +10,15 @@ import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import useFilePath from "@/app/hooks/useFilePath";
+import CreateComponentForm from "@/app/libraries/ui/components/CreateComponentForm";
+import DeleteComponent from "@/app/libraries/ui/components/DeleteComponent";
+import UpdateComponent from "@/app/libraries/ui/components/UpdateComponent";
+import { ApiConfig } from "@/app/services/ConfigurationService";
 import ErrorBoundary from "@/app/shared/ErrorBoundary";
 import { selectApiConfigs } from "@/app/state/redux/slices/ApiSlice";
 import { User, UserData } from "@/app/users/User";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import FileData from '@/components/models/data/FileData';
-import { ApiConfig } from "@/config/ConfigurationService";
 import { frontendConfig } from "@/config/FrontendConfig";
 import MainConfig from "@/config/MainConfig";
 import { UserPreferences, userPreferences } from "@/config/UserPreferences";

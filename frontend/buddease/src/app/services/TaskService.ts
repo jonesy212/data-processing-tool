@@ -1,5 +1,5 @@
 import { apiService } from "@/app/api/ApiDetails";
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
 import apiNotificationsService from "@/app/api/NotificationsService";
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
@@ -10,14 +10,20 @@ import { Progress } from "@/app/models/tracker/ProgressBar";
 import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { AxiosResponse } from "axios";
 import { action, observable, runInAction } from "mobx";
+import { TaskMeta, TaskEntity, TaskAttachment, TaskExcludedFields } from '@/app/snapshots/SnapshotActoins'
+
 const API_BASE_URL = endpoints.tasks;
 
 class TaskService<
-  T extends BaseData<any>,
+  T extends TaskEntity,
   K extends T = T,
+  Meta extends TaskMeta = TaskMeta,
+  AttachmentType extends TaskAttachment = TaskAttachment,
+  ExcludedFields extends keyof T = TaskExcludedFields,
+  IncludedFields extends keyof T = TaskIncludedFields
 > {
 
-  static instance: TaskService;
+  static instance: TaskService<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   static getInstance() {
     if (!this.instance) {
@@ -26,12 +32,12 @@ class TaskService<
     return this.instance;
   }
 
-  @observable tasks: Task<T, K>[] = [];
+  @observable tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
   @observable loading = false;
   @observable error: string | null = null;
 
   @action
-  createTask = async (task: Task<T, K>, name: string,  title: string, type: NotificationTypeEnum, requestData: string) => {
+  createTask = async (task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, name: string,  title: string, type: NotificationType, requestData: string) => {
     try {
       task.id = UniqueIDGenerator.generateTaskID(name, title, type);
 
@@ -46,7 +52,7 @@ class TaskService<
         NOTIFICATION_MESSAGES.Tasks.TASK_CREATED,
         task,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
       runInAction(() => {
         this.tasks.push(task);
@@ -56,6 +62,76 @@ class TaskService<
     }
   };
 
+  @action
+  assignTask = async (projectId: string, taskId: string, assigneeId: string, requestData: string): Promise<void> => {
+    try {
+      const endpoint = `${API_BASE_URL}/${taskId}/assign`;
+      await axiosInstance.put(await apiService.callApi(endpoint, requestData), {
+        projectId,
+        assigneeId
+      });
+      
+      const task = this.getTaskById(taskId);
+      if (task) {
+        task.assigneeId = assigneeId;
+      }
+    } catch (error) {
+      throw new Error("Failed to assign task");
+    }
+  };
+
+  @action
+  unassignTask = async (taskId: string, requestData: string): Promise<void> => {
+    try {
+      const endpoint = `${API_BASE_URL}/${taskId}/unassign`;
+      await axiosInstance.put(await apiService.callApi(endpoint, requestData));
+      
+      const task = this.getTaskById(taskId);
+      if (task) {
+        task.assigneeId = undefined;
+      }
+    } catch (error) {
+      throw new Error("Failed to unassign task");
+    }
+  };
+
+  @action
+  updateTaskPriority = async (taskId: number, newPriority: string, requestData: string): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+    try {
+      const endpoint = `${API_BASE_URL}/${taskId}/priority`;
+      const response = await axiosInstance.put(await apiService.callApi(endpoint, requestData), {
+        priority: newPriority
+      });
+      
+      const updatedTask = response.data as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+      const index = this.tasks.findIndex(task => task.id === String(taskId));
+      if (index !== -1) {
+        this.tasks[index] = updatedTask;
+      }
+      
+      return updatedTask;
+    } catch (error) {
+      throw new Error("Failed to update task priority");
+    }
+  };
+
+  @action
+  markTaskComplete = async (taskId: string, requestData: string): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+    try {
+      const endpoint = `${API_BASE_URL}/${taskId}/complete`;
+      const response = await axiosInstance.put(await apiService.callApi(endpoint, requestData));
+      
+      const updatedTask = response.data as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+      const index = this.tasks.findIndex(task => task.id === taskId);
+      if (index !== -1) {
+        this.tasks[index] = updatedTask;
+      }
+      
+      return updatedTask;
+    } catch (error) {
+      throw new Error("Failed to mark task as complete");
+    }
+  };
   @action
   fetchTasks = async (requestData: string): Promise<void> => {
     try {
@@ -80,10 +156,10 @@ class TaskService<
   };
 
   @action
-  fetchTask = (taskId: number, requestData: string): Promise<AxiosResponse<Task<T, K>, any>> => {
+  fetchTask = (taskId: number, requestData: string): Promise<AxiosResponse<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, any>> => {
     const endpoint = `${API_BASE_URL}/${taskId}`; // Construct the endpoint URL
     return apiService.callApi(endpoint, requestData)
-      .then(apiEndpoint => axiosInstance.get<AxiosResponse<Task<T, K>, any>>(apiEndpoint))
+      .then(apiEndpoint => axiosInstance.get<AxiosResponse<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, any>>(apiEndpoint))
       .then(response => response.data)
       .catch(error => {
         throw new Error(`Failed to fetch task with ID ${taskId}`);
@@ -112,7 +188,7 @@ class TaskService<
         NOTIFICATION_MESSAGES.Tasks.TASK_UPDATED,
         progress,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
       Logger.info(`Updated task: ${progress.id}`);
       Logger.info(response.data);
@@ -132,10 +208,10 @@ class TaskService<
   };
 
   @action
-  addTask = (newTask: Task<T, K>, requestData: string): Promise<AxiosResponse<Task<T, K>, any>> => {
+  addTask = (newTask: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, requestData: string): Promise<AxiosResponse<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, any>> => {
     const endpoint = API_BASE_URL.add;
     return apiService.callApi(`${endpoint}`, requestData)
-      .then(apiEndpoint => axiosInstance.post<AxiosResponse<Task<T, K>, any>>(apiEndpoint, newTask, {
+      .then(apiEndpoint => axiosInstance.post<AxiosResponse<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, any>>(apiEndpoint, newTask, {
         headers: {
           "Content-Type": "application/json",
         },
@@ -164,7 +240,7 @@ class TaskService<
 
 
   @action
-  processTasks = async (updatedTasks: Task<T, K>[], taskType: string) => {
+  processTasks = async (updatedTasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], taskType: string) => {
     try {
       const requestData = {
         taskIds: updatedTasks.map((task) => task.id),
@@ -185,10 +261,10 @@ class TaskService<
   };
 
   @action
-  updateTask = (taskId: number, requestData: any): Promise<AxiosResponse<Task<T, K>, any>> => {
+  updateTask = (taskId: number, requestData: any): Promise<AxiosResponse<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, any>> => {
     const endpoint = `${API_BASE_URL}/${taskId}`; // Construct the endpoint URL
 
-    return axiosInstance.put<AxiosResponse<Task<T, K>, any>>(endpoint, requestData, {
+    return axiosInstance.put<AxiosResponse<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, any>>(endpoint, requestData, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -213,7 +289,7 @@ class TaskService<
 
 
   @action
-  getTasks = async (requestData: string): Promise<Task<T, K>[]> => {
+  getTasks = async (requestData: string): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
     try {
       const response = await axiosInstance.get(
         await apiService.callApi(
@@ -221,7 +297,7 @@ class TaskService<
           requestData
         )
       );
-      return response.data as Task<T, K>[];
+      return response.data as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
     } catch (error) {
       runInAction(() => {
         this.error = "Failed to fetch tasks";
@@ -279,7 +355,7 @@ class TaskService<
   };
 
   @action
-  getTaskById(id: string): Task<T, K> | null {
+  getTaskById(id: string): Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
     const task = this.tasks.find((task) => task.id === id);
     if (task) {
       return task;
@@ -288,11 +364,11 @@ class TaskService<
   }
 
   @action
-  fetchTaskData(taskId: number): Promise<Task<T, K>> {
+  fetchTaskData(taskId: number): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     return new Promise(async (resolve, reject) => {
       axiosInstance.get(await apiService.callApi(`${API_BASE_URL}/${taskId}`, ""))
         .then(response => {
-          resolve(response.data as Task<T, K>);
+          resolve(response.data as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
         })
         .catch(error => {
           reject(new Error("Failed to fetch task data"));
@@ -337,6 +413,147 @@ class TaskService<
       );
     }
   }
+
+  @action
+  batchUpdateTasks = async (ids: number[], newTitles: string[], requestData: string): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
+    try {
+      const endpoint = API_BASE_URL.batchUpdate;
+      const response = await axiosInstance.put(await apiService.callApi(endpoint, requestData), {
+        ids,
+        newTitles
+      });
+      
+      const updatedTasks = response.data as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+      
+      // Update local state
+      updatedTasks.forEach(updatedTask => {
+        const index = this.tasks.findIndex(task => task.id === updatedTask.id);
+        if (index !== -1) {
+          this.tasks[index] = updatedTask;
+        }
+      });
+      
+      return updatedTasks;
+    } catch (error) {
+      throw new Error("Failed to batch update tasks");
+    }
+  };
+
+  @action
+  batchRemoveTasks = async (taskIds: number[], requestData: string): Promise<void> => {
+    try {
+      const endpoint = API_BASE_URL.batchRemove;
+      await axiosInstance.post(await apiService.callApi(endpoint, requestData), {
+        taskIds
+      });
+      
+      // Remove from local state
+      this.tasks = this.tasks.filter(task => !taskIds.includes(Number(task.id)));
+    } catch (error) {
+      throw new Error("Failed to batch remove tasks");
+    }
+  };
+
+
+  @action
+  filterTasksByStatus = async (status: string, requestData: string): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
+    try {
+      const endpoint = `${API_BASE_URL}/filter`;
+      const response = await axiosInstance.post(await apiService.callApi(endpoint, requestData), {
+        status
+      });
+      
+      return response.data as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+    } catch (error) {
+      throw new Error("Failed to filter tasks by status");
+    }
+  };
+
+  @action
+  sortTasksByDueDate = async (requestData: string): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
+    try {
+      const endpoint = `${API_BASE_URL}/sort/due-date`;
+      const response = await axiosInstance.get(await apiService.callApi(endpoint, requestData));
+      
+      return response.data as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+    } catch (error) {
+      throw new Error("Failed to sort tasks by due date");
+    }
+  };
+
+
+  @action
+  updateTaskIdeas = async (taskId: string, ideas: Idea[], requestData: string): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+    try {
+      const endpoint = `${API_BASE_URL}/${taskId}/ideas`;
+      const response = await axiosInstance.put(await apiService.callApi(endpoint, requestData), {
+        ideas
+      });
+      
+      const updatedTask = response.data as Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+      const index = this.tasks.findIndex(task => task.id === taskId);
+      if (index !== -1) {
+        this.tasks[index] = updatedTask;
+      }
+      
+      return updatedTask;
+    } catch (error) {
+      throw new Error("Failed to update task ideas");
+    }
+  };
+
+
+  @action
+  exportTasksToCSV = async (requestData: string): Promise<string> => {
+    try {
+      const endpoint = `${API_BASE_URL}/export/csv`;
+      const response = await axiosInstance.get(await apiService.callApi(endpoint, requestData));
+      
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to export tasks to CSV");
+    }
+  };
+
+  @action
+  getTaskCountByStatus = async (requestData: string): Promise<Record<string, number>> => {
+    try {
+      const endpoint = `${API_BASE_URL}/counts/by-status`;
+      const response = await axiosInstance.get(await apiService.callApi(endpoint, requestData));
+      
+      return response.data;
+    } catch (error) {
+      throw new Error("Failed to get task counts by status");
+    }
+  };
+
+  @action
+  archiveCompletedTasks = async (requestData: string): Promise<void> => {
+    try {
+      const endpoint = API_BASE_URL.archiveCompleted;
+      await axiosInstance.post(await apiService.callApi(endpoint, requestData));
+      
+      // Remove completed tasks from local state
+      this.tasks = this.tasks.filter(task => !task.isComplete);
+    } catch (error) {
+      throw new Error("Failed to archive completed tasks");
+    }
+  };
+
+  @action
+  clearAllTasks = async (requestData: string): Promise<void> => {
+    try {
+      const endpoint = API_BASE_URL.clearAll;
+      await axiosInstance.delete(await apiService.callApi(endpoint, requestData));
+      
+      // Clear local state
+      this.tasks = [];
+    } catch (error) {
+      throw new Error("Failed to clear all tasks");
+    }
+  };
+
+
 }
 export const taskService = new TaskService();
 export default TaskService;

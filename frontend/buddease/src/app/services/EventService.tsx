@@ -368,7 +368,7 @@ class EventService {
   ): CalendarEvent {
 
     const area = fetchUserAreaDimensions().toString()
-    const metadata: UnifiedMetadata<T, K> = useMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>(area);
+    const metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>>(area);
     const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
 
     // Create a new CalendarEvent object with the provided parameters

@@ -1,17 +1,17 @@
 // ApiDrawing.ts
 import axiosInstance from "@/app/api/csrfToken";
+import { endpoints } from "@/app/api/endpointConfigurations";
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import { BaseData } from '@/app/models/data/Data';
-import { YourResponseType } from "@/app/typings/responseTypes";
 import {
     NotificationType,
     NotificationTypeEnum,
     useNotification,
 } from "@/app/context/NotificationContext";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
+import { BaseData } from '@/app/models/data/Data';
+import { YourResponseType } from "@/app/typings/responseTypes";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from "axios";
-import { endpoints } from "./ApiEndpoints";
 import { handleApiError } from "./ApiLogs";
 
 // Define the API base URL

@@ -30,7 +30,7 @@ interface SearchResult<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> extends Entity, DocumentData<T, K, Meta> {
+> extends Entity, DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   items: T[];
   totalCount: number;
   id: number;

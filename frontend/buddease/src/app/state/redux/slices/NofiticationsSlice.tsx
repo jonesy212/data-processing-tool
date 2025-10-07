@@ -14,41 +14,11 @@ import { Attachment } from '@/app/documents/Attachment/attachment';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
  
-
 export type SendStatus = "Sent" | "Delivered" | "Read" | "Error";
 
 export type TeamStatus = "active" | "inactive" | "onHold"; // Define TeamStatus enum
 
 export type DataStatus = "processing" | "completed" | "failed"; // Define DataStatus enum
-
-
-interface NotificationData<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T
-> extends Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  id: string | null;
-  message: string;
-  createdAt?: Date;
-  updatedAt?: Date;
-  content: any;
-  sendStatus?: SendStatus | boolean;
-  completionMessageLog: LogData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
-  date?: Date | undefined;
-  email?: string;
-  status?: AllStatus;
-  inApp?: boolean;
-  notificationType?: NotificationTypeEnum | string;
-  options?: {
-    additionalOptions: readonly string[] | string | number | any[] | undefined;
-    additionalDocumentOptions: DocumentOptions;
-    additionalOptionsLabel: string;
-  };
-}
 
 interface NotificationsState {
   notifications: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
@@ -57,7 +27,6 @@ interface NotificationsState {
 const initialState: NotificationsState = {
   notifications: [{} as NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>] 
 };
-
 
 // Helper function to dispatch notifications
 export const dispatchNotification = (
@@ -128,7 +97,7 @@ export const dispatchNotification = (
         rsvpStatus: 'yes',
         participants: [],
         teamMemberId: '',
-        meta: {} as WritableDraft<UnifiedMetadata<T, K, StructuredMetadata<T, K>>>,
+        meta: {} as WritableDraft<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
         getSnapshotStoreData: function (): Promise<SnapshotStore<SnapshotWithCriteria<Base<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, SnapshotWithCriteria<BaseData>>[]> {
           throw new Error('Function not implemented.');
         }

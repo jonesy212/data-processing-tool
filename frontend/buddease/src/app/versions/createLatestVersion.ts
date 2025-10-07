@@ -5,9 +5,19 @@ import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import VersionImpl from "@/app/versions/Version";
 import { T, K } from "@/app/components/models/data/dataStoreMethods";
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
+import { Attachment } from "@/app/documents/Attachment/attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 // Define a default latestVersion generator
-export function createLatestVersion<T extends BaseData<any>, K extends T = T>(
+export function createLatestVersion<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  >(
   versionData: Partial<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {}
 ): VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   const now = new Date();
@@ -91,7 +101,7 @@ export function createLatestVersion<T extends BaseData<any>, K extends T = T>(
     currentHash: '0000000000000000',
     structureData: '{}',
   
-    transformToStructureItems: function (data: any): AppStructureItem[] {
+    transformToStructureItems: function (data: any): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
       return data.map((item: any) => ({
         id: item.id ?? 'unknown',
         name: item.name ?? 'Unnamed Item',
@@ -211,7 +221,7 @@ export function createLastUpdatedWithVersion<T extends BaseData<any>, K extends 
     versionData: [], // Initialize as empty array or appropriate value
     latestVersion: createLatestVersion<T, K>({
       version: {
-        transformToStructureItems: function (data: any): AppStructureItem[] {
+        transformToStructureItems: function (data: any): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
           return data.map((item: any) => ({
             id: item.id,
             name: item.name,

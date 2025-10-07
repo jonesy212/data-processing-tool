@@ -6,7 +6,7 @@ import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { Snapshot } from '@/Snapshot';
+import { Snapshot } from '@/app/snapshots/Snapshpshot';
 import { SnapshotWithCriteriaAsBase } from "./SnapshotStoreOptions";
 
 type ConvertSnapshotWithCriteria<

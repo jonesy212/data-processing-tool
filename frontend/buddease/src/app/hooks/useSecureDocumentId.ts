@@ -6,7 +6,7 @@ import { sanitizeData } from '@/security/SanitizationFunctions';
 import useDocumentStore, { Document } from '@/app/state/stores/DocumentStore';
 import UserRoles, { UserRoleEnum } from '@/users/UserRoles';
 import { useNavigate } from 'react-router-dom';
-import { DocumentNode } from '@/users/User';
+import { DocumentNode } from '@/app/users/User';
 import { Permission } from '@/users/Permission';
 
 

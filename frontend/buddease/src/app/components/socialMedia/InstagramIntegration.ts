@@ -1,4 +1,4 @@
-import { endpoints } from "@/app/api/ApiEndpoints";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import InstagramAPI from "@/app/api/InstagramAPI";
 import { authToken } from "@/app/auth/authToken";
 import axiosInstance from "@/server/security/axiosInstance";

@@ -7,7 +7,7 @@ import { User } from "@/app/users/User";
 import { AppVersion, currentAppName } from "@/app/versions/AppVersion";
 import { Version } from "@/app/versions/Version";
 import { current } from "immer";
-import { ApiConfig, CacheConfig, RetryConfig, configServiceInstance } from "./ConfigurationService";
+import { ApiConfig, CacheConfig, RetryConfig, configServiceInstance } from "../app/services/ConfigurationService";
 import { AppStructureItem } from "./appStructure/AppStructure";
 
 // Define the API version header constant
@@ -194,9 +194,9 @@ export const getAppConfig = (): AppConfig => {
       },
       id: 0,
       content: "",
-      frontendStructure: {} as Promise<AppStructureItem[]>,
+      frontendStructure: {} as Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
       data: [],
-      structure: {} as Record<string, AppStructureItem[]>,
+      structure: {} as Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
       generateStructureHash(): Promise<string> {
         // Wait for the resolution of both frontendStructure and backendStructure promises
         return Promise.all([this.frontendStructure, this.backendStructure])
@@ -208,7 +208,7 @@ export const getAppConfig = (): AppConfig => {
       isNewer: function (otherVersion: Version): boolean {
         throw new Error("Function not implemented.");
       },
-      hashStructure: function (structure: AppStructureItem[]): string {
+      hashStructure: function (structure: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): string {
         throw new Error("Function not implemented.");
       },
       getStructureHash: function (): string {
