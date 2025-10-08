@@ -40,7 +40,7 @@ import CalendarSettingsPage from "./CalendarSettingsPage";
 import { implementThen } from "./CommonEvent";
 import { AllStatus } from "./DetailsListStore";
 import { useStore } from "./StoreProvider";
-;
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 import { EventActions } from "@/app/actions/EventActions";
 import { getSnapshotConfig } from "@/app/api/SnapshotApi";
@@ -79,7 +79,7 @@ import {
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CategoryKeys, getCategoryProperties } from "@/app/libraries/categories/CategoryManager";
 import { allCategories } from "@/app/models/data/DataStructureCategories";
-import { FilterState } from "@/app/redux/slices/FilterSlice";
+import { FilterState } from "@/app/state/redux/slices/FilterSlice";
 import { getCurrentSnapshotConfigOptions } from "@/app/snapshots/getCurrentSnapshotConfigOptions";
 import { SnapshotConfigProps } from "@/app/snapshots/SnapshotConfigProps";
 import SnapshotManagerOptions from "@/app/snapshots/SnapshotManagerOptions";
@@ -384,7 +384,7 @@ class CalendarManagerStoreClass<
         // Destructure operation from storeProps
         const { operation, endpointCategory, additionalData, priority, version, ...otherProps } = storeProps;
         const delegate = snapshotApi.getSnapshotContainer<T, K>(snapshotId, storeId);
-        const config = snapshotApi.getSnapshotConfig<T, K>(
+        const config = snapshotApi.getSnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
           id,
           snapshotId,
           criteria,
@@ -678,7 +678,7 @@ class CalendarManagerStoreClass<
       }
 
      
-    // Create a snapshot using the `createSnapshotInstance` factory function
+    // Create a snapshot using the `createSnapshot` factory function
     const snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = createSnapshot(
       document.id ?? null,
       castDocumentData<T>(document.documentData), // Ensure data matches type T
@@ -1243,7 +1243,7 @@ export const eventRecords: Record<string, EventRecord<BaseData, BaseData>[]> = {
 
 
 // Use CombinedEvents in SnapshotData
-const snapshotData: SnapshotData<T, K> = {
+const snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   then: (callback: (newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) => {
     // Implement logic to handle the snapshot of data
     const newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {

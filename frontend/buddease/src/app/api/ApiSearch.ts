@@ -1,7 +1,7 @@
 // ApiSearch.ts
 import axiosInstance from "@/app/api/csrfToken";
 import { SearchResult } from "@/app/components/routing/SearchResult";
-import { handleApiError } from "./ApiLogs";
+import { handleApiError } from '@/app/api/ApiLogs';
 import { Note } from "./ApiNote";
 
 

@@ -25,10 +25,8 @@ import {
   Callback
 } from "@/app/snapshots/subscribeToSnapshotsImplementation";
 import { generateSnapshotId, isSnapshot } from "@/app/utils/snapshotUtils";
-
-
-import { T } from "@/app/models/data/dataStoreMethods";
-
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { additionalHeaders } from "@/app/api/headers/generateAllHeaders";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { ExcludedFields } from "@/app/routing/Fields";
@@ -135,7 +133,7 @@ class YourSpecificSnapshotType <
 
   snapshot(
     id: string | number | undefined,
-    snapshotData: SnapshotData<T, K>,
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     dataStore: DataStore<T, K>,
@@ -144,7 +142,7 @@ class YourSpecificSnapshotType <
     subscriberId: string,
     endpointCategory: string | number,
     storeProps: SnapshotStoreProps<T, K>,
-    snapshotConfigData: SnapshotConfig<T, K>,
+    snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscription: Subscription<T, K>,
     snapshotId?: string | number | null,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
@@ -167,7 +165,7 @@ class YourSpecificSnapshotType <
   generateId(
     prefix: string,
     name: string,
-    type: NotificationTypeEnum,
+    type: NotificationType,
     id?: string,
     title?: string,
     chatThreadName?: string,
@@ -412,7 +410,13 @@ function convertToSnapshotStoreConfig <
     }))
     : null;
 
-  function isSubscriber <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  function isSubscriber <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     obj: any
   ): obj is Subscriber<T, K> {
     return (
@@ -561,13 +565,25 @@ function convertToSnapshotStoreConfig <
   };
 }
 
-function convertSnapshotStoreConfig<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(config: SnapshotStoreConfig<any, any>): SnapshotStoreConfig<T, K> {
+function convertSnapshotStoreConfig<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(config: SnapshotStoreConfig<any, any>): SnapshotStoreConfig<T, K> {
   // Implement conversion logic for SnapshotStoreConfig
   // This is a placeholder; adjust according to your actual conversion logic
   return config as SnapshotStoreConfig<T, K>;
 }
 
-function convertSnapshotToStore <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertSnapshotToStore <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Manually convert snapshot to snapshot store
@@ -758,7 +774,13 @@ function convertSnapshotToStore <T extends  BaseData<any>, K extends T = T, Meta
   }
 }
 
-const convertSnapshotStoreToSnapshot = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertSnapshotStoreToSnapshot = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   const snapshotStoreConfig = store.getConfig();
@@ -851,14 +873,26 @@ const convertSnapshotStoreToSnapshot = <T extends  BaseData<any>, K extends T = 
 // Export the specific snapshot type if needed
 export { YourSpecificSnapshotType };
 
-const convertSnapshotData =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertSnapshotData =  <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   snapshotConfigData: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
 ): SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return snapshotConfigData
 };
 
 
-function convertToDataSnapshot <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertToDataSnapshot <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {
@@ -869,7 +903,7 @@ function convertToDataSnapshot <T extends  BaseData<any>, K extends T = T, Meta 
     snapshot: (
       id: string | number | undefined,
       snapshotId: number,
-      snapshotData: SnapshotData<T, K>,
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
       callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
       dataStore: DataStore<T, K>,
@@ -878,7 +912,7 @@ function convertToDataSnapshot <T extends  BaseData<any>, K extends T = T, Meta 
       subscriberId: string, // Add subscriberId here
       endpointCategory: string | number, // Add endpointCategory here
       storeProps: SnapshotStoreProps<T, K>,
-      snapshotConfigData: SnapshotConfig<T, K>,
+      snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       subscription: Subscription,
   
       snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
@@ -909,21 +943,35 @@ function convertToDataSnapshot <T extends  BaseData<any>, K extends T = T, Meta 
         }
       });
     }
-  } as unknown as Snapshot<T, K, Meta>;
+  } as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 
 
 
 
-const convertSnapshoStoretData =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
-  snapshotStoreConfigData: SnapshotStoreConfig<any, K>
-): SnapshotStoreConfig<any, K> => {
+const convertSnapshoStoretData =  <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  snapshotStoreConfigData: SnapshotStoreConfig<any, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): SnapshotStoreConfig<any, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return snapshotStoreConfigData
 };
 
 
-const snapshotType =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const snapshotType =  <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   const defaultCategory: Category = "defaultCategory";
@@ -968,7 +1016,13 @@ const snapshotType =  <T extends  BaseData<any>, K extends T = T, Meta extends S
 };
 
 
-const snapshotStoreType = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const snapshotStoreType = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   const defaultCategory: Category = "defaultCategory";
@@ -1022,9 +1076,16 @@ const snapshotStoreType = async <T extends  BaseData<any>, K extends T = T, Meta
 
 
 // Type guard to check if input is SnapshotStore<BaseData>
-function isSnapshotStore<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
+function isSnapshotStore<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   data: any
-): data is SnapshotStore<T, K, Meta> {
+): data is SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return (
     data && 
     (data instanceof SnapshotStore || '#snapshotStores' in data)
@@ -1039,16 +1100,19 @@ function isSnapshotStore<T extends BaseData, K extends T, Meta extends Structure
  * @template Meta - Metadata type (defaults to StructuredMetadata<T, K>)
  * @param data - Unknown data to check
  * @param debug - Enable debug logging (default: false)
- * @returns Type predicate indicating if data is YourResponseType<T, K, Meta>
+ * @returns Type predicate indicating if data is YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
  */
 function isYourResponseType<
-  T extends BaseData,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   data: unknown,
   debug: boolean = false
-): data is YourResponseType<T, K, Meta> {
+): data is YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Debug initialization
   if (debug) {
     console.groupCollapsed('[isYourResponseType] Type checking');
@@ -1136,9 +1200,16 @@ function isYourResponseType<
 }
 
 // Enrich SnapshotStore with additional metadata
-function enrichSnapshotStore<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
-  store: SnapshotStore<T, K, Meta>
-): SnapshotStore<T, K, Meta> {
+function enrichSnapshotStore<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {
     ...store,
     metadata: {
@@ -1153,9 +1224,16 @@ function enrichSnapshotStore<T extends BaseData, K extends T, Meta extends Struc
 }
 
 // Normalize snapshot data structure
-function normalizeSnapshot<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
-  snapshot: Snapshot<T, K, Meta>
-): Snapshot<T, K, Meta> {
+function normalizeSnapshot<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {
     ...snapshot,
     // Ensure all dates are properly formatted
@@ -1169,9 +1247,16 @@ function normalizeSnapshot<T extends BaseData, K extends T, Meta extends Structu
 }
 
 // Transform API response to standardized format
-function transformResponse<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
-  response: YourResponseType<T, K, Meta>
-): YourResponseType<T, K, Meta> {
+function transformResponse<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  response: YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {
     ...response,
     // Normalize all dates in the response
@@ -1215,8 +1300,15 @@ function normalizeSnapshotData<T extends BaseData>(data: T): T {
   };
 }
 
-function validateSnapshot<T extends BaseData, K extends T, Meta extends StructuredMetadata<T, K>>(
-  snapshot: Snapshot<T, K, Meta>
+function validateSnapshot<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): boolean {
   return !!(
     snapshot.id &&
@@ -1226,7 +1318,13 @@ function validateSnapshot<T extends BaseData, K extends T, Meta extends Structur
 }
 
 
-const convertSnapshotStoreItemToT =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertSnapshotStoreItemToT =  <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   item: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): T => {
   if (item.data) {
@@ -1241,14 +1339,26 @@ const convertSnapshotStoreItemToT =  <T extends  BaseData<any>, K extends T = T,
   }
 };
 
-const convertSnapshotStoreItemToSnapshot =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertSnapshotStoreItemToSnapshot =  <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   item: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   return item;
 };
 
 // Function to convert SnapshotStore<BaseData> to Map<string, T>
-const convertSnapshotStoreToMap =  <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertSnapshotStoreToMap =  <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   const dataMap = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
@@ -1550,7 +1660,7 @@ K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K
       snapshotData: T,
       category: Category | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T, K, Meta>,
+      snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
       event: Event,
       snapshotContainer?: T,
@@ -1889,7 +1999,13 @@ function convertSnapshotContent<T extends BaseData>(
   return content;
 }
 
-function convertSnapshotToMap<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertSnapshotToMap<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Map<string, any> {
   const map = new Map<string, any>();
@@ -1915,7 +2031,13 @@ function convertSnapshotToMap<T extends  BaseData<any>, K extends T = T, Meta ex
 }
 
 
-const convertSnapshotContainerToStore = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertSnapshotContainerToStore = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   snapshotContainer: SnapshotContainer<T, K>
 ): SnapshotStore<Data, BaseData> => {
   return {
@@ -2016,16 +2138,22 @@ const convertSnapshotContainerToStore = <T extends  BaseData<any>, K extends T =
 };
 
 
-const convertToSnapshot = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertToSnapshot = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   id: string | number | undefined,
   snapshotId: string | null,
-  snapshotData: SnapshotData<T, K>,
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   category: Category | undefined,  categoryProperties: CategoryProperties | undefined,
   metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
   subscriberId: string,
   endpointCategory: string | number,
   storeProps: SnapshotStoreProps<T, K>,
-  snapshotConfigData: SnapshotConfig<T, K>,
+  snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscription: Subscription<T, K>,
   snapshotContainer?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
@@ -2052,7 +2180,13 @@ const convertToSnapshot = <T extends  BaseData<any>, K extends T = T, Meta exten
 
 
 
-function convertSnapshotMap <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function convertSnapshotMap <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   dataMap: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 ): Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   const convertedMap = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
@@ -2065,7 +2199,13 @@ function convertSnapshotMap <T extends  BaseData<any>, K extends T = T, Meta ext
   return convertedMap;
 }
 
-function isCoreSnapshot<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isCoreSnapshot<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   snapshot: any
 ): snapshot is CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return snapshot && Array.isArray(snapshot.children) && typeof snapshot.id === 'string';

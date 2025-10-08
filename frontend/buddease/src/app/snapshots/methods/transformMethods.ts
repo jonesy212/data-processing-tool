@@ -1,13 +1,13 @@
 // transformMethods.tsx
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { Subscriber } from "@/app/users/Subscriber";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
 import { Snapshots } from "@/app/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/Snapshot";
 import { SnapshotCoreBase } from '@/app/snapshots';
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshotstoreConfig";
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Subscriber } from "@/app/users/Subscriber";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
 
 // -------------------------------
 // SnapshotStore Cnfig with Core

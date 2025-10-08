@@ -1,25 +1,25 @@
 import { DayOfWeekProps } from "@/app/calendar/DayOfWeek";
 import { Month } from "@/app/calendar/Month";
 import { ScheduledData } from "@/app/components/calendar/ScheduledData";
-import { BaseData, Data } from '@/app/models/data/Data';
 import { Task } from '@/app/components/models/tasks/Task';
 import { Collaborator } from '@/app/components/models/teams/TeamMembers';
 import { NotificationType } from '@/app/context/context/NotificationContext';
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Content } from "@/app/models/content/AddContent";
 import ChecklistItem, { ChecklistItemProps } from "@/app/models/data/ChecklistItem";
 import { Comment } from "@/app/models/data/Comments";
+import { BaseData, Data } from '@/app/models/data/Data';
 import { NotificationPosition, PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { Phase } from "@/app/phases/Phase";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
-import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { CreateSnapshotsPayload, Payload } from "@/app/server/database/Payload";
 import { Callback, SnapshotConfig, SnapshotData, SnapshotItem, SnapshotStoreConfig, SnapshotWithCriteria, SubscriberCollection, TagsRecord } from "@/app/snapshots";
 import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
@@ -145,7 +145,13 @@ export interface Todo<
   updateUI?(): void;
 }
 
-export interface TodoManagerState<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+export interface TodoManagerState<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T> {
   entities: Record<string, Todo<T>>;
 }
 
@@ -411,7 +417,7 @@ class TodoImpl<
     ):Promise<Result<Snapshot<T, K, never>>> {
       throw new Error("Function not implemented.");
     },
-    setSnapshotSuccess: function (snapshotData: SnapshotData<T, K>, subscribers: ((data: Subscriber<T, K>) => void)[]): void {
+    setSnapshotSuccess: function (snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, subscribers: ((data: Subscriber<T, K>) => void)[]): void {
       throw new Error("Function not implemented.");
     },
     setSnapshotFailure: function (error: Error): void {
@@ -429,7 +435,7 @@ class TodoImpl<
     initSnapshot: function (
       snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
       snapshotId: string | number | null,
-      snapshotData: SnapshotData<T, K>,
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       snapshotConfig: SnapshotStoreConfig<T, K>,
@@ -553,7 +559,7 @@ class TodoImpl<
     handleSnapshotSuccess: function (snapshot: Snapshot<Data, Data> | null, snapshotId: string): void {
       throw new Error("Function not implemented.");
     },
-    getSnapshotId: function (key: string | SnapshotData<T, K>): unknown {
+    getSnapshotId: function (key: string | SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): unknown {
       throw new Error("Function not implemented.");
     },
     compareSnapshotState: function (arg0: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, state: any): unknown {
@@ -660,7 +666,7 @@ class TodoImpl<
       snapshotManager: SnapshotManager<T, K>, 
       payload: CreateSnapshotsPayload<T, K>, 
       callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null, 
-      snapshotDataConfig?: SnapshotConfig<T, K>[] | undefined, 
+      snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined, 
       category?: string | Category,
       categoryProperties?: string | CategoryProperties
     ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null {
@@ -714,7 +720,7 @@ class TodoImpl<
       category: symbol | string | Category | undefined, 
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T, K, Meta>,
+      snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
       event: Event,
       snapshotContainer?: T,
@@ -725,15 +731,15 @@ class TodoImpl<
     subscribeToSnapshots: function (
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotId: string,
-      snapshotData: SnapshotData<T, K>,
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       category: Category | undefined,      snapshotConfig: SnapshotStoreConfig<T, K>,
       callback: (
         snapshotStore: SnapshotStore<any, any>,
-        snapshots: SnapshotsArray<T, K, Meta>
+        snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
       ) => Subscriber<T, K> | null,
-      snapshots: SnapshotsArray<T, K, Meta>,
+      snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       unsubscribe?: UnsubscribeDetails
-    ) : SnapshotsArray<T, K, Meta> {
+    ) : SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
       throw new Error("Function not implemented.");
     },
 

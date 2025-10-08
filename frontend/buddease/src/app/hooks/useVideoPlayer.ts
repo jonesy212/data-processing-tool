@@ -1,8 +1,7 @@
 // app/features/video/hooks/useVideoPlayer.ts
-import { useState, useRef, useCallback, useEffect } from 'react';
-import { useNotification } from "@/app/context/NotificationContext";
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { useCallback, useRef, useState } from 'react';
 
 interface VideoPlayerState {
   isPlaying: boolean;

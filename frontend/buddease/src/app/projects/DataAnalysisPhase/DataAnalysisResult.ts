@@ -1,6 +1,6 @@
 // DataAnalysisResult.ts
 import { Phase } from '@/app/components/phases/Phase';
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { SnapshotStoreReference } from '@/app/snapshots/SnapshotStore';
 import { AllStatus } from "@/app/state/stores/DetailsListStore";

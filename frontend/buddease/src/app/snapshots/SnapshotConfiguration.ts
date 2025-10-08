@@ -21,7 +21,7 @@ interface SnapshotConfiguration<
   // Property for storing temporary data
   tempData?: TempData<T, K, Meta, ExcludedFields>; // Optional property to hold temporary data
   
-  initialBaseConfig: SnapshotConfig<T, K, Meta, ExcludedFields>;
+  initialBaseConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   // Load configuration method
   loadConfig(): void;
 

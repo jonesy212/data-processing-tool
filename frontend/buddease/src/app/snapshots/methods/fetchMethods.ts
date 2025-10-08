@@ -48,15 +48,15 @@ export const FetchMethods = {
     criteria: CriteriaType,
     snapshotData: (
       snapshotIds: string[],
-      subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>,
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshots: Snapshots<T, K, Meta, ExcludedFields>
     ) => Promise<{
-      subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>;
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       snapshots: Snapshots<T, K, Meta, ExcludedFields>;
     }>
   ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     const snapshotIds = this.getSnapshotIdsByCriteria(criteria);
-    const subscribers: SubscriberCollection<T, K, Meta, ExcludedFields> = this.getSubscribersByCriteria(criteria);
+    const subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = this.getSubscribersByCriteria(criteria);
     const snapshots: Snapshots<T, K, Meta, ExcludedFields> = this.getSnapshotsMapByCriteria(criteria);
 
     const { snapshots: fetchedSnapshots } = await snapshotData(snapshotIds, subscribers, snapshots);

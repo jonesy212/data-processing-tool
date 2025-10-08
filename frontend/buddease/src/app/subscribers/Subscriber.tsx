@@ -3,8 +3,8 @@ import apiNotificationsService from "@/app/api/NotificationsService";
 import * as snapshotApi from "@/app/api/SnapshotApi";
 import { addSnapshot } from "@/app/api/SnapshotApi";
 import { TriggerIncentivesParams } from "@/app/components/utils/applicationUtils";
-import { Attachment } from '@/app/documents/Attachment/attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import {
   SnapshotStoreOptions,
   convertSnapshotToContent
@@ -1011,7 +1011,7 @@ class Subscriber<
    *
    * @param data - The processed data.
    */
-  public getTriggerActions(eventType: string, eventData: any, date: Date, type: NotificationTypeEnum, data: T): Promise<void> {
+  public getTriggerActions(eventType: string, eventData: any, date: Date, type: NotificationType, data: T): Promise<void> {
     return this.triggerActions(data);
   }
 

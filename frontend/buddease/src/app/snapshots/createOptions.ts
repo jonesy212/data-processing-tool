@@ -68,22 +68,22 @@ function createOptions<
 	snapshotId: string;
 	category: CategoryProperties;
 	dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>>;
-	snapshotMethods?: SnapshotStoreMethod<T, K, Meta, ExcludedFields>[]; // Make this optional
+	snapshotMethods?: SnapshotStoreMethods<T, K, Meta, ExcludedFields>[]; // Make this optional
 	type?: string; // Optional, adjust as needed
 	snapshotConfig?: any; // Optional, adjust as needed
 	subscribeToSnapshots: (
     snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
     snapshotId: string,
-    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: symbol | string | Category | undefined,    
     snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 	callback: (
 		snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>, 
-		snapshots: SnapshotsArray<T, K, Meta>
+		snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 	) => Subscriber<T, K, Meta, ExcludedFields> | null,
-	snapshots: SnapshotsArray<T, K, Meta>,
+	snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     unsubscribe?: UnsubscribeDetails, 
-  ) => SnapshotsArray<T, K, Meta> | []
+  ) => SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | []
   
 	subscribeToSnapshot: (
 		snapshotId: string,
@@ -105,7 +105,7 @@ function createOptions<
 		snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 		type: string,
 		event: SnapshotEvent<T, K, Meta, ExcludedFields>,
-		snapshotConfig: SnapshotConfig<T, K, Meta, ExcludedFields>,
+		snapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 		additionalHeaders?: Record<string, string>
 	  ) => Promise<{ snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; categoryProperties?: CategoryProperties }>;
 	
@@ -135,11 +135,11 @@ function createOptions<
 		categoryProperties: CategoryProperties | undefined,
     	subscriberId: string | undefined,
 		delegate: SnapshotWithCriteria<T, K, Meta, ExcludedFields>[],
-		snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+		snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 		snapshot: (
 			id: string | number | undefined,
 			snapshotId: string | null,
-			snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+			snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 			category: symbol | string | Category | undefined,
 			categoryProperties: CategoryProperties,
 			callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields> | null) => void,
@@ -150,13 +150,13 @@ function createOptions<
 			subscriberId: string, // Add subscriberId here
 			endpointCategory: string | number,// Add endpointCategory here
 			storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
-			snapshotConfigData: SnapshotConfig<T, K, Meta, ExcludedFields>,
+			snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 			subscription: Subscription<T, K, Meta, ExcludedFields>,
 			snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 			snapshotContainer?: SnapshotContainerType<T, K, Meta, ExcludedFields>,
 		) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
 		data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-		events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>, // Added prop
+		events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>, // Added prop
 		dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[], // Added prop
 		newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Added prop
 		payload: ConfigureSnapshotStorePayload<T, K, Meta, ExcludedFields>, // Added prop
@@ -165,12 +165,12 @@ function createOptions<
 		storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
 		endpointCategory: string | number,
 		snapshotContainer: Promise<SnapshotContainer<T, K, Meta, ExcludedFields>>,
-	) => SnapshotConfig<T, K, Meta, ExcludedFields> 
+	) => SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
 	
 	initSnapshot: (
 		snapshot: SnapshotStore<T, K, Meta, ExcludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
 		snapshotId: string | null,
-		snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+		snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 		category: symbol | string | Category | undefined,
 		snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 		callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void
@@ -204,7 +204,7 @@ function createOptions<
 		callback?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
 		snapshotData?: SnapshotStore<T, K, Meta, ExcludedFields>,
 		snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
-	) => SnapshotConfig<T, K, Meta, ExcludedFields> | undefined,
+	) => SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
 
 	getDelegate: (
 		context: {
@@ -667,7 +667,7 @@ function createOptions<
 					data: K,
 					index: number
 				) => SnapshotsObject<T, K, Meta, ExcludedFields>
-			): Promise<SnapshotsArray<T, K, Meta>> => {
+			): Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
 				console.log("Mapping snapshots with category:", category, "timestamp:", timestamp, "ID:", id);
 
 				// Create a promise that will resolve with the mapped snapshots

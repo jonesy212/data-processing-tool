@@ -1,5 +1,5 @@
 import { StatusType } from "@/app/models/data/StatusType";
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { UnifiedMetadata } from '@/app/components/configs/database/MetaDataOptions';

@@ -20,7 +20,7 @@ function isDataStoreMethod<
   // Check if the value is an array of snapshot methods
   if (Array.isArray(value)) {
     return value.every(
-      (item) => typeof item === 'function' || isSnapshotStoreMethod<U, any, K>(item)
+      (item) => typeof item === 'function' || isSnapshotStoreMethods<U, any, K>(item)
     );
   }
 
@@ -29,7 +29,7 @@ function isDataStoreMethod<
     // Optionally check for required properties or structure
     // For example, if your DataStoreWithSnapshotMethods object must have certain keys or properties
     return Object.values(value).every(
-      (item) => typeof item === 'function' || isSnapshotStoreMethod<U, any, K>(item)
+      (item) => typeof item === 'function' || isSnapshotStoreMethods<U, any, K>(item)
     );
   }
 
@@ -38,7 +38,7 @@ function isDataStoreMethod<
 }
 
 // Example of a type guard for SnapshotStore methods (assuming you have this function)
-function isSnapshotStoreMethod<
+function isSnapshotStoreMethods<
   U extends BaseData,
   Meta extends StructuredMetadata<U, K>,
   K extends Data
@@ -50,9 +50,9 @@ function isSnapshotStoreMethod<
 
 
 // Example type guard for `SnapshotStoreMethod`
-function isSnapshotStoreMethod<U extends BaseData,   K extends Data>(
+function isSnapshotStoreMethods<U extends BaseData,   K extends Data>(
   value: unknown, K extends
-): value is SnapshotStoreMethod<U, K, Meta> {
+): value is SnapshotStoreMethods<U, K, Meta> {
   // Assuming SnapshotStoreMethod is a function or object with specific properties
   return typeof value === 'function' || (typeof value === 'object' && value !== null);
 }

@@ -1,16 +1,14 @@
 // SnapshotStoreProps.ts
-import { SnapshotEventBase } from '@/app/snapshots/SnapshpshotEvents';
 import { BaseEntityProperties, SharedIdentifiers, SharedSnapshotProperties } from '@/app/components/documents/RelatedProps';
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
-import { BaseData } from '@/app/models/data/Data';
 import { Meta } from '@/app/components/models/data/dataStoreMethods';
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { createBaseData, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { Data } from '@/app/models/data/Data';
+import { BaseData, Data } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { K, T } from '@/app/models/data/dataStoreMethods';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
@@ -31,6 +29,7 @@ import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { InitializedData, SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
+import { SnapshotEventBase } from '@/app/snapshots/SnapshpshotEvents';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { fetchSnapshotsForCategory } from '@/app/snapshots/fetchSnapshotsForCategory';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
@@ -865,7 +864,7 @@ const storeProps: SnapshotStoreProps<ExampleEntity,
       // Implement your logic here
       return {}; // or the appropriate Partial<DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
     },
-    // Array of SnapshotStoreMethod<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    // Array of SnapshotStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     snapshotMethods: [],
     handleSnapshotOperation: (
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -910,7 +909,7 @@ const storeProps: SnapshotStoreProps<ExampleEntity,
         const { snapshotManager, snapshotStore } = useSnapshotManager<T, K, Meta, ExcludedFields>(Number(storeId), storeProps);
 
 
-        // If all conditions are met, create a new snapshot instance using createSnapshotInstance
+        // If all conditions are met, create a new snapshot instance using createSnapshot
         const newSnapshot = createSnapshot<Data<BaseData<any>>, Data<BaseData<any>>>(
           snapshot.baseData,
           snapshot.baseMeta,

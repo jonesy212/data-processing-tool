@@ -4,16 +4,16 @@
 import axiosInstance from '@/app/api/csrfToken';
 import { endpoints } from "@/app/api/endpointConfigurations";
 import HeadersConfig from "@/app/api/headers/HeadersConfig";
-import FileImportData from '@/app/documents/FileImportData';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
-import { useNotification } from "@/app/context/NotificationContext";
+import { useNotification } from '@/app/context/NotificationContext';
+import { Attachment } from '@/app/documents/attachment/attachment';
+import FileImportData from '@/app/documents/FileImportData';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { Attachment } from '@/app/documents/Attachment/attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { NotificationType, NotificationTypeEnum } from "@/context/NotificationContext";
-import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import { NotificationType } from "@/context/NotificationContext";
 import { VersionData } from '@/versions/VersionData';
-import { handleApiError } from "./ApiLogs";
+import { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import { handleApiError } from '@/app/api/ApiLogs';
 
 
 const API_BASE_URL = endpoints.client;
@@ -29,23 +29,6 @@ export const createHeaders = (): typeof HeadersConfig => {
 };
 
 
-// Helper function to get message with fallback
-const getNotificationMessage = (key: keyof ClientNotificationMessages): string => {
-  const message = NOTIFICATION_MESSAGES.Client[key as keyof typeof NOTIFICATION_MESSAGES.Client];
-  if (message) return message;
-  
-  // Fallback messages for any missing ones
-  const fallbackMessages: Partial<ClientNotificationMessages> = {
-    CONNECT_WITH_TENANT_SUCCESS: "Successfully connected with tenant",
-    CONNECT_WITH_TENANT_ERROR: "Failed to connect with tenant",
-    CREATE_FILE_VERSION_SUCCESS: "File version created successfully",
-    CREATE_FILE_VERSION_ERROR: "Failed to create file version",
-    // Add fallbacks for any other missing messages
-  };
-  
-  return fallbackMessages[key] || `${key} message not configured`;
-};
-
 
 // Then use it in your clientNotificationMessages
 interface ClientNotificationMessages {
@@ -54,48 +37,60 @@ interface ClientNotificationMessages {
   FETCH_CLIENT_DETAILS_ERROR: string;
   UPDATE_CLIENT_DETAILS_SUCCESS: string;
   UPDATE_CLIENT_DETAILS_ERROR: string;
+  REMOVE_CALENDAR_EVENT_SUCCESS: string;
   REMOVE_CALENDAR_EVENT_ERROR: string;
   GENERIC_GET_ERROR: string;
 
-  // New success messages needed
+  // Tenant and communication messages
   CONNECT_WITH_TENANT_SUCCESS: string;
+  CONNECT_WITH_TENANT_ERROR: string;
   SEND_MESSAGE_TO_TENANT_SUCCESS: string;
+  SEND_MESSAGE_TO_TENANT_ERROR: string;
   LIST_CONNECTED_TENANTS_SUCCESS: string;
+  LIST_CONNECTED_TENANTS_ERROR: string;
+
+  // Task and project messages
   LIST_MESSAGES_SUCCESS: string;
+  LIST_MESSAGES_ERROR: string;
   CREATE_TASK_SUCCESS: string;
-  REMOVE_CALENDAR_EVENT_SUCCESS: string;
+  CREATE_TASK_ERROR: string;
   LIST_TASKS_SUCCESS: string;
+  LIST_TASKS_ERROR: string;
   SUBMIT_PROJECT_PROPOSAL_SUCCESS: string;
+  SUBMIT_PROJECT_PROPOSAL_ERROR: string;
   PARTICIPATE_IN_COMMUNITY_CHALLENGES_SUCCESS: string;
+  PARTICIPATE_IN_COMMUNITY_CHALLENGES_ERROR: string;
+
+  // Rewards and files
   LIST_REWARDS_SUCCESS: string;
+  LIST_REWARDS_ERROR: string;
   LIST_FILES_SUCCESS: string;
+  LIST_FILES_ERROR: string;
   GET_FILE_CONTENT_SUCCESS: string;
+  GET_FILE_CONTENT_ERROR: string;
   START_COLLABORATIVE_EDIT_SUCCESS: string;
+  START_COLLABORATIVE_EDIT_ERROR: string;
 
-
+  // File operations
   CREATE_FILE_VERSION_SUCCESS: string;
-  RECEIVE_FILE_UPDATE_SUCCESS: string;
-  FETCH_FILE_VERSIONS_SUCCESS: string;
-  SHARE_FILE_SUCCESS: string;
-  REQUEST_ACCESS_TO_FILE_SUCCESS: string;
-  EXPORT_FILE_SUCCESS: string;
-  ARCHIVE_FILE_SUCCESS: string;
-  DETERMINE_FILE_TYPE_SUCCESS: string;
-  IMPORT_FILE_SUCCESS: string;
-  
-  // File operation error messages (you may already have some of these)
   CREATE_FILE_VERSION_ERROR: string;
+  RECEIVE_FILE_UPDATE_SUCCESS: string;
   RECEIVE_FILE_UPDATE_ERROR: string;
+  FETCH_FILE_VERSIONS_SUCCESS: string;
   FETCH_FILE_VERSIONS_ERROR: string;
+  SHARE_FILE_SUCCESS: string;
   SHARE_FILE_ERROR: string;
+  REQUEST_ACCESS_TO_FILE_SUCCESS: string;
   REQUEST_ACCESS_TO_FILE_ERROR: string;
+  EXPORT_FILE_SUCCESS: string;
   EXPORT_FILE_ERROR: string;
+  ARCHIVE_FILE_SUCCESS: string;
   ARCHIVE_FILE_ERROR: string;
+  DETERMINE_FILE_TYPE_SUCCESS: string;
   DETERMINE_FILE_TYPE_ERROR: string;
+  IMPORT_FILE_SUCCESS: string;
   IMPORT_FILE_ERROR: string;
-  // Add other success messages as needed
 }
-
 
 // Helper function to get message with fallback
 const getNotificationMessage = (key: keyof ClientNotificationMessages): string => {
@@ -270,22 +265,21 @@ class ClientApiService<TMessages extends Record<string, string>> {
     errorMessageId: keyof TMessages, // Use the enum key
     notificationData: any = null
   ): Promise<AxiosResponse> {
-    try {
+      try {
       const response: AxiosResponse = await request();
       
       if (successMessageId) {
-        const successMessage = clientNotificationMessages[successMessageId];
-        this.notify(successMessageId, successMessage, notificationData, new Date(), "success");
+        const successMessage = this.notificationMessages[successMessageId];
+        this.notify(String(successMessageId), successMessage, notificationData, new Date(), "success");
       }
       
       return response;
     } catch (error: any) {
       handleApiError(error as AxiosError<unknown>, errorMessage);
 
-      // ✅ FIXED: Use the actual error message from your messages object
       if (errorMessageId) {
-        const errorMessageText = clientNotificationMessages[errorMessageId];
-        this.notify(errorMessageId, errorMessageText, notificationData, new Date(), "error");
+        const errorMessageText = this.notificationMessages[errorMessageId];
+        this.notify(String(errorMessageId), errorMessageText, notificationData, new Date(), "error");
       }
       throw error;
     }
@@ -302,6 +296,52 @@ class ClientApiService<TMessages extends Record<string, string>> {
       "GET request failed",
       successMessageId || "GENERIC_GET_ERROR" as keyof TMessages,
       errorMessageId || "GENERIC_GET_ERROR" as keyof TMessages
+    );
+  }
+
+
+  async post<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+    successMessageId?: keyof TMessages,
+    errorMessageId?: keyof TMessages
+  ): Promise<AxiosResponse<T>> {
+    return this.requestHandler(
+      () => axiosInstance.post<T>(url, data, config),
+      "POST request failed",
+      successMessageId || "GENERIC_POST_ERROR" as keyof TMessages,
+      errorMessageId || "GENERIC_POST_ERROR" as keyof TMessages
+    );
+  }
+
+  // You might also want to add other HTTP methods for completeness
+  async put<T = any>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+    successMessageId?: keyof TMessages,
+    errorMessageId?: keyof TMessages
+  ): Promise<AxiosResponse<T>> {
+    return this.requestHandler(
+      () => axiosInstance.put<T>(url, data, config),
+      "PUT request failed",
+      successMessageId || "GENERIC_PUT_ERROR" as keyof TMessages,
+      errorMessageId || "GENERIC_PUT_ERROR" as keyof TMessages
+    );
+  }
+
+  async delete<T = any>(
+    url: string,
+    config?: AxiosRequestConfig,
+    successMessageId?: keyof TMessages,
+    errorMessageId?: keyof TMessages
+  ): Promise<AxiosResponse<T>> {
+    return this.requestHandler(
+      () => axiosInstance.delete<T>(url, config),
+      "DELETE request failed",
+      successMessageId || "GENERIC_DELETE_ERROR" as keyof TMessages,
+      errorMessageId || "GENERIC_DELETE_ERROR" as keyof TMessages
     );
   }
 
@@ -606,9 +646,7 @@ const updateCalendarEvent = async (
 };
 
 
-
-
-const internalApiService = new ClientApiService(useNotification, updateCalendarEvent, getFileContent);
+const internalApiService = new ClientApiService(useNotification, clientNotificationMessages, updateCalendarEvent, getFileContent);
 
 export default internalApiService;
 export { clientNotificationMessages };

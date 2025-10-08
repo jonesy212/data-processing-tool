@@ -1,5 +1,4 @@
 // ApiData.ts
-// ApiData.ts
 import { fetchUserIdsFromDatabase } from "@/app/api/ApiDatabase";
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
@@ -11,8 +10,8 @@ import { addLog } from '@/app/state/redux/slices/LogSlice';
 import HighlightEvent from '@/components/documents/screenFunctionality/HighlightEvent';
 import { YourResponseType } from '@/components/typings/types';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { endpoints } from '@/app/endpointConfigurations';
-import headersConfig from '@/headers/HeadersConfig';
+import { endpoints } from '@/app/api/endpointConfigurations';
+import headersConfig from '@/api/headers/HeadersConfig';
 import { Version } from '@/versions/Version';
 import { AxiosError, AxiosResponse } from 'axios';
 import internalApiService from "./ApiClient"; // ✅ ADD THIS
@@ -42,6 +41,26 @@ const apiNotificationMessages: DataNotificationMessages = {
   FETCH_DEX_DATA_ERROR: NOTIFICATION_MESSAGES.DEX.FETCH_DEX_DATA_ERROR,
   FETCH_EXCHANGE_DATA_ERROR: NOTIFICATION_MESSAGES.DEX.FETCH_EXCHANGE_DATA_ERROR,
   GENERATE_VERSION_ERROR_ID: NOTIFICATION_MESSAGES.Version.GENERATE_VERSION_ERROR_ID
+};
+
+
+const handleApiErrorAndNotify = <T extends Record<string, string>>(
+  error: AxiosError<unknown>,
+  defaultMessage: string,
+  errorId: keyof T,
+  notificationMessages: T,
+  serviceType: string = "Api"
+) => {
+  const message = notificationMessages[errorId] || defaultMessage;
+  console.error(`Error: ${message}`, error);
+  
+  useNotification().notify(
+    String(errorId),
+    message,
+    null,
+    new Date(),
+    `${serviceType}Error` as NotificationType
+  );
 };
 
 // ✅ NEW: Create DataApiService class following CalendarApiService pattern

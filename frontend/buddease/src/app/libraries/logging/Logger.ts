@@ -608,7 +608,7 @@ class AnimationLogger extends Logger {
   // Using generateID with default K inferred as T
   static generateTrackerID(
     name: string,
-    type: NotificationTypeEnum,
+    type: NotificationType,
     id?: string
   ): string {
     return UniqueIDGenerator.generateID("TRK", name, type, id, NotificationTypeEnum.GeneratedID);
@@ -1125,7 +1125,7 @@ class TaskLogger<
   static logTaskCompleted(
     existingTaskId: string,
     taskName: string,
-    type: NotificationTypeEnum,
+    type: NotificationType,
     notify: (message: string, type: string, date: Date, id: string) => void,
   ) {
     // Generate or retrieve the task ID

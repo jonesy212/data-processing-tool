@@ -1,14 +1,14 @@
 // DocumentPath.ts
-import { Content } from "@/app/models/content/AddContent";
-import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CommonData } from "@/app/models/CommonData";
+import { Content } from "@/app/models/content/AddContent";
 import { DocumentBase } from "@/app/state/stores/DocumentStore";
+import { DatasetModel } from "@/app/todos/tasks/DataSetModel";
 import AccessHistory from "@/app/versions/AccessHistory";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { AppStructurePermissions } from "@/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 
 interface DocumentPath<

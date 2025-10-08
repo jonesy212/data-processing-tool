@@ -11,6 +11,7 @@ import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { EventAttendance } from '@/calendar/AttendancePrediction';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "./BaseConfig";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 interface SharedSnapshotEvent<
   T extends BaseDataEntity = BaseDataEntity,
@@ -265,7 +266,7 @@ function handleEvent<T extends BaseDataEntity,
   coreSnapshot: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscribers: SubscriberCollection<T, K>,
-  snapshotData: SnapshotData<T, K>,
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotId?: string | number | null,
 ): void {
   switch (event.type) {

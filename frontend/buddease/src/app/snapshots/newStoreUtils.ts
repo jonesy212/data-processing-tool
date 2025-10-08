@@ -13,7 +13,7 @@ import { ExcludedFields } from '@/routing/Fields';
 import SnapshotManagerOptions from "./SnapshotManagerOptions";
 import SnapshotStore from "./SnapshotStore";
 
-const snapConfig: SnapshotConfig<T, K, Meta, ExcludedFields> | undefined = {/* your snapshot configuration logic here */}
+const snapConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined = {/* your snapshot configuration logic here */}
 
 // newStoreUtils.ts
 export const createSnapshotStores = async <
@@ -93,21 +93,21 @@ export const createSnapshotStores = async <
           subscribeToSnapshots: async (
             snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
             snapshotId: string,
-            snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+            snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
             category: Category | undefined,
             snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
             callback: (
               snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
-              snapshots: SnapshotsArray<T, K, Meta>
+              snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
             ) => Subscriber<T, K, Meta, ExcludedFields> | null,
-            snapshots: SnapshotsArray<T, K, Meta>,
+            snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
             unsubscribe?: UnsubscribeDetails,
-          ): Promise<SnapshotsArray<T, K, Meta>> => {
+          ): Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
             // Your subscription logic here
             console.log('Subscribing to snapshots:', snapshotId);
             
             // Simulate fetching snapshots
-            const mockSnapshots: SnapshotsArray<T, K, Meta> = [
+            const mockSnapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [
               {
                 id: snapshotId,
                 data: new Map().set('mock-key', {

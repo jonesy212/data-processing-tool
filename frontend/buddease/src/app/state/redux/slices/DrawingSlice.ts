@@ -134,7 +134,13 @@ type TrackerDrawingElement = TrackerProps & DrawingElement;
 
 
 // Define interface for drawing state
-interface DrawingState<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface DrawingState<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T> {
   id: string;
   selectedDrawingId: number | null;
   isDrawing: boolean;

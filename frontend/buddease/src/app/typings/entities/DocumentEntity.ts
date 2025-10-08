@@ -1,8 +1,8 @@
 // DocumentEntity.ts
 // DocumentEntity.types.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { DocumentObject } from '@/app/documents/DocumentObject';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Core Document type definitions
 interface DocumentEntity extends BaseDataEntity {
@@ -224,51 +224,30 @@ const emptyDocumentData: AppDocumentData = createDefaultDocumentData();
 export type {
   // Core App types
   AppDocument,
-  AppDocumentData,
-  AppDocumentSnapshot,
+  AppDocumentData, AppDocumentRealtimeDataItem, AppDocumentSnapshot,
   AppDocumentSnapshotData,
-  AppDocumentSnapshotStore,
-  AppDocumentRealtimeDataItem,
-  AppDocumentUnifiedMetadata,
-  AppDocumentStructuredMetadata,
-  
-  // Configuration types
-  DocumentSnapshotStoreConfig,
-  DocumentSnapshotsArray,
-  DocumentParams,
-  DocumentFrontendStructure,
-  
-  // Document variations
-  PublicDocument,
-  PrivateDocument,
-  DocumentSummary,
-  
-  // State types
-  DocumentSession,
-  DocumentContext,
-  
-  // Utility types
-  DocumentFilterOptions,
-  DocumentSortOptions,
-  DocumentPermissions,
-  
-  // Versioning types
-  DocumentVersion,
-  DocumentVersionHistory,
-  
+  AppDocumentSnapshotStore, AppDocumentStructuredMetadata, AppDocumentUnifiedMetadata,
   // Collaboration types
   DocumentCollaborator,
-  DocumentComment
+  DocumentComment, DocumentContext,
+
+  // Utility types
+  DocumentFilterOptions, DocumentFrontendStructure, DocumentParams, DocumentPermissions,
+  // State types
+  DocumentSession, DocumentSnapshotsArray,
+  // Configuration types
+  DocumentSnapshotStoreConfig, DocumentSortOptions, DocumentSummary,
+  // Versioning types
+  DocumentVersion,
+  DocumentVersionHistory, PrivateDocument,
+  // Document variations
+  PublicDocument
 };
 
 
 
 
-export {
-  createDefaultDocument,
-  emptyDocument,
-createDefaultDocumentData,
-  createDocumentVersion,
-  incrementVersion,
-  emptyDocumentData
-};
+  export {
+    createDefaultDocument, createDefaultDocumentData,
+    createDocumentVersion, emptyDocument, emptyDocumentData, incrementVersion
+  };

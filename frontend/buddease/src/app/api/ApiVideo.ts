@@ -5,7 +5,7 @@ import { endpoints } from "@/app/api/endpointConfigurations";
 import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { VideoData } from "@/app/components/video/Video";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { ExcludedFields } from '@/app/routing/Fields';
 import useVideoStore, { Video } from "@/app/state/stores/VideoStore";

@@ -1,12 +1,11 @@
 // TaskEntity.ts
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
-import { AppMetadata } from "@/config/AppMetadata";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseData } from '@/app/models/data/Data';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { Attachment } from "@/app/documents/Attachment/attachment";
 import { AllStatus, PriorityTypeEnum } from "@/app/models/data/StatusType";
+import { AppMetadata } from "@/config/AppMetadata";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 
@@ -107,14 +106,9 @@ type TaskBaseParams = {
   IncludedFields: TaskIncludedFields;
 };
 
-export type { 
-  TaskCoreData,
-  TaskEntity,
-  TaskK,
-  TaskMeta,
-  TaskAttachment,
-  TaskExcludedFields,
-  TaskIncludedFields,
-  TaskBaseParams,
-  TaskStructuredMetadata
+export type {
+  TaskAttachment, TaskBaseParams, TaskCoreData,
+  TaskEntity, TaskExcludedFields,
+  TaskIncludedFields, TaskK,
+  TaskMeta, TaskStructuredMetadata
 };

@@ -1,7 +1,7 @@
 // SnapshotOptions.tsx
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/app/confgs/BaseConfig';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData } from '@/app/models/data/Data';
 import { Snapshot } from '@/app/snapshots/Snapshot';

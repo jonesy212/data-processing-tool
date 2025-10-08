@@ -2,7 +2,7 @@
 // Function to parse and process the received data
 import ProjectDetails from '@/app/projects/Project';
 import useSearchPagination from '@/app/hooks/commHooks/useSearchPagination';
-import { YourResponseType } from '@/typings/types';
+import { YourResponseType, YourSettingsResponseType } from "@/app/typings/responseTypes";
 
 // Define a separate interface for cryptocurrency-specific data
 export interface CryptoData {

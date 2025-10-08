@@ -20,7 +20,7 @@ function createSnapshotStore <
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >(
   id: string,
-  snapshotData: SnapshotData<T, K>,
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   category?:  Category,
   callback?: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
   snapshotDataConfig?: SnapshotStoreConfig<T, K> 
@@ -67,7 +67,7 @@ function createSnapshotStore <
       snapshotData: SnapshotData<T, K, Meta>,
       category: Category | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T, K, Meta>,
+      snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
       event: string | SnapshotEvents<T, K>,
       subscribers: SubscriberCollection<T, K>,
@@ -96,12 +96,12 @@ function createSnapshotStore <
           // Step 4: Perform an action based on the type (e.g., "restore", "revert")
           switch (type) {
             case 'restore':
-              if (!snapshots.includes(snapshotData as unknown as Snapshot<T, K, Meta>)) {
-                snapshots.push(snapshotData as unknown as Snapshot<T, K, Meta>);
+              if (!snapshots.includes(snapshotData as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)) {
+                snapshots.push(snapshotData as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
               }
               break;
             case 'revert':
-              const index = snapshots.indexOf(snapshotData as unknown as Snapshot<T, K, Meta>);
+              const index = snapshots.indexOf(snapshotData as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
               if (index !== -1) {
                 snapshots.splice(index, 1);
               }

@@ -1,23 +1,22 @@
 // app/configs/BackendStructure.ts
-import Logger from "@/app/libraries/logging/Logger";
 import { SecureField, SecureMetadata } from '@/app/components/security/SecureField';
 import SecureFieldManager from '@/app/components/security/SecureFieldManager';
-import SecurityAudit from "@/server/security/SecurityAudit";
+import { NotificationTypeEnum } from "@/app/context/NotificationContext";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { hashString } from "@/app/generators/HashUtils";
+import Logger from "@/app/libraries/logging/Logger";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { VersionHistory } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { hashString } from "@/app/generators/HashUtils";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { sanitizeDatabaseSchema } from '@/server/database/sanitizeDatabase';
+import SecurityAudit from "@/server/security/SecurityAudit";
 import * as fs from "fs/promises"; // Use promise-based fs module
 import * as path from "path";
 import getAppPath from "./appPath";
 import { AppStructureItem } from "./AppStructure";
 import { frontend } from "./FrontendStructure";
-import { Attachment } from "@/app/documents/Attachment/attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 
 interface StructuredBackend {

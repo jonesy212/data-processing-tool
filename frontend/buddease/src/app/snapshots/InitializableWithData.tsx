@@ -11,7 +11,7 @@ interface InitializableWithData<
   addSnapshot(
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
-    subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>
+    subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined>;
 }
 

@@ -3,22 +3,22 @@ import { CategoryProperties } from "@/app/app/pages/personas/ScenarioBuilder";
 import { ContentItem } from "@/app/cards/DummyCardLoader";
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { Task } from '@/app/components/models/tasks/Task';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { NotificationType } from '@/app/context/NotificationContext';
 import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { CombinedEvents } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Content } from "@/app/models/content/AddContent";
+import { SnapshotIdentity } from '@/app/snapshots/SnapshpshotIdentity';
 import { ChatRoom } from '@/calendar/CalendarSlice';
 import { Sender } from '@/communications/chat/Communication';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { SnapshotIdentity } from '@/app/snapshots/SnapshpshotIdentity';
 import { SnapshotBase, SnapshotData } from ".";
 
 import { Label } from "@/app/branding/BrandingSettings";
 import { SharedIdentifiers } from '@/app/components/documents/RelatedProps';
 import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { SharedTimestamps } from '@/app/models/CommonData';
 import { ProjectPhaseTypeEnum, StatusType } from "@/app/models/data/StatusType";
@@ -164,10 +164,10 @@ phase?: PhaseDefault | null;
     savedState: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: Category | undefined,
     callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T, K, Meta>,
+    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     event: string | SnapshotEvents<T, K, Meta, ExcludedFields>,
-    subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>,
+    subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: T,
     snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| undefined
   ) => void;
@@ -179,7 +179,7 @@ phase?: PhaseDefault | null;
     category: Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T, K, Meta>,
+    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     event: SnapshotEvents<T, K, Meta, ExcludedFields>,
     snapshotContainer?: T | undefined,
@@ -189,7 +189,7 @@ phase?: PhaseDefault | null;
   getItem?: (key: T) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined>;
   meta?: StructuredMetadata<T, K>;
   mappedSnapshot?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | {};
-  snapshotMethods?: SnapshotStoreMethod<T, K, Meta, ExcludedFields>[];
+  snapshotMethods?: SnapshotStoreMethods<T, K, Meta, ExcludedFields>[];
   getSnapshotsBySubscriber?: (subscriber: string) => Promise<T[]>;
 
   // Additional properties and methods from SnapshotEvents

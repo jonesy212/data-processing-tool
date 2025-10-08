@@ -1,5 +1,5 @@
 // apiTypes.ts
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { ProjectData, ProjectPriority, ProjectStatus } from '@/app/typings/projectTypes';
 import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';

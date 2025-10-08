@@ -1,6 +1,6 @@
 // createMeta.ts
 import { BaseData } from '@/app/models/data/Data';
-import { UserConfigData } from "@/app/components/models/data/dataStoreMethods";
+import { UserConfigData } from '@/app/components/models/data/dataStoreMethods';
 import { StructuredMetadata } from "@/app/StructuredMetadata";
 
 import { useSecurityAudit } from "@/app/hooks/useSecurityAudit";

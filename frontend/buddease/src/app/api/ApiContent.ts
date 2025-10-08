@@ -4,13 +4,13 @@ import { NotificationType, NotificationTypeEnum, useNotification } from "@/app/c
 
 import axiosInstance from "@/app/api/csrfToken";
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import { YourResponseType } from "@/app/components/typings/types";
+import { YourResponseType } from '@/app/components/typings/responseTypes'
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from "axios";
 import { ContentState } from "draft-js";
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { handleApiError } from "./ApiLogs";
+import { handleApiError } from '@/app/api/ApiLogs';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.content
@@ -239,7 +239,13 @@ const createContentStateFromText = (text: string): any => {
 };
 
  
-const getMetadataForContent = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const getMetadataForContent = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   contentId: string,
   contentState: ContentState // Include contentState in the function parameters
 ): Promise<StructuredMetadata<T, K>> => {

@@ -1,17 +1,16 @@
 import * as apiFile from '@/api/ApiFiles';
 import SecurityAPI from '@/app/api/SecurityAPI';
+import { Attachment, FileType } from "@/app/documents/attachment/attachment";
+import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { Content } from '@/app/models/content/AddContent';
 import { SecuritySettings } from '@/app/settings/SecuritySettings';
 import { Permission } from "@/app/users/Permission";
-import { FileType } from "@/app/documents/Attachment/attachment";
-import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { VersionData } from '@/app/versions/VersionData';
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { DataVersions } from '@/configs/DataVersionsConfig';
 import getAppPath from "./appPath";
-import { Attachment } from "@/app/documents/Attachment/attachment";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 const userId = useSecureUserId()
 

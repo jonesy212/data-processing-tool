@@ -16,14 +16,13 @@ import { snapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SharedRelationshipData } from '@/app/models/data/Data';
 import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import FrontendStructure, { frontendStructure } from "@/config/appStructure/FrontendStructure";
 import { sharedMetadata } from "@/config/metadata/MetadataHooks";
-import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import BackendStructure, { backendStructure } from '@/server/database/BackendStructure';
 import { fetchUserAreaDimensions } from "@/server/database/MetaDataOptions";
 
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import DocumentPermissions from "@/app/documents/DocumentPermissions";
 import { createBaseData } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
@@ -37,9 +36,10 @@ import { data, TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { HistoryEntry } from '@/app/state/stores/HistoryStore';
 import { User } from "@/app/users/User";
 import { fluenceApiKey } from "@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
+import getAppPath from "@/config/appStructure/appPath";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { dataVersions } from "@/config/DocumentBuilderConfig";
 import { MetadataEntriesType, StructuredMetadata } from "@/config/StructuredMetadata";
-import getAppPath from "@/config/appStructure/appPath";
 import { BumpVersionOptions } from "./BumpVersionOptions";
 import { VersionData, VersionHistory } from "./VersionData";
 

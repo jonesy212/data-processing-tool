@@ -15,10 +15,7 @@ import {
 } from "@/app/context/NotificationContext";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentActions } from "@/app/tokens/DocumentActions";
-import {
-    DocumentStatusEnum,
-    DocumentTypeEnum,
-} from "@/app/typnigs/documentTypes";
+import {  DocumentStatusEnum, DocumentTypeEnum } from "@/app/typings/documentTypes";
 import { DatabaseConfig } from "@/config/DatabaseTypes";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { AxiosError } from "axios";

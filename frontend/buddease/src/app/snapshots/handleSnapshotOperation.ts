@@ -8,6 +8,7 @@ import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 
 // First, extract the sorting logic to a shared utility function
@@ -25,9 +26,9 @@ const sortByTimestamp = <T extends { timestamp?: string | Date }>(
 function handleMapOperation<
   T extends BaseDataEntity, 
   K extends T = T, 
- Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(
+>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   data: InitializedData<T, K, Meta, ExcludedFields> | undefined,
   operationType: SnapshotOperationType

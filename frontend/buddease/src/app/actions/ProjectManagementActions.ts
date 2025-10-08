@@ -3,14 +3,18 @@ import { BaseData, Data } from '@/app/models/data/Data';
 import { createAction } from "@reduxjs/toolkit";
 import { CustomSnapshotData } from '@/app/snapshots/SnapshotData';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 
 export const ProjectManagementActions = <
-  T extends  BaseData<any> = BaseData<any, any>, 
+  T extends BaseDataEntity,
   K extends T = T,
-  ExcludedFields extends T = never,
-  S extends CustomSnapshotData<T, K> = CustomSnapshotData<T, K>,  
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T,
+  S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 >() => ({
   // Tenant-related actions
   addTenantToProject: createAction<{ projectId: number, tenantId: number }>("addTenantToProject"),

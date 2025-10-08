@@ -1,6 +1,6 @@
 import { EventActions } from '@/app/actions/EventActions';
 import { NotificationActions } from "@/app/actions/NotificationActions";
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { LogData } from "@/app/components/models/LogData";
 import {
     NotificationType,

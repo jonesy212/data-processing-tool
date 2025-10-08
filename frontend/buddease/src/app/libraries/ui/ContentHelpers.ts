@@ -27,6 +27,6 @@ export function isTodo<
   
 export function isMap<
   T extends  BaseData<any>,
-  K extends T = T>(data: SnapshotData<T, K>): data is SnapshotData<T, K> & Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+  K extends T = T>(data: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): data is SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     return data instanceof Map;
   }

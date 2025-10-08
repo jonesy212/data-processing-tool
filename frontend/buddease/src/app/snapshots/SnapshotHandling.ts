@@ -33,7 +33,7 @@ interface SnapshotHandling<T extends BaseDataEntity, K extends T = T, Meta exten
           data: T,
           index: number
         ) => SnapshotsObject<T, K, Meta, ExcludedFields>
-      ): Promise<SnapshotsArray<T, K, Meta>>    
+      ): Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>    
 
       createSnapshotStore: (
         id: string,
@@ -59,7 +59,7 @@ interface SnapshotHandling<T extends BaseDataEntity, K extends T = T, Meta exten
   initSnapshot: (
     snapshot: SnapshotStore<T, K, Meta, ExcludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     snapshotId: string | null,
-    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>, // Ensure snapshotData matches SnapshotStore<T, K, Meta, ExcludedFields>
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Ensure snapshotData matches SnapshotStore<T, K, Meta, ExcludedFields>
     category: Category | undefined,    snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Use K instead of T for snapshotConfig
     callback: (snapshotStore: SnapshotStore<any, any>) => void
   ) => void;

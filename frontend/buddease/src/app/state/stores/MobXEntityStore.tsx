@@ -11,7 +11,7 @@ import { NotificationTypeEnum } from '@/app/context/NotificationContext';
 import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
 import { DocumentSize } from "@/app/models/data/StatusType";
-import { AlignmentOptions } from '@/redux/slices/toolbarSlice';
+import { AlignmentOptions } from '@/app/state/redux/slices/toolbarSlice';
 import { DocumentTypeEnum } from '@/server/ServerDocumentGenerator';
 import * as crypto from 'crypto'; // Correct crypto module for Node.js
 import * as docx from 'docx';

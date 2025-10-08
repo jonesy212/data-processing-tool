@@ -33,8 +33,8 @@ function handleSnapshotEvent<T extends BaseDataEntity, K extends T = T>(
   type: string,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   eventDate: Date,
-  snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
-  subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>,
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotId?: string | number | null,
 ): void {
   if (!coreSnapshot.events) {

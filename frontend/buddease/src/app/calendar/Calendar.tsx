@@ -12,7 +12,7 @@ import { CryptoHolding } from "@/app/components/crypto/CryptoHolding";
 import CryptoTransaction from "@/app/components/crypto/CryptoTransaction";
 import { ContentPost } from "@/app/components/models/content/ContentPost";
 import { BaseData } from '@/app/models/data/Data';
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { Task } from "@/app/components/models/tasks/Task";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { Project } from "@/app/projects/Project";
@@ -102,7 +102,13 @@ interface CalendarProps<T extends BaseData<any>, K extends T = T, Meta extends S
   onDateSelect: (date: Date) => void;
 }
 
-const Calendar = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>({
+const Calendar = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>({
   view,
   container,
   speed,

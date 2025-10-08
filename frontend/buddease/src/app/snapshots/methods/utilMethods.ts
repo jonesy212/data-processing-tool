@@ -2,7 +2,8 @@ import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { Snapshot } from "@/app/types"; // adjust path to where Snapshot<T,K> lives
 import { convertEventsToRecord } from '@/app/typings/convertSnapshotEvents';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
@@ -15,10 +16,13 @@ import { SnapshotUnion, SnapshotsArray } from '@/LocalStorageSnapshotStore';
 
 
 export const UtilMethods = {
-  deepCompare: function <T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  deepCompare: function <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
     objA: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     objB: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -40,10 +44,13 @@ export const UtilMethods = {
   },
 
   shallowCompare: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
       objA: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       objB: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ): boolean {
@@ -54,10 +61,12 @@ export const UtilMethods = {
    * Compare two full snapshots and return differences + version info
    */
   compareSnapshots: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
     snap1: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snap2: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -98,10 +107,12 @@ export const UtilMethods = {
    * Compare snapshot items only by specific keys
    */
   compareSnapshotItems: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
     snap1: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snap2: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -137,21 +148,25 @@ export const UtilMethods = {
   },
 
   getEventsAsRecord: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(this: SnapshotStore<T, K, Meta, ExcludedFields>): Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]> {
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     return convertEventsToRecord(this.events);
   },
 
  getDataStoreMap: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(this: SnapshotStore<T, K, Meta, ExcludedFields>): Promise<Map<string, DataStore<T, K, Meta, ExcludedFields>>> {
-    const dataStoreMap = new Map<string, DataStore<T, K, Meta, ExcludedFields>>();
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<Map<string, DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
+    const dataStoreMap = new Map<string, DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
 
     try {
       for (const store of this.getDataStores()) {
@@ -174,10 +189,12 @@ export const UtilMethods = {
    * Assign a prefix based on category
    */
   determinePrefix: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined,
     category: string
@@ -215,11 +232,13 @@ export const UtilMethods = {
   },
 
   determineCategory: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(input: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, ExcludedFields> | string): string {
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  >(input: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string): string {
     if (typeof input === 'string') {
       return input; // Already a category string
     }
@@ -244,10 +263,12 @@ export const UtilMethods = {
 
   // utilMethods.ts
   getAllKeys: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
     storeId: number,
     snapshotId: string,
@@ -256,7 +277,7 @@ export const UtilMethods = {
     snapshot: Snapshot<SnapshotUnion<T, K, Meta>, T> | null,
     timestamp: string | number | Date | undefined,
     type: string,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: number,
     snapshotStore: SnapshotStore<SnapshotUnion<T, K, Meta>, T, Meta, ExcludedFields>,
     data: T
@@ -293,12 +314,14 @@ export const UtilMethods = {
   },
 
   getAllValues: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(): SnapshotsArray<T, K, Meta> {
-    const values: SnapshotsArray<T, K, Meta> = [];
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  >(): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    const values: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [];
 
     // This would typically be implemented to return all snapshot values
     // For now, returning empty array as placeholder
@@ -306,10 +329,12 @@ export const UtilMethods = {
   },
 
   getAllItems: async function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> {
     try {
       const items: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
@@ -336,10 +361,12 @@ export const UtilMethods = {
   },
 
   getSnapshotEntries: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
     snapshotId: string
   ): Map<string, T> | undefined {
@@ -370,10 +397,12 @@ export const UtilMethods = {
   },
 
 getAllSnapshotEntries: function <
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(): Map<string, T>[] {
     const allEntries: Map<string, T>[] = [];
 

@@ -11,7 +11,7 @@ import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Project, ProjectData } from "@/app/projects/Project";
 import { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
-import { handleApiError } from "./ApiLogs";
+import { handleApiError } from '@/app/api/ApiLogs';
 
 const API_BASE_URL = endpoints.projectOwner.base;
 

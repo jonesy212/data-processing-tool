@@ -121,7 +121,13 @@ export const toggleTodo = async (
   };
 
 // Add todo
-export const addTodo = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(newTodo: Omit<Todo<T, K>, 'id'>): Promise<void> => {
+export const addTodo = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(newTodo: Omit<Todo<T, K>, 'id'>): Promise<void> => {
   try {
     const addTodoEndpoint = `${API_BASE_URL}.add`;
     await axiosInstance.post(addTodoEndpoint, newTodo);
@@ -151,7 +157,13 @@ export const removeTodo = async (todoId: number): Promise<void> => {
 
 
 // Update todo
-export const updateTodo = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(todoId: number, updatedFields: Partial<Todo<T,K>>): Promise<void> => {
+export const updateTodo = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(todoId: number, updatedFields: Partial<Todo<T,K>>): Promise<void> => {
   try {
     const updateTodoEndpoint = `${API_BASE_URL}.update.${todoId}`;
     await axiosInstance.put(updateTodoEndpoint, updatedFields);
@@ -220,7 +232,13 @@ export const assignTodoToTeam = async (todoId: number, teamId: number): Promise<
   }
 };
 
-export const fetchTodosSuccess = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const fetchTodosSuccess = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   req: Request,
   res: Response
 ): Promise<Todo<T,K>[]> => {
@@ -228,7 +246,13 @@ export const fetchTodosSuccess = async <T extends  BaseData<any>, K extends T = 
 }
 
 
-export const fetchTodosFailure = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const fetchTodosFailure = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   req: Request,
   res: Response
 ): Promise<Todo<T,K>[]> => {
@@ -240,7 +264,13 @@ export const completeAllTodosRequest = async (
   res: Response
 ): Promise<void> => {};
 
-export const completeAllTodosSuccess = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const completeAllTodosSuccess = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   req: Request,
   res: Response
 ): Promise<Todo<T,K>[]> => {

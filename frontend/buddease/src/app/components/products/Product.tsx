@@ -2,6 +2,7 @@
 
 import { CommonData } from "@/app/models/CommonData";
 import { UserData, VisualizationData } from "@/app/users/User";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 interface Product<
   T extends BaseDataEntity,

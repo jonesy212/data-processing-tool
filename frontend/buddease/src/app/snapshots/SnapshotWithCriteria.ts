@@ -28,9 +28,9 @@ import { Snapshot } from "./Snapshot";
 import { handleSnapshotSuccess } from "./snapshotHandlers";
 import SnapshotStore, { SnapshotStoreReference } from "./SnapshotStore";
 
-import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { FilterCriteria } from "@/app/pages/searchs/FilterCriteria";
@@ -89,28 +89,30 @@ interface SnapshotWithCriteriaContract<
   delegate: InitializedDelegate<T, K, Meta, ExcludedFields>;
   analysisType?: AnalysisTypeEnum;
   events: CombinedEvents<T, K, Meta, ExcludedFields>;
-  subscribers?: SubscriberCollection<T, K, Meta, ExcludedFields>[];
+  subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
   timestamp: string | number | Date | undefined;
-  snapshots?: Snapshots<T, K, Meta, ExcludedFields, IncludedFields>;
+  snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotStoreArray?: SnapshotStoreReference<T, K, Meta>[];
 }
 
 // Define SnapshotWithCriteria type
 type SnapshotWithCriteria<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & Omit<SearchCriteria, 'analysisType'> & {
   criteria: FilterCriteria;
   delegate: InitializedDelegate<T, K, Meta, ExcludedFields>;
   analysisType?: AnalysisTypeEnum;
   events?: CombinedEvents<T, K, Meta, ExcludedFields>;  // Update as needed based on your schema
-  subscribers?: SubscriberCollection<T, K, Meta, ExcludedFields>[];  // Update as needed based on your schema
+  subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];  // Update as needed based on your schema
   tags?: TagsRecord<T, K, Meta, ExcludedFields> | string[] | undefined;   // Update as needed based on your schema
   timestamp: string | number | Date | undefined;
-  snapshots?: Snapshots<T, K, Meta, ExcludedFields, IncludedFields>;
+  snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotStores?: Map<number, SnapshotStoreReference<T, K, Meta>>; // not a Map
 }
 
@@ -223,14 +225,14 @@ const exampleSnapshotWithCriteria: SnapshotWithCriteria<T, K, Meta, ExcludedFiel
       event: string,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotId: string,
-      subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => {},
     
     onSnapshotRemoved: (
         event: string,
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotId: string,
-        subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>,
+        subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         type: string,
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
@@ -243,7 +245,7 @@ const exampleSnapshotWithCriteria: SnapshotWithCriteria<T, K, Meta, ExcludedFiel
         snapshotId: string,
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-        events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>,
+        events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
         newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -271,8 +273,8 @@ const exampleSnapshotWithCriteria: SnapshotWithCriteria<T, K, Meta, ExcludedFiel
     ) => void) => {},
     addRecord: (
       event: string,
-      record: CalendarManagerStoreClass<T, K, Meta, ExcludedFields>,
-      callback: (snapshot: CalendarManagerStoreClass<T, K, Meta, ExcludedFields>) => void
+      record: CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      callback: (snapshot: CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
     ) => {
       
     },
@@ -289,19 +291,19 @@ const exampleSnapshotWithCriteria: SnapshotWithCriteria<T, K, Meta, ExcludedFiel
     trigger: (event: string | CombinedEvents<T, K, Meta, ExcludedFields> | SnapshotEvents<T, K, Meta, ExcludedFields>,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotId: string,
-      subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>,
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => { },
-    initialConfig: {} as SnapshotConfig<T, K, Meta, ExcludedFields>,
-    records: {} as Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>,
+    initialConfig: {} as SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    records: {} as Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
    
     onInitialize: () => {},
     on: (event: string, callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) => {},
     off: (event: string | number,
       callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, 
       snapshotId: string,
-      subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>,
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       unsubscribeDetails?: { 
@@ -318,7 +320,7 @@ const exampleSnapshotWithCriteria: SnapshotWithCriteria<T, K, Meta, ExcludedFiel
       event: string,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
       snapshotId: string,
-      subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>, 
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
       type: string,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[], 
@@ -349,7 +351,7 @@ const exampleSnapshotWithCriteria: SnapshotWithCriteria<T, K, Meta, ExcludedFiel
         // tags: ["Sample", "Event"],
 
         // todo properly update the record
-        record: {} as CalendarManagerStoreClass<T, K, Meta, ExcludedFields>,
+        record: {} as CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {},
         action: "", 
         timestamp: new Date(),

@@ -1,12 +1,12 @@
 // SharedMetadata.ts
-import { Attachment } from '@/app/documents/Attachment/attachment';
-import { ConfigMetadata, StatusMetadata, UnifiedMetadata, VersionMetadata } from "@/server/database/MetaDataOptions";
-import { CoreMetadata } from "@/server/database/MetadataStateManager";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SharedRelationshipData } from '@/app/models/data/Data';
 import { AppStructurePermissions } from "@/config/appStructure/AppStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { ConfigMetadata, StatusMetadata, UnifiedMetadata, VersionMetadata } from "@/server/database/MetaDataOptions";
+import { CoreMetadata } from "@/server/database/MetadataStateManager";
 import { SchemaField } from '@/server/database/SchemaField';
-import { Category } from '@/app/libraries/categories/generateCategoryProperties'
 
 interface SharedMetadata<
   T extends BaseDataEntity,
@@ -29,12 +29,12 @@ interface SharedMetadata<
   customFields?: Record<string, any>; 
   baseUrl?: string; 
   category?: Category;
-  currentMetadata?: UnifiedMetadata<T, K, Meta, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>;
-  previousMetadata?: UnifiedMetadata<T, K, Meta, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>;
+  currentMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>;
+  previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>;
   currentMeta?: Meta;
   previousMeta?: Meta;
   schema?: Record<string, SchemaField>;
 }
 
 
-export type { SharedMetadata }
+export type { SharedMetadata };

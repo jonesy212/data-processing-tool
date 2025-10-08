@@ -1,12 +1,12 @@
 // NotificationsService.ts
 import { endpoints } from "@/app/api/endpointConfigurations";
 import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/context/NotificationContext";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { Attachment } from '@/app/documents/Attachment/attachment';
 import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 

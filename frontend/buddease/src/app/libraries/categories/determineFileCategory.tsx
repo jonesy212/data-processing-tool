@@ -72,7 +72,13 @@ function determineFileCategory(categoryName: string): FileCategory {
 }
 
 // Example implementation of fetching snapshot data based on category
-async function fetchFileSnapshotData<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function fetchFileSnapshotData<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   category: FileCategory,
   snapshotId: string
 ): Promise<{ data: any }> {

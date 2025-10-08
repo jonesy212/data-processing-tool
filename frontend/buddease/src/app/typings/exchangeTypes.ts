@@ -1,5 +1,5 @@
 // exchangeTypes.ts
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { Snapshot, SnapshotData, SnapshotStore, SnapshotWithCriteria } from "@/app/snapshots";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";

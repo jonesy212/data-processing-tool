@@ -212,7 +212,7 @@ const returnsSnapshotStore = async <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   id: string,
-  snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   category: Category | undefined,
   categoryProperties: CategoryProperties | undefined,
   dataStoreMethods: DataStore<T, K, Meta, ExcludedFields>
@@ -261,7 +261,7 @@ const returnsSnapshotStore = async <
       snapshot: async (
         id: string | number | undefined,
         snapshotId: string | null,
-        snapshotData: SnapshotData<T, K, Meta, ExcludedFields> | null,
+        snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
         category: Category,
         categoryProperties: CategoryProperties | undefined,
         callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
@@ -271,7 +271,7 @@ const returnsSnapshotStore = async <
         subscriberId: string,
         endpointCategory: string | number,
         storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
-        snapshotConfigData?: SnapshotConfig<T, K, Meta, ExcludedFields>,
+        snapshotConfigData?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotContainer?: SnapshotContainer<T, K, Meta, ExcludedFields> | undefined
       ) => {

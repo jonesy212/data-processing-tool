@@ -12,7 +12,7 @@ import { BaseData } from '@/app/models/data/Data';
 import { YourResponseType } from "@/app/typings/responseTypes";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from "axios";
-import { handleApiError } from "./ApiLogs";
+import { handleApiError } from '@/app/api/ApiLogs';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.drawing; // Accessing property directly

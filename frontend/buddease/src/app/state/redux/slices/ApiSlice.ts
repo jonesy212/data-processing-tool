@@ -24,6 +24,8 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Draft } from "immer";
 import { useDispatch } from "react-redux";
 import { addTask } from "./TaskSlice";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 interface CommunityEvent {
   id: string;

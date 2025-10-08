@@ -1,20 +1,19 @@
 // MemberEntity.ts
-import { SnapshotData } from "@/app/snapshots/SnapshotData";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
-import { Attachment } from "@/app/documents/Attachment/attachment";
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { Member } from "@/app/components/models/teams/TeamMembers";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Task } from "@/app/models/tasks/Task";
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotStore } from '@/app/snapshots/SnapshotStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SnapshotConfig } from "@/app/snapshot/SnapshotConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { Task } from "@/app/models/tasks/Task";
-import { Member } from "@/app/components/models/teams/TeamMembers";
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 // Core Member type definitions
 type MemberEntity = BaseDataEntity & {
@@ -160,30 +159,13 @@ const createDefaultMemberData = (baseData: Partial<MemberData>): MemberData => (
   status: baseData.status || 'active'
 });
 
-export type { 
-  MemberEntity,
-  MemberK,
-  MemberMeta,
-  MemberAttachment,
-  MemberExcludedFields,
-  MemberIncludedFields,
-  MemberSnapshot,
-  MemberSnapshotData,
-  MemberSnapshotStore,
-  MemberSnapshotWithCriteria,
-  MemberSubscriberCollection,
-  MemberRealtimeDataItem,
-  MemberSnapshotStoreConfig,
-  MemberSnapshotsArray,
-  MemberParams,
-  MemberBaseParams,
-  MemberUnifiedMetadata,
-  MemberStructuredMetadata,
-  MemberApplyFieldFilters,
-  MemberData
+export type {
+  MemberApplyFieldFilters, MemberAttachment, MemberBaseParams, MemberData, MemberEntity, MemberExcludedFields,
+  MemberIncludedFields, MemberK,
+  MemberMeta, MemberParams, MemberRealtimeDataItem, MemberSnapshot,
+  MemberSnapshotData, MemberSnapshotsArray, MemberSnapshotStore, MemberSnapshotStoreConfig, MemberSnapshotWithCriteria, MemberStructuredMetadata, MemberSubscriberCollection, MemberUnifiedMetadata
 };
 
-export {
-  emptyMemberData,
-  createDefaultMemberData
-};
+  export {
+    createDefaultMemberData, emptyMemberData
+  };

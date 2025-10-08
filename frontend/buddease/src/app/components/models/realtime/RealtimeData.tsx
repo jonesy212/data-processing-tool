@@ -9,14 +9,13 @@ import { EventData } from "@/app/state/stores/AssignEventStore";
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { SharedMetadata } from "@/config/metadata/MetadataHooks";
+import { SharedMetadata } from "@/app/shared/SharedMetadata";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Attachment } from "@/app/documents/Attachment/attachment";
-import { BaseDataRoot } from "@/config/BaseConfig";
 
 
 interface BaseRealtimeData<
@@ -24,8 +23,9 @@ interface BaseRealtimeData<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields> {
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string | number; // Override id to ensure it's required (remove undefined)
   name: string;
   value?: string | number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
@@ -39,8 +39,9 @@ interface RealtimeData<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends BaseRealtime<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends BaseRealtimeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventId: string;
   userId: string;
   dispatch: (action: any) => void;
@@ -52,17 +53,18 @@ interface RealtimeDataItem<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends 
-  BaseRealtime<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
   EventData, 
+  BaseRealtimeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
   SharedMetadata<T, K, Meta, AttachmentType> {
  
   title?: string;
   userId: string;
   dispatch: (action: any) => void;
   timestamp: Date;
-  data?: Initialized<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 }
 
 const processSnapshotStore = <
@@ -70,12 +72,13 @@ const processSnapshotStore = <
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) => {
   Object.keys(snapshotStore).forEach((snapshotId) => {
-    const typedSnapshotId = snapshotId as keyof SnapshotStore<T, K, Meta, AttachmentType>;
+    const typedSnapshotId = snapshotId as keyof SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     const snapshotData = snapshotStore[typedSnapshotId];
     console.log(`Processing snapshot with ID ${String(typedSnapshotId)}:`, snapshotData);
   });
@@ -101,7 +104,9 @@ const updateCallback = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   id: string,
   events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,

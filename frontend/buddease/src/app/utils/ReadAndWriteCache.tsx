@@ -1,6 +1,6 @@
 import UserService, { userId, userService } from "@/app/api/ApiUser";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { RealtimeData } from "@/app/components/models/realtime/RealtimeData";
 import { CustomPhaseHooks } from "@/app/components/phases/Phase";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";

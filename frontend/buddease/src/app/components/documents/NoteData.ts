@@ -7,7 +7,7 @@ import { Version } from "@/app/versions/Version";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 import { CommonAnimationOptions } from '@/SharedDocumentProps';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData } from '@/app/models/data/Data';
 
 export interface Change {

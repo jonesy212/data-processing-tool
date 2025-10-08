@@ -3,7 +3,13 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { SnapshotCategory, SnapshotCategoryType } from "./getSnapshotEndpoint";
 
-class SnapshotCategoryManager <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+class SnapshotCategoryManager <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T> {
     private categories: SnapshotCategory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 
     // Add a new category

@@ -4,6 +4,7 @@ import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { Snapshot } from '@/app/snapshots/Snapshpshot';
 import { useCallback, useEffect, useRef } from 'react';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 interface SubscriptionManager<  T extends BaseDataEntity,
   K extends T = T,

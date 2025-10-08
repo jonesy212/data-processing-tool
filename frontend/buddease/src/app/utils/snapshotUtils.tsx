@@ -33,7 +33,7 @@ function isHydrateResult<T>(result: any): result is IHydrateResult<T> {
   return (result as IHydrateResult<T>).then !== undefined;
 }
 
-function isSnapshotConfig<T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(config: any): config is SnapshotConfig<T, K> {
+function isSnapshotConfig<T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(config: any): config is SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return config && 'storeConfig' in config && 'additionalData' in config;
 }
 
@@ -92,7 +92,7 @@ const isSnapshotWithCriteriaBaseData = (
 // Example conversion function
 function convertToSnapshotArray<T extends BaseData, K extends T = T>(
   data: Snapshots<T, K>
-): SnapshotsArray<T, K, Meta> {
+): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Implement conversion logic here
   return Array.isArray(data) ? data : Object.values(data);
 }
@@ -102,7 +102,7 @@ function convertToSnapshotWithCriteria<
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >(
-  snapshot: Snapshot<T, K, Meta>,
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotStore?: SnapshotStore<T, K, Meta>
 ): SnapshotWithCriteria<T, K> | null {
   const { id, snapshotData, category, description, categoryProperties } = snapshot;
@@ -159,17 +159,17 @@ function convertToSnapshotWithCriteria<
       handleSnapshot: async (
         id: string,
         snapshotId: string | number | null,
-        snapshot: Snapshot<T, K, Meta> | null,
+        snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
         snapshotData: T,
         category: Category,
         categoryProperties: CategoryProperties | undefined,
         callback: (snapshotData: T) => void,
-        snapshots: SnapshotsArray<T, K, Meta>,
+        snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         type: string,
         event: SnapshotEvents<T, K>,
         snapshotContainer?: T,
         snapshotStoreConfig?: SnapshotStoreConfig<T, K> | null
-      ): Promise<Snapshot<T, K, Meta> | null> => {
+      ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
         try {
           // Validate required parameters
           if (!snapshotId) {
@@ -185,7 +185,7 @@ function convertToSnapshotWithCriteria<
               }
       
               // Create new snapshot with metadata
-              const newSnapshot: Snapshot<T, K, Meta> = {
+              const newSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
                 id: String(snapshotId),
                 data: snapshotData,
                 category,
@@ -230,7 +230,7 @@ function convertToSnapshotWithCriteria<
               };
       
               // Update snapshot properties
-              const updatedSnapshot: Snapshot<T, K, Meta> = {
+              const updatedSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
                 ...snapshot,
                 data: updatedData,
                 properties: {
@@ -620,7 +620,7 @@ function isSnapshotData<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(data: any): data is SnapshotData<T, K, Meta, ExcludedFields> {
+>(data: any): data is SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   if (!data || typeof data !== 'object') {
     return false;
   }
@@ -779,7 +779,7 @@ export const category = snapshotApi.getSnapshotsAndCategory(
   getSnapshotValue(),          // Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   getTypeValue(),              // string
   getEventValue(),             // SnapshotEvent<T, K>
-  getSnapshotConfigValue(),    // SnapshotConfig<T, K>
+  getSnapshotConfigValue(),    // SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   additionalHeaders      // Record<string, string> (optional)
 );
 

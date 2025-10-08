@@ -294,8 +294,8 @@ export function getAllValues<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(): SnapshotsArray<T, K, Meta> {
-  const values: SnapshotsArray<T, K, Meta> = [];
+>(): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  const values: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [];
   
   // This would typically be implemented to return all snapshot values
   // For now, returning empty array as placeholder

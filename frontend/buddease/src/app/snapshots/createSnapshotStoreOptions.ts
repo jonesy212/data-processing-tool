@@ -1,12 +1,12 @@
 // createSnapshotStoreOptions.ts
 import { FetchSnapshotPayload } from '@/FetchSnapshotPayload';
-import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
-import { InitializedData } from '@/app/snapshots/SnapshpshotStoreOptions';
+import { UnsubscribeDetails } from '@/app//event/DynamicEventHandlerExample';
 import { isInitializedSnapshot } from "@/app/api/ApiDataAnalysis";
 import { getCurrentSnapshot } from '@/app/api/SnapshotApi';
 import { getSubscribersAPI } from '@/app/api/subscriberApi';
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
-import { K, Meta } from '@/app/components/models/data/dataStoreMethods';
+import { Meta } from '@/app/components/models/data/dataStoreMethods';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import useSecureStoreId from '@/app/hooks/useSecureStoreId';
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { CombinedEvents, SnapshotManager, SnapshotStoreOptions, useSnapshotManager } from '@/app/hooks/useSnapshotManager';
@@ -27,6 +27,8 @@ import {
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
+import { InitializedData } from '@/app/snapshots/SnapshpshotStoreOptions';
 import handleSnapshotStoreOperation from '@/app/snapshots/handleSnapshotStoreOperation';
 import { subscribeToSnapshotsImpl } from '@/app/snapshots/subscribeToSnapshotsImplementation';
 import { Subscriber } from "@/app/subscribers/Subscriber";
@@ -40,6 +42,7 @@ import { SnapshotWithData } from '@/calendar/CalendarApp';
 import { CalendarEvent } from '@/calendar/CalendarEvent';
 import { LanguageEnum } from '@/communications/LanguageEnum';
 import { baseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataRoot } from '@/config/BaseeConfiig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { createMeta } from '@/config/metadata/MetadataHooks';
 import { useMeta } from '@/config/useMeta';
@@ -49,7 +52,6 @@ import {
   createBasicSnapshot,
   createCompleteSnapshot
 } from '@/createSnapshot';
-import { UnsubscribeDetails } from '@/app//event/DynamicEventHandlerExample';
 import { handleSnapshotOperation } from '@/handleSnapshotOperation';
 import { displayToast } from '@/models/display/ShowToast';
 import { ExcludedFields } from '@/routing/Fields';
@@ -63,9 +65,6 @@ import { createDefaultVersionData } from '@/versions/VersionData';
 import { Tag } from 'sanitize-html';
 import { Snapshots } from "./LocalStorageSnapshotStore";
 import SnapshotStore from "./SnapshotStore";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Attachment } from '@/app/documents/Attachment/attachment';
-import { BaseDataRoot } from '@/config/BaseeConfiig'
 
 
 interface Difference<T> {

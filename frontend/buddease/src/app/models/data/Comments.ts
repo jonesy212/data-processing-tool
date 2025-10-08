@@ -1,7 +1,7 @@
 // Comments.ts
 import { Content } from '@/app/components/models/content/AddContent';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData, Data } from '@/app/models/data/Data';
-import { Attachment } from '@/app/documents/Attachment/attachment';
 import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";

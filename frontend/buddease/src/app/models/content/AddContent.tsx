@@ -21,7 +21,7 @@ import UserRoles from '@/users/UserRoles';
 import React, { FormEvent, useState } from 'react';
 import ContentDetailsListItem from '@/app/components/models/content/ContentDetailsListItem';
 import ContentToolbar from '@/app/components/models/content/ContentToolbar';
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { BaseDataRoot, BaseConfig } from "@/config/BaseConfig";
 

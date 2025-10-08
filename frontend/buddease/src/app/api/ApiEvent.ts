@@ -1,13 +1,13 @@
 // EventApi.ts
-import { endpoints } from '@/app/api/endpointConfigurations';
 import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from '@/app/api/csrfToken';
-import { useNotification } from "@/app/context/NotificationContext";
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { useNotification } from '@/app/context/NotificationContext';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
 import { NotificationTypeEnum } from '@/app/models/data/StatusType';
 import { addLog } from '@/app/state/redux/slices/LogSlice';
 import { ReassignEventResponse } from '@/app/state/stores/AssignEventStore';
-import headersConfig from '@/headers/HeadersConfig';
+import headersConfig from '@/api/headers/HeadersConfig';
 import { AxiosError } from 'axios';
 
 const API_BASE_URL = endpoints.events; // Directly access the events endpoint

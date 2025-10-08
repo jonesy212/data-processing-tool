@@ -5,7 +5,13 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { ContentState } from "draft-js";
 
 
-async function getMetadataForContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(contentId: string, content: string): Promise<StructuredMetadata<T, K>> {
+async function getMetadataForContent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(contentId: string, content: string): Promise<StructuredMetadata<T, K>> {
     // Process the content string<T extends  BaseData<any>,
     // ...
   }

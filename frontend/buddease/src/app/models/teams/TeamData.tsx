@@ -1,5 +1,4 @@
 import { BaseData } from '@/app/models/data/Data';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { BrainstormingSettings } from "@/app/interfaces/settings/BrainstormingSettings";
 import { CollaborationPreferences } from "@/app/interfaces/settings/CollaborationPreferences";
@@ -11,6 +10,7 @@ import { Progress } from "@/app/models/tracker/ProgressBar";
 import { Member } from "./TeamMembers";
 import { CommonData } from "@/app/models/CommonData";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 interface TeamData<  
 T extends BaseDataEntity,

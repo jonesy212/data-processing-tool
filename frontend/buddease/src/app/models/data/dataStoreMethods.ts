@@ -9,8 +9,7 @@ import { Subscriber } from "@/app/subscribers/Subscriber";
 import { addToSnapshotList, isBaseData, isSnapshot } from '@/app/utils/snapshotUtils';
 import { CustomHydrateResult } from "@/config/DocumentBuilderConfig";
 
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { convertToArray } from '@/app/snapshots/createSnapshotStoreOptions';
@@ -23,6 +22,7 @@ import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { useSnapshotStore, } from "@/app/snapshots/useSnapshotStore";
 import { Version } from "@/app/versions/Version";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import { BaseData, Data } from "./Data";
 import { StatusType } from "./StatusType";

@@ -21,7 +21,7 @@ export const ContainerMethodsImplementation = {
     category?: Category,
     categoryProperties?: CategoryProperties,
     delegate?: any,
-    snapshotData?: SnapshotData<T, K, Meta, ExcludedFields>
+    snapshotData?: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): SnapshotContainer<T, K, Meta, ExcludedFields> | undefined {
     return this.snapshotContainers?.get(snapshotId);
   },

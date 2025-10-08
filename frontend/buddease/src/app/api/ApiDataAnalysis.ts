@@ -3,11 +3,10 @@ import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification
 } from "@/app/context/NotificationContext";
-import { Attachment } from '@/app/documents/Attachment/attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { BaseData } from '@/app/models/data/Data';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
@@ -24,7 +23,9 @@ import { isSnapshot } from "@/app/utils/snapshotUtils";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { AxiosError, AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
-import { handleApiError } from "./ApiLogs";
+import { handleApiError } from '@/app/api/ApiLogs';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 const dispatch = useDispatch();
 // Define the API base URL for data analysis
@@ -93,13 +94,16 @@ export const handleDataAnalysisApiErrorAndNotify = (
 
 
 export function fetchDataAnalysis<
-  T extends BaseData<any, any, StructuredMetadata<any, any>, Attachment>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   endpoint: string,
   text?: string
-): Promise<YourResponseType<T, K, Meta> | Snapshot<T, K, Meta> | SnapshotStore<T, K, Meta>> {
+): Promise<YourResponseType<T, K, Meta> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>> {
   const fetchDataAnalysisEndpoint = `${DATA_ANALYSIS_BASE_URL}${endpoint}`;
   const config = {
     headers: headersConfig,
@@ -111,12 +115,12 @@ export function fetchDataAnalysis<
       fetchDataAnalysisEndpoint, 
       config
     )
-    .then((response: AxiosResponse<YourResponseType<T, K, Meta> | Snapshot<T, K, Meta> | SnapshotStore<T, K, Meta>>) => {
+    .then((response: AxiosResponse<YourResponseType<T, K, Meta> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>>) => {
       const result = convertResponseToSnapshot<T, K, Meta>(response.data);
       
       // Explicit type narrowing
       if (isSnapshot<T, K, Meta>(result)) {
-        return result as Snapshot<T, K, Meta>;
+        return result as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       } else if (isSnapshotStore<T, K, Meta>(result)) {
         return result as SnapshotStore<T, K, Meta>;
       } else if (isYourResponseType<T, K, Meta>(result)) {
@@ -140,8 +144,15 @@ export function fetchDataAnalysis<
 
 
 // Helper type guard for InitializedSnapshot
-function isInitializedSnapshot<T extends BaseData<any>, K extends T, Meta extends StructuredMetadata<T, K>>(
-  snapshot: YourResponseType<T, K, Meta> | Snapshot<T, K, Meta> | SnapshotStore<T, K, Meta>
+function isInitializedSnapshot<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  snapshot: YourResponseType<T, K, Meta> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>
 ): snapshot is InitializedSnapshot<T, K, Meta> {
   return (snapshot as InitializedSnapshot<T, K, Meta>).isInitialized === true;
 }
@@ -150,10 +161,13 @@ function isInitializedSnapshot<T extends BaseData<any>, K extends T, Meta extend
 
 // Function to fetch analysis results
 export const fetchAnalysisResults = <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
->(): Promise<Snapshot<T, K, Meta>> => {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   const endpoint = DATA_ANALYSIS_BASE_URL.getAnalysisResults;
 
   if (typeof endpoint !== "string") {
@@ -578,12 +592,12 @@ export const fetchAnalysisResults = <
         if (!isDataAnalysisResult(analysisResults)) {
           return Promise.reject(new Error("Invalid response data"));
         }
+        const snapshotStore = snapshotStore;
 
         if (!snapshotStore?.[0]) {
           return Promise.reject(new Error("No snapshots available"));
         }
 
-        const snapshotStore = snapshotStore;
         return createSnapshot<T, K, Meta>({
           // Map properties from analysisResults and snapshotStore
           // Similar to above but using analysisResults where needed

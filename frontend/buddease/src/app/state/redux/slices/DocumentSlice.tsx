@@ -35,6 +35,8 @@ import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import getAppPath from "@/config/appStructure/appPath";
 import { ClientInformation } from '@/server/database/ClientInformation';
 import { data } from '@tensorflow/tfjs';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 
 

@@ -1,7 +1,7 @@
 // ErrorStore.ts
 import { makeAutoObservable } from "mobx";
-import { clearError, setError } from "@/app/redux/slices/ErrorSlice";
-import type { ErrorState } from "@/app/redux/slices/ErrorSlice";
+import { clearError, setError } from "@/app/state/redux/slices/ErrorSlice";
+import type { ErrorState } from "@/app/state/redux/slices/ErrorSlice";
 
 // Create an ErrorStore to manage error state
 const errorStore = () => {

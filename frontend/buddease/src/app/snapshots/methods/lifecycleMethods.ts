@@ -102,7 +102,7 @@ export const LifecycleMethods = {
     snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>,
     payload: CreateSnapshotsPayload<T, K, Meta, ExcludedFields>,
     callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
-    snapshotDataConfig?: SnapshotConfig<T, K, Meta, ExcludedFields>[],
+    snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     category?: Category,
     categoryProperties?: string | CategoryProperties
   ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
@@ -110,7 +110,7 @@ export const LifecycleMethods = {
 
     const createdSnapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = snapshotsArray.map(
       (snapshot) => {
-        // Use createSnapshotInstance to build a full snapshot
+        // Use createSnapshot to build a full snapshot
         const completeSnapshot = createSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
           baseData: snapshot.data,
           baseMeta: new Map(), // you can pass existing snapshot map if needed

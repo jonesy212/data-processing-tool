@@ -12,12 +12,13 @@ import CommonEvent from "@/app/state/stores/CommonEvent";
 import { DetailsItemExtended } from "@/app/state/stores/DetailsListStore";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { SharedMetadata } from "@/config/metadata/MetadataHooks";
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { observer } from "mobx-react-lite";
 import React from "react";
 import ListGenerator from "@/app/generators/ListGenerator";
 import { Comment } from "./Comments";
 import { Data } from "./Data";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 export type DataAndEventDetails = Data<any, any, any> | CommonEvent;
 

@@ -1,19 +1,18 @@
 // LazyLoadScriptConfig.ts
 import { SystemConfigs } from "@/app/api/systemConfigs";
 import { UserConfigs } from "@/app/api/userConfigs";
-import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { DocumentBuilderConfig } from "@/app/documents/editing/DocumentBuilderConfig";
 import ShoppingCenterConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
+import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
 import { ApiConfig } from "@/config/BackendConfig";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import MainConfig from "@/config/MainConfig";
 import { DataVersions } from "@/configs/DataVersionsConfig";
 import { traverseFrontendDirectory } from "@/server/traverseFrontend";
 import { BackendConfig, backendConfig } from "./BackendConfig";
 import { FrontendConfig, frontendConfig } from "./FrontendConfig";
 import { AppStructureItem } from "./appStructure/AppStructure";
-import { Attachment } from "@/app/documents/Attachment/attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { BaseDataRoot } from "@/config/BaseConfig";
 
 interface LazyLoadScriptConfig {
   configureScript(): unknown;

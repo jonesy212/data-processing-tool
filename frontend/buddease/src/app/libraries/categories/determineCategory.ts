@@ -5,6 +5,7 @@ import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { isCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 // determineCategory function
 function determineCategory<

@@ -1,10 +1,10 @@
 
 // // Sample function to convert snapshotMethods
 // function convertSnapshotMethods<T, K, Meta, ExcludedFields>(
-//   snapshotMethods: SnapshotStoreMethod<T, K, Meta, ExcludedFields>[] | undefined,
+//   snapshotMethods: SnapshotStoreMethods<T, K, Meta, ExcludedFields>[] | undefined,
 //   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //   snapshotId: string,
-//   snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+//   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //   snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //   callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
 //   versionHistory: VersionHistory
@@ -49,7 +49,7 @@
 
 // // Usage Example
 // // Here's how you might use this function in your application:
-// const snapshotMethods: SnapshotStoreMethod<Data, string>[] | undefined = /* Your methods here */;
+// const snapshotMethods: SnapshotStoreMethods<Data, string>[] | undefined = /* Your methods here */;
 // const snapshot: Snapshot<Data, string> = /* Your snapshot */;
 // const snapshotId = "someId";
 // const snapshotData: SnapshotData<Data, string> = /* Your snapshot data */;

@@ -2,7 +2,7 @@ import { Attendee } from "@/app/calendar/Attendee";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { DayOfWeekProps } from "@/app/components/calendar/DayOfWeek";
 import { Month } from "@/app/components/calendar/Month";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ReassignEventResponse } from "@/app/state/stores/AssignEventStore";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { User } from "@/app/users/User";

@@ -1,4 +1,4 @@
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 // SnapshotStoreConfig.ts
 
 import { fetchCategoryByName } from "@/app/api/CategoryApi";
@@ -8,7 +8,7 @@ import * as snapshotApi from '@/app/api/SnapshotApi';
 import { fetchSnapshotStoreData } from "@/app/api/SnapshotApi";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { Content } from '@/app/components/models/content/AddContent';
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
+import { Meta } from '@/app/components/models/data/dataStoreMethods';
 import { NotificationType } from "@/app/context/NotificationContext";
 import { ModifiedDate } from "@/app/documents/DocType";
 import { FileCategory } from "@/app/documents/FileType";
@@ -22,8 +22,8 @@ import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { CreateSnapshotStoresPayload } from "@/app/server/database/Payload";
 import { RetentionPolicy } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotErrorHandling } from '@/app/snapshots/SnapshotErrorHandling';
@@ -253,8 +253,8 @@ export interface SnapshotStoreConfig<
   length?: number
   content: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   privacy?: PrivacySettings;
-
-  snapshotConfig?: UserConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,["snapshotConfig"];
+  snapshotConfig?: UserConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["snapshotConfig"];
+  userConfig?: UserConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,["snapshotConfig"];
   snapshotCategory?: SnapshotCategory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotContent: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   store?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
@@ -375,7 +375,7 @@ export interface SnapshotStoreConfig<
         data: K,
         index: number
       ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    ) => Promise<SnapshotsArray<T, K, Meta>>;
+    ) => Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
     deleteSnapshot: (
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -776,7 +776,7 @@ export interface SnapshotStoreConfig<
       data: K,
       index: number
     ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  ) => Promise<SnapshotsArray<T, K, Meta>>;
+  ) => Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
 
   getAllSnapshots: (
@@ -1024,7 +1024,7 @@ export interface SnapshotStoreConfig<
   ) => void;
   generateId: (prefix: string,
     name: string,
-    type: NotificationTypeEnum,
+    type: NotificationType,
     id?: string,
     title?: string,
     chatThreadName?: string,

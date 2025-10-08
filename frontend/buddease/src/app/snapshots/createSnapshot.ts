@@ -1,21 +1,21 @@
-import { Category } from '@/app/libraries/categories/generateCategoryProperties';
-import { DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from '@/app/generators/GenerateUniqueIds';
-import { internalCache } from '@/app/utils/cache/InternalCache';
-import { deepEqual } from 'assert';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { defaultSnapshotBuilder } from '@/app/snapshots/defaultSnapshotBuilder';
-import { SnapshotsArray } from "./LocalStorageSnapshotStore";
 import { UtilMethods } from '@/app/snapshots/methods/utilMethods';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import SnapshotStore from '@/app/snapshots/SnapshpshotStore';
 import { SnapshotStoreProps } from '@/app/snapshots/SnapshpshotStoreProps';
-import { Callback } from '@/app/subscribe/subscribeToSnapshotsImplementation';
 import { SnapshotStoreOptions } from '@/app/snapshots/useSnapshotStore';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Callback } from '@/app/subscribe/subscribeToSnapshotsImplementation';
+import { internalCache } from '@/app/utils/cache/InternalCache';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { deepEqual } from 'assert';
+import { SnapshotsArray } from "./LocalStorageSnapshotStore";
 
 export const createBasicSnapshot = <
   T extends BaseDataEntity,

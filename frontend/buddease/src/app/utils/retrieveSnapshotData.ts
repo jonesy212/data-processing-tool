@@ -1,6 +1,6 @@
 import axiosInstance from '@/app/api/csrfToken';
 import { BaseData } from '@/app/models/data/Data';
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { CreateSnapshotsPayload, CreateSnapshotStoresPayload, UpdateSnapshotPayload } from '@/app/components/server/database/Payload';
 import { SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotWithCriteria } from '@/app/components/snapshots';
 import { VideoData } from "@/app/components/video/Video";
@@ -64,7 +64,13 @@ interface RetrievedSnapshot<
 
 
 // Define a nction to convert RetrievedSnapshot<SnapshotDataResponse> to SnapshotStore<Snapshot< BaseData<any>, Data>>
-const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const converSnapshotStore = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   retrievedSnapshot: RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshots: any, 
   snapshotConfig: any, 
@@ -636,7 +642,7 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
         snapshotManager: SnapshotManager<T, K>,
         payload: CreateSnapshotsPayload<T, K>,
         callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
-        snapshotDataConfig?: SnapshotConfig<T, K>[] | undefined,
+        snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined,
         category?:  Category,
         categoryProperties?: string | CategoryProperties,
       ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
@@ -1165,7 +1171,7 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
     createInitSnapshot: (
       id: string, 
       initialData: T,
-      snapshotData: SnapshotData<T, K>, 
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
       category: Category
     ): Promise<SnapshotWithCriteria<T, K>> => {},
     createSnapshotSuccess: () => {},
@@ -1205,7 +1211,7 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
       snapshotData: T,
       category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T, K, Meta>,
+      snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
       event: Event,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -1255,7 +1261,13 @@ const converSnapshotStore = <T extends  BaseData<any>, K extends T = T, Meta ext
 };
  
  // Define a function to convert SnapshotStore<Snapshot<Data, Data>> to RetrievedSnapshot<SnapshotDataResponse>
-const convertToRetrievedSnapshot = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const convertToRetrievedSnapshot = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   const singleSnapshot = snapshotStore.state?.[0];
@@ -1286,7 +1298,13 @@ const convertToRetrievedSnapshot = <T extends  BaseData<any>, K extends T = T, M
 };
 
 
-export const RetrievedSnapshotData = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
+export const RetrievedSnapshotData = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(): Promise<RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
   return new Promise<RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(async (resolve, reject) => {
     try {
       // Fetch snapshot data from the API endpoint
@@ -1359,8 +1377,14 @@ function isValidSnapshotDataResponse(data: any): data is SnapshotDataResponse<T,
 export default RetrievedSnapshotData;
 
 // Define `retrievedSnapshot` to return an instance of `RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>`
-const retrievedSnapshot: <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>() => RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = () => {
-  // Assuming `RetrievedSnapshotData<T, K>` is not a function but rather a data structure
+const retrievedSnapshot: <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>() => RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = () => {
+  // Assuming `RetrievedSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>` is not a function but rather a data structure
   const snapshotData: RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     // Populate with necessary properties according to RetrievedSnapshot structure
     responseData: {} as SnapshotDataResponse<T, K>, // Adjust as per your response structure

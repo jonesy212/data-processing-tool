@@ -2,7 +2,7 @@ import { handleApiError, handleSnapshotApiError } from '@/app//errorHandlers';
 import axiosInstance from '@/app/api/csrfToken';
 import { headersConfig } from '@/app/components/shared/SharedHeaders';
 import { useNotification } from '@/app/context/NotificationContext';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { NotificationTypeEnum } from '@/app/models/data/StatusType';
 import { ApiConfig } from "@/app/services/ConfigurationService";
 import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';

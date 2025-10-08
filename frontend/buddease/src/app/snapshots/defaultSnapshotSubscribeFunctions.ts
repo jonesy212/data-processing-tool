@@ -4,8 +4,17 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/Bas
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import { Callback } from "./subscribeToSnapshotsImplementation";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+
 // Function to unsubscribe from snapshots
-export const defaultUnsubscribeFromSnapshots = <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+export const defaultUnsubscribeFromSnapshots = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshotId: string,
   callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // Ensure this matches the expected type
@@ -23,7 +32,14 @@ export const defaultUnsubscribeFromSnapshots = <T extends BaseDataEntity, K exte
 };
 
 
-function convertCoreToSnapshot<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function convertCoreToSnapshot<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   coreSnapshot: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {
@@ -41,10 +57,12 @@ function convertCoreToSnapshot<T extends BaseDataEntity, K extends T = T, Meta e
 }
 
 export const fetchAndCreateSnapshot = async <
-T extends BaseDataEntity, 
-K extends T = T, 
-Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotId: string,
   storeId: number,
@@ -133,7 +151,14 @@ Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
 }
 
 
-export const defaultSubscribeToSnapshot = async <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+export const defaultSubscribeToSnapshot = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   snapshotId: string,
   storeId: number, // Added storeId parameter
   callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,

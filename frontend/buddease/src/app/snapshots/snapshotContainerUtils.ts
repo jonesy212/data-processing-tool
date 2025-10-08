@@ -69,7 +69,7 @@ const initializeSnapshotConfig = <
 >(
   id: string | number,
   snapshotId: string,
-  snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   criteria: CriteriaType,
   category: Category | undefined,
   categoryProperties: CategoryProperties | undefined,
@@ -79,7 +79,7 @@ const initializeSnapshotConfig = <
     // ... snapshot parameters
   ) => Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }>,
   data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-  events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>,
+  events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
   dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
   newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   payload: ConfigureSnapshotStorePayload<T, K, Meta, ExcludedFields>,
@@ -172,7 +172,7 @@ const getCategory = async <
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   type: string,
   event: SnapshotEvent<T, K, Meta, ExcludedFields>,
-  snapshotConfig: SnapshotConfig<T, K, Meta, ExcludedFields>,
+  snapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   additionalHeaders?: Record<string, string>
 ): Promise<{ categoryProperties?: CategoryProperties; snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }> => {
   try {

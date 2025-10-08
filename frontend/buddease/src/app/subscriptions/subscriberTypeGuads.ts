@@ -10,7 +10,13 @@ import { Subscriber } from "@/app/subscribers/Subscriber";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 // Type guard to differentiate between SnapshotSubscriberManagement and SnapshotStoreOptions
-function isSnapshotSubscriberManagement<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isSnapshotSubscriberManagement<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     obj: SnapshotSubscriberManagement<T, K> | SnapshotStoreOptions<T, K>
   ): obj is SnapshotSubscriberManagement<T, K> {
     return (
@@ -21,14 +27,20 @@ function isSnapshotSubscriberManagement<T extends  BaseData<any>, K extends T = 
 
 
 // Usage Example
-function handleSubscription<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function handleSubscription<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   obj: SnapshotSubscriberManagement<T, K> | SnapshotStoreOptions<T, K>,
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotId: string,
-  snapshotData: SnapshotData<T, K>,
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   category: Category | undefined,  snapshotConfig: SnapshotStoreConfig<T, K>,
-  callback: (snapshots: SnapshotsArray<T, K, Meta>) => Subscriber<T, K> | null,
-  snapshots: SnapshotsArray<T, K, Meta>
+  callback: (snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K> | null,
+  snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): void {
   if (isSnapshotSubscriberManagement(obj)) {
     // Handle SnapshotSubscriberManagement case

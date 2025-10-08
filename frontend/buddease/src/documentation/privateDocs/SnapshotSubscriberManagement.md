@@ -85,7 +85,7 @@ subscribeToSnapshotWithMetadata: (
   event: Event,
   callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   value: T,
-) => [] | SnapshotsArray<T, K, Meta>;
+) => [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 Example Usage
 typescript
 Copy

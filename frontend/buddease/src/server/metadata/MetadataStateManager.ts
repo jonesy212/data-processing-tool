@@ -1,6 +1,6 @@
 // server/metadata/MetadataStateManager.ts
 import { SharedIdentifiers } from '@/app/components/documents/RelatedProps';
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Taggable } from '@/app/models/CommonData';
 import { SharedRelationshipData } from '@/app/models/data/Data';
 import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
@@ -26,7 +26,7 @@ interface CoreMetadata<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>{
+> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>{
   schema: Record<string, SchemaField>;
 }
 
@@ -48,7 +48,7 @@ interface WithValue<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  value?: string | number | Snapshot<T, K, Meta, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields> | null;
+  value?: string | number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields> | null;
 }
 
 // Server-side metadata state creation
@@ -70,10 +70,10 @@ function createMetaState<
   timestamp: string | number | Date | undefined,
   createdBy: string,
   tags: string[],
-  metadata: UnifiedMetadata<T, K, Meta, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>,
+  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>,
   initialState: InitializedState<T, K>,
-  mappedSnapshot: Map<string, Snapshot<T, K, Meta, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>>,
-  events: EventManager<T, K, Meta, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>,
+  mappedSnapshot: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>>,
+  events: EventManager<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>,
   lastUpdated: VersionHistory<T, K>,
   isActive: boolean,
   config: Record<string, any>,
@@ -83,9 +83,9 @@ function createMetaState<
   version?: string | number | Version<T, K> | null,
   childIds?: K[],
   relatedData?: K[],
-): StructuredMetadata<T, K, Meta, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields> {
+): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields> {
 
-  const baseConfig: BaseConfig<T, K, Meta, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields> = {
+  const baseConfig: BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields> = {
     id,
     apiEndpoint,
     apiKey,
@@ -106,7 +106,7 @@ function createMetaState<
     latestVersion: metadata.latestVersion,
   };
 
-  const unifiedMetadata = createMetadata<T, K, Meta, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>({
+  const unifiedMetadata = createMetadata<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>({
     id,
     category,
     timestamp,
@@ -133,7 +133,7 @@ function createMetaState<
     ...unifiedMetadata,
     baseConfig,
     timestamp: new Date(),
-    sharedMetadata: unifiedMetadata.sharedMetadata ?? ({} as SharedMetadata<T, K, Meta, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>),
+    sharedMetadata: unifiedMetadata.sharedMetadata ?? ({} as SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields>),
     sharedBaseData: unifiedMetadata.sharedBaseData ?? ({} as SharedRelationshipData<K>),
     taggable: unifiedMetadata.taggable ?? ({} as Taggable<T, K>),
     metadataEntries: unifiedMetadata.metadataEntries ?? ({} as MetadataEntriesType<T, K>),
@@ -241,3 +241,4 @@ export const sharedMetadata: SharedMetadata<any> = {
 
 export { createMetaState };
 export type { CoreMetadata, MetaBase };
+

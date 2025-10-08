@@ -1,5 +1,5 @@
 // useNotificationManagerSlice.ts
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { WritableDraft } from "@/app/ReducerGenerator";
 import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';

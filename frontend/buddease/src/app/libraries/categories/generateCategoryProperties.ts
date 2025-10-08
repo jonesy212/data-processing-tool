@@ -1,13 +1,11 @@
-import { BaseData } from '@/app/models/data/Data';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotConfig } from '@/app/snapshots/';
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
-import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CategoryKeys } from "@/app/libraries/categories/CategoryManager";
-import { Attachment } from '@/app/documents/Attachment/attachment';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
+import { SnapshotConfig } from '@/app/snapshots/';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 type CategoryIdentifier = string | symbol;
 type Category = CategoryKeys | CategoryIdentifier | CategoryProperties | undefined;
@@ -256,7 +254,7 @@ function getOrSetCategoryForSnapshot <
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   type: string,
   event: Event,
-  snapshotConfig: SnapshotConfig<T, K>,
+  snapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   categoryProps?: Category,
   additionalHeaders?: Record<string, string>
 ): Promise<{ categoryProperties?: CategoryProperties; snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }> {
@@ -337,7 +335,7 @@ function generateOrVerifySnapshotId <
   IncludedFields extends keyof T = keyof T
 >(
   id: string | number | undefined,
-  snapshotData: SnapshotData<T, K>,
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   category: Category
 ): string {
   if (typeof id === 'number') {

@@ -1,11 +1,11 @@
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, Data } from '@/app/models/data/Data';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
-import { StructuredMetadata } from "@/config/s/StructuredMetadata";
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SubscriberCollection } from "@/app/users/SubscriberCollection";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
+import { StructuredMetadata } from "@/config/s/StructuredMetadata";
 import { SchemaField } from "@/server/database/SchemaField";
-import { Attachment } from "@/app/documents/Attachment/attachment";
 import { SnapshotUnion, SnapshotsArray } from "./LocalStorageSnapshotStore";
 import { Snapshot } from "./Snapshot";
 import { SnapshotData } from "./SnapshotData";

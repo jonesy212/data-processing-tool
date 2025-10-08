@@ -1,5 +1,5 @@
 // responseTypes.ts
-import { NestedEndpoints } from '@/app/api/endpointConfigurations';
+import { NestedEndpoints } from '@/app/api/ApiEndpoints';
 import { SearchNotesResponse } from "@/app/api/ApiNote";
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';

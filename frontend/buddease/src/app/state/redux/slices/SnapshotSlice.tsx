@@ -1,13 +1,13 @@
 // snapshots/SnapshotSlice.ts
+import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
-import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { SnapshotManager, useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { NotificationPosition, StatusType } from "@/app/models/data/StatusType";
+import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Callback, snapshot, SnapshotConfig, SnapshotData, SnapshotWithCriteria } from "@/app/snapshots";
 import { Snapshot, Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
@@ -17,17 +17,17 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { CreateSnapshotsPayload, Payload } from '@/server/database/Payload';
 
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
+import { NotificationType } from "@/app/context/NotificationContext";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Content } from "@/app/models/content/AddContent";
 import { K, Meta, T } from "@/app/models/data/dataStoreMethods";
-import { ExcludedFields } from "@/app/routing/Fields";
-import { sendNotification } from "@/app/users/UserSlice";
-import { NotificationType } from "@/app/context/NotificationContext";
-import { Attachment } from "@/app/documents/Attachment/attachment";
 import { WritableDraft } from "@/app/ReducerGenerator";
+import { ExcludedFields } from "@/app/routing/Fields";
 import { FetchSnapshotPayload } from "@/app/snapshots/FetchSnapshotPayload";
 import { getSnapshotItems } from "@/app/snapshots/snapshotOperations";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from "@/app/users/SubscriberCollection";
+import { sendNotification } from "@/app/users/UserSlice";
 import { findCorrectSnapshotStore, isSnapshot } from "@/app/utils/snapshotUtils";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -171,7 +171,13 @@ const useSnapshotSlice = createSlice({
 
     
 
-    batchRemoveSnapshotsRequest: <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+    batchRemoveSnapshotsRequest: <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
       state, // Specify state type here
       action: PayloadAction<{ startDate: Date; endDate: Date }>
     ) => {
@@ -182,7 +188,13 @@ const useSnapshotSlice = createSlice({
       state.loading = true;
       state.error = null;
 
-      const notifySubscribers = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+      const notifySubscribers = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
         subscribers: Subscriber<T, K, Meta, ExcludedFields>[]
       ) => {
         const { startDate, endDate } = action.payload;
@@ -224,7 +236,13 @@ const useSnapshotSlice = createSlice({
       state.loading = true;
       state.error = null;
 
-      const notifySubscribers = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+      const notifySubscribers = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
         subscribers: Subscriber<T, K, Meta, ExcludedFields>[],
         action: PayloadAction<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; subscriber: Subscriber<T, K, Meta, ExcludedFields> }>
       ) => {
@@ -609,7 +627,7 @@ export const createMockSnapshot = <
     addSnapshot: function (
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
       snapshotId: string, 
-      subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
       throw new Error("Function not implemented.");
     },
@@ -617,14 +635,14 @@ export const createMockSnapshot = <
     createInitSnapshot: function (
       id: string,
       initialData: T,
-      snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       category: Category | undefined,            
       additionalData: any
       ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
       throw new Error("Function not implemented.");
     },
-    setSnapshotSuccess: function (snapshotData: SnapshotData<T, K, Meta, ExcludedFields>, subscribers: ((data: Subscriber<T, K, Meta, ExcludedFields>) => void)[]): void {
+    setSnapshotSuccess: function (snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, subscribers: ((data: Subscriber<T, K, Meta, ExcludedFields>) => void)[]): void {
       throw new Error("Function not implemented.");
     },
     setSnapshotFailure: function (error: Error): void {
@@ -642,7 +660,7 @@ export const createMockSnapshot = <
     initSnapshot: function (
       snapshot: SnapshotStore<BaseData, BaseData> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
       snapshotId: string | number | null,
-      snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -736,10 +754,10 @@ export const createMockSnapshot = <
       criteria: CriteriaType,
       snapshotData: (
         snapshotIds: string[],
-        subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>,
+        subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshots: Snapshots<BaseData>
       ) => Promise<{
-        subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>;
+        subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
         snapshots: Snapshots<BaseData>; // Include snapshots here for consistency
       }>
     ): Promise<Snapshots<BaseData>> {
@@ -758,8 +776,8 @@ export const createMockSnapshot = <
       throw new Error("Function not implemented.");
     },
     batchUpdateSnapshotsRequest: function (
-      snapshotData: (subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>) => Promise<{
-        subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>;
+      snapshotData: (subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<{
+        subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
         snapshots: Snapshots<T, K, Meta, ExcludedFields>
       }>,
       snapshotManager: SnapshotManager<BaseData, BaseData>
@@ -804,7 +822,7 @@ export const createMockSnapshot = <
     handleSnapshotSuccess: function (message: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, snapshotId: string): void {
       throw new Error("Function not implemented.");
     },
-    getSnapshotId: function (key: string | SnapshotData<T, K, Meta, ExcludedFields>): unknown {
+    getSnapshotId: function (key: string | SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): unknown {
       throw new Error("Function not implemented.");
     },
     compareSnapshotState: function (snapshot1: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, state: any): boolean {

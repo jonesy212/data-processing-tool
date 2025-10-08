@@ -13,7 +13,13 @@ import {
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useDispatch } from 'react-redux';
 
-interface BaseDataOperations<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface BaseDataOperations<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T> {
   fetchData(): Promise<void>; // Fetch data doesn't need parameters
   addData(newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void; // New method signature for adding data
   updateData(id: number, newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void; // Match the DataStore update signature
@@ -21,7 +27,13 @@ interface BaseDataOperations<T extends  BaseData<any>, K extends T = T, Meta ext
 }
 
   
-class BaseDataManager<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> implements BaseDataOperations<T> {
+class BaseDataManager<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T> implements BaseDataOperations<T> {
   private dispatch = useDispatch();
 
   async fetchData(): Promise<void> {

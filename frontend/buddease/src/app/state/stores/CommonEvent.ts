@@ -112,7 +112,7 @@ export function implementThen<
     events: {} as EventStore<T, K, Meta, ExcludedFields>,
     meta: {},
     // Corrected getSnapshotId implementation
-    getSnapshotId: function (key: string | SnapshotData<T, K, Meta, ExcludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): unknown {
+    getSnapshotId: function (key: string | SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): unknown {
       // If the key is a string, you can use it directly
       if (typeof key === 'string') {
         return snapshot.id; // or some logic to derive the ID
@@ -207,12 +207,12 @@ export function implementThen<
     handleSnapshot: function (
       id: string,
       snapshotId: string,
-      snapshot: T extends SnapshotData<T, K, Meta, ExcludedFields> ? Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> : null,  // Use conditional type to ensure properties exist
+      snapshot: T extends SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ? Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> : null,  // Use conditional type to ensure properties exist
       snapshotData: T,
       category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
-      snapshots: SnapshotsArray<T, K, Meta>,
+      snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
       event: Event,
       snapshotContainer?: T,
@@ -237,7 +237,7 @@ export function implementThen<
       event: Event,
       callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       value: T,
-    ): SnapshotsArray<T, K, Meta> {
+    ): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
       const foundSubscriber = subscriber as Subscriber<T, K>;
       if (foundSubscriber) {
         foundSubscriber.getState(data);
@@ -254,7 +254,7 @@ export function implementThen<
       // Type assertion when passing to callback
       callback(newSnapshot as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
     
-      // Return an appropriate SnapshotsArray<T, K, Meta> value.
+      // Return an appropriate SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> value.
       return [newSnapshot as unknown as SnapshotUnion<T, K, Meta>];
     }
   }

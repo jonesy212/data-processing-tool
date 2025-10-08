@@ -1,6 +1,6 @@
 // subscriberApi.ts 
 import axiosInstance from "@/app/api/csrfToken";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 

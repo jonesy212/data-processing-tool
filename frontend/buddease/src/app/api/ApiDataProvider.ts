@@ -7,7 +7,7 @@ import {
     useNotification,
 } from "@/app/context/NotificationContext";
 import { AxiosError } from "axios";
-import { handleApiError } from "./ApiLogs";
+import { handleApiError } from '@/app/api/ApiLogs';
 
 const API_BASE_URL = endpoints.dataProviders;
 

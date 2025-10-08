@@ -1,16 +1,13 @@
 // NotificationSlice.tsx
-import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { NotificationTypeEnum } from '@/app/context/NotificationContext';
-import { BaseData, Data } from '@/app/models/data/Data';
+import { BaseData } from '@/app/models/data/Data';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { DocumentOptions } from '@/documents/DocumentOptions';
 import { LogData } from '@/models/LogData';
 import { WritableDraft } from '@/state/redux/ReducerGenerator';
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
 
-import { Attachment } from '@/app/documents/Attachment/attachment';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
  
@@ -130,4 +127,3 @@ export const selectNotifications = (state: { notifications: NotificationsState }
   state.notifications.notifications;
 
 export default notificationsSlice.reducer;
-export type { NotificationData };

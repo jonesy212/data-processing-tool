@@ -144,7 +144,7 @@ subscribeToSnapshots: function<
   this: SnapshotStore<T, K, Meta, ExcludedFields>,
   snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
   snapshotId: string,
-  snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   category: Category | undefined,
   snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   callback: (

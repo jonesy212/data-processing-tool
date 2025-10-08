@@ -1,10 +1,10 @@
 import { BaseEntityProperties, SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
-import { AllTypes } from '@/app/typings/PropTypes';
-import { SpecificMetadata, StructuredMetadata } from '@/config/StructuredMetadata';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { TagsRecord } from '@/app/snapshots';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
+import { AllTypes } from '@/app/typings/PropTypes';
 import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { SpecificMetadata, StructuredMetadata } from '@/config/StructuredMetadata';
 import React from 'react';
 
 
@@ -31,7 +31,7 @@ interface TagOptions<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SharedIdentifiers<T, K, Meta, ExcludedFields, IncludedFields>, 
+> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
           BaseEntityProperties, 
           SharedTimestamps {
   color: string;

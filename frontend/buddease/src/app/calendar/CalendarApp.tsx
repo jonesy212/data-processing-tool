@@ -384,7 +384,7 @@ function CalendarApp<
       id: number,
       snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
       data: T,
-    ): Promise<Snapshot<T, K, Meta>[]> {
+    ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
       try {
         const keys = await this.getAllKeys(
           storeId,
@@ -529,9 +529,9 @@ function CalendarApp<
         data: K,
         index: number
       ) => SnapshotsObject<T, K>
-    ): Promise<SnapshotsArray<T, K, Meta>> {
+    ): Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
       // Initialize an array to store results from callback executions
-      const result: SnapshotsArray<T, K, Meta> = [];
+      const result: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [];
     
       // Loop through each storeId and execute the callback
       for (let i = 0; i < storeIds.length; i++) {
@@ -621,7 +621,7 @@ function CalendarApp<
       snapshot: (id: string) =>
         | Promise<{
           snapshotId: number;
-          snapshotData: SnapshotData<T, K>;
+          snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
           category: Category | undefined;
           categoryProperties: CategoryProperties;
           dataStoreMethods: DataStore<T, K>;
@@ -650,9 +650,9 @@ function CalendarApp<
       id: number,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
-      snapshotData: SnapshotData<T, K>,
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       data: Data<T>,
-      snapshotsArray: SnapshotsArray<T, K, Meta>,
+      snapshotsArray: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotsObject: SnapshotsObject<T, K>
     ): Promise<SnapshotContainer<T, K, Meta, ExcludedFields> | undefined> {
       throw new Error("Function not implemented.");
@@ -745,7 +745,13 @@ function CalendarApp<
     host: {} as Member,
     teamMemberId: "",
     participants: [],
-    then: function<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(callback: (newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
+    then: function<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(callback: (newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
       if (this as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
         callback(this as unknown as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
       }

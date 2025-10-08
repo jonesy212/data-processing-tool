@@ -1,12 +1,13 @@
 //CalendarEvent.ts
+import { Label } from '@/app/branding/BrandingSettings';
+import { Team } from "@/app/components/models/teams/Team";
+import { Member } from "@/app/components/models/teams/TeamMembers";
+import { NotificationType } from '@/app/context/NotificationContext';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { CommonData } from "@/app/models/CommonData";
 import { BaseData } from '@/app/models/data/Data';
-import { Team } from "@/app/components/models/teams/Team";
-import { Member } from "@/app/components/models/teams/TeamMembers";
 import { Phase, PhaseData } from "@/app/models/phases/Phase";
-import { Label } from '@/app/branding/BrandingSettings';
-import { NotificationType } from '@/app/context/NotificationContext';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CalendarEventWithCriteria } from "@/app/pages/searchs/FilterCriteria";
 import { TagsRecord } from "@/app/snapshots";
@@ -15,14 +16,13 @@ import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { CommonEvent } from "@/app/state/stores/CommonEvent";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
+import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/utils/web3/dAppAdapter/AppEntity";
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { AppStructuredMetadata, AppUnifiedMetadata } from "@/app/utils/web3/dAppAdapter/AppEntity";
-import { Attachment } from '@/app/documents/Attachment/attachment';
 import { Attendee } from "./Attendee";
 
 

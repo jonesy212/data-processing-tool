@@ -14,14 +14,12 @@ import {
   LanguageEnum
 } from "@/app/communications/LanguageEnum";
 import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
-import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
 import { SortCriteria } from "@/app/settings/SortCriteria";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
-import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
+import { TeamEntity, TeamMeta } from '@/app/typings/entities/teamTypes';
 import { DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { TeamEntity, TeamMeta } from '@/app/typings/entities/teamTypes'
 const options: SearchOptions = {
   communicationMode: "email", // Example communication mode
   size: "medium",

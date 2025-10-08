@@ -25,7 +25,13 @@ import socketIOClient from "socket.io-client";
  
 const API_BASE_URL = endpoints;
 // FileSharingComponent functional component
-const FileSharingComponent: React.FC = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>() => {
+const FileSharingComponent: React.FC = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>() => {
   // State for managing selected file
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   // Ensure that inputValue is a string state
@@ -44,7 +50,13 @@ const FileSharingComponent: React.FC = <T extends  BaseData<any>, K extends T = 
   const router = useRouter(); // Get the router object using useRouter hook
 
   // Implement the update callback function
-  const updateCallback = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  const updateCallback = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
     data: SupportedData<T, K, Meta>[],
     events: Record<string, CalendarEvent[]>,
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

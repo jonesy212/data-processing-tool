@@ -34,7 +34,7 @@ export const SnapshotMethodsImplementation = {
     this: SnapshotStore<T, K, Meta, ExcludedFields>,
     id: string | number | undefined,
     snapshotId: string | null,
-    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void,
@@ -45,7 +45,7 @@ export const SnapshotMethodsImplementation = {
     endpointCategory: string | number,
     storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
     subscription?: Subscription<T, K, Meta, ExcludedFields>,
-    snapshotConfigData?: SnapshotConfig<T, K, Meta, ExcludedFields>,
+    snapshotConfigData?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: SnapshotContainerType<T, K, Meta, ExcludedFields>,
   ): Promise<{snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>}> {
@@ -127,7 +127,7 @@ export const SnapshotMethodsImplementation = {
     this: SnapshotStore<T, K, Meta, ExcludedFields>,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
-    subscribers?: SubscriberCollection<T, K, Meta, ExcludedFields>
+    subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
     try {
       // Validate input
@@ -438,7 +438,7 @@ export const SnapshotMethodsImplementation = {
     id: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
-    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     savedState: SnapshotStore<T, K, Meta, ExcludedFields>,
     category: Category | undefined,
     callback: (snapshot: T) => void,
@@ -446,7 +446,7 @@ export const SnapshotMethodsImplementation = {
     type: string,
     event: string | SnapshotEvents<T, K, Meta, ExcludedFields>,
     realtimeData?: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
-    subscribers?: SubscriberCollection<T, K, Meta, ExcludedFields>,
+    subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: SnapshotContainerType<T, K, Meta, ExcludedFields>,
     snapshotStoreConfig?: SnapshotStoreConfig<SnapshotUnion<BaseData, Meta>, K> | undefined
   ): void {
@@ -473,7 +473,7 @@ export const SnapshotMethodsImplementation = {
 
     switch (type) {
       case "restore":
-        // Ensure snapshotData is compatible with SnapshotsArray<T, K, Meta>
+        // Ensure snapshotData is compatible with SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
         if (!snapshots.includes(snapshotData as unknown as SnapshotUnion<T, K, Meta, ExcludedFields>)) {
           snapshots.push(snapshotData as unknown as SnapshotUnion<T, K, Meta, ExcludedFields>);
         }
@@ -537,7 +537,7 @@ export const SnapshotMethodsImplementation = {
     category?: Category,
     categoryProperties?: CategoryProperties,
     delegate?: any,
-    snapshotData?: SnapshotData<T, K, Meta, ExcludedFields>
+    snapshotData?: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): SnapshotContainer<T, K, Meta, ExcludedFields> | undefined;
   
   /**

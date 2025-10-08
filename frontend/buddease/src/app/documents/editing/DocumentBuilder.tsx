@@ -4,7 +4,7 @@ import {
   createContentStateFromText,
   fetchContentIdFromAPI
 } from "@/app/api/ApiContent";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ExcludedFields } from '@/app/routing/Fields';
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
@@ -14,7 +14,6 @@ import { endpoints } from "@/app/api/endpointConfigurations";
 import { LanguageEnum } from "@/app/communications/LanguageEnum";
 import { ToolbarOptionsComponent, ToolbarOptionsProps } from "@/app/components/documents/ToolbarOptions";
 import { getTextBetweenOffsets } from "@/app/components/documents/getTextBetweenOffsets";
-import { BaseData } from '@/app/models/data/Data';
 import { selectedmetadata } from "@/app/components/routing/MetadataComponent";
 import SharingOptions from "@/app/components/shared/SharingOptions";
 import {
@@ -29,7 +28,7 @@ import { determineDocumentType } from "@/app/libraries/categories/determineDocum
 import { CustomContentState } from "@/app/libraries/ui/CustomContentState";
 import { CommonData } from "@/app/models/CommonData";
 import { Content } from "@/app/models/content/AddContent";
-import { Data, TodoSubtasks } from '@/app/models/data/Data';
+import { BaseData, Data, TodoSubtasks } from '@/app/models/data/Data';
 import FileData from "@/app/models/data/FileData";
 import FolderData from "@/app/models/data/FolderData";
 import { DocumentSize, ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
@@ -38,7 +37,6 @@ import { Team } from "@/app/models/teams/Team";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { Phase } from "@/app/phases/Phase";
 import PromptViewer from "@/app/prompts/PromptViewer";
-import { TagsRecord } from "@/app/snapshots";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import {
   addDocumentSuccess,

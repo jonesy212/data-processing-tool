@@ -7,7 +7,7 @@ import { User } from "@/app/users/User";
 import { useNotification } from "@/context/NotificationContext";
 import { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
-import { handleApiError } from "./ApiLogs";
+import { handleApiError } from '@/app/api/ApiLogs';
 
 
 const API_BASE_URL = endpoints.apiConfig

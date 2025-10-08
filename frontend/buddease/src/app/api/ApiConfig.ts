@@ -1,3 +1,5 @@
+import { EndpointConfig, EndpointConfigurations } from '@/app/api/endpointConfigurations';
+import { Endpoints } from '@/app/api/ApiEndpoints';
 
 type EndpointCategory = keyof EndpointConfigurations;
 type EndpointKey<T extends EndpointCategory> = keyof EndpointConfigurations[T];

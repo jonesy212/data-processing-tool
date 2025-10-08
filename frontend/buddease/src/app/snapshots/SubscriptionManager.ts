@@ -55,7 +55,7 @@ interface SubscriptionManager<
   getSubscribers: (
     snapshotId?: string,
     eventType?: string
-  ) => SubscriberCollection<T, K, Meta, ExcludedFields>[];
+  ) => SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 
   // Notification system
   notifySubscribers: (

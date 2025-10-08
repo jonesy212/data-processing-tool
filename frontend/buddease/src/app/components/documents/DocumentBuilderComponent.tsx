@@ -1,6 +1,6 @@
 // DocumentBuilderComponent.tsx
 import { BaseData } from '@/app/models/data/Data';
-import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { ExcludedFields } from '@/app/components/routing/Fields';
 import DocumentBuilder, { saveDocument } from "@/app/documents/editing/DocumentBuilder";
 import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
@@ -12,7 +12,13 @@ import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent
 
 const dispatch = useDispatch()
 
-function formatDocument<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function formatDocument<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   documentObject: DocumentObject<T, K>,
   options: DocumentFormattingOptions
 ): DocumentObject<T, K> {
@@ -29,7 +35,13 @@ function validateDocumentType(documentType: string): string | null {
 }
 
 // Define the buildDocument function
-const buildDocument = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const buildDocument = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   options: DocumentFormattingOptions,
   documentObject: DocumentObject<T, K>,
   documentType: string

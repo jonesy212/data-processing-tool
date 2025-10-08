@@ -1,4 +1,4 @@
-import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { NotificationTypeEnum } from "@/app/context/NotificationContext";
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DataDetails } from '@/app/models/data/Data';
@@ -119,7 +119,7 @@ class UniqueIDGenerator {
     message: string,
     content: any,
     timestamp: Date,
-    type: NotificationTypeEnum,
+    type: NotificationType,
     notificationType: NotificationType = NotificationTypeEnum.System,
     options?: {
       additionalOptions?: readonly string[] | string | number | any[] | undefined;
@@ -159,7 +159,7 @@ class UniqueIDGenerator {
 
   static generateTrackerID(
     name: string,
-    type: NotificationTypeEnum,
+    type: NotificationType,
     id?: string,
   ): string {
     return UniqueIDGenerator.generateID(
@@ -260,7 +260,7 @@ class UniqueIDGenerator {
 
   static generateDocumentID(
     name: string,
-    type: NotificationTypeEnum,
+    type: NotificationType,
   ): string {
     return `document_${name}_${type}`;
   }
@@ -309,7 +309,7 @@ class UniqueIDGenerator {
   static generatePresentationID(
     prefix: string,
     name: string,
-    type: NotificationTypeEnum,
+    type: NotificationType,
     id?: string,
     title?: string,
     notificationType?: NotificationType,
@@ -435,7 +435,7 @@ class UniqueIDGenerator {
   static generateID(
     prefix: string,
     name: string,
-    type: NotificationTypeEnum,
+    type: NotificationType,
     id?: string,
     title?: string,
     chatThreadName?: string,

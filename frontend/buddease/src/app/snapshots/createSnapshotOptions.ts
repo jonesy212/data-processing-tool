@@ -86,7 +86,7 @@ function createSnapshotOptions<
   snapshotObj: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshot: (
     id: string | number | undefined,
-    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: Category | undefined,
     callback: (snapshot: SnapshotStore<T, K, Meta, ExcludedFields>) => void,
     criteria: CriteriaType,
@@ -94,7 +94,7 @@ function createSnapshotOptions<
     snapshotId: string | null,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: SnapshotContainerType<T, K, Meta, ExcludedFields>
-  ) => Promise<SnapshotData<T, K, Meta, ExcludedFields>>,
+  ) => Promise<SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   simulatedDataSource?: SimulatedDataSource<T, K, Meta, ExcludedFields> // Optional parameter for SimulatedDataSource
 ): SnapshotStoreOptions<T, K, Meta, ExcludedFields> {
   const dataMap = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
@@ -143,7 +143,7 @@ function createSnapshotOptions<
       callback?: ((snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void),
       snapshotData?: SnapshotStore<T, K, Meta, ExcludedFields>,
       snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      subscribers?: SubscriberCollection<T, K, Meta, ExcludedFields>
+      subscribers?: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null => {
       return configureSnapshot(id, category, callback, snapshotData, snapshotStoreConfig, subscribers);
     },

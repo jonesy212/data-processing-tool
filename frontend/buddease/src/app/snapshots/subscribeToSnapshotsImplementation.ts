@@ -1,5 +1,5 @@
 // subscribeToSnapshotsImplementation.ts
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
 
 import SnapshotStore from '@/app/snapshots/SnapshotStore';

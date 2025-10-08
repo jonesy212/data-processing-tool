@@ -11,7 +11,7 @@ import { Category } from "@/app/libraries/categories/generateCategoryProperties"
 import { BaseData, Data } from '@/app/models/data/Data';
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import {  Snapshots, SnapshotUnion } from "./LocalStorageSnapshotStore";
 import { Snapshot } from "./Snapshot";
 import { SnapshotOperation } from "./SnapshotActions";
@@ -22,7 +22,7 @@ import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataS
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { CategoryProperties } from '@/pages/personas/ScenarioBuilder';
 import { SnapshotContext } from '@/app/snapshots/SnapshpshotSubscriberManagement';
@@ -57,7 +57,7 @@ interface SnapshotStoreSubset<
   updateSnapshot: (
     snapshotId: string,
     data: SnapshotStore<T, K, Meta, ExcludedFields>,
-    events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>,
+    events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
     snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
     dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
     newData: T | Data<T, K, Meta, Attachment, ExcludedFields>
@@ -71,7 +71,7 @@ interface SnapshotStoreSubset<
   clearSnapshots: () => void;
 
   // Initializes a snapshot with various possible data types.
-  createInitSnapshot: (snapshotData: SnapshotData<T, K, Meta, ExcludedFields> | Snapshot<BaseData> | null | undefined) => void;
+  createInitSnapshot: (snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<BaseData> | null | undefined) => void;
 
   // Called when a snapshot creation is successful.
   createSnapshotSuccess: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, storeId: number) => void;

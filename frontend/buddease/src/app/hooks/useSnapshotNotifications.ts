@@ -6,6 +6,8 @@ import { notificationStoreInstance } from '@/app/state/stores/NotificationStore'
 import { useSnapshot } from "@/context/SnapshotContext";
 import { useCallback } from 'react';
 import { NotificationData } from '@/app/state/redux/slices/NofiticationsSlice'
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Snapshot notification types
 interface SnapshotNotificationOptions {

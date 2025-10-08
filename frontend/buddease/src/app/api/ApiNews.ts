@@ -1,7 +1,10 @@
 // ApiNews.ts
-import axiosInstance from '@/app/api/csrfToken'
+import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { handleApiErrorAndNotify } from '@/app/api/ApiData';
+import { useNotification } from '@/app/context/NotificationContext';
+import { NotificationType } from "@/context/NotificationContext";
 import { AxiosError, AxiosResponse } from 'axios';
-import { endpoints } from '@/app//endpointConfigurations';
 
 const  newsApiBaseURL = endpoints; // Ensure you have this defined in your ApiEndpoints
 
@@ -24,15 +27,20 @@ interface NewsNotificationMessages {
   };
 
 
-  const handleApiErrorAndNotify = (
-    error: AxiosError<unknown>,
-    defaultMessage: string,
-    errorId: keyof NewsNotificationMessages
-  ) => {
-    const message = newsNotificationMessages[errorId] || defaultMessage;
-    console.error(`Error: ${message}`, error);
-    // Add additional notification handling logic here, such as displaying a toast notification.
-  };
+// Generic handleNewsApiErrorAndNotify that works with any notification messagesconst handleNewsApiErrorAndNotify = (
+const handleNewsApiErrorAndNotify = (
+  error: AxiosError<unknown>,
+  defaultMessage: string,
+  errorId: keyof NewsNotificationMessages
+) => {
+  handleApiErrorAndNotify(
+    error,
+    defaultMessage,
+    errorId,
+    newsNotificationMessages
+  );
+};
+
 
 
 // Fetch News Articles
@@ -41,10 +49,11 @@ export const fetchNewsArticles = async (): Promise<any[]> => {
     const response: AxiosResponse<any[]> = await axiosInstance.get(`${newsApiBaseURL}/articles`);
     return response.data;
   } catch (error) {
-    handleApiErrorAndNotify(
+    handleNewsApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to fetch news articles',
-      'FetchNewsArticlesErrorId' as keyof NewsNotificationMessages
+      'FetchNewsArticlesErrorId' as keyof NewsNotificationMessages,
+      newsNotificationMessages
     );
     return [];
   }
@@ -56,10 +65,11 @@ export const fetchNewsArticleById = async (articleId: number): Promise<any> => {
     const response: AxiosResponse<any> = await axiosInstance.get(`${newsApiBaseURL}/articles/${articleId}`);
     return response.data;
   } catch (error) {
-    handleApiErrorAndNotify(
+    handleNewsApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to fetch news article by ID',
-      'FetchNewsArticleByIdErrorId' as keyof NewsNotificationMessages
+      'FetchNewsArticleByIdErrorId' as keyof NewsNotificationMessages,
+      newsNotificationMessages
     );
     throw error;
   }
@@ -70,10 +80,11 @@ export const postNewArticle = async (newArticle: any): Promise<void> => {
   try {
     await axiosInstance.post(`${newsApiBaseURL}/articles`, newArticle);
   } catch (error) {
-    handleApiErrorAndNotify(
+    handleNewsApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to post new article',
-      'PostNewArticleErrorId' as keyof NewsNotificationMessages
+      'PostNewArticleErrorId' as keyof NewsNotificationMessages,
+      newsNotificationMessages
     );
     throw error;
   }
@@ -84,10 +95,11 @@ export const updateArticle = async (articleId: number, updatedArticle: any): Pro
   try {
     await axiosInstance.put(`${newsApiBaseURL}/articles/${articleId}`, updatedArticle);
   } catch (error) {
-    handleApiErrorAndNotify(
+    handleNewsApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to update article',
-      'UpdateArticleErrorId' as keyof NewsNotificationMessages
+      'UpdateArticleErrorId' as keyof NewsNotificationMessages,
+      newsNotificationMessages
     );
     throw error;
   }
@@ -98,10 +110,11 @@ export const deleteArticle = async (articleId: number): Promise<void> => {
   try {
     await axiosInstance.delete(`${newsApiBaseURL}/articles/${articleId}`);
   } catch (error) {
-    handleApiErrorAndNotify(
+    handleNewsApiErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to delete article',
-      'DeleteArticleErrorId' as keyof NewsNotificationMessages
+      'DeleteArticleErrorId' as keyof NewsNotificationMessages,
+      newsNotificationMessages
     );
     throw error;
   }

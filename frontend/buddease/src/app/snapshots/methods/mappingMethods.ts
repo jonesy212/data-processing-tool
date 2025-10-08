@@ -51,7 +51,7 @@ export const MapMethods = {
       data: K,
       index: number
     ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): Promise<SnapshotsArray<T, K, Meta>> {
+  ): Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     // Implementation using this.* for instance access
     if (!this.delegate || this.delegate.length === 0) {
       return Promise.resolve([]);

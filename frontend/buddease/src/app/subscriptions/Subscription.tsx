@@ -1,6 +1,6 @@
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { TriggerIncentivesParams } from "@/app/components/utils/applicationUtils";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SubscriberTypeEnum, SubscriptionTypeEnum } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -9,8 +9,8 @@ import { SubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
 import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 
 import { UnsubscribeDetails } from '@/app/components/event/DynamicEventHandlerExample';
-import { BaseData } from '@/app/models/data/Data';
 import { ModifiedDate } from '@/app/documents/DocType';
+import { BaseData } from '@/app/models/data/Data';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { Callback } from '@/app/snapshots/subscribeToSnapshotsImplementation';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
@@ -114,7 +114,7 @@ type Subscription<
     subscriptionId?: string;
     subscriberType?: SubscriberTypeEnum;
     subscriptionType?: SubscriptionTypeEnum;
-    subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>;
+    subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined;
     triggerIncentives: ({ userId, incentiveType, params }: TriggerIncentivesParams) => void;

@@ -1,5 +1,5 @@
 import { Data } from "@/app/data/Data";
-import { FileType } from "@/app/documents/Attachment/attachment";
+import { FileType } from "@/app/documents/attachment/attachment";
 import { StatusType } from "@/app/models/data/StatusType";
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { Tag } from "@/app/tracker/Tag";

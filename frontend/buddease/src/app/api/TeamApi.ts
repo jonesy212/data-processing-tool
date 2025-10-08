@@ -5,7 +5,7 @@ import { NotificationType, useNotification } from "@/app/context/NotificationCon
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { AxiosError, AxiosResponse } from "axios";
 import { useParams } from "react-router-dom";
-import { handleApiError } from "./ApiLogs";
+import { handleApiError } from '@/app/api/ApiLogs';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.teams;

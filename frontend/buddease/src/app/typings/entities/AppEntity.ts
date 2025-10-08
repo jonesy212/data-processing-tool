@@ -1,21 +1,17 @@
 // AppEntity.ts
-import { SnapshotData } from "@/app/snapshots/SnapshotData";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
-import { Attachment } from "@/app/documents/Attachment/attachment";
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotStore } from '@/app/snapshots/SnapshotStore';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SnapshotConfig } from "@/app/snapshot/SnapshotConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
-import { useMeta } from "@/config/useMeta";
-import { useMetadata } from "@/config/useMetadata";
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 // Core App type definitions
 type AppEntity = BaseDataEntity;
@@ -74,27 +70,12 @@ type AppParams = SnapshotConfigParams<AppEntity, AppK, AppMeta, AppAttachment, A
 type ApplyFieldFilters<
   T extends BaseDataEntity,
   Excluded extends keyof T = never,
-  Included extends keyof T = keyof T
-> = Pick<Omit<T, Excluded>, Included>;
+  Included extends Exclude<keyof T, Excluded> = Exclude<keyof T, Excluded>
+  > = Pick<Omit<T, Excluded>, Included>;
 
-export type { 
-  AppEntity,
-  AppK,
-  AppMeta,
-  AppAttachment,
-  AppExcludedFields,
-  AppIncludedFields,
-  AppSnapshot,
-  AppSnapshotData,
-  AppSnapshotStore,
-  AppSnapshotWithCriteria,
-  AppSubscriberCollection,
-  AppRealtimeDataItem,
-  AppSnapshotStoreConfig,
-  AppSnapshotsArray,
-  AppParams,
-  AppBaseParams,
-  AppUnifiedMetadata,
-  AppStructuredMetadata,
-  ApplyFieldFilters
+
+export type {
+  AppAttachment, AppBaseParams, AppEntity, AppExcludedFields,
+  AppIncludedFields, AppK, ApplyFieldFilters, AppMeta, AppParams, AppRealtimeDataItem, AppSnapshot,
+  AppSnapshotData, AppSnapshotsArray, AppSnapshotStore, AppSnapshotStoreConfig, AppSnapshotWithCriteria, AppStructuredMetadata, AppSubscriberCollection, AppUnifiedMetadata
 };

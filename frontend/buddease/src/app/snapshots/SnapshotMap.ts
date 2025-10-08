@@ -111,7 +111,7 @@ function isSnapshotFunction<T extends BaseDataEntity, K extends T = T, Meta exte
 ): snapshot is (
   id: string | number | undefined,
   snapshotId: string | null,
-  snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   category: Category,
   categoryProperties: CategoryProperties | undefined,
   callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields> | null) => void,
@@ -121,7 +121,7 @@ function isSnapshotFunction<T extends BaseDataEntity, K extends T = T, Meta exte
   subscriberId: string,
   endpointCategory: string | number,
   storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
-  snapshotConfigData: SnapshotConfig<T, K, Meta, ExcludedFields>,
+  snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscription: Subscription<T, K, Meta, ExcludedFields>,
   snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotContainer?: SnapshotContainer<T, K, Meta, ExcludedFields>

@@ -1,6 +1,6 @@
 // snapshotOperations.ts
 import { EnhancedSnapshotData } from '@/app/api/processSnapshotData';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { Content } from "@/app/models/content/AddContent";
@@ -11,6 +11,8 @@ import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { ExcludedFields } from '@/app/routing/Fields';
 import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
+import { InitializedData, SnapshotStoreOptions } from '@/app/snapshots/SnapshpshotStoreOptions';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshpshotWithCriteria';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SnapshotEvent } from '@/app/typings/eventTypes';
@@ -20,8 +22,6 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { UpdateSnapshotPayload } from "@/server/database/Payload";
 import { SchemaField } from '@/server/database/SchemaField';
-import { InitializedData, SnapshotStoreOptions } from '@/app/snapshots/SnapshpshotStoreOptions';
-import { SnapshotWithCriteria } from '@/app/snapshots/SnapshpshotWithCriteria';
 import { UpdateSnapshotParams } from '@/UpdateSnapshotParams';
 import { SubscriberCollection } from '@/users/SubscriberCollection';
 import { VersionData } from '@/versions/VersionData';
@@ -270,8 +270,8 @@ const mapSnapshots = async <
     data: T,
     index: number
   ) => SnapshotUnion<T, K, Meta>
-): Promise<SnapshotsArray<T, K, Meta>> => {
-  const snapshotsArray: SnapshotsArray<T, K, Meta> = [];
+): Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+  const snapshotsArray: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [];
 
   for (let i = 0; i < storeIds.length; i++) {
     const snapshotObject = callback(

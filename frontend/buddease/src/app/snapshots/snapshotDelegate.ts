@@ -112,8 +112,8 @@ const snapshotDelegate = <
           ) => void;
 
           batchUpdateSnapshotsRequest: (
-            snapshotData: (subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>) => Promise<{
-              subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>;
+            snapshotData: (subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<{
+              subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
               snapshots: Snapshots<T, K, Meta, ExcludedFields>
             }>,
             snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>
@@ -126,7 +126,7 @@ const snapshotDelegate = <
             snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>,
             payload: CreateSnapshotsPayload<T, K, Meta, ExcludedFields>,
             callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
-            snapshotDataConfig?: SnapshotConfig<T, K, Meta, ExcludedFields>[] | undefined,
+            snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined,
             category?:  Category,
             categoryProperties?: string | CategoryProperties
           ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
@@ -150,10 +150,10 @@ const snapshotDelegate = <
             criteria: CriteriaType,
             snapshotData: (
               snapshotIds: string[],
-              subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>,
+              subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
               snapshots: Snapshots<T, K, Meta, ExcludedFields>
             ) => Promise<{
-              subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>;
+              subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
               snapshots: Snapshots<T, K, Meta, ExcludedFields>; // Include snapshots here for consistency
             }>
           ) => Promise<Snapshots<T, K, Meta, ExcludedFields>>;
@@ -189,7 +189,7 @@ const snapshotDelegate = <
               delegate: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
           }>;
 
-          getSnapshotData(params: SnapshotDataParams<T, K, Meta, ExcludedFields>): SnapshotData<T, K, Meta, ExcludedFields> | undefined
+          getSnapshotData(params: SnapshotDataParams<T, K, Meta, ExcludedFields>): SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
           
           setSnapshotCategory: (id: string, category: Category) => void;
           getSnapshotCategory: (id: string) => string;
@@ -433,7 +433,7 @@ const snapshotDelegate = <
       getSnapshotVersions: (
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotId: string,
-        snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+        snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         versionHistory: VersionHistory,
       ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
         return new Promise(async (resolve, reject) => {
@@ -581,7 +581,7 @@ const snapshotDelegate = <
       fetchData: async (
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotId: string,
-        snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+        snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
       ): Promise<VersionData[]> => {
@@ -605,7 +605,7 @@ const snapshotDelegate = <
       snapshotMethods: (
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotId: string,
-        snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+        snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
         versionHistory: VersionHistory
@@ -626,7 +626,7 @@ const snapshotDelegate = <
           }
         });
       },
-      meta: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotId: string, snapshotData: SnapshotData<T, K, Meta, ExcludedFields>, snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, versionHistory: VersionHistory): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+      meta: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotId: string, snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, versionHistory: VersionHistory): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
         return new Promise((resolve, reject) => {
           try {
             const API_URL = endpoints.snapshots.fetch;
@@ -646,7 +646,7 @@ const snapshotDelegate = <
       initialState: (
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotId: string,
-        snapshotData: SnapshotData<T, K, Meta, ExcludedFields>, 
+        snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
         snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
         versionHistory: VersionHistory

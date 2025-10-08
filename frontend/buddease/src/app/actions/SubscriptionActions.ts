@@ -1,12 +1,14 @@
 // SubscriptionActions.ts
-import { Content } from '@/app/components/models/content/AddContent';
-import { BaseData, Data } from '@/app/models/data/Data';
+import { Content } from '@/app/models/content/AddContent';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { BaseData } from '@/app/models/data/Data';
 import { NotificationPosition, ProjectStateEnum } from "@/app/models/data/StatusType";
 import { Project } from '@/app/models/projects/Project';
 import { SnapshotContainerData } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
-
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { Callback } from "@/app/snapshots/subscribeToSnapshotsImplementation";
 import { Subscriber } from "@/app/subscribers/Subscriber";
@@ -16,25 +18,21 @@ import { NotificationType, NotificationTypeEnum } from "@/context/NotificationCo
 import { ActionCreatorWithoutPayload, ActionCreatorWithPayload, createAction } from "@reduxjs/toolkit";
 
 
-interface SimplifiedBaseData {
-  id: string;
-  // Add only the absolutely necessary properties
-}
-
-
 interface SubscriptionPayload<
-  // ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  T extends SimplifiedBaseData = SimplifiedBaseData,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = never,
-  S extends CustomSnapshotData<T, K> = CustomSnapshotData<T, K>,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  IncludedFields extends keyof T = keyof T,
+  S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+= CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 > {
   error: string | undefined;
   meta: {
     name: string,
     timestamp: Date,
-    type: NotificationTypeEnum,
+    type: NotificationType,
     startDate: Date,
     endDate: Date,
     status: string,
@@ -136,14 +134,17 @@ type SubscriptionKType<T extends BaseData<any>> = T & CustomSnapshotData<T, any>
 
 
 export const SubscriptionActions = <
-  T extends BaseData<any> = BaseData<any, any>,
-  //from: K extends T & CustomSnapshotData<T, K, StructuredMetadata<T, K>> = T & CustomSnapshotData<T, T, StructuredMetadata<T, T>>,
-  K extends SubscriptionKType<T> = SubscriptionKType<T>, 
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T,
+  S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 >() => {
   const actions = {
     // Action to add a new subscriber
-    subscribe: createAction<SubscriptionPayload<T, K>>("subscribe"),
+    subscribe: createAction<SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, S>>("subscribe"),
 
     // Action to remove a subscriber
     unsubscribe: createAction<string>("unsubscribe"),
@@ -159,7 +160,7 @@ export const SubscriptionActions = <
   };
 
   return actions as {
-    subscribe: ActionCreatorWithPayload<SubscriptionPayload<T, K>>;
+    subscribe: ActionCreatorWithPayload<SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, S>>;
     unsubscribe: ActionCreatorWithPayload<string>;
     fetchInitialSubscriptions: ActionCreatorWithoutPayload;
     subscriptionSuccess: ActionCreatorWithPayload<string>;
@@ -168,9 +169,17 @@ export const SubscriptionActions = <
 }
 
 
-export const createSubscriptionPayload = <T extends BaseData<any>, K extends T = T>(
-  overrides: Partial<SubscriptionPayload<T, K>> = {}
-): SubscriptionPayload<T, K> => {
+export const createSubscriptionPayload = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
+  S extends CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+>(
+  overrides: Partial<SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {}
+): SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
 
   return {
     error: undefined,

@@ -1,12 +1,12 @@
 // projectTypes.ts
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { PriorityTypeEnum } from '@/app/models/data/StatusType';
 import { Task } from '@/app/models/tasks/Task';
 import { Member } from '@/app/models/teams/TeamMembers';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { ProjectMilestone } from '@/app/typings/milestoneTypes';
 import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 // -------------------- Project Core Types --------------------
 
 export enum ProjectStatus {

@@ -1,16 +1,14 @@
-import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { DocumentPhaseTypeEnum } from "@/app/components/documents/DocumentPhaseType";
-import { BaseData } from '@/app/models/data/Data';
-import { useNotification } from "@/app/context/NotificationContext";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { useNotification } from '@/app/context/NotificationContext';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { Content } from "@/app/models/content/AddContent";
 import { Comment } from "@/app/models/data/Comments";
+import { BaseData } from '@/app/models/data/Data';
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { ProgressPhase } from "@/app/models/tracker/ProgressBar";
-import { CustomComment } from "@/app/redux/slices/BlogSlice";
-import { TagsRecord } from "@/app/snapshots";
 import { AllTypes } from "@/app/typings/PropTypes";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
@@ -233,7 +231,13 @@ interface DocumentStatus {
   visibilityState?: string;
 }
 
-interface DocumentAdditionalProps <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface DocumentAdditionalProps <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T> {
   URL: string;
   bgColor: string;
   documentURI: string;
@@ -341,7 +345,7 @@ const useDocumentStore = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->(): DocumentStore<T, K, Meta, ExcludedFields, IncludedFields, AttachmentType> => {
+>(): DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, AttachmentType> => {
   const [documents, setDocuments] = useState<Record<string, Document<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>({});
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -508,7 +512,7 @@ const useDocumentStore = <
     }
   };
 
-  const store: DocumentStore<T, K, Meta, ExcludedFields, IncludedFields, AttachmentType> = makeAutoObservable({
+  const store: DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, AttachmentType> = makeAutoObservable({
     documents,
     isLoading,
     error,

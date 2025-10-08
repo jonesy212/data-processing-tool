@@ -1,26 +1,31 @@
 // // SnapshotContext.ts
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { BaseData, } from '@/app/models/data/Data';
-import { SnapshotData } from '@/app/snapshots';
-import {
-    Snapshot,
-} from "@/app/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { createContext, ReactNode, useContext, useState } from "react";
-
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMemo } from 'react';
 
-const fetchSnapshotFromAPI = async <T extends BaseData<any> = BaseData<any, any>, K extends T = T>(id: string) => {
+const fetchSnapshotFromAPI = async <  
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(id: string): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     const response = await fetch(`/api/snapshots/${id}`);
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     const data = await response.json();
-    return data;
+    return data as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   } catch (error) {
     console.error("Error fetching snapshot:", error);
     throw error;
@@ -68,11 +73,9 @@ export const SnapshotProvider = <
   const [snapshot, setSnapshot] = useState<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(null);
   const [snapshots, setSnapshots] = useState<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>([]);
 
-
   // Initialize the snapshotMap from the snapshots array
   const snapshotMap = useMemo(() => {
     const map = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
-
 
     if (!snapshots || snapshots.length === 0) {
       return map;
@@ -87,15 +90,13 @@ export const SnapshotProvider = <
       }
     });
 
-    return map
+    return map;
   }, [snapshots]);
 
-  
-
   // Function to create a new snapshot using Promise with resolve and reject
-  const createSnapshot = (
+  const createNewSnapshot = ( // ← RENAMED from createSnapshot to avoid recursion
     id: string,
-    snapshotData: SnapshotData<T, K>,
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: Category,
     storeProps?: SnapshotStoreProps<T, K>, // Optional parameter
     storeOptions?: SnapshotStoreOptions<T, K, Meta, ExcludedFields> // Optional parameter
@@ -117,15 +118,18 @@ export const SnapshotProvider = <
         } = storeProps;
   
         try {
-          const newSnapshot = createSnapshotInstance(
-            snapshotData.data as T,
-            new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(), // Pass a new or existing metadata map
-            id,
-            category,
-            null, // Pass a `snapshotStore` if applicable
-            null, // Pass a `snapshotManager` if applicable
-            null, // Pass a `snapshotStoreConfig` if applicable
+          // FIXED: Use createCompleteSnapshot with correct number of arguments
+          const newSnapshot = await createCompleteSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+            snapshotData.data as T, // baseData
+            new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(), // baseMeta
+            id, // snapshotId
+            category, // category
+            null, // snapshotStore
+            null, // snapshotManager
+            null, // snapshotStoreConfig
+            false, // isSubscribed
             {
+              // Proper storeProps structure
               id,
               category,
               storeId,
@@ -137,49 +141,53 @@ export const SnapshotProvider = <
               expirationDate,
               payload,
               callback,
-              storeProps, // Pass the entire storeProps here if needed
               endpointCategory,
               data: snapshotData.data ?? undefined,
-              createdAt: new Date() ?? '', // Ensure proper fallback for createdAt
-            },
+              createdAt: new Date(),
+            } as SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
             {
+              // Proper storeOptions structure
               id,
               storeId,
-
-
-              delegate, getDelegate, getCategory, initSnapshot,
-              createSnapshotStore, configureSnapshot, configureSnapshotStore, getDataStoreMethods,
-              getSnapshotConfig, createSnapshot, configureSnap,
-              
-
-
-              baseURL: 'https://example.com/api', // Ensure this is properly set
-              enabled: true, // Required boolean property
+              baseURL: 'https://example.com/api',
+              enabled: true,
               maxRetries: 3,
-              retryDelay: 1000, // Example retry delay in milliseconds
+              retryDelay: 1000,
               maxAge: '30d',
-              staleWhileRevalidate: 600, // Example: 10 minutes
+              staleWhileRevalidate: 600,
               cacheKey: `snapshot_${id}`,
-              initialState: initialState || {}, // Provide a proper initial state
+              initialState: initialState || {},
               eventRecords: {},
               records: [],
               category,
-              date: new Date(), // Provide a valid date
-              type: 'snapshot-type', // Example placeholder, adjust as needed
+              date: new Date(),
+              type: 'snapshot-type',
               metadata: {},
               criteria: {},
-              callbacks: {}, // Define callbacks if necessary
-              snapshotMethods: [], // Example placeholder, adjust as needed
-              simulatedDataSource: null, // Placeholder
+              callbacks: {},
+              snapshotMethods: [],
+              simulatedDataSource: null,
               subscribeToSnapshots: "",
               subscribeToSnapshot: "",
               unsubscribeToSnapshots: "",
               unsubscribeToSnapshot: "",
-              handleSnapshotOperation, handleSnapshotStoreOperation, displayToast, addToSnapshotList,
-              getSnapshotConfig, createSnapshot, configureSnap,
-
-
-            } as SnapshotStoreOptions<T, K>, // Ensure correct type casting // Example `storeOptions`, pass necessary options here
+              delegate: "",
+              getDelegate: "",
+              getCategory: "",
+              initSnapshot: "",
+              createSnapshotStore: "",
+              configureSnapshot: "",
+              configureSnapshotStore: "",
+              getDataStoreMethods: "",
+              getSnapshotConfig: "",
+              createSnapshot: "",
+              configureSnap: "",
+              multipleCallbacks: "",
+              handleSnapshotOperation: "",
+              handleSnapshotStoreOperation: "",
+              displayToast: "",
+              addToSnapshotList: "",
+            } as SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
           );
   
           // Resolve with the newly created snapshot
@@ -199,14 +207,32 @@ export const SnapshotProvider = <
       }
     });
   };
-}
+
+  // Return the provider context value
+  const contextValue = useMemo(() => ({
+    snapshot,
+    snapshots,
+    snapshotMap,
+    createSnapshot: createNewSnapshot, // Export the renamed function
+    setSnapshot,
+    setSnapshots,
+  }), [snapshot, snapshots, snapshotMap]);
+
+  return (
+    <SnapshotContext.Provider value={contextValue}>
+      {children}
+    </SnapshotContext.Provider>
+  );
+};
 
 // Custom hook to use the SnapshotContext
 export const useSnapshot = <
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(): { snapshotMap: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> } => {
   const context = useContext(SnapshotContext);
 
@@ -220,7 +246,14 @@ export const useSnapshot = <
 };
 
 
-// function fetchSnapshotFromAPI<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// function fetchSnapshotFromAPI<
+//   T extends BaseDataEntity,
+//   K extends T = T,
+//   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+//   AttachmentType extends Attachment = Attachment,
+//   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+//   IncludedFields extends keyof T = keyof T
+// >(
 //   id: string
 // ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
 //   return new Promise((resolve, reject) => {
@@ -461,7 +494,13 @@ export const useSnapshot = <
 //   });
 // }
 
-// function fetchSnapshotStoreFromAPI<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+// function fetchSnapshotStoreFromAPI<
+//   T extends BaseDataEntity,
+//   K extends T = T,
+//   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+//   AttachmentType extends Attachment = Attachment,
+//   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+//   IncludedFields extends keyof T = keyof T>(
 //   id: string
 // ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
 //   return new Promise((resolve, reject) => {

@@ -2,8 +2,11 @@ import { BaseData } from '@/app/models/data/Data';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { logTradeActivity, updateUserPortfolio } from '@/portfolioService';
-import { getMarketPrice } from '@/priceService';
+import { logTradeActivity, updateUserPortfolio } from '@/app/api/PortfolioService';
+import { getMarketPrice } from '@/app/api/PriceApiService';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Portfolio management in crypto
 export interface CryptoPortfolio {
@@ -43,8 +46,12 @@ export const executeTrade = async (trade: TradeAction): Promise<void> => {
   const { userId, asset, amount, action, price } = trade;
 
   try {
+    // Log trade initiation
+    TradeLogger.logTradeInitiation(trade);
+
     // 1. Get the current market price if not provided
     const marketPrice = price ?? await getMarketPrice(asset);
+    TradeLogger.logMarketDataFetch(asset, marketPrice, 'priceService', userId);
 
     if (!marketPrice) {
       throw new Error(`Failed to retrieve market price for ${asset}`);
@@ -54,7 +61,7 @@ export const executeTrade = async (trade: TradeAction): Promise<void> => {
 
     // 2. Optional: Call external trading API
     // Example pseudo-request
-    /*
+    
     const response = await axios.post('https://api.yourexchange.com/trade', {
       userId,
       asset,
@@ -62,14 +69,30 @@ export const executeTrade = async (trade: TradeAction): Promise<void> => {
       action,
       price: marketPrice
     });
-    */
+  
+
+    // Log external API call (commented out but logged for future implementation)
+    TradeLogger.logWithOptions(
+      "External API",
+      `External trade API call prepared for ${action} ${amount} ${asset} at $${marketPrice}`,
+      userId
+    );
 
     // Simulate successful response
     const response = { status: 200 };
 
     if (response.status !== 200) {
-      throw new Error('Trade execution failed with the exchange');
+      const errorMsg = 'Trade execution failed with the exchange';
+      TradeLogger.logTradeError(trade, new Error(errorMsg), 'external exchange API');
+      throw new Error(errorMsg);
     }
+
+    // Log successful external API response
+    TradeLogger.logWithOptions(
+      "External API",
+      `External trade API response: ${response.status} for ${action} ${amount} ${asset}`,
+      userId
+    );
 
     // 3. Update user portfolio locally
     await updateUserPortfolio(userId, {
@@ -80,6 +103,16 @@ export const executeTrade = async (trade: TradeAction): Promise<void> => {
       timestamp: Date.now()
     });
 
+    // Log portfolio update completion
+    TradeLogger.logPortfolioUpdate(
+      userId,
+      asset,
+      action,
+      amount,
+      amount, // This would be the new balance - you might want to get the actual new balance
+      tradeValue // This would be the portfolio value - you might want to get the actual portfolio value
+    );
+
     // 4. Log the trade activity
     await logTradeActivity(userId, {
       asset,
@@ -89,28 +122,70 @@ export const executeTrade = async (trade: TradeAction): Promise<void> => {
       executedAt: new Date().toISOString()
     });
 
+    // Log trade activity completion
+    TradeLogger.logWithOptions(
+      "Trade Activity",
+      `Trade activity logged for ${action} ${amount} ${asset}`,
+      userId
+    );
+
+    // Log successful trade execution
+    TradeLogger.logTradeExecution(trade, marketPrice, tradeValue, 'success');
+
     console.log(`[✔] ${action.toUpperCase()} ${amount} ${asset} at ${marketPrice} executed for user ${userId}`);
   } catch (error) {
+    // Log trade execution failure with detailed context
+    TradeLogger.logTradeError(trade, error as Error, 'trade execution');
+    
     console.error(`[✖] Failed to execute trade:`, error);
     throw error; // Re-throw to handle in caller if needed
   }
 };
 
 
-  
-
-  
-  // Example function to fetch snapshot and crypto data
+// Example function to fetch snapshot and crypto data
 export const fetchSnapshotAndCryptoData = async <
-    T extends BaseData<any>,
-    K extends T = T,
-    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
-    snapshotContainer: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshotId: string,
-    cryptoPortfolio: CryptoPortfolio
-  ): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; portfolio: CryptoPortfolio }> => {
-    // Fetch snapshot and portfolio data
-    const snapshot = snapshotContainer[snapshotId];
-    return { snapshot, portfolio: cryptoPortfolio };
-  };
+  snapshotContainer: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  snapshotId: string,
+  cryptoPortfolio: CryptoPortfolio
+): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined; portfolio: CryptoPortfolio }> => {
+  
+  // Use a type-safe method to get the snapshot
+  const snapshot = getSnapshotFromStore(snapshotContainer, snapshotId);
+  
+  return { snapshot, portfolio: cryptoPortfolio };
+};
+
+// Helper function for type-safe snapshot access
+function getSnapshotFromStore<
+  T extends BaseDataEntity,
+  K extends T,
+  Meta extends DefaultMeta<T, K>,
+  AttachmentType extends Attachment,
+  ExcludedFields extends keyof T,
+  IncludedFields extends keyof T
+>(
+  store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  snapshotId: string
+): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
+  // Implement your actual logic here based on how snapshots are stored
+  // For example:
+  if ('getSnapshot' in store && typeof store.getSnapshot === 'function') {
+    return store.getSnapshot(snapshotId);
+  }
+  
+  // Or if it's a Map-like structure:
+  if (store instanceof Map) {
+    return store.get(snapshotId);
+  }
+  
+  // Fallback to type assertion if you're sure about the structure
+  return (store as any)[snapshotId];
+}

@@ -1,7 +1,7 @@
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import { Tag } from "@/app/models/tracker/Tag";
 import { Resource } from "@/app/state/redux/slices/CollaborationSlice";
-import { T , K } from "@/app/components/models/data/dataStoreMethods";
+import { T , K } from '@/app/components/models/data/dataStoreMethods';
 
 // BrandingSettings.ts
 interface BrandingSettings {

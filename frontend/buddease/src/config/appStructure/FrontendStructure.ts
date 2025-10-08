@@ -1,20 +1,20 @@
 import axiosInstance from '@/app/api/csrfToken';
-import { AppStructureItem } from "@/config/appStructure/AppStructure";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { hashString } from "@/app/generators/HashUtils";
 import { BaseData } from '@/app/models/data/Data';
 import { UserConfigData } from "@/app/models/data/dataStoreMethods";
 import { Permission } from '@/app/users/Permission';
-import { DataVersions } from "@/configs/DataVersionsConfig";
-import { hashString } from "@/app/generators/HashUtils";
 import { UserData } from "@/app/users/User";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
 import getAppPath from "@/config/appStructure/appPath";
+import { AppStructureItem } from "@/config/appStructure/AppStructure";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { DataVersions } from "@/configs/DataVersionsConfig";
 import UserRoles from '@/users/UserRoles';
 import * as path from "path";
-import { Attachment } from "@/app/documents/Attachment/attachment";
 
 
 interface MyData extends BaseData<any> {

@@ -8,7 +8,7 @@ import {
 import { Phase } from "@/app/components/phases/Phase";
 import { Content } from "@/app/content/AddContent";
 import { CustomTransaction } from "@/app/crypto/SmartContractInteraction";
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import { createCustomTransaction } from "@/app/hooks/dynamicHooks/createCustomTransaction";
@@ -21,12 +21,12 @@ import PersonaTypeEnum from "@/app/pages/personas/PersonaBuilder";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { taskService } from "@/app/services/TaskService";
-import { Snapshot } from '@/app/snapshots/Snapshot';
 import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
 import {
   Snapshots,
   SnapshotsArray,
 } from "@/app/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore, {
   SnapshotStoreReference,
 } from "@/app/snapshots/SnapshotStore";
@@ -225,7 +225,7 @@ interface BaseData<
   members?: number[] | string[] | Member[];
   leader?: User | null;
   snapshotStores?: SnapshotStoreReference<T, K>[];
-  snapshots?: SnapshotStore<Snapshots<T, K, Meta, ExcludedFields, IncludedFields>>; // Simplify snapshots type
+  snapshots?: SnapshotStore<Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>; // Simplify snapshots type
   text?: string | Content<T, K, Meta>;
   category?: symbol | string | Category | undefined;
   notificationTypes?: NotificationSettings;

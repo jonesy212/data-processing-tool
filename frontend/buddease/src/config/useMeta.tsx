@@ -1,4 +1,4 @@
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseData } from '@/app/models/data/Data';
 import { PhaseData } from "@/app/components/phases/Phase";
 import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";

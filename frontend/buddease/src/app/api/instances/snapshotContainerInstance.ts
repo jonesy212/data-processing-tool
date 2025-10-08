@@ -165,7 +165,7 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
         SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>[]> {
     throw new Error('Function not implemented.');
   },
-  generateId: function (prefix: string, name: string, type: NotificationTypeEnum, id?: string, title?: string, chatThreadName?: string, chatMessageId?: string, chatThreadId?: string, dataDetails?: DataDetails, generatorType?: string): string {
+  generateId: function (prefix: string, name: string, type: NotificationType, id?: string, title?: string, chatThreadName?: string, chatMessageId?: string, chatThreadId?: string, dataDetails?: DataDetails, generatorType?: string): string {
     throw new Error('Function not implemented.');
   },
   compareSnapshots: function (snap1: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,

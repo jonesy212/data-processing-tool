@@ -13,7 +13,7 @@ import {
   manageThemeDependencies,
   monitorThemeHealth,
 
-} from "@/app/redux/slices/ThemeSlice";
+} from "@/app/state/redux/slices/ThemeSlice";
 
 export interface ThemeStore {
   theme: Theme;

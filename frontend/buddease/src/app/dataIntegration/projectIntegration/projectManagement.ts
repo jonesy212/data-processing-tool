@@ -5,7 +5,7 @@ import {
   ProjectK,
   ProjectMeta
 } from '@/app/components/models/ProjectModel';
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseData } from '@/app/models/data/Data';
 import { Task } from "@/app/models/tasks/Task";
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';

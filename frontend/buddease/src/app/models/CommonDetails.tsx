@@ -10,13 +10,25 @@ interface Customizations<T> {
 }
 
 // Define the CommonDetailsProps interface with the generic CommonData type
-interface CommonDetailsProps<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface CommonDetailsProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T> {
   data?: CommonData<T, K>
   customizations?: Customizations<T>;
 }
   
 // CommonDetails component for displaying common details
-const CommonDetails = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>({
+const CommonDetails = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>({
   data,
   customizations,
 }: CommonDetailsProps<T, K>) => {

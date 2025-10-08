@@ -4,7 +4,7 @@ import { generateSnapshotId } from '@/app/utils/snapshotUtils';
 // TodoManagerStore.ts
 import { endpoints } from '@/app/api/endpointConfigurations';
 import { BaseData } from '@/app/models/data/Data';
-import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useSecureStoreId from "@/app/hooks/useSecureStoreId";

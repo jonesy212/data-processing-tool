@@ -2,8 +2,8 @@
 
 import { TaskActions } from '@/app/actions/TaskActions';
 import { addSnapshot } from '@/app/api/SnapshotApi';
-import { saveAs } from '@/app/components/documents/editing/autosave';
-import { Subscriber } from '@/app/components/users/Subscriber';
+import { saveAs } from '@/app/documents/editing/autosave';
+import { Subscriber } from '@/app/subscrbers/Subscriber';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import {
     NotificationType, NotificationTypeEnum,
@@ -17,10 +17,10 @@ import useSecureStoreId from "@/app/hooks/useSecureStoreId";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum, TaskStatus } from "@/app/models/data/StatusType";
-import { Task, tasksDataSource } from "@/app/models/tasks/Task";
+import { Task, tasksDataSource } from "@/app/models/tasks/Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>";
 import FilterTasksRequest from "@/app/pages/searchs/FilterTasksRequest";
-import { useApiManagerSlice } from "@/app/redux/slices/ApiSlice";
-import { useTaskManagerSlice } from "@/app/redux/slices/TaskSlice";
+import { useApiManagerSlice } from "@/app/state/redux/slices/ApiSlice";
+import { useTaskManagerSlice } from "@/app/state/redux/slices/TaskSlice";
 import { taskService } from "@/app/services/TaskService";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { updateSnapshot } from '@/app/snapshots/snapshotHandlers';
@@ -29,15 +29,25 @@ import { useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { Todo } from "@/app/todos/Todo";
 import { User } from "@/app/users/User";
-import { clearSnapshots, removeSnapshot } from '@/redux/slices/SnapshotSlice';
+import { clearSnapshots, removeSnapshot } from '@/app/state/redux/slices/SnapshotSlice';
 import { makeAutoObservable } from "mobx";
 import { title } from 'process';
 import { useState } from "react";
 import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
 ;
 
-export interface TaskManagerStore {
-  tasks: Record<string, Task[]>;
+export interface TaskManagerStore<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  tasks: Record<
+    string,
+    Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  >;
   taskTitle: string;
   taskId?: string;
 
@@ -56,7 +66,7 @@ export interface TaskManagerStore {
   updateTaskPriority: (taskId: string, priority: PriorityTypeEnum) => void;
   filterTasksByStatus: (
     status: TaskStatus
-  ) => Task[];
+  ) => Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   getTaskCountByStatus: (
     status: "pending" | "inProgress" | "completed"
   ) => number;
@@ -66,26 +76,27 @@ export interface TaskManagerStore {
     taskId: string,
     assignee: User
   ) => (dispatch: any) => Promise<void>;
-  getTasksByAssignee: (tasks: Task[], assignee: User) => Promise<Task[]>;
-  getTaskById: (taskId: string) => Task | null;
+  getTasksByAssignee: (tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], assignee: User) => Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+  getTaskById: (taskId: string) => Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   sortByDueDate: () => void;
   exportTasksToCSV: () => void;
 
   // Define dispatch function
   dispatch: (action: any) => void;
-  addTaskSuccess: (payload: { task: Task }) => void;
-  addTask: (task: Task) => void;
-  addTasks: (tasks: Task[]) => void;
+  addTaskSuccess: (payload: { task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }) => void;
+  addTask: (task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+  addTasks: (tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void;
 
+  
   assignTaskToUser: (taskId: string, userId: string) => void;
   removeTask: (taskId: string) => void;
   removeTasks: (taskIds: string[]) => void;
   fetchTasksByTaskId: (taskId: string) => Promise<string>;
-  fetchTasksSuccess: (payload: { tasks: Task[] }) => void;
+  fetchTasksSuccess: (payload: { tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }) => void;
   fetchTasksFailure: (payload: { error: string }) => void;
   fetchTasksRequest: () => void;
   completeAllTasksSuccess: (success: string) => void;
-  completeAllTasks: (payload: { task: Task[] }) => void;
+  completeAllTasks: (payload: { task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }) => void;
   completeAllTasksFailure: (payload: { error: string }) => void;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
@@ -93,24 +104,59 @@ export interface TaskManagerStore {
   takeTaskSnapshot: (taskId: string) => void;
   markTaskAsComplete: (taskId: string) => void;
 
-  updateTaskPositionSuccess: (payload: { task: Task }) => void;
+  updateTaskPositionSuccess: (payload: { task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }) => void;
   // Add more methods or properties as needed
   batchFetchTaskSnapshotsRequest: (
-    snapshotData: Record<string, Task[]>
+    snapshotData: Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>
   ) => void;
-  batchFetchTaskSnapshotsSuccess: (taskId:  Record<string, Task[]>) => void;
+  batchFetchTaskSnapshotsSuccess: (taskId:  Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => void;
   batchFetchUserSnapshotsRequest: (
     snapshotData: Record<string, User[]>
   ) => void
 
 
 }
+const updateTaskPositionSuccess = (payload: { task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }) => {
+  const { task } = payload;
+
+  // Find the current position of the task
+  const currentStatus = task.status;
+  const taskList = tasks[currentStatus];
+
+  if (!taskList) {
+    console.error(`No task list found for status: ${currentStatus}`);
+    return;
+  }
+
+  const taskIndex = taskList.findIndex((t) => t.id === task.id);
+
+  if (taskIndex === -1) {
+    console.error(`Task with ID ${task.id} not found in ${currentStatus} list`);
+    return;
+  }
+
+  // Update the task in its current position
+  setTasks((prevTasks) => {
+    const updatedTasks = { ...prevTasks };
+    const updatedTaskList = [...updatedTasks[currentStatus]];
+    updatedTaskList[taskIndex] = task;
+
+    return {
+      ...updatedTasks,
+      [currentStatus]: updatedTaskList,
+    };
+  });
+
+  // Show success notification
+  setDynamicNotificationMessage(NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT);
+};
+
 
 const useTaskManagerStore = (): TaskManagerStore => {
   const { notify } = useNotification();
   const { markTaskAsCompleteSuccess, markTaskAsCompleteFailure, setAssignedTaskStore } = TaskActions;
   const assignTaskToUser = useApiManager();
-  const [tasks, setTasks] = useState<Record<string, Task[]>>({
+  const [tasks, setTasks] = useState<Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>>({
     pending: [],
     inProgress: [],
     completed: [],
@@ -170,7 +216,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
 
     const reassignedTasks = ["task1", "task2", "task3"];
 
-    const taskSnapshotStore: Promise<SnapshotStore<Snapshot<Task>>> = useSnapshotStore(addToSnapshotList);
+    const taskSnapshotStore: Promise<SnapshotStore<Snapshot<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>> = useSnapshotStore(addToSnapshotList);
     const taskIdToAssign = "someTaskId";
     
     
@@ -263,7 +309,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
       oldUserId: string,
       newUserId: string
     ) => {
-      const reassignedTasks = assignedTaskStore[taskId]?.map((task: Task) => {
+      const reassignedTasks = assignedTaskStore[taskId]?.map((task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         // Ensure oldUserId is of type string
         const oldUserIdString: string = oldUserId.toString();
         if (task.userId === oldUserIdString) {
@@ -298,7 +344,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
     };
   };
 
-  const addTaskSuccess = (payload: { task: Task }) => {
+  const addTaskSuccess = (payload: { task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }) => {
     const { task } = payload;
     setTasks((prevTasks) => {
       const taskId = task.id;
@@ -313,7 +359,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
   >(taskId: string, storeId?: number) => {
     // Ensure the taskId exists in the tasks
     if (!tasks[taskId]) {
-      console.error(`Task with ID ${taskId} does not exist.`);
+      console.error(`Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> with ID ${taskId} does not exist.`);
       return;
     }
 
@@ -330,7 +376,8 @@ const useTaskManagerStore = (): TaskManagerStore => {
     );
   };
 
-  const addTask = (task: Task) => {
+
+  const addTask = (task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     // Ensure the title is not empty before adding a task
     if (taskTitle.trim().length === 0) {
       console.error("Task title cannot be empty.");
@@ -351,7 +398,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
       return;
     }
 
-    newTask.then((task: Task) => {
+    newTask.then((task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
       setTasks((prevTasks) => {
         const taskId = task.id;
         return { ...prevTasks, [taskId]: [...(prevTasks[taskId] || []), task] };
@@ -365,7 +412,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
   };
 
   const removeTask = (taskId: string) => {
-    setTasks((prevTasks: Record<string, Task[]>) => {
+    setTasks((prevTasks: Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => {
       const updatedTasks = { ...prevTasks };
       delete updatedTasks[taskId];
       return updatedTasks;
@@ -407,7 +454,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
     });
   };
 
-  const addTasks = (tasksToAdd: Task[]) => {
+  const addTasks = (tasksToAdd: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => {
     // Ensure at least one task is passed
     if (tasksToAdd.length === 0) {
       console.error("At least one task must be passed");
@@ -428,7 +475,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
     setTaskStatus("pending");
   };
 
-  const fetchTasksSuccess = (payload: { tasks: Task[] }) => {
+  const fetchTasksSuccess = (payload: { tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }) => {
     const { tasks: newTasks } = payload;
     setTasks((prevTasks) => {
       const updatedTasks = { ...prevTasks };
@@ -460,7 +507,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
 
     // Find the task and update its due date
     const taskToUpdate = updatedTasks.pending.find(
-      (task: Task) => task.id === taskId
+      (task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => task.id === taskId
     );
 
     if (taskToUpdate) {
@@ -519,7 +566,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
     // Simulate asynchronous completion
     setTimeout(() => {
       // Update tasks to mark all as done
-      setTasks((prevTasks: Record<string, Task[]>) => {
+      setTasks((prevTasks: Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => {
         const updatedTasks = { ...prevTasks };
         Object.keys(updatedTasks).forEach((id) => {
           updatedTasks[id] = prevTasks[id].map((task) => ({
@@ -583,7 +630,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
           `Error marking task ${taskId} as complete`,
           NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       }, 1000);
     } catch (error) {
@@ -656,7 +703,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
           `Error marking task ${taskToUpdate} as in progress`,
           NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       }, 1000);
     };
@@ -664,11 +711,11 @@ const useTaskManagerStore = (): TaskManagerStore => {
 
 
   // Function to fetch a task by its ID
-  const getTaskById = (taskId: string): Promise<Task | null> => {
-    return new Promise<Task | null>(async (resolve, reject) => {
+  const getTaskById = (taskId: string): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
+    return new Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(async (resolve, reject) => {
       try {
         setTimeout(() => {
-          const task: Task | undefined = tasksDataSource[taskId];
+          const task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined = tasksDataSource[taskId];
   
           if (task) {
             resolve(task);
@@ -683,7 +730,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
   };
   
 
-  const sortByDueDate = (tasks: Task[]) => {
+  const sortByDueDate = (tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => {
     return tasks.sort((a, b) => {
       const dateA = new Date(a.dueDate ?? "");
       const dateB = new Date(b.dueDate ?? "");
@@ -738,7 +785,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
           `Error updating priority for task ${taskId}`,
           NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       }, 1000);
     } catch (error) {
@@ -763,7 +810,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
 
 
   const filterTasksByStatus = (status: TaskStatus) => {
-    return tasksDataSource.filter((task: Task) => task.status === status);
+    return tasksDataSource.filter((task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => task.status === status);
   }
   const updateTaskAssignee =
     (taskId: string, assignee: User) => async (dispatch: any) => {
@@ -793,7 +840,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
           `Error updating task ${taskId} assignee`,
           NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       }, 1000);
     };
@@ -801,12 +848,12 @@ const useTaskManagerStore = (): TaskManagerStore => {
   // Define an index signature for taskCountByStatus
   const taskCountByStatus: { [key: string]: number } = {};
 
-  const getTaskCountByStatus = async (tasks: Task[]) => {
+  const getTaskCountByStatus = async (tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => {
     try {
       const statuses = Object.keys(TaskStatus);
       for (const status of statuses) {
         taskCountByStatus[status] = tasks.filter(
-          (task: Task) => task.status === status
+          (task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => task.status === status
         ).length;
       }
       // Simulating asynchronous operation
@@ -816,7 +863,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
           `Error getting task count by status`,
           NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       }, 1000);
 
@@ -865,7 +912,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
       
       // Filter completed tasks
       const completedTasks = tasksArray.filter(
-        (task: Task) => task.status === TaskStatus.Completed
+        (task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => task.status === TaskStatus.Completed
       );
   
       // Create a new tasksDataSource excluding completed tasks
@@ -874,7 +921,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
           acc[task.id] = task;
         }
         return acc;
-      }, {} as Record<string, Task>);
+      }, {} as Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>);
   
       // Simulate updating the state with the new tasks object
       setTasks(Object.values(updatedTasks));
@@ -884,7 +931,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
   };
   
 
-  const getTasksByAssignee = async (tasks: Task[], assignee: User) => {
+  const getTasksByAssignee = async (tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], assignee: User) => {
     try {
       // Simulate fetching tasks assigned to the given user
       const tasks = TaskActions.fetchTasksByTaskUserId({
@@ -997,7 +1044,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
         `Task ${taskId} fetched`,
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
 
       // Assuming you have a method to fetch tasks by taskId from your data source
@@ -1015,7 +1062,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
             `Error fetching task ${taskId}`,
             NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
             new Date(),
-            NotificationTypeEnum.OperationSuccess
+            NotificationTypeEnum.OPERATION_SUCCESS
           );
         }, 1000);
       } else {
@@ -1058,7 +1105,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
         `Task ${taskId} marked as in progress`,
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
       dispatch(markTaskAsInProgressSuccess(taskId, requestData));
       const { markTaskAsInProgress } = taskService;
@@ -1070,7 +1117,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
           `Error marking task ${taskId} as in progress`,
           NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       }, 1000);
     };
@@ -1100,7 +1147,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
         `Error marking task ${taskId} as pending`,
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     }, 1000);
     // Dispatch the asynchronous action (no need to await)
@@ -1203,7 +1250,7 @@ export { useTaskManagerStore };
   (await  useSnapshotManager(initialStoreId)).addSnapshot(snapshot);
    }
 
-function tasksDataSourceToCSV(tasksDataSource: Record<string, Task>) {
+function tasksDataSourceToCSV(tasksDataSource: Record<string, Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) {
   throw new Error('Function not implemented.');
 }
 

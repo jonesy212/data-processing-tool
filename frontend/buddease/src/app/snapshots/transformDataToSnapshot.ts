@@ -9,7 +9,7 @@ import { InitializedData } from "./SnapshotStoreOptions";
 
 const transformDataToSnapshot =  <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   item: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshotConfig: SnapshotConfig<T, K, Meta, ExcludedFields>,
+  snapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   const snapshotItem: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
@@ -53,7 +53,7 @@ const transformDataToSnapshot =  <T extends BaseDataEntity, K extends T = T, Met
       onSnapshotAdded: item.events?.onSnapshotAdded ?? (() => { }),
       onSnapshotRemoved: item.events?.onSnapshotRemoved ?? (() => { }),
       onSnapshotUpdated: item.events?.onSnapshotUpdated ?? (() => { }),
-      initialConfig: item.events?.initialConfig ?? {} as SnapshotConfig<T, K, Meta, ExcludedFields>,
+      initialConfig: item.events?.initialConfig ?? {} as SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       removeSubscriber: item.events?.removeSubscriber ?? (() => { }),
       onInitialize: item.events?.onInitialize ?? (() => { }),
       onError: item.events?.onError ?? (() => { }),
@@ -267,19 +267,19 @@ export default transformDataToSnapshot;
 
 function transformToCalendarManagerStoreClassMap<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   events: (SnapshotEvents<T, K, Meta, ExcludedFields> & CombinedEvents<T, K, Meta, ExcludedFields>) | {}
-): Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]> {
-  const result: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]> = {};
+): Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+  const result: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> = {};
 
   // Iterate over each key in the `events` object if it's not an empty object
   if (events && typeof events === 'object' && Object.keys(events).length > 0) {
     Object.keys(events).forEach((key) => {
       const value = events[key as keyof typeof events];
       
-      // Perform a type check to ensure value is of type `CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]`
+      // Perform a type check to ensure value is of type `CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]`
       if (Array.isArray(value) && value.every(item => item instanceof CalendarManagerStoreClass)) {
-        result[key] = value as CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[];
+        result[key] = value as CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
       } else {
-        // Handle cases where the value is not a `CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]`
+        // Handle cases where the value is not a `CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]`
         result[key] = []; // or handle differently if needed
       }
     });

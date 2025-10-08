@@ -16,6 +16,7 @@ import {
   OrderBookEntity,
   OrderBookSnapshot
 } from '@/app/typings/ExchangeTypes';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 // Client-side instances
 const orderBookUpdater = new OrderBookUpdater();

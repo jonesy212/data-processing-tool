@@ -1,35 +1,34 @@
 // SnapshotSubscriberManagement.ts
+import { NotificationType } from '@/app/context/NotificationContext';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData } from '@/app/models/data/Data';
-import { NotificationType } from '@/app/context/NotificationContext';
 import { NotificationPosition } from "@/app/models/data/StatusType";
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { Callback } from '@/app/snapshots/subscribeToSnapshotsImplementation';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
+import { Callback } from '@/app/snapshots/subscribeToSnapshotsImplementation';
 import { SnapshotEvent } from '@/typings/eventTypes';
 
 import { SnapshotConfig } from "@/app/snapshot/SnapshotConfig";
 
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
+import { SnapshotLifecycleMethods } from '@/app/snapshots/SnapshpshotMethods';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import { Content } from '@/models/content/AddContent';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
-import { SnapshotLifecycleMethods } from '@/app/snapshots/SnapshpshotMethods';
 import { SubscriberCallbackType, Subscription } from '@/subscriptions/Subscription';
-import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { Attachment } from "@/app/documents/Attachment/attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 
 interface SnapshotContext<
@@ -41,7 +40,7 @@ interface SnapshotContext<
   IncludedFields extends keyof T = keyof T
 > {
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  snapshots: Snapshots<T, K, Meta, ExcludedFields, IncludedFields>;
+  snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -77,11 +76,11 @@ export interface OptionalSnapshotSubscriberHelpers<
     snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshots: SnapshotsArray<T, K, Meta>
+      snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
-    snapshots: SnapshotsArray<T, K, Meta>,
+    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     unsubscribe?: UnsubscribeDetails
-  ) => SnapshotsArray<T, K, Meta> | [];
+  ) => SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | [];
 
     subscribeToSnapshot?: (
       snapshotId: string,
@@ -160,7 +159,7 @@ interface SnapshotSubscriberManagement<
 
   subscribeToSnapshotList?: (
     snapshotId: string,
-    callback: (snapshots: Snapshots<T, K, Meta, ExcludedFields, IncludedFields>) => void
+    callback: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
   ) => void;
 
   subscribeToSnapshotWithMetadata?: (
@@ -200,10 +199,10 @@ interface SnapshotSubscriberManagement<
 
   getSubscribers?: (
     subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshots: Snapshots<T, K, Meta, ExcludedFields, IncludedFields>
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => Promise<{
     subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-    snapshots: Snapshots<T, K, Meta, ExcludedFields, IncludedFields>;
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   }>;
 }
 

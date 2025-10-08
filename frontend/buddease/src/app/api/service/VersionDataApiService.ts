@@ -1,10 +1,10 @@
 // VersionDataApiService.ts
 import { BaseApiService } from '@/BaseApiService';
-import { endpoints } from '@/app//endpointConfigurations'; // Your updated endpoints
+import { endpoints } from '@/app/api/endpointConfigurations'; // Your updated endpoints
 import { BaseData, BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { YourResponseType } from "@/app/components/typings/types";
+import { YourResponseType } from '@/app/components/typings/responseTypes'
 import { Attachment } from '@/components/models/data/Attachment';
 
 export class VersionDataApiService extends BaseApiService {

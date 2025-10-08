@@ -6,7 +6,13 @@ import { BaseData } from '@/app/models/data/Data';
 type AsyncOperation<T> = (snapshotId: string, criteria: CriteriaType) => Promise<T>;
 
 
-export function mapToSnapshotStore <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export function mapToSnapshotStore <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   map: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>
 ): Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   // Filter out undefined values and map entries to a new Map

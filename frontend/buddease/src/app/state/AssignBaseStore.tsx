@@ -20,6 +20,7 @@ import { ReassignEventResponse } from "./stores/AssignEventStore";
 import { useAssignTeamMemberStore } from "./stores/AssignTeamMemberStore";
 import { AuthStore } from "./stores/AuthStore";
 import { PresentationStore, presentationStore } from "./stores/presentationStore";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 const { notify } = useNotification();
 

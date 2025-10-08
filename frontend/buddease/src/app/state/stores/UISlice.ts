@@ -4,9 +4,9 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 import { UIActions } from "@/app/actions/UIActions";
 import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
-import { setIsDrawing } from "@/app/redux/slices/DrawingSlice";
-import { resetMilestones, resetTrackers } from "@/app/redux/slices/TrackerSlice";
-import { CollaborationState } from "@/app/redux/slices/CollaborationSlice";
+import { setIsDrawing } from "@/app/state/redux/slices/DrawingSlice";
+import { resetMilestones, resetTrackers } from "@/app/state/redux/slices/TrackerSlice";
+import { CollaborationState } from "@/app/state/redux/slices/CollaborationSlice";
 import { produce } from 'immer';
 
 // Define interface for UI-related state

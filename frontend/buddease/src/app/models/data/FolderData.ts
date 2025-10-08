@@ -2,7 +2,7 @@
 
 import { ScheduledData } from '@/app/components/calendar/ScheduledData';
 import { User } from '@/app/components/users/User';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 interface FolderData extends ScheduledData<T, K, S> {
   folderSize: number; // Size of the folder in bytes

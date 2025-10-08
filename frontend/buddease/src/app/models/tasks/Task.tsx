@@ -1,32 +1,22 @@
 // Task.ts
+import { TaskAttachment, TaskEntity, TaskExcludedFields, TaskIncludedFields, TaskK, TaskMeta } from '@/app/';
 import { ScheduledData } from "@/app/components/calendar/ScheduledData";
 import { SharedTimestamps } from '@/app/components/documents/RelatedProps';
 import { SharedDetails } from '@/app/components/models/data/Details';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import { Attachment } from '@/app/documents/Attachment/attachment';
-import { PhaseData, PhaseMeta } from "@/app/models/phases/Phase";
-import { SharedMetadata } from "@/app/shared/SharedMetadata";
-import { Permission } from '@/app/users/Permission';
-import { User } from "@/app/users/User";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields } from '@/app/';
-import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData } from "@/app/models/data/Data";
-import CommonDetails, { SupportedData } from "@/app/models/CommonData";
-import { PriorityTypeEnum, TaskStatus } from "@/app/models/data/StatusType";
-import { Phase } from "@/app/models/phases/Phase";
-import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { PriorityTypeEnum } from "@/app/models/data/StatusType";
+import { SharedMetadata } from "@/app/shared/SharedMetadata";
 import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
-import { Snapshot } from "@/app/snapshots/Snapshot";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import TodoImpl from '@/app/todos/Todo';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { AllTypes } from "@/app/typings/PropTypes";
-import { VideoData } from "@/app/typings/videoTypes";
-import { Idea } from "@/app/users/Ideas";
+import { User } from "@/app/users/User";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { TaskMetadata, UnifiedMetaDataOptions } from '@/server/database/MetaDataOptions';
-import { AppMetadata } from "@/server/database/MetaDataOptions";
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { TaskMetadata } from '@/server/database/MetaDataOptions';
 
 export type TaskData = BaseData<any, any, StructuredMetadata<any, any>, Attachment>;
  

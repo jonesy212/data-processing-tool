@@ -1,6 +1,6 @@
 // FuzzyMatch.ts
 import { BaseEntityProperties, SharedIdentifiers, SharedTimestamps } from "@/app/components/documents/RelatedProps";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import AppTreeService from "@/app/services/AppTreeService";
 import { useAuth } from "@/context/AuthContext";
 import { AppMetadata } from "@/server/database/MetaDataOptions";

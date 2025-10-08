@@ -12,7 +12,7 @@ import { User } from "@/app/users/User";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { AxiosError } from "axios";
 import { observable } from "mobx";
-import { handleApiError } from "./ApiLogs";
+import { handleApiError } from '@/app/api/ApiLogs';
 
 
 const API_BASE_URL = endpoints.projectOwner.base;

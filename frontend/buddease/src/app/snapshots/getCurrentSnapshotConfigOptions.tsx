@@ -76,7 +76,7 @@ export const getCurrentSnapshotConfigOptions = <
   snapshot: (
     id: string | number | undefined,
     snapshotId: string | null,
-    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields> | null) => void,
@@ -87,14 +87,14 @@ export const getCurrentSnapshotConfigOptions = <
     subscriberId: string, // Add subscriberId here
     endpointCategory: string | number,// Add endpointCategory here
     storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
-    snapshotConfigData: SnapshotConfig<T, K, Meta, ExcludedFields>,
+    snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscription: Subscription<T, K, Meta, ExcludedFields>,
 
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: SnapshotContainerType<T, K, Meta, ExcludedFields>,
   ) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-  events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>, // Added prop
+  events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>, // Added prop
   dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[], // Added prop
   newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Added prop
   payload: ConfigureSnapshotStorePayload<T, K, Meta, ExcludedFields>, // Added prop
@@ -131,8 +131,8 @@ export const getCurrentSnapshotConfigOptions = <
     createdAt: new Date(),
     updatedAt: new Date(),
     metadata: {} as Meta,
-    snapshots: [],      // Correct type: SnapshotsArray<T, K, Meta>
-    subscribers: [],    // Correct type: SubscriberCollection<T, K, Meta, ExcludedFields>[]  
+    snapshots: [],      // Correct type: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    subscribers: [],    // Correct type: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]  
   });
 
   // Type guards for conditional properties in the configuration
@@ -168,14 +168,14 @@ export const getCurrentSnapshotConfigOptions = <
       id: string,
       storeId: number,
       snapshotId: string,
-      snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       dataStoreMethods: DataStore<T, K, Meta, ExcludedFields>,
       category?: Category,
       categoryProperties?: CategoryProperties | undefined,
       callback?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
       snapshotStore?: SnapshotStore<T, K, Meta, ExcludedFields>,
       snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-    ): { snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, config: SnapshotConfig<T, K, Meta, ExcludedFields> } | null => {
+    ): { snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, config: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> } | null => {
       // Ensure snapshotStore exists within snapshotData
       if (!snapshotData.snapshotStore) {
         throw new Error("snapshotStore cannot be null");

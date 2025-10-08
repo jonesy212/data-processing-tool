@@ -1,9 +1,9 @@
 import { SystemConfigs } from "@/app/api/systemConfigs";
 import { UserConfigs } from "@/app/api/userConfigs";
-import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
-import { useNotification } from "@/app/context/NotificationContext";
-import { Project, isProjectInSpecialPhase } from "@/app/projects/Project";
+import { useNotification } from '@/app/context/NotificationContext';
+import { Project, isProjectInSpecialPhase } from "@/app/models/projects/Project";
 import StoreConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
+import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
 import {
   BackendConfig,
   backendConfig,
@@ -12,7 +12,7 @@ import {
 import { getConfigsData } from '@/api/getConfigsApi';
 import LazyLoadScriptConfigImpl from "@/app/components/configs/LazyLoadScriptConfig";
 import { EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { API_VERSION_HEADER } from '@/AppConfig';
+import { API_VERSION_HEADER } from '@/config/AppConfig';
 import { BaseDataEntity, BaseDataRoot, DefaultMeta } from '@/config/BaseConfig';
 import dataVersions from "@/configs/DataVersionsConfig";
 import { VersionHistory } from '@/versions/VersionData';
@@ -149,7 +149,6 @@ export class ConfigurationService {
   }
 
 
-
 // Update the getDefaultApiConfig method
 private getDefaultApiConfig(): ApiConfig {
   return {
@@ -173,8 +172,10 @@ private getDefaultApiConfig(): ApiConfig {
         response.json().then((data) => {
           // Process the response data here
           console.log("Response data:", data);
-        }).catch((error) => {
+        }).catch((error: Error) => {
           console.error("Error parsing response:", error);
+          // You might want to notify here too
+          // notify("Parse Error", error.message, "error");
         });
       } else {
         // Handle non-successful response status
@@ -182,8 +183,8 @@ private getDefaultApiConfig(): ApiConfig {
 
         // Use the notify function to display a notification message
         const errorMessage = `Request failed with status: ${response.status}`;
-        notify();
-
+        // You need to define notify or import it
+        // notify("Request Failed", errorMessage, "error");
       }
     }
   }

@@ -156,7 +156,7 @@ type OptionalSnapshotProps<
 
   updateSnapshot?: (snapshotId: string,
     data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-    events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>,
+    events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
     snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
     dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
     newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -166,7 +166,7 @@ type OptionalSnapshotProps<
   deleteSnapshot?: (id: string) => void;
   getSnapshotItems?: (
     category: symbol | string | Category | undefined, 
-    snapshots: SnapshotsArray<T, K, Meta>,
+    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId?: string,                     // Optional: If you need to fetch a specific snapshot by ID
     callback?: (snapshots: Snapshots<T, K, Meta, ExcludedFields>) => Subscriber<T, K, Meta, ExcludedFields> | null, // Optional: Callback to process snapshots
     snapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null        // Optional: Current snapshot to process or filter by

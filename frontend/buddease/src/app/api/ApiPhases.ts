@@ -10,6 +10,7 @@ import { NotificationType } from "@/context/NotificationContext";
 // Base URL for your API
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 const API_BASE_URL = endpoints.phases;
+
 // Define your notification messages interface
 interface PhaseNotificationMessages {
   FetchPhaseErrorId: string;

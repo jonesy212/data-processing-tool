@@ -1,7 +1,7 @@
 // scheduleCoordinator.ts
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { ProjectLogger } from '@/app/dataIntegration/projectIntegration/ProjectLogger';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ScheduleOptimization } from '@/app/models/data/EventContentAnalysis';
 import { ProjectPhase } from '@/app/projects/projectManagement/ProjectManager';
 import { CalendarEventManager } from '@/calendarEventManager';

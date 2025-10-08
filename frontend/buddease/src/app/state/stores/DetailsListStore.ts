@@ -5,11 +5,10 @@ import {
   NotificationTypeEnum,
   useNotification,
 } from "@/app/components/context/NotificationContext";
-import { BaseData } from '@/app/models/data/Data';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { PhaseData } from "@/app/components/phases/Phase";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { Data } from '@/app/models/data/Data';
+import { BaseData, Data } from '@/app/models/data/Data';
 import { Team } from "@/app/models/teams/Team";
 import { Participant } from "@/app/pages/management/ParticipantManagementPage";
 import { Phase } from "@/app/phases/Phase";
@@ -20,7 +19,7 @@ import { FC } from "react";
 import { CommunicationActionTypes } from "@/app/community/CommunicationActions";
 import { DocumentStatus } from "@/app/components/documents/types";
 import { Tag } from '@/app/components/models/tracker/Tag';
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { DataDetails } from '@/app/models/data/Data';
 import {
   DataStatus,
@@ -45,7 +44,7 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { InitializedConfig, } from "@/app/snapshots/SnapshotStoreConfig";
 
 import { Label } from '@/app/branding/BrandingSettings';
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { ExcludedFields } from '@/app/routing/Fields';
 import { BaseDataEntity } from '@/app/snapshots/ValidationRule';
@@ -247,7 +246,7 @@ class DetailsListStoreClass <
 
   constructor( 
     storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
-    snapConfig: SnapshotConfig<T, K, Meta, ExcludedFields>
+    snapConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) {
     makeAutoObservable(this);
     this.initSnapshotStore(storeProps, snapConfig);
@@ -282,7 +281,7 @@ class DetailsListStoreClass <
 
   private async initSnapshotStore(
     storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
-    snapConfig: SnapshotConfig<T, K, Meta, ExcludedFields>
+    snapConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) {
     const {
       storeId,
@@ -344,7 +343,7 @@ class DetailsListStoreClass <
 
     });
 
-    const snapshotConfig: SnapshotConfig<T, K, Meta, ExcludedFields> = {
+    const snapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       
 
         id: snapConfig?.id || 'default-id', // Default or generate an ID
@@ -1207,7 +1206,7 @@ const useDetailsListStore = <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
     storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
-    snapConfig: SnapshotConfig<T, K, Meta, ExcludedFields>
+    snapConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): DetailsListStore<T, K> => {
   return new DetailsListStoreClass(storeProps, snapConfig);
 };

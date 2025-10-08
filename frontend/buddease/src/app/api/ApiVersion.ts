@@ -2,14 +2,14 @@
 
 import axiosInstance from "@/app/api/csrfToken"; // Ensure this is set up correctly for API calls
 import { endpoints } from "@/app/api/endpointConfigurations";
-import { YourResponseType } from "@/app/components/typings/types";
+import { YourResponseType } from '@/app/components/typings/responseTypes'
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { BaseData } from '@/app/models/data/Data';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from "axios";
-import { handleApiError } from "./ApiLogs";
+import { handleApiError } from '@/app/api/ApiLogs';
 
 // Define the API base URL for version data
 const VERSION_DATA_BASE_URL = endpoints.versionData;

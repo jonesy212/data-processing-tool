@@ -13,7 +13,7 @@ import { TeamData } from "./TeamData";
 import {
   LanguageEnum
 } from "@/app/communications/LanguageEnum";
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { NotificationPreferenceEnum } from "@/app/components/notifications/Notification";
 import { SearchOptions } from "@/app/pages/searchs/SearchOptions";
 import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";

@@ -42,7 +42,7 @@ interface SnapshotCore<
   // Metadata
   description?: string | null;
   tags?: TagsRecord<T, K, Meta, ExcludedFields> | string[] | undefined;
-  state?: SnapshotsArray<T, K, Meta> | null;
+  state?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   topic?: string;
   meta?: StructuredMetadata<T, K>;
   metadata?: UnifiedMetadata<
@@ -96,7 +96,7 @@ interface SnapshotStoreCore<
   snapshots?: Snapshots<T, K, Meta, ExcludedFields>;
   timestamp?: string | number | Date | undefined;
   eventRecords: Record<string, EventRecord<T, K, Meta, ExcludedFields>[]> | null;
-  records?: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>;  
+  records?: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;  
 
   storeConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 

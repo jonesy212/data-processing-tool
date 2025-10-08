@@ -1,6 +1,6 @@
 // createMessage.ts
 import { Content } from '@/app/components/models/content/AddContent';
-import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import { UserPreferences } from "@/config/UserPreferences";
 import { NotificationType } from '@/app/context/NotificationContext';

@@ -5,7 +5,7 @@ import { BaseData, Data } from "./components/models/data/Data";
 import { EventManager } from "./components/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { UnifiedMetadata } from "./configs/database/MetaDataOptions";
 
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";

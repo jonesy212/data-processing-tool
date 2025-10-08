@@ -1,6 +1,5 @@
 import { ProgressPhase } from '@/app/components/models/tracker/ProgressBar';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { ModifiedDate } from "@/app/documents/DocType";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { Content } from "@/app/models/content/AddContent";
@@ -13,6 +12,7 @@ import { DocumentObject } from "@/app/state/redux/slices/DocumentSlice";
 import { DocumentBase, PhaseTypeEnums } from "@/app/state/stores/DocumentStore";
 import { AllTypes } from "@/app/typings/PropTypes";
 import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { DocumentPath } from "@/server/DocumentPath";
 
 

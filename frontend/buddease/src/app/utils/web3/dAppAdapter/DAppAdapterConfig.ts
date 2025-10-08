@@ -1,15 +1,15 @@
-import { BaseData } from '@/app/models/data/Data';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
+import { BaseData } from '@/app/models/data/Data';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
+import { UserRole } from "@/app/UserRole";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
 import { ClientConfig } from "@/server/database/Client";
-import { UserRole } from "@/app/UserRole";
 ;
 
 // FLUENCE_API_KEY EXPORT
@@ -35,7 +35,7 @@ export interface DappProps<
     teams?: Team[];
     
     projects?: Project[];
-    teamMembers?: TeamMember<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;[]; 
+    teamMembers?: TeamMember<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
     
   };
 
@@ -45,7 +45,7 @@ export interface DappProps<
     username: string;
     description: string;
     tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-    teamMembers: TeamMember<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;[];
+    teamMembers: TeamMember<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
   };
 
   // Document-related props

@@ -1,7 +1,7 @@
 import { addPhase } from "@/app/api/ApiPhases";
 import { Label } from '@/app/branding/BrandingSettings';
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Lesson } from "@/app/documents/editing/CourseBuilder";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import { CommonData } from "@/app/models/CommonData";

@@ -1,4 +1,4 @@
-import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { StructuredMetadata } from '@/config/StructuredMetadata';

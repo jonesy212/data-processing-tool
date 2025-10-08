@@ -26,7 +26,7 @@ interface BaseSnapshotProps<
   convertKeyToT: (key: string) => T;
   dataStoreConfig: Record<string, any>;
   initializeState?: (id: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
-  snapshotMethods: SnapshotStoreMethod<T, K, Meta, ExcludedFields>[];
+  snapshotMethods: SnapshotStoreMethods<T, K, Meta, ExcludedFields>[];
   subscribers: string;
   [key: string]: any;
   // Additional shared properties and methods

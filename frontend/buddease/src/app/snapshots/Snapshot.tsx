@@ -67,9 +67,9 @@ import { Label } from "@/app/branding/BrandingSettings";
 import { SnapshotWithData } from "@/app/calendar/CalendarApp";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
 import { SharedSnapshotProperties } from "@/app/components/documents/RelatedProps";
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
+import { Meta } from '@/app/components/models/data/dataStoreMethods';
 import { ExcludedFields } from "@/app/components/routing/Fields";
-import { SharedMetadata } from "@/config/s/metadata/createMetadataState";
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import useDocumentManagement from "@/app/hooks/documents/useDocumentManagement";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
@@ -1571,11 +1571,11 @@ const snapshotConfig: SnapshotConfig<MyEntity, MyK, MyMeta, MyExcludedFields> = 
     callbacks: {
       default: [
         (snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>) => {
-          // Convert Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> to a format that can be used with Snapshots<T, K, Meta, ExcludedFields, IncludedFields>
+          // Convert Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> to a format that can be used with Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
           const snapshotsMap = convertSnapshotToMap(snapshot);
 
           // Assuming convertSnapshotToMap returns a Map or similar structure
-          // If Snapshots<T, K, Meta, ExcludedFields, IncludedFields> is a Map, this will be appropriate
+          // If Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> is a Map, this will be appropriate
           const snapshots: Map<string, any> = snapshotsMap;
 
           // Return the appropriate result or handle the snapshots as needed
@@ -2159,7 +2159,7 @@ callback,
     category: Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshot: Data<T>) => void,
-    snapshots: SnapshotsArray<T, K, Meta>,
+    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     event: SnapshotEvents<MyEntity, MyK, MyMeta, MyExcludedFields>,
     snapshotContainer?: Data<T>,
@@ -2312,7 +2312,7 @@ callback,
           generateId: function (
             prefix: string,
             name: string,
-            type: NotificationTypeEnum,
+            type: NotificationType,
             id?: string,
             title?: string,
             chatThreadName?: string,

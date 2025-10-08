@@ -1,19 +1,5 @@
 // userTypes.ts
 // UserEntityTypes.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Attachment } from '@/app/documents/Attachment/attachment';
-import { SnapshotData } from "@/app/snapshots/SnapshotData";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotStore } from '@/app/snapshots/SnapshotStore';
-import { SnapshotConfig } from "@/app/snapshot/SnapshotConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 
 // Supporting interfaces (from your UserData.ts)
 interface UserPreferences {
@@ -93,53 +79,30 @@ const createDefaultUserData = (options: Partial<UserDataDefault> = {}): UserData
 const emptyUserData: UserDataDefault = createDefaultUserData();
 
 export type {
-  // Core type parameters
-  UserEntity,
-  UserK, 
-  UserMeta,
-  UserAttachment,
-  UserExcludedFields,
-  UserIncludedFields,
-  UserBaseParams,
-  
-  // Default types
-  UserDataDefault,
-  UserSnapshotDefault,
-  UserSnapshotDataDefault,
-  UserSnapshotStoreDefault,
-  UserRealtimeDataItemDefault,
-  
-  // Metadata types
-  UserUnifiedMetadata,
-  UserStructuredMetadata,
-  
+
   // App-specific types
   AppUser,
-  AppUserData,
-  AppUserSnapshot,
+  AppUserData, AppUserRealtimeDataItem, AppUserSnapshot,
   AppUserSnapshotData,
-  AppUserSnapshotStore,
-  AppUserRealtimeDataItem,
-  AppUserUnifiedMetadata,
-  AppUserStructuredMetadata,
-  
+  AppUserSnapshotStore, AppUserStructuredMetadata, AppUserUnifiedMetadata, UserAttachment, UserBaseParams,
+
+  // Default types
+  UserDataDefault,
+  // Core type parameters
+  UserEntity, UserExcludedFields,
   // Frontend structure
-  UserFrontendStructure,
-  
-  // Configuration types
-  UserSnapshotStoreConfig,
-  UserSnapshotsArray,
-  UserParams,
-  
+  UserFrontendStructure, UserIncludedFields, UserK,
+  UserMeta, UserParams,
+
   // Supporting interfaces
   UserPreferences,
-  UserProfile,
-  UserSettings
+  UserProfile, UserRealtimeDataItemDefault, UserSettings, UserSnapshotDataDefault, UserSnapshotDefault, UserSnapshotsArray,
+  // Configuration types
+  UserSnapshotStoreConfig, UserSnapshotStoreDefault, UserStructuredMetadata,
+  // Metadata types
+  UserUnifiedMetadata
 };
 
-export {
-  createDefaultUser,
-  emptyUser,
-  createDefaultUserData,
-  emptyUserData
-};
+  export {
+    createDefaultUser, createDefaultUserData, emptyUser, emptyUserData
+  };

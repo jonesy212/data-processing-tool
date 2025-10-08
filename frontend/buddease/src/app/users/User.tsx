@@ -1,9 +1,9 @@
 // User.tsx
 import { SharedIdentifiers, SharedStatusFlags, SharedTimestamps } from '@/app/components/documents/RelatedProps';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { Data } from '@/app/models/data/Data';
 import { K, Meta, T } from "@/app/models/data/dataStoreMethods";
 import { SecuritySettings } from "@/app/settings/SecuritySettings";
-import { Attachment } from "@/app/documents/Attachment/attachment";
-import { Data } from '@/app/models/data/Data';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";

@@ -44,7 +44,7 @@ export interface SnapshotManagement<T extends BaseDataEntity, K extends T = T, M
 
   createSnapshot: (
     id: string,
-    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
     callback?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     snapshotData?: SnapshotStore<T, K, Meta, ExcludedFields>,

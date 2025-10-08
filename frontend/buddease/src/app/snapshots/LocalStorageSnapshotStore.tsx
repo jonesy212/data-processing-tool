@@ -1,68 +1,80 @@
 // LocalStorageSnapshotStore.tsx
-import * as snapshotApi from "@/app/api/SnapshotApi";
-import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
-import { isCategoryProperties } from "@/app/libraries/categories/generateCategoryProperties";
+import * as snapshotApi from '@/app/api/SnapshotApi';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
+import { isCategoryProperties } from '@/app/libraries/categories/generateCategoryProperties';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { AppEntity, AppExcludedFields, AppK, AppMeta, snapshotStoreConfigInstance } from '@/snapshotStoreConfigInstance';
-import SnapshotStore from "./SnapshotStore";
-import { Attachment } from "@/app/documents/Attachment/attachment";
 
-import { Task, TaskData } from "@/app/components/models/tasks/Task";
+import { Task, TaskData } from '@/app/components/models/tasks/Task';
 import { Data } from '@/app/models/data/Data';
 import {
   PriorityTypeEnum,
   ProjectPhaseTypeEnum,
   StatusType,
   SubscriberTypeEnum
-} from "@/app/models/data/StatusType";
+} from '@/app/models/data/StatusType';
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { EventManager } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { EventManager } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import {
   UpdateSnapshotPayload
-} from "@/app/server/database/Payload";
-import createSnapshotOptions from "@/app/snapshots/createSnapshotOptions";
-import { SnapshotEvents } from "@/app/snapshots/SnapshotEvents";
-import { Subscriber } from "@/app/subscribers/Subscriber";
-import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import {
-  NotificationType
-} from "@/context/NotificationContext";
+} from '@/app/server/database/Payload';
+import createSnapshotOptions from '@/app/snapshots/createSnapshotOptions';
 import {
   CustomSnapshotData,
   SnapshotData
-} from "./SnapshotData";
-import { useSnapshotStore } from "./useSnapshotStore";
+} from '@/app/snapshots/SnapshotData';
+import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
+import { useSnapshotStore } from '@/app/snapshots/useSnapshotStore';
+import { Subscriber } from '@/app/subscribers/Subscriber';
+import { createLatestVersion } from '@/app/versions/createLatestVersion';
+import {
+  NotificationType
+} from '@/context/NotificationContext';
 
-import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { CoreSnapshot } from "@/app/snapshots/CoreSnapshot";
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { CoreSnapshot } from '@/app/snapshots/CoreSnapshot';
 
-import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
+import CalendarManagerStoreClass from '@/app/state/stores/CalendarManagerStore';
 import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 
-import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
+import { RealtimeDataItem } from '@/app/models/realtime/RealtimeData';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 
-import { AddReport, AddReportType } from "@/app/api/ApiReport";
-import { ChatRoom } from "@/app/calendar/CalendarSlice";
-import { Sender } from "@/app/communications/chat/Communication";
-import { SharedSnapshotProperties } from "@/app/components/documents/RelatedProps";
+import { AddReport, AddReportType } from '@/app/api/ApiReport';
+import { endpoints } from '@/app/api/endpointConfigurations';
+import { ChatRoom } from '@/app/calendar/CalendarSlice';
+import { Sender } from '@/app/communications/chat/Communication';
+import { SharedSnapshotProperties } from '@/app/components/documents/RelatedProps';
+import { Meta } from '@/app/components/models/data/dataStoreMethods';
+import { BaseEntity } from '@/app/components/routing/FuzzyMatch';
+import { ModifiedDate } from '@/app/documents/DocType';
+import { Message } from '@/app/generators/GenerateChatInterfaces';
 import { BaseData } from '@/app/models/data/Data';
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
-import { BaseEntity } from "@/app/components/routing/FuzzyMatch";
-import { SharedMetadata } from "@/config/s/metadata/createMetadataState";
-import { ModifiedDate } from "@/app/documents/DocType";
-import { Message } from "@/app/generators/GenerateChatInterfaces";
-import { K, T } from "@/app/models/data/dataStoreMethods";
-import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { PhaseData } from "@/app/phases/Phase";
-import { ExcludedFields } from "@/app/routing/Fields";
-import { getSubscriptionLevel } from "@/app/subscriptions/SubscriptionLevel";
+import { K, T } from '@/app/models/data/dataStoreMethods';
+import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
+import { PhaseData } from '@/app/phases/Phase';
+import { ExcludedFields } from '@/app/routing/Fields';
+import { createCompleteSnapshot } from '@/app/snapshots/createSnapshot';
+import { createSnapshot } from '@/app/snapshots/defaultSnapshotBuilder';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import {
+  snapshotContainer,
+  SnapshotContainer
+} from '@/app/snapshots/SnapshotContainer';
+import { SnapshotDataParams } from '@/app/snapshots/SnapshotDataParams';
+import { SnapshotOperations } from '@/app/snapshots/snapshotOperations';
+import { SnapshotSecurity } from '@/app/snapshots/SnapshotSecurity';
+import { InitializedSnapshot } from '@/app/snapshots/SnapshotStoreOptions';
+import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
+import { getSubscriptionLevel } from '@/app/subscriptions/SubscriptionLevel';
 import { isSnapshotData } from '@/app/utils/snapshotUtils';
 import {
   getCommunityEngagement,
   getMarketUpdates,
   getTradeExecutions,
-} from "@/app/utils/trading/TradingUtils";
+} from '@/app/utils/trading/TradingUtils';
 import {
   logActivity,
   notifyEventSystem,
@@ -70,25 +82,14 @@ import {
   triggerIncentives,
   unsubscribe,
   updateProjectState,
-} from "@/app/utils/web3/applicationUtils";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import baseMeta from "@/server/database/baseMeta";
-import { FC } from "react";
-import { createCompleteSnapshot } from "./createSnapshot";
-import { createSnapshot } from "./defaultSnapshotBuilder";
-import { Snapshot } from "./Snapshot";
-import {
-  snapshotContainer,
-  SnapshotContainer
-} from "./SnapshotContainer";
-import { SnapshotDataParams } from "./SnapshotDataParams";
-import { SnapshotOperations } from "./snapshotOperations";
-import { SnapshotSecurity } from "./SnapshotSecurity";
-import { InitializedSnapshot } from "./SnapshotStoreOptions";
-import { SnapshotStoreProps } from "./useSnapshotStore";
+} from '@/app/utils/web3/applicationUtils';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
+import baseMeta from '@/server/database/baseMeta';
+import { FC } from 'react';
 
-// const SNAPSHOT_URL = endpoints.snapshots;
+const SNAPSHOT_URL = endpoints.snapshots;
 
 // Define SnapshotUnion without needing K
 type SnapshotUnion<
@@ -247,7 +248,7 @@ interface ISnapshotApi {
     ExcludedFields extends keyof T = DefaultExcludedFields<T>
   > = 
     SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & {
-      state?: SnapshotsArray<T, K, Meta> | null;
+      state?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
       properties?: T | K;
     };
 
@@ -630,7 +631,7 @@ export class LocalStorageSnapshotStore<
     savedState: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: Category | undefined,
     callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T, K, Meta>,
+    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     event: string | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -748,7 +749,7 @@ export class LocalStorageSnapshotStore<
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     savedState: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: Category | undefined,    callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T, K, Meta>,
+    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     event: string | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

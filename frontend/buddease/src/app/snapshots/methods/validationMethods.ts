@@ -18,7 +18,7 @@ export const ValidationMethods = {
     event: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
-    subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>,
+    subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
     dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],

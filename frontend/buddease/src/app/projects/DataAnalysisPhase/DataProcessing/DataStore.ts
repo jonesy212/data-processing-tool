@@ -51,7 +51,7 @@ import { DataStoreMethods } from '@/ DataStoreMethods';
 import { DataActions } from '@/app/actions/DataActions';
 import * as apiData from "@/app/api/ApiData";
 import { DataContext } from '@/app/context/DataContext';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { MixedCriteria } from '@/app/pages/searchs/CriteriaOptions';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
@@ -156,7 +156,7 @@ export interface DataStore<
   getData: (
     id: number,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, CustomSnapshotData<T, K, Meta, ExcludedFields>  & K, StructuredMetadata<T, CustomSnapshotData<T, K, Meta, ExcludedFields>  & K>>
+    data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  & K, StructuredMetadata<T, CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  & K>>
   ) => Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined>;
 
   // Add convertKeyToT method
@@ -395,7 +395,7 @@ export interface DataStore<
     snapshotsObject: SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined>
   
-  snapshotMethods?: SnapshotStoreMethod<T, K, Meta, ExcludedFields>[] | undefined;
+  snapshotMethods?: SnapshotStoreMethods<T, K, Meta, ExcludedFields>[] | undefined;
   snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
   getSnapshotVersions: (
     category: Category | undefined,    timestamp: any,
@@ -917,7 +917,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K, Meta, AttachmentTyp
 
     if (newData) {
       let initialState: SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined = null;
-      let initialConfig: SnapshotConfig<T, K> | null | undefined = null;
+      let initialConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined = null;
       if (newData.initialState instanceof SnapshotStore) {
         // Convert SnapshotStore to Snapshot
         initialState = convertSnapshotStoreToSnapshot(newData.initialState) as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -1284,7 +1284,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K, Meta, AttachmentTyp
   };
 
   // Define your snapshotMethods array
-  const snapshotMethods: SnapshotStoreMethod<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [
+  const snapshotMethods: SnapshotStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [
     {
       snapshot: (
         id: string | number | undefined,
@@ -1299,7 +1299,7 @@ const getItem = (key: T, id: number): Promise<Snapshot<T, K, Meta, AttachmentTyp
         subscriberId: string, // Add subscriberId here
         endpointCategory: string | number,// Add endpointCategory here
         storeProps: SnapshotStoreProps<T, K>,
-        snapshotConfigData: SnapshotConfig<T, K>,
+        snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         subscription: Subscription<T, K>,
         snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         snapshotContainer?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,

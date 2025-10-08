@@ -1,13 +1,13 @@
+import internalApiService, { ClientNotificationMessages, clientNotificationMessages } from "@/app/api/ApiClient";
+import { handleApiError } from "@/app/api/ApiLogs";
 import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from "@/app/api/endpointConfigurations";
 import { NotificationType } from '@/app/context/NotificationContext';
-import { FileType } from "@/app/documents/Attachment/attachment";
+import { FileType } from "@/app/documents/attachment/attachment";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { sendNotification } from "@/app/users/UserSlice";
 import { VersionData } from "@/app/versions/VersionData";
 import { AxiosError, AxiosResponse } from "axios";
-import internalApiService, { ClientNotificationMessages, clientNotificationMessages } from "@/app/api/ApiClient";
-import { endpoints } from "@/app/api/endpointConfigurations";
-import { handleApiError } from "@/app/api/ApiLogs";
 
 const API_BASE_URL = endpoints.client;
 

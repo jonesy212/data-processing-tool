@@ -1,5 +1,5 @@
 // eventTypes.ts
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Snapshots } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
@@ -20,6 +20,8 @@ export interface SnapshotEvent<
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   context: EventContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   previousState?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  timestamp?: Date;
+  source?: string;
 }
 
 export interface BatchSnapshotEvent<
@@ -54,14 +56,23 @@ export interface EventContext<
 }
 
 // Simplified interface for your specific SnapshotEvents type
-export interface SnapshotEvents<
-  T extends BaseDataEntity = BaseDataEntity,
-  K extends T = T
+interface SnapshotEvents<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
-  onSnapshotAdded?: (event: SnapshotEvent<T, K>) => void;
-  onSnapshotUpdated?: (event: SnapshotEvent<T, K>) => void;
-  onSnapshotRemoved?: (event: SnapshotEvent<T, K>) => void;
-  onError?: (event: ErrorEvent) => void;
+  // Use the full typed event handlers internally
+  eventHandlers: {
+    onSnapshotAdded?: (event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+    onSnapshotUpdated?: (event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+    onSnapshotRemoved?: (event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+    onError?: (event: ErrorEvent) => void;
+  };
+
+  // ... rest of your comprehensive properties
 }
 
 export interface ErrorEvent {

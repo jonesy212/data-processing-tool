@@ -1,12 +1,12 @@
 // CourseDevelopmentPage.tsx
 import { fetchDataWithToken, useAuth } from "@/app/components/auth/AuthContext";
+import { useNotification } from '@/app/context/NotificationContext';
 import { Data } from '@/app/models/data/Data';
-import SnapshotStore, {
-    Snapshot,
-} from "@/app/snapshots/SnapshotStore";
-import { useNotification } from "@/app/context/NotificationContext";
-import React, { useEffect, useState } from "react";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
+import SnapshotStore, {
+  Snapshot,
+} from "@/app/snapshots/SnapshotStore";
+import React, { useEffect, useState } from "react";
 import CourseLearningPhase from "./CourseLearningPhase";
 import CoursePlanningPhase from "./CoursePlanningPhase";
 import CourseSetupPhase from "./CourseSetupPhase";

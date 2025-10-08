@@ -44,7 +44,7 @@ interface SnapshotConfigProps<T extends BaseDataEntity,
   metadata: any; // Replace `any` with the appropriate type
   endpointCategory: string; // Adjust the type as necessary
   storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>; // Replace `any` with the appropriate type
-  snapshotConfigData: SnapshotConfig<T, K, Meta, ExcludedFields>; // Replace `any` with the appropriate type
+  snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Replace `any` with the appropriate type
   snapshotStoreConfigData: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Replace `any` with the appropriate type
   snapshotContainer: SnapshotContainer<T, K, Meta, ExcludedFields>; // Replace `any` with the appropriate type
 }

@@ -1,4 +1,4 @@
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UserRole } from '@/components/users/UserRole';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { useAuth } from '@/context/AuthContext';

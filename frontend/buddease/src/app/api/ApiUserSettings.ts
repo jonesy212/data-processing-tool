@@ -4,7 +4,7 @@ import { HeadersConfig } from "@/app/api/headers/HeadersConfig";
 import { headersConfig } from "@/app/components/shared/SharedHeaders";
 import { UserSettings } from "@/config/UserSettings";
 import { AxiosError, AxiosResponse } from "axios";
-import { handleApiError } from "./ApiLogs";
+import { handleApiError } from '@/app/api/ApiLogs';
 
 const API_BASE_URL = endpoints.client;
 

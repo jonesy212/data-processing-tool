@@ -24,9 +24,9 @@ async function fetchSnapshotsForCategory<
   snapshotId: string,
   type: string,
   category?: Category
-): Promise<SnapshotsArray<T, K, Meta>> {
+): Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   try {
-    const response = await internalApiService.get<SnapshotsArray<T, K, Meta>>(
+    const response = await internalApiService.get<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
       `/snapshots`,
       {
         params: {

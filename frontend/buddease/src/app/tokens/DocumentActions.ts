@@ -1,5 +1,5 @@
 // DocumentActions.ts
-import { Meta } from "@/app/components/models/data/dataStoreMethods";
+import { Meta } from '@/app/components/models/data/dataStoreMethods';
 import  { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { createAction } from "@reduxjs/toolkit";
 import { DocumentEditingPermissions } from "@/app/components/users/Permission";

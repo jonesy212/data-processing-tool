@@ -2,10 +2,9 @@
 import { EventActions } from '@/app/actions/EventActions';
 import { UIActions } from "@/app/actions/UIActions";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { BaseData } from '@/app/models/data/Data';
-import { StructuredMetadata } from '@/config//StructuredMetadata';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
+import { BaseData } from '@/app/models/data/Data';
 import { Member } from "@/app/models/teams/TeamMembers";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
@@ -15,9 +14,11 @@ import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { implementThen } from "@/app/state/stores/CommonEvent";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
+import { AppAttachment, AppEntity, AppExcludedFields, AppK, AppMeta } from "@/app/utils/web3/dAppAdapter/AppEntity";
 import { Version } from "@/app/versions/Version";
 import { VersionHistory } from "@/app/versions/VersionData";
 import { VideoData } from "@/app/video/Video";
+import { StructuredMetadata } from '@/config//StructuredMetadata';
 import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
@@ -30,7 +31,6 @@ import {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CustomEventExtension } from "./BaseCustomEvent";
-import { AppEntity, AppExcludedFields, AppK, AppMeta, AppAttachment, AppIncludeField } from "@/app/utils/web3/dAppAdapter/AppEntity";
 
 
 interface CustomMouseEvent<T = Element>

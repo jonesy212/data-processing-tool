@@ -22,10 +22,10 @@ import {
   updateSnapshot,
   validateSnapshot
 } from '@/app//components/snapshots/snapshotOperations';
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SnapshotStore } from '@/app/snapshots/SnapshpshotStore';
+import { Subscriber } from '@/app/subscribers/Subscriber';
 
 const useSnapshotOperations = <
   T extends BaseDataEntity,

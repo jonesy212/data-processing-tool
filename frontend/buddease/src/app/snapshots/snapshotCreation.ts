@@ -2,7 +2,7 @@
 // In snapshotOperations/snapshotCreation.ts
 import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
 import { Content } from '@/app/components/models/content/AddContent';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UniqueIDGenerator } from '@/app/generators/GenerateUniqueIds';
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';

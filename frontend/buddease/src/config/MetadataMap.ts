@@ -6,7 +6,7 @@ type MetadataMap<
   T extends BaseData<any>,
   K extends T = T,
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
-> = Map<string, Snapshot<T, K, Meta>> & BaseData<any, any, any>;
+> = Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> & BaseData<any, any, any>;
 
 
 export type { MetadataMap };

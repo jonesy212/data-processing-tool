@@ -10,7 +10,7 @@ import { RealtimeDataItem } from "@/app/app/components/models/realtime/RealtimeD
 import { AllStatus } from "@/app/app/components/state/stores/DetailsListStore";
 import useSubscription from "@/app/app/hooks/useSubscription";
 import { CalendarEvent } from "@/app/calendar/CalendarEvent";
-import { useNotification } from "@/app/context/NotificationContext";
+import { useNotification } from '@/app/context/NotificationContext';
 import { SnapshotLogger } from "@/app/libraries/logging/Logger";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotActions } from "@/app/snapshots/SnapshotActions";

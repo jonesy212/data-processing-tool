@@ -4,21 +4,23 @@ import {
     SimpleCalendarEvent,
     useCalendarContext,
 } from "@/app/calendar/CalendarContext";
-import { CalendarEvent } from '@/app/components/calendar/CalendarEvent';
+import { BaseDataRoot } from "@/config/BaseConfig";
+import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import {
     CalendarNotificationTypes,
     NotificationType,
     useNotification
-} from "@/app/support/NotificationContext";
+} from "@/app/context/NotificationContext";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { AxiosResponse } from "axios";
 import internalApiService from "./ApiClient";
-
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import axiosInstance from "@/app/api/csrfToken";
-import { handleApiError } from "./ApiLogs";
+import { handleApiError } from '@/app/api/ApiLogs';
 
 const API_BASE_URL = endpoints.calendar
+
 interface CalendarNotificationMessages {
   FETCH_CALENDAR_EVENTS_SUCCESS: string;
   FETCH_CALENDAR_EVENTS_ERROR: string;
@@ -102,21 +104,6 @@ class CalendarApiService <
       // Extract data from the AxiosResponse object
       const calendarEvents: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = response.data;
       return calendarEvents;
-    } catch (error) {
-      console.error("Error fetching calendar events:", error);
-      throw error;
-    }
-  }
-
-  async fetchCalendarEvents(): Promise<CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
-    try {
-      const response = await this.requestHandler(
-        () => internalApiService.get(`${API_BASE_URL}/calendar/events`), // ✅ Use internalApiService with correct endpoint
-        "FETCH_CALENDAR_EVENTS_SUCCESS", 
-        "FETCH_CALENDAR_EVENTS_ERROR"
-      );
-
-      return response.data;
     } catch (error) {
       console.error("Error fetching calendar events:", error);
       throw error;

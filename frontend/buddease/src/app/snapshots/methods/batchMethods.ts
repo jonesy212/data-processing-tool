@@ -1,6 +1,6 @@
 // batchMethods.ts
 
-import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
 import { ExcludedFields } from "@/app/components/routing/Fields";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Snapshots } from "@/app/LocalStorageSnapshotStore";
@@ -123,10 +123,10 @@ export const BatchMethods = {
     criteria: CriteriaType,
     snapshotData?: (
       snapshotIds: string[],
-      subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>,
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshots: Snapshots<T, K, Meta, ExcludedFields>
     ) => Promise<{
-      subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>;
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       snapshots: Snapshots<T, K, Meta, ExcludedFields>;
     }>,
     ids?: string[] // Optional parameter for direct ID fetching
@@ -169,7 +169,7 @@ export const BatchMethods = {
   },
 
 
-  async batchTakeSnapshotsRequest(snapshotData: SnapshotData<T, K, Meta, ExcludedFields>): Promise<void> {
+  async batchTakeSnapshotsRequest(snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<void> {
     const delegate = this.ensureDelegate();
     // Call the delegate method
     await delegate.batchTakeSnapshotsRequest(snapshotData);
@@ -177,9 +177,9 @@ export const BatchMethods = {
 
   batchUpdateSnapshotsRequest(
     snapshotData: (
-      subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => Promise<{
-      subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>;
+      subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       snapshots: Snapshots<T, K, Meta, ExcludedFields>;
     }>
   ): Promise<void> {

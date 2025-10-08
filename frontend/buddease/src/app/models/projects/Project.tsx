@@ -1,15 +1,13 @@
 // projects/Project.ts (CLIENT-SIDE ONLY)
 import { ScheduledData } from "@/app/components/calendar/ScheduledData";
-import { BaseData } from '@/app/models/data/Data';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { Collaborator } from '@/app/components/models/teams/TeamMembers';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { Exchange } from "@/app/crypto/Exchange";
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { ButtonGenerator } from "@/app/generators/GenerateButtons";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import CommonDetails, { CommonData } from "@/app/models/CommonData";
-import { Data } from '@/app/models/data/Data';
+import { BaseData, Data } from '@/app/models/data/Data';
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { StatusType } from "@/app/models/data/StatusType";
@@ -17,13 +15,13 @@ import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import { Member } from "@/app/models/teams/TeamMembers";
 import {
-    CustomPhaseHooks, Phase,
-    PhaseData,
-    PhaseEntity,
-    PhaseExcluded,
-    PhaseK,
-    PhaseMeta,
-    PhaseMetaType
+  CustomPhaseHooks, Phase,
+  PhaseData,
+  PhaseEntity,
+  PhaseExcluded,
+  PhaseK,
+  PhaseMeta,
+  PhaseMetaType
 } from "@/app/phases/Phase";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
@@ -32,8 +30,9 @@ import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
 import { VideoData } from "@/app/video/Video";
-import { DefaultExcludedFields, BaseDataEntity, DefaultMeta, baseConfig } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, baseConfig } from '@/config/BaseConfig';
 import { sharedBaseData, sharedMetadata } from '@/config/metadata/MetadataHooks';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { SharedTimestamps } from '@/RelatedProps';
 import { ExcludedFields } from '@/routing/Fields';
 import React, { ReactNode, useEffect, useState } from "react";

@@ -1,4 +1,4 @@
-// createSnapshotInstance.ts
+// defaultSnapshotBuilder.ts
 import {
   BaseDataEntity,
   BaseDataRoot,
@@ -6,22 +6,32 @@ import {
   DefaultMeta,
   ExcludedFields
 } from '@/config/BaseConfig';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { SnapshotContainer, SnapshotUnion, SnapshotWithCriteria } from '.';
+import { UnifiedMetadata } from '@/server/database/MetaDataOptions';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { SnapshotUnion } from '@/app/snapshots/snapshotsLocalStorageSnapshotStore';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 
-import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
+import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 
 import { Subscribers } from '@/app/subscribers/Subscriber';
 import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshpshotConfigBuilder';
 import { SnapshotEvents } from '@/app/snapshots/SnapshpshotEvents';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshpshotStoreConfig';
-import { SnapshotStoreProps } from '@/useSnapshotStore';
-import { Snapshot } from "./Snapshot";
-import { default as SnapshotStore } from "./SnapshotStore";
+import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
+import { Snapshot } from './Snapshot';
+import { default as SnapshotStore } from './SnapshotStore';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
 // Utility: flatten map
-function flatMap<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
+function flatMap<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  >(
   array: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
   callback: (
     value: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 

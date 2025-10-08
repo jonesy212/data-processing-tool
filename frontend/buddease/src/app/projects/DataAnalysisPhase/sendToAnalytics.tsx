@@ -3,7 +3,13 @@ import { BaseData } from '@/app/models/data/Data';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 
-const sendToAnalytics = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(eventName: string, eventData: Record<string, any>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+const sendToAnalytics = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(eventName: string, eventData: Record<string, any>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
   try {
     // Example: Interacting with a third-party analytics platform (like Mixpanel)
     if (window.mixpanel) {

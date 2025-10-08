@@ -1,16 +1,12 @@
-import crypto from 'crypto';
-import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { createLatestVersion } from '@/versions/createLatestVersion';
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { BaseData } from '@/app/models/data/Data';
-import { Attachment } from "@/app/documents/Attachment/attachment";
-import { UnifiedMetaDataOptions } from '@/server/database/MetaDataOptions';
-import { Snapshot } from "@/app/snapshots/Snapshot";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import SecureFieldManager from '@/server/security/SecureFieldManager'
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { useSecurityAudit } from "@/app/hooks/useSecurityAudit";
-import { BaseDataRoot } from "@/config/BaseConfig";
+import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
+import SecureFieldManager from '@/server/security/SecureFieldManager';
+import { createLatestVersion } from '@/versions/createLatestVersion';
+import crypto from 'crypto';
 
 
 interface DashboardMeta<

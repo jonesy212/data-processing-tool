@@ -18,13 +18,13 @@ interface ConfigMethodsInterface<
 > {
   getConfigOptionAsync(): Promise<
     | string
-    | SnapshotConfig<T, K, Meta, ExcludedFields>
+    | SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     | SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     | null
   >;
   
   setConfigOption(
-    option: string | SnapshotConfig<T, K, Meta, ExcludedFields> | SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+    option: string | SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
   ): void;
   
   getConfig(): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
@@ -78,7 +78,7 @@ export class ConfigMethods<
 
   public async getConfigOptionAsync(): Promise<
     | string
-    | SnapshotConfig<T, K, Meta, ExcludedFields>
+    | SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     | SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     | null
   > {
@@ -87,7 +87,7 @@ export class ConfigMethods<
   }
 
   public async setConfigOption(
-    option: string | SnapshotConfig<T, K, Meta, ExcludedFields> | SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
+    option: string | SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
   ): Promise<void> {
     const currentConfig = await this.getConfig();
     const updatedConfig = {

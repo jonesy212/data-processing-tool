@@ -45,7 +45,7 @@ interface SpecificMetadata<
   IncludedFields extends keyof T = keyof T
 > {
   tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
-  categories?: CategoryProperties<T, K, Meta, ExcludedFields, IncludedFields>[];
+  categories?: CategoryProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   priority?: number;
   customFields?: Record<string, any>;
 }

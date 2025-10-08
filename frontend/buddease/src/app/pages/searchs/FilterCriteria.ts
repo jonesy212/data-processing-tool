@@ -1,7 +1,7 @@
 
 import { extractCriteria } from '@/app/api/SnapshotApi';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 
 import {
@@ -9,7 +9,6 @@ import {
   LanguageEnum,
 } from "@/app/communications/LanguageEnum";
 import FormatEnum from "@/app/components/form/FormatEnum";
-import { BaseData, Data } from '@/app/models/data/Data';
 import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { FeedbackPhaseEnum } from "@/app/components/phases/FeedbackPhase";
@@ -20,6 +19,7 @@ import { MessageType } from "@/app/generators/MessaageType";
 import AnimationTypeEnum from "@/app/libraries/animations/AnimationLibrary";
 import { CategoryIdentifier } from "@/app/libraries/categories/generateCategoryProperties";
 import { StatusTrackable, Timestamped } from "@/app/models/CommonData";
+import { BaseData, Data } from '@/app/models/data/Data';
 import {
   BookmarkStatus,
   CalendarStatus,
@@ -658,8 +658,8 @@ const events: CalendarEvent[] = [
     },
     
 then: function <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-  callback: (newData: Snapshot<T, K, Meta>) => void
-): Snapshot<T, K, Meta> {
+  callback: (newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
+): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   
   // Create base data with your calendar properties
   const baseCalendarData: T = {
@@ -738,7 +738,7 @@ then: function <T extends BaseDataEntity, K extends T = T, Meta extends DefaultM
   });
 
   // Return a temporary snapshot that will be replaced by the real one
-  const temporarySnapshot: Snapshot<T, K, Meta> = {
+  const temporarySnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     id: "temp",
     data: baseData,
     metadata: baseMeta,

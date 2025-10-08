@@ -1,7 +1,7 @@
 // SnapshotConfig.ts
+import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
 import { createLatestVersion } from '@/app/versions/createLatestVersion';
-import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 
 import { userId } from "@/api/ApiUser";
@@ -29,7 +29,6 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { DataStore, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { CreateSnapshotsPayload, Payload } from "@/server/database/Payload";
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { CoreSnapshot, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
@@ -49,22 +48,22 @@ import {
   NotificationTypeEnum,
 } from "@/context/NotificationContext";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { UpdateSnapshotPayload } from '@/server/database/Payload';
-import { useParams } from "next/navigation";
+import { CreateSnapshotsPayload, Payload, UpdateSnapshotPayload } from "@/server/database/Payload";
 import {
   getCommunityEngagement,
   getMarketUpdates,
   getTradeExecutions,
 } from "@/utils/trading/TradingUtils";
+import { useParams } from "next/navigation";
 import { InitializedData, SnapshotStoreOptions } from "./SnapshotStoreOptions";
 
-import { BaseDatabaseService } from '@/server/database//DatabaseConfig';
-import { Attachment } from '@/app/documents/Attachment/attachment';
-import { internalCache } from '@/app/utils/cache/InternalCache';
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta, mappedSnapshot } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotCallback } from '@/app/event/EventManager';
 import { SnapshotContext } from '@/app/snapshots/SnapshpshotSubscriberManagement';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { internalCache } from '@/app/utils/cache/InternalCache';
+import { BaseDataRoot, mappedSnapshot } from '@/config/BaseConfig';
+import { BaseDatabaseService } from '@/server/database//DatabaseConfig';
 import {
   Snapshots,
   SnapshotUnion,
@@ -162,8 +161,8 @@ function createSnapshotConfig<
   snapshotManager: SnapshotManager<T, K>,
   snapshotStoreConfig: any,
   
-  existingConfigs: Map<string, SnapshotConfig<T, K>>,
-  snapshotData: SnapshotData<T, K>,
+  existingConfigs: Map<string, SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   category: symbol | string | Category | undefined = 'default-category',
   criteria: CriteriaType | undefined,
   storeConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Ensure this is provided and correctly typed
@@ -212,7 +211,7 @@ function createSnapshotConfig<
   ) => string,
   // Define types as needed
   snapshotContainer?: any, // Define types as needed
-  getSnapshotItems?: (category: symbol | string | Category | undefined, snapshots: SnapshotsArray<T, K, Meta>
+  getSnapshotItems?: (category: symbol | string | Category | undefined, snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => (SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotItem<T, K> | undefined)[], // Define types as needed
   defaultSubscribeToSnapshots?: (
     snapshotId: string, 
@@ -406,7 +405,7 @@ function createSnapshotConfig<
         deepCompare,
       }
  
-      const newSnapshotConfig: SnapshotConfig<T, K> = {
+      const newSnapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         ...snapshot,
         id: snapshotId,
         description,
@@ -560,7 +559,7 @@ const updateSubscribersAndSnapshots = async <
                 snapshotManager: SnapshotManager<T, K>,
                 payload: CreateSnapshotsPayload<T, K>,
                 callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
-                snapshotDataConfig?: SnapshotConfig<T, K>[],
+                snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
                 category?: string | symbol | Category
               ) => snapshot.createSnapshots(id, snapshotId, snapshots, snapshotManager, payload, callback, snapshotDataConfig, category),
               events: {
@@ -603,7 +602,7 @@ const updateSubscribersAndSnapshots = async <
                   dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
                   criteria: SnapshotWithCriteria<T, K>,
                   category: Category,
-                  snapshotData: SnapshotData<T, K>) => {
+                  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
                   throw new Error("Function not implemented.");
                 },
                 onSnapshotUpdated: (
@@ -708,7 +707,7 @@ const updateSubscribersAndSnapshots = async <
               },
               snapshot: (
                 id: string | number | undefined,
-                snapshotData: SnapshotData<T, K>,
+                snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                 category: Category | undefined,                categoryProperties: CategoryProperties | undefined,
                 callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
                 dataStore: DataStore<T, K>,
@@ -717,7 +716,7 @@ const updateSubscribersAndSnapshots = async <
                 subscriberId: string, // Add subscriberId here
                 endpointCategory: string | number,// Add endpointCategory here
                 storeProps: SnapshotStoreProps<T, K>,
-                snapshotConfigData: SnapshotConfig<T, K>,
+                snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                 subscription: Subscription<T, K>,
                 snapshotId?: string | null,
                 snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

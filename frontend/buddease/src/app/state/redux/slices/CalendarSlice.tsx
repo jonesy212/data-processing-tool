@@ -1,15 +1,15 @@
 import { CalendarActions } from "@/app/actions/CalendarEventActions";
 import { NotificationActions } from "@/app/actions/NotificationActions";
 import calendarApiService from "@/app/api/ApiCalendar";
-import { endpoints } from '@/app/api/endpointConfigurations';
 import { fetchEventData } from "@/app/api/ApiEvent";
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { AttendancePrediction } from "@/app/calendar/AttendancePrediction";
 import CalendarEventAgendaItem from "@/app/calendar/CalendarEventAgendaItem";
 import CalendarEventEffectivenessEvaluation from "@/app/calendar/CalendarEventEffectivenessEvaluation";
 import CalendarEventFeedbackAnalysis from "@/app/calendar/CalendarEventFeedbackAnalysis";
 import CalendarEventFollowUpActionSuggestion from "@/app/calendar/CalendarEventFollowUpActionSuggestion";
 import ChatMessage from "@/app/communications/chat/ChatMessage";
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import CustomFile from "@/app/documents/File";
 import EventCategory from "@/app/event/EventCategory";
 import EventSentiment from "@/app/event/EventSentiment";

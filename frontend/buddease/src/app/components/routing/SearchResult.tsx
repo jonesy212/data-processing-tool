@@ -1,16 +1,19 @@
 // SearchResult.tsx
-import { DocumentOptions } from '@/documents/DocumentOptions';
+import { DocumentOptions } from '@/app/documents/DocumentOptions';
 import { searchDocumentAPI } from '@/app/api/ApiDocument'; // Import the searchDocumentAPI method
 import SearchResultItem from '@/app/components/models/data/SearchResultItem';
-import SearchHistory from '@/app/components/versions/SearchHistory';
-import Version from '@/app/components/versions/Version';
+import SearchHistory from '@/app/versions/SearchHistory';
+import Version from '@/app/versions/Version';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import ListGenerator from '@/app/generators/ListGenerator';
-import { DocumentData } from '@/documents/DocumentBuilder';
-import FolderData from '@/models/data/FolderData';
+import { DocumentData } from '@/app/documents/DocumentBuilder';
+import FolderData from '@/app/models/data/FolderData';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { Entity } from '@/FuzzyMatch';
+import { Entity } from '@/routing/FuzzyMatch';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
+import { BaseDataRoot } from "@/config/BaseConfig";
 
 
 // Define the SearchResultWithQuery interface that extends SearchResult
@@ -29,7 +32,10 @@ interface SearchResultProps<T> {
 interface SearchResult<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends Entity, DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   items: T[];
   totalCount: number;
@@ -96,7 +102,7 @@ const SearchResultComponent: React.FC<SearchResultProps<any>> = ({ result }) => 
           ) : (
             // If there is only one item, render its details using SearchResultItem
             <SearchResultItem
-              key={index}
+              key={item.id} 
               items={result.items}
               id={result.id}
               title={result.title}

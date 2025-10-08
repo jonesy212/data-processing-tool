@@ -1,19 +1,18 @@
-import { handleApiError } from '@/app/api/ApiLogs';
+import { handleAPIError } from '@/app/api/APILogs';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData } from '@/app/models/data/Data';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Dispatch } from '@reduxjs/toolkit';
-import { Attachment } from "@/app/documents/Attachment/attachment";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { AxiosError, AxiosResponse } from 'axios';
 
-import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { NotificationType, useNotification } from '@/app/context/NotificationContext';
-import { historyManagerStore } from '@/app/state/stores/HistoryStore';
-import { useTaskManagerStore } from '@/app/state/stores/TaskStore ';
 import { TaskHistoryEntry } from '@/app/interfaces/history/TaskHistoryEntry';
 import { Task } from '@/app/models/tasks/Task';
+import { historyManagerStore } from '@/app/state/stores/HistoryStore';
+import { useTaskManagerStore } from '@/app/state/stores/TaskStore ';
 
 // Define the API base URL
 const API_BASE_URL = endpoints.tasks.list;
@@ -50,7 +49,7 @@ interface TaskNotificationMessages {
 }
 
 // Define API notification messages for tasks
-const taskApiNotificationMessages: TaskNotificationMessages = {
+const taskAPINotificationMessages: TaskNotificationMessages = {
   FETCH_TASKS_SUCCESS: 'Tasks fetched successfully.',
   FETCH_TASKS_ERROR: 'Failed to fetch tasks.',
   ADD_TASK_SUCCESS: 'Task added successfully.',
@@ -80,38 +79,45 @@ const taskApiNotificationMessages: TaskNotificationMessages = {
   // Add more properties as needed
 };
 
-type TaskApiNotificationKeys = keyof typeof taskApiNotificationMessages
+type TaskAPINotificationKeys = keyof typeof taskAPINotificationMessages
 
 // Function to handle API errors and notify for tasks
-const handleTaskApiErrorAndNotify = (
+const handleTaskAPIErrorAndNotify = (
   error: AxiosError<unknown>,
   errorMessage: string,
-  errorMessageId: TaskApiNotificationKeys
+  errorMessageId: TaskAPINotificationKeys
 ) => {
-  handleApiError(error, errorMessage);
+  handleAPIError(error, errorMessage);
  
-  if (errorMessageId && taskApiNotificationMessages.hasOwnProperty(errorMessageId)) {
-    const errorMessageText = taskApiNotificationMessages[errorMessageId];
+  if (errorMessageId && taskAPINotificationMessages.hasOwnProperty(errorMessageId)) {
+    const errorMessageText = taskAPINotificationMessages[errorMessageId];
     // Notify the error message
     useNotification().notify(
       errorMessageId,
       errorMessageText,
       null,
       new Date(),
-      "ApiClientError" as NotificationType
+      "APIClientError" as NotificationType
     );
   };
 }
 
 
 
-const fetchTasks = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
+const fetchTasksAPI = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
     const response = await axiosInstance.get(`${API_BASE_URL}`);
     return response.data.tasks;
   } catch (error) {
     console.error('Error fetching tasks:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to fetch tasks',
       'FETCH_TASKS_ERROR'
@@ -121,7 +127,7 @@ const fetchTasks = async <T extends  BaseData<any>, K extends T = T, Meta extend
 };
 
 
-const updateTaskPositionSuccess = <
+const updateTaskPositionSuccessAPI = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -137,7 +143,7 @@ const updateTaskPositionSuccess = <
   };
 };
 
-const updateTaskPosition = async <
+const updateTaskPositionAPI = async <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -175,17 +181,17 @@ const updateTaskPosition = async <
     // Notify the success message
     useNotification().notify(
       'UPDATE_TASK_SUCCESS',
-      taskApiNotificationMessages.UPDATE_TASK_SUCCESS,
+      taskAPINotificationMessages.UPDATE_TASK_SUCCESS,
       null,
       new Date(),
-      "ApiClientSuccess" as NotificationType
+      "APIClientSuccess" as NotificationType
     );
 
     // Notify the caller (if needed)
     notify();
   } catch (error) {
     console.error('Error updating task position:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to update task position',
       'UPDATE_TASK_ERROR'
@@ -194,7 +200,14 @@ const updateTaskPosition = async <
   }
 };
 
-const addTaskApi = async <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(newTask: Omit<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 'id'>): Promise<void> => {
+const addTaskAPI = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(newTask: Omit<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 'id'>): Promise<void> => {
   try {
     const addTaskEndpoint = `${API_BASE_URL}.add`;
     const response = await axiosInstance.post(addTaskEndpoint, newTask);
@@ -207,7 +220,7 @@ const addTaskApi = async <T extends  BaseData<any>, K extends T = T, Meta extend
     }
   } catch (error) {
     console.error('Error adding task:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to add task',
       'ADD_TASK_ERROR'
@@ -215,7 +228,7 @@ const addTaskApi = async <T extends  BaseData<any>, K extends T = T, Meta extend
     throw error;
   }
 };
-const removeTaskApi = async (taskId: number): Promise<void> => {
+const removeTaskAPI = async (taskId: number): Promise<void> => {
   try {
     const removeTaskEndpoint = `${API_BASE_URL}.remove.${taskId}`;
     const response = await axiosInstance.delete(removeTaskEndpoint);
@@ -227,7 +240,7 @@ const removeTaskApi = async (taskId: number): Promise<void> => {
     }
   } catch (error) {
     console.error('Error removing task:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to remove task',
       'REMOVE_TASK_ERROR'
@@ -236,7 +249,14 @@ const removeTaskApi = async (taskId: number): Promise<void> => {
   }
 };
 
-const toggleTask = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(taskId: number): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void> => {
+const toggleTaskAPI = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(taskId: number): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void> => {
   return new Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void>(async (resolve, reject) => {
     try {
       const toggleTaskEndpoint = `${API_BASE_URL}.toggle.${taskId}`;
@@ -246,7 +266,7 @@ const toggleTask = <T extends  BaseData<any>, K extends T = T, Meta extends Stru
       return response.data;
     } catch (error) {
       console.error('Error toggling task:', error);
-      handleTaskApiErrorAndNotify(
+      handleTaskAPIErrorAndNotify(
         error as AxiosError<unknown>,
         'Failed to toggle task',
         'TOGGLE_TASK_ERROR'
@@ -257,7 +277,14 @@ const toggleTask = <T extends  BaseData<any>, K extends T = T, Meta extends Stru
   })
 };
 
-const updateTask = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(taskId: number, newTitle: string): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void> => {
+const updateTaskAPI = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(taskId: number, newTitle: string): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void> => {
   return new Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void>(async (resolve, reject) => {
     try {
       const updateTaskEndpoint = `${API_BASE_URL}.update.${taskId}`;
@@ -269,7 +296,7 @@ const updateTask = <T extends  BaseData<any>, K extends T = T, Meta extends Stru
 
     } catch (error) {
       console.error('Error updating task:', error);
-      handleTaskApiErrorAndNotify(
+      handleTaskAPIErrorAndNotify(
         error as AxiosError<unknown>,
         'Failed to update task',
         'UPDATE_TASK_ERROR'
@@ -280,13 +307,13 @@ const updateTask = <T extends  BaseData<any>, K extends T = T, Meta extends Stru
   })
 };
 
-const completeAllTasks = async (): Promise<void> => {
+const completeAllTasksAPI = async (): Promise<void> => {
   try {
     const completeAllTasksEndpoint = `${API_BASE_URL}.completeAll`;
     await axiosInstance.post(completeAllTasksEndpoint);
   } catch (error) {
     console.error('Error completing all tasks:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to complete all tasks',
       'COMPLETE_ALL_TASKS_ERROR'
@@ -295,13 +322,13 @@ const completeAllTasks = async (): Promise<void> => {
   }
 };
 
-const assignTaskToTeam = async (taskId: number, teamId: number): Promise<void> => {
+const assignTaskToTeamAPI = async (taskId: number, teamId: number): Promise<void> => {
   try {
     const assignTaskToTeamEndpoint = `${API_BASE_URL}.assign.${taskId}.${teamId}`;
     await axiosInstance.post(assignTaskToTeamEndpoint);
   } catch (error) {
     console.error('Error assigning task to team:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to assign task to team',
       'ASSIGN_TASK_TO_TEAM_ERROR'
@@ -312,7 +339,7 @@ const assignTaskToTeam = async (taskId: number, teamId: number): Promise<void> =
 
 
 // Assuming getTaskHistoryFromDatabase is a function to fetch task history from the database
-const getTaskHistoryFromDatabase = async (taskId: string) => {
+const getTaskHistoryFromDatabaseAPI = async (taskId: string) => {
   try {
     // Call your API endpoint to fetch task history based on taskId
     const response = await fetch(`/api/tasks/${taskId}/history`);
@@ -328,13 +355,13 @@ const getTaskHistoryFromDatabase = async (taskId: string) => {
   }
 };
 
-const unassignTaskApi = async (taskId: number): Promise<void> => {
+const unassignTaskAPI = async (taskId: number): Promise<void> => {
   try {
     const unassignTaskEndpoint = `${API_BASE_URL}.unassign.${taskId}`;
     await axiosInstance.post(unassignTaskEndpoint);
   } catch (error) {
     console.error('Error unassigning task:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to unassign task',
       'UNASSIGN_TASK_ERROR'
@@ -344,7 +371,7 @@ const unassignTaskApi = async (taskId: number): Promise<void> => {
 };
 
 
-const fetchTaskData = <
+const fetchTaskDataAPI = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -362,7 +389,7 @@ const fetchTaskData = <
       response.data ? resolve(response.data) : resolve(); // Return task data if present, else resolve
     } catch (error) {
       console.error('Error fetching task:', error);
-      handleTaskApiErrorAndNotify(
+      handleTaskAPIErrorAndNotify(
         error as AxiosError<unknown>,
         'Failed to fetch task',
         'FETCH_TASK_ERROR'
@@ -372,9 +399,7 @@ const fetchTaskData = <
   });
 };
 
-
-// ✅ Rename to avoid naming conflicts
-export const createTaskApi = <
+const createTaskAPI = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -392,7 +417,7 @@ export const createTaskApi = <
       return response.data;
     } catch (error) {
       console.error("Error creating task:", error);
-      handleTaskApiErrorAndNotify(
+      handleTaskAPIErrorAndNotify(
         error as AxiosError<unknown>,
         "Failed to create task",
         "CREATE_TASK_ERROR"
@@ -404,13 +429,13 @@ export const createTaskApi = <
 };
 
 
-const deleteTaskApi = async (taskId: number): Promise<void> => {
+const deleteTaskAPI = async (taskId: number): Promise<void> => {
   try {
     const deleteTaskEndpoint = `${API_BASE_URL}.delete.${taskId}`;
     await axiosInstance.delete(deleteTaskEndpoint);
   } catch (error) {
     console.error('Error deleting task:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to delete task',
       'DELETE_TASK_ERROR'
@@ -419,13 +444,13 @@ const deleteTaskApi = async (taskId: number): Promise<void> => {
   }
 };
 
-const bulkAssignTasks = async (taskIds: number[], teamId: number): Promise<void> => {
+const bulkAssignTasksAPI = async (taskIds: number[], teamId: number): Promise<void> => {
   try {
     const bulkAssignTasksEndpoint = `${API_BASE_URL}.bulkAssign`;
     await axiosInstance.post(bulkAssignTasksEndpoint, { taskIds, teamId });
   } catch (error) {
     console.error('Error bulk assigning tasks:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to bulk assign tasks',
       'BULK_ASSIGN_TASKS_ERROR'
@@ -434,13 +459,13 @@ const bulkAssignTasks = async (taskIds: number[], teamId: number): Promise<void>
   }
 };
 
-const bulkUnassignTasks = async (taskIds: number[]): Promise<void> => {
+const bulkUnassignTasksAPI = async (taskIds: number[]): Promise<void> => {
   try {
     const bulkUnassignTasksEndpoint = `${API_BASE_URL}.bulkUnassign`;
     await axiosInstance.post(bulkUnassignTasksEndpoint, { taskIds });
   } catch (error) {
     console.error('Error bulk unassigning tasks:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to bulk unassign tasks',
       'BULK_UNASSIGN_TASKS_ERROR'
@@ -450,13 +475,13 @@ const bulkUnassignTasks = async (taskIds: number[]): Promise<void> => {
 };
 
 // For todos
-const bulkAssignTodos = async (todoIds: number[], teamId: number): Promise<void> => {
+const bulkAssignTodosAPI = async (todoIds: number[], teamId: number): Promise<void> => {
   try {
     const bulkAssignTodosEndpoint = `${API_BASE_URL}.bulkAssignTodos`;
     await axiosInstance.post(bulkAssignTodosEndpoint, { todoIds, teamId });
   } catch (error) {
     console.error('Error bulk assigning todos:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to bulk assign todos',
       'BULK_ASSIGN_TODOS_ERROR'
@@ -465,13 +490,13 @@ const bulkAssignTodos = async (todoIds: number[], teamId: number): Promise<void>
   }
 };
 
-const bulkUnassignTodos = async (todoIds: number[]): Promise<void> => {
+const bulkUnassignTodosAPI = async (todoIds: number[]): Promise<void> => {
   try {
     const bulkUnassignTodosEndpoint = `${API_BASE_URL}.bulkUnassignTodos`;
     await axiosInstance.post(bulkUnassignTodosEndpoint, { todoIds });
   } catch (error) {
     console.error('Error bulk unassigning todos:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to bulk unassign todos',
       'BULK_UNASSIGN_TODOS_ERROR'
@@ -480,7 +505,7 @@ const bulkUnassignTodos = async (todoIds: number[]): Promise<void> => {
   }
 };
 
-const getTasksByUserId = async <
+const getTasksByUserIdAPI = async <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
@@ -494,7 +519,7 @@ const getTasksByUserId = async <
     return response.data;
   } catch (error) {
     console.error('Error fetching tasks by user:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to fetch tasks by user',
       'FETCH_TASKS_BY_USER_ERROR'
@@ -503,14 +528,14 @@ const getTasksByUserId = async <
   }
 }
 
-const getTaskHistory = async (taskId: string): Promise<TaskHistoryEntry[]> => {
+const getTaskHistoryAPI = async (taskId: string): Promise<TaskHistoryEntry[]> => {
   try {
     // Call the corresponding method from TaskHistoryStore to fetch task history entries
     const taskHistoryStoreInstance = historyManagerStore();
     return await taskHistoryStoreInstance.getTaskHistory(Number(taskId));
   } catch (error) {
     console.error('Error fetching task history:', error);
-    handleTaskApiErrorAndNotify(
+    handleTaskAPIErrorAndNotify(
       error as AxiosError<unknown>,
       'Failed to fetch task history',
       'FETCH_TASK_HISTORY_ERROR'
@@ -519,7 +544,7 @@ const getTaskHistory = async (taskId: string): Promise<TaskHistoryEntry[]> => {
   }
 };
 
-const fetchUsersByTaskApi = async (taskId: string): Promise<string[]> => {
+const fetchUsersByTaskAPI = async (taskId: string): Promise<string[]> => {
   // Simulate an API call to fetch users by task ID
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -531,8 +556,8 @@ const fetchUsersByTaskApi = async (taskId: string): Promise<string[]> => {
 };
 
 export {
-  addTask, assignTaskToTeam, bulkAssignTasks, bulkAssignTodos, bulkUnassignTasks, bulkUnassignTodos, completeAllTasks, createTask,
-  deleteTask, fetchTaskData, fetchTasks, fetchUsersByTaskApi, getTaskHistory, getTaskHistoryFromDatabase, getTasksByUserId, handleTaskApiErrorAndNotify, removeTask,
-  toggleTask, unassignTask, updateTask, updateTaskPosition, updateTaskPositionSuccess
+  addTaskAPI, assignTaskToTeamAPI, bulkAssignTasksAPI, bulkAssignTodosAPI, bulkUnassignTasksAPI, bulkUnassignTodosAPI, completeAllTasksAPI, createTaskAPI,
+  deleteTaskAPI, fetchTaskDataAPI, fetchTasksAPI, fetchUsersByTaskAPI, getTaskHistoryAPI, getTaskHistoryFromDatabaseAPI, getTasksByUserIdAPI, handleTaskAPIErrorAndNotify, removeTaskAPI,
+  toggleTaskAPI, unassignTaskAPI, updateTaskAPI, updateTaskPositionAPI, updateTaskPositionSuccessAPI
 };
 

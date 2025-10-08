@@ -1,16 +1,16 @@
 // TeamEntity.ts
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Attachment } from '@/app/documents/Attachment/attachment';
-import { SnapshotData } from "@/app/snapshots/SnapshotData";
-import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
-import { SubscriberCollection } from '@/app/snapshots/SubscriberCollection';
+import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
-import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
+import { SubscriberCollection } from '@/app/snapshots/SubscriberCollection';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 // Define the actual TeamEntity interface
 export interface TeamEntity extends BaseDataEntity {
@@ -122,40 +122,22 @@ type TeamSnapshotUnionFromParams<Params extends SnapshotConfigParams<any, any, a
   SnapshotUnion<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
 
 export type {
-  // Core type parameters
-  TeamEntityType,
-  TeamK,
-  TeamMeta,
-  TeamAttachment,
-  TeamExcludedFields,
-  TeamIncludedFields,
-  TeamBaseParams,
-  
+  BasicTeamInfo,
   // Team entity types
   CompleteTeam,
-  PublicTeamProfile,
-  BasicTeamInfo,
-  TeamWithMembers,
-  
+  PublicTeamProfile, TeamAttachment, TeamBaseParams,
+  // Core type parameters
+  TeamEntityType, TeamExcludedFields,
+  TeamIncludedFields, TeamK,
+  TeamMeta, TeamParams, TeamRealtimeDataItem,
   // Snapshot types
   TeamSnapshot,
   TeamSnapshotData,
-  TeamSnapshotStore,
-  TeamSnapshotWithCriteria,
-  TeamSubscriberCollection,
-  TeamRealtimeDataItem,
-  TeamSnapshotStoreConfig,
-  TeamSnapshotsArray,
-  TeamParams,
-  
-  // Metadata types
-  TeamUnifiedMetadata,
-  TeamStructuredMetadata,
-  
   // Utility types
-  TeamSnapshotFromParams,
-  TeamSnapshotUnionFromParams
+  TeamSnapshotFromParams, TeamSnapshotsArray, TeamSnapshotStore, TeamSnapshotStoreConfig, TeamSnapshotUnionFromParams, TeamSnapshotWithCriteria, TeamStructuredMetadata, TeamSubscriberCollection,
+  // Metadata types
+  TeamUnifiedMetadata, TeamWithMembers
 };
 
 // Export the main interfaces
-export type { TeamEntity, TeamSettings, TeamPermissions, TeamNotificationSettings };
+  export type { TeamEntity, TeamNotificationSettings, TeamPermissions, TeamSettings };

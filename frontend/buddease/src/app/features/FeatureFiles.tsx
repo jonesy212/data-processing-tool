@@ -1,32 +1,27 @@
 // app/features/prompts/FeatureFiles.tsx
-import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { 
-  Tag, 
-  Input, 
-  Button, 
-  Card, 
-  List, 
-  Switch, 
-  Modal, 
-  Upload,
-  Tree,
-  Select,
-  Space,
-  Badge
-} from 'antd';
-import { 
-  SearchOutlined, 
-  LinkOutlined, 
-  FolderOutlined, 
+import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
+import { FeaturePrompt } from '@/app/typings/promptTypes';
+import {
+  FolderOutlined,
+  LinkOutlined,
   LockOutlined,
+  SearchOutlined,
   TeamOutlined,
   UploadOutlined
 } from '@ant-design/icons';
-import { RootState } from '@/app/state/store';
-import { useNotification } from "@/app/context/NotificationContext";
-import { NotificationTypeEnum } from "@/app/context/NotificationContext";
-import { FeaturePrompt } from '@/app/typings/promptTypes'
+import {
+  Button,
+  Card,
+  Input,
+  List,
+  Modal,
+  Select,
+  Space,
+  Tag,
+  Upload
+} from 'antd';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 // Types
 export interface Subject {
   id: string;

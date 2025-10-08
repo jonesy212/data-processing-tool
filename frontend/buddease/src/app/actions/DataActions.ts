@@ -1,10 +1,10 @@
 // data/DataActions.ts
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { DataProcessing, DataProcessingResult } from "@/api/service/DataProcessingService";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { StatusType } from "@/app/models/data/StatusType";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { createAction, PayloadAction } from "@reduxjs/toolkit";
-import { DataProcessing, DataProcessingResult } from "@/api/service/DataProcessingService";
 
 /**
  * Factory function that creates a set of strongly-typed Redux actions for data management.

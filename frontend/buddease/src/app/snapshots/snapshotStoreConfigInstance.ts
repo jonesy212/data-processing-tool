@@ -521,7 +521,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
   },
   getSnapshots: async (
     category: symbol | string | Category | undefined,
-    snapshots: SnapshotsArray<T, K, Meta>
+    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => {
     console.log(`Getting snapshots in category: ${String(category)}`, snapshots);
     return { snapshots };

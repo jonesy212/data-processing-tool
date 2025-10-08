@@ -1,11 +1,10 @@
-import UserRoles from '@/users/UserRoles';
+import { Team } from '@/app/components/models/teams/Team';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { Persona } from "@/app/pages/personas/Persona";
 import { User } from "@/app/users/User";
 import { UserRole } from "@/app/users/UserRole";
-import { Team } from '@/app/components/models/teams/Team';
-import { Task } from '@/tasks/Task';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import UserRoles from '@/users/UserRoles';
 
 export interface Member extends User {
   teamId: string;
@@ -107,4 +106,5 @@ interface TeamMember<
 export default MemberData; 
 export type { Contributor, TeamMember };
 
-export { memberData, teamMember };
+  export { memberData, teamMember };
+

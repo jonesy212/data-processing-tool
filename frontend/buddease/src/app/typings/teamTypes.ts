@@ -1,16 +1,16 @@
 // teamTypes.ts
 
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { SnapshotStore } from '@/app/snapshots/SnapshotStore';
-import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Core Team type definitions
 interface TeamEntity extends BaseDataEntity {
@@ -146,29 +146,21 @@ const emptyTeam: TeamFull = createDefaultTeam();
 
 // ✅ EXPORT FOR REUSE
 export type {
-  TeamEntity,
-  TeamK, 
-  TeamMeta,
-  TeamAttachment,
-  TeamExcludedFields,
-  TeamIncludedFields,
-  TeamBaseParams,
-  TeamFull,                       // ✅ Clean alias
-  TeamSnapshotFull,               // ✅ Clean alias
-  TeamSnapshotDataFull,           // ✅ Clean alias
-  TeamSnapshotStoreFull,          // ✅ Clean alias
-  TeamSnapshotWithCriteriaFull,   // ✅ Clean alias
-  TeamSubscriberCollectionFull,   // ✅ Clean alias
-  TeamRealtimeDataItemFull,       // ✅ Clean alias
-  TeamSnapshotStoreConfigFull,    // ✅ Clean alias
-  TeamSnapshotsArrayFull,         // ✅ Clean alias
-  TeamParams,                     // ✅ Clean alias
-  TeamSettings,
-  TeamPermissions,
-  TeamNotificationSettings
+  TeamAttachment, TeamBaseParams, TeamEntity, TeamExcludedFields, TeamFull, TeamIncludedFields, TeamK,
+  TeamMeta, TeamNotificationSettings, // ✅ Clean alias
+  TeamParams, TeamPermissions, // ✅ Clean alias
+  TeamRealtimeDataItemFull, // ✅ Clean alias
+  TeamSettings, // ✅ Clean alias
+  TeamSnapshotDataFull, // ✅ Clean alias
+  TeamSnapshotFull, // ✅ Clean alias
+  TeamSnapshotsArrayFull, // ✅ Clean alias
+  TeamSnapshotStoreConfigFull, // ✅ Clean alias
+  TeamSnapshotStoreFull, // ✅ Clean alias
+  TeamSnapshotWithCriteriaFull, // ✅ Clean alias
+  TeamSubscriberCollectionFull
 };
 
-export {
-  createDefaultTeam,
-  emptyTeam
-};
+  export {
+    createDefaultTeam,
+    emptyTeam
+  };

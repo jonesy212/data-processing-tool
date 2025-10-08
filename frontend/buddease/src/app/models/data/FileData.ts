@@ -2,7 +2,7 @@
 
 import { ScheduledData } from '@/app/components/calendar/ScheduledData';
 import { User } from '@/app/components/users/User';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData } from '@/Data';
 
 // Define the interface for FileData

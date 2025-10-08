@@ -1,5 +1,5 @@
 import { DetailsItem } from '@/app/components/state/stores/DetailsListStore';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentData } from '@/app/documents/editing/DocumentBuilder';
 import { DocumentMetadata } from '@/app/state/stores/DocumentStore';
 import { DocumentContent } from '@/CommonData';

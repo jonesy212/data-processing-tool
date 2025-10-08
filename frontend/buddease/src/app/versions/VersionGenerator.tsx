@@ -1,20 +1,20 @@
 // VersionGenerator.tsx
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 
 import { apiNotificationMessages, handleApiErrorAndNotify } from "@/app/api/ApiData";
-import { BaseData } from '@/app/models/data/Data';
 import { NotificationTypeEnum, useNotification } from '@/app/context/NotificationContext';
 import DocumentPermissions from '@/app/documents/DocumentPermissions';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { TaskLogger } from "@/app/libraries/logging/Logger";
+import { BaseData } from '@/app/models/data/Data';
 import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { Version } from "@/app/versions/Version";
-import getAppPath from "@/config/appStructure/appPath";
 import { ExtendedVersionData } from '@/app/versionsVersionData';
+import getAppPath from "@/config/appStructure/appPath";
 import { AxiosError } from "axios";
 
 const { notify } = useNotification();

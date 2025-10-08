@@ -1,5 +1,5 @@
-import { Attachment } from '@/app/documents/Attachment/attachment';
-import { SnapshotStore } from '@/app/snapshots/SnapshotStore';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
 
 export interface MiddlewareContext<

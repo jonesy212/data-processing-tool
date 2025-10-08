@@ -179,7 +179,7 @@ const SnapshotComponent = <
 
     const snapshotData = buildSnapshotData(context);
 
-    const snapshot = createSnapshotInstance({
+    const snapshot = createSnapshot({
       id: snapshotData.id,
       data: snapshotData,
       timestamp: additionalData.timestamp,

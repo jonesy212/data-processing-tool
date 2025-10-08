@@ -1,11 +1,13 @@
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { enrichSnapshotStore, isSnapshotStore, isYourResponseType, normalizeSnapshot, transformResponse } from "@/app/typings/YourSpecificSnapshotType";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { YourResponseType } from '@/typings/types';
+import { YourResponseType, YourSettingsResponseType } from "@/app/typings/responseTypes";
 import { isSnapshot } from '@/app/utils/snapshotUtils';
 import SnapshotStore from '@/app/snapshots/SnapshpshotStore';
 import { InitializedSnapshot } from '@/app/snapshots/SnapshpshotStoreOptions';
-
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { getLatestSnapshot } from '@/app/snapshots/snapshotOperatiions'
 /**
  * Converts API response data to an InitializedSnapshot with proper typing
  */

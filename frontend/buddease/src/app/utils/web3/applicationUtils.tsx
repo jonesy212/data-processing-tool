@@ -7,6 +7,8 @@ import {
   NotificationTypeEnum,
   useNotification,
 } from "@/app/context/NotificationContext";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Content } from "@/app/models/content/AddContent";
 import { BaseData } from '@/app/models/data/Data';
@@ -20,11 +22,9 @@ import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
 import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { updateProject } from "@/app/state/redux/slices/ProjectManagerSlice";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import { fetchUserAreaDimensions, UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
 import { AxiosResponse } from "axios";
 import { useDispatch } from "react-redux";
-import { Attachment } from '@/app/documents/Attachment/attachment';
 
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 
@@ -663,14 +663,20 @@ const unsubscribe = (
   }
 };
 
-const triggerEvent = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const triggerEvent = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   event: string | CombinedEvents<T, K> | SnapshotEvents<T, K>,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   eventDate: Date,
   snapshotId: string,
   subscribers: SubscriberCollection<T, K>,
   type: string,
-  snapshotData: SnapshotData<T, K>
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) => {
   // Log the event for debugging purposes
   console.log("Event Triggered:");
@@ -702,7 +708,13 @@ const triggerEvent = <T extends  BaseData<any>, K extends T = T, Meta extends St
 };
 
 // Example function to send event data to an analytics service
-const sendEventToAnalyticsService = <T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+const sendEventToAnalyticsService = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   event: AnalyticsEvent<T, K>
 ) => {
   // Replace with actual analytics service logic

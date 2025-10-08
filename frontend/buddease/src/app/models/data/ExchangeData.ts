@@ -1,7 +1,7 @@
 // ExchangeData.ts
 import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
 import { ExchangeDataTypeEnum } from "@/app/crypto/exchangeIntegration";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SharedTimestamps } from "@/app/models/CommonData";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { BaseDataEntity, DefaultExcludedFields } from "@/app/snapshots/ValidationRule";

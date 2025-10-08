@@ -1,29 +1,27 @@
 // DApp.tsx
 import appTreeApiService from "@/app/api/appTreeApi";
-import { DatabaseType } from '@/app/typings/database'
 import { generateAllHeaders } from '@/app/api/headers/generateAllHeaders';
 import { AquaChat } from "@/app/components/communications/chat/AquaChat";
-import { SupportedData } from '@/app/models/CommonData';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { SharedIdentifiers } from "@/app/components/documents/RelatedProps";
-import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
-import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
-import { SharedRelationshipData } from '@/app/models/data/Data';
 import { DAppAdapterProps } from "@/app/crossPlatformLayer/src/src/platform/DAppAdapter";
 import LoadAquaState from "@/app/dashboards/LoadAquaState";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
-import FluenceConnection from "@/app/utils/fluenceProtocoIntegration/FluenceConnection";
 import useSocialAuthentication from "@/app/hooks/commHooks/useSocialAuthentication";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { DataLogger } from "@/app/libraries/logging/Logger";
-import { BaseData, CommonRelationship } from '@/app/models/data/Data';
+import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
+import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
+import { BaseData, CommonRelationship, SharedRelationshipData } from '@/app/models/data/Data';
 import { DocumentSize } from "@/app/models/data/StatusType";
 import FluencePlugin from "@/app/pluginSystem/plugins/fluencePlugin";
+import { DatabaseType } from '@/app/typings/database';
+import { AppEntity } from "@/app/typings/entities/AppEntity";
 import { UserData } from "@/app/users/User";
-import YourClass from "@/app/utils/YourClass";
+import FluenceConnection from "@/app/utils/fluenceProtocoIntegration/FluenceConnection";
 import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
+import YourClass from "@/app/utils/YourClass";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { authToken } from "@/server/auth/authToken";
 import Connection from "@/server/database/Connection";
@@ -33,7 +31,6 @@ import React, { FC } from "react";
 import winston from "winston";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
 import { manageDocuments } from "./functionality/DocumentManagement";
-import { AppEntity } from "@/app/typings/entities/AppEntity";
 
 
 

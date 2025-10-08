@@ -12,22 +12,22 @@
 // // Utility function to convert Snapshot<BaseData, T>[] to Snapshots<T, K, Meta, ExcludedFields>
 // function convertSnapshotsArray<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
 //   snapshotsArray: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
-// ): SnapshotsArray<T, K, Meta> {
+// ): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 //     return snapshotsArray.map((snapshot) => {
 //       const convertedSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
 //         ...snapshot,
 //         data: snapshot.data as T,
-//         snapshots: snapshot.snapshots as SnapshotsArray<T, K, Meta>,
+//         snapshots: snapshot.snapshots as SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //         compareSnapshotState: snapshot.compareSnapshotState,
 //         eventRecords: snapshot.eventRecords,
 //       };
 //       return convertedSnapshot;
-//     }) as unknown as SnapshotsArray<T, K, Meta>;
+//     }) as unknown as SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 //   }
   
 //   // Example usage of the conversion function
 //   const filteredSnapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [/* your snapshots array */];
-//   const convertedSnapshots: SnapshotsArray<T, K, Meta> = convertSnapshotsArray<T, BaseData>(filteredSnapshots);
+//   const convertedSnapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = convertSnapshotsArray<T, BaseData>(filteredSnapshots);
   
 //   const storeId = useSecureStoreId()
 //   if(!storeId){
@@ -43,13 +43,13 @@
 //   // Assuming that you want to use snapshotManager or snapshotStore to derive config
 //   const config = snapshotManager ? snapshotManager.config : snapshotStore.getConfig();
 
-//   const convertMapToSnapshotData = (map: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): SnapshotData<T, K, Meta, ExcludedFields> => {
+//   const convertMapToSnapshotData = (map: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
     
 //     const configPromise = config instanceof Promise
 //     ? config // If config is already a promise, use it directly
 //     : Promise.resolve(config ? config : null); // Otherwise, wrap it in a Promise
     
-//     // Convert the map to a format that satisfies the SnapshotData<T, K, Meta, ExcludedFields> type
+//     // Convert the map to a format that satisfies the SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> type
 //     return {
 //       storeId: storeId,
 //       config: configPromise,

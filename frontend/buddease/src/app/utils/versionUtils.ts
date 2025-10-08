@@ -36,7 +36,7 @@ const processSnapshotData = <
   K extends T = T, 
   Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
 >(
-  snapshotData: SnapshotData<T, K>,
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   versionedData?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // Optional versioned data
 ): void => {
   const dataWithPriority: Partial<DataWithPriority> = {

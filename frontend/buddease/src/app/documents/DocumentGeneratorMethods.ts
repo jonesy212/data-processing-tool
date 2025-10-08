@@ -49,7 +49,13 @@ import { DocumentOptions, getDefaultDocumentOptions } from "./DocumentOptions";
 
 var xl = require("excel4node");
 
-async function loadTextDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(document: DocumentData<T, K>): Promise<string> {
+async function loadTextDocumentContent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(document: DocumentData<T, K>): Promise<string> {
   let textContent = "";
 
   // Check if content exists in local storage
@@ -85,7 +91,13 @@ function downloadTextContentFromCloud(url: string): string {
   return `Downloaded text content from ${url}`;
 }
 
-async function loadDiagramDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadDiagramDocumentContent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   documentId: number,
   dataCallback: (data: WritableDraft<DocumentObject<T, K, Meta>>) => void
 ): Promise<string> {
@@ -130,7 +142,13 @@ async function loadDiagramDocumentContent<T extends  BaseData<any>, K extends T 
   }
 }
 
-async function loadFinancialReportDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadFinancialReportDocumentContent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   documentId: number,
   dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
 ): Promise<string> {
@@ -161,7 +179,13 @@ async function loadFinancialReportDocumentContent<T extends  BaseData<any>, K ex
   }
 }
 
-async function loadMarketAnalysisDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadMarketAnalysisDocumentContent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   document: DocumentData<T, K>,
   dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
 ): Promise<string> {
@@ -180,7 +204,13 @@ async function loadMarketAnalysisDocumentContent<T extends  BaseData<any>, K ext
   }
 }
 
-async function loadClientPortfolioDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadClientPortfolioDocumentContent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   document: DocumentData<T, K>,
   dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
 ): Promise<string> {
@@ -199,7 +229,13 @@ async function loadClientPortfolioDocumentContent<T extends  BaseData<any>, K ex
   }
 }
 
-async function loadSQLDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadSQLDocumentContent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   document: DocumentPath,
   dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
 ): Promise<string> {
@@ -339,7 +375,13 @@ async function loadSQLDocumentContent<T extends  BaseData<any>, K extends T = T,
   }
 }
 
-async function loadPDFDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadPDFDocumentContent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   document: DocumentData<T, K>,
   dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
 ): Promise<string> {
@@ -382,7 +424,13 @@ async function loadCalendarEventsDocumentContent(documentId: number) {
 }
 
 // Function to load content for a drawing document
-async function loadDrawingDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadDrawingDocumentContent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   documentId: DocumentData<T, K>
 ): Promise<string> {
   try {
@@ -399,7 +447,13 @@ async function loadDrawingDocumentContent<T extends  BaseData<any>, K extends T 
   }
 }
 
-async function loadPresentationDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadPresentationDocumentContent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   presentationId: DocumentObject<T, K>
 ): Promise<string> {
   try {
@@ -437,7 +491,13 @@ async function loadDraftDocumentContent(
   }
 }
 
-async function loadGenericDocumentContent<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadGenericDocumentContent<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   documentId: DocumentObject<T, K>,
   format: string,
   dataCallback: (data: WritableDraft<DocumentObject<T, K>>) => void
@@ -545,7 +605,13 @@ function parsePDFData<T extends object>({
   });
 }
 
-async function loadDocumentContentFromDatabase<T extends  BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+async function loadDocumentContentFromDatabase<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T>(
   pdfType: YourPDFType,
   [],
   pdfData: string | Uint8Array,

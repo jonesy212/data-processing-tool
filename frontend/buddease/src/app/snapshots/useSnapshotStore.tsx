@@ -96,11 +96,11 @@ import { CreateSnapshotsPayload, Payload } from "@/app/server/database/Payload";
 import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { AttachmentType } from '@/app/components/documents/NoteData';
 import { BaseDataEntity, DefaultExcludedFields, IncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { convertSubscriptionPayloadToSubscriber } from '@/convertSubscriptionPayloadToSubscriber';
-import { createSnapshotInstance } from "./defaultSnapshotBuilder";
+import { createSnapshot } from "./defaultSnapshotBuilder";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { sortByTimestamp } from "./handleSnapshotOperation";
 import { SnapshotActions } from "./SnapshotActions";
@@ -2958,7 +2958,7 @@ const specificDependencies = [
 //             snapshotData: T,
 //             category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
 //             callback: (snapshot: T) => void,
-//             snapshots: SnapshotsArray<T, K, Meta>,
+//             snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //             type: string,
 //             event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //             snapshotContainer?: T | undefined,
@@ -4474,8 +4474,8 @@ const specificDependencies = [
 
 //     // Snapshot Creation and Management
 //     createSnapshot: async (): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
-//       // You need to provide all required arguments for createSnapshotInstance
-//       return createSnapshotInstance(
+//       // You need to provide all required arguments for createSnapshot
+//       return createSnapshot(
 //         {} as T, // baseData - you need to provide actual data
 //         new Map(), // baseMeta - empty map or provide actual metadata
 //         null, // snapshotId - null or provide actual ID

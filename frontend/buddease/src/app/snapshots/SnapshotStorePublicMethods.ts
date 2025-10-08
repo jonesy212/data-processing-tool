@@ -27,7 +27,7 @@ interface SnapshotStorePublicMethods<
     snapshotStoreData: SnapshotStore<T, K, Meta, ExcludedFields>, 
     category: Category, 
     categoryProperties: CategoryProperties | undefined, 
-    subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>
+    subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): void;
   determineSnapshotStoreCategory(storeId: number, snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>, configs: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): string;
   getSnapshotStoreData(): any; // Define a more specific type if possible

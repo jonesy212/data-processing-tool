@@ -1,8 +1,8 @@
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { SnapshotData } from "@/app/snapshots";
 
-const snapshotCache: Map<string, SnapshotData<T, K>> = new Map();
-const getCachedSnapshotData = (snapshotId: string): SnapshotData<T, K> | undefined => {
+const snapshotCache: Map<string, SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = new Map();
+const getCachedSnapshotData = (snapshotId: string): SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined => {
     // Check if the cache has data for the given snapshot ID
     if (snapshotCache.has(snapshotId)) {
       console.log(`Cache hit for snapshot ID: ${snapshotId}`);
@@ -15,7 +15,7 @@ const getCachedSnapshotData = (snapshotId: string): SnapshotData<T, K> | undefin
 
 
   
-  const cacheSnapshotData = (snapshotId: string, data: SnapshotData<T, K>): void => {
+  const cacheSnapshotData = (snapshotId: string, data: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void => {
     snapshotCache.set(snapshotId, data);
     console.log(`Data cached for snapshot ID: ${snapshotId}`);
   };

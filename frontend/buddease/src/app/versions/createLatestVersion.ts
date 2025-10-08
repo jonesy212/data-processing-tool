@@ -1,13 +1,11 @@
-import { version } from '@/app/versions/Version';
-import { createLastUpdated, VersionData, VersionHistory } from "./VersionData";
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
+import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseData } from '@/app/models/data/Data';
-import { AppStructureItem } from "@/config/appStructure/AppStructure";
-import VersionImpl from "@/app/versions/Version";
-import { T, K } from "@/app/components/models/data/dataStoreMethods";
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
-import { Attachment } from "@/app/documents/Attachment/attachment";
+import VersionImpl, { version } from "@/app/versions/Version";
+import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { VersionData, VersionHistory } from "./VersionData";
 
 // Define a default latestVersion generator
 export function createLatestVersion<

@@ -9,8 +9,8 @@ import {
   updateSnapshotStore
 } from "@/app/api/SnapshotApi";
 import { additionalHeaders } from '@/app/api/headers/generateAllHeaders';
-import { K, T } from "@/app/components/models/data/dataStoreMethods";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { K, T } from '@/app/components/models/data/dataStoreMethods';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import useStorageManager from "@/app/hooks/useStorageManager";
 import { BaseData, Data } from '@/app/models/data/Data';

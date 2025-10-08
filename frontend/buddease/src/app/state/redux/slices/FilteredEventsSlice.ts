@@ -2,7 +2,7 @@ import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import { ExtendedCalendarEvent } from "@/app/components/calendar/CalendarEventTimingOptimization";
 import HighlightEvent from "@/app/components/documents/screenFunctionality/HighlightEvent";
 import { BaseData, Data } from '@/app/models/data/Data';
-import { T } from "@/app/components/models/data/dataStoreMethods";
+import { T } from '@/app/models/data/dataStoreMethods';
 import { Member } from "@/app/components/models/teams/TeamMembers";
 import { Tag } from "@/app/components/models/tracker/Tag";
 import { RootState } from '@/app/state/redux/slices/RootSlice';

@@ -3,7 +3,7 @@ import { endpoints } from '@/app/api/endpointConfigurations';
 import * as ApiTask from "@/app/api/TasksApi";
 import axiosInstance from '@/app/api/csrfToken'
 import headersConfig from "@/app/api/headers/HeadersConfig";
-import { FileType } from "@/app/documents/Attachment/attachment";
+import { FileType } from "@/app/documents/attachment/Attachment";
 import { SupportedData } from '@/app/models/CommonData';
 import ContentDetails from "@/app/components/models/content/ContentDetails";
 import {

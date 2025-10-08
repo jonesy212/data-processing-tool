@@ -10,7 +10,7 @@ import {
 } from '@/components/documents/documentation/report/Report';
 import { FinancialMetrics, processFinancialMetrics } from '@/components/metrics/FinancialMetrics';
 import { processTechnicalSpecifications, TechnicalSpecifications } from '@/components/metrics/TechnicalSpecifications';
-import { createSnapshotInstance } from '@/app/snapshots/createSnapshotInstance';
+import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { analyzeResearchFindings, ResearchFindings } from '@/pages/searchs/ResearchFindings';
 
 // Define the API base URL for reports
@@ -36,19 +36,19 @@ export const processReports = (reports: AddReport[]): void => {
       console.log("Processing Financial Report:", report.title);
       processFinancialMetrics((report as FinancialReport).financialMetrics);
       saveToSnapshotStore(
-        createSnapshotInstance(report.id.toString(), report, report.category ?? "Financial")
+        createSnapshot(report.id.toString(), report, report.category ?? "Financial")
       );
     } else if (reportType === "technical") {
       console.log("Processing Technical Report:", report.title);
       processTechnicalSpecifications((report as TechnicalReport).technicalSpecifications);
       saveToSnapshotStore(
-        createSnapshotInstance(report.id.toString(), report, report.category ?? "Technical")
+        createSnapshot(report.id.toString(), report, report.category ?? "Technical")
       );
     } else if (reportType === "research") {
       console.log("Processing Research Report:", report.title);
       analyzeResearchFindings((report as ResearchReport).researchFindings);
       saveToSnapshotStore(
-        createSnapshotInstance(report.id.toString(), report, report.category ?? "Research")
+        createSnapshot(report.id.toString(), report, report.category ?? "Research")
       );
     } else {
       console.warn("Unknown report type:", report.title);
@@ -60,8 +60,8 @@ export const processReports = (reports: AddReport[]): void => {
 
 
 const saveReportSnapshot = (report: AddReportType, reportType: string): void => {
-  // Generate a base snapshot using createSnapshotInstance
-  const baseSnapshot = createSnapshotInstance(
+  // Generate a base snapshot using createSnapshot
+  const baseSnapshot = createSnapshot(
     generateUniqueId(),     // Snapshot ID
     report,                 // Report data
     report.category ?? "DefaultCategory", // Category

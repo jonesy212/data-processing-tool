@@ -5,7 +5,7 @@ import { Theme } from '@/app/components/libraries/ui/theme/Theme';
 import { User } from '@/app/components/users/User';
 import { ParticipantData } from '@/app/pages/management/ParticipantManagementPage';
 import featureStore from '@/featureStateManagement';
-import { AlignmentOptions, ToolbarState } from '@/redux/slices/toolbarSlice';
+import { AlignmentOptions, ToolbarState } from '@/app/state/redux/slices/toolbarSlice';
 import { useDispatch } from 'react-redux';
 const dispatch = useDispatch();
 

@@ -1,10 +1,12 @@
+// ApiTradeCore.ts
+// ApiTradeCore.ts
 import axiosInstance from '@/app/api/csrfToken';
 import { NotificationType, useNotification } from "@/app/context/NotificationContext";
 import { DocumentData } from '@/documents/editing/DocumentBuilder';
 import { WritableDraft } from '@/state/redux/ReducerGenerator';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AxiosError } from 'axios';
-import { endpoints } from '@/app/endpointConfigurations';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { handleApiError } from '@/app/api/ApiLogs';
 import headersConfig from '@/app/api/headers/HeadersConfig';
 
@@ -41,10 +43,10 @@ interface TradingNotificationMessages {
     FETCH_MARKET_DATA_ERROR: string;
     FETCH_TECHNICAL_ANALYSIS_ERROR: string;
     FETCH_NEWS_ERROR: string;
-  FETCH_HISTORICAL_DATA_ERROR: string
-  CONFIRM_TRADE_CREATION_ERROR: string
+    FETCH_HISTORICAL_DATA_ERROR: string;
+    CONFIRM_TRADE_CREATION_ERROR: string;
 }
-  
+
 // Define API notification messages for trading
 const tradingNotificationMessages: TradingNotificationMessages = {
     FETCH_TRADING_SUCCESS: 'Trading data fetched successfully',
@@ -75,10 +77,10 @@ const tradingNotificationMessages: TradingNotificationMessages = {
     FETCH_MARKET_DATA_ERROR: 'Failed to fetch market data',
     FETCH_TECHNICAL_ANALYSIS_ERROR: 'Failed to fetch technical analysis data',
     FETCH_NEWS_ERROR: 'Failed to fetch news',
-  FETCH_HISTORICAL_DATA_ERROR: 'Failed to fetch historical data',
-  CONFIRM_TRADE_CREATION_ERROR: 'Failed to create trade',
- };
-  
+    FETCH_HISTORICAL_DATA_ERROR: 'Failed to fetch historical data',
+    CONFIRM_TRADE_CREATION_ERROR: 'Failed to create trade',
+};
+
 // Function to handle API errors and notify for trading
 const handleTradingApiErrorAndNotify = (
   error: AxiosError<unknown>,
@@ -87,9 +89,9 @@ const handleTradingApiErrorAndNotify = (
 ) => {
   handleApiError(error, errorMessage);
   if (errorMessageId) {
-    const errorMessageText = tradingNotificationMessages[errorMessageId] || errorMessage
+    const errorMessageText = tradingNotificationMessages[errorMessageId] || errorMessage;
     useNotification().notify(
-      errorMessageId,
+      String(errorMessageId),
       errorMessageText,
       null,
       new Date(),
@@ -98,7 +100,7 @@ const handleTradingApiErrorAndNotify = (
   }
 };
 
-// Trading API functions
+// Core Trading API Functions
 export const fetchTradingDataAPI = async <
   T extends BaseData<any>,
   K extends T = T,
@@ -114,10 +116,7 @@ export const fetchTradingDataAPI = async <
       headers: headersConfig,
     });
 
-    // Call the provided data callback with the fetched trading data
     dataCallback(response.data);
-
-    // Return the fetched trading data if needed
     return response.data;
   } catch (error) {
     console.error('Error fetching trading data:', error);
@@ -125,14 +124,11 @@ export const fetchTradingDataAPI = async <
     handleTradingApiErrorAndNotify(
       error as AxiosError<unknown>,
       errorMessage,
-      'FETCH_TRADING_ERROR' as NotificationType
+      'FETCH_TRADING_ERROR'
     );
     throw error;
   }
 };
-
-// Add more trading API functions as needed
-// Example:
 
 export const updateTradingDataAPI = async (
   tradingId: number,
@@ -150,79 +146,238 @@ export const updateTradingDataAPI = async (
     handleTradingApiErrorAndNotify(
       error as AxiosError<unknown>,
       errorMessage,
-      'UPDATE_TRADING_ERROR' as NotificationType
+      'UPDATE_TRADING_ERROR'
     );
     throw error;
   }
 };
 
+export const executeTradeAPI = async (tradeData: any): Promise<any> => {
+  try {
+    const executeTradeEndpoint = `${TRADING_API_BASE_URL}/execute-trade`;
+    const response = await axiosInstance.post(executeTradeEndpoint, tradeData, {
+      headers: headersConfig,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error executing trade:', error);
+    const errorMessage = 'Failed to confirm trade creation';
+    handleTradingApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'CONFIRM_TRADE_CREATION_ERROR'
+    );
+    throw error;
+  }
+};
 
+export const confirmTradeCreation = async (tradeData: any) => {
+  try {
+    const tradeResult = await executeTradeAPI(tradeData);
+    const portfolioSummary = await fetchPortfolioSummaryAPI();
+    const assetDetails = await fetchAssetDetailsAPI(tradeData.assetId);
+    const marketNews = await fetchMarketNewsAPI();
+    const economicCalendar = await fetchEconomicCalendarAPI();
+    const tradingSignals = await fetchTradingSignalsAPI();
+    const topPerformingAssets = await fetchTopPerformingAssetsAPI();
+    const assetPriceHistory = await fetchAssetPriceHistoryAPI(tradeData.assetId);
 
+    return {
+      tradeResult,
+      portfolioSummary,
+      assetDetails,
+      marketNews,
+      economicCalendar,
+      tradingSignals,
+      topPerformingAssets,
+      assetPriceHistory,
+    };
+  } catch (error) {
+    console.error('Error confirming trade creation:', error);
+    throw error;
+  }
+};
 
-export const fetchMarketDataAPI = async (
-    asset: string,
-  ): Promise<any> => {
-    try {
-      const fetchMarketDataEndpoint = `${TRADING_API_BASE_URL}/market-data?asset=${asset}`;
-      const response = await axiosInstance.get(fetchMarketDataEndpoint, {
-        headers: headersConfig,
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching market data:', error);
-      const errorMessage = 'Failed to fetch market data';
-      handleTradingApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        'FETCH_MARKET_DATA_ERROR' as NotificationType
-      );
-      throw error;
-    }
-  };
-  
-  export const fetchHistoricalDataAPI = async (
-    asset: string,
-    timeframe: string,
-  ): Promise<any> => {
-    try {
-      const fetchHistoricalDataEndpoint = `${TRADING_API_BASE_URL}/historical-data?asset=${asset}&timeframe=${timeframe}`;
-      const response = await axiosInstance.get(fetchHistoricalDataEndpoint, {
-        headers: headersConfig,
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching historical data:', error);
-      const errorMessage = 'Failed to fetch historical data';
-      handleTradingApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        'FETCH_HISTORICAL_DATA_ERROR' as NotificationType
-      );
-      throw error;
-    }
-  };
-  
-  export const fetchNewsAPI = async (
-    category: string,
-  ): Promise<any> => {
-    try {
-      const fetchNewsEndpoint = `${TRADING_API_BASE_URL}/news?category=${category}`;
-      const response = await axiosInstance.get(fetchNewsEndpoint, {
-        headers: headersConfig,
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching news:', error);
-      const errorMessage = 'Failed to fetch news';
-      handleTradingApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        'FETCH_NEWS_ERROR' as NotificationType
-      );
-      throw error;
-    }
-  };
-  
+// Market Data Functions
+export const fetchMarketDataAPI = async (asset: string): Promise<any> => {
+  try {
+    const fetchMarketDataEndpoint = `${TRADING_API_BASE_URL}/market-data?asset=${asset}`;
+    const response = await axiosInstance.get(fetchMarketDataEndpoint, {
+      headers: headersConfig,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching market data:', error);
+    const errorMessage = 'Failed to fetch market data';
+    handleTradingApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'FETCH_MARKET_DATA_ERROR'
+    );
+    throw error;
+  }
+};
+
+export const fetchHistoricalDataAPI = async (
+  asset: string,
+  timeframe: string,
+): Promise<any> => {
+  try {
+    const fetchHistoricalDataEndpoint = `${TRADING_API_BASE_URL}/historical-data?asset=${asset}&timeframe=${timeframe}`;
+    const response = await axiosInstance.get(fetchHistoricalDataEndpoint, {
+      headers: headersConfig,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching historical data:', error);
+    const errorMessage = 'Failed to fetch historical data';
+    handleTradingApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'FETCH_HISTORICAL_DATA_ERROR'
+    );
+    throw error;
+  }
+};
+
+// Portfolio Functions
+export const fetchPortfolioSummaryAPI = async (): Promise<any> => {
+  try {
+    const fetchPortfolioSummaryEndpoint = `${TRADING_API_BASE_URL}/portfolio-summary`;
+    const response = await axiosInstance.get(fetchPortfolioSummaryEndpoint, {
+      headers: headersConfig,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching portfolio summary:', error);
+    const errorMessage = 'Failed to fetch portfolio summary';
+    handleTradingApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'FETCH_PORTFOLIO_SUMMARY_ERROR'
+    );
+    throw error;
+  }
+};
+
+// Asset Functions
+export const fetchAssetDetailsAPI = async (assetId: string): Promise<any> => {
+  try {
+    const fetchAssetDetailsEndpoint = `${TRADING_API_BASE_URL}/asset-details/${assetId}`;
+    const response = await axiosInstance.get(fetchAssetDetailsEndpoint, {
+      headers: headersConfig,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching asset details:', error);
+    const errorMessage = 'Failed to fetch asset details';
+    handleTradingApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'FETCH_ASSET_DETAILS_ERROR'
+    );
+    throw error;
+  }
+};
+
+export const fetchAssetPriceHistoryAPI = async (assetId: string): Promise<any> => {
+  try {
+    const fetchAssetPriceHistoryEndpoint = `${TRADING_API_BASE_URL}/asset-price-history/${assetId}`;
+    const response = await axiosInstance.get(fetchAssetPriceHistoryEndpoint, {
+      headers: headersConfig,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching asset price history:', error);
+    const errorMessage = 'Failed to fetch asset price history';
+    handleTradingApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'FETCH_ASSET_PRICE_HISTORY_ERROR'
+    );
+    throw error;
+  }
+};
+
+// Market Info Functions
+export const fetchMarketNewsAPI = async (): Promise<any> => {
+  try {
+    const fetchMarketNewsEndpoint = `${TRADING_API_BASE_URL}/market-news`;
+    const response = await axiosInstance.get(fetchMarketNewsEndpoint, {
+      headers: headersConfig,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching market news:', error);
+    const errorMessage = 'Failed to fetch market news';
+    handleTradingApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'FETCH_MARKET_NEWS_ERROR'
+    );
+    throw error;
+  }
+};
+
+export const fetchEconomicCalendarAPI = async (): Promise<any> => {
+  try {
+    const fetchEconomicCalendarEndpoint = `${TRADING_API_BASE_URL}/economic-calendar`;
+    const response = await axiosInstance.get(fetchEconomicCalendarEndpoint, {
+      headers: headersConfig,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching economic calendar:', error);
+    const errorMessage = 'Failed to fetch economic calendar';
+    handleTradingApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'FETCH_ECONOMIC_CALENDAR_ERROR'
+    );
+    throw error;
+  }
+};
+
+export const fetchTradingSignalsAPI = async (): Promise<any> => {
+  try {
+    const fetchTradingSignalsEndpoint = `${TRADING_API_BASE_URL}/trading-signals`;
+    const response = await axiosInstance.get(fetchTradingSignalsEndpoint, {
+      headers: headersConfig,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching trading signals:', error);
+    const errorMessage = 'Failed to fetch trading signals';
+    handleTradingApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'FETCH_TRADING_SIGNALS_ERROR'
+    );
+    throw error;
+  }
+};
+
+export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
+  try {
+    const fetchTopPerformingAssetsEndpoint = `${TRADING_API_BASE_URL}/top-performing-assets`;
+    const response = await axiosInstance.get(fetchTopPerformingAssetsEndpoint, {
+      headers: headersConfig,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching top performing assets:', error);
+    const errorMessage = 'Failed to fetch top performing assets';
+    handleTradingApiErrorAndNotify(
+      error as AxiosError<unknown>,
+      errorMessage,
+      'FETCH_TOP_PERFORMING_ASSETS_ERROR'
+    );
+    throw error;
+  }
+};
+
+// Additional trading functions (keep the rest of your functions here)
+
   export const fetchTechnicalAnalysisAPI = async (
     asset: string,
   ): Promise<any> => {
@@ -244,6 +399,8 @@ export const fetchMarketDataAPI = async (
     }
   };
   
+  
+
   export const fetchMarketSentimentAPI = async (
     asset: string,
   ): Promise<any> => {
@@ -265,9 +422,8 @@ export const fetchMarketDataAPI = async (
     }
   };
 
+
   
-
-
   export const fetchTopGainersAPI = async (): Promise<any> => {
     try {
       const fetchTopGainersEndpoint = `${TRADING_API_BASE_URL}/top-gainers`;
@@ -287,6 +443,7 @@ export const fetchMarketDataAPI = async (
     }
   };
   
+
   export const fetchTopLosersAPI = async (): Promise<any> => {
     try {
       const fetchTopLosersEndpoint = `${TRADING_API_BASE_URL}/top-losers`;
@@ -306,6 +463,8 @@ export const fetchMarketDataAPI = async (
     }
   };
   
+  
+
   export const fetchExchangeRatesAPI = async (): Promise<any> => {
     try {
       const fetchExchangeRatesEndpoint = `${TRADING_API_BASE_URL}/exchange-rates`;
@@ -325,6 +484,9 @@ export const fetchMarketDataAPI = async (
     }
   };
   
+  
+  
+
   export const fetchOrderBookAPI = async (
     assetPair: string,
   ): Promise<any> => {
@@ -346,6 +508,8 @@ export const fetchMarketDataAPI = async (
     }
   };
   
+  
+  
   export const fetchTradeHistoryAPI = async (
     assetPair: string,
   ): Promise<any> => {
@@ -366,210 +530,3 @@ export const fetchMarketDataAPI = async (
       throw error;
     }
   };
-
-  export const confirmTradeCreation = async (tradeData: any) => {
-    try {
-      // Execute the trade
-      const tradeResult = await executeTradeAPI(tradeData);
-  
-      // Fetch portfolio summary
-      const portfolioSummary = await fetchPortfolioSummaryAPI();
-  
-      // Fetch asset details
-      const assetDetails = await fetchAssetDetailsAPI(tradeData.assetId);
-  
-      // Fetch market news
-      const marketNews = await fetchMarketNewsAPI();
-  
-      // Fetch economic calendar
-      const economicCalendar = await fetchEconomicCalendarAPI();
-  
-      // Fetch trading signals
-      const tradingSignals = await fetchTradingSignalsAPI();
-  
-      // Fetch top performing assets
-      const topPerformingAssets = await fetchTopPerformingAssetsAPI();
-  
-      // Fetch asset price history
-      const assetPriceHistory = await fetchAssetPriceHistoryAPI(tradeData.assetId);
-  
-      // Return the trade result and fetched data
-      return {
-        tradeResult,
-        portfolioSummary,
-        assetDetails,
-        marketNews,
-        economicCalendar,
-        tradingSignals,
-        topPerformingAssets,
-        assetPriceHistory,
-      };
-    } catch (error) {
-      // Handle errors
-      console.error('Error confirming trade creation:', error);
-      throw error;
-    }
-  };
-
-export const executeTradeAPI = async (
-  tradeData: any,
-): Promise<any> => {
-  try {
-    const executeTradeEndpoint = `${TRADING_API_BASE_URL}/execute-trade`;
-    const response = await axiosInstance.post(executeTradeEndpoint, tradeData, {
-      headers: headersConfig,
-    });
-    return response.data;
-  } catch (error) {
-    console.error('Error executing trade:', error);
-    // Handle errors specific to confirmTradeCreationnc
-    const errorMessage = 'Failed to confirm trade creation';
-    handleTradingApiErrorAndNotify(
-      error as AxiosError<unknown>,
-      errorMessage,
-      'CONFIRM_TRADE_CREATION_ERROR' as NotificationType
-    );
-    throw error;
-  }
-}
-  
-  export const fetchPortfolioSummaryAPI = async (): Promise<any> => {
-    try {
-      const fetchPortfolioSummaryEndpoint = `${TRADING_API_BASE_URL}/portfolio-summary`;
-      const response = await axiosInstance.get(fetchPortfolioSummaryEndpoint, {
-        headers: headersConfig,
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching portfolio summary:', error);
-      const errorMessage = 'Failed to fetch portfolio summary';
-      handleTradingApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        'FETCH_PORTFOLIO_SUMMARY_ERROR' as NotificationType
-      );
-      throw error;
-    }
-  };
-  
-  export const fetchAssetDetailsAPI = async (
-    assetId: string,
-  ): Promise<any> => {
-    try {
-      const fetchAssetDetailsEndpoint = `${TRADING_API_BASE_URL}/asset-details/${assetId}`;
-      const response = await axiosInstance.get(fetchAssetDetailsEndpoint, {
-        headers: headersConfig,
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching asset details:', error);
-      const errorMessage = 'Failed to fetch asset details';
-      handleTradingApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        'FETCH_ASSET_DETAILS_ERROR' as NotificationType
-      );
-      throw error;
-    }
-  };
-  
-
-  export const fetchMarketNewsAPI = async (): Promise<any> => {
-    try {
-      const fetchMarketNewsEndpoint = `${TRADING_API_BASE_URL}/market-news`;
-      const response = await axiosInstance.get(fetchMarketNewsEndpoint, {
-        headers: headersConfig,
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching market news:', error);
-      const errorMessage = 'Failed to fetch market news';
-      handleTradingApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        'FETCH_MARKET_NEWS_ERROR' as NotificationType
-      );
-      throw error;
-    }
-  };
-  
-  export const fetchEconomicCalendarAPI = async (): Promise<any> => {
-    try {
-      const fetchEconomicCalendarEndpoint = `${TRADING_API_BASE_URL}/economic-calendar`;
-      const response = await axiosInstance.get(fetchEconomicCalendarEndpoint, {
-        headers: headersConfig,
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching economic calendar:', error);
-      const errorMessage = 'Failed to fetch economic calendar';
-      handleTradingApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        'FETCH_ECONOMIC_CALENDAR_ERROR' as NotificationType
-      );
-      throw error;
-    }
-  };
-  
-  export const fetchTradingSignalsAPI = async (): Promise<any> => {
-    try {
-      const fetchTradingSignalsEndpoint = `${TRADING_API_BASE_URL}/trading-signals`;
-      const response = await axiosInstance.get(fetchTradingSignalsEndpoint, {
-        headers: headersConfig,
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching trading signals:', error);
-      const errorMessage = 'Failed to fetch trading signals';
-      handleTradingApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        'FETCH_TRADING_SIGNALS_ERROR' as NotificationType
-      );
-      throw error;
-    }
-  };
-  
-  export const fetchTopPerformingAssetsAPI = async (): Promise<any> => {
-    try {
-      const fetchTopPerformingAssetsEndpoint = `${TRADING_API_BASE_URL}/top-performing-assets`;
-      const response = await axiosInstance.get(fetchTopPerformingAssetsEndpoint, {
-        headers: headersConfig,
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching top performing assets:', error);
-      const errorMessage = 'Failed to fetch top performing assets';
-      handleTradingApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        'FETCH_TOP_PERFORMING_ASSETS_ERROR' as NotificationType
-      );
-      throw error;
-    }
-  };
-  
-  export const fetchAssetPriceHistoryAPI = async (
-    assetId: string,
-  ): Promise<any> => {
-    try {
-      const fetchAssetPriceHistoryEndpoint = `${TRADING_API_BASE_URL}/asset-price-history/${assetId}`;
-      const response = await axiosInstance.get(fetchAssetPriceHistoryEndpoint, {
-        headers: headersConfig,
-      });
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching asset price history:', error);
-      const errorMessage = 'Failed to fetch asset price history';
-      handleTradingApiErrorAndNotify(
-        error as AxiosError<unknown>,
-        errorMessage,
-        'FETCH_ASSET_PRICE_HISTORY_ERROR' as NotificationType
-      );
-      throw error;
-    }
-  };
-  
-
-// Add more trading API functions as needed

@@ -2,18 +2,18 @@
 import { getStoreId } from '@/app/api/ApiData';
 import { fetchEventId } from '@/app/api/ApiEvent';
 import { createSnapshot } from '@/app/api/SnapshotApi';
-import { BaseData } from '@/app/models/data/Data';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import {
   useNotification
 } from "@/app/context/NotificationContext";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import { Category, generateOrVerifySnapshotId } from '@/app/libraries/categories/generateCategoryProperties';
 import { Content } from "@/app/models/content/AddContent";
+import { BaseData } from '@/app/models/data/Data';
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { ConfigurableSnapshotStore, DataStore, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { processSnapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreProps } from '@/app/snapshots';
 import { Snapshot, Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotOperation, SnapshotOperationType } from "@/app/snapshots/SnapshotActions";
@@ -24,15 +24,15 @@ import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
+import { SnapshotStoreMap } from '@/app/snapshots/SnapshpshotMethods';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { isSnapshotWithCriteria } from '@/app/utils/snapshotUtils';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { UpdateSnapshotPayload } from "@/server/database/Payload";
 import { createMetadata } from '@/server/metadata/createMetadata';
-import { SnapshotStoreMap } from '@/app/snapshots/SnapshpshotMethods';
 import { SubscriberCallbackType, Subscription } from '@/subscriptions/Subscription';
 import { useEffect, useState } from "react";
 import { SnapshotStoreReference } from "./SnapshotStoreReference";
@@ -49,37 +49,37 @@ interface CombinedEvents<
   IncludedFields extends keyof T = keyof T
 >
   extends SnapshotEvents<T, K, Meta, ExcludedFields> {
-  subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>[],
+  subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
   event: string | CombinedEvents<T, K, Meta, ExcludedFields> | SnapshotEvents<T, K, Meta, ExcludedFields>,
   trigger: (
     event: string | CombinedEvents<T, K, Meta, ExcludedFields> | SnapshotEvents<T, K, Meta, ExcludedFields>,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     eventDate: Date,
     snapshotId: string,
-    subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>,
+    subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
-    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
 
-  onSnapshotAdded: (event: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotId: string, subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>) => void;
+  onSnapshotAdded: (event: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotId: string, subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   onSnapshotRemoved: (
     event: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
-    subscribers: SubscriberCollection<T, K, Meta, ExcludedFields>,
+    subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
     criteria: SnapshotWithCriteria<T, K, Meta, ExcludedFields>,
     category: Category,
-    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
   onSnapshotUpdated: (
     event: string,
     snapshotId: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-    events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>,
+    events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
     newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -101,8 +101,8 @@ interface CombinedEvents<
   
   addRecord: (
     event: string, 
-    record: CalendarManagerStoreClass<T, K, Meta, ExcludedFields>, 
-    callback: (snapshot: CalendarManagerStoreClass<T, K, Meta, ExcludedFields>) => void
+    record: CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
+    callback: (snapshot: CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
   ) => void;
 
   unsubscribe: (
@@ -120,10 +120,10 @@ interface SnapshotManager<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T,
-> extends Snapshot<T, K, Meta> {
+> extends Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   initSnapshot: (
     snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => Promise<void>;
   
   storeIds: number[],
@@ -132,7 +132,7 @@ interface SnapshotManager<
   
   snapshot: (
     id: string | number | undefined,
-    snapshotData: SnapshotData<T, K, Meta, ExcludedFields>,
+    snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: Category | undefined,    
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
@@ -142,7 +142,7 @@ interface SnapshotManager<
     subscriberId: string, // Add subscriberId here
     endpointCategory: string | number, // Add endpointCategory here
     storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
-    snapshotConfigData: SnapshotConfig<T, K, Meta, ExcludedFields>,
+    snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscription: Subscription<T, K, Meta, ExcludedFields>,
     snapshotId?: string | number | null,
     snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -296,7 +296,7 @@ const createSnapshotStore =  <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   snapshotConfig: SnapshotStoreConfig<T, K>,
-  snapshotData: SnapshotData<T, K>
+  snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): ConfigurableSnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   // Step 1: Validate input parameters
   if (!snapshotConfig || !snapshotData) {
@@ -520,7 +520,7 @@ const createSnapshotConfig = <
     snapshot: async (
       id: string | number | undefined,
       snapshotId: string | null,
-      snapshotData: SnapshotData<T, K> | null, // Change here
+      snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, // Change here
       category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => void,
       dataStore: DataStore<T, K>,
@@ -530,10 +530,10 @@ const createSnapshotConfig = <
       subscriberId: string, // Add subscriberId here
       endpointCategory: string | number,// Add endpointCategory here
       storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
-      snapshotConfigData: SnapshotConfig<T, K>,
+      snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotStoreConfigData?: SnapshotStoreConfig<T, K>,
       snapshotContainer?: SnapshotContainer<T, K>,
-    ): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, snapshotData: SnapshotData<T, K>; }> => {
+    ): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; }> => {
       const { storeId, name, version, options, snapshots, expirationDate, schema,
         payload, 
       } = storeProps
@@ -588,7 +588,7 @@ const createSnapshotConfig = <
         }
       }
     
-      return { snapshot: null, snapshotData: {} as SnapshotData<T, K> };
+      return { snapshot: null, snapshotData: {} as SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> };
     },    
     
     createSnapshot: () => ({

@@ -1,34 +1,34 @@
 import { LanguageEnum } from '@/app/communications/LanguageEnum';
 import { dynamicMeetingMetadata, MeetingMetadata } from '@/app/components/calendar/ScheduledData';
+import { FileMetadata } from '@/app/components/models/file/FileManager';
+import { Task } from '@/app/components/models/tasks/Task';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { SharedRelationshipData } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
-import { FileMetadata } from '@/app/components/models/file/FileManager';
-import { Task } from '@/app/components/models/tasks/Task';
-import { TransactionData } from '@/app/payment/Transaction';
+import { PriorityTypeEnum } from '@/app/models/data/StatusType';
 import { PhaseMeta } from '@/app/models/phases/Phase';
-import TodoImpl from '@/app/todos/Todo';
-import { CoreMetadata, SharedMetadata } from '@/config/metadata/MetadataHooks';
-import { MetadataEntriesType, MetadataEntry, projectMetadata, ProjectMetadata, StructuredMetadata, VideoMetadata } from '@/config/StructuredMetadata';
-import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { TransactionData } from '@/app/payment/Transaction';
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { initialState, Snapshot } from '@/app/snapshots/Snapshot';
 import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { data, TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
+import { AllStatus } from '@/app/state/stores/DetailsListStore';
+import TodoImpl from '@/app/todos/Todo';
 import { AnalysisTypeEnum } from '@/app/typings/AnalysisType';
+import { User } from '@/app/users/User';
 import { category } from '@/app/utils/snapshotUtils';
 import { createLastUpdatedWithVersion, createLatestVersion } from '@/app/versions/createLatestVersion';
 import { default as Version, version, versionData, default as VersionImpl } from '@/app/versions/Version';
 import { VersionData, VersionHistory } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
+import { AppStructurePermissions } from '@/config/AppStructure';
 import { baseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { CoreMetadata, SharedMetadata } from '@/config/metadata/MetadataHooks';
+import { MetadataEntriesType, MetadataEntry, projectMetadata, ProjectMetadata, StructuredMetadata, VideoMetadata } from '@/config/StructuredMetadata';
 import { useMeta } from '@/config/useMeta';
 import { SchemaField } from '@/server/database/SchemaField';
-import { AppStructurePermissions } from '@/config/AppStructure';
-import { PriorityTypeEnum } from '@/app/models/data/StatusType';
-import { AllStatus } from '@/app/state/stores/DetailsListStore';
-import { User } from '@/app/users/User';
-import { Attachment } from "@/app/documents/Attachment/attachment";
 
 export type BaseAudit<T = any, K = any> = AuditEntry<T, K, StructuredMetadata<T, K>>;
 
@@ -631,8 +631,8 @@ function transformProjectToUnifiedMetadata<
 }
 
 export type {
-    AdditionalMetaDataOptions, AppMetadata, BaseMetadata, BaseMetaDataOptions, ConfigMetadata, MediaMetadata, MyDataType, ProjectMetaDataOptions,
-    SnapshotMetaDataOptions, StatusMetadata, TaskMetadata, UnifiedMetadata, UnifiedMetaDataOptions, VersionMetadata
+  AdditionalMetaDataOptions, AppMetadata, BaseMetadata, BaseMetaDataOptions, ConfigMetadata, MediaMetadata, MyDataType, ProjectMetaDataOptions,
+  SnapshotMetaDataOptions, StatusMetadata, TaskMetadata, UnifiedMetadata, UnifiedMetaDataOptions, VersionMetadata
 };
 
 

@@ -1,5 +1,5 @@
 // UIActions.tsx
-import { K } from "@/app/components/models/data/dataStoreMethods";
+import { K } from '@/app/components/models/data/dataStoreMethods';
 import { CollaborationData } from "@/app/pages/community/CollaborationData";
 import { createAction } from "@reduxjs/toolkit";
 import React from "react";

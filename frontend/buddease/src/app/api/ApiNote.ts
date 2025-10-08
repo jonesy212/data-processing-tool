@@ -18,8 +18,10 @@ import { Version } from "@/app/versions/Version";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { Encryption } from "@/server/security/Encryption";
 import { AxiosError } from "axios";
-import { handleApiError } from "./ApiLogs";
+import { handleApiError } from '@/app/api/ApiLogs';
 import { SearchResponseData } from "./ApiSearch";
+import { NotificationPosition } from "@/app/models/data/StatusType";
+import { NotificationType } from "@/app/context/NotificationContext";
 
 // Define the API base URL
 const API_BASE_URL = endpoints.notes;

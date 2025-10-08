@@ -1,6 +1,6 @@
 // UserEntity.ts
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Attachment } from '@/app/documents/Attachment/attachment';
 
 // Define the actual UserEntity interface
 export interface UserEntity extends BaseDataEntity {
@@ -158,49 +158,30 @@ type UserSortOptions = {
 
 // Export all the new types
 export type {
+  AdminUser, AdminUserData,
   // Core App types
   AppUser,
   AppUserData,
-  AppUserProfile,
-  AppUserSnapshot,
+  AppUserProfile, AppUserRealtimeDataItem, AppUserSnapshot,
   AppUserSnapshotData,
-  AppUserSnapshotStore,
-  AppUserRealtimeDataItem,
-  AppUserUnifiedMetadata,
-  AppUserStructuredMetadata,
-  
-  // User metadata types
-  UserMeta,
-  UserExcludedFields,
-  UserIncludedFields,
-  
-  // Configuration types
-  UserSnapshotStoreConfig,
-  UserSnapshotsArray,
-  UserParams,
-  UserFrontendStructure,
-  
-  // Data variations
-  PublicUserData,
-  PrivateUserData,
-  AdminUserData,
-  
+  AppUserSnapshotStore, AppUserStructuredMetadata, AppUserUnifiedMetadata,
   // Role-specific types
   BasicUser,
-  PremiumUser,
-  AdminUser,
-  
-  // State types
-  UserSession,
-  UserContext,
-  
+  PremiumUser, PrivateUserData,
+  // Data variations
+  PublicUserData, UserContext, UserExcludedFields,
   // Utility types
-  UserFilterOptions,
-  UserSortOptions
+  UserFilterOptions, UserFrontendStructure, UserIncludedFields,
+  // User metadata types
+  UserMeta, UserParams,
+  // State types
+  UserSession, UserSnapshotsArray,
+  // Configuration types
+  UserSnapshotStoreConfig, UserSortOptions
 };
 
 // Export the main interface
-export type { UserEntity };
+  export type { UserEntity };
 
 
 

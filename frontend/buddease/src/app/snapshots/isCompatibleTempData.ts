@@ -1,10 +1,10 @@
 //isCompatibleTempData.ts
-import { BaseData } from '@/app/models/data/Data';
-import { T } from "@/app/components/models/data/dataStoreMethods";
+import { T } from '@/app/models/data/dataStoreMethods';
 import { TempData } from "@/app/components/models/data/TempData";
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { BaseData } from '@/app/models/data/Data';
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
@@ -34,7 +34,7 @@ interface SnapshotConversionMethods<
     snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
     storeId: number,
     data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-    events: Record<string, CalendarManagerStoreClass<T, K, Meta, ExcludedFields>[]>,
+    events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
     dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
     newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     payload: ConfigureSnapshotStorePayload<T, K, Meta, ExcludedFields>,
@@ -58,18 +58,18 @@ interface SnapshotConversionMethods<
     event: SnapshotEvent<T, K, Meta, ExcludedFields>,
     callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     value: T
-  ) => [] | SnapshotsArray<T, K, Meta>;
+  ) => [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   // Complex type conversion handler
   handleSnapshot: (
     id: string,
     snapshotId: string | number | null,
-    snapshot: T extends SnapshotData<T, K, Meta, ExcludedFields> ? Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> : null,
+    snapshot: T extends SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ? Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> : null,
     snapshotData: T,
     category: Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshot: T) => void,
-    snapshots: SnapshotsArray<T, K, Meta>,
+    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     event: SnapshotEvent<T, K, Meta, ExcludedFields>,
     snapshotContainer?: T | undefined,

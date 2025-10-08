@@ -5,10 +5,10 @@ import { SharedDetails } from '@/app/components/models/data/Details';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { PhaseData, PhaseMeta } from "@/app/components/phases/Phase";
 import { Permission } from '@/app/components/users/Permission';
-import { Attachment } from '@/app/documents/Attachment/attachment';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { User } from "@/app/users/User";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { SharedMetadata } from "@/config/metadata/MetadataHooks";
+import { SharedMetadata } from '@/app/shared/SharedMetadata';
 
 import { BaseEntity } from '@/app//components/routing/FuzzyMatch';
 import { EventManager } from "@/app/@/projects/DataAnalysisPhase/DataProcessing/DataStore";

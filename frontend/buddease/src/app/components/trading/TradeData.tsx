@@ -1,15 +1,15 @@
 // TradeData.tsx
-import { K, Meta, T } from "@/app/components/models/data/dataStoreMethods";
+import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import CommonDetails from '@/app/models/CommonData';
 import { Data, DataDetailsProps } from '@/app/models/data/Data';
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { DetailsItemExtended } from '@/app/state/stores/DetailsListStore';
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { Tag } from '@/appp/models/tracker/Tag';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { CommonData, Customizations } from '@/models/CommonDetails';
 import React from 'react';
-import { Attachment } from '@/app/documents/Attachment/attachment';
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 // Define the TradeData interface extending the CommonData interface
 interface TradeData<
