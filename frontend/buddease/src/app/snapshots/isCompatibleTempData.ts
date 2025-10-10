@@ -13,7 +13,7 @@ import { Subscriber } from "@/app/subscribers/Subscriber";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { SnapshotsArray } from "./LocalStorageSnapshotStore";
-import { Snapshot } from "./Snapshot";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
@@ -31,15 +31,15 @@ interface SnapshotConversionMethods<
 > {
 
   convertAndConfigureSnapshotStore: (
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     storeId: number,
     data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
-    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
+    dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    payload: ConfigureSnapshotStorePayload<T, K, Meta, ExcludedFields>,
+    payload: ConfigureSnapshotStorePayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     store: SnapshotStore<any, K>,
-    callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void,
+    callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
 
@@ -53,9 +53,9 @@ interface SnapshotConversionMethods<
   subscribe: (
     snapshotId: string | number | null,
     unsubscribe: UnsubscribeDetails,
-    subscriber: Subscriber<T, K, Meta, ExcludedFields> | null,
+    subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     data: T,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     value: T
   ) => [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -66,12 +66,12 @@ interface SnapshotConversionMethods<
     snapshotId: string | number | null,
     snapshot: T extends SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ? Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> : null,
     snapshotData: T,
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshot: T) => void,
     snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: T | undefined,
     snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined,
     storeConfigs?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]

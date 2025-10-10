@@ -1,22 +1,22 @@
 import { DayOfWeekProps } from "@/app/calendar/DayOfWeek";
 import { Month } from "@/app/calendar/Month";
+import { Collaborator } from "@/app/collaborators/Collaborator";
 import { ScheduledData } from "@/app/components/calendar/ScheduledData";
 import { Task } from '@/app/components/models/tasks/Task';
-import { Collaborator } from '@/app/components/models/teams/TeamMembers';
 import { NotificationType } from '@/app/context/context/NotificationContext';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { UnsubscribeDetails } from "@/app/event/DynamicEventHandlerExample";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
+import { Comment } from "@/app/models/comments/Comments";
 import { Content } from "@/app/models/content/AddContent";
 import ChecklistItem, { ChecklistItemProps } from "@/app/models/data/ChecklistItem";
-import { Comment } from "@/app/models/data/Comments";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { NotificationPosition, PriorityTypeEnum, StatusType } from "@/app/models/data/StatusType";
+import { Phase } from '@/app/models/phases/Phase';
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { Phase } from "@/app/phases/Phase";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { DataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { DataStoreMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
@@ -34,7 +34,6 @@ import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
 import { VideoData } from "@/app/video/Video";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
 import operation from "antd/es/transfer/operation";
 import { config } from "process";
 import { FC } from "react";
@@ -43,9 +42,12 @@ import { options } from "sanitize-html";
 export type UserAssignee = Pick<User, '_id' | 'id' | 'username' | 'firstName' | 'lastName' | 'email' | 'fullName' | 'avatarUrl'>;
 
 export interface Todo<
-  T extends BaseData<any> = BaseData<any, any>, // Align `T` with `BaseData`
-  K extends T = T, // Ensure `K` aligns with `T`
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Use `StructuredMetadata` for metadata
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   _id: string;
   id: string;
@@ -58,7 +60,7 @@ export interface Todo<
   todos: TodoImpl<T, K>[];
   title: string;
   selectedTodo?: Todo<T>;
-  subtasks?: Array<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | TodoImpl<T, K, Meta, ExcludedFields>>;
+  subtasks?: Array<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   progress?: Progress;
   description: string;
   dueDate?: Date | null | undefined;
@@ -171,10 +173,12 @@ interface TodoMeta<
 
 
 class TodoImpl<
-  T extends BaseData<any>,
+  T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Add constraint for Meta
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > implements Todo<T, K, Meta> {
   _id: string = "";
   id: string = "";
@@ -219,9 +223,9 @@ class TodoImpl<
   assignedUsers: string[] = [];
   collaborators: Collaborator[] = [];
   labels: string[] = [];
-  comments: Comment<T, K, Meta, ExcludedFields>[] = [];
+  comments: Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
   attachments: Attachment[] = [];
-  subtasks: Array<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | TodoImpl<T, K, Meta, ExcludedFields>> = [];
+  subtasks: Array<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = [];
 
   entities: Todo<T>[] = [];
 
@@ -413,7 +417,7 @@ class TodoImpl<
       initialData: T,
       snapshotData: SnapshotData<any, K>,
       snapshotStoreConfig: SnapshotStoreConfig<T, K>,
-      category: Category | undefined,      additionalData: any
+      category?: Category,      additionalData: any
     ):Promise<Result<Snapshot<T, K, never>>> {
       throw new Error("Function not implemented.");
     },
@@ -436,7 +440,7 @@ class TodoImpl<
       snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
       snapshotId: string | number | null,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       snapshotConfig: SnapshotStoreConfig<T, K>,
       callback: (snapshotStore: SnapshotStore<any, any>) => void,
@@ -732,7 +736,7 @@ class TodoImpl<
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotId: string,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category: Category | undefined,      snapshotConfig: SnapshotStoreConfig<T, K>,
+      category?: Category,      snapshotConfig: SnapshotStoreConfig<T, K>,
       callback: (
         snapshotStore: SnapshotStore<any, any>,
         snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>

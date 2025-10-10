@@ -1,6 +1,6 @@
 import { addNoteAPI, updateNoteAPI } from "@/app/api/ApiNote";
 import { createMetaState } from '@/config//metadata/MetadataHooks';
-import { Collaborator } from "@/app/models/teams/TeamMembers";
+import { Collaborator } from "@/app/collaborators/Collaborator";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { UserData } from "@/app/users/User";
 import { Version } from "@/app/versions/Version";

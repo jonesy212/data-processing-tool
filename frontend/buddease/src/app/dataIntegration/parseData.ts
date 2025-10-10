@@ -107,7 +107,7 @@ const calculatePriceDisparity = (
 };
 
 // Example usage:
-const yourResponseTypeData: YourResponseType<T, K, Meta>[] = [];
+const yourResponseTypeData: YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
 const threshold = 5; // Threshold value to consider a significant disparity (in currency units)
 
 // Parse and process the received data

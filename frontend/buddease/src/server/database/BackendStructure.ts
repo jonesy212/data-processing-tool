@@ -185,7 +185,7 @@ export default class BackendStructure <
           const uniqueID = UniqueIDGenerator.generateID(
             file,
             filePath,
-            NotificationTypeEnum.FileID,
+            NotificationTypeEnum.FILE_ID,
           );
           const fileContent = await fs.readFile(filePath, "utf-8");
           const appStructureItem: AppStructureItem = {
@@ -343,7 +343,7 @@ export default class BackendStructure <
         permissions,
         versions: [],
         versionData: [],
-        latestVersion: createLatestVersion<T, K>(), 
+        latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), 
         lastUpdated: new Date(),
         timestamp: new Date(),
         history: [],

@@ -1,10 +1,10 @@
 // user/UserActions.ts
 import { Data } from '@/app/models/data/Data';
+import { UserRole } from "@/app/models/UserRole";
 import { Persona } from "@/app/pages/personas/Persona";
 import { UserProfile } from "@/app/snapshots/userSnapshotData";
 import { DataProcessingTask } from "@/app/todos/tasks/DataProcessingTask";
 import { createAction } from "@reduxjs/toolkit";
-import { UserRole } from "@/app/components/users/UserRole";
 import { User, UserData } from "./User";
 
 export const UserActions = {

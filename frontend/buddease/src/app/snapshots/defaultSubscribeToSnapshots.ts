@@ -4,7 +4,7 @@ import { BaseData } from '@/app/models/data/Data';
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { createMockSnapshot } from '@/snapshotOperations';
-import { Snapshot } from "./Snapshot";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 
 
 export const defaultSubscribeToSnapshots = <

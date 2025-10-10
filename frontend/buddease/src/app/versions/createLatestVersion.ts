@@ -19,7 +19,7 @@ export function createLatestVersion<
   versionData: Partial<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {}
 ): VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   const now = new Date();
-  const { latestVersion = createLatestVersion<T, K>(), ...rest } = data;
+  const { latestVersion = createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), ...rest } = data;
   const defaultVersionImpl: VersionImpl<T, K> = {
     major: 1,
     minor: 0,
@@ -217,7 +217,7 @@ export function createLastUpdatedWithVersion<T extends BaseData<any>, K extends 
     timestamp: now,
     changeLogSummary: summary || "No changes recorded.",
     versionData: [], // Initialize as empty array or appropriate value
-    latestVersion: createLatestVersion<T, K>({
+    latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
       version: {
         transformToStructureItems: function (data: any): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
           return data.map((item: any) => ({
@@ -241,7 +241,7 @@ export function createLastUpdatedWithVersion<T extends BaseData<any>, K extends 
 const versionHistory: VersionHistory = {
   versionData: [],
   history: [],
-  latestVersion: createLatestVersion<T, K>({
+  latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
     id: "1",
     name: "Initial Release",
     versionNumber: "1.0.0",
@@ -252,7 +252,7 @@ const versionHistory: VersionHistory = {
       timestamp: new Date(),
       area: 'version history area',
       metadataEntries: {},
-      latestVersion: createLatestVersion<T, K>(),
+      latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
       schema: {}
     },
     releaseDate: "2024-11-24",

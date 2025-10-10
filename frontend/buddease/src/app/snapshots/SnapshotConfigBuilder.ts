@@ -3,8 +3,8 @@
 import { EventStore } from "@/app/components/event/EventStore";
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from "@/config//BaseConfig";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
-import baseMeta from "@/app/data_analysis/frontend/buddease/src/server/database/baseMeta";
-import { SnapshotStoreConfig } from ".";
+import baseMeta from "@/server/database/baseMeta";
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotUnion } from "./LocalStorageSnapshotStore";
 import { SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotContainer } from "./SnapshotContainer";
@@ -24,15 +24,42 @@ type SnapshotConfigParams<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  Excluded extends keyof T = DefaultExcludedFields<T>,
-  Extras extends unknown[] = []
-> = [T, K, Meta, Excluded, ...Extras];
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
+  Extras extends unknown[] = [] // Allow flexible extension
+> = [T, K, Meta, AttachmentType, ExcludedFields, IncludedFields, ...Extras];
 
+
+// ✅ Simulated Data Source that expands from params tuple
 interface SimulatedDataSourceFromParams<
-  Params extends SnapshotConfigParams<any, any, any, any, any[]> = SnapshotConfigParams
-> extends SnapshotInstanceProps<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]> {
-  data: InitializedData<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
-  fetchData: () => Promise<SnapshotStoreConfig<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>>;
+  Params extends SnapshotConfigParams<any, any, any, any, any, any, any[]> = SnapshotConfigParams
+> extends SnapshotInstanceProps<
+    Params[0], // T
+    Params[1], // K
+    Params[2], // Meta
+    Params[3], // AttachmentType
+    Params[4], // ExcludedFields
+    Params[5]  // IncludedFields
+  > {
+  data: InitializedData<
+    Params[0],
+    Params[1],
+    Params[2],
+    Params[3],
+    Params[4],
+    Params[5]
+  >;
+  fetchData: () => Promise<
+    SnapshotStoreConfig<
+      Params[0],
+      Params[1],
+      Params[2],
+      Params[3],
+      Params[4],
+      Params[5]
+    >
+  >;
 }
 
 // Master builder (factory companion)
@@ -40,8 +67,14 @@ export interface SnapshotConfigBuilder<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  Excluded extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
+  createConfig?: (
+    params: SnapshotConfigParams<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ) => SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
   getType(): T;
   getKey(): K;
   getMeta(): Meta;
@@ -66,12 +99,17 @@ export interface SnapshotConfigBuilder<
 }
 
 
-export type { SnapshotConfigParams };
+export type { SnapshotConfigParams, SnapshotLifecycle };
 
 
 // Initialize builder
 const builder: SnapshotConfigBuilder<SnapshotConfigParams> = {
   buildBaseConfig: async (params) => ({
+
+    deleted, initialConfig, onInitialize, taskIdToAssign,
+
+
+
         id: generateId?.('prefix', 'name', NotificationTypeEnum.Default) || 'default-id',
       description: 'Snapshot description',
       category: currentCategory,
@@ -82,7 +120,7 @@ const builder: SnapshotConfigBuilder<SnapshotConfigParams> = {
       snapshotCriteria: undefined,
       criteria: criteria || 'default-criteria',
       priority: priority || 'normal',
-      data: baseData as InitializedData<T, K, Meta, ExcludedFields>,
+      data: baseData as InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       subscribers: [],
       storeConfig: snapshotStoreConfig,
       initialState: initialState || {},

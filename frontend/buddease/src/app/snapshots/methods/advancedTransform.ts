@@ -9,13 +9,15 @@ export function transformSubscriberAdvanced<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   subscriber: (
     event: string,
     snapshotId: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     dataItems: any[],
     criteria: any,
     category: symbol | string | undefined
@@ -24,14 +26,14 @@ export function transformSubscriberAdvanced<
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   transformSnapshotStore: (
-    store: SnapshotStore<T, K, Meta, ExcludedFields>
-  ) => SnapshotStore<T, K, Meta, ExcludedFields>,
+    store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ) => SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   transformSnapshotCriteria: (criteria: any) => any
 ): (
   event: string,
   snapshotId: string,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   dataItems: any[],
   criteria: any,
   category: symbol | string | undefined
@@ -66,7 +68,9 @@ export function transformSubscriberMappedAdvanced<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
   U extends BaseDataEntity = T,
   V extends U = U,
   Meta2 = DefaultMeta<U, V>,
@@ -85,14 +89,14 @@ export function transformSubscriberMappedAdvanced<
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => Snapshot<U, V, Meta2, ExcludedFields2>,
   transformSnapshotStore: (
-    store: SnapshotStore<T, K, Meta, ExcludedFields>
+    store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => SnapshotStore<U, V, Meta2, ExcludedFields2>,
   transformSnapshotCriteria: (criteria: any) => any
 ): (
   event: string,
   snapshotId: string,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   dataItems: any[],
   criteria: any,
   category: symbol | string | undefined

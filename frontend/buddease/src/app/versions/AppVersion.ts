@@ -249,8 +249,8 @@ const appVersion: AppVersion = new AppVersionImpl({
   workspaceViewers: [], // Add workspaceViewers property
   workspaceAdmins: [], // Add workspaceAdmins property
   versions: {
-    data: {} as VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    frontend: {} as FrontendStructure<T, K>,
+    data: {} as VersionData<AppVersion>,
+    frontend: {} as FrontendStructure<AppVersion>,
     backend: {} as BackendStructure,
   },
 });

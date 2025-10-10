@@ -33,7 +33,7 @@ function isHydrateResult<T>(result: any): result is IHydrateResult<T> {
   return (result as IHydrateResult<T>).then !== undefined;
 }
 
-function isSnapshotConfig<T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(config: any): config is SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+function isSnapshotConfig<T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(config: any): config is SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return config && 'storeConfig' in config && 'additionalData' in config;
 }
 
@@ -100,7 +100,7 @@ function convertToSnapshotArray<T extends BaseData, K extends T = T>(
 function convertToSnapshotWithCriteria<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotStore?: SnapshotStore<T, K, Meta>
@@ -343,7 +343,7 @@ function convertToSnapshotWithCriteria<
 }
 
 
-function isSnapshotOfType <T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isSnapshotOfType <T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   typeCheck: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => snapshot is Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): snapshot is Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
@@ -361,7 +361,7 @@ function findCorrectSnapshotStore(
 
 
 // Type guard to check if data is SnapshotWithCriteria<T, BaseData>
-function isSnapshotWithCriteria <T extends  BaseDataEntity, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isSnapshotWithCriteria <T extends  BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   data: any
 ): data is SnapshotWithCriteria<T, BaseData> {
   return (
@@ -398,16 +398,16 @@ export const addToSnapshotList = async  <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
   >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  subscribers: Subscriber<T, K, Meta, ExcludedFields>[],
-  storeProps?: SnapshotStoreProps<T, K, Meta, ExcludedFields>
-): Promise<Subscription<T, K, Meta, ExcludedFields> | null> => {
+  subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+  storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): Promise<Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
   console.log("Snapshot added to snapshot list: ", snapshot);
   if (!storeProps) {
     throw new Error("Snapshot properties not available")
   }
   const snapshotStore = await useSnapshotStore(addToSnapshotList, storeProps);
 
-  const subscriptionData: Subscription<T, K, Meta, ExcludedFields> | null = snapshot.data
+  const subscriptionData: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null = snapshot.data
     ? {
         name: snapshot.name ? snapshot.name : undefined,
         subscribers: [],
@@ -444,7 +444,7 @@ export const addToSnapshotList = async  <
 export const getSnapshotsBySubscriber = async <
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   subscriber: Subscriber<T, K, Meta>,
@@ -551,7 +551,7 @@ function isSnapshotDataType<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   data: any
-): data is SnapshotDataType<T, K, Meta, ExcludedFields>  {
+): data is SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  {
   // Check if the data is a Map
   if (data instanceof Map) {
     // Verify the structure of each entry in the Map
@@ -667,7 +667,7 @@ function castToSnapshot<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
-  snapshot: SnapshotUnion<T, K, Meta, ExcludedFields> | null
+  snapshot: SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
   return snapshot as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
 }

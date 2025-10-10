@@ -1,14 +1,15 @@
 // NoteData.ts
 
 import { DocumentSize } from "@/app/models/data/StatusType";
-import { Collaborator } from "@/app/models/teams/TeamMembers";
+import { Collaborator } from "@/app/collaborators/Collaborator";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import { Version } from "@/app/versions/Version";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 
-import { CommonAnimationOptions } from '@/SharedDocumentProps';
+import { CommonAnimationOptions } from '@/app/documents/SharedDocumentProps';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData } from '@/app/models/data/Data';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
 export interface Change {
   id: number;
@@ -33,10 +34,14 @@ interface Highlight {
 }
 
 export interface NoteData<
-  T extends BaseData<any> = BaseData<any, any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> 
-  extends BaseData<T, K> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
+> 
+  extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: number;
   title: string;
   content: string;
@@ -52,12 +57,12 @@ export interface NoteData<
   folderPath: string;
   previousContent?: string;
   currentContent?: string;
-  previousMetadata: StructuredMetadata<T, K>;
-  currentMetadata: StructuredMetadata<T, K>;
+  previousMetadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  currentMetadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   accessHistory: any[];
   lastModifiedDate: Date;
-  version: Version<T, K>;
-  versionHistory: NoteVersion[] | Version<T, K>[]; // Use a union type to allow either NoteVersion or Version
+  version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  versionHistory: NoteVersion[] | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Use a union type to allow either NoteVersion or Version
   colorLabel?: string; // Hex color code or predefined label
   collaborators: Collaborator[]; // Array of user IDs
   reminderDate?: Date;
@@ -67,7 +72,7 @@ export interface NoteData<
 
 export interface NoteAttachment extends Attachment {
   id: string;
-  type: AttachmentType;
+  type: Attachment;
   url: string;
   purpose?: AttachmentPurpose; // Optional role within the note
 

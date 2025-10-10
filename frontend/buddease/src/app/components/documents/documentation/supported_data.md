@@ -9,10 +9,10 @@ The `SupportedData` type is a comprehensive TypeScript type that combines severa
 type SupportedData<
   T extends BaseData<any, any> = BaseData<any, any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > =
   UserData<T, K> &
-  Data<T, K, Meta> &
+  Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
   Todo<T, K, Meta> &
   Task<T, K, Meta> &
   CommunityData &

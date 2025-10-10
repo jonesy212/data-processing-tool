@@ -12,22 +12,20 @@ import socketIOClient, { Socket } from 'socket.io-client';
  
 export const ENDPOINT = endpoints.backend
 
+
 export type RealtimeUpdateCallback<
-  T extends RealtimeData<
-    BaseDataEntity,
-    BaseDataEntity,
-    DefaultMeta<BaseDataEntity, BaseDataEntity>,
-    keyof BaseDataEntity
-  >,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = (
   id: string,
   events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
-  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
-  dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
-  data?: InitializedData<T, K, Meta, ExcludedFields> | null
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
 ) => void;
 
 const useRealtimeData = <
@@ -36,11 +34,11 @@ const useRealtimeData = <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
-  initialData: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
-  updateCallback: RealtimeUpdateCallback<T, K, Meta, ExcludedFields>
+  initialData: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+  updateCallback: RealtimeUpdateCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) => {
   const [socket, setSocket] = useState<Socket | null>(null);
-  const [realtimeData, setRealtimeData] = useState<RealtimeDataItem<T, K, Meta, ExcludedFields>[]>(initialData);
+  const [realtimeData, setRealtimeData] = useState<RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>(initialData);
   const dispatch = useDispatch();
 
   const fetchData = async (userId: string, callback: (action: any) => void) => {
@@ -67,9 +65,9 @@ const useRealtimeData = <
       (
         id: string,
         events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
-        snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
-        dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
-        data?: InitializedData<T, K, Meta, ExcludedFields> | null
+        snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+        data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
       ) => {
         if (!data || !snapshotStore || !dataItems) {
           console.error("Received data, snapshotStore, or dataItems is null");

@@ -16,7 +16,7 @@ export const detailsApiService = {
   fetchDetailsItem: async <
     T extends BaseData<any>,
     K extends T = T,
-    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
       detailsItemId: string
     ): Promise<{ detailsItem: DetailsItem<T, K, Meta> }> => {
     try {
@@ -36,13 +36,13 @@ export const detailsApiService = {
         "Fetch Details Item Error",
         NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEM_ERROR,
         new Date(),
-        NotificationTypeEnum.APIError
+        NotificationTypeEnum.API_ERROR
       );
       throw error;
     }
   },
 
-  updateDetailsItem: async <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  updateDetailsItem: async <T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
     detailsItemId: string,
     updatedDetailsItemData: any
   ): Promise<{ detailsItemId: string, detailsItem: DetailsItem<T, K, Meta> }> => {
@@ -53,7 +53,7 @@ export const detailsApiService = {
         "Update Details Item Success",
         NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_SUCCESS,
         new Date(), 
-        NotificationTypeEnum.APISuccess
+        NotificationTypeEnum.API_SUCCESS
       );
       return {
         detailsItemId: response.data.id,
@@ -66,13 +66,13 @@ export const detailsApiService = {
         "Update Details Item Error",
         NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEM_ERROR,
         new Date(), 
-        NotificationTypeEnum.APIError
+        NotificationTypeEnum.API_ERROR
       );
       throw error;
     }
   },
 
-  fetchDetailsItems: async <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  fetchDetailsItems: async <T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   
   ): Promise<{ 
     detailsItems: DetailsItem<T, K, Meta>[]
@@ -84,7 +84,7 @@ export const detailsApiService = {
         "Fetch Details Items Success",
         NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEMS_SUCCESS,
         new Date(), 
-        NotificationTypeEnum.APISuccess
+        NotificationTypeEnum.API_SUCCESS
       );
       return { detailsItems: response.data as DetailsItem<Data<any>>[] };
     } catch (error) {
@@ -94,12 +94,12 @@ export const detailsApiService = {
         "Fetch Details Items Error",
         NOTIFICATION_MESSAGES.Details.FETCH_DETAILS_ITEMS_ERROR,
         new Date(), 
-        NotificationTypeEnum.APIError
+        NotificationTypeEnum.API_ERROR
       );
       throw error;
     }
   },
-  updateDetailsItems: async <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(updatedDetailsItemsData: any): Promise<{ detailsItems: DetailsItem<T, K, Meta>[] }> => {
+  updateDetailsItems: async <T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(updatedDetailsItemsData: any): Promise<{ detailsItems: DetailsItem<T, K, Meta>[] }> => {
     try {
       const response = await axiosInstance.put(API_BASE_URL, updatedDetailsItemsData);
       notify(
@@ -107,7 +107,7 @@ export const detailsApiService = {
         "Update Details Items Success",
         NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEMS_SUCCESS,
         new Date(), 
-        NotificationTypeEnum.APISuccess
+        NotificationTypeEnum.API_SUCCESS
       );
       return { detailsItems: response.data as DetailsItem<Data<any, any, StructuredMetadata<any, any>>>[] };
     } catch (error) {
@@ -117,7 +117,7 @@ export const detailsApiService = {
         "Update Details Items Error",
         NOTIFICATION_MESSAGES.Details.UPDATE_DETAILS_ITEMS_ERROR,
         new Date(), 
-        NotificationTypeEnum.APIError
+        NotificationTypeEnum.API_ERROR
       );
       throw error;
     }
@@ -132,7 +132,7 @@ export const detailsApiService = {
         "Delete Details Items Success",
         NOTIFICATION_MESSAGES.Details.DELETE_DETAILS_ITEMS_SUCCESS,
         new Date(),
-        NotificationTypeEnum.APISuccess
+        NotificationTypeEnum.API_SUCCESS
       );
     } catch (error) {
       handleApiError(
@@ -144,7 +144,7 @@ export const detailsApiService = {
         "Delete Details Items Error",
         NOTIFICATION_MESSAGES.Details.DELETE_DETAILS_ITEMS_ERROR,
         new Date(),
-        NotificationTypeEnum.APIError
+        NotificationTypeEnum.API_ERROR
       );
       throw error;
     }

@@ -4,8 +4,8 @@
 // import { BaseData } from '@/data/Data';
 // import axiosInstance from '@/app/api/csrfToken';
 // import { Snapshot } from '@/app/snapshots/Snapshot';
-// import { SnapshotData } from '@/app/snapshots/SnapshpshotData';
-// import SnapshotStoreComponent from '@/app/snapshots/SnapshpshotStoreComponent';
+// import { SnapshotData } from '@/app/snapshots/SnapshotData';
+// import SnapshotStoreComponent from '@/app/snapshots/SnapshotStoreComponent';
 
 
 // // // Define the API endpoint for retrieving snapshot data
@@ -13,8 +13,12 @@
 
 // // Define the type for the response data
 // interface SnapshotDataResponse<
-//   T extends BaseDataEntity, 
-//   K extends T = T> 
+  // T extends BaseDataEntity,
+  // K extends T = T,
+  // Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  // AttachmentType extends Attachment = Attachment,
+  // ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  // IncludedFields extends keyof T = keyof T
 // extends Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  {
 //   // Define the structure of the response data
 //   // This should match the structure of your snapshot data
@@ -27,14 +31,17 @@
 
 // // Define the function to retrieve snapshot data
 // export const retrieveSnapshotData =  <
-//   T extends BaseDataEntity,
-//   K extends T = T,
-//   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-//   ): Promise<Snapshot<SnapshotDataResponse<T, K, Meta, ExcludedFields>> | null> => {
+  // T extends BaseDataEntity,
+  // K extends T = T,
+  // Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  // AttachmentType extends Attachment = Attachment,
+  // ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  // IncludedFields extends keyof T = keyof T
+  // >(): Promise<Snapshot<SnapshotDataResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null> => {
 //   return new Promise(async (resolve, reject) => {
 //     // Define a function to convert RetrievedSnapshot<SnapshotDataResponse> to SnapshotStore<Snapshot<Data, Data>>
-//     const convertToSnapshotStore =  (retrievedSnapshot: RetrievedSnapshot<SnapshotDataResponse<T, K, Meta, ExcludedFields>, any>) => {
-//       const response = await axiosInstance.get<SnapshotDataResponse<T, K, Meta, ExcludedFields>>(SNAPSHOT_DATA_API_URL);
+//     const convertToSnapshotStore =  (retrievedSnapshot: RetrievedSnapshot<SnapshotDataResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, any>) => {
+//       const response = await axiosInstance.get<SnapshotDataResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(SNAPSHOT_DATA_API_URL);
 //       // Create a new SnapshotStore instance
 //       const snapshotStore = new SnapshotStoreComponent(retrievedSnapshot.id, retrievedSnapshot.timestamp, retrievedSnapshot.category, retrievedSnapshot.data, retrievedSnapshot.callbacks);
 
@@ -42,7 +49,7 @@
 //         // Fetch snapshot data from the API endpoint
 
 //         // Extract the snapshot data from the response
-//         const snapshotData: SnapshotData<SnapshotDataResponse<T, K, Meta, ExcludedFields>> = {
+//         const snapshotData: SnapshotData<SnapshotDataResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
 //           id: response.data.id.toString(), // Ensure id is a string
 //           timestamp: new Date(response.data.timestamp), // Convert timestamp to Date
 //           category: response.data.category,
@@ -213,7 +220,7 @@
 //           batchUpdateSnapshotsFailure: response.data.batchUpdateSnapshotsFailure,
 //           batchTakeSnapshot: response.data.batchTakeSnapshot,
 //           handleSnapshotSuccess: response.data.handleSnapshotSuccess,
-//           [Symbol.iterator]: function* (): IterableIterator<Snapshot<SnapshotDataResponse<T, K, Meta, ExcludedFields>>> {
+//           [Symbol.iterator]: function* (): IterableIterator<Snapshot<SnapshotDataResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
 //             yield this;
 //           },
 //         };
@@ -236,7 +243,7 @@ const retrievedSnapshot: RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedF
     id: "snapshot-id", // Example data
     parentId: "parent-id",
     label: "Example Label",
-    responseData: {} as SnapshotDataResponse<T, K, Meta, ExcludedFields>,
+    responseData: {} as SnapshotDataResponse<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     // Add other properties as needed
   };
 

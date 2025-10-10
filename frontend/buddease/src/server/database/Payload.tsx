@@ -39,8 +39,8 @@ import { useDispatch, useSelector } from "react-redux";
 interface ExtendedBaseDataPayload<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends {} = StructuredMetadata<T, K>
-> extends BaseData<T, K, StructuredMetadata<T, K>> {
+  Meta extends {} = StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+> extends BaseData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   meta?: {
     name: string;
     timestamp: Date;
@@ -103,7 +103,7 @@ interface CreateSnapshotsPayload<
 > {
   data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   events: Record<string, CalendarEvent<T, K>[]>;
-  dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[];
+  dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   category?: Category;
 }
@@ -123,7 +123,7 @@ interface CreateSnapshotStoresPayload<
   category: string;
   data: T | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined;
   events: Record<string, CalendarEvent<T, K>[]>;
-  dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[];
+  dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   metadata: any;
   id: string; // Adding id

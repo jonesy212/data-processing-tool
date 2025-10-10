@@ -38,7 +38,7 @@ const UserJourneyManager: React.FC = () => {
         "Failed to setup two-factor authentication",
         NOTIFICATION_MESSAGES.Onboarding.TWO_FACTOR_ERROR,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
     }
   };
@@ -62,7 +62,7 @@ const UserJourneyManager: React.FC = () => {
         "Your information has been successfully submitted",
         NOTIFICATION_MESSAGES.Onboarding.QUESTIONNAIRE_SUBMITTED,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       console.error("Error sending questionnaire responses:", error);
@@ -71,7 +71,7 @@ const UserJourneyManager: React.FC = () => {
         "There was an error saving your submission, try again",
         NOTIFICATION_MESSAGES.Onboarding.PROFILE_SETUP_ERROR,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
     }
   };

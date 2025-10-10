@@ -17,7 +17,8 @@ import { BaseConfig, BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { FC } from "react";
-
+import { Dependency } from '@/app/models/realtme/IntegrationLogic'
+import { PhaseMilestone } from '@/app//typings/entities/PhaseEntitty'
 
   interface PhaseData<
     T extends BaseDataEntity,
@@ -43,7 +44,7 @@ interface PhaseMeta<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedField> {
-  baseConfig: BaseConfig<T, K, Meta, ExcludedFields>;;
+  baseConfig: BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   createdBy?: string;
   updatedBy?: string;
   archived?: boolean;
@@ -117,7 +118,9 @@ export class PhaseImpl<
   IncludedFields extends keyof T = keyof T
 > implements Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string = "";
+  projectId: string = "";
   name: string = "";
+
   index?: number;
   description: string = "";
   startDate?: Date;

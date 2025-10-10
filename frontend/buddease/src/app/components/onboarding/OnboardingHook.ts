@@ -49,10 +49,10 @@ export const useDynamicOnboarding = <
           id: phase.id,
           name: phase.description,
           phases: [],
-          trackFileChanges: function (file: DocumentData<T, K, Meta, ExcludedFields>): void {
+          trackFileChanges: function (file: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
             throw new Error('Function not implemented.');
           },
-          trackFolderChanges: function (fileLoader: DocumentData<T, K, Meta, ExcludedFields>): void {
+          trackFolderChanges: function (fileLoader: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
             throw new Error('Function not implemented.');
           },
           getName: function (trackerName: string): string {

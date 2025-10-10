@@ -27,7 +27,7 @@ interface BaseEventCallbacks<
   on?: (
     event: string,
     callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
+    ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
 
   off?: (
@@ -41,13 +41,13 @@ interface BaseEventCallbacks<
       unsubscribeReason: string;
       unsubscribeData: any;
     },
-    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
+    ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
 
   trigger?: (
-    event: string | SnapshotEvents<T, K, Meta, ExcludedFields>,
+    event: string | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     eventDate: Date,
-    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
+    ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
 }
 
@@ -85,7 +85,7 @@ interface EventManagement<
   subscribe: (
     snapshotId: string,
     unsubscribe: UnsubscribeDetails,
-    subscriber: Subscriber<T, K, Meta, ExcludedFields> | null,
+    subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     data: T,
     event: string | Event,
     callback: Callback<SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
@@ -96,13 +96,13 @@ interface EventManagement<
   unsubscribe: (
     snapshotId: string,
     unsubscribeDetails: UnsubscribeDetails,
-    callback: SubscriberCallbackType<T, K, Meta, ExcludedFields> | null,
+    callback: SubscriberCallbackType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     ctx?: SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
 
    emit: (
     event: string,
-    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
+    ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
 
 
@@ -148,14 +148,14 @@ interface RecordManagement<
   removeSubscriber: (
     event: string,
     snapshotId: string,
-    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
+    ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
 }
 
 interface SharedProperties<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -171,11 +171,11 @@ interface SnapshotEventBase<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends SnapshotCoreBase<T, K, Meta, ExcludedFields> {
+> extends SnapshotCoreBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   key?: string;
   target?: EventTarget;
   snapshotData?: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  dataItems?: RealtimeDataItem<T, K, Meta, ExcludedFields>[];
+  dataItems?: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 
@@ -186,12 +186,12 @@ interface SnapshotEvents<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends SnapshotEventBase<T, K, Meta, ExcludedFields>,
+> extends SnapshotEventBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     BaseEventCallbacks<T, K, Meta>,
-    EventManagement<T, K, Meta, ExcludedFields>,
+    EventManagement<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     SnapshotEventHandlers<T, K, Meta>,
     RecordManagement<T, K, Meta>,
-    SharedProperties<T, K, Meta, ExcludedFields>,
+    SharedProperties<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     SnapshotSubscriberManagement<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 {
   // Additional event-specific properties
@@ -202,20 +202,20 @@ interface SnapshotEvents<
   eventSource?: string;
 
   // Event handlers
-  onEvent?: (event: Event, ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>) => void;
-  beforeEvent?: (event: Event, ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>) => boolean | void;
-  afterEvent?: (event: Event, ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>) => void;
+  onEvent?: (event: Event, ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+  beforeEvent?: (event: Event, ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean | void;
+  afterEvent?: (event: Event, ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
 
   // Trigger methods now share the same tuple
   trigger?: (
-    event: string | SnapshotEvents<T, K, Meta, ExcludedFields>,
-    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
+    event: string | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
 
   on?: (
     event: string,
     callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
+    ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
 
   off?: (
@@ -229,7 +229,7 @@ interface SnapshotEvents<
       unsubscribeReason: string;
       unsubscribeData: any;
     },
-    ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
+    ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => void;
 }
 
@@ -240,7 +240,7 @@ function createContextArgs<  T extends BaseDataEntity,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
-  ...args: ExtractContextArgs<T, K, Meta, ExcludedFields>
+  ...args: ExtractContextArgs<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) {
   return args;
 }

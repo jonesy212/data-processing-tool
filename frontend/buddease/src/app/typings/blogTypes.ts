@@ -8,7 +8,7 @@ import { StructuredMetadata } from '@/config/StructuredMetadata';
 export interface BlogData<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K> 
 > extends SharedRelationshipData<K> {
   _id: string;
   id: string;

@@ -5,11 +5,11 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Task } from "@/app/models/tasks/Task";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
@@ -66,21 +66,23 @@ type MemberStructuredMetadata = StructuredMetadata<
 >;
 
 
-type AppPhase = Phase<
+// Core App Member Types
+type AppMember = Phase<
   MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields
 >;
 
-type AppPhaseData = PhaseData<
+type AppMemberData = PhaseData<
   MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields
 >;
 
-type AppPhaseMeta = PhaseMeta<
+type AppMemberMeta = PhaseMeta<
   MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields
 >;
 
-type CustomAppPhaseHooks = CustomPhaseHooks<
+type CustomAppMemberHooks = CustomPhaseHooks<
   MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields
 >;
+
 
 // Core snapshot types
 type MemberSnapshot = Snapshot<MemberEntity, MemberK, MemberMeta, MemberAttachment, MemberExcludedFields, MemberIncludedFields>;
@@ -101,7 +103,7 @@ type MemberParams = SnapshotConfigParams<MemberEntity, MemberK, MemberMeta, Memb
 type MemberApplyFieldFilters<
   T extends BaseDataEntity,
   Excluded extends keyof T = never,
-  Included extends keyof T = keyof T
+  IncludedFields extends keyof T = keyof T
 > = Pick<Omit<T, Excluded>, Included>;
 
 // Define the MemberData interface extending Member
@@ -159,6 +161,8 @@ const createDefaultMemberData = (baseData: Partial<MemberData>): MemberData => (
   status: baseData.status || 'active'
 });
 
+export default MemberData; 
+
 export type {
   MemberApplyFieldFilters, MemberAttachment, MemberBaseParams, MemberData, MemberEntity, MemberExcludedFields,
   MemberIncludedFields, MemberK,
@@ -169,3 +173,4 @@ export type {
   export {
     createDefaultMemberData, emptyMemberData
   };
+

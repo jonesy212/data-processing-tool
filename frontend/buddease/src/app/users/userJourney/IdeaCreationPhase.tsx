@@ -1,7 +1,7 @@
 import React from 'react';
 import { setCurrentPhase } from '@/app/hooks/phaseHooks/EnhancePhase';
 import { PhaseHookConfig } from '@/app/hooks/phaseHooks/PhaseHooks';
-import { Phase, PhaseData, PhaseMeta  } from '@/app/components/phases/Phase';
+import { Phase, PhaseData, PhaseMeta  } from '@/app/models/phases/Phase';;
 
 export enum IdeaCreationPhaseEnum {
   CREATE_IDEA,

@@ -8,7 +8,7 @@
 interface DocumentPhase<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
   name?: string;
@@ -24,7 +24,7 @@ interface DocumentPhase<
   copyright?: string;
   license?: string;
   links?: string[];
-  tags?: TagsRecord<T, K, Meta, ExcludedFields> | string[];
+  tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| string[];
   phaseType: ProjectPhaseTypeEnum;
   customProp1: string;
   customProp2: number;

@@ -8,7 +8,7 @@ import {
     useNotification,
 } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { Project, ProjectData } from "@/app/projects/Project";
+import { Project, ProjectData } from '@/app/models/projects/Project';
 import { AxiosError, AxiosResponse } from "axios";
 import { observable, runInAction } from "mobx";
 import { handleApiError } from '@/app/api/ApiLogs';
@@ -30,7 +30,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.CREATE_PROJECT_SUCCESS,
         {},
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
       return response.data;
     } catch (error) {
@@ -40,7 +40,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.CREATE_PROJECT_ERROR,
         "Create Project Error",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -69,7 +69,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.INVITE_MEMBER_SUCCESS,
         "Invite Member Success",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to invite member");
@@ -83,7 +83,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.INVITE_MEMBER_ERROR,
         "Invite Member Error",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
 
       throw error;
@@ -106,7 +106,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.FETCH_PROJECT_DETAILS_SUCCESS,
         "Fetch Project Details Success",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
       return response.data;
     } catch (error) {
@@ -121,7 +121,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.FETCH_PROJECT_DETAILS_ERROR,
         "Fetch Project Details Error",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -141,7 +141,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.DELETE_PROJECT_SUCCESS,
         "Delete Project Success",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to delete project");
@@ -150,7 +150,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.DELETE_PROJECT_ERROR,
         "Delete Project Error",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -175,7 +175,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_SUCCESS,
         "Update Project Success",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
       return response;
     } catch (error) {
@@ -186,7 +186,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_ERROR,
         "Update Project Error",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -212,7 +212,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_SUCCESS,
         "Add Team Member Success",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to add team member");
@@ -221,7 +221,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_ERROR,
         "Add Team Member Error",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -246,7 +246,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_SUCCESS,
         "Remove Team Member Success",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       handleApiError(
@@ -258,7 +258,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_ERROR,
         "Remove Team Member Error",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -274,7 +274,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_SUCCESS,
         "Assign Task Success",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
 
@@ -284,7 +284,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_ERROR,
         "Assign Task Error",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -311,7 +311,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_SUCCESS,
         "Update Meeting Success",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
       return response.data;
     } catch (error) {
@@ -322,7 +322,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_ERROR,
         "Update Meeting Error",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -339,7 +339,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.DELETE_MEETING_SUCCESS,
         "Delete Meeting Success",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       handleApiError(error as AxiosError<unknown>, "Failed to delete meeting");
@@ -348,7 +348,7 @@ export const projectOwnerApiService = observable({
         NOTIFICATION_MESSAGES.ProjectOwner.DELETE_MEETING_ERROR,
         "Delete Meeting Error",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }

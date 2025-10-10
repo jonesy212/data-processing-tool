@@ -35,7 +35,7 @@ import { ModifiedDate } from "./DocType";
 import DocumentBuilder, { DocumentData } from "@/app/documents/editing/DocumentBuilder"; // Import the DocumentBuilder component
 import { DocumentOptions, getDocumentPhase } from "./DocumentOptions";
 
-const DocumentEditor = ({ documentId }: { documentId: DocumentData<T, K, Meta, ExcludedFields>["id"] }) => {
+const DocumentEditor = ({ documentId }: { documentId: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"] }) => {
   const dispatch = useDispatch();
   const [componentName, setComponentName] = useState("");
   const { editorState, handleEditorStateChange } = useEditorState(browserCheckStore, snapshotStore); // Use the useEditorState hook
@@ -171,8 +171,8 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
           customProp2: 0,
         }}
         buildDocument={async (
-          documentData: DocumentData<T, K, Meta, ExcludedFields>,
-          document: DocumentObject<T, K, Meta, ExcludedFields>,
+          documentData: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+          document: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           documentType: DocumentTypeEnum
         ) => {
           try {
@@ -512,7 +512,7 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
               timestamp: undefined
             }
           }),
-          metadata: {} as UnifiedMetadata<T, K, Meta, ExcludedFields>,
+          metadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           userIdea: "",
           size: DocumentSize.Letter,
           animations: { type: "slide", duration: 500 },
@@ -557,7 +557,7 @@ const handleOnChange = (phase: ProjectPhaseTypeEnum) => {
           html: "html",
           colorCoding: {} as Record<string, string>,
           customSettings: {},
-          documents: [] as DocumentData<T, K, Meta, ExcludedFields>[],
+          documents: [] as DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
           includeType: "all",
           includeTitle: true,
           includeContent: true,

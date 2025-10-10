@@ -1,29 +1,29 @@
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { StatusType } from "@/app/models/data/StatusType";
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
+import { SnapshotsArray, SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotItem } from "@/app/snapshots/SnapshotList";
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { isSnapshot } from '@/app/utils/snapshotUtils';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
-import { SnapshotsArray } from '@/snapshots/LocalStorageSnapshotStore';
-import { SnapshotUnion } from '@/LocalStorageSnapshotStore';
-import { SnapshotItem } from "./SnapshotList";
-import SnapshotStore from '@/app/snapshots/SnapshpshotStore';
 
 export function addDataSnapshot<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(this: SnapshotStore<T, K, Meta, ExcludedFields>, data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
   // Ensure dataStoreMethods is defined and has the addData method
   this.dataStoreMethods?.addData(data);
 
   // Ensure data.id is a number before passing to addDataStatus
-  const idAsNumber =
-    typeof data.id === "string" ? parseInt(data.id, 10) : data.id;
+  const idAsNumber = typeof data.id === "string" ? parseInt(data.id, 10) : data.id;
 
   // Add a check to handle NaN cases if needed
-  if (!isNaN(idAsNumber)) {
+  if (typeof idAsNumber === "number" && !isNaN(idAsNumber)) {
     this.dataStoreMethods?.addDataStatus(idAsNumber, StatusType.Pending);
   } else {
     console.error("Invalid ID: Not a number");
@@ -31,13 +31,15 @@ export function addDataSnapshot<
 }
 
 export function getData<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   id: number | string,
-  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   const snapshot = snapshotStore.getSnapshot(id); // Assuming this returns Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   
@@ -52,11 +54,13 @@ export function getData<
 }
 
 export function removeData<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(this: SnapshotStore<T, K, Meta, ExcludedFields>, id: number): void {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, id: number): void {
   if (this.dataStoreMethods?.removeData) {
     return this.dataStoreMethods.removeData(id);
   }
@@ -64,11 +68,13 @@ export function removeData<
 }
 
 export function updateData<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(this: SnapshotStore<T, K, Meta, ExcludedFields>, id: number, newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, id: number, newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
   if (this.dataStoreMethods?.updateData) {
     return this.dataStoreMethods.updateData(id, newData);
   }
@@ -76,11 +82,13 @@ export function updateData<
 }
 
 export function updateDataTitle<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(this: SnapshotStore<T, K, Meta, ExcludedFields>, id: number, title: string): void {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, id: number, title: string): void {
   if (this.dataStoreMethods?.updateDataTitle) {
     return this.dataStoreMethods.updateDataTitle(id, title);
   }
@@ -88,11 +96,13 @@ export function updateDataTitle<
 }
 
 export function updateDataDescription<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(this: SnapshotStore<T, K, Meta, ExcludedFields>, id: number, description: string): void {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, id: number, description: string): void {
   if (this.dataStoreMethods?.updateDataDescription) {
     return this.dataStoreMethods.updateDataDescription(id, description);
   }
@@ -100,11 +110,13 @@ export function updateDataDescription<
 }
 
 export function updateDataStatus<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(this: SnapshotStore<T, K, Meta, ExcludedFields>, id: number, status: StatusType | undefined): void {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, id: number, status: StatusType | undefined): void {
   if (this.dataStoreMethods?.updateDataStatus) {
     return this.dataStoreMethods.updateDataStatus(id, status);
   }
@@ -112,11 +124,13 @@ export function updateDataStatus<
 }
 
 export function addDataSuccess<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(this: SnapshotStore<T, K, Meta, ExcludedFields>, payload: { data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }): void {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: { data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }): void {
   if (this.dataStoreMethods?.addDataSuccess) {
     return this.dataStoreMethods.addDataSuccess(payload);
   }
@@ -124,11 +138,13 @@ export function addDataSuccess<
 }
 
 export function addDataStatus<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(this: SnapshotStore<T, K, Meta, ExcludedFields>, id: number, status: StatusType | undefined): void {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, id: number, status: StatusType | undefined): void {
   if (this.dataStoreMethods?.addDataStatus) {
     return this.dataStoreMethods.addDataStatus(id, status);
   }
@@ -136,15 +152,15 @@ export function addDataStatus<
 }
 
 
-
-
 // dataMethods.ts
 export function setData<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(this: SnapshotStore<T, K, Meta, ExcludedFields>, id: string, data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): void {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, id: string, data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): void {
   try {
     if (!this.dataStore) {
       throw new Error("Data store is not initialized");
@@ -176,11 +192,13 @@ export function setData<
 
 
 export function addDataPartial<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(this: SnapshotStore<T, K, Meta, ExcludedFields>, id: string, data: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): void {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, id: string, data: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): void {
   try {
     if (!this.dataStore) {
       throw new Error("Data store is not initialized");
@@ -215,13 +233,13 @@ export function addDataPartial<
     // Update snapshot items if they exist
     if (this.snapshotItems) {
       const itemIndex = this.snapshotItems.findIndex(item => 
-        (item as SnapshotItem<T, K, Meta, ExcludedFields>).id === id
+        (item as SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>).id === id
       );
       if (itemIndex !== -1) {
         this.snapshotItems[itemIndex] = {
           ...this.snapshotItems[itemIndex],
           snapshot: mergedSnapshot
-        } as SnapshotItem<T, K, Meta, ExcludedFields>;
+        } as SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       }
     }
 
@@ -240,25 +258,25 @@ export function addDataPartial<
 
 
 
-
-
 export function getAllKeys<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   storeId: number,
   snapshotId: string,
-  category: Category | undefined,
   categoryProperties: CategoryProperties | undefined,
   snapshot: Snapshot<SnapshotUnion<T, K, Meta>, T> | null,
   timestamp: string | number | Date | undefined,
   type: string,
-  event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+  event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   id: number,
   snapshotStore: SnapshotStore<SnapshotUnion<T, K, Meta>, T, Meta, ExcludedFields>,
-  data: T
+  data: T,
+  category?: Category
 ): Promise<string[] | undefined> {
   try {
     const keys: string[] = [];
@@ -290,10 +308,12 @@ export function getAllKeys<
 }
 
 export function getAllValues<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   const values: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = [];
   
@@ -303,10 +323,12 @@ export function getAllValues<
 }
 
 export async function getAllItems<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> {
   try {
     const items: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
@@ -333,10 +355,12 @@ export async function getAllItems<
 }
 
 export function getSnapshotEntries<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshotId: string
 ): Map<string, T> | undefined {

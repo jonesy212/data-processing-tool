@@ -43,7 +43,7 @@ export type UserConfigData<
   UserConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   
   
-type Meta<T extends BaseDataEntity, K extends T> = StructuredMetadata<T, K>;
+type Meta<T extends BaseDataEntity, K extends T> = StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 type ConvertMeta<
   U extends BaseDataEntity,
@@ -1302,7 +1302,7 @@ const dataStoreMethods = <
     }: {
       storeId: number;
       snapshotId: string;
-      category?: symbol | string | Category;
+      category?: Category;
       timestamp?: string | number | Date;
       type: string;
       event: Event;
@@ -1336,7 +1336,7 @@ const dataStoreMethods = <
     getAllItems: async (
       storeId: number,
       snapshotId: string,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       snapshot: SnapshotUnion<T, K, Meta> | null,
       timestamp: string | number | Date | undefined,
@@ -1739,7 +1739,7 @@ const dataStoreMethods = <
         | Promise<{
           snapshotId: number;
           snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-          category: Category | undefined;
+          category?: Category;
           categoryProperties: CategoryProperties | undefined;
           dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
           timestamp: string | number | Date | undefined;
@@ -1760,7 +1760,7 @@ const dataStoreMethods = <
     },
 
     getSnapshotWithCriteria: function (
-      category: Category | undefined, timestamp: any,
+      category?: Category, timestamp: any,
       id: number,
       snapshot: Snapshot<BaseDataEntity, any>,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -1772,7 +1772,7 @@ const dataStoreMethods = <
     },
 
     getSnapshotVersions: function (
-      category: Category | undefined, timestamp: any,
+      category?: Category, timestamp: any,
       id: number,
       snapshot: Snapshot<BaseData, any>,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -1783,7 +1783,7 @@ const dataStoreMethods = <
       })
     },
     getSnapshotWithCriteriaVersions: function (
-      category: Category | undefined,
+      category?: Category,
       timestamp: any,
       id: number,
       snapshot: Snapshot<BaseData, any>,
@@ -1815,7 +1815,7 @@ const dataStoreMethods = <
     mapSnapshots: (
       storeIds: number[],
       snapshotId: string,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       timestamp: string | number | Date | undefined,
@@ -1827,7 +1827,7 @@ const dataStoreMethods = <
       callback: (
         storeIds: number[],
         snapshotId: string,
-        category: Category | undefined,
+        category?: Category,
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         timestamp: string | number | Date | undefined,
         type: string,
@@ -1912,7 +1912,7 @@ const dataStoreMethods = <
     mapSnapshotStore: (
       storeId: number,
       snapshotId: string,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<any, any>,
       timestamp: string | number | Date | undefined,

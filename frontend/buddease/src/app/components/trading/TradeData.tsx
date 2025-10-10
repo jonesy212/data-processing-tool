@@ -50,7 +50,7 @@ interface TradeDataProps<
 }
 
 // Ensure TradeDataWithCommon does not cause recursion
-type TradeDataWithCommon = CommonData<T, K, Meta, ExcludedFields> & TradeData;
+type TradeDataWithCommon = CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & TradeData;
 
 
 

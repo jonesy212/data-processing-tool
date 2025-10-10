@@ -1,5 +1,5 @@
 import { ExchangeActions } from "@/app/actions/ExchangeActions";
-import { ExchangeData } from "@/app/components/models/data/ExchangeData";
+import { ExchangeData } from "@/app/models/data/ExchangeData";
 import useRealtimeData from "@/app/hooks/commHooks/useRealtimeData";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { fetchDEXData } from "@/app/models/data/fetchExchangeData";
@@ -34,18 +34,22 @@ interface BaseRealtimeData<
   // Add other common properties shared by RealtimeDataItem and RealtimeData here
 }
 
-interface RealtimeData<
+
+export interface RealtimeData<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends BaseRealtimeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  eventId: string;
-  userId: string;
-  dispatch: (action: any) => void;
-  // Define other properties specific to RealtimeData here
+> {
+  id: string;
+  data: T;
+  metadata: Meta;
+  attachments?: AttachmentType[];
+  lastUpdated: Date;
+  version: number;
+  subscribers: Set<RealtimeUpdateCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 }
 
 interface RealtimeDataItem<
@@ -58,7 +62,7 @@ interface RealtimeDataItem<
 > extends 
   EventData, 
   BaseRealtimeData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-  SharedMetadata<T, K, Meta, AttachmentType> {
+  SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
  
   title?: string;
   userId: string;
@@ -111,8 +115,8 @@ const updateCallback = <
   id: string,
   events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
-  data?: InitializedData<T, K, Meta, ExcludedFields> | null,
+  dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
 ): void => {
   const exchangeData: ExchangeData[] = [];
   const dexData: any[] = [];

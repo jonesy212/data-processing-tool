@@ -1,0 +1,11 @@
+// userRolesNFTConfig.ts
+import { UserRolesNFTEndpoints } from '../types/categories/UserRolesNFTEndpoints';
+import { BASE_URL } from './baseUrl';
+
+export const userRolesNFTConfig: UserRolesNFTEndpoints = {
+  list: { path: `${BASE_URL}/api/user-roles-nft`, method: "GET" },
+  single: (roleId: number) => ({ path: `${BASE_URL}/api/user-roles-nft/${roleId}`, method: "GET" }),
+  add: { path: `${BASE_URL}/api/user-roles-nft`, method: "POST" },
+  remove: (roleId: number) => ({ path: `${BASE_URL}/api/user-roles-nft/${roleId}`, method: "DELETE" }),
+  update: (roleId: number) => ({ path: `${BASE_URL}/api/user-roles-nft/${roleId}`, method: "PUT" }),
+};

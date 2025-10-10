@@ -20,10 +20,10 @@
 //     snapshotId: string | null,
 //     snapshot: SnapshotWithCriteria<any, BaseData> | null,
 //     snapshotData: SnapshotDataWithCriteria<any, BaseData>,
-//     category: Category | undefined,//     callback: (snapshot: SnapshotWithCriteria<any, BaseData>) => void,
+//     category?: Category,//     callback: (snapshot: SnapshotWithCriteria<any, BaseData>) => void,
 //     snapshots: Snapshots<Data>,
 //     type: string,
-//     event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+//     event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //     snapshotContainer?: SnapshotWithCriteria<any, BaseData>,
 //     snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Data>,
 //   ): Promise<{ snapshot: SnapshotWithCriteria<any, BaseData> }> => {
@@ -54,7 +54,7 @@
 //     id: string,
 //     snapshotId: string | null,
 //     snapshotData: SnapshotData<SnapshotWithCriteria<BaseData, any>, Data> | null,
-//     category: Category | undefined,//     categoryProperties: CategoryProperties | undefined,
+//     category?: Category,//     categoryProperties: CategoryProperties | undefined,
 //     callback: (snapshotData: SnapshotData<SnapshotWithCriteria<any, BaseData>, Data>) => void,
 //     snapshotContainer?: Snapshot<SnapshotWithCriteria<any, BaseData>, Data> | null,
 //     snapshotStoreConfigData?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, Data>
@@ -142,7 +142,7 @@
 //   configureSnapshotStore: (snapshot) => {},
 //   createSnapshotSuccess: () => {},
 //   createSnapshotFailure: (    snapshotId: string,
-//     snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>,
+//     snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //     payload: { error: Error }
 //   ) => {

@@ -366,7 +366,7 @@ class SnapshotApiService {
 
   private enhanceSnapshotWithMetadata<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, AttachmentType extends Attachment = Attachment, ExcludedFields extends keyof T = DefaultExcludedFields<T>, IncludedFields extends keyof T = keyof T>(
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    meta: Partial<StructuredMetadata<T, K>>,
+    meta: Partial<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {}
   ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     const timestamp = new Date().toISOString();

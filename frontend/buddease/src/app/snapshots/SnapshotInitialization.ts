@@ -11,7 +11,7 @@ interface SnapshotInitialization<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T  
 > {
-  initialState: InitializedState<T, K, Meta, ExcludedFields> | {};
+  initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
   initialConfig: InitializedConfig | {};
   onInitialize: (callback: () => void) => void;
 }

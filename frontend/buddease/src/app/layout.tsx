@@ -17,11 +17,11 @@ import { createLastUpdatedWithVersion, createLatestVersion } from "./versions/cr
 
 const area = fetchUserAreaDimensions().toString()
 const metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<BaseData<any>>(area);
-const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
 
-const { snapshotMap } = useSnapshot<T, K, StructuredMetadata<T, K>, keyof T>();
+const { snapshotMap } = useSnapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>();
 
-const mappedSnapshot: Map<string, Snapshot<T, K, StructuredMetadata<T, K>, keyof T>> = snapshotMap;
+const mappedSnapshot: Map<string, Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>> = snapshotMap;
 
 export const defaultMetadata = <
   T extends BaseDataEntity,
@@ -40,7 +40,7 @@ export const defaultMetadata = <
   structuredMetadata: {
     version: version,
     lastUpdated: createLastUpdatedWithVersion(),
-    latestVersion: createLatestVersion<T, K>(),
+    latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     isActive: true,
     config: {},
    
@@ -70,7 +70,7 @@ export const defaultMetadata = <
         permissions: [],
         customFields: {},
         versionData: [],
-        latestVersion: createLatestVersion<T, K>(),
+        latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
         id: "",
         apiEndpoint: "",
         apiKey: undefined,
@@ -90,7 +90,7 @@ export const defaultMetadata = <
       metadataEntries: {}
     },
     initialState: undefined,
-    meta: {} as StructuredMetadata<T, K>,
+    meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     mappedSnapshot: new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(),
     events: {} as EventManager<T, K>,
   },
@@ -156,7 +156,7 @@ export const videoMetadataExample: UnifiedMetadata<
     tags: [],
     initialState: undefined,
     lastUpdated: createLastUpdatedWithVersion(),
-    latestVersion: createLatestVersion<T, K>(),
+    latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     isActive: true, 
     config:  {},
     version: null, 
@@ -222,7 +222,7 @@ export const videoMetadataExample: UnifiedMetadata<
     metadata: null, 
     childIds: [], 
     relatedData: [],
-    data: {} as Data<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K>>,
+    data: {} as Data<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     colorSpace: 'sRGB',
     audioCodec: 'AAC',
     audioChannels: 2,

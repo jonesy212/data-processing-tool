@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 // Utility hooks for handling metadata
 export const usePhaseMeta = <T extends BaseData<any>, K extends T = T>(
   area: string | undefined, 
-  initialPhaseMetadata: Partial<StructuredMetadata<T, K>> = {}
+  initialPhaseMetadata: Partial<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {}
 ) => {
   // Use `useMeta` hook to manage metadata
   const { metadata, setMetadata, updateMetadata } = useMeta<T, K>({

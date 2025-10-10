@@ -6,7 +6,7 @@
 // function convertSnapshotToItem<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
 //   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //   id: string
-// ): SnapshotItem<T, K, Meta, ExcludedFields> {
+// ): SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 //   return {
 //     id,
 //     user: snapshot.user,

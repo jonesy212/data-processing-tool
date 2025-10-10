@@ -79,7 +79,7 @@ type SearchNotesResponse = {
 interface Note<
   T extends  BaseData<any>, 
   K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
   id: number;
   title: string;
   content: string;
@@ -105,7 +105,7 @@ interface Note<
   encryption: Encryption;
   currentMetadata: StructuredMetadata<any, any>;
   searchHistory: SearchHistory[];
-  version: Version<T, K>;
+  version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   // Add more properties as needed
 }
 

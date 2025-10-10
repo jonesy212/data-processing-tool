@@ -4,12 +4,12 @@ import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 // Define a new type for DetailsItem with optional properties
-type DetailsItemCommon<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> = DetailsItem<Partial<AllProperties<T, K>>>;
+type DetailsItemCommon<T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> = DetailsItem<Partial<AllProperties<T, K>>>;
 
 interface ListGeneratorProps<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > {
   items: DetailsItemCommon<T, K>[]; // Use DetailsItemCommon type
   onItemClick?: (contentItemId: DetailsItemCommon<T, K>, tracker: K) => void; // Accept both contentItemId and tracker (K instead of U)
@@ -18,7 +18,7 @@ interface ListGeneratorProps<
 const ListGenerator = <
   T extends BaseData<any>, 
 K extends T = T, 
-Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >({
   items,
   onItemClick,

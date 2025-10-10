@@ -127,7 +127,7 @@ const notifyEventSystem = <
   storeProps?: SnapshotStoreProps<T, K>
 ) => {
   const area = fetchUserAreaDimensions().toString()
-  const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+  const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
   const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area)
   // Logic to notify the event system
   console.log(`Event '${eventType}' occurred from ${source}. Data:`, eventData);
@@ -159,7 +159,7 @@ const {
   const notificationData: NotificationData<
     T,
     K,
-    StructuredMetadata<T, K>
+    StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   > = {
     topics: [],
     highlights: [],

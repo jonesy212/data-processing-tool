@@ -26,7 +26,7 @@ interface SnapshotCommonProps<T extends BaseDataEntity,
   dataItems?: T[]; // Define the type based on your data structure
   newData?: T; // Define what type newData should be
   payload?: any; // Specify the type if known
-  store?: SnapshotStore<T, K, Meta, ExcludedFields>; // Optional store to retrieve from
+  store?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Optional store to retrieve from
   callback?: (data: T) => void; // Define the callback type as needed
 }
 
@@ -36,17 +36,17 @@ interface SnapshotConfigProps<T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends SnapshotCommonProps<T, K, Meta, ExcludedFields> {
+> extends SnapshotCommonProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string;
   subscriberId: string;
-  dataStoreMethods: DataStoreMethods<T, K, Meta, ExcludedFields>; // Replace `any` with the appropriate type
-  dataStore: DataStore<T, K, Meta, ExcludedFields>; // Replace `any` with the appropriate type
+  dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Replace `any` with the appropriate type
+  dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Replace `any` with the appropriate type
   metadata: any; // Replace `any` with the appropriate type
   endpointCategory: string; // Adjust the type as necessary
-  storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>; // Replace `any` with the appropriate type
+  storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Replace `any` with the appropriate type
   snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Replace `any` with the appropriate type
   snapshotStoreConfigData: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Replace `any` with the appropriate type
-  snapshotContainer: SnapshotContainer<T, K, Meta, ExcludedFields>; // Replace `any` with the appropriate type
+  snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Replace `any` with the appropriate type
 }
 
 

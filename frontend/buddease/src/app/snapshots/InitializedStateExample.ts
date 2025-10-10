@@ -36,7 +36,7 @@ export function isSnapshotIdentity<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(obj: any): obj is SnapshotIdentity<T, K, Meta, ExcludedFields> {
+>(obj: any): obj is SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return obj && (obj.id !== undefined || obj.snapshotId !== undefined);
 }
 
@@ -82,7 +82,7 @@ const snapshot: Snapshot<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFi
     snapshotId: string,
     snapshotData: SnapshotData<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
     savedState: SnapshotStore<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
-    category: Category | undefined,
+    category?: Category,
     callback: (snapshot: T) => void,
     snapshots: SnapshotsArray<AppEntity, AppK, AppMeta>,
     type: string,

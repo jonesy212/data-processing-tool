@@ -1,6 +1,5 @@
 // validationMethods.ts
 import { CoreSnapshot } from '@/app/snapshots/LocalStorageSnapshotStore';
-
 import { Category } from "@/app/components/libraries/categories/generateCategoryProperties";
 import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData";
 import { SearchCriteria } from "@/app/components/routing/SearchCriteria";
@@ -8,21 +7,28 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config//Ba
 import { SubscriberCollection } from "@/app/users/SubscriberCollection";
 import SnapshotStore from "@/app/snapshotstore";
 import { SnapshotWithCriteriaAsBase } from "@/app/snapshotstoreOptions";
-import { Snapshot } from "..";
+import { Snapshot } from "@/app/snapshot/Snapshot";
 
 // validationMethods.ts
 export const ValidationMethods = {
   // EVENT & HIERARCHY VALIDATION METHODS
   
-  emit: function<T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+  emit: function<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
     event: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
     subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
-    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
-    criteria: SnapshotWithCriteriaAsBase<T, K, Meta, ExcludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    criteria: SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: symbol | string | Category | undefined
   ): void {
     // Validate event parameters
@@ -71,7 +77,14 @@ export const ValidationMethods = {
     
 
     // validationMethods.ts - Add this to the ValidationMethods object
-addChild: function<T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
+addChild: function<
+    T extends BaseDataEntity,
+    K extends T = T,
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(
   parentId: string,
   childId: string,
   childSnapshot: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -137,212 +150,278 @@ addChild: function<T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta
   // This would require knowledge of your hierarchy rules
 },
 
-  removeChild: function<T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
-    childId: string,
-    parentId: string,
-    parentSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): void {
-    if (typeof childId !== 'string' || childId.trim().length === 0) {
-      throw new Error('Child ID must be a non-empty string');
-    }
+    removeChild: function<
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T
+    >(
+      childId: string,
+      parentId: string,
+      parentSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    ): void {
+      if (typeof childId !== 'string' || childId.trim().length === 0) {
+        throw new Error('Child ID must be a non-empty string');
+      }
 
-    if (typeof parentId !== 'string' || parentId.trim().length === 0) {
-      throw new Error('Parent ID must be a non-empty string');
-    }
+      if (typeof parentId !== 'string' || parentId.trim().length === 0) {
+        throw new Error('Parent ID must be a non-empty string');
+      }
 
-    if (!parentSnapshot || typeof parentSnapshot !== 'object') {
-      throw new Error('Parent snapshot must be a valid object');
-    }
+      if (!parentSnapshot || typeof parentSnapshot !== 'object') {
+        throw new Error('Parent snapshot must be a valid object');
+      }
 
-    if (!childSnapshot || typeof childSnapshot !== 'object') {
-      throw new Error('Child snapshot must be a valid object');
-    }
+      if (!childSnapshot || typeof childSnapshot !== 'object') {
+        throw new Error('Child snapshot must be a valid object');
+      }
 
-    // Validate that parent actually has this child
-    if (!parentSnapshot.children || !parentSnapshot.children.includes(childId)) {
-      throw new Error(`Parent does not have child with ID: ${childId}`);
-    }
+      // Validate that parent actually has this child
+      if (!parentSnapshot.children || !parentSnapshot.children.includes(childId)) {
+        throw new Error(`Parent does not have child with ID: ${childId}`);
+      }
 
-    // Validate that child exists and has correct parent reference
-    if (childSnapshot.parentId !== parentId) {
-      throw new Error(`Child parent ID mismatch: expected ${parentId}, got ${childSnapshot.parentId}`);
-    }
-  },
+      // Validate that child exists and has correct parent reference
+      if (childSnapshot.parentId !== parentId) {
+        throw new Error(`Child parent ID mismatch: expected ${parentId}, got ${childSnapshot.parentId}`);
+      }
+    },
 
-  getChildren: function<T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
-    id: string,
-    childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
-    if (typeof id !== 'string' || id.trim().length === 0) {
-      throw new Error('ID must be a non-empty string');
-    }
+    getChildren: function<
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T
+    >(
+      id: string,
+      childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+      if (typeof id !== 'string' || id.trim().length === 0) {
+        throw new Error('ID must be a non-empty string');
+      }
 
-    if (!childSnapshot || typeof childSnapshot !== 'object') {
-      throw new Error('Child snapshot must be a valid object');
-    }
+      if (!childSnapshot || typeof childSnapshot !== 'object') {
+        throw new Error('Child snapshot must be a valid object');
+      }
 
-    // Validate that child snapshot has the correct parent reference
-    if (childSnapshot.parentId !== id) {
-      throw new Error(`Child parent ID mismatch: expected ${id}, got ${childSnapshot.parentId}`);
-    }
+      // Validate that child snapshot has the correct parent reference
+      if (childSnapshot.parentId !== id) {
+        throw new Error(`Child parent ID mismatch: expected ${id}, got ${childSnapshot.parentId}`);
+      }
 
-    return [childSnapshot]; // Return validated child
-  },
+      return [childSnapshot]; // Return validated child
+    },
 
-  hasChildren: function<T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
-    id: string
-  ): boolean {
-    if (typeof id !== 'string' || id.trim().length === 0) {
-      throw new Error('ID must be a non-empty string');
-    }
+    hasChildren: function<
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T
+    >(
+      id: string
+    ): boolean {
+      if (typeof id !== 'string' || id.trim().length === 0) {
+        throw new Error('ID must be a non-empty string');
+      }
 
-    // Additional validation could check if ID exists in the store
-    // For now, just validate the input format
-    return false; // Default implementation
-  },
+      // Additional validation could check if ID exists in the store
+      // For now, just validate the input format
+      return false; // Default implementation
+    },
 
-  isDescendantOf: function<T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
-    childId: string,
-    parentId: string,
-    parentSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): boolean {
-    if (typeof childId !== 'string' || childId.trim().length === 0) {
-      throw new Error('Child ID must be a non-empty string');
-    }
+    isDescendantOf: function<
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T
+    >(
+      childId: string,
+      parentId: string,
+      parentSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    ): boolean {
+      if (typeof childId !== 'string' || childId.trim().length === 0) {
+        throw new Error('Child ID must be a non-empty string');
+      }
 
-    if (typeof parentId !== 'string' || parentId.trim().length === 0) {
-      throw new Error('Parent ID must be a non-empty string');
-    }
+      if (typeof parentId !== 'string' || parentId.trim().length === 0) {
+        throw new Error('Parent ID must be a non-empty string');
+      }
 
-    if (!parentSnapshot || typeof parentSnapshot !== 'object') {
-      throw new Error('Parent snapshot must be a valid object');
-    }
+      if (!parentSnapshot || typeof parentSnapshot !== 'object') {
+        throw new Error('Parent snapshot must be a valid object');
+      }
 
-    if (!childSnapshot || typeof childSnapshot !== 'object') {
-      throw new Error('Child snapshot must be a valid object');
-    }
+      if (!childSnapshot || typeof childSnapshot !== 'object') {
+        throw new Error('Child snapshot must be a valid object');
+      }
 
-    if (childId === parentId) {
-      throw new Error('Child and parent cannot have the same ID');
-    }
+      if (childId === parentId) {
+        throw new Error('Child and parent cannot have the same ID');
+      }
 
-    // Check if child actually points to this parent
-    if (childSnapshot.parentId !== parentId) {
-      return false;
-    }
+      // Check if child actually points to this parent
+      if (childSnapshot.parentId !== parentId) {
+        return false;
+      }
 
-    return true;
-  },
+      return true;
+    },
 
-  getInitialState: function<T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-    // Validate that we can create a valid initial state
-    // This might involve checking default values, required fields, etc.
+    getInitialState: function<
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T
+    >(): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+      // Validate that we can create a valid initial state
+      // This might involve checking default values, required fields, etc.
+      
+      const initialState: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
+        id: 'initial',
+        timestamp: new Date(),
+        data: {} as T,
+        version: '1'
+      };
+
+      // Validate required fields
+      if (!initialState.id) {
+        throw new Error('Initial state must have an ID');
+      }
+
+      if (!initialState.timestamp) {
+        throw new Error('Initial state must have a timestamp');
+      }
+
+      return initialState as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+    },
+
+    getConfigOption: function<
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T
+    >(
+      optionKey: string
+    ): Record<string, any> {
+      if (typeof optionKey !== 'string' || optionKey.trim().length === 0) {
+        throw new Error('Option key must be a non-empty string');
+      }
+
+      // Validate option key format (e.g., no special characters, etc.)
+      if (!/^[a-zA-Z0-9_.-]+$/.test(optionKey)) {
+        throw new Error('Option key contains invalid characters');
+      }
+
+      return {}; // Return empty config by default
+    },
+
+    getTimestamp: function<
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T
+    >(): Date {
+      // Always return current timestamp for validation purposes
+      return new Date();
+    },
+
+    // STORE MANAGEMENT VALIDATION METHODS
     
-    const initialState: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
-      id: 'initial',
-      timestamp: new Date(),
-      data: {} as T,
-      version: '1'
+    findSnapshots: function<
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T
+    >(
+      criteria: SearchCriteria
+    ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+      if (!criteria || typeof criteria !== 'object') {
+        throw new Error('Search criteria must be a valid object');
+      }
+
+      // Validate criteria structure
+      if (criteria.filters && !Array.isArray(criteria.filters)) {
+        throw new Error('Criteria filters must be an array');
+      }
+
+      if (criteria.sortBy && typeof criteria.sortBy !== 'string') {
+        throw new Error('Sort by must be a string');
+      }
+
+      if (criteria.limit !== undefined && (typeof criteria.limit !== 'number' || criteria.limit < 0)) {
+        throw new Error('Limit must be a non-negative number');
+      }
+
+      if (criteria.offset !== undefined && (typeof criteria.offset !== 'number' || criteria.offset < 0)) {
+        throw new Error('Offset must be a non-negative number');
+      }
+
+      return Promise.resolve([]); // Return empty array for validation
+    },
+
+
+    // Add these to ValidationMethods or as helper functions
+  validateHierarchy: function<
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T
+    >(
+    parentId: string,
+    childId: string,
+    parentSnapshot: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
+    maxDepth: number = 10
+  ): void {
+    if (maxDepth <= 0) {
+      throw new Error('Maximum hierarchy depth exceeded - possible circular reference');
+    }
+
+    // Additional hierarchy validation logic can go here
+  },
+
+  validateChildType: function<
+      T extends BaseDataEntity,
+      K extends T = T,
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+      AttachmentType extends Attachment = Attachment,
+      ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+      IncludedFields extends keyof T = keyof T
+    >(
+    parentType: string,
+    childType: string
+  ): void {
+    // Implement your specific type compatibility rules
+    const allowedChildTypes: Record<string, string[]> = {
+      'folder': ['document', 'image', 'folder'],
+      'document': [],
+      'image': [],
+      // Add your specific type hierarchy rules
     };
 
-    // Validate required fields
-    if (!initialState.id) {
-      throw new Error('Initial state must have an ID');
+    if (allowedChildTypes[parentType] && !allowedChildTypes[parentType].includes(childType)) {
+      throw new Error(`Cannot add child of type '${childType}' to parent of type '${parentType}'`);
     }
-
-    if (!initialState.timestamp) {
-      throw new Error('Initial state must have a timestamp');
-    }
-
-    return initialState as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  },
-
-  getConfigOption: function<T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
-    optionKey: string
-  ): Record<string, any> {
-    if (typeof optionKey !== 'string' || optionKey.trim().length === 0) {
-      throw new Error('Option key must be a non-empty string');
-    }
-
-    // Validate option key format (e.g., no special characters, etc.)
-    if (!/^[a-zA-Z0-9_.-]+$/.test(optionKey)) {
-      throw new Error('Option key contains invalid characters');
-    }
-
-    return {}; // Return empty config by default
-  },
-
-  getTimestamp: function<T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(): Date {
-    // Always return current timestamp for validation purposes
-    return new Date();
-  },
-
-  // STORE MANAGEMENT VALIDATION METHODS
-  
-  findSnapshots: function<T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
-    criteria: SearchCriteria
-  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
-    if (!criteria || typeof criteria !== 'object') {
-      throw new Error('Search criteria must be a valid object');
-    }
-
-    // Validate criteria structure
-    if (criteria.filters && !Array.isArray(criteria.filters)) {
-      throw new Error('Criteria filters must be an array');
-    }
-
-    if (criteria.sortBy && typeof criteria.sortBy !== 'string') {
-      throw new Error('Sort by must be a string');
-    }
-
-    if (criteria.limit !== undefined && (typeof criteria.limit !== 'number' || criteria.limit < 0)) {
-      throw new Error('Limit must be a non-negative number');
-    }
-
-    if (criteria.offset !== undefined && (typeof criteria.offset !== 'number' || criteria.offset < 0)) {
-      throw new Error('Offset must be a non-negative number');
-    }
-
-    return Promise.resolve([]); // Return empty array for validation
-  },
-
-
-  // Add these to ValidationMethods or as helper functions
-validateHierarchy: function<T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
-  parentId: string,
-  childId: string,
-  parentSnapshot: CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
-  maxDepth: number = 10
-): void {
-  if (maxDepth <= 0) {
-    throw new Error('Maximum hierarchy depth exceeded - possible circular reference');
   }
-
-  // Additional hierarchy validation logic can go here
-},
-
-validateChildType: function<T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
-  parentType: string,
-  childType: string
-): void {
-  // Implement your specific type compatibility rules
-  const allowedChildTypes: Record<string, string[]> = {
-    'folder': ['document', 'image', 'folder'],
-    'document': [],
-    'image': [],
-    // Add your specific type hierarchy rules
-  };
-
-  if (allowedChildTypes[parentType] && !allowedChildTypes[parentType].includes(childType)) {
-    throw new Error(`Cannot add child of type '${childType}' to parent of type '${parentType}'`);
-  }
-}
-
-
-
-
 };
 
 // Helper function to check if object is a Category

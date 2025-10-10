@@ -244,7 +244,7 @@ const userManagerStore = (): UserStore => {
         `Task ${userId} fetched`,
         NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
 
       // Assuming you have a method to fetch tasks by userId from your data source
@@ -262,7 +262,7 @@ const userManagerStore = (): UserStore => {
             `Error fetching task ${userId}`,
             NOTIFICATION_MESSAGES.OperationSuccess.DEFAULT,
             new Date(),
-            NotificationTypeEnum.OperationSuccess
+            NotificationTypeEnum.OPERATION_SUCCESS
           );
         }, 1000);
       } else {

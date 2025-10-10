@@ -1,18 +1,19 @@
 // ApiDrawing.ts
+import { handleApiError } from '@/app/api/ApiLogs';
 import axiosInstance from "@/app/api/csrfToken";
 import { endpoints } from "@/app/api/endpointConfigurations";
 import headersConfig from "@/app/api/headers/HeadersConfig";
 import {
-    NotificationType,
-    NotificationTypeEnum,
-    useNotification,
+  NotificationType,
+  NotificationTypeEnum,
+  useNotification,
 } from "@/app/context/NotificationContext";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
-import { BaseData } from '@/app/models/data/Data';
 import { YourResponseType } from "@/app/typings/responseTypes";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { AxiosError } from "axios";
-import { handleApiError } from '@/app/api/ApiLogs';
+
+
 
 // Define the API base URL
 const API_BASE_URL = endpoints.drawing; // Accessing property directly
@@ -64,16 +65,20 @@ export const handleDrawingApiErrorAndNotify = (
 
 // Fetch drawing data
 export const fetchDrawing = <
-  T extends BaseData<any> = BaseData<any, any>, 
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(): Promise<YourResponseType<T, K, Meta>> => {
+  T extends BaseDataEntity, 
+  K extends T, 
+  Meta extends DefaultMeta<T, K>, 
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(): Promise<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   // Initialize the useErrorHandling hook
   const { handleError } = useErrorHandling();
 
-  return new Promise<YourResponseType<T, K, Meta>>(async (resolve, reject) => {
+  return new Promise<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(async (resolve, reject) => {
     try {
       const fetchDrawingEndpoint = `${API_BASE_URL}/fetch`; // Adjust the endpoint as needed
-      const response = await axiosInstance.get<YourResponseType<T, K, Meta>>(
+      const response = await axiosInstance.get<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
         fetchDrawingEndpoint,
         {
           headers: headersConfig,
@@ -91,17 +96,20 @@ export const fetchDrawing = <
 
 // Fetch drawing data by ID
 export const fetchDrawingById = <
-  T extends BaseData<any> = BaseData<any, any>, 
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
->(drawingId: number): Promise<YourResponseType<T, K, Meta>> => {
+  T extends BaseDataEntity, 
+  K extends T, 
+  Meta extends DefaultMeta<T, K>, 
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(drawingId: number): Promise<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   // Initialize the useErrorHandling hook
   const { handleError } = useErrorHandling();
 
-  return new Promise<YourResponseType<T, K, Meta>>(async (resolve, reject) => {
+  return new Promise<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(async (resolve, reject) => {
     try {
       const fetchDrawingByIdEndpoint = `${API_BASE_URL}/fetch/${drawingId}`;
-      const response = await axiosInstance.get<YourResponseType<T, K, Meta>>(
+      const response = await axiosInstance.get<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
         fetchDrawingByIdEndpoint,
         {
           headers: headersConfig

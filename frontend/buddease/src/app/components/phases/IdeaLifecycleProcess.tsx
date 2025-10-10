@@ -57,7 +57,7 @@ const IdeaLifecycleProcess: React.FC = () => {
         "Idea has been successfully created",
         "success",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       console.error("Error creating idea:", error);
@@ -66,7 +66,7 @@ const IdeaLifecycleProcess: React.FC = () => {
         "Error creating idea",
         "error",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
     }
   };
@@ -85,7 +85,7 @@ const IdeaLifecycleProcess: React.FC = () => {
         "Your idea has been successfully confirmed",
         "IdeaConfirmationSuccess",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
 
       // Perform additional actions as needed, such as updating the UI or navigating to a different page
@@ -97,7 +97,7 @@ const IdeaLifecycleProcess: React.FC = () => {
         "There was an error confirming your idea, please try again",
         "IdeaConfirmationError",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
     }
   };

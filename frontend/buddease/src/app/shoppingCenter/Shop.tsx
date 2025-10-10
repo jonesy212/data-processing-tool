@@ -1,5 +1,5 @@
 import React from 'react';
-import ShoppingCenterConfig from '@/ShoppingCenterConfig'; // Import the ShoppingCenterConfig interface
+import ShoppingCenterConfig from '@/app/ShoppingCenterConfig'; // Import the ShoppingCenterConfig interface
 
 const MarketplacePage: React.FC<{ shoppingCenterConfig: ShoppingCenterConfig }> = ({ shoppingCenterConfig }) => {
   // Dummy data representing premium draggable divs available in the marketplace

@@ -1,11 +1,11 @@
-import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { makeAutoObservable } from "mobx";
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { isBrowser } from "@/app/utils/isBrowser"; // Import the isBrowser utility
 import BrowserBehaviorManager, { BrowserBehaviorConfig } from "@/app/BrowserBehaviorManager";
 import { RootStores } from "./RootStores";
-import { SubscriberCollection } from '@/app/components/users/SubscriberCollection';
-import { Subscriber } from '@/app/components/users/Subscriber';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
+import { Subscriber } from '@/app/users/Subscriber';
 
 class BrowserCheckStore {
   rootStores?: RootStores;
@@ -13,15 +13,15 @@ class BrowserCheckStore {
   state: Record<string, any> = {}; // State object to hold dynamic data
   browserBehaviorManager: BrowserBehaviorManager;
   private snapshotId: string;      // Private property for snapshotId
-  private subscribers: SubscriberCollection<any, any>; // Private property for subscribers (using a Set to avoid duplicates)
+  private subscribers: SubscriberCollection<any, any, any, any, any, any>; // Private property for subscribers (using a Set to avoid duplicates)
 
   constructor(
     snapshotId: string, 
     rootStores: RootStores, 
     dispatch: any,
     browserConfig: BrowserBehaviorConfig,
-    subscribers: Subscriber<any, any>[] | Record<string, Subscriber<any, any>[]> = [], // Default empty array if no subscribers are passed  
-    private snapshotStore?: SnapshotStore<any, any>
+    subscribers: Subscriber<any, any, any, any, any, any>[] | Record<string, Subscriber<any, any, any, any, any, any>[]> = [], // Default empty array if no subscribers are passed  
+    private snapshotStore?: SnapshotStore<any, any, any, any, any, any>
 
   ) {
     this.rootStores = rootStores;

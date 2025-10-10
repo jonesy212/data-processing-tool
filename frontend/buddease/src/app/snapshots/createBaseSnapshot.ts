@@ -5,7 +5,7 @@ import { Version } from '@/app/versions/Version';
 import { BaseDataRoot } from "@/config/BaseConfig";
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
-import { SnapshotStoreMethod } from "@/app/snapshots/SnapshotStoreMethod";
+import { SnapshotStoreMethods } from "@/app/snapshots/SnapshotStoreMethods";
 
 interface BaseSnapshotProps<
   T extends BaseDataEntity,
@@ -18,15 +18,15 @@ interface BaseSnapshotProps<
   id: string;
   baseId: string;
   baseConfig: Partial<SnapshotStoreConfig<T>>;
-  version?: string | Version<T, K, Meta, ExcludedFields>;
+  version?: string | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   // Any other shared properties
-  meta: StructuredMetadata<T, K>;
+  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
   convertKeyToT: (key: string) => T;
   dataStoreConfig: Record<string, any>;
   initializeState?: (id: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
-  snapshotMethods: SnapshotStoreMethods<T, K, Meta, ExcludedFields>[];
+  snapshotMethods: SnapshotStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   subscribers: string;
   [key: string]: any;
   // Additional shared properties and methods

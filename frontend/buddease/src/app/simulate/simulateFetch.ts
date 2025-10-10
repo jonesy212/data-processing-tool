@@ -7,7 +7,7 @@ import { SnapshotData } from '@/app/snapshots/SnapshotData';
 async function simulateFetch<
   T extends SnapshotData<BaseData<any>>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
 >(
     snapshotId: string,
     queryParams: Record<string, any>

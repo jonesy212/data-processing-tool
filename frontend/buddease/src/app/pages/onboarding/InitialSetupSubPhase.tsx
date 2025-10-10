@@ -57,7 +57,7 @@ const InitialSetupSubPhase: React.FC<InitialSetupSubPhaseProps> = ({ onSubmit, u
             "ValidationSubmitError",
             error.errorMessage || `Something happened causing an error when trying to submit your information. Please try again and advise the ${appName} team if the problem persists.`,
             new Date(),
-            NotificationTypeEnum.OperationError
+            NotificationTypeEnum.OPERATION_ERROR
           );
         });
         return; // Stop further execution if there are validation errors
@@ -68,7 +68,7 @@ const InitialSetupSubPhase: React.FC<InitialSetupSubPhaseProps> = ({ onSubmit, u
     } catch (error) {
       // Handle errors in a user-friendly way
       const errorMessage = error instanceof AxiosError ? error.response?.data.message : "An unexpected error occurred.";
-      notify("SubmissionError", errorMessage, new Date(), NotificationTypeEnum.OperationError);
+      notify("SubmissionError", errorMessage, new Date(), NotificationTypeEnum.OPERATION_ERROR);
       console.error("Submission error:", error);
     }
   };

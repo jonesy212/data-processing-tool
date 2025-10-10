@@ -1,0 +1,11 @@
+// registrationConfig.ts
+import { RegistrationEndpoints } from '../types/categories/RegistrationEndpoints';
+import { BASE_URL } from './baseUrl';
+
+export const registrationConfig: RegistrationEndpoints = {
+  registerUser: { path: `${BASE_URL}/api/users/register`, method: "POST" },
+  updateUserProfile: (userId: number) => ({ path: `${BASE_URL}/api/users/${userId}/update`, method: "PUT" }),
+  deleteUserAccount: (userId: number) => ({ path: `${BASE_URL}/api/users/${userId}/delete`, method: "DELETE" }),
+  getUserDetails: (userId: number) => ({ path: `${BASE_URL}/api/users/${userId}`, method: "GET" }),
+  listUsers: { path: `${BASE_URL}/api/users`, method: "GET" },
+};

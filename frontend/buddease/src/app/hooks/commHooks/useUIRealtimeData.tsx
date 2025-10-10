@@ -266,7 +266,14 @@ const handleTokenActions = (action: TokenActionTypes) => {
 
 
 
-const useUIRealtimeData = <T extends  BaseData<any>, K extends T = T>(
+const useUIRealtimeData = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   initialData: RealtimeDataItem[],
   updateCallback: (events: Record<string, CalendarEvent<T, K>[]>,
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, dataItems: RealtimeDataItem[],
@@ -333,7 +340,7 @@ const useUIRealtimeData = <T extends  BaseData<any>, K extends T = T>(
       'updateData',
       (
         data: any,
-        events: Record<string, CalendarEvent<T, K>[]>,
+        events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         dataItems: RealtimeDataItem[]
       ) => {

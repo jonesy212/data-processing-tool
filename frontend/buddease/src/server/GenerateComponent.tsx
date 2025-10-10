@@ -15,7 +15,7 @@ import { CategoryProperties, dataVisualizationProperties } from '@/app/pages/per
 import { allCategories, AllCategoryValues } from "@/app/models/data/DataStructureCategories";
 import { DocumentSize } from "@/app/models/data/StatusType";
 import { ProgressPhase } from '@/app/models/tracker/ProgressBar';
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import { Label } from '@/app/branding/BrandingSettings';
 import { generateValidationRulesCode } from "@/server/security/validationRulesCode";
 import { Snapshot } from '@/app/snapshots/Snapshot';
@@ -330,7 +330,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
         id: "1",
         documentSize: DocumentSize.A4,
         versionData: {} as VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-        version: {} as Version<T, K>,
+        version: {} as Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         visibility: "public",
         _id: "1",
         permissions: docPermissions,
@@ -445,7 +445,7 @@ async function createUserScenarios(props: any, type: PersonaTypeEnum, reactCode:
           undefined, // initialState: initial state of the metadata, can be undefined
           {} as Map<string, Snapshot<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never, StructuredMetadata<UserData<BaseData<any, any, StructuredMetadata<any, any>>, never>, never>, never>>, // meta: additional metadata, can be an empty array if not needed
           { eventRecords: {} }, // events: event manager data, initializing with an empty event record
-          {} as Version<T, K>, // version: version information, can be undefined if not applicable
+          {} as Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // version: version information, can be undefined if not applicable
           {} as VersionHistory, // lastUpdated: last updated version history, it should be provided
           true, // isActive: boolean flag indicating whether metadata is active or not
           {}, // config: configuration settings for the metadata, using an empty object

@@ -1,6 +1,6 @@
 // Filter.tsx
 import React, { useState } from 'react';
-import { SortingOption } from '@/SearchOptions';
+import { SortingOption } from '@/app/pages/searches/SearchOptions';
 
 interface Filter {
   label: string;

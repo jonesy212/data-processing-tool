@@ -39,7 +39,7 @@ const EnhancedVideoControlToolbar = () => {
         "Video recording disabled successfully",
         NOTIFICATION_MESSAGES.Video.DISABLE_VIDEO_SUCCESS,
         new Date(),
-        NotificationTypeEnum.OperationSuccess,
+        NotificationTypeEnum.OPERATION_SUCCESS,
         // NotificationType.Success
       );
     } else {
@@ -57,7 +57,7 @@ const EnhancedVideoControlToolbar = () => {
         "Video recording enabled successfully",
         NOTIFICATION_MESSAGES.Video.ENABLE_VIDEO_SUCCESS,
         new Date(),
-        NotificationTypeEnum.OperationError,
+        NotificationTypeEnum.OPERATION_ERROR,
       );
     }
   };

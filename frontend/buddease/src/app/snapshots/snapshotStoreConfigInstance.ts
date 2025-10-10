@@ -33,7 +33,7 @@ import { Subscription } from 'react-redux';
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { Snapshots, SnapshotsArray, SnapshotUnion, } from "./LocalStorageSnapshotStore";
 import { TransformMethods } from "./methods/transformMethods";
-import { Snapshot, snapshotConfig } from "./Snapshot";
+import { Snapshot, snapshotConfig } from '@/app/snapshots/Snapshot';
 import { SnapshotContainer } from "./SnapshotContainer";
 import { SnapshotStoreReference } from "./SnapshotStoreReference";
 
@@ -155,7 +155,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
       snapshotId: string | null,
       snapshot: AppSnapshot | null,
       snapshotData: SnapshotData<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
-      category: Category | undefined,
+      category?: Category,
       callback: (snapshot: AppEntity) => void,
       snapshots: AppSnapshotsArray,
       type: string,
@@ -369,7 +369,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
   createSnapshotStoresAlternate: (
     id: string,
     snapshotStoresData: SnapshotStore<any, any>[], // Use Snapshot instead of Map
-    category: Category | undefined, callback: (snapshotStores: SnapshotStore<any, any>[]) => void,
+    category?: Category, callback: (snapshotStores: SnapshotStore<any, any>[]) => void,
     snapshotDataConfig?: SnapshotStoreConfig<any, any>[] // Adjust as per your definition
   ): SnapshotStore<any, any>[] | null => {
     console.log(`Creating snapshot with ID: ${id} in category: ${category}`, snapshotDataConfig);
@@ -387,7 +387,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
     id: string,
     storeId: number,
     snapshotStoreData: SnapshotStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>[], // Array of Snapshotstore objects
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     callback?: (snapshotStore: SnapshotStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>) => void,
     snapshotDataConfig?: SnapshotStoreConfig<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>[] // Array of SnapshotStoreConfig objects
@@ -424,7 +424,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
     snapshotId: string,
     data: Map<string, Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>>,
     events: Record<string, CalendarManagerStoreClass<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>[]>,
-    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
+    dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     newSnapshot: Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
     payload: ConfigureSnapshotStorePayload<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
     store: SnapshotStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,  // just one
@@ -470,7 +470,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
     snapshotId: string,
     snapshot: Snapshot<any, any>,
     type: string, 
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (snapshot: Snapshot<any, any>
 
     ) => void) => {
@@ -481,7 +481,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
     snapshot: SnapshotStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]> | Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]> | null,
     snapshotId: string | number | null,
     snapshotData: SnapshotData<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     snapshotConfig: SnapshotStoreConfig<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
     callback: (snapshotStore: SnapshotStore<any, any>) => void,
@@ -507,7 +507,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
     data: Map<string, Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>>,
     events: Record<string, CalendarManagerStoreClass<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>[]>,
     snapshotStore: SnapshotStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
-    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
+    dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     newData: Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
     payload: UpdateSnapshotPayload<T>,
     store: SnapshotStore<any, any>
@@ -549,7 +549,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
     id: string | number | undefined,
     snapshotId: string | null,
     snapshotData: SnapshotData<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]> | null,
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshot: Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]> | null) => void,
     dataStore: DataStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
@@ -629,7 +629,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
   createSnapshot: (
     id: string,
     snapshotData: SnapshotData<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
           callback?: (snapshot: Snapshot<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>) => void,
           snapshotStore?: SnapshotStore<AppEntity, AppK,  AppMeta, AppAttachment, AppExcludedFields, AppIncludeField>,
@@ -989,7 +989,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
           data: Map<string, Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>>,
           events: Record<string, CalendarManagerStoreClass<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>[]>,
           snapshotStore: SnapshotStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
-          dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
+          dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
           newData: Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
           payload: UpdateSnapshotPayload<BaseData>,
           store: any
@@ -1065,7 +1065,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
           snapshot: Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]> | Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]> | null,
           snapshotId: string | null,
           snapshotData: SnapshotData<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
-          category: Category | undefined,
+          category?: Category,
           snapshotConfig: SnapshotStoreConfig<Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>>,
           callback: (snapshotStore: SnapshotStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>) => void
         ): void {
@@ -1138,11 +1138,11 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
           snapshotId: string,
           snapshot: Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]> | null,
           snapshotData: SnapshotData<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
-          category: Category | undefined,
+          category?: Category,
           callback: (snapshot: AppEntity) => void,
           snapshots: Snapshots<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
           type: string,
-          event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+          event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           snapshotContainer?: AppEntity,
           snapshotStoreConfig?: SnapshotStoreConfig<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
 
@@ -1188,12 +1188,12 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
         mapSnapshots: function (
           storeIds: number[],
           snapshotId: string,
-          category: Category | undefined,
+          category?: Category,
           categoryProperties: CategoryProperties | undefined,
           snapshot: Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
           timestamp: string | number | Date | undefined,
           type: string,
-          event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+          event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           id: number,
           snapshotStore: SnapshotStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
           data: AppEntity
@@ -1240,7 +1240,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
             payload: FetchSnapshotPayload<K>,
             snapshotStore: SnapshotStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
             payloadData: T | Data<T>,
-            category: Category | undefined, timestamp: Date,
+            category?: Category, timestamp: Date,
             data: T,
             delegate: SnapshotWithCriteria<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>[]
           ) => void
@@ -1354,7 +1354,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
 
   fetchSnapshot: async (
     id: string,
-    category: Category | undefined,
+    category?: Category,
     timestamp: Date,
     snapshot: Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
     data: T,
@@ -1405,7 +1405,7 @@ const snapshotStoreConfigInstance = createSnapshotStoreConfig<
     data: Map<string, Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>>,
     events: Record<string, CalendarEvent<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>[]>,
     snapshotStore: SnapshotStore<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
-    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
+    dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     newData: Snapshot<AppParams[0], AppParams[1], AppParams[2], AppParams[3], AppParams[4], AppParams[5]>,
     payload: UpdateSnapshotPayload<T>,
     store: SnapshotStore<any, any>

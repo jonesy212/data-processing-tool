@@ -18,7 +18,7 @@ import { VersionData, VersionHistory } from "./VersionData";
 
 
 // Default reusable data
-const defaultData: Data<T, K, StructuredMetadata<T, K>> = {
+const defaultData: Data<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
   id: 'default-id', // Replace with a unique identifier logic if needed
   category: 'default-category',
   subtasks: [],
@@ -27,12 +27,12 @@ const defaultData: Data<T, K, StructuredMetadata<T, K>> = {
 };
 
 
-const createVersionInfo = (versionData: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Version<T, K> => {
+const createVersionInfo = (versionData: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   const docPermissions = new DocumentPermissions(true, true);
 
   const area = `${fetchUserAreaDimensions().width}x${fetchUserAreaDimensions().height}`;
 
-  const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+  const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
   
     // If the versionData is a string, construct a default versionInfo object
   const defaultVersionInfo: Version<any, any> = {
@@ -71,7 +71,7 @@ const createVersionInfo = (versionData: string | VersionData<T, K, Meta, Attachm
       currentMeta: currentMeta,
       metadataEntries: {},
       timestamp: new Date(),
-      latestVersion: createLatestVersion<T, K>(),
+      latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
       schema: {}
     },
     versions: null,
@@ -177,7 +177,7 @@ export const handleSnapshot = (
   snapshotId: string,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotData: SnapshotData<T, >,
-  category: Category | undefined,
+  category?: Category,
   callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
   snapshots: SnapshotsArray<any, any>,
   type: string,

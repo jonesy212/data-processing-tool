@@ -43,7 +43,7 @@ type SnapshotCallback<
 
 // Define the type for the subscribers
 interface Subscribers<T extends  BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
-  [event: string]: SnapshotCallback<T, K, Meta, ExcludedFields>[]; // Keys are event names, values are arrays of callback functions
+  [event: string]: SnapshotCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Keys are event names, values are arrays of callback functions
 }
 
 interface EventManagerProps {

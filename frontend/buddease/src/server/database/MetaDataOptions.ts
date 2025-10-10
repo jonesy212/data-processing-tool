@@ -30,7 +30,7 @@ import { MetadataEntriesType, MetadataEntry, projectMetadata, ProjectMetadata, S
 import { useMeta } from '@/config/useMeta';
 import { SchemaField } from '@/server/database/SchemaField';
 
-export type BaseAudit<T = any, K = any> = AuditEntry<T, K, StructuredMetadata<T, K>>;
+export type BaseAudit<T = any, K = any> = AuditEntry<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
 export interface AuditEntry<
   T extends BaseDataEntity,
@@ -48,7 +48,7 @@ export interface AuditEntry<
 
   // Metadata and contextual info
   metadata?: Meta;
-  version?: Version<T, K>;
+  version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   category?: Category;
 
   // Who and when
@@ -151,7 +151,7 @@ interface StructuralMetadata<T extends BaseDataEntity, K extends T> {
 // Current state properties
 interface CurrentStateMetadata<T extends BaseDataEntity, K extends T> {
   currentMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  currentMeta?: StructuredMetadata<T, K> | undefined;
+  currentMeta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
 }
 
 
@@ -179,7 +179,7 @@ interface ProjectMetaDataOptions<T extends BaseDataEntity, K extends T> extends
 // Snapshot-specific metadata
 interface SnapshotMetaDataOptions<T extends BaseDataEntity, K extends T> extends
   Omit<BaseMetaDataOptions<T, K>, 'tags' | 'version' | 'customFields'> {
-  structuredMetadata: StructuredMetadata<T, K>;
+  structuredMetadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   simulatedDataSource?: Record<string, any>;
   tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[];
   version: VersionImpl<T, K>;
@@ -346,7 +346,7 @@ function transformProjectToUnifiedMetadata<
         },
         versionHistory: {
           versionData: {},
-          latestVersion: createLatestVersion<T, K>(),
+          latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
           history: [],
           timestamp: Date.now()
         },
@@ -419,7 +419,7 @@ function transformProjectToUnifiedMetadata<
   };
 
 
-  const structuredMetadata: StructuredMetadata<T, K> = {
+  const structuredMetadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     ...baseConfig,
     description: projectMetadata.description || "A project to manage structured metadata.",
     versionData: processedVersionData,
@@ -506,7 +506,7 @@ function transformProjectToUnifiedMetadata<
       _structure: {},
       versionHistory: {
         versionData: {},
-        latestVersion: createLatestVersion<T, K>(),
+        latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
         history: [],
         timestamp: new Date(),
         versions: [], 
@@ -611,7 +611,7 @@ function transformProjectToUnifiedMetadata<
     baseUrl: "https://example.com/metadata",
     childIds: [] as K[],
     relatedData: [] as K[],
-    meta: {} as StructuredMetadata<T, K>
+    meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   };
 
 
@@ -662,7 +662,7 @@ const area = `${dimensions.width}x${dimensions.height}`;
 console.log(area);
 
 
-const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
 // console.log(area);  // Output: "1920x1080"
 
 // const currentMeta = useMeta<MyDataType, MyDataType>(area)
@@ -961,7 +961,7 @@ const task: Task<MyDataType, MyDataType> = {
 };
 
 
-const { latestVersion = createLatestVersion<T, K>(), ...rest } = data;
+const { latestVersion = createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), ...rest } = data;
 
 // console.log(area);  // Output: "1920x1080"
 // const currentMeta = useMeta<MyDataType, MyDataType>(area)

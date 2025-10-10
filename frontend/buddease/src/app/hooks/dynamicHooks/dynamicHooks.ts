@@ -263,7 +263,7 @@ useAsyncHookLinker({
 const subscriptionServiceInstance = {
   subscriptions: new Map<string, { callback: (message: any) => void; usage: string }>(),
    // Add generic types <T, K> to the subscribers method
-   subscribers<T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(name: string, id: string): SubscriberCollection<T, K> {
+   subscribers<T extends  BaseData<any>,  K extends T = T,  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(name: string, id: string): SubscriberCollection<T, K> {
     // Return an empty array or , K extends the subscribers as a placeholder
     return [];
   },   

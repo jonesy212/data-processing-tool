@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import FilterComponent, { Filter } from '@/Filter';
-import { SortingOption } from '@/SearchOptions';
+import { SortingOption } from '@/app/pages/searches/SearchOptions';
 import { selectFilteredEvents } from '@/app//eventActions'; // Assuming the action is imported from eventActions
 
 const EventFilterComponent: React.FC = () => {

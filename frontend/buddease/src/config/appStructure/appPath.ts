@@ -1,13 +1,26 @@
 import * as path from "path";
 
-const getAppPath = (versionNumber: string, appVersion: string) => {
+import path from "path";
+import { AppVersion } from "./AppVersion"; // adjust import path
+
+type AppVersionOrString = string | AppVersion;
+
+const getAppPath = (versionNumber: string, appVersion: AppVersionOrString) => {
   const appPath = path.resolve(__filename, "../..");
 
-  // Normalize app path (convert to lowercase, remove underscores and spaces)
   const normalizedAppPath = appPath.toLowerCase().replace(/[_ ]/g, "");
 
-  // Include version information in the app path
-  const versionedAppPath = path.join(normalizedAppPath, `${versionNumber}_${appVersion}`);
+  let versionString: string;
+
+  if (typeof appVersion === "string") {
+    versionString = appVersion;
+  } else if (appVersion && typeof appVersion.appVersion === "string") {
+    versionString = appVersion.appVersion;
+  } else {
+    throw new Error("Invalid appVersion: must be string or AppVersion with appVersion property");
+  }
+
+  const versionedAppPath = path.join(normalizedAppPath, `${versionNumber}_${versionString}`);
 
   return versionedAppPath;
 };

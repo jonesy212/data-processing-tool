@@ -63,14 +63,14 @@ const fetchVersionData = <
 const fetchAnalyticsData = async <
   T extends BaseData, 
   K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
   >(analyticsId: string
   
-): Promise<YourResponseType<T, K, Meta>> => {
+): Promise<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   const fetchAnalyticsEndpoint = `${VERSION_DATA_BASE_URL}/analytics/${analyticsId}`;
 
   try {
-    const response = await axiosInstance.get<YourResponseType<T, K, Meta>>(fetchAnalyticsEndpoint);
+    const response = await axiosInstance.get<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(fetchAnalyticsEndpoint);
     return Promise.resolve(response.data);  // Explicitly wrapping the return in a Promise if needed
   } catch (error) {
     console.error("Error fetching analytics data:", error);

@@ -4,7 +4,7 @@ import { HighlightColor } from "@/app/components/styling/Palette";
 import { detectMetadataChanges } from "@/configs/metadata/detectMetadataChanges";
 import { useAuth } from "@/context/AuthContext";
 import path from "path";
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import { Stroke } from "@/app/state/redux/slices/DrawingSlice";
 import { Payment } from "@/app/subscriptions/SubscriptionPlan";
 import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
@@ -39,7 +39,7 @@ interface CommonTrackerProps {
   trackFileChanges?: (file: FileData<T>) => void;  // Optional
   trackFolderChanges?: (folder: FolderData) => void;  // Optional
   updateUserProfile?: (userData: User, dispatch: any) => void;  // Optional
-  sendNotification?: (notification: NotificationData<T, K, StructuredMetadata<T, K>>, userData: User) => void;  // Optional
+  sendNotification?: (notification: NotificationData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, userData: User) => void;  // Optional
   stroke?: Stroke;
   strokeColor?: string;
   strokeWidth?: number;
@@ -331,7 +331,7 @@ class Tracker implements TrackerProps {
     }
   }
 
-  sendNotification(notification: NotificationData<T, K, StructuredMetadata<T, K>>, userData: User): void {
+  sendNotification(notification: NotificationData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, userData: User): void {
     // Access dispatch function from AuthContext
     const { dispatch } = useAuth();
 

@@ -31,6 +31,29 @@ export const DataActions = <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >() => ({
+   createAndAddSnapshot: createAsyncThunk(
+    'snapshot/createAndAddSnapshot',
+    async (entity: T, thunkAPI) => {
+      try {
+        const baseSnapshot = await createCompleteSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+          entity,                    // baseData
+          new Map(),                 // baseMeta
+          'mock-snapshot-id',        // snapshotId
+          undefined,                 // category
+          null,                      // snapshotStore
+          null,                      // snapshotManager
+          null,                      // snapshotStoreConfig
+          false,                     // isSubscribed (use default or provide false)
+          undefined,                 // storeProps (optional - provide undefined)
+          undefined                  // storeOptions (optional - provide undefined)
+        );
+        
+        return baseSnapshot;
+      } catch (error) {
+        return thunkAPI.rejectWithValue(error);
+      }
+    }
+  ),
    updateDataFrame: createAction<{ id: string; frame: any }>('data/updateDataFrame'),
    deleteDataFrame: createAction<{ id: string }>('data/deleteDataFrame'),
    updateDataTitle: createAction<{ id: string; title: string }>('data/updateDataTitle'),

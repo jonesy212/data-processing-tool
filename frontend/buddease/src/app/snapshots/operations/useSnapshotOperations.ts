@@ -4,27 +4,27 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/Bas
 import { useCallback, useRef } from 'react';
 
 import {
-  clearSnapshotFailure,
-  configureSnapshot,
-  createMockSnapshot,
-  getChildIds,
-  getParentId,
-  getSnapshot,
-  getSnapshotById,
-  getSnapshotContainer,
-  getSnapshotItems,
-  getSnapshots,
-  handleSnapshot,
-  mapSnapshots,
-  removeSnapshot,
-  SnapshotOperations,
-  takeSnapshot,
-  updateSnapshot,
-  validateSnapshot
+    clearSnapshotFailure,
+    configureSnapshot,
+    createMockSnapshot,
+    getChildIds,
+    getParentId,
+    getSnapshot,
+    getSnapshotById,
+    getSnapshotContainer,
+    getSnapshotItems,
+    getSnapshots,
+    handleSnapshot,
+    mapSnapshots,
+    removeSnapshot,
+    SnapshotOperations,
+    takeSnapshot,
+    updateSnapshot,
+    validateSnapshot
 } from '@/app//components/snapshots/snapshotOperations';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotStore } from '@/app/snapshots/SnapshpshotStore';
+import { SnapshotStore } from '@/app/snapshots/SnapshotStore';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 
 const useSnapshotOperations = <

@@ -33,7 +33,7 @@ function getSnapshotFromMap<T extends BaseDataEntity, K extends T = T, Meta exte
 
 // Implementation of the getSnapshot method
 function getSnapshot<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-  this: SnapshotContainer<T, K, Meta, ExcludedFields>
+  this: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
   return convertSnapshotContainer(this.snapshotContainer);
 }
@@ -114,17 +114,17 @@ function isSnapshotFunction<T extends BaseDataEntity, K extends T = T, Meta exte
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   category: Category,
   categoryProperties: CategoryProperties | undefined,
-  callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields> | null) => void,
-  dataStore: DataStore<T, K, Meta, ExcludedFields>,
-  dataStoreMethods: DataStoreMethods<T, K, Meta, ExcludedFields>,
-  metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
+  callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => void,
+  dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscriberId: string,
   endpointCategory: string | number,
-  storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+  storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  subscription: Subscription<T, K, Meta, ExcludedFields>,
+  subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  snapshotContainer?: SnapshotContainer<T, K, Meta, ExcludedFields>
+  snapshotContainer?: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) => Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }> {
   return typeof snapshot === "function";
 }

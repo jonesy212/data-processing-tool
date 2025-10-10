@@ -9,7 +9,7 @@ import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
 import { DeveloperPersona } from "@/app/pages/personas/DeveloperPersona";
-import { ProjectDetails } from "@/app/projects/Project";
+import { ProjectDetails } from '@/app/models/projects/Project';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
@@ -173,7 +173,7 @@ export const useProjectOwnerSlice = createSlice({
           "Update Project Success",
           NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -182,7 +182,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_PROJECT_ERROR,
           "Update Project Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -202,7 +202,7 @@ export const useProjectOwnerSlice = createSlice({
           "Add Team Member Success",
           NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -211,7 +211,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.ADD_TEAM_MEMBER_ERROR,
           "Add Team Member Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -232,7 +232,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_SUCCESS,
           "Remove Team Member Success",
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -241,7 +241,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.REMOVE_TEAM_MEMBER_ERROR,
           "Remove Team Member Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -288,7 +288,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_SUCCESS,
           "Assign Task Success",
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle error
@@ -297,7 +297,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.ASSIGN_TASK_ERROR,
           "Assign Task Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -318,7 +318,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.CREATE_MEETING_ERROR,
           "Create Meeting Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       } catch (error) {}
     },
@@ -342,7 +342,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETING_ERROR,
           "Update Meeting Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       } catch (e) {
         // Handle error
@@ -351,7 +351,7 @@ export const useProjectOwnerSlice = createSlice({
           "Update Meeting Error",
           NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_MEETIN_ERROR,
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -373,7 +373,7 @@ export const useProjectOwnerSlice = createSlice({
           "Delete Meeting Success",
           NOTIFICATION_MESSAGES.Project.DELETE_MEETING_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle error
@@ -382,7 +382,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.DELETE_MEETING_ERROR,
           "Delete Meeting Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -398,7 +398,7 @@ export const useProjectOwnerSlice = createSlice({
           "Get Team Members Error",
           NOTIFICATION_MESSAGES.ProjectOwner.GET_TEAM_MEMBERS_ERROR,
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
         // Return team members
       }
@@ -425,7 +425,7 @@ export const useProjectOwnerSlice = createSlice({
           "Generate Report Success",
           NOTIFICATION_MESSAGES.ProjectOwner.GENERATE_REPORT_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
 
         // Optionally return the generated report (if needed)
@@ -438,7 +438,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.GENERATE_REPORT_ERROR,
           "Generate Report Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
         // Return undefined or some default value in case of error
         return undefined;
@@ -460,7 +460,7 @@ export const useProjectOwnerSlice = createSlice({
             "Update Task Success",
             NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_TASK_SUCCESS,
             new Date(),
-            NotificationTypeEnum.OperationSuccess
+            NotificationTypeEnum.OPERATION_SUCCESS
           );
         } else {
           // Handle case where task is not found
@@ -469,7 +469,7 @@ export const useProjectOwnerSlice = createSlice({
             NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_TASK_ERROR,
             "Update Task Error: Task not found",
             new Date(),
-            NotificationTypeEnum.OperationError
+            NotificationTypeEnum.OPERATION_ERROR
           );
         }
       } catch (error) {
@@ -480,7 +480,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.UPDATE_TASK_ERROR,
           "Update Task Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -501,7 +501,7 @@ export const useProjectOwnerSlice = createSlice({
             "Delete Task Success",
             NOTIFICATION_MESSAGES.ProjectOwner.DELETE_TASK_SUCCESS,
             new Date(),
-            NotificationTypeEnum.OperationSuccess
+            NotificationTypeEnum.OPERATION_SUCCESS
           );
         } else {
           // Handle case where state.tasks is null or undefined
@@ -513,7 +513,7 @@ export const useProjectOwnerSlice = createSlice({
             NOTIFICATION_MESSAGES.ProjectOwner.DELETE_TASK_ERROR,
             "Delete Task Error: state.tasks is null or undefined",
             new Date(),
-            NotificationTypeEnum.OperationError
+            NotificationTypeEnum.OPERATION_ERROR
           );
         }
       } catch (error) {
@@ -524,7 +524,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.DELETE_TASK_ERROR,
           "Delete Task Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -540,7 +540,7 @@ export const useProjectOwnerSlice = createSlice({
           "Hire Developer Success",
           NOTIFICATION_MESSAGES.ProjectOwner.HIRE_DEVELOPER_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -550,7 +550,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.HIRE_DEVELOPER_ERROR,
           "Hire Developer Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -574,7 +574,7 @@ export const useProjectOwnerSlice = createSlice({
           "Compensate Developer Success",
           NOTIFICATION_MESSAGES.ProjectOwner.COMPENSATE_DEVELOPER_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -584,7 +584,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.COMPENSATE_DEVELOPER_ERROR,
           "Compensate Developer Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -602,7 +602,7 @@ export const useProjectOwnerSlice = createSlice({
           "Select Developer Success",
           NOTIFICATION_MESSAGES.ProjectOwner.SELECT_DEVELOPER_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -612,7 +612,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.SELECT_DEVELOPER_ERROR,
           "Select Developer Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -627,7 +627,7 @@ export const useProjectOwnerSlice = createSlice({
           "Ideation Phase Initiated",
           NOTIFICATION_MESSAGES.ProjectOwner.INITIATE_IDEATION_PHASE_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -637,7 +637,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.INITIATE_IDEATION_PHASE_ERROR,
           "Error initiating ideation phase",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -652,7 +652,7 @@ export const useProjectOwnerSlice = createSlice({
           "Team Formed",
           NOTIFICATION_MESSAGES.ProjectOwner.FORM_TEAM_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -662,7 +662,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.FORM_TEAM_ERROR,
           "Error forming team",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -677,7 +677,7 @@ export const useProjectOwnerSlice = createSlice({
           "Product Brainstorming Success",
           NOTIFICATION_MESSAGES.ProjectOwner.BRAINSTORM_PRODUCT_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -687,7 +687,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.BRAINSTORM_PRODUCT_ERROR,
           "Error brainstorming product",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -702,7 +702,7 @@ export const useProjectOwnerSlice = createSlice({
           "Product Launched",
           NOTIFICATION_MESSAGES.ProjectOwner.LAUNCH_PRODUCT_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -712,7 +712,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.LAUNCH_PRODUCT_ERROR,
           "Launch Product Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -726,7 +726,7 @@ export const useProjectOwnerSlice = createSlice({
           "Data Analysis Performed",
           NOTIFICATION_MESSAGES.ProjectOwner.PERFORM_DATA_ANALYSIS_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -736,7 +736,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.ProjectOwner.PERFORM_DATA_ANALYSIS_ERROR,
           "Perform Data Analysis Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -750,7 +750,7 @@ export const useProjectOwnerSlice = createSlice({
           "Participated in Community",
           NOTIFICATION_MESSAGES.Community.PARTICIPATE_COMMUNITY_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -760,7 +760,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.Community.PARTICIPATE_COMMUNITY_ERROR,
           "Participate Community Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -774,7 +774,7 @@ export const useProjectOwnerSlice = createSlice({
           "Unity Promoted",
           NOTIFICATION_MESSAGES.Community.PROMOTE_UNITY_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -784,7 +784,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.Community.PROMOTE_UNITY_ERROR,
           "Promote Unity Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -799,7 +799,7 @@ export const useProjectOwnerSlice = createSlice({
           "Contributions Rewarded",
           NOTIFICATION_MESSAGES.Community.REWARD_CONTRIBUTIONS_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -809,7 +809,7 @@ export const useProjectOwnerSlice = createSlice({
           NOTIFICATION_MESSAGES.Community.REWARD_CONTRIBUTIONS_ERROR,
           "Reward Contributions Error",
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -826,7 +826,7 @@ export const useProjectOwnerSlice = createSlice({
           "Custom Apps Built",
           `${numberOfApps} custom apps successfully built.`,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -836,7 +836,7 @@ export const useProjectOwnerSlice = createSlice({
           "Build Custom Apps Error",
           NOTIFICATION_MESSAGES.Project.BUILD_CUSTOM_APPS_ERROR,
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -850,7 +850,7 @@ export const useProjectOwnerSlice = createSlice({
           "Project Metrics Incentivized",
           NOTIFICATION_MESSAGES.Project.INCENTIVIZE_PROJECT_METRICS_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -860,7 +860,7 @@ export const useProjectOwnerSlice = createSlice({
           "Incentivize Project Metrics Error",
           NOTIFICATION_MESSAGES.Project.INCENTIVIZE_PROJECT_METRICS_ERROR,
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },
@@ -874,7 +874,7 @@ export const useProjectOwnerSlice = createSlice({
           "Contribution to Sustainability",
           NOTIFICATION_MESSAGES.Project.CONTRIBUTE_TO_SUSTAINABILITY_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         // Handle errors
@@ -884,7 +884,7 @@ export const useProjectOwnerSlice = createSlice({
           "Contribute to Sustainability Error",
           NOTIFICATION_MESSAGES.Project.CONTRIBUTE_TO_SUSTAINABILITY_ERROR,
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },

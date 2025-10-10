@@ -35,7 +35,7 @@ interface CollaborationData extends BaseData {
   interface CollaborationMeta<
       T extends BaseData<any> = CollaborationData,
       K extends T = T,
-      Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+      Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
     >  extends BaseMetaDataOptions<T, K> {
     projectId?: string; // Specific to collaboration metadata
     projectType?: string; // Project type for collaboration context

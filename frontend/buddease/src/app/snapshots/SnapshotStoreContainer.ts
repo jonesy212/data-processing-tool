@@ -27,10 +27,10 @@ interface SnapshotStoreContainer<
   > {
     id?: string | number | undefined;
     storeId: number;
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields> | null;
-    snapshotContainers: Map<string, SnapshotContainer<T, K, Meta, ExcludedFields>>;
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+    snapshotContainers: Map<string, SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
     timestamp: string | number | Date | undefined;
-    currentCategory: Category | undefined;
+    currentcategory?: Category;
   
     setSnapshotCategory: (id: string, newCategory: string | Category) => void;
     getSnapshotCategory: (id: string) => Category | undefined;
@@ -38,12 +38,12 @@ interface SnapshotStoreContainer<
     initializeSnapshotStore: (
       id: string | number | undefined,
       snapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined, // Fix type error
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined
     ) => Promise<void>;
   
-    addSnapshotContainer: (snapshotId: string, container: SnapshotContainer<T, K, Meta, ExcludedFields>) => void;
-    getSnapshotContainer: (snapshotId: string) => SnapshotContainer<T, K, Meta, ExcludedFields> | undefined;
+    addSnapshotContainer: (snapshotId: string, container: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+    getSnapshotContainer: (snapshotId: string) => SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   
     // Other methods as necessary for managing snapshots and configurations
   }
@@ -55,8 +55,8 @@ export const snapshotStoreContainer = <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
     storeId: number,
-    storeProps?: SnapshotStoreProps<T, K, Meta, ExcludedFields>
-  ): SnapshotStoreContainer<T, K, Meta, ExcludedFields> => {
+    storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): SnapshotStoreContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
     if(!storeProps){
       throw new Error("storeProps is undefined");
     }
@@ -71,10 +71,10 @@ export const snapshotStoreContainer = <
       expirationDate
      }
       = storeProps
-    const snapshotStoreContainer: SnapshotStoreContainer<T, K, Meta, ExcludedFields> = {
+    const snapshotStoreContainer: SnapshotStoreContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       storeId,
       snapshotStore: null,
-      snapshotContainers: new Map<string, SnapshotContainer<T, K, Meta, ExcludedFields>>(),
+      snapshotContainers: new Map<string, SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(),
       timestamp: undefined,
       currentCategory: undefined,
   
@@ -100,12 +100,12 @@ export const snapshotStoreContainer = <
       initializeSnapshotStore: async (
         id: string | number | undefined,
         snapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined,
-        category: Category | undefined,
+        category?: Category,
         categoryProperties: CategoryProperties | undefined
       ): Promise<void> => {
         const snapshotId = id !== undefined ? String(id) : null;
        
-        const options: SnapshotStoreOptions<T, K, Meta, ExcludedFields> = {
+        const options: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
           retryDelay: 500,
           maxAge: 3600,
           staleWhileRevalidate: 1800,
@@ -126,7 +126,7 @@ export const snapshotStoreContainer = <
           getDelegate: async (context) => {
             // Assuming simulatedDataSource can be cast to DataStore[]
             // If not, you'll need to implement proper conversion
-            return context.simulatedDataSource as unknown as DataStore<T, K, Meta, ExcludedFields>[];
+            return context.simulatedDataSource as unknown as DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
           },
           getCategory: (snapshotId, snapshot, type, event) => undefined,
           getSnapshotConfig: (
@@ -139,7 +139,7 @@ export const snapshotStoreContainer = <
           handleSnapshotStoreOperation: async (snapshotId, snapshotStore, snapshot, operation, operationType, callback) => {},
           displayToast: (message, type: string, duration: number, onClose: () => void): Promise<void> => { console.log(message); },
           addToSnapshotList: (snapshot, subscribers): Promise<any> => {},
-          simulatedDataSource: {} as SimulatedDataSource<T, K, Meta, ExcludedFields>,
+          simulatedDataSource: {} as SimulatedDataSource<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           id: id ?? "default",
           storeId,
           baseURL: "",
@@ -236,7 +236,7 @@ export const snapshotStoreContainer = <
         } = storeProps
 
         if (id === undefined) {
-          snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K, Meta, ExcludedFields>({
+          snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
             storeId,
             name,
             version,
@@ -249,7 +249,7 @@ export const snapshotStoreContainer = <
             payload, callback, storeProps, endpointCategory, initialState
           });
         } else {
-          snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K, Meta, ExcludedFields>({
+          snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
               storeId,
               name,
               version,
@@ -264,7 +264,7 @@ export const snapshotStoreContainer = <
         }
        
         const name = (await getSnapshotContainer(id ?? "default", snapshotFetcher)).snapshot.name;
-        snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K, Meta, ExcludedFields>({
+        snapshotStoreContainer.snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
           storeId,
           name,
           version,
@@ -278,7 +278,7 @@ export const snapshotStoreContainer = <
         });
       },      
       
-      addSnapshotContainer: (snapshotId: string, container: SnapshotContainer<T, K, Meta, ExcludedFields>) => {
+      addSnapshotContainer: (snapshotId: string, container: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
         snapshotStoreContainer.snapshotContainers.set(snapshotId, container);
       },
   

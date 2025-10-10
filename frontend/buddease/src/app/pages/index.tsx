@@ -1,7 +1,7 @@
 // pages/index.tsx
 import RootLayout from "@/app/RootLayout";
 import useMessagingSystem from "@/app/components/communications/chat/useMessagingSystem";
-import { UserRole } from "@/app/components/users/UserRole";
+import { UserRole } from "@/app/models/UserRole";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
 import PaymentForm from "@/app/payment/PaymentForm";
 import { rootStores } from "@/app/state/stores/RootStores";

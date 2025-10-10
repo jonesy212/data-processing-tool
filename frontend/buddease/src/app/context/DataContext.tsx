@@ -12,7 +12,7 @@ import { createContext, ReactNode, useContext } from "react";
 interface DataContextProps<
   T extends BaseData<any> = BaseData<any, any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > {
   dataStore: DataStore<T, K> & VersionedData<T, K>;
   useSimulatedDataSource: boolean;
@@ -29,7 +29,7 @@ const DataContext = createContext<DataContextProps<any, any>>({
 export const DataProvider = <
   T extends BaseData<any> = BaseData<any, any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >({
   children,
 }: {
@@ -63,7 +63,7 @@ export const DataProvider = <
 export const useDataContext = <
   T extends BaseData<any>,
   K extends T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >() => {
   const context = useContext<DataContextProps<T, K, Meta> | undefined>(DataContext as any);
   if (!context) {

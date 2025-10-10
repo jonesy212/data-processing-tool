@@ -8,7 +8,7 @@ import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { Progress } from "@/app/models/tracker/ProgressBar";
 import IdeationPhaseComponent from "@/app/phases/IdeationPhaseComponent";
-import { CustomPhaseHooks, Phase } from "@/app/phases/Phase";
+import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
 import {
     ExtendedDAppAdapter,
     ExtendedDappProps

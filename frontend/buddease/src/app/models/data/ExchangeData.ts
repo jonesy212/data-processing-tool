@@ -12,7 +12,8 @@ export interface ExchangeData<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends SharedTimestamps, SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string;
   name: string;
@@ -20,7 +21,7 @@ export interface ExchangeData<
   price: number;
   volume: number;
   type: ExchangeDataTypeEnum;
-  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields>;
+  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   createdAt: Date;
   updatedAt: Date;
   liquidity: number;

@@ -1,4 +1,6 @@
 // src/app/lib/server-api.ts
+// server-api.ts - INTERNAL server-to-server API
+
 import axios from 'axios';
 
 const serverApi = axios.create({

@@ -11,7 +11,7 @@ export function manageDocuments<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(newDocument: DocumentData, dappProps: DappProps<T, K, Meta, ExcludedFields>) {
+>(newDocument: DocumentData, dappProps: DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
   // Implement logic for document management
   console.log("Document management functionality enabled");
 

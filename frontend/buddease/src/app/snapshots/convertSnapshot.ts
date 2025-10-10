@@ -3,9 +3,10 @@ import * as snapshotApi from "@/app/api/SnapshotApi";
 import { CategoryProperties } from "@/app/app/pages/personas/ScenarioBuilder";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import { T } from '@/app/models/data/dataStoreMethods';
-import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { DataStore, useDataStore } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
+import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
 import { Snapshot, SnapshotDataType } from '@/app/snapshots';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
@@ -13,10 +14,9 @@ import { Subscription } from "@/app/subscriptions/Subscription";
 import { convertSnapshotData, convertSnapshotMap } from "@/app/typings/YourSpecificSnapshotType";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
 import { Subscriber } from '@/users/Subscriber';
 import { createSnapshotStoreOptions } from "./createSnapshotStoreOptions";
-import { SnapshotConfig, SnapshotStoreConfig, SnapshotStoreMethod, SnapshotStoreProps } from "./index";
+import { SnapshotConfig, SnapshotStoreConfig, SnapshotStoreMethods, SnapshotStoreProps } from "./index";
 import { SnapshotOperation, SnapshotOperationType } from "./SnapshotActions";
 import SnapshotStore from "./SnapshotStore";
 
@@ -32,14 +32,14 @@ function convertBaseDataToK<
   const convertedSubscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = snapshot.subscribers.map(subscriber => {
     if (Array.isArray(subscriber)) {
       // If subscriber is an array, map each element
-      return subscriber.map(sub => sub as unknown as Subscriber<T, K, Meta, ExcludedFields>);
+      return subscriber.map(sub => sub as unknown as Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
     } else {
       // If subscriber is a Record<string, Subscriber[]>
-      const convertedRecord: Record<string, Subscriber<T, K, Meta, ExcludedFields>[]> = {};
+      const convertedRecord: Record<string, Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> = {};
       for (const key in subscriber) {
         convertedRecord[key] = subscriber[key].map((
-          sub: Subscriber<T, K, Meta, ExcludedFields>
-        ) => sub as unknown as Subscriber<T, K, Meta, ExcludedFields>);
+          sub: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+        ) => sub as unknown as Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>);
       }
       return convertedRecord;
     }
@@ -53,12 +53,12 @@ function convertBaseDataToK<
       data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
-      category: Category | undefined,
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
-      dataStoreMethods: DataStoreMethods<T, K, Meta, ExcludedFields>,
-      storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>
-    ) => Promise<SnapshotDataType<T, K, Meta, ExcludedFields>>;
+      dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    ) => Promise<SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   };
 
   // Construct the new Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -83,7 +83,7 @@ function convertSnapshot<
     useSimulatedDataSource: boolean;
     simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   },
-  storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>
+  storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   return new Promise((resolve, reject) => {
     try {
@@ -92,28 +92,28 @@ function convertSnapshot<
       }
 
        // Convert dataStoreMethods
-      const dataStoreMethods = snapshot.store.getDataStoreMethods() as DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>;
+      const dataStoreMethods = snapshot.store.getDataStoreMethods() as DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
       // Convert snapshot methods
       const convertedSnapshotMethods = dataStoreMethods.snapshotMethods?.map(
-        (method: SnapshotStoreMethods<T, K, Meta, ExcludedFields>) => ({
+        (method: SnapshotStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => ({
           ...method,
           snapshot: (
             id: string | number | undefined,
             snapshotId: string | null,
             snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-            category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
-            callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void,
-            dataStore: DataStore<T, K, Meta, ExcludedFields>,
-            dataStoreMethods: DataStoreMethods<T, K, Meta, ExcludedFields>,
-            metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
+            category?: Category,            categoryProperties: CategoryProperties | undefined,
+            callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+            dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+            dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+            metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
             subscriberId: string,
             endpointCategory: string | number,
-            storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+            storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
             snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-            subscription: Subscription<T, K, Meta, ExcludedFields>,
+            subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
             snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-            snapshotContainer?: SnapshotContainerType<T, K, Meta, ExcludedFields>
+            snapshotContainer?: SnapshotContainerType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
           ) =>
             method.snapshot(
               id,
@@ -143,24 +143,24 @@ function convertSnapshot<
           dataStoreMethods: {
             ...config.dataStoreMethods,
             snapshotMethods: config.dataStoreMethods?.snapshotMethods?.map(
-              (method: SnapshotStoreMethods<T, K, Meta, ExcludedFields>) => ({
+              (method: SnapshotStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => ({
                 ...method,
                 snapshot: (
                   id: string | number | undefined,
                   snapshotId: string | null,
                   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-                  category: Category | undefined,                  categoryProperties: CategoryProperties | undefined,
-                  callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void,
-                  dataStore: DataStore<T, K, Meta, ExcludedFields>,
-                  dataStoreMethods: DataStoreMethods<T, K, Meta, ExcludedFields>,
-                  metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
+                  category?: Category,                  categoryProperties: CategoryProperties | undefined,
+                  callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
+                  dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+                  dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+                  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                   subscriberId: string,
                   endpointCategory: string | number,
-                  storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+                  storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                   snapshotConfigData: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-                  subscription: Subscription<T, K, Meta, ExcludedFields>,
+                  subscription: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                   snapshotStoreConfigData?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-                  snapshotContainer?: SnapshotContainerType<T, K, Meta, ExcludedFields>
+                  snapshotContainer?: SnapshotContainerType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
                 ) =>
                   method.snapshot(
                     id,
@@ -181,13 +181,13 @@ function convertSnapshot<
                     snapshotContainer
                   ),
               })
-            ) as SnapshotStoreMethods<T, K, Meta, ExcludedFields>[],
+            ) as SnapshotStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
           },
         })
       );
 
-      // Convert dataStoreMethods to ensure compatibility with DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>
-      const convertedDataStoreMethods: DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields> = {
+      // Convert dataStoreMethods to ensure compatibility with DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      const convertedDataStoreMethods: DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         ...dataStoreMethods,
         snapshotMethods: convertedSnapshotMethods,
         getDelegate: dataStoreMethods.getDelegate as (context: {
@@ -196,7 +196,7 @@ function convertSnapshot<
         }) => Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
       };
 
-      const options = createSnapshotStoreOptions<T, K, Meta, ExcludedFields>({
+      const options = createSnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
         initialState: snapshot.store.initialState ?? null,
         snapshotId: snapshot.store.snapshotId,
         category: snapshot.store.category ?? ({} as Category),
@@ -204,7 +204,7 @@ function convertSnapshot<
         dataStoreMethods: convertedDataStoreMethods,
       });
 
-      const defaultMetadata: UnifiedMetadata<T, K, Meta, ExcludedFields> = {
+      const defaultMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         // Assigning project-related properties to `projectMetadata`
         projectMetadata: {
           startDate: snapshot.store.startDate || undefined,
@@ -258,7 +258,7 @@ function convertSnapshot<
           snapshot.store.getSnapshotData(),
           snapshot.store.snapshot,
           snapshot.store.data instanceof Map 
-          ? convertSnapshotMap<T, K, Meta, ExcludedFields>(snapshot.store.data) 
+          ? convertSnapshotMap<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(snapshot.store.data) 
             : new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(),
           snapshot.store.events ? snapshot.store.events : {} as Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
           snapshot.store.dataItems,
@@ -277,13 +277,13 @@ function convertSnapshot<
           const { storeId, name, version, schema, options, config, expirationDate,
             payload, callback, endpointCategory, initialState
           } = storeProps;
-          const operation: SnapshotOperation<T, K, Meta, ExcludedFields> = {
+          const operation: SnapshotOperation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
             operationType: SnapshotOperationType.FindSnapshot,
           };
 
           const snapshotStoreConfig = useDataStore().snapshotStoreConfig
 
-          const newStore = new SnapshotStore<T, K, Meta, ExcludedFields>({
+          const newStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
             storeId,
             name,
             version,
@@ -328,7 +328,7 @@ function convertStoreId(storeId: string | number): number {
   }
 }
 
-function deepConvert<T, K, Meta, ExcludedFields>(source: T): K {
+function deepConvert<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(source: T): K {
   // Recursively map properties from T to K
   if (Array.isArray(source)) {
     return source.map(item => deepConvert(item)) as unknown as K;

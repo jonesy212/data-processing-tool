@@ -33,7 +33,7 @@ type SubscriberCallbackType<
   ExcludedFields extends keyof T = never
 > =
   | Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
-  | SubscriberCallback<T, K, Meta, ExcludedFields>;
+  | SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 
 interface SubscriberCallback<
@@ -54,11 +54,11 @@ function isSubscriberCallback<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = never
 >(
-  callback: SubscriberCallbackType<T, K, Meta, ExcludedFields>
-): callback is SubscriberCallback<T, K, Meta, ExcludedFields> {
+  callback: SubscriberCallbackType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): callback is SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return (
-    (callback as SubscriberCallback<T, K, Meta, ExcludedFields>).handleCallback !== undefined &&
-    (callback as SubscriberCallback<T, K, Meta, ExcludedFields>).snapshotCallback !== undefined
+    (callback as SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>).handleCallback !== undefined &&
+    (callback as SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>).snapshotCallback !== undefined
   );
 }
 
@@ -78,10 +78,10 @@ function unsubscribe<
   this: SubscriptionContext,
   snapshotId: number,
   unsubscribe: UnsubscribeDetails,
-  callback: SubscriberCallbackType<T, K, Meta, ExcludedFields>
+  callback: SubscriberCallbackType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ) {
   // Check if callback is of type SubscriberCallback using the type guard
-  if (isSubscriberCallback<T, K, Meta, ExcludedFields>(callback)) {
+  if (isSubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(callback)) {
     // If it's a SubscriberCallback, handle accordingly
     const index = this.subscribers.indexOf(callback);
     if (index !== -1) {

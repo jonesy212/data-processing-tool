@@ -1,14 +1,13 @@
 // teamTypes.ts
-
 import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
@@ -96,6 +95,7 @@ interface TeamSettings {
   visibility: 'public' | 'private' | 'restricted';
   joinPolicy: 'open' | 'invite' | 'approval';
   maxMembers?: number;
+  permissions: TeamPermissions;
   notifications: TeamNotificationSettings;
 }
 
@@ -103,6 +103,7 @@ interface TeamPermissions {
   canInvite: boolean;
   canRemove: boolean;
   canEditSettings: boolean;
+  canCreateProjects: boolean;
   canManageProjects: boolean;
 }
 
@@ -111,7 +112,9 @@ interface TeamNotificationSettings {
   push: boolean;
   slack: boolean;
   frequency: 'instant' | 'daily' | 'weekly';
+  dailyDigest: boolean;
 }
+
 
 // Helper for creating team instances
 const createDefaultTeam = (options: Partial<TeamFull> = {}): TeamFull => ({
@@ -146,21 +149,22 @@ const emptyTeam: TeamFull = createDefaultTeam();
 
 // ✅ EXPORT FOR REUSE
 export type {
-  TeamAttachment, TeamBaseParams, TeamEntity, TeamExcludedFields, TeamFull, TeamIncludedFields, TeamK,
-  TeamMeta, TeamNotificationSettings, // ✅ Clean alias
-  TeamParams, TeamPermissions, // ✅ Clean alias
-  TeamRealtimeDataItemFull, // ✅ Clean alias
-  TeamSettings, // ✅ Clean alias
-  TeamSnapshotDataFull, // ✅ Clean alias
-  TeamSnapshotFull, // ✅ Clean alias
-  TeamSnapshotsArrayFull, // ✅ Clean alias
-  TeamSnapshotStoreConfigFull, // ✅ Clean alias
-  TeamSnapshotStoreFull, // ✅ Clean alias
-  TeamSnapshotWithCriteriaFull, // ✅ Clean alias
-  TeamSubscriberCollectionFull
+    TeamAttachment, TeamBaseParams, TeamEntity, TeamExcludedFields, TeamFull, TeamIncludedFields, TeamK,
+    TeamMeta, TeamNotificationSettings, // ✅ Clean alias
+    TeamParams, TeamPermissions, // ✅ Clean alias
+    TeamRealtimeDataItemFull, // ✅ Clean alias
+    TeamSettings, // ✅ Clean alias
+    TeamSnapshotDataFull, // ✅ Clean alias
+    TeamSnapshotFull, // ✅ Clean alias
+    TeamSnapshotsArrayFull, // ✅ Clean alias
+    TeamSnapshotStoreConfigFull, // ✅ Clean alias
+    TeamSnapshotStoreFull, // ✅ Clean alias
+    TeamSnapshotWithCriteriaFull, // ✅ Clean alias
+    TeamSubscriberCollectionFull
 };
 
   export {
-    createDefaultTeam,
-    emptyTeam
-  };
+        createDefaultTeam,
+        emptyTeam
+    };
+

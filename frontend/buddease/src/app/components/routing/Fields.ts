@@ -1,4 +1,4 @@
-import { Project } from "@/app/projects/Project";
+import { Project } from '@/app/models/projects/Project';
 import { BaseDataEntity, DefaultExcludedFields } from '@/config/BaseConfig';
 import { ProjectMetadata, StructuredMetadata } from "@/config/StructuredMetadata";
 import { TaskMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
@@ -42,7 +42,7 @@ type ExcludedFields<T, K extends keyof T> = {
 type MapExcludedFieldsToMetaKeys<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > = ExcludedFields extends keyof Meta ? ExcludedFields : never;
 

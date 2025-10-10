@@ -18,6 +18,247 @@ interface DocumentEntity extends BaseDataEntity {
   isPublished?: boolean;
 }
 
+
+type DocumentSearchResult = {
+  document: AppDocument;
+  relevance: number;
+  matchedFields: (keyof AppDocument)[];
+  highlights: {
+    field: keyof AppDocument;
+    snippets: string[];
+  }[];
+};
+
+type DocumentIndex = {
+  documentId: string;
+  title: string;
+  content: string;
+  tags: string[];
+  author: string;
+  metadata: Record<string, any>;
+  lastModified: Date;
+};
+
+// Document template types
+type DocumentTemplate = {
+  id: string;
+  name: string;
+  category: string;
+  content: string;
+  fields: TemplateField[];
+  styles: DocumentStyles;
+  isSystem: boolean;
+  createdBy: string;
+  createdAt: Date;
+};
+
+type TemplateField = {
+  name: string;
+  type: 'text' | 'number' | 'date' | 'select' | 'rich-text';
+  required: boolean;
+  defaultValue?: any;
+  options?: string[];
+  placeholder?: string;
+};
+
+// Document workflow types
+type DocumentWorkflow = {
+  id: string;
+  name: string;
+  steps: WorkflowStep[];
+  currentStep: number;
+  status: 'draft' | 'review' | 'approved' | 'rejected' | 'published';
+  participants: WorkflowParticipant[];
+  dueDate?: Date;
+};
+
+type WorkflowStep = {
+  order: number;
+  name: string;
+  action: 'review' | 'approve' | 'sign' | 'publish';
+  required: boolean;
+  assignees: string[];
+  completed: boolean;
+  completedBy?: string;
+  completedAt?: Date;
+  comments: string[];
+};
+
+type WorkflowParticipant = {
+  userId: string;
+  role: 'author' | 'reviewer' | 'approver' | 'viewer';
+  assignedAt: Date;
+  completedSteps: number[];
+};
+
+// Document styling and formatting types
+type DocumentStyles = {
+  fontFamily: string;
+  fontSize: number;
+  lineHeight: number;
+  margins: {
+    top: number;
+    right: number;
+    bottom: number;
+    left: number;
+  };
+  headers: {
+    h1: HeaderStyle;
+    h2: HeaderStyle;
+    h3: HeaderStyle;
+  };
+};
+
+type HeaderStyle = {
+  fontSize: number;
+  bold: boolean;
+  spacing: number;
+};
+
+// Document export types
+type ExportFormat = 'pdf' | 'docx' | 'html' | 'markdown' | 'text';
+
+type DocumentExportOptions = {
+  format: ExportFormat;
+  includeComments: boolean;
+  includeVersionHistory: boolean;
+  includeMetadata: boolean;
+  watermark?: string;
+  pageNumbers: boolean;
+  header?: string;
+  footer?: string;
+};
+
+type ExportResult = {
+  success: boolean;
+  fileUrl?: string;
+  fileSize?: number;
+  error?: string;
+  format: ExportFormat;
+};
+
+// Document analytics types
+type DocumentAnalytics = {
+  views: number;
+  uniqueViewers: number;
+  averageTimeSpent: number;
+  downloads: number;
+  shares: number;
+  lastAccessed: Date;
+  accessHeatmap: {
+    section: string;
+    views: number;
+    timeSpent: number;
+  }[];
+};
+
+type DocumentUsageStats = {
+  period: 'day' | 'week' | 'month' | 'year';
+  totalViews: number;
+  totalDownloads: number;
+  totalShares: number;
+  topViewers: string[];
+  popularSections: string[];
+};
+
+// Document backup and recovery types
+type DocumentBackup = {
+  id: string;
+  documentId: string;
+  timestamp: Date;
+  content: string;
+  version: string;
+  backupType: 'auto' | 'manual' | 'pre-update';
+  size: number;
+  checksum: string;
+};
+
+type BackupSchedule = {
+  enabled: boolean;
+  frequency: 'hourly' | 'daily' | 'weekly';
+  retentionDays: number;
+  maxBackups: number;
+};
+
+// Document sharing and access control types
+type DocumentShareLink = {
+  id: string;
+  documentId: string;
+  token: string;
+  expiresAt: Date;
+  maxUses?: number;
+  usedCount: number;
+  permissions: DocumentPermissions;
+  createdBy: string;
+  createdAt: Date;
+  password?: string;
+};
+
+type DocumentAccessLog = {
+  id: string;
+  documentId: string;
+  userId: string;
+  action: 'view' | 'edit' | 'download' | 'share' | 'comment';
+  timestamp: Date;
+  ipAddress?: string;
+  userAgent?: string;
+  duration?: number;
+};
+
+// Document batch operations types
+type BatchDocumentOperation = {
+  documents: string[];
+  operation: 'archive' | 'publish' | 'delete' | 'move' | 'change-owner';
+  parameters: Record<string, any>;
+};
+
+type BatchOperationResult = {
+  operationId: string;
+  total: number;
+  successful: number;
+  failed: number;
+  errors: Array<{
+    documentId: string;
+    error: string;
+  }>;
+  startedAt: Date;
+  completedAt: Date;
+};
+
+// Document validation types
+type DocumentValidationRule = {
+  field: keyof AppDocument;
+  rule: 'required' | 'minLength' | 'maxLength' | 'format' | 'custom';
+  value?: any;
+  message: string;
+};
+
+
+// Document AI/ML enhancement types
+type DocumentAIAnalysis = {
+  summary: string;
+  keywords: string[];
+  sentiment: 'positive' | 'negative' | 'neutral';
+  entities: Array<{
+    type: 'person' | 'organization' | 'location' | 'date' | 'concept';
+    value: string;
+    confidence: number;
+  }>;
+  readability: {
+    score: number;
+    level: string;
+  };
+  suggestions: AISuggestion[];
+};
+
+type AISuggestion = {
+  type: 'grammar' | 'style' | 'structure' | 'content';
+  original: string;
+  suggestion: string;
+  confidence: number;
+  reason: string;
+};
+
 type DocumentK = DocumentEntity;
 type DocumentMeta = DefaultMeta<DocumentEntity, DocumentK>;
 type DocumentAttachment = Attachment;
@@ -229,7 +470,8 @@ export type {
   AppDocumentSnapshotStore, AppDocumentStructuredMetadata, AppDocumentUnifiedMetadata,
   // Collaboration types
   DocumentCollaborator,
-  DocumentComment, DocumentContext,
+  DocumentComment, 
+  DocumentContext,
 
   // Utility types
   DocumentFilterOptions, DocumentFrontendStructure, DocumentParams, DocumentPermissions,
@@ -241,7 +483,57 @@ export type {
   DocumentVersion,
   DocumentVersionHistory, PrivateDocument,
   // Document variations
-  PublicDocument
+  PublicDocument,
+
+
+
+
+   // Search and indexing
+  DocumentSearchResult,
+  DocumentIndex,
+  
+  // Template types
+  DocumentTemplate,
+  TemplateField,
+  
+  // Workflow types
+  DocumentWorkflow,
+  WorkflowStep,
+  WorkflowParticipant,
+  
+  // Styling types
+  DocumentStyles,
+  HeaderStyle,
+  
+  // Export types
+  DocumentExportOptions,
+  ExportResult,
+  ExportFormat,
+  
+  // Analytics types
+  DocumentAnalytics,
+  DocumentUsageStats,
+  
+  // Backup types
+  DocumentBackup,
+  BackupSchedule,
+  
+  // Sharing types
+  DocumentShareLink,
+  DocumentAccessLog,
+  
+  // Batch operations
+  BatchDocumentOperation,
+  BatchOperationResult,
+  
+  // Validation types
+  DocumentValidationRule,
+  ValidationResult,
+  
+  // AI/ML types
+  DocumentAIAnalysis,
+  AISuggestion
+
 };
 
 

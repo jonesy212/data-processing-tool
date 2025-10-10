@@ -17,20 +17,20 @@ interface SnapshotDataParams<T extends BaseDataEntity,
 > {
     snapshotId: string,
     snapshot: T | null,
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshot: T) => void,
     snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: Map<string, T>,
-    subscribers: Subscriber<T, K, Meta, ExcludedFields>[],
+    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     snapshotData: Partial<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     id?: string | number; 
 
     snapshotDataParam?: T; // ← Missing: snapshotData parameter from method
-    dataStoreMethods?: DataStore<T, K, Meta, ExcludedFields>; // ← Missing: dataStoreMethods parameter
+    dataStoreMethods?: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // ← Missing: dataStoreMethods parameter
     snapshotIdNumber?: number; // ← Missing: snapshotId as number (current snapshotId is string)
     returnType?: 'map' | 'array' | 'single' | 'all'; // ← For flexibility
     includeRelations?: boolean; // ← Whether to include related snapshots

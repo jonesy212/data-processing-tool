@@ -3,7 +3,7 @@ import { ProjectManagementActions } from '@/app/actions/ProjectManagementActions
 import { TaskActions } from '@/app/actions/TaskActions';
 import { BaseDataEntity, DefaultMeta } from '@/app/components/configs/BaseConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SnapshotActions } from '@/app/snapshots/SnapshpshotActions';
+import { SnapshotActions } from '@/app/snapshots/SnapshotActions';
 import { addNotification } from '@/features/support/NotificationsSlice';
 import { Snapshot, Snapshots } from '@/LocalStorageSnapshotStore';
 import { NotificationData } from '@/models/display/ShowToast';

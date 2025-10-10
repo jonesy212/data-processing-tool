@@ -4,11 +4,11 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 /**
  * Function to validate if a given metadata object is valid.
  * @template T, K
- * @param {StructuredMetadata<T, K>} meta - The metadata object to validate.
+ * @param {StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>} meta - The metadata object to validate.
  * @param {Record<string, string>} schema - Schema to validate the metadata against, with key-value pairs specifying expected types.
  * @returns {boolean} - Returns true if the metadata is valid, otherwise false.
  */
-function isValidMeta<T, K, Meta, ExcludedFields>(
+function isValidMeta<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
   meta: StructuredMetadata<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, K>,
   schema: Record<string, string> = {}
 ): boolean {

@@ -7,7 +7,7 @@ import { BaseData, Data } from '@/app/models/data/Data';
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
 import { K, T } from "@/app/models/data/dataStoreMethods";
 import { Task } from "@/app/models/tasks/Task";
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import { AnalyticsTool } from "@/app/projects/DataAnalysisPhase/AnalyticsTool";
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { ApiConfig } from "@/app/services/ConfigurationService";
@@ -247,7 +247,7 @@ export const useApiManagerSlice = createSlice({
         [Symbol.iterator]: function (): Iterator<any, any, undefined> {
           throw new Error("Function not implemented.");
         },
-        getData: function (): Promise<Task<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K>>> {
+        getData: function (): Promise<Task<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> {
           throw new Error("Function not implemented.");
         },
         taskId: "",
@@ -258,14 +258,14 @@ export const useApiManagerSlice = createSlice({
         metadataEntries: {},
         customFields: {},
         versionData: [],
-        latestVersion: createLatestVersion<T, K>(),
+        latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
         apiEndpoint: "",
         apiKey: undefined,
         timeout: 0,
         retryAttempts: 0,
         name: "",
         category: "",
-        metadata: {} as WritableDraft<UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K>, never>>,
+        metadata: {} as WritableDraft<UnifiedMetaDataOptions<BaseData<any, any, StructuredMetadata<any, any>>, BaseData<any, any, StructuredMetadata<any, any>>, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>,
         initialState: initializedState,
         meta: undefined,
         mappedSnapshot: undefined,

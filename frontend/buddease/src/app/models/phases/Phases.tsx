@@ -5,7 +5,7 @@ import { calendarPhase } from "@/app/calendar/CalendarPhase";
 import { Lesson } from "@/app/documents/CourseBuilder";
 import { createPhaseHook } from "@/app/hooks/phaseHooks/PhaseHooks";
 import useAsyncHookLinker, { AsyncHookLinkerConfig, LibraryAsyncHook } from "@/app/hooks/useAsyncHookLinker";
-import { CustomPhaseHooks, Phase } from "@/app/phases/Phase";
+import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
 import React from "react";
 import { IDLE_TIMEOUT_DURATION } from "@/app/hooks/commHooks/idleTimeoutUtils";
 

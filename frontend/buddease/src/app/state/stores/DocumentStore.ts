@@ -4,11 +4,12 @@ import { DocumentPhaseTypeEnum } from "@/app/components/documents/DocumentPhaseT
 import { useNotification } from '@/app/context/NotificationContext';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
+import { Comment } from "@/app/models/comments/Comments";
 import { Content } from "@/app/models/content/AddContent";
-import { Comment } from "@/app/models/data/Comments";
 import { BaseData } from '@/app/models/data/Data';
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
 import { ProgressPhase } from "@/app/models/tracker/ProgressBar";
+import { UserRoleEnum } from '@/app/models/UserRoles';
 import { AllTypes } from "@/app/typings/PropTypes";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
@@ -17,7 +18,6 @@ import { useMetadata } from "@/config/useMetadata";
 import { NotificationTypeEnum } from "@/context/NotificationContext";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { DocumentPath } from "@/server/DocumentPath";
-import { UserRoleEnum } from "@/users/UserRoles";
 import { makeAutoObservable } from "mobx";
 import { useMemo, useState } from "react";
 ;
@@ -46,13 +46,13 @@ const documentNotificationMessages: DocumentNotificationMessages = {
 interface DocumentContent<
   T extends  BaseData<any>, 
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
   eventId: string;
   content: Content<T, K, Meta>,
   meta: Meta; 
-  metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>; 
+  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; 
   // Add more properties as needed
 }
 
@@ -64,7 +64,7 @@ interface DocumentContent<
 interface DocumentBase<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -107,8 +107,8 @@ interface DocumentBase<
   // Metadata
   currentMeta: Meta;
   previousMeta?: Meta;
-  currentMetadata: UnifiedMetadata<T, K, Meta, ExcludedFields>;
-  previousMetadata?: UnifiedMetadata<T, K, Meta, ExcludedFields>;
+  currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   // File handling
   file?: FileData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -128,7 +128,7 @@ interface DocumentBase<
   clientInformation?: ClientInformation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   supportedLanguages?: string[];
   body?: WritableDraft<HTMLElement> | HTMLElement;
-  comments?: Comment[] | Comment;
+  comments?: number | (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | CustomComment)[] | undefined;
   
   // Organization
   topics?: string[];
@@ -155,10 +155,10 @@ interface DocumentBase<
   // Options and configuration
   options?: DocumentOptions;
   folderPath: string;
-  documentOptions?: DocumentWithBuilderProps<T, K, Meta, ExcludedFields>;
+  documentOptions?: DocumentWithBuilderProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   // Workflow
-  documentPhase?: DocumentPhase<T, K, Meta, ExcludedFields>;
+  documentPhase?: DocumentPhase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   subtasks?: TodoSubtasks;
   
   // Browser/document properties
@@ -281,7 +281,7 @@ interface DocumentAdditionalProps <
 interface Document<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -341,7 +341,7 @@ export interface DocumentStore<
 const useDocumentStore = <
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -380,7 +380,7 @@ const useDocumentStore = <
       "Document added successfully",
       documentNotificationMessages.ADD_DOCUMENT_SUCCESS,
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     );
   };
 
@@ -396,17 +396,17 @@ const useDocumentStore = <
       `You have successfully deleted the document ${id}`,
       NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_SUCCESS,
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     );
   };
 
   const loadCalendarEventsDocumentContent = async (
     eventId: string,
     area?: string
-  ): Promise<DocumentContent<T, K, StructuredMetadata<T, K>>> => {
+  ): Promise<DocumentContent<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> => {
     try {
       const response = await axiosInstance.get(`/api/calendar-events/${eventId}/document-content`);
-      const meta: StructuredMetadata<T, K> = useMeta<T, K>(area);
+      const meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area);
       const metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area);
 
       return {
@@ -445,7 +445,7 @@ const useDocumentStore = <
       "Document updated successfully",
       NOTIFICATION_MESSAGES.Document.UPDATE_DOCUMENT_SUCCESS,
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     );
   };
 
@@ -537,7 +537,7 @@ const useDocumentStore = <
 // Helper function to convert Document to DocumentData
 const convertDocumentToDocumentData = <T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   document: Document<T, K, Meta>
 ): Document<T, K, Meta> => {
   // Implement conversion logic here

@@ -8,7 +8,7 @@ import { Subscription } from "./Subscription";
 const getEventName = (userId: string, snapshotId: string) => `${userId}:${snapshotId}`;
 
 
-function getSubscription<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function getSubscription<T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   userId: string,
   snapshotId: string
 ): { subscription: Subscription<T, K> | null; subscriber: Subscriber<T, K> | null } {

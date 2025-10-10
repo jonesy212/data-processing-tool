@@ -33,7 +33,7 @@ fetchData = async (): Promise<void> => {
           "Data fetched successfully",
           DATA_NOTIFICATIONS.DataOperationSuccess.FETCH_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       }
       this.dataAnalysis = dataAnalysis;

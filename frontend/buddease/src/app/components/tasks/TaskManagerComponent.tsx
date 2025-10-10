@@ -2,8 +2,11 @@
 import { ProjectActions } from "@/app/actions/ProjectActions";
 import TaskAssignmentSnapshot from "@/app/actions/TaskAssignmentSnapshot";
 import { UIActions } from "@/app/actions/UIActions";
+import { DetailsItem } from '@/app/state/stores/DetailsListStore';
 import { checkTodoCompletion, updateTodo } from "@/app/api/ApiTodo";
-import { handleTaskApiErrorAndNotify, updateTask } from "@/app/api/TasksApi";
+import { Progress } from '';
+import { handleTaskApiErrorAndNotify, updateTaskAPI } from "@/app/api/TasksApi";
+import { Progress } from "@/app/models/tracker/ProgressBar";
 import { brandingSettings } from "@/app/branding/BrandingSettings";
 import updateUI from "@/app/documents/editing/updateUI";
 import ContentRenderer from "@/app/libraries/ui/ContentRenderer";
@@ -14,9 +17,9 @@ import { Project } from "@/app/models/projects/Project";
 import { Task, TaskData } from "@/app/models/tasks/Task";
 import { Member } from "@/app/models/teams/TeamMembers";
 import { ExtendedRouter } from "@/app/pages/MyAppWrapper";
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from "@/app/models/phases/Phase";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
-import { ProjectDetails } from "@/app/projects/Project";
+import { ProjectDetails } from "@/app/models/projects/Project";
 import TaskProgress from "@/app/projects/projectManagement/TaskProgress";
 import TeamProgress from "@/app/projects/projectManagement/TeamProgress";
 import TodoProgress from "@/app/projects/projectManagement/TodoProgress";
@@ -28,25 +31,47 @@ import useTrackerStore from "@/app/state/stores/TrackerStore";
 import { Todo } from "@/app/todos/Todo";
 import { todoService } from "@/app/todos/TodoService";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
-import { VideoData } from "@/app/video/Video";
+import { VideoData } from "@/app/typingsVideo/video/videoTypes";
 import { AxiosError } from "axios";
 import { Router, useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 
-interface TaskAssignmentProps {
+
+interface TaskAssignmentProps<
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
   taskId: () => string;
   newTitle: (newTitle: string) => string;
-  task: Task;
+  task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  // Optional: Add other props that might need the generic types
+  onTaskUpdate?: (task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+  project?: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
-const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
+const TaskManagerComponent = <
+  T extends BaseDataEntity = BaseDataRoot,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>({
   taskId,
   newTitle,
-}) => {
+  task,
+  onTaskUpdate,
+  project
+}: TaskAssignmentProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+ 
   const router = useRouter(); // Get the router object using useRouter hook
   const taskManagerStore = useTaskManagerStore();
   const [localState, setLocalState] = useState<string>("");
-  const [todos, setTodos] = useState<Todo[]>([
+  const [todos, setTodos] = useState<Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>([
     {
       _id: "todoData",
       id: "1",
@@ -92,13 +117,13 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
       subtasks: [],
       snapshot: {} as Snapshot<Data, Data>,
       analysisType: AnalysisTypeEnum.DEFAULT,
-      analysisResults: {} as DataAnalysisResult<T, K>[],
+      analysisResults: {} as DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
       videoData: {} as VideoData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       save: () => Promise.resolve(),
     },
   ]);
 
-  const [tasks, setTasks] = useState<Task[]>([
+  const [tasks, setTasks] = useState<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>([
     {
       _id: "taskData", // Example value
       id: "1",
@@ -284,8 +309,8 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
   const handleUpdateTask =  (
     taskId: string,
     newTitle: string
-  ): Promise<Task | void> => {
-    return new Promise<Task | void>(async (resole, reject) => {
+  ): Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void> => {
+    return new Promise<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | void>(async (resole, reject) => {
       try {
         const updatedTask = await updateTask(Number(taskId), newTitle);
         // Optimistically update local task data
@@ -456,7 +481,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
     // Update UI as per your application's requirements
   };
 
-  const handleTaskClick = async (task: Task) => {
+  const handleTaskClick = async (task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
     // Assuming you have a function to fetch the taskId details based on its ID
     const taskDetails = fetchTaskDetails(task.id);
 
@@ -550,7 +575,7 @@ const TaskManagerComponent: React.FC<TaskAssignmentProps> = ({
               selectedTask={task.selectedTask}
               newProgress={task.progress.percentage} // Fixed: extract number value
               onTaskClick={handleTaskClick}
-              taskProgress={[task as unknown as DetailsItem<Data>]} // Fixed: wrap in array and cast if needed
+              taskProgress={[task as unknown as DetailsItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>]} // Fixed: wrap in array and cast if needed
               onUpdateProgress={(newProgress) =>
                 updateTaskProgress(task.id, newProgress)
               }

@@ -39,7 +39,7 @@ export const useSnapshotApi = <
       snapshotId: string,
       data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      payload: UpdateSnapshotPayload<Data<T, K, StructuredMetadata<T, K>>>
+      payload: UpdateSnapshotPayload<Data<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>
     ) => {
       return snapshotApi.update(snapshotId, data, newData, payload);
     },

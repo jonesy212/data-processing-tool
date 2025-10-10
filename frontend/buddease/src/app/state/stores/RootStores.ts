@@ -1,29 +1,30 @@
 // RootStores.ts
+import { TrackerStore } from '@/app/state/stores/TrackerStore';
 import { ApiManagerStore, useApiManagerStore } from '@/api/ApiStore';
-import { CalendarManagerStore, useCalendarManagerStore } from '@/app/calendar/CalendarEvent';
+import { CalendarManagerStore, useCalendarManagerStore } from '@/app/state/CalendarManagerStore';
 import { EventStore } from '@/app/components/event/EventStore';
 import useUIStore from '@/app/libraries/ui/useUIStore';
-import { RealTimeDataStore } from '@/app/components/models/realtime/RealTimeDataStore';
+import { RealTimeDataStore } from '@/app/models/realtime/RealTimeDataStore';
 import { DataStore, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
-import { AppStore } from '@/state/stores/AppStore';
-import { AuthorizationStore, useAuthorizationStore } from '@/state/stores/AuthorizationStore';
-import BrowserCheckStore from '@/state/stores/BrowserCheckStore';
-import { CollaborationStore, useCollaborationStore } from '@/state/stores/CollaborationStore';
-import useDocumentStore, { DocumentStore } from '@/state/stores/DocumentStore';
-import useIconStore, { IconStore } from '@/state/stores/IconStore';
-import NotificationStore from '@/state/stores/NotificationStore';
-import { ProjectManagerStore, useProjectManagerStore } from '@/state/stores/ProjectStore';
+import { AppStore } from '@/app/state/stores/AppStore';
+import { AuthorizationStore, useAuthorizationStore } from '@/app/state/stores/AuthorizationStore';
+import BrowserCheckStore from '@/app/state/stores/BrowserCheckStore';
+import { CollaborationStore, useCollaborationStore } from '@/app/state/stores/CollaborationStore';
+import useDocumentStore, { DocumentStore } from '@/app/state/stores/DocumentStore';
+import useIconStore, { IconStore } from '@/app/state/stores/IconStore';
+import NotificationStore from '@/app/state/stores/NotificationStore';
+import { ProjectManagerStore, useProjectManagerStore } from '@/app/state/stores/ProjectStore';
 import { CalendarActionPayload, CalendarActionType } from '@/server/database/CalendarActionPayload';
-import { SettingManagerStore } from '@/state/stores/SettingsStore';
+import { SettingManagerStore } from '@/app/state/stores/SettingsStore';
 import { AuthStore, useAuthStore } from '@/state/storesAuthStore';
-import { TaskManagerStore, useTaskManagerStore } from '@/state/stores/TaskStore ';
-import { TeamManagerStore, useTeamManagerStore } from '@/state/stores/TeamStore';
-import useTodoManagerStore, { TodoManagerStore } from '@/state/stores/TodoStore';
-import { ToolbarStore, useToolbarStore } from '@/state/stores/ToolbarStore';
-import useTrackerStore, { TrackerStore } from '@/state/stores/TrackerStore';
-import UIStore from '@/state/stores/UIStore';
-import { UserStore, userManagerStore } from '@/state/stores/UserStore';
-import useVideoStore, { VideoStore } from '@/state/stores/VideoStore';
+import { TaskManagerStore, useTaskManagerStore } from '@/app/state/stores/TaskStore ';
+import { TeamManagerStore, useTeamManagerStore } from '@/app/state/stores/TeamStore';
+import useTodoManagerStore, { TodoManagerStore } from '@/app/state/stores/TodoStore';
+import { ToolbarStore, useToolbarStore } from '@/app/state/stores/ToolbarStore';
+import useTrackerStore, { TrackerStore } from '@/app/state/stores/TrackerStore';
+import UIStore from '@/app/state/stores/UIStore';
+import { UserStore, userManagerStore } from '@/app/state/stores/UserStore';
+import useVideoStore, { VideoStore } from '@/app/state/stores/VideoStore';
 import { action, makeAutoObservable } from 'mobx';
 import { create } from 'mobx-persist';
  
@@ -35,73 +36,96 @@ export interface Dispatchable {
 export type RootState = MobXRootState;
 
 export interface MobXRootState {
-  appManager: AppStore;
+  appStore: AppStore;
+
+
+   // Add missing stores here
+  trackerStore: TrackerStore;
+  taskManagerStore: TaskManagerStore;
+  calendarStore: CalendarManagerStore;
+  undoRedoStore: UndoRedoStore;
+  todoStore: TodoManagerStore;
+  teamStore: TeamManagerStore<T, K, Meta>;
+  userStore: UserStore;
+
   browserCheckStore: BrowserCheckStore
-  toolbarManager: ToolbarStore;
-  uiManager: UIStore;
-  authManager: AuthStore;
+  trackerStore: TrackerStore
+  toolbarStore: ToolbarStore;
+  uiStore: UIStore;
+  authStore: AuthStore;
   iconStore: IconStore;
-  authorizationManager: AuthorizationStore;
-  projectManager: ProjectManagerStore;
-  taskManager: TaskManagerStore;
+  authorizationStore: AuthorizationStore;
+  projectStore: ProjectManagerStore;
+  taskStore: TaskManagerStore;
   
-  trackerManager: TrackerStore;
-  userManager: UserStore;
-  teamManager: TeamManagerStore<T, K, Meta>;
+  trackerStore: TrackerStore;
+  userStore: UserStore;
+  teamStore: TeamManagerStore<T, K, Meta>;
   projectOwner: ProjectManagerStore;
-  dataManager: DataStore<T, K>;
-  dataAnalysisManager: DataAnal;
-  calendarManager: CalendarManagerStore;
-  todoManager: TodoManagerStore;
-  documentManager: DocumentStore;
+  dataStore: DataStore<T, K>;
+  dataAnalysisStore: DataAna;
+  calendarStore: CalendarManagerStore;
+  todoStore: TodoManagerStore;
+  documentStore: DocumentStore;
   
-  apiManager: ApiManagerStore;
-  realtimeManager: RealtimeManagerStore;
-  eventManager: EventManagerStore;
-  collaborationManager: CollaborationManagerStore;
-  entityManager: EntityManagerStore;
-  notificationManager: NotificationManagerStore;
-  settingsManager: SettingsManagerStore;
-  videoManager: VideoStore;
-  randomWalkManager: RandomWalkManagerStore;
-  pagingManager: PagingManagerStore;
-  blogManager: BlogManagerStore;
-  drawingManager: DrawingManagerStore;
-  versionManager: VersionManagerStore;
+  apiStore: ApiManagerStore;
+  realtimeStore: RealtimeManagerStore;
+  eventStore: EventManagerStore;
+  collaborationStore: CollaborationManagerStore;
+  entityStore: EntityManagerStore;
+  notificationStore: NotificationManagerStore;
+  settingsStore: SettingsManagerStore;
+  videoStore: VideoStore;
+  randomWalkStore: RandomWalkManagerStore;
+  pagingStore: PagingManagerStore;
+  blogStore: BlogManagerStore;
+  drawingStore: DrawingManagerStore;
+  versionStore: VersionManagerStore;
 }
 
 export class RootStores {
+  
+  
   browserCheckStore: BrowserCheckStore;
-  appManager: AppStore;
-  toolbarManager: ToolbarStore;
-  uiManager: UIStore;
-  authManager: AuthStore;
+  appStore: AppStore;
+  toolbarStore: ToolbarStore;
+  uiStore: UIStore;
+  authStore: AuthStore;
   iconStore: IconStore;
-  authorizationManager: AuthorizationStore;
-  projectManager: ProjectManagerStore;
-  taskManager: TaskManagerStore;
-  trackerManager: TrackerStore;
-  userManager: UserStore;
-  teamManager: TeamManagerStore<T, K>;
+  authorizationStore: AuthorizationStore;
+  projectStore: ProjectManagerStore;
+  taskStore: TaskManagerStore;
+  trackerStore: TrackerStore;
+  userStore: UserStore;
+
+  trackerStore: TrackerStore;
+  taskManagerStore: TaskManagerStore;
+  calendarStore: CalendarManagerStore;
+  undoRedoStore: UndoRedoStore;
+  todoStore: TodoManagerStore;
+  teamStore: TeamManagerStore<T, K, Meta>;
+  userStore: UserStore;
+
+  teamStore: TeamManagerStore<T, K>;
   projectOwner: ProjectManagerStore;
-  dataManager: DataStore<any, any>;
-  dataAnalysisManager: DataAnalysisManagerStore;
-  calendarManager: CalendarManagerStore;
-  todoManager: TodoManagerStore;
-  documentManager: DocumentStore;
-  apiManager: ApiManagerStore;
-  realtimeManager: RealTimeDataStore;
-  eventManager: EventStore;
-  collaborationManager: CollaborationStore;
-  entityManager: EntityStore;
-  notificationManager: NotificationStore;
-  settingsManager: SettingManagerStore;
-  videoManager: VideoStore;
-  randomWalkManager: RandomWalkStore;
-  pagingManager: PagingManagerStore;
-  blogManager: BlogManagerStore;
-  drawingManager: DrawingManagerStore;
-  versionManager: VersionStore;
+  dataStore: DataStore<any, any>;
+  dataAnalysisStore: DataAnalysisManagerStore;
+  calendarStore: CalendarManagerStore;
+  todoStore: TodoManagerStore;
+  documentStore: DocumentStore;
+  apiStore: ApiManagerStore;
+  realtimeStore: RealTimeDataStore;
+  eventStore: EventStore;
+  collaborationStore: CollaborationStore;
+  entityStore: EntityStore;
+  notificationStore: NotificationStore;
+  settingsStore: SettingManagerStore;
+  videoStore: VideoStore;
+  randomWalkStore: RandomWalkStore;
+  pagingStore: PagingManagerStore;
+  blogStore: BlogManagerStore;
+  drawingStore: DrawingManagerStore;
+  versionStore: VersionStore;
 
 
 
@@ -152,7 +176,7 @@ export class RootStores {
     this.taskManagerStore.dispatch(action);
     this.calendarStore.dispatch(action);
     this.iconStore.dispatch(action);
-    this.authManager.dispatch(action);
+    this.authStore.dispatch(action);
     
   }
 
@@ -166,32 +190,32 @@ export class RootStores {
     this.taskManagerStore.callback(action);
     this.calendarStore.callback(action);
     this.iconStore.callback(action);
-    this.authManager.callback(action);
+    this.authStore.callback(action);
   }
 
   @action
   public setDocumentReleaseStatus(id: number, eventId: number, status: string, isReleased: boolean) {
-    this.documentManager.setDocumentReleaseStatus(id, eventId, status, isReleased);
+    this.documentStore.setDocumentReleaseStatus(id, eventId, status, isReleased);
   }
 
   @action
   public getSnapshotDataKey(documentId: string | number, eventId: number, userId: string) {
-    return this.documentManager.getSnapshotDataKey(documentId, eventId, userId)
+    return this.documentStore.getSnapshotDataKey(documentId, eventId, userId)
   }
 
   @action
   public getData(id: string) {
-    return this.documentManager.getData(id);
+    return this.documentStore.getData(id);
   }
 
   @action
   public updateDocumentReleaseStatus(id: number, eventId: number, status: string, isReleased: boolean) {
-    this.documentManager.updateDocumentReleaseStatus(id, eventId, status, isReleased);
+    this.documentStore.updateDocumentReleaseStatus(id, eventId, status, isReleased);
   }
 
   @action
   public action(type: CalendarActionType, payload: CalendarActionPayload<T, K>) {
-    this.calendarManager.action(type, payload);
+    this.calendarStore.action(type, payload);
   }
 
   public getState(): MobXRootState {
@@ -205,7 +229,7 @@ export class RootStores {
       todoStore: this.todoStore,
       teamStore: this.teamStore,
       userStore: this.userStore,
-      authManager: this.authManager,
+      authStore: this.authManager,
     };
   }
 }

@@ -1,3 +1,4 @@
+import { ApiConfig } from '@/app/api/ApiiConfig';
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { BaseData } from '@/app/models/data/Data';
@@ -6,11 +7,10 @@ import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import { TeamMember } from "@/app/models/teams/TeamMembers";
-import { UserRole } from "@/app/UserRole";
+import { UserRole } from "@/app/models/UserRole";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
 import { ClientConfig } from "@/server/database/Client";
-;
 
 // FLUENCE_API_KEY EXPORT
 export const fluenceApiKey = process.env.FLUENCE_API_KEY;

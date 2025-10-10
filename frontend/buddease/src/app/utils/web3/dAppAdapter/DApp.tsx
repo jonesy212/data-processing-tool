@@ -15,6 +15,7 @@ import { ThemeEnum } from "@/app/libraries/ui/theme/Theme";
 import { ThemeConfig } from "@/app/libraries/ui/theme/ThemeConfig";
 import { BaseData, CommonRelationship, SharedRelationshipData } from '@/app/models/data/Data';
 import { DocumentSize } from "@/app/models/data/StatusType";
+import UserRoles from '@/app/models/UserRoles';
 import FluencePlugin from "@/app/pluginSystem/plugins/fluencePlugin";
 import { DatabaseType } from '@/app/typings/database';
 import { AppEntity } from "@/app/typings/entities/AppEntity";
@@ -22,17 +23,14 @@ import { UserData } from "@/app/users/User";
 import FluenceConnection from "@/app/utils/fluenceProtocoIntegration/FluenceConnection";
 import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
 import YourClass from "@/app/utils/YourClass";
-import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultIncludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { authToken } from "@/server/auth/authToken";
 import Connection from "@/server/database/Connection";
 import isValidAuthToken from "@/server/security/AuthValidation";
-import UserRoles from "@/users/UserRoles";
 import React, { FC } from "react";
 import winston from "winston";
 import { DAppAdapterConfig, DappProps } from "./DAppAdapterConfig";
 import { manageDocuments } from "./functionality/DocumentManagement";
-
-
 
 export type CustomDocumentOptionProps<
   T extends BaseDataEntity = AppEntity,
@@ -41,27 +39,30 @@ export type CustomDocumentOptionProps<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> = DocumentOptions & DappProps<T, K, Meta, ExcludedFields>;
+> = DocumentOptions & DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 interface CustomApp<
-    T extends BaseData<
-    AppEntity,                                    // T
-    AppEntity,                                    // K
-    DefaultMeta<AppEntity, AppEntity>,           // Meta
-    Attachment,                                   // AttachmentType
-    DefaultExcludedFields<AppEntity>             // ExcludedFields
+  T extends BaseData<
+    AppEntity,
+    AppEntity,
+    DefaultMeta<AppEntity, AppEntity>,
+    Attachment,
+    DefaultExcludedFields<AppEntity>,
+    DefaultIncludedFields<AppEntity>
   > = BaseData<
     AppEntity,
     AppEntity,
     DefaultMeta<AppEntity, AppEntity>,
     Attachment,
-    DefaultExcludedFields<AppEntity>
+    DefaultExcludedFields<AppEntity>,
+    DefaultIncludedFields<AppEntity>
   >,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends CommonRelationship<T, K>, SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields> {
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = DefaultIncludedFields<T>
+> extends CommonRelationship<T, K>, SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     id: string;
     name: string;    
     username: string;

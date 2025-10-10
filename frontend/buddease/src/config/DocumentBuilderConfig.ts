@@ -97,7 +97,7 @@ export interface CustomHydrateResult<T> extends IHydrateResult<T> {
   ): CustomHydrateResult<T | TResult>;
 }
 
-const versionInfo: Version<T, K> = {
+const versionInfo: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   id: 123456789,
   versionData: undefined,
   buildVersions: undefined,

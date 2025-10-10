@@ -6,7 +6,7 @@ import { FakeData } from "@/app/intelligence/FakeDataGenerator";
 import { CollaborationOptions } from "@/app/interfaces/options/CollaborationOptions";
 import { CommonData, Customizations } from "@/app/models/CommonData";
 import { Participant } from "@/app/pages/management/ParticipantManagementPage";
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import CommonEvent from "@/app/state/stores/CommonEvent";
 import { DetailsItemExtended } from "@/app/state/stores/DetailsListStore";
@@ -30,7 +30,7 @@ interface SharedDetails<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-          SharedIdentifiers<T, K, Meta, ExcludedFields> {
+          SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   participants: Participant[];
   uploadedAt: Date;
   phase: Phase<any, any>;
@@ -38,7 +38,7 @@ interface SharedDetails<
   fakeData?: FakeData;
   comments?: number | (Comment<T, K, Meta> | CustomComment)[];
   isCompleted: boolean;
-  previousMeta?: StructuredMetadata<T, K>;
+  previousMeta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   label: Label;
 }
 

@@ -173,7 +173,7 @@ class NotificationStore {
       content,
       date: new Date(),
       type: 'default' as string,
-      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "default"} as LogData<T, K, StructuredMetadata<T, K>>
+      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "default"} as LogData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
     };
     this.addNotification(notification);
   };
@@ -187,7 +187,7 @@ class NotificationStore {
       content,
       date: new Date(),
       type: 'success' as string,
-      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "success"} as LogData<T, K, StructuredMetadata<T, K>>
+      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "success"} as LogData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
     };
     this.addNotification(notification);
   };
@@ -201,7 +201,7 @@ class NotificationStore {
       content,
       date: new Date(),
       type: 'error' as string,
-      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "error"} as LogData<T, K, StructuredMetadata<T, K>>
+      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "error"} as LogData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
     };
     this.addNotification(notification);
   };
@@ -215,7 +215,7 @@ class NotificationStore {
       content,
       date: new Date(),
       type: 'info' as string,
-      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "info"} as LogData<T, K, StructuredMetadata<T, K>>
+      completionMessageLog: { date: new Date(), timestamp: new Date(), level: "info"} as LogData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
     };
     this.addNotification(notification);
   };

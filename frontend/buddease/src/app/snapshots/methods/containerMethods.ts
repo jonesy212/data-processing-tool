@@ -6,6 +6,7 @@ import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
 import SnapshotStore from "@/app/snapshotstore";
 import { SnapshotContainer, SnapshotData } from "..";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 
 // src/methods/containerMethods.ts
 export const ContainerMethodsImplementation = {
@@ -13,27 +14,31 @@ export const ContainerMethodsImplementation = {
     T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
     criteria?: CriteriaType,
     category?: Category,
     categoryProperties?: CategoryProperties,
     delegate?: any,
     snapshotData?: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): SnapshotContainer<T, K, Meta, ExcludedFields> | undefined {
+  ): SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
     return this.snapshotContainers?.get(snapshotId);
   },
   
   setSnapshotContainer: function<
-    T extends BaseDataEntity,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
-    container: SnapshotContainer<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    container: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId?: string
   ): void {
     const containerId = snapshotId || container.id;

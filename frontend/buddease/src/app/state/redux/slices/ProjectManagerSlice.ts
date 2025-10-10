@@ -2,7 +2,7 @@ import Milestone from "@/app/components/calendar/CalendarSlice";
 import { Task } from "@/app/components/models/tasks/Task";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { useNotification } from '@/app/context/NotificationContext';
-import { Project } from "@/app/projects/Project";
+import { Project } from '@/app/models/projects/Project';
 import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ProjectState } from "./ProjectSlice";

@@ -21,33 +21,7 @@ import { SortCriteria } from "@/app/settings/SortCriteria";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
 import { SubscriberCollection } from "@/app/subscribers/SubscriberCollection";
 import { DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-
-
-type TeamEntity = BaseDataEntity;
-type TeamK = TeamEntity;
-type TeamMeta = DefaultMeta<TeamEntity, TeamK>;
-type TeamExcludedFields = DefaultExcludedFields<TeamEntity>;
-
-// Core snapshot types
-type TeamSnapshot = Snapshot<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
-type TeamSnapshotData = SnapshotData<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
-type TeamSnapshotStore = SnapshotStore<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
-type TeamSnapshotWithCriteria = SnapshotWithCriteria<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
-type TeamSubscriberCollection = SubscriberCollection<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
-type TeamRealtimeDataItem = RealtimeDataItem<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
-
-// Config
-type TeamSnapshotStoreConfig = SnapshotStoreConfig<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
-type TeamSnapshotsArray = SnapshotsArray<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
-
-// Params
-type TeamParams = SnapshotConfigParams<TeamEntity, TeamK, TeamMeta, TeamExcludedFields>;
-
-type TeamSnapshotFromParams<Params extends SnapshotConfigParams<any, any, any, any>> =
-  Snapshot<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
-
-type TeamSnapshotUnionFromParams<Params extends SnapshotConfigParams<any, any, any, any>> =
-  SnapshotUnion<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
+import { TeamMeta } from '@/app/typings/entities/TeamEntity'
 
 const options: SearchOptions = {
   communicationMode: "email", // Example communication mode

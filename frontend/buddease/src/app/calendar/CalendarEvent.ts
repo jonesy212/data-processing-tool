@@ -10,7 +10,7 @@ import { BaseData } from '@/app/models/data/Data';
 import { Phase, PhaseData } from "@/app/models/phases/Phase";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { CalendarEventWithCriteria } from "@/app/pages/searchs/FilterCriteria";
-import { TagsRecord } from "@/app/snapshots";
+import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { data } from '@/app/snapshots/SnapshotWithCriteria';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
@@ -24,7 +24,7 @@ import { useMeta } from "@/config/useMeta";
 import { useMetadata } from "@/config/useMetadata";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { Attendee } from "./Attendee";
-
+import { ReminderSettings } from '@/app/settings/Reminder'
 
 type CalendarEventBase = BaseDataEntity & {
   title: string;
@@ -179,7 +179,7 @@ interface CalendarEvent<
 }
 
 // Destructure `latestVersion` with a default value
-const { latestVersion = createLatestVersion<T, K>(), ...rest } = data;
+const { latestVersion = createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), ...rest } = data;
 const area = fetchUserAreaDimensions().toString()
 const currentMetadata: AppUnifiedMetadata = useMetadata('calendar-event-area')
 const currentMeta: AppStructuredMetadata = useMeta(area)

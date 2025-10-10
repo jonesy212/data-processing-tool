@@ -34,7 +34,7 @@ import {
 } from "@/app/hooks/userInterface/ThemeCustomization";
 import BrandingSettings from "@/app/libraries/theme/BrandingService";
 import { BaseData, Data } from '@/app/models/data/Data';
-import { CustomPhaseHooks, Phase } from "@/app/phases/Phase";
+import { CustomPhaseHooks, Phase } from '@/app/models/phases/Phase';
 import undoLastAction from "@/app/projects/projectManagement/ProjectManager";
 import { DynamicPromptProvider } from "@/app/prompts/DynamicPromptContext";
 import DynamicErrorBoundary from "@/app/shared/DynamicErrorBoundary";
@@ -407,7 +407,7 @@ async function MyApp({
         expirationDate: undefined,
         localStorage: undefined,
         payload: undefined,
-        callback: function (data: ProjectData<T, K, StructuredMetadata<T, K>>): void {
+        callback: function (data: ProjectData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): void {
           throw new Error("Function not implemented.");
         },
         storeProps: undefined,

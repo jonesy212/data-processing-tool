@@ -30,7 +30,7 @@ const defaultCondition = async (idleTimeoutDuration: number): Promise<boolean> =
     const [currentPhase, setCurrentPhase] = useState<Phase | null>(null);
 
     const area = fetchUserAreaDimensions().toString()
-    const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+    const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
     const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area)
 
     const createPhases = () => {

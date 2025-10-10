@@ -16,7 +16,7 @@ interface SnapshotStorage<
   
   // Container-like properties
   snapshots: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
-  metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>;
+  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   
   // Combined methods

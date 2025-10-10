@@ -35,34 +35,34 @@ class InternalCache<T> {
 // Create a cache instance for your data type (e.g., BaseData)
 // 1. First define your cache with proper generic parameters
 export const internalCache = new InternalCache<
-  Snapshot<T, K, StructuredMetadata<T, K>, keyof T>
+  Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>
 >();
 
 
 // Option 1: For direct Snapshot storage (recommended for most cases)
 export const snapshotCache = new InternalCache<
-  Snapshot<T, K, StructuredMetadata<T, K>, keyof T>
+  Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>
 >();
 
 // Option 2: For Promise storage (if you need async cache operations)
 export const promiseSnapshotCache = new InternalCache<
-  Promise<Snapshot<T, K, StructuredMetadata<T, K>, keyof T>>
+  Promise<Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>>
 >();
 
 
 // Example methods using the cache instance
 const cacheOperations = {
   // For direct Snapshot storage
-  getSnapshot: (id: string): Snapshot<T, K, StructuredMetadata<T, K>, keyof T> | undefined => {
+  getSnapshot: (id: string): Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T> | undefined => {
     return snapshotCache.get(id);
   },
 
-  addSnapshot: (id: string, snapshot: Snapshot<T, K, StructuredMetadata<T, K>, keyof T>): void => {
+  addSnapshot: (id: string, snapshot: Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>): void => {
     snapshotCache.set(id, snapshot);
   },
 
   // For Promise storage
-  getPromiseSnapshot: (id: string): Promise<Snapshot<T, K, StructuredMetadata<T, K>, keyof T> | undefined> => {
+  getPromiseSnapshot: (id: string): Promise<Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T> | undefined> => {
     const cachedPromise = promiseSnapshotCache.get(id);
     if (!cachedPromise) {
       return Promise.resolve(undefined);
@@ -70,7 +70,7 @@ const cacheOperations = {
     return cachedPromise;
   },
 
-  addPromiseSnapshot: (id: string, promise: Promise<Snapshot<T, K, StructuredMetadata<T, K>, keyof T>>): void => {
+  addPromiseSnapshot: (id: string, promise: Promise<Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>>): void => {
     promiseSnapshotCache.set(id, promise);
   },
 

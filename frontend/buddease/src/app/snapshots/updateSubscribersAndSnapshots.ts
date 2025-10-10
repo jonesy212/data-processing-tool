@@ -14,7 +14,7 @@
 // import { userId } from "@/app/users/ApiUser";
 // import { triggerIncentives } from "@/app/utils/web3/applicationUtils";
 // import { Snapshot, CreateSnapshotsPayload, CustomSnapshotData, Snapshots, SnapshotsArray } from "./LocalStorageSnapshotStore";
-// import { SnapshotConfig } from "./snapshot";
+// import { SnapshotConfig } from '@/app/snapshots/Snapshot';
 // import { K, T } from "./SnapshotConfig";
 // import SnapshotStore from "./SnapshotStore";
 // import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
@@ -76,7 +76,7 @@
 //               newData: undefined,
 //               stores: null,
 //               getStore: (  storeId: number,
-//                 snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+//                 snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //                 snapshotId: string,
 //                 snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //                 type: string,
@@ -270,7 +270,7 @@
 //             getSubscriberId: function (): string {
 //               throw new Error("Function not implemented.");
 //             },
-//             getSubscription: function (): Subscription<T, K, Meta, ExcludedFields> {
+//             getSubscription: function (): Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 //               throw new Error("Function not implemented.");
 //             },
 //             onUnsubscribe: function (

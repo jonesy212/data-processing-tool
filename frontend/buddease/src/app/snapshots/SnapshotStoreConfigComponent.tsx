@@ -14,7 +14,7 @@ const SnapshotStoreConfigComponent = <T extends Data, K extends Data>({
   config,
   onUpdate,
   onError,
-}: SnapshotStoreConfigComponentProps<T, K, Meta, ExcludedFields>) => {
+}: SnapshotStoreConfigComponentProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
   const [currentConfig, setCurrentConfig] = useState<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(config);
 
   useEffect(() => {

@@ -23,40 +23,7 @@ import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { rootStores } from "@/app/state/stores/RootStores";
 import ControlPanel from "@/app/utils/ControlPanel";
 import React, { useEffect, useState } from "react";
-
-interface Dependency {
-  // Define the properties of the Dependency type
-  // For example:
-  id: number;
-  name: string;
-  // Add more properties as needed
-}
-
-type Year = number;
-type Years = Year[];
-
-interface IntegrateComponentsProps extends CommonCalendarProps {
-  speed: number;
-  onChangeSpeed: (newSpeed: number) => void;
-  container: NotificationContextProps;
-  view: string;
-  tasks: Task<BaseData, BaseData>[];
-  event: any;
-  milestones: Milestone[];
-  dependencies: Dependency[];
-  progress: Progress;
-  label: Label;
-  labels: Label[];
-  resources: Resource[];
-  month: MonthInfo[];
-  months: Month[];
-  year: YearInfo[];
-  years: Years;
-  projectId: string
-  events: any[],
-  onDateSelect: (date: Date) => void;
-}
-
+import { IntegrateComponentsProps } from '@/app/models/realtime/IntegrationLogic'
 
 // Define a function to integrate existing components into the real-time visualization and control panel
 const integrateComponents: React.FC<IntegrateComponentsProps> = ({

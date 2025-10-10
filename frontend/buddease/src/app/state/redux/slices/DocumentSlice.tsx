@@ -46,7 +46,7 @@ const API_BASE_URL = getAppPath(versionNumber, appVersion);
 interface DocumentSliceState<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -88,7 +88,7 @@ interface ArtworkItem {
 interface DocumentObject<  
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -103,7 +103,12 @@ interface DocumentObject<
   subtasks?: WritableTodoSubtasks;  
   artwork?: ArtworkItem[];
   clientInformation?: ClientInformation; 
-  supportedLanguages: string[]
+  supportedLanguages: string[];
+  meta: Partial<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> & {
+    lifecyclePhase?: string;
+    lifecycleType?: string;
+    previousLifecyclePhase?: string;
+  };
 }
 
 interface ViewTransition {
@@ -113,7 +118,16 @@ interface ViewTransition {
 }
 
 
-function toObject(document: DocumentObject<T, K, StructuredMetadata<T, K>>): object {
+function toObject<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  document: DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+): object {
   return { ...document };
 }
 
@@ -271,7 +285,7 @@ const initialState: DocumentObject<BaseData, BaseData> = {
       timestamp: new Date(),
       metadataEntries: {},
       schema: {},
-      latestVersion: createLatestVersion<T, K>(),
+      latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     },
     getVersion: async () => "1.0",
     versionHistory: {
@@ -687,7 +701,7 @@ function createNewDocument<
           traverseDirectoryPublic: async () => [],
           getStructure:  async () => ({} as Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>),
           getStructureChecksum: async () => ""
-        } as FrontendStructure<T, K, Meta, ExcludedFields>,
+        } as FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       },
     },
     URL: "",
@@ -1153,7 +1167,7 @@ export const restoreDocument = (state: WritableDraft<DocumentSliceState>, action
       `Restoring document with ID: ${documentId} success`,
       NOTIFICATION_MESSAGES.Document.RESTORE_DOCUMENT_SUCCESS,
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     );
   } catch (error) {
     console.error("Error restoring document:", error);
@@ -1420,45 +1434,79 @@ const applyTransformation = <
   transformation(document, value);
 };
 
-const transformations = {
-  tag: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, tag: string) => {
+const transformations = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>() => ({
+
+  lifecycleManagement: <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  document: WritableDraft<
+    DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+  >,
+    lifecycle: string,
+    currentPhase?: string,
+    previousPhase?: string
+  ) => {
+    const phaseInfo = currentPhase ? `[${currentPhase}] ` : '';
+    document.content = `${phaseInfo}${lifecycle} Lifecycle: ${document.content}`;
+
+    if (!document.meta)
+      document.meta = {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
+    document.meta.lifecyclePhase = currentPhase;
+    document.meta.lifecycleType = lifecycle;
+    document.meta.previousLifecyclePhase = previousPhase; // <-- track previous phase
+  },
+
+  tag: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, tag: string) => {
     document.content = `${tag} Tagged: ${document.content}`;
   },
 
-  categorize: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, category: string) => {
+  categorize: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, category: string) => {
     document.content = `${category} Categorized: ${document.content}`;
   },
 
-  customizeView: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, view: string) => {
+  customizeView: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, view: string) => {
     document.content = `${view} Customized: ${document.content}`;
   },
 
-  comment: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, comment: string) => {
+  comment: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, comment: string) => {
     document.content = `${comment} Commented: ${document.content}`;
   },
 
-  mention: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, mention: string) => {
+  mention: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, mention: string) => {
     document.content = `${mention} Mentioned: ${document.content}`;
   },
 
-  assignTask: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, task: string) => {
+  assignTask: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, task: string) => {
     document.content = `${task} Assigned: ${document.content}`;
   },
 
-  requestReview: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, review: string) => {
+  requestReview: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, review: string) => {
     document.content = `${review} Requested: ${document.content}`;
   },
 
-  approve: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, approval: string) => {
+  approve: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, approval: string) => {
     document.content = `${approval} Approved: ${document.content}`;
   },
 
-  reject: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, rejection: string) => {
+  reject: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, rejection: string) => {
     document.content = `${rejection} Rejected: ${document.content}`;
   },
 
   provideFeedback: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     feedback: string
   ) => {
     document.content = `${feedback} Provided: ${document.content}`;
@@ -1466,62 +1514,62 @@ const transformations = {
     
   },
 
-  requestFeedback: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, review: string) => {
+  requestFeedback: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, review: string) => {
     document.content = `${review} Requested: ${document.content}`;
   },
 
   resolveFeedback: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     feedback: string
   ) => {
     document.content = `${feedback} Resolved: ${document.content}`;
   },
 
   collaborate: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     collaborator: string
   ) => {
     document.content = `${collaborator} Collaborated: ${document.content}`;
   },
 
-  version: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, version: string) => {
+  version: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, version: string) => {
     document.content = `${version} Versioned: ${document.content}`;
   },
 
-  annotate: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, annotation: string) => {
+  annotate: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, annotation: string) => {
     document.content = `${annotation} Annotated: ${document.content}`;
   },
 
-  logActivity: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, activity: string) => {
+  logActivity: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, activity: string) => {
     document.content = `${activity} Logged: ${document.content}`;
   },
 
-  revert: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, revert: string) => {
+  revert: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, revert: string) => {
     document.content = `${revert} Reverted: ${document.content}`;
   },
 
-  search: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, search: string) => {
+  search: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, search: string) => {
     document.content = `${search} Searched: ${document.content}`;
   },
 
-  grantAccess: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, access: string) => {
+  grantAccess: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
-  viewHistory: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, view: string) => {
+  viewHistory: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, view: string) => {
     document.content = `${view} Viewed: ${document.content}`;
   },
 
-  compare: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, compare: string) => {
+  compare: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, compare: string) => {
     document.content = `${compare} Compared: ${document.content}`;
   },
 
-  revokeAccess: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, access: string) => {
+  revokeAccess: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
   managePermissions: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     permissions: string
   ) => {
     // Add permission transformation logic
@@ -1529,118 +1577,118 @@ const transformations = {
   },
 
   initiateWorkflow: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     workflow: string
   ) => {
     document.content = `${workflow} Initiated: ${document.content}`;
   },
 
-  automateTasks: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, tasks: string) => {
+  automateTasks: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, tasks: string) => {
     document.content = `${tasks} Automated: ${document.content}`;
   },
 
-  triggerEvents: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, events: string) => {
+  triggerEvents: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, events: string) => {
     document.content = `${events} Triggered: ${document.content}`;
   },
 
   approvalWorkflow: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     workflow: string
   ) => {
     document.content = `${workflow} Approved: ${document.content}`;
   },
 
   lifecycleManagement: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     lifecycle: string
   ) => {
     document.content = `${lifecycle} Lifecycle: ${document.content}`;
   },
 
   connectWithExternalSystem: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     externalSystem: string
   ) => {
     document.content = `${externalSystem} Connected: ${document.content}`;
   },
 
   synchronizeWithCloudStorage: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     cloudStorage: string
   ) => {
     document.content = `${cloudStorage} Synchronized: ${document.content}`;
   },
 
   importFromExternalSource: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     externalSource: string
   ) => {
     document.content = `${externalSource} Imported: ${document.content}`;
   },
 
   exportToExternalSystem: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     externalSystem: string
   ) => {
     document.content = `${externalSystem} Exported: ${document.content}`;
   },
 
-  generateReport: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, report: string) => {
+  generateReport: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, report: string) => {
     document.content = `${report} Generated: ${document.content}`;
   },
 
-  exportReport: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, report: string) => {
+  exportReport: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, report: string) => {
     document.content = `${report} Exported: ${document.content}`;
   },
 
   scheduleReportGeneration: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     report: string
   ) => {
     document.content = `${report} Scheduled: ${document.content}`;
   },
 
   customizeReportSettings: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     report: string
   ) => {
     document.content = `${report} Customized: ${document.content}`;
   },
 
-  backupDocuments: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, backup: string) => {
+  backupDocuments: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, backup: string) => {
     document.content = `${backup} Backed up: ${document.content}`;
   },
 
-  retrieveBackup: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, backup: string) => {
+  retrieveBackup: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, backup: string) => {
     document.content = `${backup} Retrieved: ${document.content}`;
   },
 
-  redaction: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, redaction: string) => {
+  redaction: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, redaction: string) => {
     document.content = `${redaction} Redacted: ${document.content}`;
   },
 
-  accessControls: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, access: string) => {
+  accessControls: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, access: string) => {
     document.content = `${access} Access: ${document.content}`;
   },
 
-  templates: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>, template: string) => {
+  templates: (document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>, template: string) => {
     document.content = `${template} Templates: ${document.content}`;
   },
 
   updateDocumentVersion: (
-    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>>,
+    document: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
     version: string
   ) => {
     document.content = `${version} Version updated: ${document.content}`;
   },
 
   getDocumentVersion: (
-    document: WritableDraft<DocumentData<T, K,  StructuredMetadata<T, K>, keyof T>>,
+    document: WritableDraft<DocumentData<T, K,  StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, keyof T>>,
     version: string
   ) => {
     document.content = `${version} Version retrieved: ${document.content}`;
   },
-};
+});
 
 // function createNewDocument(documentId: string): DocumentObject {
 //   return {
@@ -1979,7 +2027,7 @@ export const useDocumentManagerSlice = createSlice({
       },
       prepare: () => {
         // Generate a new document with default values
-        const newDocument: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K>>> = {
+        const newDocument: WritableDraft<DocumentObject<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> = {
           _id: "i989adn8dd",
           id: Math.floor(Math.random() * 1000).toString(), // Generate a unique ID
           title: "New Document",
@@ -2682,7 +2730,7 @@ export const useDocumentManagerSlice = createSlice({
           "Document deleted successfully",
           NOTIFICATION_MESSAGES.Document.DELETE_DOCUMENT_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } else {
         useNotification().notify(
@@ -2711,7 +2759,7 @@ export const useDocumentManagerSlice = createSlice({
           `Filtering documents by keyword: ${filterKeyword} success`,
           NOTIFICATION_MESSAGES.Document.FILTER_DOCUMENTS_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         console.error("Error filtering documents:", error);
@@ -2739,7 +2787,7 @@ export const useDocumentManagerSlice = createSlice({
           `Sorting documents by sort key: ${String(sortKey)} success`,
           NOTIFICATION_MESSAGES.Document.SORT_DOCUMENT_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         console.error("Error sorting documents:", error);
@@ -2806,7 +2854,7 @@ export const useDocumentManagerSlice = createSlice({
           "Document downloaded successfully",
           NOTIFICATION_MESSAGES.Document.DOWNLOAD_DOCUMENT_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
         // Additional logic for downloading document...
       } else {
@@ -2832,7 +2880,7 @@ export const useDocumentManagerSlice = createSlice({
           "Document exported successfully",
           NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENT_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
         // Additional logic for exporting document...
       } else {
@@ -2866,7 +2914,7 @@ export const useDocumentManagerSlice = createSlice({
               "Exporting documents success",
               NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_SUCCESS,
               new Date(),
-              NotificationTypeEnum.OperationSuccess
+              NotificationTypeEnum.OPERATION_SUCCESS
             );
             // Additional logic for exporting documentList...
             return;
@@ -2892,7 +2940,7 @@ export const useDocumentManagerSlice = createSlice({
               "Exporting documents success",
               NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_SUCCESS,
               new Date(),
-              NotificationTypeEnum.OperationSuccess
+              NotificationTypeEnum.OPERATION_SUCCESS
             );
             // Additional logic for exporting documentList...
             return;
@@ -2914,7 +2962,7 @@ export const useDocumentManagerSlice = createSlice({
           "Exporting documents success",
           NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         console.error("Error exporting documents:", error);
@@ -2938,7 +2986,7 @@ export const useDocumentManagerSlice = createSlice({
           "Importing documents success",
           NOTIFICATION_MESSAGES.Document.IMPORT_DOCUMENTS_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         console.error("Error importing documents:", error);
@@ -2962,7 +3010,7 @@ export const useDocumentManagerSlice = createSlice({
           `Archiving document with ID: ${documentId} success`,
           NOTIFICATION_MESSAGES.Document.ARCHIVE_DOCUMENT_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         console.error("Error archiving document:", error);
@@ -3459,7 +3507,7 @@ export const useDocumentManagerSlice = createSlice({
           `Fetching document with ID: ${documentId} success`,
           NOTIFICATION_MESSAGES.Document.FETCH_DOCUMENT_FROM_ARCHIVE_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         console.error("Error fetching document from archive:", error);
@@ -3487,7 +3535,7 @@ export const useDocumentManagerSlice = createSlice({
 //       `Restoring document with ID: ${documentId} success`,
 //       NOTIFICATION_MESSAGES.Document.RESTORE_DOCUMENT_SUCCESS,
 //       new Date(),
-//       NotificationTypeEnum.OperationSuccess
+//       NotificationTypeEnum.OPERATION_SUCCESS
 //     );
 //   } catch (error) {
 //     console.error("Error restoring document:", error);
@@ -3525,7 +3573,7 @@ export const useDocumentManagerSlice = createSlice({
               `Moving document with ID: ${documentId} to destination with ID: ${destinationId} success`,
               NOTIFICATION_MESSAGES.Document.MOVE_DOCUMENT_SUCCESS,
               new Date(),
-              NotificationTypeEnum.OperationSuccess
+              NotificationTypeEnum.OPERATION_SUCCESS
             );
           } else {
             throw new Error(
@@ -3556,7 +3604,7 @@ export const useDocumentManagerSlice = createSlice({
         `Copying document with ID: ${action.payload} success`,
         NOTIFICATION_MESSAGES.Document.COPY_DOCUMENT_SUCCESS,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     },
 
@@ -3592,7 +3640,7 @@ export const useDocumentManagerSlice = createSlice({
           `Merging document with ID: ${sourceId} to destination with ID: ${destinationId} success`,
           NOTIFICATION_MESSAGES.Document.MERGE_DOCUMENTS_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         );
       } catch (error) {
         console.error("Error merging documents:", error);
@@ -4849,7 +4897,7 @@ export const useDocumentManagerSlice = createSlice({
         `Downloading document with ID: ${action.payload.id} success`,
         NOTIFICATION_MESSAGES.Document.DOWNLOAD_DOCUMENT_SUCCESS,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     });
 
@@ -4861,7 +4909,7 @@ export const useDocumentManagerSlice = createSlice({
         "Exporting documents success",
         NOTIFICATION_MESSAGES.Document.EXPORT_DOCUMENTS_SUCCESS,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     });
 
@@ -4872,7 +4920,7 @@ export const useDocumentManagerSlice = createSlice({
         `Downloading document with ID: ${action.payload.id} success`,
         NOTIFICATION_MESSAGES.Document.DOWNLOAD_DOCUMENT_SUCCESS,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     });
   },

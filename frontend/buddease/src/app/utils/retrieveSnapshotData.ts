@@ -35,7 +35,7 @@ const SNAPSHOT_DATA_API_URL = "https://example.com/api/snapshot";
 interface SnapshotDataResponse<
   T extends  BaseData<any> = BaseData<any, any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >
   extends Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string | number;
@@ -49,7 +49,7 @@ interface SnapshotDataResponse<
 interface RetrievedSnapshot<
   T extends  BaseData<any> =BaseData<any, any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
   // ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
   extends Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>{
@@ -503,7 +503,7 @@ const converSnapshotStore = <
     category: retrievedSnapshot.category,
     description: '',
     isActive: true,
-    version: {} as Version<T, K>,
+    version: {} as Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     status: StatusType.Inactive,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -665,7 +665,7 @@ const converSnapshotStore = <
           payload: FetchSnapshotPayload<T, K> | undefined,
           snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           payloadData: T |  BaseData<any>,
-          category: Category | undefined,
+          category?: Category,
           categoryProperties: CategoryProperties | undefined,
           timestamp: Date,
           data: T,
@@ -677,7 +677,7 @@ const converSnapshotStore = <
         id: string | number | undefined,
         snapshotId: string,
         snapshotData: T,
-        category: Category | undefined,
+        category?: Category,
         categoryProperties: CategoryProperties | undefined,
         dataStoreMethods: DataStore<T, K>
       ) => Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined;
@@ -692,7 +692,7 @@ const converSnapshotStore = <
         event: Event,
         id: number,
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-        category: Category | undefined,        categoryProperties: CategoryProperties | undefined,
+        category?: Category,        categoryProperties: CategoryProperties | undefined,
         dataStoreMethods: DataStore<T, K>,
         data: T,
         dataCallback?: (
@@ -1117,7 +1117,7 @@ const converSnapshotStore = <
     getSnapshot: (
       snapshot: (id: string) =>
         | Promise<{
-          category: Category | undefined;
+          category?: Category;
           categoryProperties: CategoryProperties;
           timestamp: string | number | Date | undefined;
           id: string | number | undefined;
@@ -1209,7 +1209,7 @@ const converSnapshotStore = <
       snapshotId: string,
       snapshot: T | null,
       snapshotData: T,
-      category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
+      category?: Category,      categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
       snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
@@ -1218,7 +1218,7 @@ const converSnapshotStore = <
       data: Map<string, T>,
       subscribers: Subscriber<T, K>[],
       snapshotContainer?: T,
-      snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>  | null,
+      snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>  | null,
     ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {},
     setSnapshots: () => {},
     clearSnapshot: () => {},
@@ -1402,7 +1402,7 @@ const retrieveData = async () => {
 
 export const retrieveSnapshotData = <
   T extends BaseData<any>, K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(id: string
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(id: string
 ): Promise<RetrievedSnapshot<SnapshotDataResponse<T, K>, K> | null> => {
   return new Promise<RetrievedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(
     async (resolve, reject) => {

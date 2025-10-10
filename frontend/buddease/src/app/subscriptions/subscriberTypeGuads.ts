@@ -38,7 +38,7 @@ function handleSubscription<
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotId: string,
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  category: Category | undefined,  snapshotConfig: SnapshotStoreConfig<T, K>,
+  category?: Category,  snapshotConfig: SnapshotStoreConfig<T, K>,
   callback: (snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K> | null,
   snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): void {

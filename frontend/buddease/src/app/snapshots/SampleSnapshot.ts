@@ -11,16 +11,16 @@ class SampleSnapshot<
   implements Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string;
   data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
-  meta: StructuredMetadata<T, K>;
-  events: CombinedEvents<T, K, Meta, ExcludedFields>;
+  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  events: CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   mappedMeta?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   mappedSnapshot?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   
   constructor(
     id: string,
     data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-    meta: StructuredMetadata<T, K>,
-    events?: CombinedEvents<T, K, Meta, ExcludedFields>
+    meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    events?: CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) {
     this.id = id;
     this.data = data;

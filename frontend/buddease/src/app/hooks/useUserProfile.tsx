@@ -48,7 +48,7 @@ const useUserProfile = () => {
           'Profile updated successfully.',
           NOTIFICATION_MESSAGES.UserProfile.PROFILE_SAVING_SUCCESS,
           new Date(),
-          NotificationTypeEnum.OperationSuccess
+          NotificationTypeEnum.OPERATION_SUCCESS
         ); // Notify user about successful profile update
       } else {
         // Handle error response

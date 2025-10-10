@@ -56,7 +56,7 @@ interface FileSystemService {
 export default class AppStructure<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -391,6 +391,6 @@ export const createAppStructure = <
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(fileSystem?: FileSystemService): AppStructure<T, K, Meta, ExcludedFields> => {
-  return new AppStructure<T, K, Meta, ExcludedFields>("frontend", fileSystem);
+>(fileSystem?: FileSystemService): AppStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
+  return new AppStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>("frontend", fileSystem);
 };

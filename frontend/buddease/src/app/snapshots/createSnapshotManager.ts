@@ -6,10 +6,10 @@ export function createSnapshotManager<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
-  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   storeId: number,
   category?: Category
-): SnapshotManager<T, K, Meta, ExcludedFields> {
+): SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {
     // 🔹 Extend from snapshotStore
     ...snapshotStore,

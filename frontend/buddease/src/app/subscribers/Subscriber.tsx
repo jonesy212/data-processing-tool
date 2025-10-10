@@ -1880,7 +1880,7 @@ class Subscriber<
           snapshotId: string,
           snapshot: T | null,
           snapshotData: T,
-          category: Category | undefined,
+          category?: Category,
           callback: (snapshot: T) => void,
           snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           type: string,

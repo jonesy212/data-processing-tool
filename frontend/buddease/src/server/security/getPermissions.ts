@@ -1,6 +1,6 @@
 // getPermissions.ts
 
-import { UserRoleEnum } from "@/users/UserRoles";
+import { UserRoleEnum } from '@/app/models/UserRoles';
 
 // Defining permissions for each role
 interface Permissions {

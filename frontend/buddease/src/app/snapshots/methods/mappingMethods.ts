@@ -28,7 +28,6 @@ export const MapMethods = {
     this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  // ✅ Add this parameter
     storeIds: number[],
     snapshotId: string,
-    category: Category | undefined,
     categoryProperties: CategoryProperties | undefined,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
     timestamp: string | number | Date | undefined,
@@ -40,7 +39,7 @@ export const MapMethods = {
     callback: (
       storeIds: number[],
       snapshotId: string,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
       timestamp: string | number | Date | undefined,
@@ -50,7 +49,9 @@ export const MapMethods = {
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,  
       data: K,
       index: number
-    ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    
+    category?: Category,
   ): Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     // Implementation using this.* for instance access
     if (!this.delegate || this.delegate.length === 0) {

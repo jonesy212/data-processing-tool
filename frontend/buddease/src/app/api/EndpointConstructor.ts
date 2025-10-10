@@ -19,21 +19,37 @@ const constructTarget = (
     limit: 0,
   }
 ): Target => {
-  const endpoint = endpoints[endpointCategory][endpointKey];
+const constructTarget = (
+  endpointCategory: keyof Endpoints,
+  endpointKey: string,
+  params: { sortBy: string; limit: number; [key: string]: string | number } = {
+    sortBy: "",
+    limit: 0,
+  }
+): Target => {
+  const category = endpoints[endpointCategory];
+  
+  // Runtime validation
+  if (!category || !(endpointKey in category)) {
+    throw new Error(`Invalid endpoint: ${endpointCategory}.${endpointKey}`);
+  }
+  
+  const endpoint = (category as any)[endpointKey];
+  
   if (typeof endpoint === "string") {
-    // If the endpoint is a string, directly concatenate with params
     const queryString = Object.entries(params)
+      .filter(([_, value]) => value !== undefined && value !== null && value !== "")
       .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
       .join("&");
-    const url = `${endpoint}?${queryString}`;
-    return { endpoint: url, params };
-  } else if (typeof endpoint === "function") {
-    // If the endpoint is a function, call it with params
-    const url = endpoint(...Object.values(params));
-    return { endpoint: url, params };
-  } else {
-    throw new Error(`Invalid endpoint type for ${endpointCategory}/${endpointKey}`);
-  }
+    const url = queryString ? `${endpoint}?${queryString}` : endpoint;
+      return { endpoint: url, params };
+    } else if (typeof endpoint === "function") {
+      const url = endpoint(...Object.values(params));
+      return { endpoint: url, params };
+    } else {
+      throw new Error(`Invalid endpoint type for ${endpointCategory}.${endpointKey}`);
+    }
+  };
 };
 
 export const target = constructTarget("apiWebBase", "login", {

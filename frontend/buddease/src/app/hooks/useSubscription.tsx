@@ -60,8 +60,8 @@ const useSubscription = <
       unsubscribeReason: string;
       unsubscribeData: any;
     },
-    callback: Callback<Snapshot<SnapshotContainerData<T, K, Meta, ExcludedFields>,
-      SnapshotContainerData<T, K, Meta, ExcludedFields>>> | null
+    callback: Callback<Snapshot<SnapshotContainerData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      SnapshotContainerData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> | null
   ) => {
     // Filter out the subscriber with the given subscriberId
     const updatedSubscribers = subscribers.filter(
@@ -95,7 +95,7 @@ const useSubscription = <
     if (callback) {
       // Here, assuming you want to pass a Snapshot object to the callback.
       // You may need to adjust the structure of the Snapshot data accordingly.
-      const snapshot: Snapshot<SnapshotContainerData<T, K, Meta, ExcludedFields>> = {
+      const snapshot: Snapshot<SnapshotContainerData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
         // Populate the Snapshot with the relevant data
         snapshotId: unsubscribeDetails.snapshotId,
         snapshotData: unsubscribeDetails.unsubscribeData,

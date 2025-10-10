@@ -23,7 +23,7 @@ interface UpdateSnapshotParams<
   newData: Snapshot<T, K, Meta, Excluded>;
   timestamp: Date;
   payload: UpdateSnapshotPayload<T>;
-  category: Category | undefined;
+  category?: Category;
   payloadData: T | K;
   mappedSnapshotData: Map<string, Snapshot<T, K, Meta, Excluded>>;
   delegate: SnapshotWithCriteria<T, K, Meta, Excluded>[];
@@ -72,7 +72,7 @@ type SnapshotConfigParams<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  Excluded extends keyof T = DefaultExcludedFields<T>,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   Extras extends unknown[] = []
 > = [T, K, Meta, Excluded, ...Extras];
 ```

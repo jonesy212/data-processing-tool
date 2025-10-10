@@ -1,3 +1,4 @@
+
 import { BaseData } from '@/app/models/data/Data';
 import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
@@ -5,6 +6,7 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { logTradeActivity, updateUserPortfolio } from '@/app/api/PortfolioService';
 import { getMarketPrice } from '@/app/api/PriceApiService';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { TradeLogger } from "@/app/libraries/logging/TradeLogger";
 
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 
@@ -175,17 +177,26 @@ function getSnapshotFromStore<
   store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotId: string
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined {
-  // Implement your actual logic here based on how snapshots are stored
-  // For example:
+  
   if ('getSnapshot' in store && typeof store.getSnapshot === 'function') {
-    return store.getSnapshot(snapshotId);
+    const result = store.getSnapshot(snapshotId);
+    
+    // Handle both sync and async returns
+    if (result instanceof Promise) {
+      const resolvedResult = await result;
+      // The resolved result should be the object with snapshotData, not the snapshot itself
+      return resolvedResult?.snapshotData || resolvedResult;
+    } else {
+      // For sync returns, handle the object structure
+      return (result as any)?.snapshotData || result;
+    }
   }
   
-  // Or if it's a Map-like structure:
+  // Alternative access patterns
   if (store instanceof Map) {
     return store.get(snapshotId);
   }
   
-  // Fallback to type assertion if you're sure about the structure
-  return (store as any)[snapshotId];
+  // Fallback to direct property access
+  return (store as any).snapshots?.[snapshotId] || (store as any)[snapshotId];
 }

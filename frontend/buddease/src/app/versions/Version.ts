@@ -1,5 +1,6 @@
 // Version.ts
 import metadata from '@/app/layout';
+import UserRoles from '@/app/models/UserRoles';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { SnapshotStoreConfig } from '@/app/snapshots';
@@ -9,7 +10,6 @@ import { UserData } from "@/app/users/User";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { useAuth } from "@/context/AuthContext";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import UserRoles from '@/users/UserRoles';
 
 import { snapshotContainer } from '@/app/snapshots/SnapshotContainer';
       
@@ -37,13 +37,13 @@ import { HistoryEntry } from '@/app/state/stores/HistoryStore';
 import { User } from "@/app/users/User";
 import { fluenceApiKey } from "@/app/utils/web3/dAppAdapter/DAppAdapterConfig";
 import getAppPath from "@/config/appStructure/appPath";
-import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { dataVersions } from "@/config/DocumentBuilderConfig";
 import { MetadataEntriesType, StructuredMetadata } from "@/config/StructuredMetadata";
 import { BumpVersionOptions } from "./BumpVersionOptions";
 import { VersionData, VersionHistory } from "./VersionData";
 
-interface ExtendedVersion extends Version<T, K> {
+interface ExtendedVersion extends Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   name: string;
   url: string;
   versionNumber: string;
@@ -59,96 +59,103 @@ interface BuildVersion {
   frontend: FrontendStructure<T, K> | undefined
 }
 
-interface Version<
+export interface Version<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  id: number;
-  versionData?: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null; // Adjust based on actual type
-  buildVersions?: BuildVersion | undefined; // Adjust based on actual type
-  isActive: boolean;
-  previousVersion?: Version<T, K, Meta> | null;
-  releaseDate: string | Date | undefined;
-  transformToStructureItems(data: any): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Required
-  getStructure?: () => Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined>; // Mark as optional
-  bumpVersion: (type: "major" | "minor" | "patch", notes?: string) => Version<T, K, Meta>;
-  
-  versionNotes: string[];
+  id: string | number;
   major: number;
   minor: number;
   patch: number;
-  name: string;
-  url: string;
-  versionNumber: string;
-  documentId: string | number;
-  draft: boolean;
-  userId: string;
-  content: string;
-  description: string;
   buildNumber: number | string;
-  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  versions: Versions<T, K> | null; // Adjust based on actual type
+  versionNumber: string;
+  name: string;
+  description: string;
+  content: string;
+  documentId: string | number;
   appVersion: string;
-  checksum: string;
-  parentId: string | null;
-  parentType: string;
-  parentVersion: string;
-  parentTitle: string;
-  parentContent: string;
-  parentName: string;
-  parentUrl: string;
-  parentChecksum: string;
-  parentAppVersion: string;
-  parentVersionNumber: string;
-  parentMetadata?: {} | undefined;
-  createdAt?: string | Date | undefined;
-  updatedAt?: string | Date | undefined;
-  deletedAt?: string | Date | undefined;
-  isLatest: boolean;
+  draft: boolean;
+  url: string;
+  userId: string;
+  isActive: boolean;
   isPublished: boolean;
-  publishedAt: Date | null;
-  source: string;
-  status: string;
+  isLatest: boolean;
+  publishedAt?: Date | null;
+  releaseDate?: string | Date;
+  status?: string;
+  source?: string;
+
+  // Metadata and relationships
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  parentId?: string | null;
+  parentType?: string;
+  parentVersion?: string;
+  parentVersionNumber?: string;
+  parentAppVersion?: string;
+  parentName?: string;
+  parentTitle?: string;
+  parentContent?: string;
+  parentUrl?: string;
+  parentChecksum?: string;
+  parentMetadata?: Record<string, any>;
+
+  // Workspace
   workspaceId: string;
   workspaceName: string;
   workspaceType: string;
   workspaceUrl: string;
-  workspaceViewers: any[]; // Adjust based on actual type
-  workspaceAdmins: any[]; // Adjust based on actual type
+  workspaceViewers: any[];
+  workspaceAdmins: any[];
   workspaceMembers: any[];
-  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined,
+
+  // Data + structure
+  data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  versionData?: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   _structure: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
-  versionHistory: VersionHistory<T, K>;
-  getVersionNumber: (() => string) | undefined;
+  structureData: string;
+  attachments?: Attachment[];
+  excludedFields?: ExcludedFields[];
+  includedFields?: IncludedFields[];
+
+  // Methods
+  getVersionNumber(): string;
+  calculateHash(): string;
+  generateChecksum(version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string;
   updateStructureHash(): Promise<void>;
   setStructureData(newData: string): void;
   hash(value: string): string;
-  generateChecksum(version: Version<T, K, Meta>): string;
-  generateContentChecksum?(content: string): string 
-  currentHash: string; // Property to hold the current hash value
-  structureData: string; // Property to hold the structure data
-  calculateHash(): string; // Method to calculate the hash
+  transformToStructureItems(data: any): AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  getStructure?(): Promise<Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined>;
+  bumpVersion(type: "major" | "minor" | "patch", notes?: string): Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
+  // Version linking
+  previousVersion?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  versions?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
+  versionNotes: string[];
 }
 
 interface Versions<
-  T extends BaseDataEntity,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
-  version?: Version<T, K, Meta>[];
+  version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   versionData?: string | number | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  backend: BackendStructure | undefined;
-  frontend: FrontendStructure<T, K> | undefined;
-  history: HistoryEntry[] | undefined;
+  backend?: BackendStructure;
+  frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  history?: HistoryEntry[];
 }
 
 const area = fetchUserAreaDimensions().toString()
 
-function createDefaultMeta<T extends BaseDataEntity, K extends T = T>(): StructuredMetadata<T, K> {
+function createDefaultMeta<T extends BaseDataEntity, K extends T = T>(): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   
 const { latestVersion = createLatestVersion(), ...rest } = data;
   
@@ -169,9 +176,9 @@ const { latestVersion = createLatestVersion(), ...rest } = data;
       createdBy: "Unknown",
       metadata: {} as UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       initialState: {} as InitializedState<T, K>, // Fixed
-      meta: {} as StructuredMetadata<T, K>, // Fixed
-      mappedSnapshot: new Map<string, Snapshot<T, K, StructuredMetadata<T, K>, never>>(), 
-      events: {} as EventManager<T, K, StructuredMetadata<T, K>>,
+      meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Fixed
+      mappedSnapshot: new Map<string, Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>(), 
+      events: {} as EventManager<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       latestVersion,
       schema: {}
     },
@@ -179,7 +186,7 @@ const { latestVersion = createLatestVersion(), ...rest } = data;
     isActive: true,
     permissions: [],
     customFields: {},
-    latestVersion: createLatestVersion<T, K>(),
+    latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     versionData: "",
     sharedMetadata: sharedMetadata,
     sharedBaseData: {} as SharedRelationshipData<any>,
@@ -192,17 +199,17 @@ function createVersion<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
->(overrides?: Partial<Version<T, K, Meta>>, previousVersion?: Version<T, K, Meta> | null): Version<T, K, Meta> {
+>(overrides?: Partial<Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, previousVersion?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null): Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   const now = new Date();
 
   // Helper function defined outside the version object
-  const generateChecksum = (version: Version<T, K, Meta>): string => {
+  const generateChecksum = (version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string => {
     const content = `${version.major}.${version.minor}.${version.patch}.${version.appVersion}`;
     return crypto.createHash('md5').update(content).digest('hex').substring(0, 16);
   };
   
   // Default structure
-  const defaultVersion: Version<T, K, Meta> = {
+  const defaultVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     id: 1,
     versionData: null,
     buildVersions: undefined,
@@ -223,16 +230,16 @@ function createVersion<
     buildNumber: "build_001",
     transformToStructureItems: (data: any) => [],
     bumpVersion: function (
-      this: Version<T, K, Meta>, 
+      this: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
       type: "major" | "minor" | "patch" = "patch", 
       notes?: string,
       options: BumpVersionOptions = {}
-    ): Version<T, K, Meta> {
+    ): Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
       // Create a new version object with updated version numbers
       const newVersionId = Math.floor(Math.random() * 1000000);
       
       
-      const newVersion: Version<T, K, Meta> = {
+      const newVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         ...this,
         id: newVersionId,
         major: this.major,
@@ -321,7 +328,7 @@ function createVersion<
       return newVersion
     },
     // Helper method for checksum generation (simplified)
-    generateChecksum: function(version: Version<T, K, Meta>): string {
+    generateChecksum: function(version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
       // In a real implementation, you'd use a proper hash function
       const content = `${version.major}.${version.minor}.${version.patch}.${version.appVersion}`;
       return crypto.createHash('md5').update(content).digest('hex').substring(0, 16);
@@ -330,7 +337,7 @@ function createVersion<
       area: area,
       currentMeta: createDefaultMeta<T, K>(), // Use the factory function
       metadataEntries: {},
-      latestVersion: createLatestVersion<T, K>(),
+      latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
       schema: {}
     },
     versions: null,
@@ -367,7 +374,7 @@ function createVersion<
 
     versionHistory: {
       versionData: {},
-      latestVersion: createLatestVersion<T, K>(), 
+      latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), 
       lastUpdated: new Date(),
       history: [], 
       timestamp: new Date(),
@@ -440,7 +447,7 @@ function createVersion<
 
 
 // DevVersion: Extends BaseVersion and adds development-specific properties
-interface DevVersion<T extends BaseDataEntity, K extends T = T> extends Version<T, K> {
+interface DevVersion<T extends BaseDataEntity, K extends T = T> extends Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   buildDate: string;
   commitHash: string;
   commitDate: string;
@@ -484,31 +491,40 @@ interface DevVersion<T extends BaseDataEntity, K extends T = T> extends Version<
   pullRequestMergeCommitCommitterEmail: string;
 }
 
-
 class VersionImpl<
-  T extends BaseDataEntity = BaseDataRoot,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
-> implements Version<T, K, Meta>, VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> implements Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+             VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
+{
+  id: number = 0;
   major: number = 0;
   minor: number = 0;
   patch: number = 0;
+  name: string;
   appVersion: string = "1.0.0";
+  draft: boolean = false
+  buildNumber: number | string = 0;
+  versionNumber: string = "";
+  name: string = ""
+  description: string = "";
+  isPublished: boolean = false;
+  publishedAt: Date | null = null;
+  isActive: boolean = true;
+  isLatest: boolean = true;
   checksum: string = "";
   releaseDate: string | Date | undefined = undefined;
-  description: string = "";
   content: string = "";
-  id: number = 0;
 
-  name: string;
-  url: string;
-  versionNumber: string;
-  documentId: string | number;
-  draft: boolean;
-  userId: string;
-  buildNumber: number | string;
+  url: string = "";
+  documentId: string | number = 0;
+  userId: string = "";
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  versions: Versions<T, K, Meta> | null
+  versions: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
   
   // Add other properties as needed
   parentId: string | null;
@@ -522,10 +538,6 @@ class VersionImpl<
   parentMetadata?: {};
   parentAppVersion: string;
   parentVersionNumber: string;
-  isLatest: boolean;
-  isActive: boolean;
-  isPublished: boolean;
-  publishedAt: Date | null;
   source: string;
   status: string;
   workspaceId: string;
@@ -611,7 +623,7 @@ class VersionImpl<
       name: string;
       url: string;
       metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-      versions: Versions<T, K> | null;
+      versions: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
       versionHistory: VersionHistory<T, K>;
       userId: string;
       documentId: string | number;
@@ -765,7 +777,7 @@ class VersionImpl<
     name: string;
     url: string;
     metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-    versions: Versions<T, K, Meta> | null;
+    versions: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
     versionHistory: VersionHistory<T, K>;
     userId: string;
     documentId: string | number;
@@ -904,7 +916,7 @@ class VersionImpl<
       revisionNotes: undefined, 
       area: "defaultMetadata", 
       metadataEntries: {}, 
-      latestVersion: createLatestVersion<T, K>(),
+      latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
       schema: {}
     };
     this.metadata = versionInfo.metadata
@@ -1138,7 +1150,7 @@ class VersionImpl<
     checksum: string;
     data: Data<BaseData<any>>[];
     name: string;
-    versions: Versions<T, K>;
+    versions: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     metadata: {
       author: string | undefined;
       timestamp: string | Date | undefined
@@ -1199,7 +1211,7 @@ class VersionImpl<
     changes: string[],
     attachments: Attachment[],
     updatedAt: Date | undefined;
-  }): Version<T, K, Meta> {
+  }): Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     // Create processedInfo with all type conversions
     const processedInfo = {
       // Convert id to number
@@ -1499,13 +1511,13 @@ async getVersionData?(): Promise<VersionData<T, K, Meta, AttachmentType, Exclude
   }
 
   // Method to generate checksum
-  generateChecksum(version: Version<T, K, Meta>): string {
+  generateChecksum(version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
     const content = `${version.major}.${version.minor}.${version.patch}.${version.appVersion}`;
     return crypto.createHash("sha256").update(content).digest("hex");
   }
 
   // Method to compare two versions
-  compare?(otherVersion: Version<T, K, Meta>): number {
+  compare?(otherVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): number {
     const currentParts = this.versionNumber
       .split(".")
       .map((part) => parseInt(part, 10));
@@ -1541,7 +1553,7 @@ async getVersionData?(): Promise<VersionData<T, K, Meta, AttachmentType, Exclude
   }
 
   // Method to check if the version is newer than another
-  isNewer?(otherVersion: Version<T, K, Meta>): boolean {
+  isNewer?(otherVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): boolean {
     return Boolean(this.compare && this.compare(otherVersion) === 1);
   }
 
@@ -1739,7 +1751,7 @@ async getVersionData?(): Promise<VersionData<T, K, Meta, AttachmentType, Exclude
   /**
    * Compares this version with another version
    */
-  compareTo(other: Version<T, K, Meta>): number {
+  compareTo(other: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): number {
     if (this.major !== other.major) {
       return this.major - other.major;
     }
@@ -1755,21 +1767,21 @@ async getVersionData?(): Promise<VersionData<T, K, Meta, AttachmentType, Exclude
   /**
    * Checks if this version is newer than another version
    */
-  isNewerThan(other: Version<T, K, Meta>): boolean {
+  isNewerThan(other: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): boolean {
     return this.compareTo(other) > 0;
   }
 
   /**
    * Checks if this version is older than another version
    */
-  isOlderThan(other: Version<T, K, Meta>): boolean {
+  isOlderThan(other: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): boolean {
     return this.compareTo(other) < 0;
   }
 
   /**
    * Create a new version with incremented version number
    */
-  bumpVersion(type: "major" | "minor" | "patch" = "patch", notes?: string): Version<T, K, Meta> {
+  bumpVersion(type: "major" | "minor" | "patch" = "patch", notes?: string): Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     const parts = this.getVersionString().split(".").map(Number);
   
     switch (type) {
@@ -1799,9 +1811,13 @@ async getVersionData?(): Promise<VersionData<T, K, Meta, AttachmentType, Exclude
   hash(value: string): string {
     return crypto.createHash("sha256").update(value).digest("hex");
   }
+
+  constructor(init?: Partial<VersionImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) {
+   Object.assign(this, init);
+  }
 }
 
-const version = createVersion<T, K, StructuredMetadata<T, K>>();
+const version = createVersion<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
 
 const versionData: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
 id: "0",
@@ -1904,7 +1920,7 @@ name: "",
 
 
 // Example of using DevVersion for development-specific contexts
-const devVersion: DevVersion<T, K> = {
+const devVersion: DevVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   id: 1,
   isActive: true,
   releaseDate: '2024-10-10',
@@ -1955,7 +1971,7 @@ const devVersion: DevVersion<T, K> = {
   _structure: {},
   versionHistory: {
     versionData: {},
-    latestVersion: createLatestVersion<T, K>(),
+    latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     history: [],
     timestamp: new Date(),
     versions: [],

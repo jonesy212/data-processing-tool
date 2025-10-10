@@ -1,13 +1,10 @@
-import { fetchDocumentById } from '@/state/redux/slices/DocumentSlice';
 // useSecureDocumentId.ts
-import { useEffect, useState } from 'react';
+import UserRoles, { UserRoleEnum } from '@/app/models/UserRoles';
+import { DocumentNode } from '@/app/users/User';
 import { useAuth } from '@/context/AuthContext';
 import { sanitizeData } from '@/security/SanitizationFunctions';
-import useDocumentStore, { Document } from '@/app/state/stores/DocumentStore';
-import UserRoles, { UserRoleEnum } from '@/users/UserRoles';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DocumentNode } from '@/app/users/User';
-import { Permission } from '@/users/Permission';
 
 
 export const useSecureDocumentId = () => {

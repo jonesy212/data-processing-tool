@@ -9,7 +9,7 @@
 // import { Snapshot, SnapshotsArray } from "./LocalStorageSnapshotStore";
 // import SnapshotStore from "./SnapshotStore";
 
-// // Utility function to convert Snapshot<BaseData, T>[] to Snapshots<T, K, Meta, ExcludedFields>
+// // Utility function to convert Snapshot<BaseData, T>[] to Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 // function convertSnapshotsArray<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
 //   snapshotsArray: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
 // ): SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {

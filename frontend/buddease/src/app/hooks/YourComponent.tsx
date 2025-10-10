@@ -12,7 +12,8 @@ import { SnapshotStoreProps } from '@/app/snapshots';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { storeProps } from "@/app/snapshots/SnapshotStoreProps";
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-;
+import { Snapshot } from '@/app/snapshots/Snapshot';
+
 
 interface HooksObject {
   [key: string]: React.FC<{}>;

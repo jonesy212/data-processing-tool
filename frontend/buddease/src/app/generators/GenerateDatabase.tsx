@@ -46,7 +46,7 @@ const DatabaseGenerator: React.FC = () => {
         "Database setup successful.",
         NOTIFICATION_MESSAGES.Database.CONNECTING_SUCCESS,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       console.error("Error setting up database:", error);
@@ -55,7 +55,7 @@ const DatabaseGenerator: React.FC = () => {
         "Error setting up database. Please try again.",
         NOTIFICATION_MESSAGES.Database.ERROR_CONNECTING,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
     }
   };

@@ -1,8 +1,8 @@
 // CollaborationActions.ts
 
-import { createAction } from '@reduxjs/toolkit';
+import { Collaborator } from "@/app/collaborators/Collaborator";
 import { CollaborationPreferences } from '@/interfaces/settings/CollaborationPreferences';
-import { Collaborator }  from '@/app/components/models/teams/TeamMembers'
+import { createAction } from '@reduxjs/toolkit';
 // Collaboration actions
 export const CollaborationActions = {
 

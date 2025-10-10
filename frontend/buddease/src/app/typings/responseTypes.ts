@@ -2,25 +2,24 @@
 import { NestedEndpoints } from '@/app/api/ApiEndpoints';
 import { SearchNotesResponse } from "@/app/api/ApiNote";
 
+import { Attendee } from "@/app/calendar/Attendee";
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { CalendarManagerStore } from "@/app/state/stores/CalendarManagerStore";
-import { SnapshotStoreUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { Snapshot  } from "@/app/snapshots/Snapshot";
-import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { Exchange } from "@/app/components/crypto/Exchange";
 import { DataWithComment } from "@/app/dataIntegration";
+import { Attachment } from "@/app/features/support/SupportTicketComponent";
 import HighlightEvent from "@/app/highlighting/screenFunctionality";
+import { Exchange } from "@/app/models/cypto/Exchange";
 import { ExchangeData } from "@/app/models/data/ExchangeData";
+import { Phase } from "@/app/models/phases/Phase";
+import { Project } from "@/app/models/projects/Project";
 import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
-import { Phase } from "@/app/models/phases/Phase";
 import { DataAnalysisResult } from '@/app/projects/DataAnalysisPhase/DataAnalysisResult';
-import { Project } from "@/app/models/projects/Project";
-import BrowserCheckStore from "@/app/state/stores/BrowserCheckStore";
-import { Attachment } from "@/app/features/support/SupportTicketComponent";
+import { SnapshotStoreUnion } from "@/app/snapshots/LocalStorageSnapshotStore";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { BaseDataEntity } from "@/app/snapshots/ValidationRule";
-import { DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { Attendee } from "@/app/calendar/Attendee";
+import BrowserCheckStore from "@/app/state/stores/BrowserCheckStore";
+import { CalendarManagerStore } from "@/app/state/stores/CalendarManagerStore";
 import { IconStore } from "@/app/state/stores/IconStore";
 import { Settings } from "@/app/state/stores/SettingsStore";
 import { TaskManagerStore } from "@/app/state/stores/TaskStore ";
@@ -28,6 +27,7 @@ import { TodoManagerStore } from "@/app/state/stores/TodoStore";
 import { TrackerStore } from "@/app/state/stores/TrackerStore";
 import { Todo } from "@/app/todos/Todo";
 import { User } from "@/app/users/User";
+import { DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 
 export interface TodoType {
   id: string;                  // Unique identifier for the todo
@@ -92,11 +92,11 @@ interface YourSettingsResponseType<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends Settings, YourResponseType<T, K, Meta, AttachmentType, ExcludedFields> {
+> extends Settings, YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   calendarEventTypes: CalendarEventType[];
   todoTypes: TodoType[];
   taskTypes: TaskType[];
-  snapshotStoreTypes: SnapshotStoreType<T, K, Meta, AttachmentType, ExcludedFields>[];
+  snapshotStoreTypes: SnapshotStoreType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 
@@ -109,8 +109,8 @@ type UserDataResponseType<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > = User &
-  BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields> &
-  YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields>;
+  BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> &
+  YourSettingsResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
 
 // Define the structure of YourResponseType based on the actual response from the backend
@@ -120,17 +120,17 @@ interface YourResponseType<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields>>,
-          BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields>,
-          DataWithComment<T, K, Meta, AttachmentType, ExcludedFields>,
+> extends Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+          BaseResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+          DataWithComment<T>,
           SearchNotesResponse {
   id?: string;
   forEach?: (arg0: (notification: Notification<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void) => void;
   length?: number;
   calendarEvents: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  todos: Todo<T, K, Meta, AttachmentType, ExcludedFields>[];
-  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields>[];
-  snapshotStores: SnapshotStore<SnapshotStoreUnion<T, K, Meta, AttachmentType, ExcludedFields>, K, Meta, AttachmentType, ExcludedFields>[];
+  todos: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  snapshotStores: SnapshotStore<SnapshotStoreUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, K, Meta, AttachmentType, ExcludedFields>[];
   currentPhase: Phase | null;
   comment: string;
   excludedData?: ExcludedFields;
@@ -138,8 +138,8 @@ interface YourResponseType<
   // Root stores
   browserCheckStore: BrowserCheckStore;
   trackerStore: TrackerStore;
-  todoStore: TodoManagerStore<T, K, Meta, AttachmentType, ExcludedFields>;
-  taskManagerStore: TaskManagerStore<T, K, Meta, AttachmentType, ExcludedFields>;
+  todoStore: TodoManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  taskManagerStore: TaskManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   iconStore: IconStore;
   calendarStore: CalendarManagerStore;
 
@@ -152,8 +152,8 @@ interface YourResponseType<
 
   projectInfo?: {
     id: number;
-    projectName: Project<T, K, Meta, AttachmentType, ExcludedFields>["name"];
-    description: Project<T, K, Meta, AttachmentType, ExcludedFields>["description"];
+    projectName: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["name"];
+    description: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["description"];
     teamMembers: Team["members"];
     exchange: Exchange;
     communication: {
@@ -176,7 +176,7 @@ interface YourResponseType<
     averagePrice: number;
   };
 
-  analysisResults?: string | DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields>[];
+  analysisResults?: string | DataAnalysisResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 export type { BaseResponseType, UserDataResponseType, YourResponseType, YourSettingsResponseType };
 

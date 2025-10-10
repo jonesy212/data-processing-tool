@@ -36,12 +36,6 @@ const teamBuildingSettings: TeamBuildingSettings = {
   // Add other specific settings based on your project needs
 };
 
-interface CollaborationPreferences {
-  teamBuilding: TeamBuildingSettings;
-  projectManagement: ProjectManagementSettings;
-  meetings: MeetingsSettings;
-  brainstorming: BrainstormingSettings;
-}
 
 
 export type { TeamBuildingSettings };

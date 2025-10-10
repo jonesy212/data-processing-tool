@@ -131,7 +131,7 @@ type ConditionalCommonData<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> = T extends DappProps<T, K, Meta, AttachmentType, ExcludedFields>
+> = T extends DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ? CommonData<T, K, Meta, AttachmentType, never, keyof T>  
   : T extends SupportedData<any>
   ? CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> 
@@ -141,7 +141,7 @@ type ConditionalCommonData<
 interface CommonData<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -241,7 +241,7 @@ type CommonDataTypes<
 type AdditionalDataTypes<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -264,8 +264,8 @@ type SupportedData<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > =
-  CommonDataTypes<T, K, Meta, ExcludedFields> & // Apply intersection to ensure core data is present
-  AdditionalDataTypes<T, K, Meta, ExcludedFields> & // Include additional data types with flexibility
+  CommonDataTypes<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & // Apply intersection to ensure core data is present
+  AdditionalDataTypes<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & // Include additional data types with flexibility
   DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & // DocumentData can be part of the intersection, ensuring it's always there
   {
     [key: string]: any; // Allow additional dynamic properties

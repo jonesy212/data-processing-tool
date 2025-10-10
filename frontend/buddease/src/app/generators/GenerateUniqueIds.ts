@@ -15,7 +15,7 @@ import {
 
 const area = fetchUserAreaDimensions().toString()
 
-const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
 const { versionNumber, appVersion } = getCurrentAppInfo();
 
 

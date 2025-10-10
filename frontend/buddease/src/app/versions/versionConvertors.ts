@@ -6,7 +6,7 @@ import VersionImpl from "@/app/versions/Version";
 
 
 function toVersionData<T extends BaseData<any>, K extends T = T>(
-  version: Version<T, K>
+  version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {
     id: version.documentId,
@@ -55,7 +55,7 @@ function toVersionData<T extends BaseData<any>, K extends T = T>(
 
 function toVersion<T extends BaseData<any>, K extends T = T>(
   versionData: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-): Version<T, K> {
+): Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 
     const historyEntries = versionData.history ?? [];
 

@@ -809,7 +809,7 @@ readCache(options)
 const fetchCacheData = async <
   T extends BaseData<any>, 
   K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K> 
 >(filePath: string, categoryName: string, username: string): Promise<CacheResponse<T, Meta>> => {
   // Initialize the useErrorHandling hook
   const { handleError } = useErrorHandling();

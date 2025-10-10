@@ -44,7 +44,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
   const [notifications, setNotifications] = useState <NotificationData<T, K, Meta<T,K>>[]>([]);
   const [duration, setDuration] = useState<number>(3000);  // Default duration
 
-  const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)?? {
+  const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)?? {
     metadataEntries: {}, // Provide default or fallback values
     keywords: [],
     version: '1.0.0',
@@ -95,13 +95,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = <
       id: Date.now().toString(),
       content: message,
       date: new Date(),
-      notificationType: NotificationTypeEnum.OperationSuccess,
+      notificationType: NotificationTypeEnum.OPERATION_SUCCESS,
       message: "",
       type: AuthNotificationTypes.ACCOUNT_CREATED,
       sendStatus: "Sent",
       completionMessageLog: {
         date: new Date(),
-        message: `Notification of type ${NotificationTypeEnum.OperationSuccess} sent`,
+        message: `Notification of type ${NotificationTypeEnum.OPERATION_SUCCESS} sent`,
         createdAt: new Date(),
         content: message,
         timestamp: new Date(),

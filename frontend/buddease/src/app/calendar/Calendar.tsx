@@ -15,7 +15,7 @@ import { BaseData } from '@/app/models/data/Data';
 import { K, T } from '@/app/components/models/data/dataStoreMethods';
 import { Task } from "@/app/components/models/tasks/Task";
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
-import { Project } from "@/app/projects/Project";
+import { Project } from '@/app/models/projects/Project';
 import { Resource } from "@/app/state/redux/slices/CollaborationSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
@@ -87,7 +87,7 @@ interface CommonCalendarProps {
   onContentPostPerformanceTrack: (post: ContentPost) => void;
 }
 
-interface CalendarProps<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>
+interface CalendarProps<T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>
   extends CommonCalendarProps {
   view: string | CalendarManagerState;
   container: any;

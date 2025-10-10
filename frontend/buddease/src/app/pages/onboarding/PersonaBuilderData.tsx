@@ -8,7 +8,7 @@ import { TeamMember } from "@/app/components/models/teams/TeamMembers";
 import { NotificationTypeEnum, useNotification } from "@/app/context/NotificationContext";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import generateTimeBasedCode from "@/app/models/realtime/TimeBasedCodeGenerator";
-import { Project } from "@/app/projects/Project";
+import { Project } from '@/app/models/projects/Project';
 import { DocumentTree, User, UserData, VisualizationData } from "@/app/users/User";
 import { Question } from "./Question";
 

@@ -48,7 +48,7 @@ export const teamManagementService = observable({
                 NOTIFICATION_MESSAGES.TeamManagement.FETCH_TEAM_ERROR,
                 "Fetch Team Error",
                 new Date(),
-                NotificationTypeEnum.OperationError
+                NotificationTypeEnum.OPERATION_ERROR
             );
             throw error;
         }
@@ -115,7 +115,7 @@ export const teamManagementService = observable({
         "CreateTeamSuccessId", // Provide a unique ID for the notification
         NOTIFICATION_MESSAGES.Team.CREATE_TEAM_SUCCESS, // Message
         new Date(), // Date
-        NotificationTypeEnum.OperationSuccess // Type
+        NotificationTypeEnum.OPERATION_SUCCESS // Type
       );
       return response.data;
     } catch (error) {
@@ -126,7 +126,7 @@ export const teamManagementService = observable({
           "Team Create Error", // Content (can be empty in this case)
           NOTIFICATION_MESSAGES.Team.CREATE_TEAM_FAILURE, // Message
           new Date(), // Date
-          NotificationTypeEnum.OperationError // Type
+          NotificationTypeEnum.OPERATION_ERROR // Type
         );
         throw error;
       }
@@ -141,7 +141,7 @@ export const teamManagementService = observable({
         "Team Deletion", // Content (can be empty in this case)
         NOTIFICATION_MESSAGES.Team.DELETE_TEAM_SUCCESS, // Message
         new Date(), // Date
-        NotificationTypeEnum.OperationSuccess // Type
+        NotificationTypeEnum.OPERATION_SUCCESS // Type
       );
       // Dispatch deleteTeamSuccess action if needed
     } catch (error) {
@@ -152,7 +152,7 @@ export const teamManagementService = observable({
           error.message, // Example content: pass the error message
           NOTIFICATION_MESSAGES.Team.DELETE_TEAM_FAILURE, // Message
           new Date(), // Date
-          NotificationTypeEnum.OperationError // Type
+          NotificationTypeEnum.OPERATION_ERROR // Type
         );
       }
     }
@@ -183,7 +183,7 @@ export const teamManagementService = observable({
         "FetchTeammemberDataSuccessId",
         NOTIFICATION_MESSAGES.TeamManagement.FETCH_TEAMMEMBER_SUCCESS,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
       // Dispatch fetchApiDataSuccess action with the received data
       TeamActions.fetchApiDataSuccess({ data: response.data });
@@ -207,7 +207,7 @@ export const teamManagementService = observable({
           error.message,
           NOTIFICATION_MESSAGES.TeamManagement.FETCH_TEAMMEMBER_FAILURE,
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
         // Dispatch fetchApiDataFailure action with the error message
         TeamActions.fetchTeamsFailure({ error: error.message });

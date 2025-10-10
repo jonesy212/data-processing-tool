@@ -3,10 +3,10 @@ import { RealtimeDataItem } from "@/app/components/models/realtime/RealtimeData"
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
 import { SubscriberCollection } from '@/app/snapshots/SubscriberCollection';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
@@ -25,25 +25,6 @@ export interface TeamEntity extends BaseDataEntity {
   settings?: TeamSettings;
   avatar?: string;
   // Add other team-specific fields
-}
-
-export interface TeamSettings {
-  privacy: 'public' | 'private' | 'invite-only';
-  permissions: TeamPermissions;
-  notifications: TeamNotificationSettings;
-}
-
-export interface TeamPermissions {
-  canInviteMembers: boolean;
-  canCreateProjects: boolean;
-  canDeleteTeam: boolean;
-  canManageSettings: boolean;
-}
-
-export interface TeamNotificationSettings {
-  emailNotifications: boolean;
-  pushNotifications: boolean;
-  dailyDigest: boolean;
 }
 
 // Team-specific type parameters
@@ -122,21 +103,21 @@ type TeamSnapshotUnionFromParams<Params extends SnapshotConfigParams<any, any, a
   SnapshotUnion<Params[0], Params[1], Params[2], Params[3], Params[4], Params[5]>;
 
 export type {
-  BasicTeamInfo,
-  // Team entity types
-  CompleteTeam,
-  PublicTeamProfile, TeamAttachment, TeamBaseParams,
-  // Core type parameters
-  TeamEntityType, TeamExcludedFields,
-  TeamIncludedFields, TeamK,
-  TeamMeta, TeamParams, TeamRealtimeDataItem,
-  // Snapshot types
-  TeamSnapshot,
-  TeamSnapshotData,
-  // Utility types
-  TeamSnapshotFromParams, TeamSnapshotsArray, TeamSnapshotStore, TeamSnapshotStoreConfig, TeamSnapshotUnionFromParams, TeamSnapshotWithCriteria, TeamStructuredMetadata, TeamSubscriberCollection,
-  // Metadata types
-  TeamUnifiedMetadata, TeamWithMembers
+    BasicTeamInfo,
+    // Team entity types
+    CompleteTeam,
+    PublicTeamProfile, TeamAttachment, TeamBaseParams,
+    // Core type parameters
+    TeamEntityType, TeamExcludedFields,
+    TeamIncludedFields, TeamK,
+    TeamMeta, TeamParams, TeamRealtimeDataItem,
+    // Snapshot types
+    TeamSnapshot,
+    TeamSnapshotData,
+    // Utility types
+    TeamSnapshotFromParams, TeamSnapshotsArray, TeamSnapshotStore, TeamSnapshotStoreConfig, TeamSnapshotUnionFromParams, TeamSnapshotWithCriteria, TeamStructuredMetadata, TeamSubscriberCollection,
+    // Metadata types
+    TeamUnifiedMetadata, TeamWithMembers
 };
 
 // Export the main interfaces

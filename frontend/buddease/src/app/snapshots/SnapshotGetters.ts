@@ -10,7 +10,7 @@ interface SnapshotGetters {
   getSnapshotsByKeySuccess: any;
   getSnapshotsByPriority: any;
   getSnapshotsByPrioritySuccess: any;
-  getStoreData: (id: number) => Promise<SnapshotStore<T, K, Meta, ExcludedFields>[]>;
+  getStoreData: (id: number) => Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
   updateStoreData: any;
   updateDelegate: any;
   getSnapshotContainer: any;

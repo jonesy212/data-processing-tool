@@ -39,16 +39,16 @@ interface SubscriptionManager<
     snapshotId: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
   ) => void;
 
   onSnapshots: (
     snapshotId: string,
-    snapshots: Snapshots<T, K, Meta, ExcludedFields>,
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
-    callback: (snapshots: Snapshots<T, K, Meta, ExcludedFields>) => void
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    callback: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
   ) => void;
 
   // Subscription queries
@@ -65,6 +65,6 @@ interface SubscriptionManager<
   ) => void;
 
   // Properties
-  events: CombinedEvents<T, K, Meta, ExcludedFields> | undefined;
-  subscriberManagement?: SnapshotSubscriberManagement<T, K, Meta, ExcludedFields> | undefined;
+  events: CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+  subscriberManagement?: SnapshotSubscriberManagement<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
 }

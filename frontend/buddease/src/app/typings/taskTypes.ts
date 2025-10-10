@@ -1,11 +1,10 @@
-import { UserRole } from '@/components/users/UserRole';
-import { BaseData } from '@/app/models/data/Data';
 import { Task } from "@/app/components/models/tasks/Task";
-import { StructuredMetadata } from "@/config/StructuredMetadata";
+import { UserRole } from "@/app/models/UserRole";
+import { BaseData } from '@/app/models/data/Data';
 import { CreationPhase } from "./appTypes";
 
 // Define TaskUnion similar to SnapshotUnion
-type TaskUnion<T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> =
+type TaskUnion<T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> =
   | Task<T, K, Meta>
   | (TaskWithCriteria<T, K> & T);
 
@@ -39,11 +38,10 @@ export interface TaskEntityExtended extends TaskEntity {
 }
 
   export type {
-    Tasks, TasksArray,
-    TasksObject,
-    TaskStoreObject,
-    TaskStoreUnion, TaskUnion,
-    TaskEntityExtended
+  TaskEntityExtended, Tasks, TasksArray,
+  TasksObject,
+  TaskStoreObject,
+  TaskStoreUnion, TaskUnion
 };
 
 

@@ -12,7 +12,7 @@ import { produce } from "immer";
 // Import immer for immutable updates
 import { WritableDraft } from "@/app/ReducerGenerator";
 
-interface FilteredEventsState<T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+interface FilteredEventsState<T extends  BaseData<any>,  K extends T = T,  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
   filteredEvents: (ExtendedCalendarEvent | CalendarEvent<T, K> | HighlightEvent)[];
   addFilteredEvent: (event:  ExtendedCalendarEvent | CalendarEvent<T, K> | HighlightEvent) => void; // Define methods
   payload: (ExtendedCalendarEvent | CalendarEvent | HighlightEvent)[];

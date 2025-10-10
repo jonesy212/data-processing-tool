@@ -37,7 +37,7 @@ import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 
 
 // snapshotContainerInstance.ts
-const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, Data<T, K, StructuredMetadata<T, K>>>
+const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, Data<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>
   & BaseData<any, any, StructuredMetadata<any, any>>> extends Shared = {
   childIds: [],
   // ...other properties and methods
@@ -64,7 +64,7 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
     snapshotData: SnapshotData<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
     SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
     never>,
-    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
+    category?: Category,    categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     dataStore: DataStore<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
     SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
@@ -102,7 +102,7 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
     SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
     never>,
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined, 
     dataStoreMethods: DataStoreMethods<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
     SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
@@ -133,7 +133,7 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
   },
   subscribers: [],
   getSnapshotData: function (id: string | number | undefined, snapshotId: number, snapshotData: SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-    category: Category | undefined, categoryProperties: CategoryProperties | undefined, dataStoreMethods: DataStore<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
+    category?: Category, categoryProperties: CategoryProperties | undefined, dataStoreMethods: DataStore<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
       SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>): Map<string, Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
         SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>> | null | undefined {
     throw new Error('Function not implemented.');
@@ -155,7 +155,7 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
     type: string,
     event: Event, id: number,
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     dataStoreMethods: DataStore<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>, SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>,
     data: SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
@@ -173,7 +173,7 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
       SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>): {
         snapshot1: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
           SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>; snapshot2: Snapshot<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,
-            SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>; differences: Record<string, { snapshot1: any; snapshot2: any; }>; versionHistory: { snapshot1Version?: number | Version<T, K>;snapshot2Version?: number | Version<T, K>;};
+            SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>>; differences: Record<string, { snapshot1: any; snapshot2: any; }>; versionHistory: { snapshot1Version?: number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;snapshot2Version?: number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;};
       } | null {
     throw new Error('Function not implemented.');
   },
@@ -367,7 +367,7 @@ const snapshotContainerInstance: SnapshotContainer<SnapshotContainerData<T, K, D
       payload: FetchSnapshotPayload<SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>> | undefined,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       payloadData: SnapshotContainerData<T, K, ExcludedFields<T, keyof T>> | Data, 
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       timestamp: Date,
       data: SnapshotContainerData<T, K, ExcludedFields<T, keyof T>>,

@@ -74,12 +74,18 @@ export interface LastUpdated<T extends BaseDataEntity = BaseDataEntity,
   extends SharedUpdateHistory<T, K>, SharedTimestamps, SharedAuditInfo {
 }
 
-interface VersionHistory<T extends BaseDataEntity, K extends T = T>
-  extends SharedUpdateHistory {
-  versionData: string | VersionData<T, K> | null | {};
-  latestVersion?: MinimalVersion<T, K>;
+interface VersionHistory<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends SharedUpdateHistory {
+  versionData: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | {};
+  latestVersion?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   history?: HistoryEntry[];
-  versions: Version<T, K>[];
+  versions: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   currentVersionIndex: number;
 }
 
@@ -104,7 +110,7 @@ interface AppStructureDataItem<
   content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versions?: DataVersions;
   versionData?: VersionData<BaseDataEntity, BaseDataEntity> | null;
-  items?: Record<string, AppStructureDataItem<T, K, Meta, ExcludedFields>>;
+  items?: Record<string, AppStructureDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 }
 
 interface ExtendedVersionData<
@@ -127,7 +133,7 @@ interface ExtendedVersionData<
   userId?: string;
   content?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  comments?: (Comment<T, K, StructuredMetadata<T, K>> | CustomComment)[];
+  comments?: (Comment<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | CustomComment)[];
   versionHistory: VersionHistory<T, K>;
   releaseDate?: string | Date;
   lastUpdated?: Date | VersionHistory<T, K>;
@@ -172,34 +178,35 @@ type MinimalVersion<T extends BaseDataEntity, K extends T = T> =
     Pick<VersionData<T, K>, "versionNumber" | "timestamp" | "author" | "schema">> & {
   };
 
-interface VersionData<  
+represents one stored version snapshot.
+
+// VersionData.ts
+export interface VersionData<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
->
-  extends SharedVersioning,
+> extends
+  SharedVersioning,
   ExtendedVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  Omit<SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "permissions"> {
-
-  // Identity and core
+  Omit<SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "permissions">
+{
   id: string | number;
   author?: string;
   type?: string;
-  // Relationships
   parentId: string | null;
-  parentAppVersion?: string;
-  parentVersionNumber?: string;
   parentType?: string | null;
   parentVersion?: string;
+  parentVersionNumber?: string;
+  parentAppVersion?: string;
   parentTitle?: string;
-  parentContent?: string;
   parentName?: string;
+  parentContent?: string;
   parentUrl?: string;
   parentChecksum?: string;
-  parentMetadata?: {};
+  parentMetadata?: Record<string, any>;
 
   // Status
   isLatest: boolean;
@@ -217,23 +224,19 @@ interface VersionData<
   workspaceAdmins: string[];
   workspaceMembers: string[];
 
-  // Services
-  setServices?: (services: Record<string, any>) => void;
-  services?: Record<string, any>;
-
-  // App structure
-  _structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
-  frontendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
-  backendStructure?: Promise<AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
-
-  // Backend/Frontend
-  backend?: BackendStructure | undefined;
-  frontend?: FrontendStructure<T, K> | undefined;
-
   // Data
   data?: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  services?: Record<string, any>;
 
-  // Remove the duplicate 'user' since we have author/updatedBy/createdBy
+  // Structure
+  _structure?: Record<string, AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+  backend?: BackendStructure;
+  frontend?: FrontendStructure<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
+  // Misc
+  checksum?: string;
+  currentHash?: string;
+  versionNumber?: string;
 }
 
 // Example usage and data

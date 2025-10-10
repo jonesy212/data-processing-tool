@@ -19,7 +19,7 @@ import {
     PrivacySettingEnum,
     ProjectPhaseTypeEnum,
 } from "@/app/models/data/StatusType";
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import { AlignmentOptions } from "@/app/state/redux/slices/toolbarSlice";
 import { Document } from "@/app/state/stores/DocumentStore";
 import { CustomProperties, HighlightColor } from "@/app/styling/Palette";
@@ -110,7 +110,7 @@ interface Style {
   defaultZoomLevel: number;
   customProperties: CustomProperties | undefined;
   value: string;
-  metadata: StructuredMetadata<T, K> | undefined;
+  metadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   tableStyles?: {
     backgroundColor?: string;
     borderColor?: string;
@@ -244,7 +244,7 @@ export interface DocumentOptions<
     onChange: (phase: ProjectPhaseTypeEnum) => void;
   };
   versionData: string | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
-  version?: Version<T, K> | undefined;
+  version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   isDynamic: boolean | undefined;
   size: DocumentSize;
   animations: DocumentAnimationOptions | undefined;
@@ -492,8 +492,8 @@ export interface DocumentOptions<
   styles: {
     [key: string]: CustomStyle;
   };
-  previousMeta: StructuredMetadata<T, K> | undefined;
-  currentMeta: StructuredMetadata<T, K>;
+  previousMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
+  currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   currentMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   currentContent: ContentState
@@ -605,7 +605,7 @@ export interface DocumentOptions<
   includeContent: boolean | { enabled: boolean }; // New property to include content in the report
   includeStatus: boolean | { enabled: boolean }; // New property to include status in the report
   includeAdditionalInfo: boolean | { enabled: boolean }; // Example: include additional information
-  metadata: StructuredMetadata<T, K>| undefined;
+  metadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>| undefined;
 
   // Properties specific to DocumentGenerator
   title?: string;
@@ -630,12 +630,12 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   const checksum = computeChecksum(versionData);
 
   return {
-    previousMeta: {} as StructuredMetadata<T, K>,
-    currentMeta: {} as StructuredMetadata<T, K>,
+    previousMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    currentMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     documentOptions: {
 
-    previousMeta: {} as StructuredMetadata<T, K>,
-    currentMeta: {} as StructuredMetadata<T, K>,
+    previousMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    currentMeta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     uniqueIdentifier: "",
     documentType: "default",
     userIdea: undefined,
@@ -862,7 +862,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
   setServices: [],
   notes: [],
   buildNumber: "1",
-  latestVersion: createLatestVersion<T, K>(),
+  latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
   schema: {},
   metadata: {
     author: "system",
@@ -870,7 +870,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
     revisionNotes: "Initial version",
     area: area,  // keeping your external reference
     metadataEntries: {} as MetadataEntriesType<T, K>,
-    latestVersion: createLatestVersion<T, K>(),
+    latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     schema: {}
     },
     backend: undefined,
@@ -1060,7 +1060,7 @@ export const getDefaultDocumentOptions = (): DocumentOptions => {
 interface ExtendedDocumentOptions<
   T extends BaseData<any> = BaseData<any, any>, 
   K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> 
   extends DocumentOptions<T, K, Meta> {
   additionalOption2: string;
 }
@@ -1090,7 +1090,7 @@ export const getDocumentPhase = (phase: ProjectPhaseTypeEnum) => {
 
 
 
-const mapDocumentToProjectPhase = (document: Document<T, K, StructuredMetadata<T, K>>): ProjectPhaseTypeEnum => {
+const mapDocumentToProjectPhase = (document: Document<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): ProjectPhaseTypeEnum => {
   switch (document.phaseType) {
     case "drafting":
       return ProjectPhaseTypeEnum.Draft;

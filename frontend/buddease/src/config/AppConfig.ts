@@ -1,6 +1,6 @@
 //AppConfig
 import { Theme } from "@/app/components/libraries/ui/theme/Theme";
-import { UserRole } from "@/app/components/users/UserRole";
+import { UserRole } from "@/app/models/UserRole";
 import { Data } from '@/app/models/data/Data';
 import { NotificationData } from "@/app/state/redux/slices/NofiticationsSlice";
 import { User } from "@/app/users/User";
@@ -35,7 +35,7 @@ interface AppActions {
 interface AppConfig {
   // General application settings
   appName: string; // Name of the application
-  appVersion: AppVersion<T, K>;// Updated to use AppVersion class
+  appVersion: AppVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;// Updated to use AppVersion class
   apiBaseUrl: string; // Base URL for API requests
   // Add other general application settings as needed
 
@@ -137,7 +137,7 @@ export const getAppConfig = (): AppConfig => {
         }
       },
 
-      compare(otherVersion: Version<T, K>): number {
+      compare(otherVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): number {
         if (!(otherVersion instanceof AppVersion)) {
           throw new Error("Invalid version type for comparison.");
         }

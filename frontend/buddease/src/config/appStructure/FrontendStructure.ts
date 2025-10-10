@@ -3,6 +3,7 @@ import { Attachment } from "@/app/documents/attachment/Attachment";
 import { hashString } from "@/app/generators/HashUtils";
 import { BaseData } from '@/app/models/data/Data';
 import { UserConfigData } from "@/app/models/data/dataStoreMethods";
+import UserRoles from '@/app/models/UserRoles';
 import { Permission } from '@/app/users/Permission';
 import { UserData } from "@/app/users/User";
 import { createLatestVersion } from "@/app/versions/createLatestVersion";
@@ -13,7 +14,6 @@ import { AppStructureItem } from "@/config/appStructure/AppStructure";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { DataVersions } from "@/configs/DataVersionsConfig";
-import UserRoles from '@/users/UserRoles';
 import * as path from "path";
 
 
@@ -48,7 +48,7 @@ export default class FrontendStructure<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> implements AppStructureItem {
+> implements AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   [key: string]: any;
   
   versions: DataVersions = {

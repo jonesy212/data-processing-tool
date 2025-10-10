@@ -5,49 +5,46 @@ import * as snapshotApi from '@/api/SnapshotApi';
 import { findSnapshotStoresById, snapshotContainer } from '@/app/api/SnapshotApi';
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
 import CalendarDetails from "@/app/components/models/data/CalendarDetails";
-import { BaseData, Data, DataDetails } from '@/app/models/data/Data';
 import { Team, TeamDetails } from "@/app/components/models/teams/Team";
-import { DataDetailsComponent } from '@/app/models/data/Data';
 import { Member, TeamMember } from "@/app/components/models/teams/TeamMembers";
-import AnalyzeData from "@/app/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
-import { Todo } from "@/app/todos/Todo";
+import { Attachment } from '@/app/documents/attachment/Attachment';
 import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { useSnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
 import CommonDetails, { CommonData } from "@/app/models/CommonData";
+import { BaseData, Data, DataDetails, DataDetailsComponent } from '@/app/models/data/Data';
 import { CalendarStatus, MeetingStatus, StatusType } from "@/app/models/data/StatusType";
+import { Project, ProjectType } from "@/app/models/projects/Project";
+import UserRoles from '@/app/models/UserRoles';
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
+import AnalyzeData from "@/app/projects/DataAnalysisPhase/AnalyzeData/AnalyzeData";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import {
   DataStore,
   useDataStore,
 } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
-import { Project, ProjectType } from "@/app/projects/Project";
-import { SnapshotData, SnapshotStoreProps } from '@/app/snapshots';
-import { SnapshotData } from '@/app/snapshots/SnapshotData';
-import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import {
   snapshotFunction,
   SnapshotsArray,
   SnapshotsObject,
   SnapshotUnion
 } from "@/app/snapshots/LocalStorageSnapshotStore";
-import { SnapshotContainer, SnapshotContainerData } from '@/app/snapshots/SnapshotContainer';
-
-import { SnapshotContainerData } from '@/app/snapshots/SnapshotContainer';
-
 import { refreshUI } from '@/app/snapshots/refreshUI';
 import {
   Snapshot
 } from "@/app/snapshots/Snapshot";
-import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import { CustomSnapshotData, SnapshotData } from '@/app/snapshots/SnapshotData';
 import {
   default as SnapshotStore,
   default as useSnapshotStore,
 } from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
+import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
+import { Todo } from "@/app/todos/Todo";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { snapshotType } from "@/app/typings/YourSpecificSnapshotType";
 import { User } from "@/app/users/User";
@@ -58,7 +55,6 @@ import { createMeta } from "@/config/metadata/MetadataHooks";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { useMetadata } from "@/config/useMetadata";
 import { UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
-import UserRoles from "@/users/UserRoles";
 import { processSnapshotData } from '@/utils/versionUtils';
 import { useEffect, useState } from "react";
 ;
@@ -66,10 +62,12 @@ import { useEffect, useState } from "react";
 
 // Define SnapshotWithData to include only essential properties and methods
 interface SnapshotWithData<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity, 
+  K extends T, 
+  Meta extends DefaultMeta<T, K>, 
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
   data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null; // Assuming this holds snapshot data
   events: {
@@ -164,10 +162,12 @@ const analysisType = (project: Project) => {
 
 
 export const addSnapshotHandler = <
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity, 
+  K extends T, 
+  Meta extends DefaultMeta<T, K>, 
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscribers: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
@@ -178,8 +178,8 @@ export const addSnapshotHandler = <
     delegate.forEach((config) => {
       if (typeof config.setSnapshots === "function") {
         // Ensure config.snapshots is treated as an array
-        const currentSnapshotsArray: SnapshotsArray<T, K, Meta, ExcludedFields> = Array.isArray(config.snapshots)
-          ? (config.snapshots as SnapshotsArray<T, K, Meta, ExcludedFields>)
+        const currentSnapshotsArray: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = Array.isArray(config.snapshots)
+          ? (config.snapshots as SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)
           : [];
 
         // Use type guard to ensure compatibility
@@ -209,10 +209,12 @@ interface CalendarAppProps<
 
 // 2. Create the component using direct function syntax
 function CalendarApp<
-  T extends BaseDataEntity,
-  K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity, 
+  K extends T, 
+  Meta extends DefaultMeta<T, K>, 
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >({ props }: CalendarAppProps<T, K>): JSX.Element {
   
   const [snapshot, setSnapshot] = useState<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(null);
@@ -220,7 +222,7 @@ function CalendarApp<
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  const currentMeta: StructuredMetadata<T, K> = createMeta<T, K>({
+  const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = createMeta<T, K>({
     id: 'calendar-meta-id',   // Updated ID for calendar context
     description: 'Calendar Meta', // More relevant description
   });
@@ -236,12 +238,12 @@ function CalendarApp<
   } = props;
 
 
-  const defaultSnapshot: SnapshotWithData<T, K, Meta, ExcludedFields> = {
+  const defaultSnapshot: SnapshotWithData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     data: new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(), // Initialize with empty map
     events: {}, // Initialize with empty object or suitable default
     meta: {} as T // Initialize with default or empty Data
   };
-  const [snapshots, setSnapshots] = useState<SnapshotWithData<T, K, Meta, ExcludedFields>[]>([
+  const [snapshots, setSnapshots] = useState<SnapshotWithData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>([
     defaultSnapshot, // Add default snapshot to the array
   ]);
   // Default empty snapshot with the required properties
@@ -283,7 +285,7 @@ function CalendarApp<
   const date = new Date();
   const type = snapshotType.toString();
   const initialState:
-    | SnapshotStore<T, K, Meta, ExcludedFields>
+    | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     | null
     | undefined = null;
@@ -311,7 +313,7 @@ function CalendarApp<
       Promise.resolve(),
     getBackendVersion: () => Promise.resolve(""),
     getFrontendVersion: () => Promise.resolve(""),
-    fetchData: (id: number) => Promise.resolve({} as SnapshotStore<T, K, Meta, ExcludedFields>),
+    fetchData: (id: number) => Promise.resolve({} as SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
     getItem: (key:  T, id: number): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> => {
       return new Promise((resolve, reject) => {
         if (storage) {
@@ -375,14 +377,14 @@ function CalendarApp<
     getAllItems: async function(
       storeId: number,
       snapshotId: string,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       snapshot: SnapshotUnion<T, K, Meta> | null,
       timestamp: string | number | Date | undefined,
       type: string,
       event: Event,
       id: number,
-      snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       data: T,
     ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
       try {
@@ -437,9 +439,9 @@ function CalendarApp<
     mapSnapshot: function (
       id: number,
       storeId: string | number,
-      snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotId: string,
-      snapshotContainer: SnapshotContainer<T, K, Meta, ExcludedFields>,
+      snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       criteria: CriteriaType,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
@@ -464,7 +466,7 @@ function CalendarApp<
             // This is your actual logic to retrieve snapshot data by id
             const snapshotData = await snapshotApi.fetchSnapshotById(id);
 
-            if (snapshotData && isSnapshotContainer<T, K, Meta, ExcludedFields>(snapshotData)) {
+            if (snapshotData && isSnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(snapshotData)) {
               return {
                 snapshotId: parseInt(id.toString(), 10),
                 snapshotData,
@@ -506,26 +508,26 @@ function CalendarApp<
     mapSnapshots: async function (
       storeIds: number[],
       snapshotId: string,
-      category: Category | undefined,      
+      category?: Category,      
       categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       timestamp: string | number | Date | undefined,
       type: string,
       event: Event,
       id: number,
-      snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       data: K,
       callback: (
         storeIds: number[],
         snapshotId: string,
-        category: Category | undefined,        
+        category?: Category,        
         categoryProperties: CategoryProperties | undefined,
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         timestamp: string | number | Date | undefined,
         type: string,
         event: Event,
         id: number,
-        snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+        snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         data: K,
         index: number
       ) => SnapshotsObject<T, K>
@@ -566,7 +568,7 @@ function CalendarApp<
     mapSnapshotStore: function (
       storeId: number,
       snapshotId: string,
-      category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
+      category?: Category,      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<any, any>,
       timestamp: string | number | Date | undefined,
       type: string,
@@ -574,13 +576,13 @@ function CalendarApp<
       id: number,
       snapshotStore: SnapshotStore<any, any>,
       data: any
-    ): Promise<SnapshotContainer<T, K, Meta, ExcludedFields> | undefined> {
+    ): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
       throw new Error("Function not implemented.");
     },
 
     getData: async (
       input: number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, CustomSnapshotData<T, K, Meta>>
-    ): Promise<{ data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> } | SnapshotStore<T, K, Meta, ExcludedFields>[] | undefined> => {
+    ): Promise<{ data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> } | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> => {
       try {
         if (typeof input === 'number') {
           // Fetch SnapshotStore array based on the ID using `findSnapshotStoresById`
@@ -596,13 +598,13 @@ function CalendarApp<
       }
     },
     
-    getStoreData: function (id: number): Promise<SnapshotStore<T, K, Meta, ExcludedFields>[]> {
+    getStoreData: function (id: number): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
       throw new Error("Function not implemented.");
     },
     updateStoreData: function (
       data: Data<T>,
       id: number,
-      newData: SnapshotStore<T, K, Meta, ExcludedFields>
+      newData: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ): void {
       throw new Error("Function not implemented.");
     },
@@ -622,13 +624,13 @@ function CalendarApp<
         | Promise<{
           snapshotId: number;
           snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-          category: Category | undefined;
+          category?: Category;
           categoryProperties: CategoryProperties;
           dataStoreMethods: DataStore<T, K>;
           timestamp: string | number | Date | undefined;
           id: string | number | undefined;
           snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-          snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>;
+          snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
           data: T;
           }>
         | undefined
@@ -636,10 +638,11 @@ function CalendarApp<
       throw new Error("Function not implemented.");
     },
     getSnapshotWithCriteria: function (
-      category: Category | undefined,      timestamp: any,
+      category?: Category,
+      timestamp: any,
       id: number,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       data: T
     ): Promise<SnapshotWithCriteria<T, K> | undefined> {
       throw new Error("Function not implemented.");
@@ -649,28 +652,28 @@ function CalendarApp<
       timestamp: string,
       id: number,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       data: Data<T>,
       snapshotsArray: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotsObject: SnapshotsObject<T, K>
-    ): Promise<SnapshotContainer<T, K, Meta, ExcludedFields> | undefined> {
+    ): Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
       throw new Error("Function not implemented.");
     },
     getSnapshotVersions: function (
-      category: Category | undefined,      timestamp: any,
+      category?: Category,      timestamp: any,
       id: number,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       data: T
     ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> {
       throw new Error("Function not implemented.");
     },
     getSnapshotWithCriteriaVersions: function (
-      category: Category | undefined,      timestamp: any,
+      category?: Category,      timestamp: any,
       id: number,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       data: T
     ): Promise<SnapshotWithCriteria<T, K>[] | undefined> {
       throw new Error("Function not implemented.");
@@ -761,14 +764,14 @@ function CalendarApp<
     analysisResults: [],
     snapshots: [],
     getData: function (): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
-      return {} as Promise<Snapshot<T, K, StructuredMetadata<T, K>, never>>;
+      return {} as Promise<Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>;
     },
     timestamp: undefined,
     meta: {},
     getSnapshotStoreData: async function (
       
     ): Promise<SnapshotStore<CalendarEvent<T, K>, K, 
-    UnifiedMetaDataOptions<T, K, Meta, ExcludedFields>>[]> {
+    UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]> {
       return [];
     }
   };

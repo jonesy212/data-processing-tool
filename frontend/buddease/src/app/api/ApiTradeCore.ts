@@ -102,13 +102,15 @@ const handleTradingApiErrorAndNotify = (
 
 // Core Trading API Functions
 export const fetchTradingDataAPI = async <
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
 >(
   tradingId: number,
-  dataCallback: (data: WritableDraft<DocumentData<T, K, Meta, ExcludedFields>>) => void
+  dataCallback: (data: WritableDraft<DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void
 ): Promise<any> => {
   try {
     const fetchTradingEndpoint = `${TRADING_API_BASE_URL}/trading/${tradingId}`;

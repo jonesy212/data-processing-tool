@@ -1,22 +1,27 @@
 // FileData.ts
 
 import { ScheduledData } from '@/app/components/calendar/ScheduledData';
-import { User } from '@/app/components/users/User';
+import { User } from '@/app/users/User';
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { BaseData } from '@/Data';
+import { BaseDataEntity,DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
 
 // Define the interface for FileData
-interface FileData<T extends BaseData<any>> extends ScheduledData<T> {
-  // Define specific properties for FileData
+interface FileData<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends ScheduledData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   fileSize: number; // Size of the file in bytes
-  fileType: string; // Type of the file (e.g., PDF, Word document, etc.)
-  filePath: string; // Path to the file location
-  uploader: User['username'] | undefined; // User who uploaded the file
-  attachments?: Attachment[]; // Any attachments associated with the file
-  // Additional properties for expanded usage
-  fileName: string; // Name of the file
-  uploadDate: Date | undefined; // Date when the file was uploaded
-  imageData?: string; // Base64-encoded image data
+  fileType: string; // File type (PDF, DOCX, etc.)
+  filePath: string; // Path to the file
+  uploader: User['username'] | undefined;
+  attachments?: Attachment[];
+  fileName: string;
+  uploadDate: Date | undefined;
+  imageData?: string;
 }
 
 

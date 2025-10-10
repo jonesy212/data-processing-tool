@@ -1,9 +1,11 @@
 // ExampleTeam.ts
 import { PriorityTypeEnum, TeamStatus } from "@/app/models/data/StatusType";
+import { Phase } from '@/app/models/phases/Phase';
 import { Project, ProjectType, reassignProject } from "@/app/models/projects/Project";
+import { UserRole } from "@/app/models/UserRole";
+import UserRoles from '@/app/models/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
 import { ProfileAccessControl } from "@/app/pages/profile/Profile";
-import { Phase } from "@/app/phases/Phase";
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { Settings } from "@/app/state/stores/SettingsStore";
 import { Task, TaskData } from "@/app/tasks/Task";
@@ -12,10 +14,8 @@ import { Progress } from "@/app/tracker/ProgressBar";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
 import { Idea } from "@/app/users/Ideas";
 import { User } from "@/app/users/User";
-import { UserRole } from "@/app/users/UserRole";
 import { VideoData } from "@/app/video/Video";
 import { UserSettings } from "@/config/UserSettings";
-import UserRoles from "@/users/UserRoles";
 import { TeamData } from "./TeamData";
 
 // import { unassignProject } from "@/app/calendar/CalendarApp";

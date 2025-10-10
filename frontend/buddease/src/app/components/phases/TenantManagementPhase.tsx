@@ -1,6 +1,6 @@
 // TenantManagementPhase.tsx
 import React, { useEffect } from "react";
-
+import { ConfigureTenantComponent } from '@/app/components/tenants/ConfigureTenantComponent'
 export enum TenantManagementPhaseEnum {
   CONFIGURE_TENANT,
   INVITE_USERS,

@@ -34,7 +34,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Failed to fetch user preferences",
         NOTIFICATION_MESSAGES.UserPreferences.FETCHING_PREFERENCES_ERROR,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -50,7 +50,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "User preferences updated successfully",
         NOTIFICATION_MESSAGES.UserPreferences.USER_PREFERENCE_UPDATED_SUCCESS,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       console.error("Error updating user preferences:", error);
@@ -59,7 +59,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Failed to update user preferences",
         NOTIFICATION_MESSAGES.UserPreferences.USER_PREFERENCE_UPDATED_FAILED,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -73,7 +73,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Theme set successfully",
         NOTIFICATION_MESSAGES.UserPreferences.THEME_SET_SUCCESSFULLY,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       console.error("Error setting theme:", error);
@@ -82,7 +82,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Failed to set theme",
         NOTIFICATION_MESSAGES.UserPreferences.THEME_SETTING_FAILED,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -98,7 +98,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Failed to set font size",
         NOTIFICATION_MESSAGES.UserPreferences.FONT_SIZE_SETTING_FAILED,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
     }
   };
@@ -111,7 +111,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Ideation phase set successfully",
         NOTIFICATION_MESSAGES.UserPreferences.IDEATION_PHASE_SET_SUCCESSFULLY,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       console.error("Error setting ideation phase:", error);
@@ -120,7 +120,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Failed to set ideation phase",
         NOTIFICATION_MESSAGES.UserPreferences.IDEATION_PHASE_SETTING_FAILED,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -134,7 +134,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "User preferences deleted successfully",
         NOTIFICATION_MESSAGES.UserPreferences.USER_PREFERENCES_DELETED_SUCCESSFULLY,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       console.error("Error deleting user preferences:", error);
@@ -143,7 +143,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Failed to delete user preferences",
         NOTIFICATION_MESSAGES.UserPreferences.USER_PREFERENCES_DELETION_FAILED,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -157,7 +157,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Brainstorming phase set successfully",
         NOTIFICATION_MESSAGES.UserPreferences.BRAINSTORMING_PHASE_SET_SUCCESSFULLY,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       console.error("Error setting brainstorming phase:", error);
@@ -166,7 +166,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Failed to set brainstorming phase",
         NOTIFICATION_MESSAGES.UserPreferences.BRAINSTORMING_PHASE_SETTING_FAILED,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -180,7 +180,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Launch phase set successfully",
         NOTIFICATION_MESSAGES.UserPreferences.LAUNCH_PHASE_SET_SUCCESSFULLY,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       console.error("Error setting launch phase:", error);
@@ -189,7 +189,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Failed to set launch phase",
         NOTIFICATION_MESSAGES.UserPreferences.LAUNCH_PHASE_SETTING_FAILED,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -203,7 +203,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Data analysis phase set successfully",
         NOTIFICATION_MESSAGES.UserPreferences.DATA_ANALYSIS_PHASE_SET_SUCCESSFULLY,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       console.error("Error setting data analysis phase:", error);
@@ -212,7 +212,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Failed to set data analysis phase",
         NOTIFICATION_MESSAGES.UserPreferences.DATA_ANALYSIS_PHASE_SETTING_FAILED,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }
@@ -228,7 +228,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Notification preferences saved successfully",
         NOTIFICATION_MESSAGES.UserPreferences.NOTIFICATION_PREFERENCES_SAVED_SUCCESSFULLY,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       console.error("Error saving notification preferences:", error);
@@ -237,7 +237,7 @@ const useApiUserPreferences = (): ApiUserPreferences => {
         "Failed to save notification preferences",
         NOTIFICATION_MESSAGES.UserPreferences.NOTIFICATION_PREFERENCES_SAVING_FAILED,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
     }
   };

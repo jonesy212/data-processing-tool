@@ -12,7 +12,7 @@ import { BaseData, Data } from '@/app/models/data/Data';
 import { Project } from "@/app/models/projects/Project";
 import { Team } from "@/app/models/teams/Team";
 import { TeamData } from "@/app/models/teams/TeamData";
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import { ConfigureSnapshotStorePayload, Snapshot, SnapshotOperation, SnapshotOperationType, SnapshotStoreConfig, SnapshotStoreProps, TagsRecord } from '@/app/snapshots';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -42,58 +42,84 @@ interface CustomData<T extends  BaseData<any>, K extends T> extends Data<T> {
 
 
 export interface TeamManagerStore<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = TeamMeta,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > {
-  teams: Record<string, Team[]>;
+  teams: Record<string, Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
+
   teamName: string;
   teamDescription: string;
   teamStatus: "active" | "inactive" | "archived";
 
   assignedTeamMemberStore: AssignTeamMemberStore;
 
-  updateTeamData: (teamId: number, data: Team) => void;
+  updateTeamData: (teamId: number, data: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   updateTeamName: (name: string) => void;
   updateTeamDescription: (description: string) => void;
   updateTeamStatus: (status: "active" | "inactive" | "archived") => void;
 
-  addTeamSuccess: (payload: { team: Team }) => void;
-  addTeam: (team: Team) => void;
-  addTeams: (teams: Team[]) => void;
+  addTeamSuccess: (payload: { team: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }) => void;
+  addTeam: (team: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+  addTeams: (teams: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void;
 
   removeTeam: (teamId: string) => void;
   removeTeams: (teamIds: string[]) => void;
 
-  getTeamData: (teamId: string, team: Team, color: string | null) => Team | null;
-  getTeamsData: (teamId: string, team: Team[]) => Team[] | null;
-  fetchTeamsSuccess: (payload: { teams: Team[] }) => void;
+  getTeamData: (
+    teamId: string,
+    team: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    color: string | null
+  ) => Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+
+  getTeamsData: (
+    teamId: string,
+    team: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  ) => Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
+
+  fetchTeamsSuccess: (payload: { teams: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }) => void;
   fetchTeamsFailure: (payload: { error: string }) => void;
   fetchTeamsRequest: () => void;
+
   completeAllTeamsSuccess: () => void;
   completeAllTeams: () => void;
   completeAllTeamsFailure: (payload: { error: string }) => void;
+
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
-   setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
-  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Include a SnapshotStore for teams
+  setDynamicNotificationMessage: (message: Message, type: NotificationType) => void;
+
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+
   takeTeamSnapshot: (teamId: string, userIds: string[]) => void;
+
   getTeamId: (
-    teamId: Team["id"],
-    team: Team,
+    teamId: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>["id"],
+    team: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) => number;
-  // Add more methods or properties as needed
 }
+
 const config = {} as typeof SnapshotStoreConfigComponent<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
-const useTeamManagerStore = (
-  initialStoreId: number
-  ): Promise<TeamManagerStore<T extends BaseData<any, any> ? T : BaseData<any, any>, K extends T ? K : T>> => {
 
+useTeamManagerStore = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = TeamMeta,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  initialStoreId: number
+): Promise<TeamManagerStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
+ 
   const { notify } = useNotification();
 
 
-  const [teams, setTeams] = useState<Record<string, Team[]>>({
+  const [teams, setTeams] = useState<Record<string, Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>>({
     active: [],
     inactive: [],
     archived: [],
@@ -176,7 +202,7 @@ const useTeamManagerStore = (
   };
   
 
-  const getTeamData = (teamId: string, data: TeamData<T, K>, color: string | null) => {
+  const getTeamData = (teamId: string, data: TeamData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, color: string | null) => {
     const teamData: Team = {
       id: teamId,
       color: color,
@@ -222,7 +248,7 @@ const useTeamManagerStore = (
     return teamData;
   };
 
-  const getTeamsData = (teamId: string, data: TeamData<T, K>[]): Team[] => {
+  const getTeamsData = (teamId: string, data: TeamData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] => {
     // Retrieve the team corresponding to the provided teamId
     const team = teams[teamId];
     if (!team) {
@@ -253,7 +279,7 @@ const useTeamManagerStore = (
     // Filter out any null values
     const filteredTeamsData = teamsData.filter(Boolean);
 
-    return filteredTeamsData as Team[];
+    return filteredTeamsData as Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   };
   
   const takeTeamSnapshot = async (teamId: string, userIds?: string[]) => {
@@ -335,7 +361,7 @@ const useTeamManagerStore = (
   };
 
   const removeTeam = (teamId: string) => {
-    setTeams((prevTeams: Record<string, Team[]>) => {
+    setTeams((prevTeams: Record<string, Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => {
       const updatedTeams = { ...prevTeams };
       delete updatedTeams[teamId];
       return updatedTeams;
@@ -352,7 +378,7 @@ const useTeamManagerStore = (
     });
   };
 
-  const addTeams = (teamsToAdd: Team[]) => {
+  const addTeams = (teamsToAdd: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => {
     // Ensure at least one team is passed
     if (teamsToAdd.length === 0) {
       console.error("At least one team must be passed");
@@ -391,7 +417,7 @@ const useTeamManagerStore = (
     }
   };
 
-  const fetchTeamsSuccess = (payload: { teams: Team[] }) => {
+  const fetchTeamsSuccess = (payload: { teams: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }) => {
     const { teams: newTeams } = payload;
     setTeams((prevTeams) => {
       const updatedTeams = { ...prevTeams };
@@ -422,7 +448,7 @@ const useTeamManagerStore = (
     // Simulate asynchronous completion
     setTimeout(() => {
       // Update teams to mark all as done
-      setTeams((prevTeams: Record<string, Team[]>) => {
+      setTeams((prevTeams: Record<string, Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>) => {
         const updatedTeams = { ...prevTeams };
         Object.keys(updatedTeams).forEach((id) => {
           updatedTeams[id] = prevTeams[id].map((team) => ({

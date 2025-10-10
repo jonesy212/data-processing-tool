@@ -195,7 +195,7 @@ export default class MobXEntityStore {
       generateHash: function (appVersion: string): string {
         return crypto.createHash("sha256").update(appVersion).digest("hex");
       },
-      isNewer: function (otherVersion: Version<T, K>): boolean {
+      isNewer: function (otherVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): boolean {
         return this.compare?.(otherVersion) === 1;
       },
       hashStructure: function(structure: AppStructureItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): string {

@@ -1,24 +1,24 @@
 import Milestone, {
   ProductMilestone,
 } from "@/app/calendar/CalendarSlice";
+import { Product } from "@/app/components/products/Product";
+import { StatusType } from "@/app/models/data/StatusType";
+import { Project } from '@/app/models/projects/Project';
 import { Task } from "@/app/models/tasks/Task";
 import { Team } from "@/app/models/teams/Team";
 import { Contributor, Member } from "@/app/models/teams/TeamMembers";
-import { Product } from "@/app/components/products/Product";
+import { JobRole } from '@/app/models/UserRoles';
 import { IdentifiedNeed } from "@/app/projects/IdentifiedNeed";
 import { JobDescription } from "@/app/projects/JobDescription";
-import { StatusType } from "@/app/models/data/StatusType";
-import { Project } from "@/app/projects/Project";
 import { WritableDraft } from "@/app/ReducerGenerator";
 import { RootState } from "@/state/redux/slices/RootSlice";
-import { JobRole } from "@/users/UserRoles";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { Draft, produce } from "immer";
 import { useDispatch } from "react-redux";
 
 import { Meeting } from "@/app/components/communications/scheduler/Meeting";
-import ProjectProgress from '@/app/projects/projectManagement/ProjectProgress';
 import { ProjectFeedback } from "@/app/features/support/ProjectFeedback";
+import ProjectProgress from '@/app/projects/projectManagement/ProjectProgress';
 import { CustomApp } from '@/app/utils/web3/dAppAdapter/DApp';
 
 interface ProjectState {

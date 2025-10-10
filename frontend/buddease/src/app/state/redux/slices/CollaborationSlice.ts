@@ -29,7 +29,7 @@ import { StatusType } from "@/app/models/data/StatusType";
 import CollaborationSettings from "@/app/pages/community/CollaborationSettings";
 import { MentorshipRequest } from "@/app/pages/community/MentorshipRequest";
 import { Participant } from '@/app/pages/management/ParticipantManagementPage';
-import { Project } from "@/app/projects/Project";
+import { Project } from '@/app/models/projects/Project';
 import { Document } from "@/app/stores/DocumentStore";
 import { useUIManager } from "@/app/stores/UISlice";
 import { VersionData } from "@/app/versions/VersionData";
@@ -56,7 +56,7 @@ enum ResourceType {
 interface CollaborationState<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>> {
   sharedProjects: Project[];
   sharedMeetings: Meeting[];
   participants: Participant[]
@@ -100,7 +100,7 @@ interface CollaborationState<
 }
 
 const initialState: CollaborationState<
-  Data<T, K, StructuredMetadata<T, K>
+  Data<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   >, UnifiedMetaDataOptions
 > = {
   sharedProjects: [],

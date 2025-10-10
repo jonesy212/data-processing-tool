@@ -18,7 +18,7 @@ import { SnapshotData } from "./SnapshotData";
 import snapshotDelegate from "./snapshotDelegate";
 import SnapshotStore from "./SnapshotStore";
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
-import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 
 const snapshotType = <
   T extends BaseDataEntity,
@@ -32,7 +32,7 @@ const snapshotType = <
   snapshot: (
     id: string | number | undefined,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,    
+    category?: Category,    
     callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     criteria: CriteriaType,
     snapshotId?: string | number | null,
@@ -62,7 +62,7 @@ const snapshotType = <
       id: string | number | null | undefined,
       snapshotId: string | null,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category: Category | undefined,      
+      category?: Category,      
       callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
       criteria: CriteriaType,
       snapshotStoreConfigData?: SnapshotStoreConfig<

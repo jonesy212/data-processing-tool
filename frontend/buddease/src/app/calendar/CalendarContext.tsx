@@ -1,6 +1,6 @@
 import { Member } from "@/app/components/models/teams/TeamMembers";
 import { PriorityTypeEnum } from "@/app/models/data/StatusType";
-import { Project } from "@/app/projects/Project";
+import { Project } from '@/app/models/projects/Project';
 import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import React, { createContext, useContext, useState } from "react";
 

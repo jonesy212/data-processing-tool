@@ -13,7 +13,7 @@
 //   private snapshots: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 //   private callbacks: MultipleEventsCallbacks<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 
-//   constructor(options: SnapshotStoreOptions<T, K, Meta, ExcludedFields>) {
+//   constructor(options: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
 //     this.id = options.id
 //     this.category = options.category;
 //     this.snapshots = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();

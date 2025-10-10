@@ -141,7 +141,7 @@ const UserJourneyManager: React.FC = () => {
         "Your information has been successfully submitted",
         NOTIFICATION_MESSAGES.Onboarding.QUESTIONNAIRE_SUBMITTED,
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       // Handle any network or unexpected errors
@@ -151,7 +151,7 @@ const UserJourneyManager: React.FC = () => {
         "There was an error saving your submission, try again",
         NOTIFICATION_MESSAGES.Onboarding.PROFILE_SETUP_ERROR,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
     }
   };

@@ -84,7 +84,7 @@ export const calendarService = observable({
         "Complete All Batch Event Succss",
         NOTIFICATION_MESSAGES.CalendarEvents.COMPLETE_ALL_EVENTS_SUCCESS,
         new Date,
-        NotificationTypeEnum.OperationSuccess as NotificationType
+        NotificationTypeEnum.OPERATION_SUCCESS as NotificationType
       );
 
     } catch (error) {
@@ -112,7 +112,7 @@ export const calendarService = observable({
         "Reassign Event Success",
         NOTIFICATION_MESSAGES.CalendarEvents.REASSIGN_EVENT_SUCCESS,
         new Date,
-        NotificationTypeEnum.OperationSuccess as NotificationType
+        NotificationTypeEnum.OPERATION_SUCCESS as NotificationType
       );
 
     } catch (error) {

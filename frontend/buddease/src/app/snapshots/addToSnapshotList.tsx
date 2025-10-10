@@ -12,8 +12,8 @@
 
 // // addToSnapshotList.ts
 // const addToSnapshotList = async  <T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-//   snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
-//   subscribers: Subscriber<T, K, Meta, ExcludedFields>[]
+//   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+//   subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
 // ) => {
 //   // Logic to handle adding snapshot to the list in your UI
 //   console.log("SnapshotStore:", snapshotStore);
@@ -50,8 +50,8 @@
 //         getAllItems: snapshotStore.getAllItems,
 //         getDelegate: function (context: {
 //           useSimulatedDataSource: boolean;
-//           simulatedDataSource: SnapshotStoreConfig<SnapshotWithCriteria<T, K, Meta, ExcludedFields>, K>[];
-//         }): Promise<SnapshotStoreConfig<SnapshotWithCriteria<T, K, Meta, ExcludedFields>, K>[]> {
+//           simulatedDataSource: SnapshotStoreConfig<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, K>[];
+//         }): Promise<SnapshotStoreConfig<SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, K>[]> {
 //           return new Promise((resolve, reject) => {
 //             try {
 //               // Example logic to handle context and simulate data retrieval
@@ -72,23 +72,23 @@
 //         },
 
 //         getSnapshot: function (
-//           category: Category | undefined,//           timestamp: any,
+//           category?: Category,//           timestamp: any,
 //           id: number,
 //           snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-//           snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+//           snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //           data: T)
 //           : Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
 //           throw new Error("Function not implemented.");
 //         },
 //         getSnapshotContainer: function (
-//           category: Category | undefined,//           timestamp: any,
+//           category?: Category,//           timestamp: any,
 //           id: number,
 //           snapshot: Snapshot<BaseData, K>,
-//           snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+//           snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //           data: T): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> {
 //           throw new Error("Function not implemented.");
 //         },
-//         getSnapshotVersions: function (category: symbol | string | Category | undefined, timestamp: any, id: number, snapshot: Snapshot<BaseData, K>, snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>, data: T): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> {
+//         getSnapshotVersions: function (category: symbol | string | Category | undefined, timestamp: any, id: number, snapshot: Snapshot<BaseData, K>, snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, data: T): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> {
 //           throw new Error("Function not implemented.");
 //         }
 //       } // Provide actual DataStoreMethods

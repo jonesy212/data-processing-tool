@@ -4,7 +4,7 @@ import projectOwnerApiService from "@/app/api/ProjectOwnerApi";
 import { Team } from "@/app/components/models/teams/Team";
 import { TeamMember } from "@/app/components/models/teams/TeamMembers";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
-import { ProjectType } from "@/app/projects/Project";
+import { ProjectType } from '@/app/models/projects/Project';
 import { call, put, takeLatest } from "redux-saga/effects";
 
 // Worker Saga: Create Project

@@ -9,9 +9,9 @@ class SnapshotManagerOptions<T extends BaseDataEntity,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
-  private options: SnapshotStoreOptions<T, K, Meta, ExcludedFields> | undefined;
+  private options: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
 
-  constructor(initialOptions: Partial<SnapshotStoreOptions<T, K, Meta, ExcludedFields>> = {}) {
+  constructor(initialOptions: Partial<SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {}) {
       this.options = {
           data: new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(),
           initialState: null,
@@ -46,27 +46,27 @@ class SnapshotManagerOptions<T extends BaseDataEntity,
           subscribeToSnapshots: subscribeToSnapshots,
           subscribeToSnapshot: subscribeToSnapshot,
           delegate: [],
-          dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields>,
+          dataStoreMethods: {} as DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           getDelegate: [],
-          getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K, Meta, ExcludedFields> {
+          getDataStoreMethods: function (): DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
               throw new Error("Function not implemented.");
           },
           snapshotMethods: [],
           eventRecords: null,
           ...initialOptions, // Overwrite defaults with provided options
-      } as SnapshotStoreOptions<T, K, Meta, ExcludedFields>;
+      } as SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   }
 
-  get(): SnapshotStoreOptions<T, K, Meta, ExcludedFields> {
+  get(): SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
       if (this.options === undefined) {
           throw new Error("Options have not been initialized");
       }
       return this.options;
   }
 
-  set(options: Partial<SnapshotStoreOptions<T, K, Meta, ExcludedFields>>) {
+  set(options: Partial<SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) {
       if (this.options) {
-          this.options = { ...this.options, ...options } as SnapshotStoreOptions<T, K, Meta, ExcludedFields>;
+          this.options = { ...this.options, ...options } as SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       } else {
           throw new Error("Options have not been initialized");
       }

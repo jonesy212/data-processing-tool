@@ -3,7 +3,7 @@ import { ExcludedFields } from '@/app/routing/Fields';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 // Define the StructuredMetadataViewer component
-const MetadataViewer = ({ metadata }: { metadata: UnifiedMetadata<T, K, Meta, ExcludedFields> }) => {
+const MetadataViewer = ({ metadata }: { metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }) => {
   // Render the metadata here
   return (
     <div>

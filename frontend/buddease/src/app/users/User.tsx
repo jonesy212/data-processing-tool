@@ -186,7 +186,7 @@ export interface User<
   interests?: string[];
   privacySettings?: PrivacySettings;
   notifications?: NotificationSettings;
-  projects?: Project<T, K, StructuredMetadata<T, K>, AttachmentType, ExcludedFields, IncludedFields>[];
+  projects?: Project<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, AttachmentType, ExcludedFields, IncludedFields>[];
   socialLinks?: SocialLinks;
   relationshipStatus?: string | null;
   hobbies?: string[];
@@ -194,7 +194,7 @@ export interface User<
   language?: string;
   education?: Education[];
   employment?: Employment[];
-  dependencies?: Task<T, K, StructuredMetadata<T, K>, AttachmentType, ExcludedFields, IncludedFields>[];
+  dependencies?: Task<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, AttachmentType, ExcludedFields, IncludedFields>[];
   dateOfBirth?: Date;
   skills?: string[];
   achievements?: string[];
@@ -307,7 +307,7 @@ export interface UserData<
   socialAccounts?: SocialAccount[];
   teams?: string[] | Team[];
   teamMembers?: TeamMember[];
-  projects?: string[] | Project<T, K, Meta, ExcludedFields>[];
+  projects?: string[] | Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   tasks?: any[] | Task<T, K, Meta>[];
   yourDocuments?: DocumentTree;
   visualizations?: VisualizationData[];
@@ -510,7 +510,7 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
           data: user.data as UserData<
             BaseData<any, any, StructuredMetadata<any, any>>,
             BaseData<any, any, StructuredMetadata<any, any>>,
-            StructuredMetadata<T, K>
+            StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
           >,
           createdBy: user.createdBy,
           tags: validTags,
@@ -530,7 +530,7 @@ const UserDetails: React.FC<{ user: User }> = ({ user }) => {
   }
 };
 const area = fetchUserAreaDimensions().toString();
-const meta: StructuredMetadata<T, K> = useMeta<T, K>(area);
+const meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area);
 const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(
   area
 );

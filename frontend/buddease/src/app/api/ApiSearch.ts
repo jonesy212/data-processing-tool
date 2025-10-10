@@ -28,7 +28,7 @@ export const searchAPI = async <
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   query: string
-): Promise<SearchResult<T, K, Meta, ExcludedFields>[]> => {
+): Promise<SearchResult<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> => {
   try {
     const searchEndpoint = `${SEARCH_BASE_URL}?query=${encodeURIComponent(
       query

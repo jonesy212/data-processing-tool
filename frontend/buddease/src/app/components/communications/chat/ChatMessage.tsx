@@ -1,40 +1,39 @@
 // ChatMessage.tsx
+import { ChatMessageActions } from "@/app/actions/ChatMessageActions";
 import { ChatApi } from "@/app/api/ChatApi";
-import { refreshUI } from '@/app/snapshots/refreshUI';
-import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
+import ChatCard from "@/app/cards/ChatCard";
+import { FileUploadModalProps } from "@/app/cards/modal/FileUploadModal";
 import { Message } from "@/app/generators/GenerateChatInterfaces";
 import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
+import { subscriptionServiceInstance } from "@/app/hooks/dynamicHooks/dynamicHooks";
+import useFiles from "@/app/hooks/useFiles";
+import { UserRole } from "@/app/models/UserRole";
+import UserRoles from '@/app/models/UserRoles';
 import GeolocationService from "@/app/services/GeolocationService";
+import { refreshUI } from '@/app/snapshots/refreshUI';
 import { openChatSettingsPanel } from "@/app/utils/ChatSettingsPanelUtils";
 import { initializeGeolocationService } from "@/app/utils/GeolocationServiceUtils";
+import { AquaConfig } from "@/app/utils/web3/webConfigs/AquaConfig";
+import FluenceConnection from "@/app/web3/fluenceProtocoIntegration/FluenceConnection";
+import connectToChatWebSocket, { retryConfig } from "@/app/WebSocket";
 import { useAuth } from "@/context/AuthContext";
 import axios, { AxiosResponse } from "axios";
 import { EditorState } from "draft-js";
 import React, { useEffect, useState } from "react";
-import { ChatMessageActions } from "@/app/actions/ChatMessageActions";
-import ChatCard from "@/app/cards/ChatCard";
-import { FileUploadModalProps } from "@/app/cards/modal/FileUploadModal";
-import { subscriptionServiceInstance } from "@/app/hooks/dynamicHooks/dynamicHooks";
-import useFiles from "@/app/hooks/useFiles";
-import { UserRole } from "@/app/users/UserRole";
-import UserRoles from "@/users/UserRoles";
-import FluenceConnection from "@/app/web3/fluenceProtocoIntegration/FluenceConnection";
-import connectToChatWebSocket, { retryConfig } from "@/app/WebSocket";
 import { AquaChat } from "./AquaChat";
 import ChatSettings from "./ChatSettingsPanel";
-import resetUnreadMessageCount from "./ResetUnreadMessageCount";
 import {
-    SidebarController,
-    SpeechToTextEngine,
-    createRichTextEditor,
-    getUnreadMessageCount,
-    initializeSpeechToText,
-    leaveChatRoom,
-    openChatSettingsModal,
-    openChatSidebar,
-    openEmojiPicker,
-    openFileUploadModal,
-    sendChatMessage,
+  SidebarController,
+  SpeechToTextEngine,
+  createRichTextEditor,
+  getUnreadMessageCount,
+  initializeSpeechToText,
+  leaveChatRoom,
+  openChatSettingsModal,
+  openChatSidebar,
+  openEmojiPicker,
+  openFileUploadModal,
+  sendChatMessage,
 } from "./chatUtils";
 import clearChatAnalyticsData from "./features/clearChatAnalyticsData";
 import clearChatImageCache from "./features/clearChatImageCache";
@@ -50,6 +49,7 @@ import revokeMediaPermissions from "./features/revokeMediaPermissions";
 import stopAnimatedEmoticons from "./features/stopAnimatedEmoticons";
 import stopBackgroundChatAudio from "./features/stopBackgroundChatAudio";
 import unsubscribeFromChatNotifications from "./features/unsubscribeFromChatNotifications";
+import resetUnreadMessageCount from "./ResetUnreadMessageCount";
 
 type ChatSettingsModal = {
   close?: () => void;

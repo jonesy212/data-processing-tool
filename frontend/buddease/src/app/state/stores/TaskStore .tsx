@@ -34,7 +34,6 @@ import { makeAutoObservable } from "mobx";
 import { title } from 'process';
 import { useState } from "react";
 import { AssignTaskStore, useAssignTaskStore } from "./AssignTaskStore";
-;
 
 export interface TaskManagerStore<
   T extends BaseDataEntity,
@@ -113,9 +112,9 @@ export interface TaskManagerStore<
   batchFetchUserSnapshotsRequest: (
     snapshotData: Record<string, User[]>
   ) => void
-
-
 }
+
+
 const updateTaskPositionSuccess = (payload: { task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }) => {
   const { task } = payload;
 
@@ -355,7 +354,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
   const takeTaskSnapshot = async <
     T extends BaseData<any>,
     K extends T = T,
-    Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
   >(taskId: string, storeId?: number) => {
     // Ensure the taskId exists in the tasks
     if (!tasks[taskId]) {
@@ -642,7 +641,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
           `Error marking task ${taskId} as complete`,
           NOTIFICATION_MESSAGES.Error.DEFAULT,
           new Date(new Date().getTime()),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
     }
   };
@@ -802,7 +801,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
           `Error updating priority for task ${taskId}`,
           NOTIFICATION_MESSAGES.Error.DEFAULT,
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
     }
   };
@@ -875,7 +874,7 @@ const useTaskManagerStore = (): TaskManagerStore => {
         `Error getting task count by status`,
         NOTIFICATION_MESSAGES.Error.DEFAULT,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
     }
   };

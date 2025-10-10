@@ -11,7 +11,7 @@ interface FetchableDataStore<
   T extends BaseDataEntity, 
   K extends T = T
 > {
-  getData(): Promise<DataStore<T, K, Meta, ExcludedFields>[]>;
+  getData(): Promise<DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
 }
 
 const initializeData = ():  BaseDataEntity => {

@@ -32,7 +32,7 @@ interface TodoManagerStoreProps {
 export interface TodoManagerStore<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K> 
 > {
   dispatch: (action: any) => void;
   todos: Record<string, Todo<T, K, Meta>>;
@@ -79,7 +79,7 @@ export interface TodoManagerStore<
 const useTodoManagerStore = <
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(props: TodoManagerStoreProps): TodoManagerStore<T, K> => {
   
   const [todos, setTodos] = useState<Record<string, Todo>>(props.initialTodos || {});

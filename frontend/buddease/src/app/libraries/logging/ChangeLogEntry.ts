@@ -13,8 +13,8 @@ interface ChangeLogEntry<
   changeType: 'created' | 'updated' | 'deleted' | 'versioned';
   changes: Partial<T>;
   previousState?: Partial<T>;
-  version?: Version<T, K>;
-  metadata?: StructuredMetadata<T, K>;
+  version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  metadata?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 // Functional: Create Change Log Entry
@@ -23,8 +23,8 @@ function createChangeLogEntry<T extends BaseData<any, any>, K extends T = T>(
   changeType: ChangeLogEntry<T, K>['changeType'],
   changes: Partial<T>,
   previousState?: Partial<T>,
-  version?: Version<T, K>,
-  metadata?: StructuredMetadata<T, K>
+  version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  metadata?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): ChangeLogEntry<T, K> {
   return {
     id: crypto.randomUUID(),
@@ -49,8 +49,8 @@ class ChangeLogManager<T extends BaseData<any, any, StructuredMetadata<any, any>
     changeType: ChangeLogEntry<T, K>['changeType'],
     changes: Partial<T>,
     previousState?: Partial<T>,
-    version?: Version<T, K>,
-    metadata?: StructuredMetadata<T, K>
+    version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    metadata?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): void {
     const entry = createChangeLogEntry(author, changeType, changes, previousState, version, metadata);
     this.logs.push(entry);

@@ -7,12 +7,14 @@ import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
-import { SubscriberCollection } from '@/app/snapshots/SubscriberCollection';
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
+import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
+import { PhaseStructuredMetadata } from 'app/typings/entities/PhaseEntity'
+import { SnapshotStore } from "@/app/snapshots/SnapshotStore";
 
 // Define the actual PhaseEntity interface
-export interface PhaseEntity extends BaseDataEntity {
+interface PhaseEntity extends BaseDataEntity {
   id: string;
   name: string;
   description?: string;
@@ -34,7 +36,7 @@ export interface PhaseEntity extends BaseDataEntity {
   updatedAt: Date;
 }
 
-export interface PhaseMilestone {
+interface PhaseMilestone {
   id: string;
   name: string;
   description?: string;
@@ -44,14 +46,14 @@ export interface PhaseMilestone {
   assignedTo?: string; // User ID
 }
 
-export interface PhaseSettings {
+interface PhaseSettings {
   allowOverlap: boolean;
   autoProgress: boolean;
   notificationSettings: PhaseNotificationSettings;
   approvalRequired: boolean;
 }
 
-export interface PhaseNotificationSettings {
+interface PhaseNotificationSettings {
   onStart: boolean;
   onCompletion: boolean;
   onDelay: boolean;
@@ -156,9 +158,13 @@ export type {
   PhaseSnapshotData,
   // Utility types
   PhaseSnapshotFromParams, PhaseSnapshotsArray, PhaseSnapshotStore, PhaseSnapshotStoreConfig, PhaseSnapshotUnionFromParams, PhaseSnapshotWithCriteria, PhaseSpecificMetadata, PhaseStructuredMetadata, PhaseSubscriberCollection,
+  PhaseMilestone,
+  PhaseEntity, 
+  PhaseNotificationSettings, 
+  PhaseSettings 
   // Metadata types
-  PhaseUnifiedMetadata, PhaseWithDetails, PublicPhaseProfile
+  PhaseUnifiedMetadata, PhaseWithDetails, PublicPhaseProfile,
+
 };
 
 // Export the main interfaces
-  export type { PhaseEntity, PhaseMilestone, PhaseNotificationSettings, PhaseSettings };

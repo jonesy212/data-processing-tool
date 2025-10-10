@@ -2,24 +2,26 @@
 
 import { DocumentFormattingOptions } from '@/app/components/documents/ DocumentFormattingOptionsComponent';
 import { BaseData } from '@/app/models/data/Data';
-import AccessHistory from '@/app/components/versions/AccessHistory';
+import AccessHistory from '@/app/versions/AccessHistory';
 import { DocumentData } from "@/app/documents/editing/DocumentBuilder";
 import { ProjectPhaseTypeEnum } from "@/app/models/data/StatusType";
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import { TagsRecord } from '@/app/snapshots';
 import AppVersionImpl from "@/app/versions/AppVersion";
 import { VersionData } from '@/app/versions/VersionData';
 import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { ModifiedDate } from "@/documents/DocType";
-import { DocumentOptions } from "@/documents/DocumentOptions";
+import { ModifiedDate } from "@/app/documents/DocType";
+import { DocumentOptions } from "@/app/documents/DocumentOptions";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
-import { DocumentTypeEnum } from '@/server/ServerDocumentGenerator';
+import { DocumentTypeEnum } from '@/app/typings/documentTypes';
 import { ContentState, EditorState } from 'draft-js';
 import { Dispatch, SetStateAction } from "react";
-import { WritableDraft } from '@/state/redux/ReducerGenerator';
-import { DocumentObject } from '@/state/redux/slices/DocumentSlice';
-import { DocumentPhaseTypeEnum } from "./DocumentPhaseType";
+import { WritableDraft } from '@/app/state/redux/ReducerGenerator';
+import { DocumentObject } from '@/app/state/redux/slices/DocumentSlice';
+import { DocumentPhaseTypeEnum } from "@/app/documents/editing/DocumentPhaseType";
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 export interface CommonAnimationOptions {
   type: "slide" | "fade" | "show" | "custom" | "none"; // Add more animation types as needed
@@ -30,18 +32,20 @@ export interface CommonAnimationOptions {
 }
 
 export interface DocumentBuilderProps<
-  T extends BaseData<any>, 
-  K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >
-  extends DocumentData<T, K, Meta, ExcludedFields>  {
+  extends DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  {
   isDynamic: boolean;
   setDocumentPhase?: (
-    docPhase: string | Phase | undefined,
+    docPhase: string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
     phaseType: DocumentPhaseTypeEnum
   ) => {
-    phase: string | Phase | undefined,
+    phase: string | Phase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
     phaseType: DocumentPhaseTypeEnum
     } | undefined;
   currentContent?: ContentState
@@ -50,7 +54,7 @@ export interface DocumentBuilderProps<
   currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     accessHistory: AccessHistory[];
   lastModifiedDate: ModifiedDate | undefined;
-  versionData: VersionData | undefined;
+  versionData: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   documentPhase:
     | string
     | {
@@ -77,12 +81,14 @@ export interface DocumentBuilderProps<
   onOptionsChange: (newOptions: DocumentOptions) => void;
   onConfigChange: (newConfig: DocumentBuilderConfig) => void;
   setOptions: Dispatch<SetStateAction<DocumentOptions>>; 
-  documents: WritableDraft<DocumentObject<T, K, Meta>>[]
+  documents: WritableDraft<DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[];
   options: DocumentOptions;
   editorState: EditorState
   projectPath: string;
-  buildDocument: (options: DocumentFormattingOptions, documentData: DocumentData<T, K, Meta, ExcludedFields>, document: DocumentObject<T, K, Meta>, documentType: DocumentTypeEnum) => void;
-  buildDocuments?: DocumentData<T, K, Meta, ExcludedFields>[];
+  getDefaultMetadata: () => UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  buildDocument: (options: DocumentFormattingOptions,
+  documentData: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, document: DocumentObject<T, K, Meta>, documentType: DocumentTypeEnum) => void;
+  buildDocuments?: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 export interface DocumentAnimationOptions extends CommonAnimationOptions {

@@ -4,7 +4,14 @@ import { TagsRecord } from "@/app/snapshots/SnapshotWithCriteria";
 import { AllTypes } from "@/app/typings/PropTypes";
 
 // File interface representing a file
-interface CustomFile extends File{
+interface CustomFile<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+  > extends File{
   readonly name: string;                // The name of the file
   readonly size: number;                // The size of the file in bytes
   readonly type: string;                // The MIME type of the file

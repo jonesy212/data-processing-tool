@@ -26,7 +26,7 @@ export const cryptoService = observable({
         'FetchCryptoDataSuccessId', // Provide a unique ID for the notification
         NOTIFICATION_MESSAGES.Crypto.FETCH_CRYPTO_SUCCESS, // Message
         new Date(), // Date
-        NotificationTypeEnum.OperationSuccess // Type
+        NotificationTypeEnum.OPERATION_SUCCESS // Type
       );
       // Dispatch fetchApiDataSuccess action with the received data
       ApiActions.fetchApiDataSuccess({ data: response.data });
@@ -46,7 +46,7 @@ export const cryptoService = observable({
           NOTIFICATION_MESSAGES.Crypto.UPDATE_CRYPTO_FAILURE, // Message
           {}, // Content (can be empty in this case)
           new Date(), // Date
-          NotificationTypeEnum.OperationError // Type (assuming this is more appropriate for a failure)
+          NotificationTypeEnum.OPERATION_ERROR // Type (assuming this is more appropriate for a failure)
         );
         // Dispatch fetchApiDataFailure action with the error message
         ApiActions.fetchApiDataFailure({ error: error.message });

@@ -1,4 +1,5 @@
 //  DataStoreMethods.ts
+import { SnapshotStoreMethods } from '@/app/snapshots/SnapshotStoreMethods';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData } from '@/app/models/data/Data';
 import { StructuredMetadata } from '@/config/StructuredMetadata';
@@ -10,10 +11,8 @@ import { Snapshots, SnapshotsArray, SnapshotsObject } from "@/app/snapshots/Loca
 import { Snapshot } from "@/app/snapshots/Snapshot";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
-import { SnapshotStoreMethod } from "@/app/snapshots/SnapshotStoreMethod";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
-import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { DataStore } from "./DataStore";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
@@ -27,19 +26,21 @@ interface DataStoreWithSnapshotMethods<
   IncludedFields extends keyof T = keyof T
 > 
   extends DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-  snapshotMethods: SnapshotStoreMethods<T, K>[] | undefined
+  snapshotMethods: SnapshotStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined
 }
 
 type AddDataParams<
-  T extends BaseData<any>,
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = {
   id: string;
   data: T;
   snapshotConfig?: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  category?: symbol | string | Category;
+  category?: Category;
   categoryProps?: CategoryProperties;
   // Optional: Only needed for advanced cases
   snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -71,9 +72,6 @@ export interface DataStoreMethods <
   mapSnapshots: (
     storeIds: number[],
     snapshotId: string,
-    category: Category | undefined,
-    categoryProperties: CategoryProperties | undefined,
-
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     timestamp: string | number | Date | undefined,
     type: string,
@@ -84,7 +82,6 @@ export interface DataStoreMethods <
     callback: (
       storeIds: number[],
       snapshotId: string,
-      category: Category | undefined,
       categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       timestamp: string | number | Date | undefined,
@@ -93,8 +90,11 @@ export interface DataStoreMethods <
       id: number,
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       data: K,
-      index: number
-    ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+      index: number,
+      category?: Category,
+    ) => SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,
+    categoryProperties?: CategoryProperties,
   ) => Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 
   addSnapshot: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -109,7 +109,7 @@ export interface DataStoreMethods <
       | Promise<{
         snapshotId: number;
         snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-        category: Category | undefined;
+        category?: Category;
         categoryProperties: CategoryProperties | undefined;
         dataStoreMethods: DataStore<T, K> | null;
         timestamp: string | number | Date | undefined;
@@ -138,8 +138,7 @@ export interface DataStoreMethods <
     id: number,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & K, StructuredMetadata<T, CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & K>>
-  ) => Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined>;
-
+  ) => Promise<SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined>;
   removeData: (id: number) => void;
 
   updateData: (id: number, newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
@@ -151,7 +150,7 @@ export interface DataStoreMethods <
 
   getSnapshotsByPrioritySuccess: (snapshots: Snapshots<T, K>) => void;
 
-  snapshotMethods: SnapshotStoreMethods<T, K>[] | undefined;
+  snapshotMethods: SnapshotStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined;
   // More methods as required...
 }
 

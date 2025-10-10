@@ -6,8 +6,8 @@ import { StructuredMetadata } from "@/app/StructuredMetadata";
 import { useSecurityAudit } from "@/app/hooks/useSecurityAudit";
 
 const createMeta = <T extends BaseData<any>, K extends T = T>(
-  data: Partial<StructuredMetadata<T, K>>
-): StructuredMetadata<T, K> => {
+  data: Partial<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   const { useSecureUserId, sanitizeMetadata } = useSecurityAudit();
   const id = useSecureUserId();
 

@@ -46,7 +46,7 @@ export function useSnapshotVersioningSystem<
   initialSnapshots = new Map(),
   onVersionChange,
   maxHistory = 100
-}: SnapshotVersioningSystemProps<T, K, Meta, ExcludedFields>) {
+}: SnapshotVersioningSystemProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) {
   // State
 // Fix the useState type annotation
   const [snapshots, setSnapshots] = useState<Map<string, SnapshotVersion<T>>>(initialSnapshots);

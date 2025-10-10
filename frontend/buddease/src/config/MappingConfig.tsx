@@ -9,7 +9,7 @@ import { StructuredMetadata } from "@/config/StructuredMetadata";
 export interface MappingConfig<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -63,7 +63,7 @@ export interface MappingConfig<
 const mapParsedDataToCommonData = <
   T extends SupportedData<any, any, StructuredMetadata<any, any>>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   parsedData: ParsedData<T>
 ): CommonData<T, K, Meta> => {

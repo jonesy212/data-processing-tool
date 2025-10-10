@@ -2,7 +2,7 @@ import { NotificationType } from '@/app/context/NotificationContext';
 import { notify } from '@/app/utils/snapshotUtils';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StorageService } from '@/models/storage/StoragService';
-import { Snapshot } from '@/app/snapshots/Snapshpshot';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 // Archive types
 export interface ArchiveMetadata {
   id: string | number;

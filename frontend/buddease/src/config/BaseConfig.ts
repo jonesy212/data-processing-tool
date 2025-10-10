@@ -1,20 +1,24 @@
 // BaseConfig.ts
-import { Category } from '@/app/components/libraries/categories/generateCategoryProperties';
+import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { TagsRecord } from '@/app/snapshots/SnapshotWithCriteria';
-import { UnifiedMetadata, UnifiedMetaDataOptions } from "@/server/database/MetaDataOptions";
+import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
 import { useSnapshot } from '@/context/SnapshotContext';
 
 import { Taggable } from '@/app/models/CommonData';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { K, T, Meta } from '@/app/components/models/data/dataStoreMethods';
+import { K, T, Meta } from '@/app/models/data/dataStoreMethods';
 import { EventManager, InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { BaseCacheConfig, BaseMetadataConfig, BaseRetryConfig, } from "../app/services/ConfigurationService";
-import { BaseMetadata } from '@/database/MetaDataOptions';
+import { BaseMetadata } from '@/server/database/MetaDataOptions';
 import { StructuredMetadata } from "./StructuredMetadata";
 import { useMeta } from "./useMeta";
 import { useMetadata } from "./useMetadata";
-import { SharedIdentifiers } from '@/components/documents/RelatedProps';
+import { SharedIdentifiers } from '@/app/documents/RelatedProps';
+import { AttachmentType } from '@/app/components/documents/NoteData';
+import { ExcludedFields } from '@/app/components/routing/Fields';
+import { Attachment } from '@/app/features/support/SupportTicketComponent';
+import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 
 type BaseDataEntity = BaseDataRoot;
 
@@ -24,9 +28,17 @@ interface BaseDataRoot {
   categoryProperties?: CategoryProperties;
 }
 
-type DefaultMeta<T extends BaseDataEntity, K extends T = T> = 
-  StructuredMetadata<T, K>;
+type DefaultMeta<
+  T extends BaseDataEntity,
+  K extends T = T,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
+> = StructuredMetadata<T, K, any, AttachmentType, ExcludedFields, IncludedFields>;
+
+
 type DefaultExcludedFields<T extends BaseDataEntity> = never;
+type DefaultIncludedFields<T extends BaseDataEntity> = keyof T;
 
 // Utility type for excluding fields
 type WithoutExcluded<T, ExcludedFields extends keyof T> = Omit<T, ExcludedFields>;
@@ -42,10 +54,12 @@ interface SharedConfig {
 
 // Combine the base interfaces into a single interface
 interface BaseConfig<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > extends SharedConfig, 
   BaseRetryConfig, 
   BaseCacheConfig, 
@@ -60,12 +74,12 @@ interface BaseConfig<
   isActive: boolean
   name: string;
   description?: string
-  category: Category | undefined,
+  category?: Category,
   timestamp: string | number | Date | undefined;
   createdBy?: string | undefined;
   tags?: string[] | TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
   initialState: InitializedState<T, K>;
-  meta: StructuredMetadata<T, K, Meta>;
+  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   events: EventManager<T, K>;
 }
 
@@ -73,7 +87,7 @@ interface BaseConfig<
 interface ProjectManagementConfig<
   T extends  BaseDataEntity,
   K extends T = T
-> extends BaseConfig<T, K, Meta, ExcludedFields> {
+> extends BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   taskPhases: string[];
   maxCollaborators: number;
   notificationPreferences: {
@@ -84,8 +98,13 @@ interface ProjectManagementConfig<
 
 // Specific configuration for the crypto module
 interface CryptoConfig<
-  T extends  BaseDataEntity,
-  K extends T = T> extends BaseConfig<T, K, Meta, ExcludedFields> {
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> extends BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   supportedCurrencies: string[];
   defaultCurrency: string;
   marketDataRefreshInterval: number;
@@ -94,14 +113,14 @@ interface CryptoConfig<
 
 
 const area = fetchUserAreaDimensions().toString()
-const metadata: UnifiedMetaDataOptions<T, K> = useMetadata<T, K>(area)
-const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+const metadata: UnifiedMetadata<T, K> = useMetadata<T, K>(area)
+const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
 
 const mappedSnapshot: Map<string, Snapshot<T, K, DefaultMeta<T, K>, never>> = new Map(
-  Array.from(useSnapshot<T, K, StructuredMetadata<T, K>, never>().snapshotMap)
+  Array.from(useSnapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>().snapshotMap)
 );
 
-const baseConfig: BaseConfig<T, K, Meta, ExcludedFields> = {
+const baseConfig: BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
   id: "snapshot1",
   category: "example category",
   timestamp: new Date(),
@@ -122,7 +141,7 @@ const baseConfig: BaseConfig<T, K, Meta, ExcludedFields> = {
   name: "Base Snapshot",
   initialState: undefined,
   mappedSnapshot: mappedSnapshot,
-  meta: {} as StructuredMetadata<T, K>,
+  meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   events: {
      eventRecords: {},
   },
@@ -134,6 +153,7 @@ export type {
   BaseDataEntity,
   DefaultMeta,
   DefaultExcludedFields,
-  BaseDataRoot
+  BaseDataRoot,
+  DefaultIncludedFields
  };
 

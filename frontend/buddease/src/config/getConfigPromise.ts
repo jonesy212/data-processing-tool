@@ -11,7 +11,7 @@ import { DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 export function getConfigPromise<
   T extends BaseData<any>, 
   K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = never,
   IncludedFields extends keyof T = keyof T
@@ -79,10 +79,10 @@ function createInitializedData<
       return createSnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
     
     case 'data-store':
-      return createDataStore<T, K, Meta, ExcludedFields>() as DataStore<T, K, Meta, ExcludedFields>;
+      return createDataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>() as DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     
     case 'store-map':
-      return createSnapshotStoreMap<T, K, Meta, ExcludedFields>();
+      return createSnapshotStoreMap<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
     
     case 'initialized-snapshot':
       return createInitializedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();

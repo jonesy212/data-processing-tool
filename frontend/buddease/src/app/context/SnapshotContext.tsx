@@ -99,7 +99,7 @@ export const SnapshotProvider = <
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     category: Category,
     storeProps?: SnapshotStoreProps<T, K>, // Optional parameter
-    storeOptions?: SnapshotStoreOptions<T, K, Meta, ExcludedFields> // Optional parameter
+    storeOptions?: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // Optional parameter
   ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
     return new Promise(async (resolve, reject) => {
       // Check if storeProps is defined before destructuring

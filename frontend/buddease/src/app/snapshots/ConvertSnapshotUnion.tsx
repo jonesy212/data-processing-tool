@@ -4,7 +4,7 @@ import { Attachment } from '@/app/documents/attachment/Attachment';
 import { BaseData } from '@/app/models/data/Data';
 import { SnapshotUnion } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import { Snapshot } from '@/app/snapshots/Snapshpshot';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { SnapshotWithCriteriaAsBase } from "./SnapshotStoreOptions";
@@ -16,8 +16,8 @@ type ConvertSnapshotWithCriteria<
   ExcludedFields extends keyof BaseDataEntity = never
 > = SnapshotStoreConfig<
   BaseDataEntity,
-  SnapshotWithCriteriaAsBase<T, K, Meta, ExcludedFields>,
-  StructuredMetadata<BaseData<any, any, Meta, Attachment>, SnapshotWithCriteriaAsBase<T, K, Meta, ExcludedFields>>,
+  SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  StructuredMetadata<BaseData<any, any, Meta, Attachment>, SnapshotWithCriteriaAsBase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   ExcludedFields
 >;
 

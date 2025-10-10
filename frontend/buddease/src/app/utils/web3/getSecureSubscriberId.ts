@@ -4,7 +4,7 @@ import { Subscriber } from "@/app/subscribers/Subscriber";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 
 // getSecureSubscriberId.ts
-export const getSecureSubscriberId = <T extends BaseData<any>, K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+export const getSecureSubscriberId = <T extends BaseData<any>, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   subscriber: Subscriber<T, K>
 ): string | undefined => {
   // Perform additional checks or sanitization if necessary

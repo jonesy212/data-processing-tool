@@ -18,9 +18,20 @@ import { useDispatch, useSelector } from "react-redux";
 
 const dispatch = useDispatch();
 
-interface NotificationContainer {
-  notifications: NotificationData<T, K, StructuredMetadata<T, K>>[];
-  setNotifications: React.Dispatch<React.SetStateAction<NotificationData<T, K, StructuredMetadata<T, K>>>[]>;
+interface NotificationContainer<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  notifications: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  setNotifications: React.Dispatch<
+    React.SetStateAction<
+      NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+    >
+  >;
   notify: (
     id: string,
     message: string,
@@ -31,27 +42,12 @@ interface NotificationContainer {
   sendPushNotification: (message: string, sender: string) => void;
   sendAnnouncement: (message: string, sender: string) => void;
   handleButtonClick: () => Promise<void>;
-  dismissNotification: (notification: NotificationData<T, K, StructuredMetadata<T, K>>) => void;
-  addNotification: (notification: NotificationData<T, K, StructuredMetadata<T, K>>) => void;
-  removeNotification: (id: string) => void;
-  clearNotifications: () => void;
-}
-
-interface NotificationContainer {
-  notifications: NotificationData<T, K, StructuredMetadata<T, K>>[];
-  setNotifications: React.Dispatch<React.SetStateAction<NotificationData<T, K, StructuredMetadata<T, K>>>[]>;
-  notify: (
-    id: string,
-    message: string,
-    content: any,
-    date: Date,
-    type: NotificationType
-  ) => Promise<void>;
-  sendPushNotification: (message: string, sender: string) => void;
-  sendAnnouncement: (message: string, sender: string) => void;
-  handleButtonClick: () => Promise<void>;
-  dismissNotification: (notification: NotificationData<T, K, StructuredMetadata<T, K>>) => void;
-  addNotification: (notification: NotificationData<T, K, StructuredMetadata<T, K>>) => void;
+  dismissNotification: (
+    notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ) => void;
+  addNotification: (
+    notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ) => void;
   removeNotification: (id: string) => void;
   clearNotifications: () => void;
 }
@@ -103,7 +99,7 @@ const useNotificationManagerService = (): NotificationContainer => {
   const dispatch = useDispatch();
 
   const setNotifications: React.Dispatch<
-    React.SetStateAction<NotificationData<T, K, StructuredMetadata<T, K>>>[]
+    React.SetStateAction<NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>[]
   > = (value) => {
     // Dispatch action to set notifications in the store or update local state
     dispatch(NotificationActions.setNotifications(value));
@@ -172,14 +168,14 @@ const useNotificationManagerService = (): NotificationContainer => {
     await Promise.resolve(sendPushNotification("New message!", "App"));
   };
 
-  const dismissNotification = (notification: NotificationData<T, K, StructuredMetadata<T, K>>): void => {
+  const dismissNotification = (notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): void => {
     // Dispatch action to dismiss notification
     dispatch(NotificationActions.removeNotification(notification.id as string));
     // Implement dismissal logic here
     console.log("Notification dismissed:", notification);
   };
 
-  const addNotification = (notification: NotificationData<T, K, StructuredMetadata<T, K>>): void => {
+  const addNotification = (notification: NotificationData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>): void => {
     dispatch(NotificationActions.addNotification(notification));
   };
 

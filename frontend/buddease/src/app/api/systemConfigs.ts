@@ -4,13 +4,13 @@ import LazyLoadScriptConfig from "@/app/components/configs/LazyLoadScriptConfig"
 import { AquaConfig } from "@/app/utils/web3/webConfigs/aqua/AquaConfig";
 import { BackendConfig } from "@/config/BackendConfig";
 import { DataVersions } from "@/configs/DataVersionsConfig";
-import { FrontendConfig } from "@/configs/FrontendConfig";
+import { FrontendConfig } from "@/config/FrontendConfig";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 
 import ShoppingCenterConfig from "@/app/shoppingCenter/ShoppingCenterConfig";
-import FrontendStructure from "@/configs/appStructure/FrontendStructureComponent";
+import FrontendStructure from "@/config/appStructure/FrontendStructureComponent";
 
 
 type ConfigFrontendStructure = FrontendStructure<any, any, any, any, any, any>;

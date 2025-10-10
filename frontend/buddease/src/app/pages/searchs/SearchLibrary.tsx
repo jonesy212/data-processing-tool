@@ -6,9 +6,9 @@ import SearchBar from '@/app/components/routing/SearchBar';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { SearchLogger } from '@/app/libraries/logging/Logger';
-import SearchComponent from '@/SearchComponent';
-import { SearchProvider } from '@/SearchContext';
-import SearchItems from '@/SearchItems';
+import SearchComponent from '@/app/pages/searches/SearchComponent';
+import { SearchProvider } from '@/app/pages/searches/SearchContext';
+import SearchItems from '@/app/pages/searches/SearchItems';
 
 type Search = string;
 

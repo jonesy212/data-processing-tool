@@ -1,10 +1,11 @@
 // ScheduledData.ts
-import { StructuredMetadata } from "@/config/StructuredMetadata";
-import { Task } from '@/app/components/models/tasks/Task';
-import { BaseData, Data } from '@/app/models/data/Data';
+
+import { Data } from '@/app/models/data/Data';
 import { StatusType } from "@/app/models/data/StatusType";
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import TodoImpl, { UserAssignee } from "@/app/todos/Todo";
+import { Attachment } from '@/app/documents/attachment/Attachment';
+import { BaseDataEntity,DefaultMeta, DefaultExcludedFields, DefaultIncludedFields} from '@/config/BaseConfig';
 
 
 export interface Schedule {
@@ -17,13 +18,26 @@ export interface Schedule {
   isRecurring?: boolean;
   [key: string]: any; // Add any additional shared scheduling fields
 }
-type TaskOrTodo<T extends BaseData<any>, K extends T> = Task<T, K> | TodoImpl<any, any, any, never>;
+
+type MyTaskOrTodo = TaskOrTodo<
+  TaskCoreData,
+  TaskCoreData,
+  TaskMeta,
+  TaskAttachment,
+  TaskExcludedFields,
+  TaskIncludedFields
+>;
 
 export interface ScheduledData<
-  T extends BaseData<any>,
+  T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  S = TaskOrTodo<T, K>
-> extends Schedule, Data<T> {
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = DefaultIncludedFields<T>,
+  S = TaskOrTodo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+> extends Schedule,
+    Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Explicitly define the `createdBy` property to resolve the conflict
   createdBy: string | undefined;
   scheduledDate: Date;

@@ -1,38 +1,39 @@
 // batchMethods.ts
-
-import { K, Meta, T } from '@/app/components/models/data/dataStoreMethods';
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { ExcludedFields } from "@/app/components/routing/Fields";
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Snapshots } from "@/app/LocalStorageSnapshotStore";
 import { CriteriaType } from "@/app/pages/searchs/CriteriaType";
-import { Snapshot } from "@/app/Snapshot";
-import { SnapshotActions } from "@/app/SnapshotActions";
+import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotActions } from "@/app/snapshots/SnapshotActions";
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { SubscriberCollection } from "@/app/users/SubscriberCollection";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { SnapshotData } from "..";
+import { SnapshotData } from "@/app/snapshots/SnapshotData";
 
 export const BatchMethods = {
   /**
    * Take snapshots of multiple items in batch.
    */
   batchTakeSnapshot: async function <
-    T extends BaseDataEntity, 
+    T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     itemsOrSnapshotId: T[] | string,
-    snapshotManagerOrStore?: SnapshotManager<T, K, Meta, ExcludedFields> | SnapshotStore<T, K, Meta, ExcludedFields>,
-    snapshots?: Snapshots<T, K, Meta, ExcludedFields>
-  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | { snapshots: Snapshots<T, K, Meta, ExcludedFields> }> {
+    snapshotManagerOrStore?: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshots?: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | { snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }> {
     
     // Method 1: Take snapshots of multiple items using snapshot manager
     if (Array.isArray(itemsOrSnapshotId) && snapshotManagerOrStore instanceof SnapshotManager) {
       const items = itemsOrSnapshotId as T[];
-      const snapshotManager = snapshotManagerOrStore as SnapshotManager<T, K, Meta, ExcludedFields>;
+      const snapshotManager = snapshotManagerOrStore as SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       
       const takenSnapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
       for (const item of items) {
@@ -47,7 +48,7 @@ export const BatchMethods = {
     // Method 2: Delegate pattern for batch snapshot operation
     else if (typeof itemsOrSnapshotId === 'string' && snapshotManagerOrStore instanceof SnapshotStore && snapshots) {
       const snapshotId = itemsOrSnapshotId as string;
-      const snapshotStore = snapshotManagerOrStore as SnapshotStore<T, K, Meta, ExcludedFields>;
+      const snapshotStore = snapshotManagerOrStore as SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       
       const delegate = this.ensureDelegate();
       const result = await delegate.batchTakeSnapshot(snapshotId, snapshotStore, snapshots);
@@ -64,12 +65,14 @@ export const BatchMethods = {
    * Update multiple snapshots at once.
    */
   batchUpdateSnapshots: function <
-    T extends BaseDataEntity, 
+    T extends BaseDataEntity,
     K extends T = T,
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     updates: Array<{ id: string; newData: Partial<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>
   ): void {
     for (const update of updates) {
@@ -87,12 +90,14 @@ export const BatchMethods = {
    * Remove multiple snapshots by ID in batch.
    */
   batchRemoveSnapshots: function <
-    T extends BaseDataEntity, 
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     ids: string[]
   ): void {
     this.snapshots = this.snapshots.filter(s => !ids.includes(s.id));
@@ -102,32 +107,36 @@ export const BatchMethods = {
    * Add multiple snapshots to the store at once.
    */
   batchAddSnapshots: function <
-    T extends BaseDataEntity, 
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
   ): void {
     this.snapshots.push(...snapshots);
   },
 
   batchFetchSnapshots: async function <
-    T extends BaseDataEntity, 
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     criteria: CriteriaType,
     snapshotData?: (
       snapshotIds: string[],
       subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshots: Snapshots<T, K, Meta, ExcludedFields>
+      snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => Promise<{
       subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-      snapshots: Snapshots<T, K, Meta, ExcludedFields>;
+      snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     }>,
     ids?: string[] // Optional parameter for direct ID fetching
   ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
@@ -152,7 +161,7 @@ export const BatchMethods = {
       // Extract snapshots from result
       const { snapshots } = result;
 
-      // Convert Snapshots<T, K, Meta, ExcludedFields> to array
+      // Convert Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> to array
       if (Array.isArray(snapshots)) {
         return snapshots;
       } else if (snapshots instanceof Map) {
@@ -180,7 +189,7 @@ export const BatchMethods = {
       subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => Promise<{
       subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-      snapshots: Snapshots<T, K, Meta, ExcludedFields>;
+      snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     }>
   ): Promise<void> {
     const delegate = this.ensureDelegate();
@@ -194,8 +203,8 @@ export const BatchMethods = {
   },
 
   batchFetchSnapshotsSuccess(
-    subscribers: Subscriber<T, K, Meta, ExcludedFields>[],
-    snapshots: Snapshots<T, K, Meta, ExcludedFields>
+    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): void {
     const delegate = this.ensureDelegate();
     delegate.batchFetchSnapshotsSuccess(subscribers, snapshots);
@@ -203,7 +212,7 @@ export const BatchMethods = {
 
   batchFetchSnapshotsFailure(
     date: Date,
-    snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>, 
+    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
     payload: { error: Error; }
   ): void {
@@ -212,8 +221,8 @@ export const BatchMethods = {
   },
 
   batchUpdateSnapshotsSuccess(
-    subscribers: Subscriber<T, K, Meta, ExcludedFields>[],
-    snapshots: Snapshots<T, K, Meta, ExcludedFields>
+    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): void {
     const delegate = this.ensureDelegate();
     if (delegate.batchUpdateSnapshotsSuccess) {
@@ -229,7 +238,7 @@ export const BatchMethods = {
   batchUpdateSnapshotsFailure(
     date: Date, 
     snapshotId: string, 
-    snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>, 
+    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: { error: Error; }
 
   ): void {
@@ -246,7 +255,7 @@ export const BatchMethods = {
     if (snapshot) {
       // Perform actions required for handling the successful snapshot
       // For example, updating internal state, notifying subscribers, etc.
-      SnapshotActions<T, K, Meta, ExcludedFields>().handleTaskSnapshotSuccess({ message, snapshot, snapshotId });
+      SnapshotActions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>().handleTaskSnapshotSuccess({ message, snapshot, snapshotId });
       console.log(`Handling success for snapshot ID: ${snapshotId}`);
       // Implement additional logic here based on your application's needs
     }

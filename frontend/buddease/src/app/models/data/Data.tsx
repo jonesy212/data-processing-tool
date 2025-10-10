@@ -1,11 +1,12 @@
-import { InitializedState } from "@/app/@/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { ScheduledData } from "@/app/calendar/ScheduledData";
+import { AttachmentType } from "@/app/components/documents/NoteData";
 import {
   SharedIdentifiers,
   SharedStatusFlags,
   SharedTimestamps,
 } from "@/app/components/documents/RelatedProps";
 import { Phase } from "@/app/components/phases/Phase";
+import { ExcludedFields } from "@/app/components/routing/Fields";
 import { Content } from "@/app/content/AddContent";
 import { CustomTransaction } from "@/app/crypto/SmartContractInteraction";
 import { Attachment } from "@/app/documents/attachment/Attachment";
@@ -31,6 +32,7 @@ import SnapshotStore, {
   SnapshotStoreReference,
 } from "@/app/snapshots/SnapshotStore";
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
+import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import {
   SnapshotWithCriteria,
   TagsRecord,
@@ -57,6 +59,7 @@ import { createLatestVersion } from "@/app/versions/createLatestVersion";
 import { VideoData } from "@/app/video/Video";
 import {
   BaseDataEntity,
+  BaseDataRoot,
   DefaultExcludedFields,
   DefaultMeta,
 } from "@/config/BaseConfig";
@@ -68,11 +71,11 @@ import {
   fetchUserAreaDimensions,
   UnifiedMetadata,
 } from "@/server/database/MetaDataOptions";
-import UserRoles from "@/users/UserRoles";
+import { InitializedState } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import UserRoles from "@/app/models/UserRoles";
 import { AxiosResponse } from "axios";
-import React from "react";
-import { Comment } from "./Comments";
-import { K, T } from "./dataStoreMethods";
+import { Comment } from "../comments/Comments";
+import { K, Meta, T } from "./dataStoreMethods";
 import FileData from "./FileData";
 import {
   PriorityTypeEnum,
@@ -115,15 +118,17 @@ type DataWithOmittedFields<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T  
-> = Omit<Data<T, K, Meta>, ExcludedFields>;
+> = Omit<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ExcludedFields>;
 
 // Define the interface for DataDetails
 interface DataDetails<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends CommonData<T, K, Meta> {
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = DefaultIncludedFields<T>
+> extends CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   _id?: string;
   title?: string;
   description?: string | null;
@@ -150,27 +155,40 @@ phase?: PhaseDefault | null;
   snapshotArray?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   analysisType?: AnalysisTypeEnum | null;
   analysisResults?: string | DataAnalysisResult<T>[];
-  todo?: Todo<T, K>;
+  todo?: Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 // Define the props for the DataDetails component
-interface DataDetailsProps<T> {
-  data: T;
+interface DataDetailsProps<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
-type TodoSubtasks = Array<
-  | Todo<
-      BaseData<any>,
-      BaseData<any>,
-      StructuredMetadata<BaseData<any>, BaseData<any>>
-    >
-  | Task<any, any>
+type TodoSubtasks<
+  T extends BaseDataEntity = BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = DefaultIncludedFields<T>
+> = Array<
+  | Todo<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  | Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 >;
 
 type ChildRelationship<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = DefaultIncludedFields<T>
 > =
   | {
       type: "metadata";
@@ -190,7 +208,7 @@ interface BaseData<
    SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   sharedData?: SharedRelationshipData<K>;
   children?:
-    | ChildRelationship<T, K, Meta>
+    | ChildRelationship<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     | CoreSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   data?: any;
   size?: string | number;
@@ -203,14 +221,14 @@ interface BaseData<
   tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
   phase?: PhaseDefault | null;
   phaseType?: ProjectPhaseTypeEnum;
-  initialState?: InitializedState<T, K, Meta, ExcludedFields>;
+  initialState?: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   dueDate?: Date | null;
   priority?: string | AllStatus | null;
   assignee?: UserAssignee | null;
   collaborators?: Collaborator[];
-  comments?: number | (Comment<T, K, Meta> | CustomComment)[] | undefined;
+  comments?: number | (Comment<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | CustomComment)[] | undefined;
   attachments?: AttachmentType[];
-  subtasks?: TodoImpl<T, K>[];
+  subtasks?: TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   updatedDetails?: DetailsItem<T>;
   analysisType?: AnalysisTypeEnum | null;
   analysisResults?: DataAnalysisResult<T>[] | string;
@@ -226,7 +244,7 @@ interface BaseData<
   leader?: User | null;
   snapshotStores?: SnapshotStoreReference<T, K>[];
   snapshots?: SnapshotStore<Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>; // Simplify snapshots type
-  text?: string | Content<T, K, Meta>;
+  text?: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   category?: symbol | string | Category | undefined;
   notificationTypes?: NotificationSettings;
   categoryProperties?: CategoryProperties;
@@ -251,21 +269,33 @@ interface Data<
 > extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   category?: symbol | string | Category | undefined;
   categoryProperties?: CategoryProperties;
-  subtasks?: TodoImpl<any, any>[];
+  subtasks?: TodoImpl<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   actions?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-  snapshotWithCriteria?: SnapshotWithCriteria<T, K, Meta, ExcludedFields>;
+  snapshotWithCriteria?: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   value?: string | number | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   label?: any;
-  metadata?: UnifiedMetadata<T, K, Meta, ExcludedFields> | {};
+  metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
   major?: number;
   minor?: number;
   patch?: number;
   [key: string]: any;
 }
 
-// Define the UserDetails component
-const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
-  const getTagNames = (tags: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[]): string[] => {
+// Define the DataDetails component
+const DataDetailsComponent = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>({ data }: DataDetailsProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+
+  const getTagNames = (
+    tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[]
+  ): string[] => {
+    if (!tags) return [];
+
     if (Array.isArray(tags)) {
       return tags.filter((tag): tag is string => typeof tag === "string");
     }
@@ -277,7 +307,7 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
       return acc;
     }, []);
   };
-
+  
   return (
     <CommonDetails
       data={{
@@ -324,9 +354,9 @@ const DataDetailsComponent: React.FC<DataDetailsProps<T>> = ({ data }) => {
 
 const area = fetchUserAreaDimensions().toString();
 const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area);
-const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area);
+const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area);
 
-const coreData: Data<T, K, StructuredMetadata<T, K>> = {
+const coreData: Data<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
   _id: "1",
   id: "data1",
   title: "Sample Data",
@@ -391,7 +421,7 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
     }, // This should match the type defined in Tag
     subPhases: [],
     createdBy: "creator1",
-    latestVersion: createLatestVersion<T, K>(),
+    latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
   },
   phaseType: ProjectPhaseTypeEnum.Ideation,
   dueDate: new Date(),
@@ -718,7 +748,7 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
           assignBoardAutomationToTeam: {},
           assignBoardCustomFieldToTeam: {},
 
-          assignTask: (task: Task<T, K, StructuredMetadata<T, K>>) => {
+          assignTask: (task: Task<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
             // Logic to assign a task
           },
           assignUsersToTasks: (taskId: string, userIds: string[]) => {
@@ -1130,7 +1160,7 @@ const coreData: Data<T, K, StructuredMetadata<T, K>> = {
       area: "coreData",
       currentMeta: currentMeta,
       metadataEntries: {},
-      latestVersion: createLatestVersion<T, K>(),
+      latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     },
     currentMeta: currentMeta,
     // startIdleTimeout: (timeoutDuration: number, onTimeout: () => void) => {},

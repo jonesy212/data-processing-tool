@@ -30,7 +30,7 @@ function handleMapOperation<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  data: InitializedData<T, K, Meta, ExcludedFields> | undefined,
+  data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
   operationType: SnapshotOperationType
 ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   // Create a new instance preserving the prototype chain
@@ -96,7 +96,7 @@ const handleSnapshotOperation = <T extends BaseDataEntity, K extends T = T, Meta
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   mappedData: Map<string, SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
-  operation: SnapshotOperation<T, K, Meta, ExcludedFields>,
+  operation: SnapshotOperation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   operationType: SnapshotOperationType
 ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
   const snapshotId = snapshot.id;
@@ -210,11 +210,11 @@ const handleSnapshotStoreOperation = async <
   IncludedFields extends keyof T = keyof T
 >(
   snapshotId: string,
-  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  operation: SnapshotOperation<T, K, Meta, ExcludedFields>,
+  operation: SnapshotOperation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   operationType: SnapshotOperationType,
-  callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void
+  callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
 ): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
   console.log("Handling SnapshotStore operation:", snapshotStore, snapshotId);
 
@@ -234,7 +234,7 @@ const handleSnapshotStoreOperation = async <
 
   // Example update for SnapshotStore actions
   if (resultSnapshot) {
-    SnapshotStoreActions<T, K, Meta, ExcludedFields>().handleSnapshotStoreSuccess({
+    SnapshotStoreActions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>().handleSnapshotStoreSuccess({
       snapshotStore,
       snapshotId,
       snapshot: resultSnapshot,

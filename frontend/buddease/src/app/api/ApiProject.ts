@@ -6,7 +6,7 @@ import { Meeting } from "@/app/components/communications/scheduler/Meeting";
 import { Task } from "@/app/components/models/tasks/Task";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import FileData from "@/app/models/data/FileData";
-import { Project, ProjectData } from "@/app/projects/Project";
+import { Project, ProjectData } from '@/app/models/projects/Project';
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { User } from "@/app/users/User";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';

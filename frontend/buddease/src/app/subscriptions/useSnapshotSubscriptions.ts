@@ -2,11 +2,12 @@
 // hooks/subscriptions/useSnapshotSubscriptions.ts
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { Snapshot } from '@/app/snapshots/Snapshpshot';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { useCallback, useEffect, useRef } from 'react';
 import { Attachment } from "@/app/documents/attachment/Attachment";
 
-interface SubscriptionManager<  T extends BaseDataEntity,
+interface SubscriptionManager<  
+  T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
@@ -47,7 +48,9 @@ export const useSnapshotSubscriptions = <
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >() => {
   const subscriptionManagerRef = useRef<SubscriptionManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(null);
   const activeSubscriptionsRef = useRef<Map<string, Set<Function>>>(new Map());

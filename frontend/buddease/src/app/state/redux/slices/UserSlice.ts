@@ -23,7 +23,7 @@ import { DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { NotificationSettings } from "@/app/features/support/NotificationSettings";
 import { ProjectFeedback } from "@/app/features/support/ProjectFeedback";
 import TodoImpl, { Todo } from "@/app/todos/Todo";
-import { BaseResponseType } from "@/app/typings/types";
+import { BaseResponseType } from "@/app/typings/baseResponseType";
 import { VideoData } from "@/app/video/Video";
 import { BlockchainAsset } from "@/app/typings/cryptoTypes/BlockchainAsset";
 import { BlockchainPermissions } from "@/app/users/BlockchainPermissions";

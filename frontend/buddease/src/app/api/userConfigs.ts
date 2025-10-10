@@ -9,7 +9,7 @@ import userSettings, { UserSettings } from "@/config/UserSettings";
 interface UserConfigData<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > extends UserData<T, K, Meta>,  // ← This already includes BaseData via inheritance
     UserConfig<T, K, Meta>       // ← Add UserConfig properties
 {

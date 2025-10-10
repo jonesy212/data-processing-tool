@@ -44,7 +44,7 @@ import { fetchData } from "pdfjs-dist";
 import { SimulatedDataSource } from "./createSnapshotOptions";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { Snapshots, SnapshotsArray, SnapshotsObject, SnapshotUnion } from "./LocalStorageSnapshotStore";
-import { Snapshot } from "./Snapshot";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { Callback, MultipleEventsCallbacks } from "./subscribeToSnapshotsImplementation";
 
 import { AdminUser } from "@/app/api/ApiUser";
@@ -65,7 +65,7 @@ import { SnapshotVersion } from '@/useSnapshotVersioningSystem';
 import { UserConfig as ViteUserConfig } from 'vite';
 import { createSnapshot } from "./createSnapshot";
 import { TransformMethods } from "./methods/transformMethods";
-import { snapshotConfig } from "./Snapshot";
+import { snapshotConfig } from '@/app/snapshots/Snapshot';
 import { SnapshotOperation } from "./SnapshotActions";
 import { ConfigureSnapshotStorePayload, SnapshotConfig } from "./SnapshotConfig";
 import { SnapshotConfiguration } from "./SnapshotConfiguration";
@@ -94,7 +94,7 @@ interface UserConfig<
   IncludedFields extends keyof T = keyof T
 > extends ViteUserConfig {
   snapshotConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Use generic types
-  snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>; // Use generic types
+  snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>; // Use generic types
 
   root?: string; // Override Vite's root with our own type if needed
   base?: string; // Override Vite's base
@@ -216,7 +216,7 @@ export interface SnapshotStoreConfig<
   updatedAt?: string | Date | undefined
 
   baseData?: BaseData<any> | undefined;
-  meta: StructuredMetadata<T, K>;
+  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   autoSave: boolean,
   syncInterval: number, // Sync every 5 minutes
   snapshotLimit: number,   // Keep a maximum of 100 snapshots
@@ -237,7 +237,7 @@ export interface SnapshotStoreConfig<
     newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     payload: ConfigureSnapshotStorePayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     callback: (createdStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,) => void,
     snapshotDataConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] // Array of SnapshotStoreConfig objects
@@ -258,7 +258,7 @@ export interface SnapshotStoreConfig<
   snapshotCategory?: SnapshotCategory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshotContent: string | Content<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
   store?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields>;
+  snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   delegate: InitializedDelegate<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null
   delegateSearch?: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
   getParentId(id: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string | null;
@@ -292,7 +292,7 @@ export interface SnapshotStoreConfig<
     snapshotId: string | null,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     snapshotData: T,
-    category: Category | undefined,
+    category?: Category,
     callback: (snapshot: T) => void,
     snapshots: SnapshotsArray<any>,
     type: string,
@@ -306,7 +306,7 @@ export interface SnapshotStoreConfig<
     id: string | number | undefined,
     snapshotId: string | null,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, // Change here
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => void,
     dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -336,7 +336,7 @@ export interface SnapshotStoreConfig<
       data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       timestamp: Date,
-      category: Category | undefined,
+      category?: Category,
       events?: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
       snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       dataItems?: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
@@ -352,7 +352,7 @@ export interface SnapshotStoreConfig<
     mapSnapshots: (
       storeIds: number[],
       snapshotId: string,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       timestamp: string | number | Date | undefined,
@@ -364,7 +364,7 @@ export interface SnapshotStoreConfig<
       callback: (
         storeIds: number[],
         snapshotId: string,
-        category: Category | undefined,
+        category?: Category,
         categoryProperties: CategoryProperties | undefined,
         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         timestamp: string | number | Date | undefined,
@@ -473,7 +473,7 @@ export interface SnapshotStoreConfig<
     newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     timestamp: Date,
     payload: UpdateSnapshotPayload<T>,
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     payloadData: T | K,
     mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
@@ -504,7 +504,7 @@ export interface SnapshotStoreConfig<
   fetchInitialSnapshotData: (
     snapshotId: string,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,
+    category?: Category,
     snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (snapshotStore: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ) => Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
@@ -516,7 +516,7 @@ export interface SnapshotStoreConfig<
     data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     newData: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields>,
     timestamp: Date,
-    category: Category | undefined,
+    category?: Category,
     events?: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
     snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     dataItems?: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
@@ -530,15 +530,15 @@ export interface SnapshotStoreConfig<
   ) => Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }>;
 
   getSnapshots: (
-    category: Category | undefined, snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category, snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   ) => Promise<{
-    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields>;
+    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   }>;
 
   mergeSnapshots: (snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, category: string) => void;
 
   getSnapshotItems: (
-    category: Category | undefined, snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category, snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId?: string,            // Keep if you need to filter by specific ID
     callback?: (items: SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void, // Keep for async operations
   ) => Promise<{ snapshots: SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] }>
@@ -753,7 +753,7 @@ export interface SnapshotStoreConfig<
   mapSnapshots: (
     storeIds: number[],
     snapshotId: string,
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     timestamp: string | number | Date | undefined,
@@ -765,7 +765,7 @@ export interface SnapshotStoreConfig<
     callback: (
       storeIds: number[],
       snapshotId: string,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       timestamp: string | number | Date | undefined,
@@ -788,7 +788,7 @@ export interface SnapshotStoreConfig<
     event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: number,
     snapshotStore: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined, categoryProperties: CategoryProperties | undefined,
+    category?: Category, categoryProperties: CategoryProperties | undefined,
     dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: T,
     dataCallback?: (
@@ -809,7 +809,7 @@ export interface SnapshotStoreConfig<
   takeSnapshotsSuccess: (snapshots: T[]) => void;
   fetchSnapshot: (
     id: string,
-    category: Category | undefined,
+    category?: Category,
     timestamp: Date,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: T,
@@ -828,7 +828,7 @@ export interface SnapshotStoreConfig<
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotStore: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotStoreData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,
+    category?: Category,
     subscribers: Subscriber<T>[]
   ) => void;
 
@@ -954,7 +954,7 @@ export interface SnapshotStoreConfig<
     type: string,
     event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,
+    category?: Category,
     additionalHeaders?: Record<string, string>
   ) => Promise<{
     categoryProperties?: CategoryProperties;
@@ -1189,9 +1189,9 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
       mapSnapshots: async (
         storeIds: number[],
         snapshotId: string,
-        category: Category | undefined,
+        category?: Category,
         categoryProperties: CategoryProperties | undefined,
-        snapshot: Snapshot<BaseData, BaseData, StructuredMetadata<T, K>>,
+        snapshot: Snapshot<BaseData, BaseData, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
         timestamp: string | number | Date | undefined,
         type: string,
         event: SnapshotEvent<AppEntity, AppK, AppMeta, AppExcludedFields>,
@@ -1201,7 +1201,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
         callback: (
           storeIds: number[],
           snapshotId: string,
-          category: Category | undefined,
+          category?: Category,
           categoryProperties: CategoryProperties | undefined,
           snapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields>,
           timestamp: string | number | Date | undefined,
@@ -1228,7 +1228,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
         snaphsotId: string,
         snapshotData: SnapshotData<AppEntity, AppK, AppMeta, AppExcludedFields> | undefined,
         dataStoreMethods: DataStore<AppEntity, AppK, AppMeta, AppExcludedFields>,
-        category: Category | undefined,
+        category?: Category,
         categoryProperties: CategoryProperties | undefined,
         callback?: (snapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields>) => void,
         snapshotStore?: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedFields>,
@@ -1280,7 +1280,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
         newData: Snapshot<AppEntity, AppK, AppMeta, AppExcludedField>,
         payload: ConfigureSnapshotStorePayload<AppEntity, AppK, AppMeta, AppExcludedField>,
         store: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedField>,
-        category: Category | undefined,
+        category?: Category,
         categoryProperties: CategoryProperties | undefined,
         callback: (createdStore: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedField>) => void,
         snapshotDataConfig?: SnapshotStoreConfig<AppEntity, AppK, AppMeta, AppExcludedField>[]
@@ -1860,7 +1860,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
       snapshotId: string | null,
       snapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields> | null,
       snapshotData: SnapshotData<AppEntity, AppK, AppMeta, AppExcludedFields>,
-      category: Category | undefined,
+      category?: Category,
       callback: (snapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields>) => void,
       snapshots: SnapshotsArray<BaseData>,
       type: string,
@@ -2048,7 +2048,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
       data: Map<string, Snapshot<Data<AppEntity, AppK, AppMeta, AppExcludedFields>, any>>,
       newData: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields>,
       timestamp: Date,
-      category: Category | undefined,
+      category?: Category,
       events?: Record<string, CalendarManagerStoreClass<SnapshotWithCriteria<Data<AppEntity, AppK, AppMeta, AppExcludedFields>, K>, K>[]>, // Added prop,
       snapshotStore?: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields>,
       dataItems?: RealtimeDataItem<AppEntity, AppK, AppMeta, AppExcludedFields>[],
@@ -2174,7 +2174,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
     createSnapshotStoresAlternate: (
       id: string,
       snapshotStoresData: SnapshotStore<any, any>[], // Use Snapshot instead of Map
-      category: Category | undefined,
+      category?: Category,
       callback: (snapshotStores: SnapshotStore<any, any>[]) => void,
       snapshotDataConfig?: SnapshotStoreConfig<any, any>[] // Adjust as per your definition
     ): SnapshotStore<any, any>[] | null => {
@@ -2199,7 +2199,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
       newData: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields>,
       payload: ConfigureSnapshotStorePayload<AppEntity, AppK, AppMeta, AppExcludedFields>,
       store: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedFields>,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshotStore: SnapshotStore<AppEntity, AppK, AppMeta, AppExcludedFields>) => void,
       snapshotDataConfig?: SnapshotStoreConfig<AppEntity, AppK, AppMeta, AppExcludedFields>[] // Array of SnapshotStoreConfig objects
@@ -2341,7 +2341,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
       snapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields> | Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields> | null,
       snapshotId: string | null,
       snapshotData: SnapshotData<AppEntity, AppK, AppMeta, AppExcludedFields>,
-      category: Category | undefined,
+      category?: Category,
       snapshotDataConfig: SnapshotStoreConfig<any, any>, // Adjust as per your definition
       callback: (snapshotStore: SnapshotStore<any, any>) => void
     ) => {
@@ -2408,7 +2408,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
       id: string | number | undefined,
       snapshotId: string | null,
       snapshotData: SnapshotData<AppEntity, AppK, AppMeta, AppExcludedFields>,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields> | null) => void,
       dataStore: DataStore<AppEntity, AppK, AppMeta, AppExcludedFields>,
@@ -2659,7 +2659,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
               | Promise<{
                 snapshotId: number;
                 snapshotData: T;
-                category: Category | undefined;
+                category?: Category;
                 categoryProperties: CategoryProperties;
                 dataStoreMethods: DataStore<AppEntity, AppK, AppMeta, AppExcludedFields>;
                 timestamp: string | number | Date | undefined;
@@ -2893,7 +2893,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
             snapshotId: string | number | null,
             snapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields> | null,
             snapshotData: T,
-            category: Category | undefined,
+            category?: Category,
             callback: (snapshot: T) => void,
             snapshots: Snapshots<AppEntity, AppK, AppMeta, AppExcludedFields>,
             type: string,
@@ -2941,7 +2941,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
           mapSnapshots: function (
             storeIds: number[],
             snapshotId: string,
-            category: Category | undefined,
+            category?: Category,
             categoryProperties: CategoryProperties | undefined,
             snapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields>,
             timestamp: string | number | Date | undefined,
@@ -2953,7 +2953,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
             callback: (
               storeIds: number[],
               snapshotId: string,
-              category: Category | undefined,
+              category?: Category,
               categoryProperties: CategoryProperties | undefined,
               snapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields>,
               timestamp: string | number | Date | undefined,
@@ -3013,7 +3013,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
 
           fetchSnapshot: function (
             snapshotId: string,
-            category: Category | undefined,
+            category?: Category,
             timestamp: Date,
             snapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields>,
             data: BaseData,
@@ -3134,7 +3134,7 @@ const snapshotStoreConfigs: AppSnapshotStoreConfig[] = [
 
     fetchSnapshot: async (
       id: string,
-      category: Category | undefined,
+      category?: Category,
       timestamp: Date,
       snapshot: Snapshot<AppEntity, AppK, AppMeta, AppExcludedFields>,
       data: T,

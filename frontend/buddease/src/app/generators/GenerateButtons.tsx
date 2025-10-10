@@ -78,9 +78,9 @@ import { Router } from 'react-router-dom';
 interface ButtonGeneratorProps<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends SharedIdentifiers<T, K, Meta, ExcludedFields> {
+> extends SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   variant?: Record<string, string>; // Keep this as is for variant options
   date?: Date | string;
   timestamp?: string | Date;

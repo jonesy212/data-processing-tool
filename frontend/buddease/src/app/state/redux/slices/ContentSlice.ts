@@ -54,7 +54,8 @@ interface ContentManagerState<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >{
   name: string;
   contentItems: ContentItem[];
@@ -211,23 +212,62 @@ function createUpdatedDetail(detail: DetailsItem<any>): WritableDraft<DetailsIte
 
 const API_BASE_URL = endpoints.conent;
 
-const getTaskHistoryFromDatabaseAsync = async (
+const getTaskHistoryFromDatabaseAsync = async <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
   taskId: string,
   previousState: any
 ): Promise<any> => {
   try {
-    // Make API call to fetch task history
-    const taskHistoryEndpoint = `${API_BASE_URL}/tasks/${taskId}/history`;
-    const response: AxiosResponse<any> = await axiosInstance.get(
-      taskHistoryEndpoint,
-      { headers: headersConfig }
-    );
-    return response.data;
+    updateTaskDetails: (
+      state: WritableDraft<ContentManagerState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+      action: PayloadAction<TaskDetails & {
+        assignedTo?: User[];
+        dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
+        previouslyAssignedTo?: User[];
+        phase?: Phase;
+        id: string;
+        updates: TaskDetails;
+        subtitle: string;
+        value: number;
+      }>
+    ) => {
+      const { taskId, details, assignedTo, dependencies, previouslyAssignedTo, phase, id, subtitle, value } = action.payload;
+
+      const taskIndex = state.tasks.findIndex((task) => task.id === taskId);
+
+      if (taskIndex !== -1) {
+        state.tasks[taskIndex] = {
+          ...state.tasks[taskIndex],
+          ...details,
+          id,
+          subtitle,
+          value,
+          assignedTo: assignedTo
+            ? assignedTo.map((user: User) => user as WritableDraft<User>)
+            : [],
+          dependencies: dependencies
+            ? dependencies.map((dependency: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) =>
+                dependency as WritableDraft<Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
+              )
+            : null,
+          previouslyAssignedTo: previouslyAssignedTo
+            ? previouslyAssignedTo.map((user: User) => user as WritableDraft<User>)
+            : [],
+          phase: phase ? (phase as WritableDraft<Phase>) : null,
+        };
+      }
+    };
   } catch (error) {
-    console.error(`Error fetching task history for task ${taskId}:`, error);
-    throw error;
+    console.error(error);
   }
 };
+
 
 export const useContentSlice = createSlice({
   name: "contentManager",
@@ -897,7 +937,7 @@ export const useContentSlice = createSlice({
     },
 
     updateTaskDetails: (
-      state: WritableDraft<ContentManagerState<T, K, Meta, AttachmentType, ExcludedFields>>,
+      state: WritableDraft<ContentManagerState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       action: PayloadAction<TaskDetails & {
         assignedTo?: User[];
         dependencies?: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
@@ -1232,7 +1272,7 @@ export const useContentSlice = createSlice({
           "Notification permission not granted.",
           NOTIFICATION_MESSAGES.Notifications.NOTIFICATION_SEND_FAILED,
           new Date(),
-          NotificationTypeEnum.OperationError
+          NotificationTypeEnum.OPERATION_ERROR
         );
       }
     },

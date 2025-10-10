@@ -14,7 +14,7 @@ import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/Bas
  * @param {string} snapshotId - The unique identifier for the snapshot//+
  * @param {string} type - The type of snapshot to fetch//+
  * @param {Category} [category] - Optional category to filter snapshots//+
- * @returns {Promise<SnapshotsArray<T, K, Meta, ExcludedFields>>} A promise that resolves to an array of snapshots//+
+ * @returns {Promise<SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>} A promise that resolves to an array of snapshots//+
  */
 async function fetchSnapshotsForCategory<
   T extends BaseDataEntity,

@@ -7,7 +7,7 @@ import { StructuredMetadata, VideoMetadata } from '@/config/StructuredMetadata';
 interface EducationalVideoMetadata<
   T extends BaseData<any>, // Content-specific data
   K extends T = T,         // Default fallback to the same type
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > extends VideoMetadata<T, K, Meta> {
   courseId: string; // ID of the course this video belongs to
   instructor: string; // Name or ID of the instructor

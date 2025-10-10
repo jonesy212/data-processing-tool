@@ -147,7 +147,7 @@ var setNotificationMessage = function (message) {
     // Check if the notification context is available
     if (NotificationProvider_1.notificationStore && NotificationProvider_1.notificationStore.notify) {
         // Notify with the provided message
-        NotificationProvider_1.notificationStore.notify("privateSetNotificationMessageSuccess", message, new Date(), NotificationContext_1.NotificationTypeEnum.OperationSuccess);
+        NotificationProvider_1.notificationStore.notify("privateSetNotificationMessageSuccess", message, new Date(), NotificationContext_1.NotificationTypeEnum.OPERATION_SUCCESS);
     }
 };
 var SnapshotStore = /** @class */ (function () {
@@ -228,7 +228,7 @@ var SnapshotStore = /** @class */ (function () {
         // Check if the notification context is available
         if (notificationStore && notificationStore.notify) {
             // Notify with the provided message
-            notificationStore.notify("privateSetNotificationMessageId", message, NotificationMessages_1.default.Notifications.NOTIFICATION_SENT, new Date(), NotificationContext_1.NotificationTypeEnum.OperationSuccess);
+            notificationStore.notify("privateSetNotificationMessageId", message, NotificationMessages_1.default.Notifications.NOTIFICATION_SENT, new Date(), NotificationContext_1.NotificationTypeEnum.OPERATION_SUCCESS);
         }
         else {
             // If the notification context is not available, log an error
@@ -293,7 +293,7 @@ var SnapshotStore = /** @class */ (function () {
                         snapshot: [newSnapshot], // Adjusted structure here, removed unnecessary object nesting
                     };
                     this.snapshots.push(snapshotObj); // Push the snapshot object to the snapshots array
-                    this.notify("Snapshot taken at ".concat(new Date(timestamp), "."), NotificationMessages_1.default.Logger.LOG_INFO_SUCCESS, new Date(), NotificationContext_1.NotificationTypeEnum.OperationSuccess);
+                    this.notify("Snapshot taken at ".concat(new Date(timestamp), "."), NotificationMessages_1.default.Logger.LOG_INFO_SUCCESS, new Date(), NotificationContext_1.NotificationTypeEnum.OPERATION_SUCCESS);
                     this.notifySubscribers([newSnapshot]); // Pass the new snapshot object
                     if (this.onSnapshot) {
                         this.onSnapshot(data);
@@ -339,7 +339,7 @@ var SnapshotStore = /** @class */ (function () {
         });
     };
     SnapshotStore.prototype.updateSnapshotSuccess = function (snapshot) {
-        this.notify("Snapshot updated successfully.", NotificationMessages_1.default.Logger.LOG_INFO_SUCCESS, new Date(), NotificationContext_1.NotificationTypeEnum.OperationSuccess);
+        this.notify("Snapshot updated successfully.", NotificationMessages_1.default.Logger.LOG_INFO_SUCCESS, new Date(), NotificationContext_1.NotificationTypeEnum.OPERATION_SUCCESS);
         if (Array.isArray(snapshot) && snapshot.length > 0) {
             this.notifySubscribers(snapshot[0].snapshot); // Assuming notifySubscribers expects an array of snapshots
         }
@@ -414,7 +414,7 @@ var SnapshotStore = /** @class */ (function () {
         });
     };
     SnapshotStore.prototype.batchUpdateSnapshotsSuccess = function (subscribers, snapshots) {
-        this.notify("Snapshot update completed.", NotificationMessages_1.default.Logger.LOG_INFO_SUCCESS, new Date(), NotificationContext_1.NotificationTypeEnum.OperationSuccess);
+        this.notify("Snapshot update completed.", NotificationMessages_1.default.Logger.LOG_INFO_SUCCESS, new Date(), NotificationContext_1.NotificationTypeEnum.OPERATION_SUCCESS);
         if (Array.isArray(subscribers) && subscribers.length > 0) {
             this.notifySubscribers(subscribers); // Updated to use 'subscribers' instead of 'snapshot'
         }
@@ -429,7 +429,7 @@ var SnapshotStore = /** @class */ (function () {
         return snapshotData;
     };
     SnapshotStore.prototype.batchFetchSnapshotsSuccess = function (subscribers, snapshot) {
-        this.notify("Snapshot fetch completed.", NotificationMessages_1.default.Logger.LOG_INFO_SUCCESS, new Date(), NotificationContext_1.NotificationTypeEnum.OperationSuccess);
+        this.notify("Snapshot fetch completed.", NotificationMessages_1.default.Logger.LOG_INFO_SUCCESS, new Date(), NotificationContext_1.NotificationTypeEnum.OPERATION_SUCCESS);
         if (Array.isArray(subscribers) && subscribers.length > 0) {
             this.notifySubscribers(subscribers);
         }
@@ -439,17 +439,17 @@ var SnapshotStore = /** @class */ (function () {
         return snapshot;
     };
     SnapshotStore.prototype.batchFetchSnapshotsFailure = function (payload) {
-        this.notify("Snapshot fetch failed.", NotificationMessages_1.default.Logger.LOG_INFO_FAILURE, new Date(), NotificationContext_1.NotificationTypeEnum.OperationError);
+        this.notify("Snapshot fetch failed.", NotificationMessages_1.default.Logger.LOG_INFO_FAILURE, new Date(), NotificationContext_1.NotificationTypeEnum.OPERATION_ERROR);
     };
     SnapshotStore.prototype.batchUpdateSnapshotsFailure = function (payload) {
-        this.notify("Snapshot update failed.", NotificationMessages_1.default.Logger.LOG_INFO_FAILURE, new Date(), NotificationContext_1.NotificationTypeEnum.OperationError);
+        this.notify("Snapshot update failed.", NotificationMessages_1.default.Logger.LOG_INFO_FAILURE, new Date(), NotificationContext_1.NotificationTypeEnum.OPERATION_ERROR);
     };
     SnapshotStore.prototype.createSnapshotSuccess = function (subscribers) {
-        this.notify("Snapshot created successfully.", NotificationMessages_1.default.Logger.LOG_INFO_SUCCESS, new Date(), NotificationContext_1.NotificationTypeEnum.OperationSuccess);
+        this.notify("Snapshot created successfully.", NotificationMessages_1.default.Logger.LOG_INFO_SUCCESS, new Date(), NotificationContext_1.NotificationTypeEnum.OPERATION_SUCCESS);
         this.notifySubscribers(subscribers);
     };
     SnapshotStore.prototype.createSnapshotFailure = function (error) {
-        this.notify("Snapshot creation failed.", NotificationMessages_1.default.Logger.LOG_INFO_FAILURE, new Date(), NotificationContext_1.NotificationTypeEnum.OperationError);
+        this.notify("Snapshot creation failed.", NotificationMessages_1.default.Logger.LOG_INFO_FAILURE, new Date(), NotificationContext_1.NotificationTypeEnum.OPERATION_ERROR);
     };
     SnapshotStore.prototype.updateSnapshotsSuccess = function (snapshotData) {
         // Update the snapshots
@@ -458,7 +458,7 @@ var SnapshotStore = /** @class */ (function () {
         // Update the snapshots
     };
     SnapshotStore.prototype.fetchSnapshotFailure = function (error) {
-        this.notify("Failed to fetch snapshot.", NotificationMessages_1.default.Logger.LOG_INFO_FAILURE, new Date(), NotificationContext_1.NotificationTypeEnum.OperationError);
+        this.notify("Failed to fetch snapshot.", NotificationMessages_1.default.Logger.LOG_INFO_FAILURE, new Date(), NotificationContext_1.NotificationTypeEnum.OPERATION_ERROR);
     };
     return SnapshotStore;
 }());

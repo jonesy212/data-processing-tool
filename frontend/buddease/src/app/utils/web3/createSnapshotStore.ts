@@ -17,7 +17,7 @@ import { CategoryProperties } from "./../../pages/personas/ScenarioBuilder";
 function createSnapshotStore <
   T extends BaseData<any>,
   K extends T = T,  
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   id: string,
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -65,7 +65,7 @@ function createSnapshotStore <
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       snapshotId: string,
       snapshotData: SnapshotData<T, K, Meta>,
-      category: Category | undefined,
+      category?: Category,
       callback: (snapshot: T) => void,
       snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,

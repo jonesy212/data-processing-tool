@@ -266,7 +266,7 @@ const transformDataToSnapshot =  <T extends BaseDataEntity, K extends T = T, Met
 export default transformDataToSnapshot;
 
 function transformToCalendarManagerStoreClassMap<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
-  events: (SnapshotEvents<T, K, Meta, ExcludedFields> & CombinedEvents<T, K, Meta, ExcludedFields>) | {}
+  events: (SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) | {}
 ): Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
   const result: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> = {};
 

@@ -38,7 +38,7 @@ export const useTeamBuildingPhase = createDynamicPromptPhaseHook({
         "Team Building Phase Error",
         NOTIFICATION_MESSAGES.TeamBuildingPhase.CREATING_TEAM_BUILDING_PHASE_ERROR,
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
       throw error;
     }

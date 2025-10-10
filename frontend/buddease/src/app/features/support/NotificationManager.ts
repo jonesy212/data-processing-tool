@@ -80,7 +80,7 @@ class NotificationManager<
       topics: messageData.topics || [],
       highlights: messageData.highlights || [],
       files: messageData.files || [],
-      meta: messageData.meta || {} as StructuredMetadata<T, K>,
+      meta: messageData.meta || {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 
       // CalendarEvent properties
       rsvpStatus: messageData.rsvpStatus || "notResponded",

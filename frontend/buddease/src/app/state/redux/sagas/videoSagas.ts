@@ -135,7 +135,7 @@ function* fetchVideoSuccessSaga(
       "Fetch Video Success",
       NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_SUCCESS,
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     );
     yield put(VideoActions.fetchVideoSuccess({ video }));
 
@@ -147,7 +147,7 @@ function* fetchVideoSuccessSaga(
       NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_ERROR,
       "Error trying to fetch video",
       new Date(),
-      NotificationTypeEnum.OperationError
+      NotificationTypeEnum.OPERATION_ERROR
     )
   }
 }
@@ -161,7 +161,7 @@ function* updateVideoSuccessSaga( action: ReturnType<typeof VideoActions.updateV
       NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_SUCCESS,
       "Update Video Success",
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     );
     yield put(VideoActions.updateVideoSuccess({ id, updatedVideo }));
   } catch (error) {
@@ -172,7 +172,7 @@ function* updateVideoSuccessSaga( action: ReturnType<typeof VideoActions.updateV
       NOTIFICATION_MESSAGES.Video.UPDATE_VIDEO_ERROR,
       "Error trying to update video",
       new Date(),
-      NotificationTypeEnum.OperationError
+      NotificationTypeEnum.OPERATION_ERROR
     )
   }
 }
@@ -200,7 +200,7 @@ function* fetchVideoFailureSaga(response: any) {
       NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_ERROR,
       "Error trying to fetch video",
       new Date(),
-      NotificationTypeEnum.OperationError
+      NotificationTypeEnum.OPERATION_ERROR
     );
     yield put(VideoActions.fetchVideoFailure({ error }));
   } catch (error) {
@@ -210,7 +210,7 @@ function* fetchVideoFailureSaga(response: any) {
       NOTIFICATION_MESSAGES.Video.FETCH_VIDEO_ERROR,
       "Error trying to fetch video",
       new Date(),
-      NotificationTypeEnum.OperationError
+      NotificationTypeEnum.OPERATION_ERROR
     )
   }
 }

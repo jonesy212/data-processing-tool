@@ -1,9 +1,9 @@
 // userSnapshotData.ts
-import MyPromise from '@/app/utils/MyPromise';
 import useUserProfile from '@/app/hooks/useUserProfile';
-import CommonDetails from '@/models/CommonDetails';
+import UserRoles from '@/app/models/UserRoles';
 import { User, UserData } from '@/app/users/User';
-import UserRoles from '@/users/UserRoles';
+import MyPromise from '@/app/utils/MyPromise';
+import CommonDetails from '@/models/CommonDetails';
 
 export type UserProfile<
   T extends BaseDataEntity = UserEntity,

@@ -59,7 +59,7 @@ const TeamCreationProcess: React.FC = () => {
         "Team has been successfully created",
         "success",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       console.error("Error creating team:", error);
@@ -68,7 +68,7 @@ const TeamCreationProcess: React.FC = () => {
         "Error creating team",
         "error",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
     }
   };
@@ -87,7 +87,7 @@ const TeamCreationProcess: React.FC = () => {
         "Your team has been successfully confirmed",
         "TeamConfirmationSuccess",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
 
       // Perform additional actions as needed, such as updating the UI or navigating to a different page
@@ -99,7 +99,7 @@ const TeamCreationProcess: React.FC = () => {
         "There was an error confirming your team, please try again",
         "TeamConfirmationError",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
     }
   };

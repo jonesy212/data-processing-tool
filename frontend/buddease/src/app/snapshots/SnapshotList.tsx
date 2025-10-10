@@ -9,13 +9,13 @@ import UniqueIDGenerator from "@/app/generators/GenerateUniqueIds";
 import { useSecureUserId } from '@/app/hooks/useSecureUserId';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from "@/app/libraries/categories/generateCategoryProperties";
-import { Snapshot } from '@/app/snapshots/Snapshot';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
+import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { User } from "@/app/users/User";
 import { createMessage, MessageProps } from "@/app/utils/web3/createMessage";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
-import { InitializedData } from '@/app/snapshots/SnapshpshotStoreOptions';
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 import { SnapshotStoreProps } from "./useSnapshotStore";
 
@@ -257,7 +257,7 @@ const createSnapshotItem = <
 >(
   snapshotId: string | null,
   data: T,
-  category: Category | undefined,  
+  category?: Category,  
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,  // Add snapshotManager as a parameter

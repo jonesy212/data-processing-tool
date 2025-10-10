@@ -51,7 +51,7 @@ class YourSpecificSnapshotType <
   id: string;
   mappedData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   data: InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined;
-  meta: StructuredMetadata<T, K>
+  meta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   events: CombinedEvents<T, K>
   
   // Additional required properties from Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -61,7 +61,7 @@ class YourSpecificSnapshotType <
   isCore: boolean = false;
   initialConfig: InitializedConfig | {} = {};
   properties?: T | K;
-  snapshotsArray?: SnapshotsArray<T, K, StructuredMetadata<T, K>>;
+  snapshotsArray?: SnapshotsArray<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
   snapshotsObject?: SnapshotsObject<T, K>;
   recentActivity?: { action: string; timestamp: Date }[];
   onInitialize: (callback: () => void) => void = () => {};
@@ -92,7 +92,7 @@ class YourSpecificSnapshotType <
   relationships?: Map<string, K>;
   storeConfig?: SnapshotStoreConfig<T, K>;
   additionalData?: CustomSnapshotData<T>;
-  dataStores?: DataStore<T, K, StructuredMetadata<T, K>>[];
+  dataStores?: DataStore<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[];
   snapshotStoreConfig?: SnapshotStoreConfig<T, any> | null;
   snapshotStoreConfigSearch?: SnapshotStoreConfig<SnapshotWithCriteria<any, BaseData>, SnapshotWithCriteria<any, BaseData>> | null;
   snapshotContainer: SnapshotContainer<T, K> | undefined | null;
@@ -134,11 +134,11 @@ class YourSpecificSnapshotType <
   snapshot(
     id: string | number | undefined,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
+    category?: Category,    categoryProperties: CategoryProperties | undefined,
     callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     dataStore: DataStore<T, K>,
     dataStoreMethods: DataStoreMethods<T, K>,
-    metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
+    metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscriberId: string,
     endpointCategory: string | number,
     storeProps: SnapshotStoreProps<T, K>,
@@ -157,7 +157,7 @@ class YourSpecificSnapshotType <
   }
 
   applyStoreConfig(
-    snapshotStoreConfig: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never> | undefined
+    snapshotStoreConfig: SnapshotStoreConfig<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never> | undefined
   ): void {
     // Placeholder implementation
   }
@@ -904,7 +904,7 @@ function convertToDataSnapshot <
       id: string | number | undefined,
       snapshotId: number,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
+      category?: Category,      categoryProperties: CategoryProperties | undefined,
       callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
       dataStore: DataStore<T, K>,
       dataStoreMethods: DataStoreMethods<T, K>,
@@ -1097,7 +1097,7 @@ function isSnapshotStore<
  * Comprehensive type guard for YourResponseType with debugging support
  * @template T - Base data type
  * @template K - Extended data type (defaults to T)
- * @template Meta - Metadata type (defaults to StructuredMetadata<T, K>)
+ * @template Meta - Metadata type (defaults to StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)
  * @param data - Unknown data to check
  * @param debug - Enable debug logging (default: false)
  * @returns Type predicate indicating if data is YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -1405,7 +1405,7 @@ const snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFiel
 // Convert Map<string, T> to Snapshot<BaseData, BaseData>
 function convertMapToSnapshot<
 T extends  BaseData<any>, 
-K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   map: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   timestamp: string | number | Date | undefined
@@ -1658,7 +1658,7 @@ K extends T = T, Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K
       snapshotId: number,
       snapshot: T | null,
       snapshotData: T,
-      category: Category | undefined,
+      category?: Category,
       callback: (snapshot: T) => void,
       snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       type: string,
@@ -2148,8 +2148,8 @@ const convertToSnapshot = <
   id: string | number | undefined,
   snapshotId: string | null,
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  category: Category | undefined,  categoryProperties: CategoryProperties | undefined,
-  metadata: UnifiedMetadata<T, K, Meta, ExcludedFields>,
+  category?: Category,  categoryProperties: CategoryProperties | undefined,
+  metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   subscriberId: string,
   endpointCategory: string | number,
   storeProps: SnapshotStoreProps<T, K>,

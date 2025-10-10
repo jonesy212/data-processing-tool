@@ -105,14 +105,14 @@ const tasksDataSource: Record<string, Task<T, K, Meta, AttachmentType, ExcludedF
       initialState:{},
       createdBy: "",
      
-      metadata: {} as UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, never>,
+      metadata: {} as UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>,
       apiKey: "",
       timeout: 300,
       retryAttempts: 3,
      
-      mappedMeta: {} as Map<string, Snapshot<T, K, StructuredMetadata<T, K>, never>>,
-      meta: {} as StructuredMetadata<T, K>,
-      events: {} as EventManager<T, K, StructuredMetadata<T, K>>,
+      mappedMeta: {} as Map<string, Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>,
+      meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      events: {} as EventManager<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
      
     id: "2",
     title: "Task 2",

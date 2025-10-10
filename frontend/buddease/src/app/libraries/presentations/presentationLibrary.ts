@@ -55,7 +55,7 @@ function createPresentation(title: string, slides: Slide[]): Presentation {
     // Prefix for presentation IDs
     "pres",
     presentationName,
-    NotificationTypeEnum.PresentationID,
+    NotificationTypeEnum.PRESENTATION_ID,
     "created Presentation",
     "Presentation ID generated for " + presentationName,
     "presentation" as NotificationType,

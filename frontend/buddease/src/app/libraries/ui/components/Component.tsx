@@ -10,7 +10,7 @@ import {
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import useErrorHandling from "@/app/hooks/useErrorHandling";
 import { ComponentStatus, StatusType } from "@/app/models/data/StatusType";
-import { Project } from "@/app/projects/Project";
+import { Project } from '@/app/models/projects/Project';
 import useNotificationManagerService from "@/app/services/NotificationService";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import { useRouter } from "next/router";

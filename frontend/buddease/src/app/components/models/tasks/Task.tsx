@@ -17,7 +17,7 @@ import { BaseData } from "@/app/data/Data";
 import { K, T } from "@/app/data/dataStoreMethods";
 import CommonDetails, { SupportedData } from "@/app/models/CommonData";
 import { PriorityTypeEnum, TaskStatus } from "@/app/models/data/StatusType";
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import { Snapshot, TagsRecord } from "@/app/snapshots";
 import { AllStatus, DetailsItem } from "@/app/state/stores/DetailsListStore";
 import { AnalysisTypeEnum } from "@/app/typings/AnalysisType";
@@ -37,7 +37,14 @@ export interface TaskEntityExtended extends TaskEntity {
 }
 
 // using commong detais we genrate detais for components by mapping through the objects.
-const TaskDetails = Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
+const TaskDetails = <
+  T extends TaskCoreData,
+  K extends TaskK,
+  Meta extends TaskMeta,
+  AttachmentType extends TaskAttachment,
+  ExcludedFields extends TaskExcludedFields,
+  IncludedFields extends TaskIncludedFields
+>({ 
   task,
   completed,
 }: {

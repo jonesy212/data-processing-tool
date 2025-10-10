@@ -7,9 +7,9 @@ import { DataStore, InitializedState } from '@/app/projects/DataAnalysisPhase/Da
 import { defaultSnapshotBuilder } from '@/app/snapshots/defaultSnapshotBuilder';
 import { UtilMethods } from '@/app/snapshots/methods/utilMethods';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
-import SnapshotStore from '@/app/snapshots/SnapshpshotStore';
-import { SnapshotStoreProps } from '@/app/snapshots/SnapshpshotStoreProps';
+import { SnapshotStoreProps } from '@/app/snapshots/SnapshotStoreProps';
 import { SnapshotStoreOptions } from '@/app/snapshots/useSnapshotStore';
 import { Callback } from '@/app/subscribe/subscribeToSnapshotsImplementation';
 import { internalCache } from '@/app/utils/cache/InternalCache';
@@ -139,29 +139,6 @@ export const enhanceSnapshotWithMethods = <
   return enhancedSnapshot;
 };
 
-export const createAndAddSnapshot = createAsyncThunk(
-  'snapshot/createAndAddSnapshot',
-  async (entity: T, thunkAPI) => {
-    try {
-      const baseSnapshot = await createCompleteSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
-        entity,                    // baseData
-        new Map(),                 // baseMeta
-        'mock-snapshot-id',        // snapshotId
-        undefined,                 // category
-        null,                      // snapshotStore
-        null,                      // snapshotManager
-        null,                      // snapshotStoreConfig
-        false,                     // isSubscribed (use default or provide false)
-        undefined,                 // storeProps (optional - provide undefined)
-        undefined                  // storeOptions (optional - provide undefined)
-      );
-      
-      return baseSnapshot;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error);
-    }
-  }
-);
 
 export const createCompleteSnapshot = async <
   T extends BaseDataEntity,
@@ -174,7 +151,7 @@ export const createCompleteSnapshot = async <
   baseData: T,
   baseMeta: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
   snapshotId: string | null,
-  category: Category | undefined,
+  category?: Category,
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,

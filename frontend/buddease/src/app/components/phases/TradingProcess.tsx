@@ -105,7 +105,7 @@ const TradingProcess: React.FC = () => {
         "Trade has been successfully created",
         "success",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } catch (error) {
       console.error("Error creating trade:", error);
@@ -114,7 +114,7 @@ const TradingProcess: React.FC = () => {
         "Error creating trade",
         "error",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
     }
   };
@@ -133,7 +133,7 @@ const TradingProcess: React.FC = () => {
         "Your trade has been successfully confirmed",
         "TradeConfirmationSuccess",
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
 
       // Perform additional actions as needed, such as updating the UI or navigating to a different page
@@ -145,7 +145,7 @@ const TradingProcess: React.FC = () => {
         "There was an error confirming your trade, please try again",
         "TradeConfirmationError",
         new Date(),
-        NotificationTypeEnum.OperationError
+        NotificationTypeEnum.OPERATION_ERROR
       );
     }
   };

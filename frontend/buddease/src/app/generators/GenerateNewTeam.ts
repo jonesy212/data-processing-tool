@@ -1,6 +1,6 @@
 
 import { Team } from "@/app/components/models/teams/Team";
-import { Project } from "@/app/projects/Project";
+import { Project } from '@/app/models/projects/Project';
 
 let currentTeamId = 1;
 export const generateNewTeam = (): Team => {

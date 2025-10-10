@@ -10,7 +10,7 @@ type CacheReadOptions<T extends  BaseData<any>> = {
 interface CacheResponse<
   T extends  BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>, // Metadata type
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>, // Metadata type
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
   id?: string | number | undefined;

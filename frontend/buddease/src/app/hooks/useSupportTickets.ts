@@ -3,7 +3,7 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/app/state/store';
 import { provideCustomerSupport } from '@/app/state/slices/ApiManagerSlice';
-import { SupportTicket, SupportTicketStatus } from '@/SupportTicketComponent';
+import { SupportTicket, SupportTicketStatus } from '@/features/support/SupportTicketComponent';
 
 export const useSupportTickets = () => {
   const dispatch = useDispatch();

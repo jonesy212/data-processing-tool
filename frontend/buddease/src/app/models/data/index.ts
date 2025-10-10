@@ -10,7 +10,7 @@ export { default as TaskDetails } from "@/app/tasks/Task";
 // export type { default as IdeaDetails } from "@/app/ideas/Idea";
 // export type { default as AttachmentDetails } from "@/app/attachments/Attachment";
 // export type { default as CommentDetails } from "@/app/comments/Comment";
-// export type { default as PhaseDetails } from "@/app/phases/Phase";
+// export type { default as PhaseDetails } from '@/app/models/phases/Phase';
 // export type { default as CollaborationDetails } from "@/app/collaborations/Collaboration";
 // export type { default as CollaborationOptionDetails } from "@/app/collaborations/CollaborationOption";
 // export type { default as CollaborationRequestDetails } from "@/app/collaborations/CollaborationRequest";

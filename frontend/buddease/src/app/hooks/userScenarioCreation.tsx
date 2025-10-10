@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getDefaultDocumentOptions } from "@/app/documents/DocumentOptions";
 import { DocumentBuilderProps } from "@/app/documents/SharedDocumentProps";
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import PhaseManager from "@/app/phases/PhaseManager";
 import useDocumentManagerSlice from "@/app/state/redux/slices/DocumentSlice";
 import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from "@/app/models/BaseTypes";
@@ -24,8 +24,8 @@ export interface DocumentWithBuilderProps<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DocMeta,
   ExcludedFields extends keyof T = DocExcludedFields
-> extends DocumentData<T, K, Meta, ExcludedFields>,
-        DocumentBuilderProps<T, K, Meta, ExcludedFields> {}
+> extends DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+        DocumentBuilderProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {}
 
 // ---------------------------
 // Module-level document options

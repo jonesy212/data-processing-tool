@@ -173,7 +173,7 @@ const snapshotFunction = <
 >(
   id: string | number | undefined,
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  category: Category | undefined,
+  category?: Category,
   callback: (snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
   criteria: CriteriaType,
   snapshotId?: string | number | null,
@@ -229,7 +229,7 @@ interface ISnapshotApi {
     callback: (
       id: string | number | undefined,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category: Category | undefined,
+      category?: Category,
       callback: (snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
       criteria: CriteriaType,
       snapshotId?: string | number | null,
@@ -261,7 +261,7 @@ interface ISnapshotApi {
       type SnapshotHandler = (
         id: string | number | undefined,
         snapshotData: CompatibleSnapshotData<CustomData>,
-        category: Category | undefined,
+        category?: Category,
         callback: (snapshot: SnapshotStore<CustomData, CustomK>) => void,
         criteria: CriteriaType,
         snapshotId?: string | number | null,
@@ -273,7 +273,7 @@ interface ISnapshotApi {
       const handleSnapshot: SnapshotHandler = (
         id: string | number | undefined,
         snapshotData: CompatibleSnapshotData<CustomData>,
-        category: Category | undefined,
+        category?: Category,
         callback: (snapshot: SnapshotStore<CustomData, CustomK>) => void,
         criteria: CriteriaType,
         snapshotId?: string | number | null,
@@ -333,7 +333,7 @@ interface ISnapshotApi {
           operations: {
             // Operations methods if they exist in snapshot.operations
             ...snapshot.operations
-          } as SnapshotOperations<T, K, Meta, AttachmentType, ExcludedFields>,
+          } as SnapshotOperations<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           
           base: { ...snapshot.base } as BaseEntity<T, K, any, any>,
           sharedMetadata: { ...snapshot.sharedMetadata } as SharedMetadata<T, K, any, any>,
@@ -436,7 +436,7 @@ interface SnapshotEquality<
   ): Promise<boolean>;
 }
 
-const snapshotManager = useSnapshotStore<T, K, StructuredMetadata<T, K>, ExcludedFields>(storeId);
+const snapshotManager = useSnapshotStore<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(storeId);
 
 
 export class LocalStorageSnapshotStore<
@@ -629,14 +629,14 @@ export class LocalStorageSnapshotStore<
     snapshotId: string,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     savedState: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,
+    category?: Category,
     callback: (snapshot: T) => void,
     snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     event: string | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: T,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>,
   ): void {
     // Implement logic to restore snapshot
   }
@@ -651,7 +651,7 @@ export class LocalStorageSnapshotStore<
     newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     timestamp: Date,
     payload: UpdateSnapshotPayload<T>,
-    category: Category | undefined,
+    category?: Category,
     payloadData: T | K,
     mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
@@ -680,7 +680,7 @@ export class LocalStorageSnapshotStore<
         mappedSnapshotData,                             // mappedSnapshotData: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined
         newData,                                        // snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
         snapshotStore,                                  // snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-        category,                                       // category: Category | undefined
+        category,                                       // category?: Category
         categoryProperties?.properties,                 // categoryProperties: CategoryProperties | undefined
         snapshotStore.getDataStoreMethods?.() ?? {},    // dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
         snapshotStore.getStoreProps?.() ?? {},          // storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -748,13 +748,13 @@ export class LocalStorageSnapshotStore<
     snapshotId: string,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     savedState: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,    callback: (snapshot: T) => void,
+    category?: Category,    callback: (snapshot: T) => void,
     snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     event: string | SnapshotEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotContainer?: T,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>,
   ): void {
     this.restoreSnapshot(
       id,
@@ -974,7 +974,7 @@ const snapshots: CoreSnapshot<BaseData<AddReport>, AddReportType>[] = [
               StructuredMetadata<AddReport, AddReport>
             >,
             K,
-            StructuredMetadata<T, K>,
+            StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
             never
           >
         >,

@@ -65,6 +65,7 @@ type TagsType<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
   IncludedFields extends keyof T = keyof T
 > = TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[] | undefined;
 
@@ -109,7 +110,7 @@ type MetadataEntriesType<
 interface StructuredMetadata<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  Meta = any,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -118,7 +119,7 @@ interface StructuredMetadata<
   SharedStatusFlags,
   SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedField>
 {
-  baseConfig: BaseConfig<T, K, Meta, ExcludedFields>;
+  baseConfig: BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   sharedMetadata: SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   sharedBaseData: SharedRelationshipData<K>;
   taggable: Taggable<T, K>;
@@ -130,7 +131,7 @@ interface StructuredMetadata<
   keywords: string[];
   childIds?: K[];
   relatedData?: K[] | undefined;
-  version?: string | number | Version<T, K> | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  version?: string | number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   lastUpdated?: Date | VersionHistory<T, K>; 
   permissions: Permission[];
   customFields?: Record<string, any>;
@@ -169,7 +170,7 @@ interface VideoMetadata<
   frameRate: number
   views: number;
   likes: number;
-  comments?: number | (Comment<T, K, StructuredMetadata<T, K>> | CustomComment)[] | undefined;
+  comments?: number | (Comment<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | CustomComment)[] | undefined;
   resolution: string;
   aspectRatio: string;
   subtitles: boolean | string[];
@@ -247,7 +248,8 @@ interface MetadataEntry<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T>
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 >{
   originalPath: string;
   alternatePaths: string[];
@@ -274,6 +276,7 @@ function convertTags<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
   IncludedFields extends keyof T = keyof T
 >(
   tags?: TagsRecord<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | string[]
@@ -297,6 +300,7 @@ function transformProjectToStructured<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T,
   IncludedFields extends keyof T = keyof T
 >(
   projectMetadata: ProjectMetadata<T, K>
@@ -332,7 +336,7 @@ function transformProjectToStructured<
   };
 
   // Ensure latestVersion
-  const latestVersion = projectMetadata.latestVersion || createLatestVersion<T, K>();
+  const latestVersion = projectMetadata.latestVersion || createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
 
   // Get author from first contributor or fallback
   const author = projectMetadata.contributors?.[0]?.memberName || "default-author";
@@ -402,10 +406,9 @@ function transformProjectToStructured<
   return structuredMetadata;
 }
 
-
 const projectMetadata: ProjectMetadata<
-  BaseData<T, K, StructuredMetadata<T, K>, Attachment,  DefaultExcludedFields<T>>,
-  BaseData<T, K, StructuredMetadata<T, K>, Attachment,  DefaultExcludedFields<T>>
+  BaseData<ProjectEntity, ProjectK, ProjectStructuredMetadata, ProjectAttachment, ProjectExcludedFields>,
+  BaseData<ProjectEntity, ProjectK, ProjectStructuredMetadata, ProjectAttachment, ProjectExcludedFields>
 > = {
   projectName: "",
   startDate: new Date(),
@@ -424,9 +427,10 @@ const projectMetadata: ProjectMetadata<
   isActive: true,
   permissions: [],
   customFields: {},
-  latestVersion: createLatestVersion<T, K>(),
+  latestVersion: createLatestVersion<ProjectEntity, ProjectK, ProjectMeta, ProjectAttachment, ProjectExcludedFields, ProjectIncludedFields>(),
   lastUpdated: createLastUpdatedWithVersion(),
 };
+
 
 // Define function to get structure metadata path
 const getStructureMetadataPath = (filename: string): string => {

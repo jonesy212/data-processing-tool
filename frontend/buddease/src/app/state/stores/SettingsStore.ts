@@ -101,7 +101,7 @@ const useSettingManagerStore = (): SettingManagerStore => {
                 "Settings updated successfully",
                 "Settings updated",
                 new Date(),
-                NotificationTypeEnum.OperationSuccess
+                NotificationTypeEnum.OPERATION_SUCCESS
             );
         } catch (error: any) {
             handleError("updating settings", error);
@@ -266,7 +266,7 @@ const useSettingManagerStore = (): SettingManagerStore => {
             "User data updated successfully.",
             {},
             new Date(),
-            NotificationTypeEnum.OperationSuccess
+            NotificationTypeEnum.OPERATION_SUCCESS
         );
     };
 

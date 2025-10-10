@@ -9,6 +9,10 @@ import { getDefaultDocumentOptions } from "@/documents/DocumentOptions";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { useDispatch } from 'react-redux';
 import { DocumentFormattingOptions } from "./ DocumentFormattingOptionsComponent";
+import AccessHistory from '@/app/versions/AccessHistory';
+import { BaseDataEntity, DefaultMeta, DefaultExcludedFields } from '@/config/BaseConfig';
+import { useState } from 'react';
+import { Attachment } from '@/app/documents/attachment/Attachment';
 
 const dispatch = useDispatch()
 
@@ -18,7 +22,8 @@ function formatDocument<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(
+  IncludedFields extends keyof T = keyof T
+>(
   documentObject: DocumentObject<T, K>,
   options: DocumentFormattingOptions
 ): DocumentObject<T, K> {
@@ -41,9 +46,10 @@ const buildDocument = async <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
-  IncludedFields extends keyof T = keyof T>(
+  IncludedFields extends keyof T = keyof T
+>(
   options: DocumentFormattingOptions,
-  documentObject: DocumentObject<T, K>,
+  documentObject: DocumentObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   documentType: string
 ): Promise<void> => {
   try {
@@ -88,14 +94,26 @@ const buildDocument = async <
 };
 
 // Usage of DocumentBuilder
-const DocumentBuilderComponent = () => {
-   // Initialize metadata state with proper types
-   const [currentMetadata, setCurrentMetadata] = useState<UnifiedMetadata<T, K, Meta, ExcludedFields>>(
-    getDefaultMetadata() // You'll need to implement this function
-  );
-  const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetadata<T, K, Meta, ExcludedFields>>(
+const DocumentBuilderComponent = <
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = DefaultIncludedFields<T>
+>({
+  getDefaultMetadata,
+}: DocumentBuilderProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
+
+  // Initialize metadata state
+  const [currentMetadata, setCurrentMetadata] = useState<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
     getDefaultMetadata()
   );
+
+  const [previousMetadata, setPreviousMetadata] = useState<UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
+    getDefaultMetadata()
+  );
+
 
   // Initialize access history
   const [accessHistory, setAccessHistory] = useState<AccessHistory[]>([]);

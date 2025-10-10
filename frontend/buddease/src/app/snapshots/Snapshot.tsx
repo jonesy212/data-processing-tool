@@ -32,8 +32,8 @@ import { User } from "@/app/users/User";
 import { isSnapshotStoreConfig } from "@/app/utils/snapshotUtils";
 import { updateFileMetadata } from "@/app/utils/web3/fileUtils";
 import { useMeta } from "@/config/useMeta";
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
-import UserRoles from "@/users/UserRoles";
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
+import UserRoles from '@/app/models/UserRoles';
 import { Signature } from "ethers";
 import {
   Result,
@@ -162,12 +162,12 @@ interface Snapshot<
   // SharedMetadata<T, K, ExcludedFields>
   dataObject?: Record<string, unknown>;
   deleted: boolean;
-  initialState: InitializedState<T, K, Meta, ExcludedFields> | {};
+  initialState: InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
   isCore: boolean;
 
   customProperties?: Record<string, unknown>;
   childIds?: T[] | undefined;
-  snapshotCategory?: SnapshotCategory<T, K, Meta, ExcludedFields>
+  snapshotCategory?: SnapshotCategory<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   
   snapshotSubscriberId?: string | undefined;
   customProperty?: string | number | boolean | Date | null | {
@@ -177,8 +177,8 @@ interface Snapshot<
   };
   initialConfig: InitializedConfig | {};
   properties?: T | K;
-  snapshotsArray?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields>;
-  snapshotsObject?: SnapshotsObject<T, K, Meta, ExcludedFields>;
+  snapshotsArray?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  snapshotsObject?: SnapshotsObject<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   recentActivity?: { action: string; timestamp: Date }[];
   onInitialize: (callback: () => void) => void;
   onError?: (error: Error) => void;
@@ -204,7 +204,7 @@ interface Snapshot<
   security?: SnapshotSecurity;                       // ✅ Data security
   versioning?: string | number;
   versionInfo: ExtendedVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
-  initializedState: InitializedState<T, K, Meta, ExcludedFields> | {};
+  initializedState: InitializedStateInitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | {};
   criteria?: CriteriaType;
   relationships?: Map<string, K>;
   storeConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -215,17 +215,17 @@ interface Snapshot<
     SnapshotWithCriteria<any, BaseDataEntity>,
     SnapshotWithCriteria<any, BaseDataEntity>
   > | null;
-  snapshotContainer: SnapshotContainer<T, K, Meta, ExcludedFields> | undefined | null;
+  snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined | null;
   // Logic for `getAllValues`
 }
 
-// A type guard to check if an object is of type CombinedEvents<T, K, Meta, ExcludedFields>
+// A type guard to check if an object is of type CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 function isCombinedEvents<
   T extends BaseDataEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
->(events: any): events is CombinedEvents<T, K, Meta, ExcludedFields> {
+>(events: any): events is CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return (
     typeof events === "object" &&
     "records" in events &&
@@ -261,7 +261,7 @@ function processSnapshot<
     Meta,
     ExcludedFields
   > & {
-    transformSubscriber?: (sub: Subscriber<T, K, Meta, ExcludedFields>) => Subscriber<T, K, Meta, ExcludedFields>;
+    transformSubscriber?: (sub: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   };
 
   const typedSnapshot = snapshot as SnapshotWithTransformSubscriber;
@@ -293,13 +293,13 @@ function processSnapshot<
       currentMeta: currentMeta,
       metadataEntries: {},
     },
-    data: snapshot.data as InitializedData<T, K, Meta, ExcludedFields> | undefined,
+    data: snapshot.data as InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
     // mappedData: snapshot.mappedData || new Map<string, Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>>(),
     initialState: snapshot.initialState || null,
     events:
       snapshot.events && isCombinedEvents(snapshot.events)
         ? snapshot.events
-        : undefined, // or use a default value that fits `CombinedEvents<T, K, Meta, ExcludedFields>`
+        : undefined, // or use a default value that fits `CombinedEvents<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>`
 
     // Snapshot interface with type guard
     snapshotStoreConfig: isSnapshotStoreConfig<
@@ -1730,7 +1730,7 @@ const getCurrentSnapshot = <
   snapshotId: string, // ID of the snapshot to retrieve
   storeId: number,
   additionalHeaders?: Record<string, string>,
-  snapshotConfigProps?: SnapshotConfigProps<T, K, Meta, ExcludedFields>,
+  snapshotConfigProps?: SnapshotConfigProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   category?: Category, // Optional category
   snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // Optional store to retrieve from
 ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> => {
@@ -2078,7 +2078,7 @@ callback,
   unsubscribe: function (
     snapshotId: string | number | null,
     unsubscribe: UnsubscribeDetails,
-    subscriber: Subscriber<T, K, Meta, ExcludedFields> | null,
+    subscriber: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     data: T,
     event: SnapshotEvent<MyEntity, MyK, MyMeta, MyExcludedFields>,
     callback: Callback<SnapshotContext<MyEntity, MyK, MyMeta, MyExcludedFields>>,
@@ -2098,7 +2098,7 @@ callback,
     snapshotId: string,
     data: Map<string, Snapshot<BaseDataEntity, BaseDataEntity>>,
     events: Record<string, CalendarEvent<BaseDataEntity, BaseDataEntity>[]>,
-    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
+    dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     newData: Snapshot<BaseDataEntity, BaseDataEntity>,
     payload: ConfigureSnapshotStorePayload<BaseDataEntity>,
     store: SnapshotStore<any, BaseDataEntity>,
@@ -2146,1919 +2146,122 @@ callback,
   },
 
   handleSnapshot: function <
-    T extends BaseDataEntity<any>,
-    K extends T = T,
-    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-    
-  >(
-    id: string,
-    snapshotId: string | number | null,
-    snapshot: Data<T> | null,
-    snapshotData: Data<T>,
-    category: Category | undefined,
-    categoryProperties: CategoryProperties | undefined,
-    callback: (snapshot: Data<T>) => void,
-    snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    type: string,
-    event: SnapshotEvents<MyEntity, MyK, MyMeta, MyExcludedFields>,
-    snapshotContainer?: Data<T>,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
-    return new Promise((resolve, reject) => {
-      // Check if the snapshot is null
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+>(
+  id: string,
+  snapshotId: string | number | null,
+  snapshot: Data<T> | null,
+  snapshotData: Data<T>,
+  category?: Category,
+  categoryProperties?: CategoryProperties,
+  callback?: (snapshot: Data<T>) => void,
+  snapshots?: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  type?: string,
+  event?: SnapshotEvents<MyEntity, MyK, MyMeta, MyExcludedFields>,
+  snapshotContainer?: Data<T>,
+  snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { handleError } = useErrorHandling();
+
+      // Guard: snapshot cannot be null
       if (snapshot === null) {
         reject("Snapshot is null");
         return;
       }
 
-      const { handleError } = useErrorHandling(); // Access handleError function from useErrorHandling
+      // Guard: snapshots array must be defined
+      if (!snapshots) {
+        reject("Snapshots array is undefined");
+        return;
+      }
 
-      // Determine if the snapshot exists in the snapshot array
+      // Try to find an existing snapshot
       const existingSnapshot = snapshots.find((s) => s.id === snapshotId);
 
       if (existingSnapshot) {
-        // Update the existing snapshot
+        // --- Update existing snapshot ---
         existingSnapshot.data = snapshotData;
         existingSnapshot.category = category;
-        existingSnapshot.timestamp = new Date(); // Update the timestamp to the current time
+        existingSnapshot.timestamp = new Date();
 
-        // Trigger the callback function with the updated snapshot
-        callback(existingSnapshot.data);
+        // Callback for UI or other logic
+        callback?.(existingSnapshot.data);
 
-        // Handle event if necessary
+        // Emit snapshotUpdated event if available
         if (event) {
           const snapshotStore = snapshotStoreConfig?.snapshotStore;
-          const subscribers =
-            snapshotStore?.subscriberManagement.getSubscribers();
+          const subscribers = snapshotStore?.subscriberManagement.getSubscribers() || [];
           const criteria = snapshotStoreConfig?.criteria;
 
           event.emit(
             "snapshotUpdated",
             existingSnapshot,
             String(snapshotId),
-            subscribers || [],
-            type,
+            subscribers,
+            type ?? "update",
             snapshotStore!,
             [],
             criteria!,
             category as Category,
-            { id, data: snapshotData } as SnapshotData<MyEntity, MyK, MyMeta, MyExcludedFields> // Cast to expected type
+            { id, data: snapshotData } as SnapshotData<MyEntity, MyK, MyMeta, MyExcludedFields>
           );
         }
 
-        // If using snapshot store configuration, handle the snapshot store update
+        // Sync with snapshot store if configured
         if (snapshotStoreConfig) {
-          // Example: Update the snapshot store based on the configuration
-          // This is a placeholder; adjust according to your actual snapshot store logic
           const snapshotStore = snapshotStoreConfig.getSnapshotStore();
-          if (snapshotStore) {
-            snapshotStore.addSnapshot(existingSnapshot);
-          }
+          snapshotStore?.addSnapshot(existingSnapshot);
         }
 
-        resolve(existingSnapshot); // Return the updated snapshot
-      } else {
-        // Create a new snapshot if it does not exist
-        const newSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
-          id: snapshotId,
-          data: data,
-          category: category,
-          timestamp: new Date(),
-          deleted: false,
-          initialState: undefined,
-          isCore: false,
-          initialConfig: undefined,
-          onInitialize: function (callback: () => void): void {
-            throw new Error("Function not implemented.");
-          },
-          onError: undefined,
-          taskIdToAssign: undefined,
-          schema: "",
-          currentCategory: undefined,
-          mappedSnapshotData: undefined,
-          storeId: 0,
-          versionInfo: null,
-          initializedState: undefined,
-          criteria: undefined,
-          snapshot: function (
-            id: string | number | undefined,
-            snapshotData: SnapshotData<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            category: symbol | string | Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
-            callback: (
-              snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>
-            ) => void,
-            dataStore: DataStore<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >,
-            dataStoreMethods: DataStoreMethods<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >,
-            metadata: UnifiedMetadata<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            subscriberId: string,
-            endpointCategory: string | number,
-            storeProps: SnapshotStoreProps<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >,
-            snapshotConfigData: SnapshotConfig<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >,
-            subscription: Subscription<T, K, StructuredMetadata<T, K>, Meta>,
-            snapshotId?: string | number | null,
-            snapshotStoreConfigData?: any,
-            snapshotContainer?:
-              | SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>
-              | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-              | null
-          ):
-            | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-            | Promise<{
-                snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-              }> {
-            throw new Error("Function not implemented.");
-          },
-          setCategory: function (
-            category: symbol | string | Category | undefined
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          applyStoreConfig: function (
-            snapshotStoreConfig?:
-              | SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>
-              | undefined
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          generateId: function (
-            prefix: string,
-            name: string,
-            type: NotificationType,
-            id?: string,
-            title?: string,
-            chatThreadName?: string,
-            chatMessageId?: string,
-            chatThreadId?: string,
-            dataDetails?:
-              | DataDetails<
-                  Data<T, K, StructuredMetadata<T, K>>,
-                  Meta,
-                  StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-                  never
-                >
-              | undefined,
-            generatorType?: string
-          ): string {
-            throw new Error("Function not implemented.");
-          },
-          snapshotData: function (
-            id: string | number | undefined,
-            data: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            mappedSnapshotData:
-              | Map<string, Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>>
-              | null
-              | undefined,
-            snapshotData: SnapshotData<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            category: Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
-            dataStoreMethods: DataStoreMethods<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >,
-            storeProps: SnapshotStoreProps<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >,
-            snapshotId?: string | number | null
-          ): Promise<SnapshotDataType<T, K, StructuredMetadata<T, K>, Meta>> {
-            throw new Error("Function not implemented.");
-          },
-          snapshotContainer: undefined,
-          getSnapshotItems: function (
-            category: symbol | string | Category | undefined,
-            snapshots: SnapshotsArray<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >
-          ): (
-            | SnapshotItem<T, K, StructuredMetadata<T, K>, Meta>
-            | SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>
-            | undefined
-          )[] {
-            throw new Error("Function not implemented.");
-          },
-
-          getAllSnapshots: function (
-            storeId: number,
-            snapshotId: string,
-            snapshotData: Data<T, K, StructuredMetadata<T, K>>,
-            timestamp: string,
-            type: string,
-            event: SnapshotEvent<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            id: number,
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            category: symbol | string | Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
-            dataStoreMethods: DataStore<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >,
-            data: Data<T, K, StructuredMetadata<T, K>>,
-            filter?:
-              | ((
-                  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-                ) => boolean)
-              | undefined,
-            dataCallback?:
-              | ((
-                  subscribers: Subscriber<
-                    Data<T, K, StructuredMetadata<T, K>>,
-                    Meta,
-                    StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-                  >[],
-                  snapshots: Snapshots<
-                    Data<T, K, StructuredMetadata<T, K>>,
-                    Data<T, K, StructuredMetadata<T, K>>
-                  >
-                ) => Promise<
-                  SnapshotUnion<
-                    Data<T, K, StructuredMetadata<T, K>>,
-                    Data<T, K, StructuredMetadata<T, K>>,
-                    StructuredMetadata<
-                      Data<T, K, StructuredMetadata<T, K>>,
-                      Data<T, K, StructuredMetadata<T, K>>
-                    >
-                  >[]
-                >)
-              | undefined
-          ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
-            throw new Error("Function not implemented.");
-          },
-          transformDelegate: function (): Promise<
-            SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>[]
-          > {
-            throw new Error("Function not implemented.");
-          },
-
-          addDataStatus: function (
-            id: number,
-            status: StatusType | undefined
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          removeData: function (id: number): void {
-            throw new Error("Function not implemented.");
-          },
-          updateData: function (
-            id: number,
-            newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          updateDataTitle: function (id: number, title: string): void {
-            throw new Error("Function not implemented.");
-          },
-          updateDataDescription: function (
-            id: number,
-            description: string
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          updateDataStatus: function (
-            id: number,
-            status: StatusType | undefined
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          addDataSuccess: function (payload: {
-            data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
-          }): void {
-            throw new Error("Function not implemented.");
-          },
-          getDataVersions: function (
-            id: number
-          ): Promise<
-            Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined
-          > {
-            throw new Error("Function not implemented.");
-          },
-          updateDataVersions: function (
-            id: number,
-            versions: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-
-          getSnapshot: function (
-            snapshot: (
-              id: string | number
-            ) =>
-              | Promise<{
-                  snapshotId: string | number;
-                  snapshotData: SnapshotData<
-                    Data<T, K, StructuredMetadata<T, K>>,
-                    Meta,
-                    StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-                    never
-                  >;
-                  category: Category | undefined;
-                  categoryProperties: CategoryProperties;
-                  dataStoreMethods: DataStore<
-                    Data<T, K, StructuredMetadata<T, K>>,
-                    Meta,
-                    StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-                  >;
-                  timestamp: string | number | Date | undefined;
-                  id: string | number | undefined;
-                  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-                  snapshotStore: SnapshotStore<
-                    T,
-                    K,
-                    StructuredMetadata<T, K>,
-                    Meta
-                  >;
-                  data: Data<T, K, StructuredMetadata<T, K>>;
-                }>
-              | undefined
-          ): Promise<
-            Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
-          > {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotSuccess: function (
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            subscribers: Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >[]
-          ): Promise<SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>> {
-            throw new Error("Function not implemented.");
-          },
-          setItem: function (
-            key: Data<T, K, StructuredMetadata<T, K>>,
-            value: Data<T, K, StructuredMetadata<T, K>>
-          ): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          getItem: function (
-            key: Data<T, K, StructuredMetadata<T, K>>
-          ): Promise<
-            Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
-          > {
-            throw new Error("Function not implemented.");
-          },
-          getDataStore: function (): Promise<
-            InitializedDataStore<Data<T, K, StructuredMetadata<T, K>>>
-          > {
-            throw new Error("Function not implemented.");
-          },
-          getDataStoreMap: function (): Promise<
-            Map<
-              string,
-              DataStore<
-                Data<T, K, StructuredMetadata<T, K>>,
-                Meta,
-                StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-              >
-            >
-          > {
-            throw new Error("Function not implemented.");
-          },
-          addSnapshotSuccess: function (
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            subscribers: Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >[]
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          deepCompare: function (objA: any, objB: any): boolean {
-            throw new Error("Function not implemented.");
-          },
-          shallowCompare: function (objA: any, objB: any): boolean {
-            throw new Error("Function not implemented.");
-          },
-          getDataStoreMethods: function (): DataStoreMethods<
-            T,
-            K,
-            StructuredMetadata<T, K>
-          > {
-            throw new Error("Function not implemented.");
-          },
-          getDelegate: function (context: {
-            useSimulatedDataSource: boolean;
-            simulatedDataSource: SnapshotStoreConfig<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >[];
-          }): Promise<
-            DataStore<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >[]
-          > {
-            throw new Error("Function not implemented.");
-          },
-          determineCategory: function (
-            snapshot:
-              | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-              | null
-              | undefined
-          ): string {
-            throw new Error("Function not implemented.");
-          },
-          determinePrefix: function (
-            snapshot: Data<T, K, StructuredMetadata<T, K>> | null | undefined,
-            category: string
-          ): string {
-            throw new Error("Function not implemented.");
-          },
-          removeSnapshot: function (
-            snapshotToRemove: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          addSnapshotItem: function (
-            item:
-              | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-              | SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          addNestedStore: function (
-            store: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            item:
-              | SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>
-              | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          clearSnapshots: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          addSnapshot: function (
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            snapshotId: string,
-            subscribers: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>
-          ): Promise<
-            Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined
-          > {
-            throw new Error("Function not implemented.");
-          },
-          emit: function (
-            event: string,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            snapshotId: string,
-            subscribers: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            type: string,
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
-            criteria: SnapshotWithCriteria<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >,
-            category: Category,
-            snapshotData: SnapshotData<BaseDataEntity, BaseDataEntity>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          createSnapshot: function (
-            id: string,
-            additionalData: any,
-            category?: Category,
-            callback?:
-              | ((
-                  snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-                ) => void)
-              | undefined,
-            snapshotData?: SnapshotStore<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            snapshotStoreConfig?: SnapshotStoreConfig<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              never
-            >
-          ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
-            throw new Error("Function not implemented.");
-          },
-          createInitSnapshot: function (
-            id: string,
-            initialData: Data<T, K, StructuredMetadata<T, K>>,
-            snapshotData: SnapshotData<
-              any,
-              Meta,
-              StructuredMetadata<any, Meta>,
-              never
-            >,
-            snapshotStoreConfig: SnapshotStoreConfig<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >,
-            category: symbol | string | Category | undefined,
-            additionalData: any
-          ): Promise<
-            Result<
-              Snapshot<Data<T, K, StructuredMetadata<T, K>>, Meta, never, never>
-            >
-          > {
-            throw new Error("Function not implemented.");
-          },
-          addStoreConfig: function (
-            config: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          handleSnapshotConfig: function (
-            config: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotConfig: function (
-            snapshotId: string | null,
-            snapshotContainer: SnapshotContainer<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            criteria: CriteriaType,
-            category: Category,
-            categoryProperties: CategoryProperties | undefined,
-            delegate: any,
-            snapshotData: SnapshotData<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            snapshot: (
-              id: string,
-              snapshotId: string | null,
-              snapshotData: SnapshotData<
-                Data<T, K, StructuredMetadata<T, K>>,
-                Meta,
-                StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-                never
-              >,
-              category: Category
-            ) => void
-          ):
-            | SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>[]
-            | undefined {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotListByCriteria: function (
-            criteria: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>
-          ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
-            throw new Error("Function not implemented.");
-          },
-          setSnapshotSuccess: function (
-            snapshotData: SnapshotData<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            subscribers: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          setSnapshotFailure: function (error: Error): void {
-            throw new Error("Function not implemented.");
-          },
-          updateSnapshots: function (): void {
-            throw new Error("Function not implemented.");
-          },
-          updateSnapshotsSuccess: function (
-            snapshotData: (
-              subscribers: Subscriber<
-                Data<T, K, StructuredMetadata<T, K>>,
-                Meta,
-                StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-              >[],
-              snapshot: Snapshots<
-                Data<T, K, StructuredMetadata<T, K>>,
-                Data<T, K, StructuredMetadata<T, K>>
-              >
-            ) => void
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          updateSnapshotsFailure: function (error: Payload): void {
-            throw new Error("Function not implemented.");
-          },
-          initSnapshot: function (
-            snapshot:
-              | SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>
-              | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-              | null,
-            snapshotId: string | number | null,
-            snapshotData: SnapshotData<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            category: Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
-            snapshotConfig: SnapshotStoreConfig<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >,
-            callback: (snapshotStore: SnapshotStore<any, any>) => void,
-            snapshotStoreConfig: SnapshotStoreConfig<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >,
-            snapshotStoreConfigSearch: SnapshotStoreConfig<
-              SnapshotWithCriteria<any, Meta>,
-              SnapshotWithCriteria<any, Meta>
-            >
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          takeSnapshot: function (
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            subscribers: Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >[]
-          ): Promise<{
-            snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-          }> {
-            throw new Error("Function not implemented.");
-          },
-          takeSnapshotSuccess: function (
-            snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          takeSnapshotsSuccess: function (
-            snapshots: Data<T, K, StructuredMetadata<T, K>>[]
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          flatMap: function <R extends Iterable<any>>(
-            callback: (
-              value: SnapshotStoreConfig<R, any>,
-              index: number,
-              array: SnapshotStoreConfig<R, any>[]
-            ) => R
-          ): R extends (infer I)[] ? I[] : R[] {
-            throw new Error("Function not implemented.");
-          },
-          getState: function () {
-            throw new Error("Function not implemented.");
-          },
-          setState: function (state: any): void {
-            throw new Error("Function not implemented.");
-          },
-          validateSnapshot: function (
-            snapshotId: string,
-            snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): boolean {
-            throw new Error("Function not implemented.");
-          },
-
-          transformSnapshotConfig: function <U extends BaseDataEntity>(
-            config: SnapshotStoreConfig<U, U>
-          ) {
-            throw new Error("Function not implemented.");
-          },
-
-          filterSnapshots: function (): void {
-            throw new Error("Function not implemented.");
-          },
-
-          mapSnapshots: function <U, V>(
-            storeIds: number[],
-            snapshotId: string,
-            category: symbol | string | Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            timestamp: string | number | Date | undefined,
-            type: string,
-            event: SnapshotEvent<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            id: number,
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            data: Meta,
-            callback: (
-              storeIds: number[],
-              snapshotId: string,
-              category: symbol | string | Category | undefined,
-              categoryProperties: CategoryProperties | undefined,
-              snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-              timestamp: string | number | Date | undefined,
-              type: string,
-              event: SnapshotEvent<MyEntity, MyK, MyMeta, MyExcludedFields>,
-              id: number,
-              snapshotStore: SnapshotStore<
-                T,
-                K,
-                StructuredMetadata<T, K>,
-                Meta
-              >,
-              data: V,
-              index: number
-            ) => U
-          ): U[] {
-            throw new Error("Function not implemented.");
-          },
-          takeLatestSnapshot: function ():
-            | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-            | undefined {
-            throw new Error("Function not implemented.");
-          },
-          updateSnapshot: function (
-            snapshotId: string,
-            data: Map<string, Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>>,
-            snapshotManager: SnapshotManager<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            events: Record<
-              string,
-              CalendarManagerStoreClass<T, K, StructuredMetadata<T, K>, Meta>[]
-            >,
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
-            newData: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            timestamp: Date,
-            payload: UpdateSnapshotPayload<
-              Data<T, K, StructuredMetadata<T, K>>
-            >,
-            category: symbol | string | Category | undefined,
-            payloadData: Meta | Data<T, K, StructuredMetadata<T, K>>,
-            mappedSnapshotData: Map<
-              string,
-              Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-            >,
-            delegate: SnapshotWithCriteria<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >[]
-          ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotConfigItems: function (): SnapshotStoreConfig<
-            T,
-            K,
-            StructuredMetadata<T, K>,
-            Meta
-          >[] {
-            throw new Error("Function not implemented.");
-          },
-          subscribeToSnapshots: function (
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            snapshotId: string,
-            snapshotData: SnapshotData<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            category: symbol | string | Category | undefined,
-            snapshotConfig: SnapshotStoreConfig<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >,
-            callback: (
-              snapshotStore: SnapshotStore<any, any>,
-              snapshots: SnapshotsArray<
-                Data<T, K, StructuredMetadata<T, K>>,
-                Meta,
-                StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-              >
-            ) => Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            > | null,
-            snapshots: SnapshotsArray<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >,
-            unsubscribe?: UnsubscribeDetails
-          ):
-            | []
-            | SnapshotsArray<
-                Data<T, K, StructuredMetadata<T, K>>,
-                Meta,
-                StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-              > {
-            throw new Error("Function not implemented.");
-          },
-          executeSnapshotAction: function (
-            actionType: SnapshotActionType,
-            actionData: any
-          ): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotItemsSuccess: function ():
-            | SnapshotItem<T, K, StructuredMetadata<T, K>, Meta>[]
-            | undefined {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotItemSuccess: function ():
-            | SnapshotItem<T, K, StructuredMetadata<T, K>, Meta>
-            | undefined {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotKeys: function (): string[] | undefined {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotIdSuccess: function (): string | undefined {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotValuesSuccess: function ():
-            | SnapshotItem<T, K, StructuredMetadata<T, K>, Meta>[]
-            | undefined {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotWithCriteria: function (
-            criteria: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>
-          ) {
-            throw new Error("Function not implemented.");
-          },
-          reduceSnapshotItems: function (
-            callback: (
-              acc: any,
-              snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-            ) => any,
-            initialValue: any
-          ) {
-            throw new Error("Function not implemented.");
-          },
-          config: undefined,
-          createdBy: "",
-          label: undefined,
-          events: undefined,
-          restoreSnapshot: function (
-            id: string,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            snapshotId: string,
-            snapshotData: SnapshotData<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            savedState: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            category: symbol | string | Category | undefined,
-            callback: (snapshot: Data<T, K, StructuredMetadata<T, K>>) => void,
-            snapshots: SnapshotsArray<T, K, StructuredMetadata<T, K>, Meta>,
-            type: string,
-            event:
-              | string
-              | SnapshotEvents<
-                  Data<T, K, StructuredMetadata<T, K>>,
-                  Meta,
-                  StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-                >,
-            subscribers: SubscriberCollection<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >,
-            snapshotContainer?:
-              | Data<T, K, StructuredMetadata<T, K>>
-              | undefined,
-            snapshotStoreConfig?:
-              | SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>
-              | undefined
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          handleSnapshot: function (
-            id: string,
-            snapshotId: string | number | null,
-            snapshot: null,
-            snapshotData: Data<T, K, StructuredMetadata<T, K>>,
-            category: symbol | string | Category | undefined,
-            categoryProperties: CategoryProperties | undefined,
-            callback: (snapshot: Data<T, K, StructuredMetadata<T, K>>) => void,
-            snapshots: SnapshotsArray<T, K, StructuredMetadata<T, K>, Meta>,
-            type: string,
-            event: SnapshotEvent<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            snapshotContainer?:
-              | Data<T, K, StructuredMetadata<T, K>>
-              | undefined,
-            snapshotStoreConfig?:
-              | SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>
-              | null
-              | undefined,
-            storeConfigs?: SnapshotStoreConfig<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >[]
-          ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
-            throw new Error("Function not implemented.");
-          },
-          meta: undefined,
-          snapshotMethods: [],
-          getSnapshotsBySubscriber: function (
-            subscriber: string
-          ): Promise<Data<T, K, StructuredMetadata<T, K>>[]> {
-            throw new Error("Function not implemented.");
-          },
-          subscribers: [],
-          snapshotSubscriberId: null,
-          isSubscribed: false,
-          getSubscribers: function (
-            subscribers: Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >[],
-            snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>
-          ): Promise<{
-            subscribers: Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >[];
-            snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>;
-          }> {
-            throw new Error("Function not implemented.");
-          },
-          notifySubscribers: function (
-            message: string,
-            subscribers: Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >[],
-            callback: (
-              data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-            ) => Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >[],
-            data: Partial<
-              SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>
-            >
-          ): Promise<
-            Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >[]
-          > {
-            throw new Error("Function not implemented.");
-          },
-          notify: function (
-            id: string,
-            message: string,
-            content: Content<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >,
-            data: any,
-            date: Date,
-            type: NotificationType,
-            notificationPosition?: NotificationPosition
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          subscribe: function (
-            snapshotId: string | number | null,
-            unsubscribe: UnsubscribeDetails,
-            subscriber: Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            > | null,
-            data: Data<T, K, StructuredMetadata<T, K>>,
-            event: SnapshotEvent<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            callback: Callback<Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>>,
-            value: Data<T, K, StructuredMetadata<T, K>>
-          ): [] | SnapshotsArray<T, K, StructuredMetadata<T, K>, Meta> {
-            throw new Error("Function not implemented.");
-          },
-          manageSubscription: function (
-            snapshotId: string,
-            callback: Callback<Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>>,
-            snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-            throw new Error("Function not implemented.");
-          },
-          subscribeToSnapshotList: function (
-            snapshotId: string,
-            callback: (
-              snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-            ) => void
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          subscribeToSnapshot: function (
-            snapshotId: string,
-            callback: Callback<Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>>,
-            snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
-            throw new Error("Function not implemented.");
-          },
-          unsubscribeFromSnapshot: function (
-            snapshotId: string,
-            callback: (
-              snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-            ) => void
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          subscribeToSnapshotsSuccess: function (
-            callback: (
-              snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>
-            ) => void
-          ): string {
-            throw new Error("Function not implemented.");
-          },
-          unsubscribeFromSnapshots: function (
-            callback: (
-              snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>
-            ) => void
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          unsubscribe: function (
-            unsubscribeDetails: {
-              userId: string;
-              snapshotId: string;
-              unsubscribeType: string;
-              unsubscribeDate: Date;
-              unsubscribeReason: string;
-              unsubscribeData: any;
-            },
-            callback: Callback<
-              Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-            > | null
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          clearSnapshotSuccess: function (context: {
-            useSimulatedDataSource: boolean;
-            simulatedDataSource: SnapshotStoreConfig<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >[];
-          }): void {
-            throw new Error("Function not implemented.");
-          },
-          addToSnapshotList: function (
-            snapshots: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            subscribers: Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >[],
-            storeProps?:
-              | SnapshotStoreProps<T, K, StructuredMetadata<T, K>, Meta>
-              | undefined
-          ): Promise<Subscription<
-            T,
-            K,
-            StructuredMetadata<T, K>,
-            Meta
-          > | null> {
-            throw new Error("Function not implemented.");
-          },
-
-          removeSubscriber: function (
-            event: string,
-            snapshotId: string,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
-            criteria: SnapshotWithCriteria<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >,
-            category: Category
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          addSnapshotSubscriber: function (
-            snapshotId: string,
-            subscriber: Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          removeSnapshotSubscriber: function (
-            snapshotId: string,
-            subscriber: Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          transformSubscriber: function (
-            subscriberId: string,
-            sub: Subscriber<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >
-          ): Subscriber<
-            Data<T, K, StructuredMetadata<T, K>>,
-            Meta,
-            StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-          > {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotsBySubscriberSuccess: function (
-            snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          getParentId: function (
-            id: string,
-            snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): string | null {
-            throw new Error("Function not implemented.");
-          },
-          getChildIds: function (
-            id: string,
-            childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): (string | number | undefined)[] {
-            throw new Error("Function not implemented.");
-          },
-          snapshotCategory: undefined,
-          initializeWithData: function (
-            data: SnapshotUnion<Data<T, K, StructuredMetadata<T, K>>>[]
-          ): void | undefined {
-            throw new Error("Function not implemented.");
-          },
-          addChild: function (
-            parentId: string,
-            childId: string,
-            childSnapshot: CoreSnapshot<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          removeChild: function (
-            childId: string,
-            parentId: string,
-            parentSnapshot: CoreSnapshot<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            childSnapshot: CoreSnapshot<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          getChildren: function (
-            id: string,
-            childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): CoreSnapshot<
-            Data<T, K, StructuredMetadata<T, K>>,
-            Meta,
-            StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-            never
-          >[] {
-            throw new Error("Function not implemented.");
-          },
-          hasChildren: function (id: string): boolean {
-            throw new Error("Function not implemented.");
-          },
-          isDescendantOf: function (
-            childId: string,
-            parentId: string,
-            parentSnapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): boolean {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotById: function (
-            id: string
-          ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
-            throw new Error("Function not implemented.");
-          },
-          isExpired: function (): boolean | undefined {
-            throw new Error("Function not implemented.");
-          },
-          createdAt: undefined,
-          snapshotStore: undefined,
-          setSnapshotCategory: function (
-            id: string,
-            newCategory: Category
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotCategory: function (id: string): Category | undefined {
-            throw new Error("Function not implemented.");
-          },
-          deleteSnapshot: function (id: string): void {
-            throw new Error("Function not implemented.");
-          },
-          items: [],
-          find: function (id: string) {
-            throw new Error("Function not implemented.");
-          },
-          snapConfig: undefined,
-          getSnapshots: function (
-            category: string,
-            data: Snapshots<Data<T, K, StructuredMetadata<T, K>>>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          compareSnapshots: function (
-            snap1: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            snap2: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): {
-            snapshot1: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-            snapshot2: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-            differences: Record<string, { snapshot1: any; snapshot2: any }>;
-            versionHistory: {
-              snapshot1Version?: string | number | Version<T, K, Meta, ExcludedFields>;
-              snapshot2Version?: string | number | Version<T, K, Meta, ExcludedFields>;
-            };
-          } | null {
-            throw new Error("Function not implemented.");
-          },
-          compareSnapshotItems: function (
-            snap1: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            snap2: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            keys: (keyof Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)[]
-          ): {
-            itemDifferences: Record<
-              string,
-              {
-                snapshot1: any;
-                snapshot2: any;
-                differences: { [key: string]: { value1: any; value2: any } };
-              }
-            >;
-          } | null {
-            throw new Error("Function not implemented.");
-          },
-          batchTakeSnapshot: function (
-            id: number,
-            snapshotId: string,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>
-          ): Promise<{
-            snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>;
-          }> {
-            throw new Error("Function not implemented.");
-          },
-          batchFetchSnapshots: function (
-            criteria: CriteriaType,
-            snapshotData: (
-              snapshotIds: string[],
-              subscribers: SubscriberCollection<
-                T,
-                K,
-                StructuredMetadata<T, K>,
-                Meta
-              >,
-              snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>
-            ) => Promise<{
-              subscribers: SubscriberCollection<
-                T,
-                K,
-                StructuredMetadata<T, K>,
-                Meta
-              >;
-              snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>;
-            }>
-          ): Promise<Snapshots<Data<T, K, StructuredMetadata<T, K>>>> {
-            throw new Error("Function not implemented.");
-          },
-          batchTakeSnapshotsRequest: function (
-            criteria: CriteriaType,
-            snapshotData: (
-              snapshotIds: string[],
-              snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>,
-              subscribers: Subscriber<
-                Data<T, K, StructuredMetadata<T, K>>,
-                Meta,
-                StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-              >[]
-            ) => Promise<{
-              subscribers: Subscriber<
-                Data<T, K, StructuredMetadata<T, K>>,
-                Meta,
-                StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-              >[];
-            }>
-          ): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          batchUpdateSnapshotsRequest: function (
-            snapshotData: (
-              subscribers: SubscriberCollection<
-                T,
-                K,
-                StructuredMetadata<T, K>,
-                Meta
-              >
-            ) => Promise<{
-              subscribers: SubscriberCollection<
-                T,
-                K,
-                StructuredMetadata<T, K>,
-                Meta
-              >;
-              snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>;
-            }>,
-            snapshotManager: SnapshotManager<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >
-          ): Promise<void> {
-            throw new Error("Function not implemented.");
-          },
-          filterSnapshotsByStatus: function (
-            status: StatusType
-          ): Snapshots<Data<T, K, StructuredMetadata<T, K>>> {
-            throw new Error("Function not implemented.");
-          },
-          filterSnapshotsByCategory: function (
-            category: Category
-          ): Snapshots<Data<T, K, StructuredMetadata<T, K>>> {
-            throw new Error("Function not implemented.");
-          },
-          filterSnapshotsByTag: function (
-            tag: Tag<T, K, StructuredMetadata<T, K>, Meta>
-          ): Snapshots<Data<T, K, StructuredMetadata<T, K>>> {
-            throw new Error("Function not implemented.");
-          },
-          batchFetchSnapshotsSuccess: function (
-            subscribers: SubscriberCollection<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >[],
-            snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          batchFetchSnapshotsFailure: function (
-            date: Date,
-            snapshotManager: SnapshotManager<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            payload: { error: Error }
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          batchUpdateSnapshotsSuccess: function (
-            subscribers: SubscriberCollection<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >,
-            snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          batchUpdateSnapshotsFailure: function (
-            date: Date,
-            snapshotId: string | number | null,
-            snapshotManager: SnapshotManager<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            payload: { error: Error }
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          handleSnapshotSuccess: function (
-            message: string,
-            snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
-            snapshotId: string
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          handleSnapshotFailure: function (
-            error: Error,
-            snapshotId: string
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          getSnapshotId: function (
-            key: string | Data<T, K, StructuredMetadata<T, K>>,
-            snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): string {
-            throw new Error("Function not implemented.");
-          },
-          compareSnapshotState: function (
-            snapshot1: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
-            snapshot2: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): boolean {
-            throw new Error("Function not implemented.");
-          },
-          payload: undefined,
-          dataItems: function (): RealtimeDataItem<T, K, Meta, ExcludedFields>[] | null {
-            throw new Error("Function not implemented.");
-          },
-          newData: null,
-          getInitialState: function (): Snapshot<
-            T,
-            K,
-            StructuredMetadata<T, K>,
-            never
-          > | null {
-            throw new Error("Function not implemented.");
-          },
-          getConfigOption: function (optionKey: string) {
-            throw new Error("Function not implemented.");
-          },
-          getTimestamp: function (): Date | undefined {
-            throw new Error("Function not implemented.");
-          },
-          getStores: function (
-            storeId: number,
-            snapshotId: string,
-            snapshotStores: SnapshotStore<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >[],
-            snapshotStoreConfigs: SnapshotStoreConfig<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >[]
-          ): SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>[] {
-            throw new Error("Function not implemented.");
-          },
-          getData: function (
-            id: number | string,
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>
-          ):
-            | BaseDataEntity
-            | Map<string, Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>>
-            | null
-            | undefined {
-            throw new Error("Function not implemented.");
-          },
-          setData: function (
-            id: string,
-            data: Map<string, Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          addData: function (
-            id: string,
-            data: Partial<Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          stores: function (
-            storeProps: SnapshotStoreProps<T, K, StructuredMetadata<T, K>, Meta>
-          ): SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>[] {
-            throw new Error("Function not implemented.");
-          },
-          getStore: function (
-            storeId: number,
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            snapshotId: string | null,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            snapshotStoreConfig: SnapshotStoreConfig<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >,
-            type: string,
-            event: Event
-          ) {
-            throw new Error("Function not implemented.");
-          },
-          addStore: function (
-            storeId: number,
-            snapshotId: string,
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            type: string,
-            event: Event
-          ) {
-            throw new Error("Function not implemented.");
-          },
-          mapSnapshot: function (
-            id: number,
-            storeId: string | number,
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            snapshotContainer: SnapshotContainer<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            snapshotId: string,
-            criteria: CriteriaType,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            type: string,
-            event: SnapshotEvent<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            callback: (
-              snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-            ) => void,
-            mapFn: (
-              item: Data<T, K, StructuredMetadata<T, K>>
-            ) => Data<T, K, StructuredMetadata<T, K>>,
-            isAsync?: boolean
-          ):
-            | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-            | Promise<string | undefined>
-            | null {
-            throw new Error("Function not implemented.");
-          },
-          mapSnapshotWithDetails: function (
-            storeId: number,
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            snapshotId: string,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            type: string,
-            event: SnapshotEvent<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            callback: (
-              snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-            ) => void,
-            details: any
-          ): SnapshotWithData<
-            Data<T, K, StructuredMetadata<T, K>>,
-            Meta,
-            StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-          > | null {
-            throw new Error("Function not implemented.");
-          },
-          removeStore: function (
-            storeId: number,
-            store: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            snapshotId: string,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            type: string,
-            event: Event
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          fetchSnapshot: function (
-            snapshotId: string,
-            callback: (
-              snapshotId: string,
-              payload:
-                | FetchSnapshotPayload<
-                    Data<T, K, StructuredMetadata<T, K>>,
-                    Data<T, K, StructuredMetadata<T, K>>,
-                    never
-                  >
-                | undefined,
-              snapshotStore: SnapshotStore<
-                T,
-                K,
-                StructuredMetadata<T, K>,
-                Meta
-              >,
-              payloadData:
-                | BaseDataEntity
-                | Data<T, K, StructuredMetadata<T, K>>,
-              category: Category | undefined,
-              categoryProperties: CategoryProperties | undefined,
-              timestamp: Date,
-              data: Data<T, K, StructuredMetadata<T, K>>,
-              delegate: SnapshotWithCriteria<
-                T,
-                K,
-                StructuredMetadata<T, K>,
-                Meta
-              >[]
-            ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): Promise<{
-            id: string;
-            category: Category;
-            categoryProperties: CategoryProperties;
-            timestamp: Date;
-            snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-            data: BaseDataEntity;
-            delegate: SnapshotWithCriteria<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >[];
-          }> {
-            throw new Error("Function not implemented.");
-          },
-          fetchSnapshotSuccess: function (
-            id: number,
-            snapshotId: string,
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            payload:
-              | FetchSnapshotPayload<
-                  Data<T, K, StructuredMetadata<T, K>>,
-                  Meta,
-                  never
-                >
-              | undefined,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            data: Data<T, K, StructuredMetadata<T, K>>,
-            delegate: SnapshotWithCriteria<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >[],
-            snapshotData: (
-              snapshotManager: SnapshotManager<
-                Data<T, K, StructuredMetadata<T, K>>,
-                Meta,
-                StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-                never
-              >,
-              subscribers: Subscriber<
-                Data<T, K, StructuredMetadata<T, K>>,
-                Meta,
-                StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-              >[],
-              snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-            ) => void
-          ): SnapshotWithCriteria<T, K, StructuredMetadata<T, K>, Meta>[] {
-            throw new Error("Function not implemented.");
-          },
-          updateSnapshotFailure: function (
-            snapshotId: string,
-            snapshotManager: SnapshotManager<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            date: Date | undefined,
-            payload: { error: Error }
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          fetchSnapshotFailure: function (
-            snapshotId: string,
-            snapshotManager: SnapshotManager<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            date: Date | undefined,
-            payload: { error: Error }
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          addSnapshotFailure: function (
-            date: Date,
-            snapshotId: string | number | null,
-            snapshotManager: SnapshotManager<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            payload: { error: Error }
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          configureSnapshotStore: function (
-            snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>,
-            storeId: number,
-            snapshotId: string,
-            data: Map<string, Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>>,
-            events: Record<
-              string,
-              CalendarManagerStoreClass<T, K, StructuredMetadata<T, K>, Meta>[]
-            >,
-            dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
-            newData: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            payload: ConfigureSnapshotStorePayload<
-              T,
-              K,
-              StructuredMetadata<T, K>,
-              Meta
-            >,
-            store: SnapshotStore<any, Meta>,
-            callback: (
-              snapshotStore: SnapshotStore<T, K, StructuredMetadata<T, K>, Meta>
-            ) => void,
-            config: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, Meta>
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          updateSnapshotSuccess: function (
-            snapshotId: string,
-            snapshotManager: SnapshotManager<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            payload?: { data?: Error }
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          createSnapshotFailure: function (
-            date: Date,
-            snapshotId: string | number | null,
-            snapshotManager: SnapshotManager<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            payload: { error: Error }
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          createSnapshotSuccess: function (
-            snapshotId: string | number | null,
-            snapshotManager: SnapshotManager<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            payload?: { data?: any }
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          createSnapshots: function (
-            id: string,
-            snapshotId: string | number | null,
-            snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-            snapshotManager: SnapshotManager<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>,
-              never
-            >,
-            payload: CreateSnapshotsPayload<
-              Data<T, K, StructuredMetadata<T, K>>,
-              Meta,
-              StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-            >,
-            callback: (
-              snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
-            ) => void | null,
-            snapshotDataConfig?:
-              | SnapshotConfig<
-                  Data<T, K, StructuredMetadata<T, K>>,
-                  Meta,
-                  StructuredMetadata<T, K, StructuredMetadata<T, K>, Meta>
-                >[]
-              | undefined,
-            category?: string | Category,
-            categoryProperties?: string | CategoryProperties
-          ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null {
-            throw new Error("Function not implemented.");
-          },
-          onSnapshot: function (
-            snapshotId: string,
-            snapshot: Snapshot<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            type: string,
-            event: SnapshotEvent<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            callback: (
-              snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-            ) => void
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          onSnapshots: function (
-            snapshotId: string,
-            snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>,
-            type: string,
-            event: SnapshotEvent<MyEntity, MyK, MyMeta, MyExcludedFields>,
-            callback: (
-              snapshots: Snapshots<Data<T, K, StructuredMetadata<T, K>>>
-            ) => void
-          ): void {
-            throw new Error("Function not implemented.");
-          },
-          equals: function (
-            data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-          ): boolean | null | undefined {
-            throw new Error("Function not implemented.");
-          },
-        };
-
-        // Add the new snapshot to the snapshots array
-        snapshots.push(newSnapshot);
-
-        // Trigger the callback function with the new snapshot data
-        callback(newSnapshot.data);
-
-        // Handle event if necessary
-        if (event) {
-          event.emit("snapshotCreated", newSnapshot);
-        }
-
-        // If using snapshot store configuration, handle the snapshot store update
-        if (snapshotStoreConfig) {
-          // Example: Add the new snapshot to the snapshot store
-          // This is a placeholder; adjust according to your actual snapshot store logic
-          const snapshotStore = snapshotStoreConfig.getSnapshotStore();
-          if (snapshotStore) {
-            snapshotStore.addSnapshot(newSnapshot);
-          }
-        }
-
-        resolve(newSnapshot);
+        resolve(existingSnapshot);
+        return;
       }
-    });
-  },
+
+      // --- Create new snapshot if it doesn’t exist ---
+      const newSnapshot = await createSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+        snapshotData,
+        {} as Meta,
+        snapshotId,
+        category,
+        snapshotStoreConfig?.snapshotStore,
+        snapshotStoreConfig?.snapshotManager,
+        snapshotStoreConfig,
+        true, // isSubscribed
+        snapshotStoreConfig?.storeProps,
+        snapshotStoreConfig?.storeOptions
+      );
+
+      // Add to local snapshot list
+      snapshots.push(newSnapshot);
+
+      // Callback with the new snapshot
+      callback?.(newSnapshot.data);
+
+      // Emit snapshotCreated event
+      if (event) {
+        event.emit("snapshotCreated", newSnapshot);
+      }
+
+      // Add to store if snapshotStoreConfig is available
+      if (snapshotStoreConfig) {
+        const snapshotStore = snapshotStoreConfig.getSnapshotStore();
+        snapshotStore?.addSnapshot(newSnapshot);
+      }
+
+      resolve(newSnapshot);
+    } catch (error) {
+      console.error("Error handling snapshot:", error);
+      reject(error);
+    }
+  });
+},
 };
 
 export { isCombinedEvents, processSnapshot, snapshot, snapshotConfig };

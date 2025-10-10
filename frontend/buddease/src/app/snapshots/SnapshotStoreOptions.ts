@@ -1,32 +1,35 @@
 import { Content } from '@/app/components/models/content/AddContent';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotEvent } from '@/app/typings/eventTypes';
-import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
 
-import { BaseData } from '@/app/models/data/Data';
-import { ProjectMetadata, StructuredMetadata } from '@/config/StructuredMetadata';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
+import { BaseData } from '@/app/models/data/Data';
 import { CategoryProperties } from '@/app/pages/personas/ScenarioBuilder';
 import { CriteriaType } from '@/app/pages/searchs/CriteriaType';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/DataAnalysisPhase/DataProcessing/ DataStoreMethods';
 import { SnapshotStoreConfig } from '@/app/snapshots';
+import { ConfigureSnapshotStorePayload } from "@/app/snapshots/SnapshotConfig";
 import { CustomSnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { ProjectMetadata, StructuredMetadata } from '@/config/StructuredMetadata';
 import {
-  ConfigureSnapshotStorePayload, MultipleEventsCallbacks, Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotOperation, SnapshotOperationType, Snapshots,
-  SnapshotStoreMethod, SnapshotStoreProps,
+  MultipleEventsCallbacks, Snapshot, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotOperation, SnapshotOperationType, Snapshots,
+  SnapshotStoreMethods, SnapshotStoreProps,
   SnapshotWithCriteria
 } from '@/index';
 import { SimulatedDataSource } from "./createSnapshotOptions";
+import { MultipleEventsCallbacks } from "@/app/subscribers/subscribeToSnapshotsImplementation";
 
 import { SharedIdentifiers } from "@/app/documents/RelatedProps";
 import { DataStore, EventRecord } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
+import { SnapshotStoreCore } from '@/app/snapshots/SnapshotCore';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 import { SchemaField } from '@/server/database/SchemaField';
-import { SnapshotStoreCore } from '@/app/snapshots/SnapshpshotCore';
 import { Subscription } from '@/subscriptions/Subscription';
 import { Subscriber } from '@/users/Subscriber';
 
@@ -257,7 +260,7 @@ interface SnapshotStoreOptions<
     snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
     snapshotId: string | null,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,    
+    category?: Category,    
     snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
   ) => void,
@@ -273,7 +276,7 @@ interface SnapshotStoreOptions<
     newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     payload: ConfigureSnapshotStorePayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     callback: (createdStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     snapshotDataConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] // Array of SnapshotStoreConfig objects
@@ -289,7 +292,7 @@ interface SnapshotStoreOptions<
     categoryProperties?: CategoryProperties | undefined,
     callback?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>,
+    snapshotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>,
   ) => Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
 
   configureSnapshotStore: (
@@ -345,7 +348,7 @@ interface SnapshotStoreOptions<
     id: string | number,
     snapshotId: string | null,
     criteria: CriteriaType,
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     subscriberId: string | undefined,
     delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null,
@@ -354,7 +357,7 @@ interface SnapshotStoreOptions<
       id: string | number | undefined,
       snapshotId: string | null,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null) => void,
       dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -384,7 +387,7 @@ interface SnapshotStoreOptions<
   createSnapshot: (
     id: string,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     callback?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -405,7 +408,7 @@ interface SnapshotStoreOptions<
     categoryProperties?: CategoryProperties | undefined,
     callback?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapsohotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>,
+    snapsohotStoreConfig?: SnapshotStoreConfig<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>,
   ) => SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
 
   isAutoDismiss?: boolean;

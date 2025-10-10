@@ -59,7 +59,7 @@ import { InitializedData, SnapshotStoreOptions } from "./SnapshotStoreOptions";
 
 import { Attachment } from '@/app/documents/attachment/Attachment';
 import { SnapshotCallback } from '@/app/event/EventManager';
-import { SnapshotContext } from '@/app/snapshots/SnapshpshotSubscriberManagement';
+import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { internalCache } from '@/app/utils/cache/InternalCache';
 import { BaseDataRoot, mappedSnapshot } from '@/config/BaseConfig';
@@ -70,7 +70,7 @@ import {
 } from "./LocalStorageSnapshotStore";
 import {
   Snapshot
-} from "./Snapshot";
+} from '@/app/snapshots/Snapshot';
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import { SnapshotItem } from "./SnapshotList";
 import SnapshotStore from "./SnapshotStore";
@@ -126,9 +126,9 @@ interface SnapshotConfig<
   description?: string;
   category: Category;
   metadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-  meta?: StructuredMetadata<T, K>;
+  meta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   mappedSnapshot?: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | {}
-  mappedMeta?: Map<string, StructuredMetadata<T, K>> | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined;
+  mappedMeta?: Map<string, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | undefined;
   snapshotCriteria?: SnapshotWithCriteria<T, K>;
   criteria: CriteriaType;
   priority?: string;
@@ -183,7 +183,7 @@ function createSnapshotConfig<
   generatorType?: string,
 
   priority?: string,
-  version?: string | Version<T, K>,
+  version?: string | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   additionalData?: CustomSnapshotData<T, K, Meta>,
   initialState?: any, // Define types as needed
   initialConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, // Define types as needed
@@ -196,7 +196,7 @@ function createSnapshotConfig<
   initializedState?: any, // Define types as needed
   snapshot?: any, // Define types as needed
   setCategory?: ((category: symbol | string | Category | undefined) => void) | undefined,
-  applyStoreConfig?: (SnapshotStoreConfig<T, K, StructuredMetadata<T, K>, never>  | undefined),
+  applyStoreConfig?: (SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  | undefined),
   generateId?: (
     prefix: string,
     name: string,
@@ -227,7 +227,7 @@ function createSnapshotConfig<
     event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: number,
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
+    category?: Category,    categoryProperties: CategoryProperties | undefined,
     dataStoreMethods: DataStore<T, K>,
     data: T,
     dataCallback?: (
@@ -298,7 +298,7 @@ function createSnapshotConfig<
     
       const snapshot = createSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
         baseData,
-        new Map(Object.entries(baseMeta as unknown as Record<string, Snapshot<T, K, StructuredMetadata<T, K>, never>>)),
+        new Map(Object.entries(baseMeta as unknown as Record<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>)),
         snapshotId,
         category,
         snapshotStore,
@@ -703,12 +703,12 @@ const updateSubscribersAndSnapshots = async <
                 customFields: {},
                 baseUrl: '',
                 versionData: [],
-                latestVersion: createLatestVersion<T, K>(),
+                latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
               },
               snapshot: (
                 id: string | number | undefined,
                 snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-                category: Category | undefined,                categoryProperties: CategoryProperties | undefined,
+                category?: Category,                categoryProperties: CategoryProperties | undefined,
                 callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
                 dataStore: DataStore<T, K>,
                 dataStoreMethods: DataStoreMethods<T, K>,
@@ -1085,8 +1085,8 @@ const updateSubscribersAndSnapshots = async <
           ): Subscriber<BaseData, BaseData> => {}, 
           transformSubscribers: [],
           setSubscribers: [], 
-          getOnSnapshotCallbacks: [] as SubscriberCallback<T, K, StructuredMetadata<T, K>>[],
-          setOnSnapshotCallbacks: [] as SubscriberCallback<T, K, StructuredMetadata<T, K>>[],
+          getOnSnapshotCallbacks: [] as SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+          setOnSnapshotCallbacks: [] as SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
           getOnErrorCallbacks: [
             (error: Error) => {
               console.error('Error callback triggered:', error);
@@ -1100,13 +1100,13 @@ const updateSubscribersAndSnapshots = async <
           ],
 
           getOnUnsubscribeCallbacks: [
-            (data: Snapshot<T, K, StructuredMetadata<T, K>, never>) => {
+            (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
               console.log('Unsubscribe callback triggered for data:', data);
             }
           ],
 
           setOnUnsubscribeCallbacks: [
-            (data: Snapshot<T, K, StructuredMetadata<T, K>, never>) => {
+            (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
               console.log('Setting unsubscribe callback for data:', data);
             }
           ],
@@ -1114,20 +1114,20 @@ const updateSubscribersAndSnapshots = async <
           setUpdateProjectState: {} as Function, 
           setLogActivity: {} as Function,
           setTriggerIncentives: {} as Function, 
-          setOptionalData: {} as CustomSnapshotData<T, K, StructuredMetadata<T, K>>, 
+          setOptionalData: {} as CustomSnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
           setEmail: "", 
           setSnapshotIds: [],
           getPayload: {} as T,
-          handleSnapshot: (data: Snapshot<T, K, StructuredMetadata<T, K>, never>) => {
+          handleSnapshot: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => {
             // Example logic: update the snapshot data
             console.log('Handling snapshot update for:', data);
             // Insert any additional logic here, like updating state, calling another function, etc.
           },
 
-          getInitialData: (): Partial<SnapshotStore<T, K, StructuredMetadata<T, K>>> | null => {
+          getInitialData: (): Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null => {
             // Example logic: return partial store data
-            const initialData: Partial<SnapshotStore<T, K, StructuredMetadata<T, K>>> = {
-              metadata: {} as StructuredMetadata<T, K>, // Assuming metadata is required
+            const initialData: Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
+              metadata: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Assuming metadata is required
             };
             console.log('Returning initial data:', initialData);
             return initialData; 
@@ -1146,10 +1146,10 @@ const updateSubscribersAndSnapshots = async <
             return newData; 
             },
           
-          getDefaultSubscribeToSnapshots: async (): Promise<Partial<SnapshotStore<T, K, StructuredMetadata<T, K>>> | null> => {
+          getDefaultSubscribeToSnapshots: async (): Promise<Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null> => {
             try {
               // Simulate retrieving default subscription data (could be from a cache, config, etc.)
-              const defaultSnapshotStore: Partial<SnapshotStore<T, K, StructuredMetadata<T, K>>> = {
+              const defaultSnapshotStore: Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
                 id: 'default-store-id',
                 name: 'Default Store',
                 data: {} as InitializedData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined // Assume this data can be pre-filled
@@ -1161,13 +1161,13 @@ const updateSubscribersAndSnapshots = async <
             }
           },
 
-          getSubscribeToSnapshots: async (): Promise<Partial<SnapshotStore<T, K, StructuredMetadata<T, K>>> | null> => {
+          getSubscribeToSnapshots: async (): Promise<Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null> => {
             try {
               // Simulate an API call to get subscription details for snapshots
               const response = await fetch(`https://api.example.com/snapshot-store/${snapshotId}`);
               if (!response.ok) throw new Error('Failed to fetch subscribe-to-snapshots data');
               
-              const snapshotStore: Partial<SnapshotStore<T, K, StructuredMetadata<T, K>>> = await response.json();
+              const snapshotStore: Partial<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = await response.json();
               return snapshotStore;
             } catch (error) {
               console.error('Error in getSubscribeToSnapshots:', error);
@@ -1190,9 +1190,9 @@ const updateSubscribersAndSnapshots = async <
           },
           /**
          * Retrieves the list of transform subscribers.
-         * @returns {SubscriberCallback<T, K, StructuredMetadata<T, K>>[]} List of transform subscribers.
+         * @returns {SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]} List of transform subscribers.
          */
-        getTransformSubscribers: (): SubscriberCallback<T, K, StructuredMetadata<T, K>>[] => {
+        getTransformSubscribers: (): SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] => {
           return transformSubscribers;
         },
 
@@ -1200,14 +1200,14 @@ const updateSubscribersAndSnapshots = async <
          * Sets the transform subscribers. It can accept either a Promise of `BaseDatabaseService` 
          * or an array of `SubscriberCallback` functions. If a Promise is provided, 
          * it resolves the subscribers from the service and adds them to `transformSubscribers`.
-         * @param {Promise<BaseDatabaseService> | SubscriberCallback<T, K, StructuredMetadata<T, K>>[]} subscribers 
+         * @param {Promise<BaseDatabaseService> | SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]} subscribers 
          */
-        setTransformSubscribers: async (subscribers: Promise<BaseDatabaseService> | SubscriberCallback<T, K, StructuredMetadata<T, K>>[]) => {
+        setTransformSubscribers: async (subscribers: Promise<BaseDatabaseService> | SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => {
           if (subscribers instanceof Promise) {
             try {
               const service = await subscribers;
               if (service && Array.isArray(service.subscribers)) {
-                transformSubscribers.push(...service.subscribers as SubscriberCallback<T, K, StructuredMetadata<T, K>>[]);
+                transformSubscribers.push(...service.subscribers as SubscriberCallback<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]);
               }
             } catch (error) {
               console.error('Error while setting transform subscribers from service:', error);
@@ -1229,14 +1229,14 @@ const updateSubscribersAndSnapshots = async <
           }
         },
  
-        fetchSnapshotById: async (userId: string, snapshotId: string): Promise<Snapshot<T, K, StructuredMetadata<T, K>, never>> => {
+        fetchSnapshotById: async (userId: string, snapshotId: string): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> => {
           try {
             // Example logic for fetching a snapshot by ID (could involve an API call or DB lookup)
             const snapshot = await fetch(`/api/snapshots/${snapshotId}`)
               .then((response) => response.json())
               .then((data) => {
                 // Assuming the data is of type Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-                return data as Snapshot<T, K, StructuredMetadata<T, K>, never>;
+                return data as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
               });
 
             return snapshot;
@@ -1283,13 +1283,13 @@ const updateSubscribersAndSnapshots = async <
           }
         },
 
-        snapshotStores: async (): Promise<SnapshotStoreConfig<T, Data<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, StructuredMetadata<T, K>>, StructuredMetadata<T, K>, never>[]> => {
+        snapshotStores: async (): Promise<SnapshotStoreConfig<T, Data<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>[]> => {
           try {
             // Example logic to fetch snapshot store configurations
             const snapshotStoreConfigs = await fetch('/api/snapshot-stores')
               .then((response) => response.json())
               .then((data) => {
-                return data as SnapshotStoreConfig<T, Data<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, StructuredMetadata<T, K>>, StructuredMetadata<T, K>, never>[];
+                return data as SnapshotStoreConfig<T, Data<BaseData<any, any, StructuredMetadata<any, any>, Attachment>, BaseData<any, any, StructuredMetadata<any, any>, Attachment>, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>[];
               });
 
             return snapshotStoreConfigs;

@@ -75,7 +75,7 @@ import {
     NotificationData,
 } from "@/app/state/redux/slices/NofiticationsSlice";
 import { Subscriber } from "@/app/subscribers/Subscriber";
-import UserRoles from "@/users/UserRoles";
+import UserRoles from '@/app/models/UserRoles';
 import {
     logActivity,
     notifyEventSystem,
@@ -89,7 +89,7 @@ import {
     SnapshotsArray,
     SnapshotUnion,
 } from "./LocalStorageSnapshotStore";
-import { Snapshot } from "./Snapshot";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 
 import { Subscription } from '@/app/subscriptions/Subscription';
 import { CreateSnapshotsPayload, Payload } from "@/app/server/database/Payload";
@@ -104,13 +104,13 @@ import { createSnapshot } from "./defaultSnapshotBuilder";
 import { FetchSnapshotPayload } from "./FetchSnapshotPayload";
 import { sortByTimestamp } from "./handleSnapshotOperation";
 import { SnapshotActions } from "./SnapshotActions";
-import { SnapshotContainer } from '@/app/snapshots/SnapshpshotContainer';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { CustomSnapshotData, SnapshotData } from "./SnapshotData";
 import { delegate } from "./snapshotHandlers";
 import SnapshotStore, { U } from "./SnapshotStore";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { InitializedDataStore } from '@/app/snapshots/SnapshpshotStoreOptions';
-import { SnapshotContext } from '@/app/snapshots/SnapshpshotSubscriberManagement';
+import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
+import { SnapshotContext } from '@/app/snapshots/SnapshotSubscriberManagement';
 import { SnapshotWithCriteria } from "./SnapshotWithCriteria";
 import { Callback } from "./subscribeToSnapshotsImplementation";
 import { useSnapshotOperations } from '@/operations/useSnapshotOperations';
@@ -1202,7 +1202,7 @@ const specificDependencies = [
   
 //   storeProps?: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 // ): Promise<SnapshotStore<any>> => {
-//   const [subscribers, setSubscribers] = useState<Subscriber<T, K, StructuredMetadata<T, K>>[]>([]);
+//   const [subscribers, setSubscribers] = useState<Subscriber<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]>([]);
   
 //     const storeRef = useRef<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>(null);
   
@@ -1225,8 +1225,8 @@ const specificDependencies = [
 //   } = storeProps;
 
 //   // Initialize state for snapshots
-//   const [snapshots, setSnapshots] = useState<SnapshotStore<T, K, StructuredMetadata<T, K>>>(
-//     () => new SnapshotStore<T, K, StructuredMetadata<T, K>>({
+//   const [snapshots, setSnapshots] = useState<SnapshotStore<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>(
+//     () => new SnapshotStore<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>({
 //       storeId,
 //       initialState,
 //       name,
@@ -2054,7 +2054,7 @@ const specificDependencies = [
 //     const subscribers = getSubscribers(subscriber);
 //     const notify = (
 //       id: string,
-//       notification: WritableDraft<NotificationData<T, K, StructuredMetadata<T, K>>>,
+//       notification: WritableDraft<NotificationData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>,
 //       date: Date,
 //       content: any,
 //       type: NotificationType
@@ -2795,7 +2795,7 @@ const specificDependencies = [
 //           mapSnapshots: function <U, V>(
 //             storeIds: number[],
 //             snapshotId: string,
-//             category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
+//             category?: Category,            categoryProperties: CategoryProperties | undefined,
 //             snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //             timestamp: string | number | Date | undefined,
 //             type: string,
@@ -2806,7 +2806,7 @@ const specificDependencies = [
 //             callback: (
 //               storeIds: number[],
 //               snapshotId: string,
-//               category: Category | undefined,              categoryProperties: CategoryProperties | undefined,
+//               category?: Category,              categoryProperties: CategoryProperties | undefined,
 //               snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //               timestamp: string | number | Date | undefined,
 //               type: string,
@@ -2849,7 +2849,7 @@ const specificDependencies = [
 //               payload: FetchSnapshotPayload<T> | undefined,
 //               snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //               payloadData: T | Data<T>,
-//               category: Category | undefined,
+//               category?: Category,
 //               categoryProperties: CategoryProperties | undefined,
 //               timestamp: Date,
 //               data: T,
@@ -2956,7 +2956,7 @@ const specificDependencies = [
 //             snapshotId: string | number | null,
 //             snapshot: T extends SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ? Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> : null,
 //             snapshotData: T,
-//             category: Category | undefined,            categoryProperties: CategoryProperties | undefined,
+//             category?: Category,            categoryProperties: CategoryProperties | undefined,
 //             callback: (snapshot: T) => void,
 //             snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //             type: string,
@@ -4276,7 +4276,7 @@ const specificDependencies = [
 //     snapshotId: string,
 //     snapshot: T | null,
 //     snapshotData: T,
-//     category: Category | undefined,    callback: (snapshot: T) => void,
+//     category?: Category,    callback: (snapshot: T) => void,
 //     snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //     type: string,
 //     event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -4534,7 +4534,7 @@ const specificDependencies = [
 //     mapSnapshots: async <U,>(
 //       storeIds: number[],
 //       snapshotId: string,
-//       category: Category | undefined,
+//       category?: Category,
 //       categoryProperties: CategoryProperties | undefined,
 //       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //       timestamp: string | number | Date | undefined,
@@ -4546,7 +4546,7 @@ const specificDependencies = [
 //       callback: (
 //         storeIds: number[],
 //         snapshotId: string,
-//         category: Category | undefined,
+//         category?: Category,
 //         categoryProperties: CategoryProperties | undefined,
 //         snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 //         timestamp: string | number | Date | undefined,

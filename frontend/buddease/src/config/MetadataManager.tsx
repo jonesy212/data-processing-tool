@@ -26,7 +26,7 @@ interface ExtendedMetadata extends BaseMetadata {
 
 const area = fetchUserAreaDimensions().toString()
 const metadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area)
-const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
 
 const initialState: StructuredMetadata<BaseMetadata, UnifiedMetaDataOptions<BaseMetadata>> = {
   name: 'metadata',

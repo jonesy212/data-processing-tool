@@ -4,6 +4,88 @@ import { endpoints } from '@/api/ApiEndpoints';
 import axiosInstance from '@/app/api/csrfToken'
 import { socialMediaActions } from '@/app/actions/socialMediaActions';
 
+
+
+interface SyncResult {
+  success: boolean;
+  changes: any;
+  externalReferences: ExternalReference[];
+}
+
+const syncEndpointsWithExternalServices = async (): Promise<SyncResult> => {
+  try {
+    // Fetch endpoints from external services using external API instances
+    const externalEndpoints = await fetchExternalEndpoints();
+    
+    // Compare and get differences
+    const diff = compareEndpoints(endpoints, externalEndpoints);
+    
+    // Create external references for tracking
+    const externalReferences = createExternalReferences(diff);
+    
+    // React to changes
+    await reactToEndpointChanges(diff, externalReferences);
+    
+    return {
+      success: true,
+      changes: diff,
+      externalReferences
+    };
+  } catch (error) {
+    console.error('Error syncing endpoints:', error);
+    return {
+      success: false,
+      changes: {},
+      externalReferences: []
+    };
+  }
+};
+
+const fetchExternalEndpoints = async () => {
+  try {
+    // Use external API instances instead of axiosInstance
+    const [facebookEndpoints, twitterEndpoints, youtubeEndpoints] = await Promise.all([
+      externalApiInstances.facebook.get('/me').catch(() => null),
+      externalApiInstances.twitter.get('/2/tweets/search/stream/rules').catch(() => null),
+      externalApiInstances.youtube.get('/channels').catch(() => null),
+    ]);
+
+    return {
+      facebook: facebookEndpoints?.data || {},
+      twitter: twitterEndpoints?.data || {},
+      youtube: youtubeEndpoints?.data || {},
+      // Add more services as needed
+    };
+  } catch (error) {
+    console.error('Error fetching external endpoints:', error);
+    return {};
+  }
+};
+
+const createExternalReferences = (diff: any): ExternalReference[] => {
+  const references: ExternalReference[] = [];
+  
+  for (const platform in diff) {
+    if (diff.hasOwnProperty(platform)) {
+      const apiInfo = getApiInfo(platform as keyof typeof externalAPIs);
+      
+      references.push({
+        id: `sync-${platform}-${Date.now()}`,
+        source: platform,
+        url: apiInfo?.documentation,
+        metadata: {
+          syncTimestamp: new Date().toISOString(),
+          changes: diff[platform],
+          apiName: apiInfo?.name
+        }
+      });
+    }
+  }
+  
+  return references;
+};
+
+
 // Define a function to fetch and synchronize endpoints with external services
 const syncEndpointsWithExternalServices = async () => {
   try {

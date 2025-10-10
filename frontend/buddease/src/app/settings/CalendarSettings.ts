@@ -1,4 +1,5 @@
-import {EventNotificationsSettings} from '@/NotificationChannels'
+import { EventNotificationsSettings } from '@/app/settings/NotificationChannels'
+import { ReminderSettings } from '@/app/settings/Reminder'
 // Define the CalendarSettingsEnum to represent various calendar settings
 export enum CalendarSettingsEnum {
   ShowWeekends = 'ShowWeekends',
@@ -35,11 +36,6 @@ interface CalendarSettings {
   showCompletedEvents: boolean;
 }
 
-interface ReminderSettings {
-  enabled: boolean;
-  timeBeforeEvent: number; // Time in minutes
-}
-
 
 
 // Example usage
@@ -55,6 +51,15 @@ const userCalendarSettings: CalendarSettings = {
   reminderSettings: {
     enabled: true,
     timeBeforeEvent: 30,
+    defaultReminders: [],
+    inheritDefaults: false,
+    eventSpecificReminders: [],
+    smartReminders: undefined,
+    channels: undefined,
+    escalationRules: [],
+    businessHours: undefined,
+    blackoutPeriods: [],
+    userPreferences: undefined
   },
   displayWeekNumbers: true,
   enableEventOverlap: false,

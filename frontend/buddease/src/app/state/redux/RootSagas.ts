@@ -57,6 +57,6 @@ export function* rootSaga() {
       "Error in rootSaga",
       NOTIFICATION_MESSAGES.Sagas.ROOT_SAGA_ERROR,
       new Date,
-      NotificationTypeEnum.OperationError);
+      NotificationTypeEnum.OPERATION_ERROR);
   }
 }

@@ -22,10 +22,10 @@ function useMeta<
   relatedData?: K[],
   childIds?: K[],
   description?: string
-): StructuredMetadata<T, K> {
-  const meta = useMemo<StructuredMetadata<T, K>>(() => {
+): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+  const meta = useMemo<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(() => {
 
-    const dynamicVersion: Version<T, K> = VersionImpl.createVersion({
+    const dynamicVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = VersionImpl.createVersion({
       id: 1, // Dynamically assign ID based on your logic
       major: 1,
       versionNumber: "1.0.0",
@@ -51,7 +51,7 @@ function useMeta<
       },
     });
     
-    const generateMetadataEntry = (fileOrFolderId: string): StructuredMetadata<T, K>['metadataEntries'][string] => ({
+    const generateMetadataEntry = (fileOrFolderId: string): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>['metadataEntries'][string] => ({
       originalPath: `/path/to/${fileOrFolderId}`,
       alternatePaths: [`/alternate/${fileOrFolderId}`],
       author: "default-author",
@@ -85,8 +85,8 @@ function useMeta<
       tags: ["default", "tag"], // Default tags
       metadata: {}, // Empty object for metadata
       initialState: {}, // Empty object for initial state
-      meta: {} as Map<string, Snapshot<T, K, StructuredMetadata<T, K>, never>>,
-      events: {} as EventManager<T, K, StructuredMetadata<T, K>>,
+      meta: {} as Map<string, Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>>,
+      events: {} as EventManager<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
       metadataEntries: {
         file1: generateMetadataEntry("file1"),
         file2: generateMetadataEntry("file2"),
@@ -102,7 +102,7 @@ function useMeta<
       latestVersion: {},
       version: dynamicVersion,
       mappedSnapshot: undefined,
-      baseConfig: {} as BaseConfig<T, K, Meta, ExcludedFields>;,
+      baseConfig: {} as BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;,
       sharedMetadata: {} as SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       sharedBaseData: {} as SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       taggable: {} as Taggable<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,

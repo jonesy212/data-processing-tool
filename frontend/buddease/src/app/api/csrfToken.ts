@@ -1,5 +1,5 @@
 // Client-side API calls from React components
-import { axiosInstance } from '@/axiosConfig';
+import { axiosInstance } from '@/app/api/axiosConfig';
 
 export const csrfToken = 'your_csrf_token_here';
 

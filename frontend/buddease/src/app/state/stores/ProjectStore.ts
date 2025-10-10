@@ -25,15 +25,15 @@ export interface ProjectManagerStore<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 > {
-  project: Project<T, K, Meta, ExcludedFields> | null;
-  projects: Project<T, K, Meta, ExcludedFields>[];
-  currentProject: Project<T, K, Meta, ExcludedFields> | null;
+  project: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
+  projects: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
+  currentProject: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   loading: boolean;
   error: string | null;
 
   fetchProjects: () => void;
-  addProject: (project: Project<T, K, Meta, ExcludedFields>) => void;
-  updateProject: (projectId: string, updatedProject: Project<T, K, Meta, ExcludedFields>) => void;
+  addProject: (project: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
+  updateProject: (projectId: string, updatedProject: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
   deleteProject: (projectId: string) => void;
 
   assignTaskToProjectInAPI: (projectId: string, task: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;

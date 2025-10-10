@@ -7,7 +7,7 @@
 // import SnapshotStore from "./SnapshotStore";
 // import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
 
-// function convertSnapshotStoreToStorage<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>): Storage {
+// function convertSnapshotStoreToStorage<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Storage {
 //     const storage: Storage = window.localStorage;
   
 //     // Store the snapshot data in the Storage object (e.g., localStorage)
@@ -28,14 +28,14 @@
 //     snapshotStoreId: number,
 //     topic: string, 
 //     date: Date, 
-//     options: SnapshotStoreOptions<T, K, Meta, ExcludedFields>, 
+//     options: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
 //     category: symbol | string | Category | undefined, 
 //     config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-//     operation: SnapshotOperation<T, K, Meta, ExcludedFields>
-// ): SnapshotStore<T, K, Meta, ExcludedFields> {
+//     operation: SnapshotOperation<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+// ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
 //     const keys = Object.keys(storage);
 //     const data = new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>();
-//     const snapshotStore = new SnapshotStore<T, K, Meta, ExcludedFields>(
+//     const snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
 //         Number(snapshotStoreId), 
 //         options, 
 //         category, 

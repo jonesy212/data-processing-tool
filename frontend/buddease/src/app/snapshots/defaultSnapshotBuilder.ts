@@ -1,27 +1,26 @@
 // defaultSnapshotBuilder.ts
-import {
-  BaseDataEntity,
-  BaseDataRoot,
-  DefaultExcludedFields,
-  DefaultMeta,
-  ExcludedFields
-} from '@/config/BaseConfig';
-import { UnifiedMetadata } from '@/server/database/MetaDataOptions';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
 import { SnapshotUnion } from '@/app/snapshots/snapshotsLocalStorageSnapshotStore';
-import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
+import {
+    BaseDataEntity,
+    BaseDataRoot,
+    DefaultExcludedFields,
+    DefaultMeta
+} from '@/config/BaseConfig';
+import { UnifiedMetadata } from '@/server/database/MetaDataOptions';
 
 import { SnapshotManager } from '@/app/hooks/useSnapshotManager';
 import { SnapshotStoreOptions } from '@/app/snapshots/SnapshotStoreOptions';
 
-import { Subscribers } from '@/app/subscribers/Subscriber';
-import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshpshotConfigBuilder';
-import { SnapshotEvents } from '@/app/snapshots/SnapshpshotEvents';
-import { SnapshotStoreConfig } from '@/app/snapshots/SnapshpshotStoreConfig';
+import { Attachment } from "@/app/documents/attachment/Attachment";
+import { SnapshotConfigBuilder } from '@/app/snapshots/SnapshotConfigBuilder';
+import { SnapshotEvents } from '@/app/snapshots/SnapshotEvents';
+import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import { SnapshotStoreProps } from '@/app/snapshots/useSnapshotStore';
+import { Subscribers } from '@/app/subscribers/Subscriber';
 import { Snapshot } from './Snapshot';
 import { default as SnapshotStore } from './SnapshotStore';
-import { Attachment } from "@/app/documents/attachment/Attachment";
 
 // Utility: flatten map
 function flatMap<

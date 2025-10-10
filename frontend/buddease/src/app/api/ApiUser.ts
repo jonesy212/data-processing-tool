@@ -1,11 +1,11 @@
 // ApiUser.ts
 import { UserRoleActions } from "@/app/actions/UserRoleActions";
 import { createHeaders } from "@/app/api/ApiClient";
-import { endpoints } from '@/app/api/endpointConfigurations';
 import axiosInstance from '@/app/api/csrfToken';
+import { endpoints } from '@/app/api/endpointConfigurations';
 import { UserActions } from "@/app/components/users/UserActions";
-import { UserRole } from "@/app/components/users/UserRole";
 import Logger from "@/app/libraries/logging/Logger";
+import { UserRole } from "@/app/models/UserRole";
 import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import { User } from "@/app/users/User";
 import dotProp from "dot-prop";

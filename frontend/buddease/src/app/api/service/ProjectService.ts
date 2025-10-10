@@ -6,7 +6,7 @@ import { Phase } from "@/app/components/phases/Phase";
 import { Product } from "@/app/components/products/Product";
 import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import ProjectModel from "@/app/models/ProjectModel";
-import { Project, ProjectData } from "@/app/projects/Project";
+import { Project, ProjectData } from '@/app/models/projects/Project';
 import { sendNotification } from "@/app/state/redux/slices/UserSlice";
 import { User } from "@/app/users/User";
 import { K, T } from '@/components/models/data/dataStoreMethods';

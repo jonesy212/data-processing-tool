@@ -1,21 +1,21 @@
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { Snapshot } from '@/app/snapshots/Snapshot';
-import { SnapshotContainer } from '@/app/snapshots/SnapshpshotContainer';
+import { SnapshotContainer } from '@/app/snapshots/SnapshotContainer';
 
-interface DelegateType<T, K, Meta, ExcludedFields> {
+interface DelegateType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     processSnapshot: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void;
     anotherTask: () => void;
   }
   
 
 // Define the delegate function that retrieves the delegate based on the snapshot ID and store ID
-async function getSnapshotDelegate<T, K, Meta, ExcludedFields>(
+async function getSnapshotDelegate<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
   snapshotId: string,
   storeId: number
-): Promise<DelegateType<T, K, Meta, ExcludedFields> | null> {
+): Promise<DelegateType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
   try {
     // You may need to fetch the snapshot container first
-    const snapshotContainer = await snapshotApi.getSnapshotContainer<T, K, Meta, ExcludedFields>(snapshotId, storeId);
+    const snapshotContainer = await snapshotApi.getSnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(snapshotId, storeId);
 
     if (!snapshotContainer) {
       console.error("Snapshot container not found for snapshotId:", snapshotId);
@@ -39,7 +39,7 @@ async function getSnapshotDelegate<T, K, Meta, ExcludedFields>(
 }
 
 // Helper function to create a delegate from a container if needed
-function createDelegateFromContainer<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(container: SnapshotContainer<T, K, Meta, ExcludedFields>): DelegateType<T, K, Meta, ExcludedFields> {
+function createDelegateFromContainer<T extends BaseDataEntity, K extends T = T, Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(container: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): DelegateType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return {
     processSnapshot: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
       try {
@@ -89,3 +89,4 @@ function createDelegateFromContainer<T extends BaseDataEntity, K extends T = T, 
 
 export { getSnapshotDelegate };
 export type { DelegateType };
+

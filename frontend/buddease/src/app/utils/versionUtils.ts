@@ -34,7 +34,7 @@ function hasVersion<T extends Partial<DataWithVersion>>(data: T): data is T & Da
 const processSnapshotData = <
   T extends BaseData<any>, 
   K extends T = T, 
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   versionedData?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> // Optional versioned data

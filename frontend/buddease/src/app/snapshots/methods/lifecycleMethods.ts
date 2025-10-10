@@ -5,23 +5,23 @@ import { Content } from '@/app/components/models/content/AddContent';
 import { T } from '@/app/components/models/data/dataStoreMethods';
 import { NotificationType } from "@/app/context/NotificationContext";
 import { Snapshots } from '@/app/snapshots/LocalStorageSnapshotStore';
+import { SnapshotConfig } from '@/app/snapshots/SnapshotConfig';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from '@/app/snapshots/SnapshotStoreConfig';
 import type {
-  Category,
-  CategoryProperties,
-  CreateSnapshotsPayload,
-  Snapshot,
-  SnapshotManager,
-  SnapshotStoreProps,
-  SnapshotUnion,
-  Subscriber,
-  Subscription,
+    Category,
+    CategoryProperties,
+    CreateSnapshotsPayload,
+    Snapshot,
+    SnapshotManager,
+    SnapshotStoreProps,
+    SnapshotUnion,
+    Subscriber,
+    Subscription,
 } from "@/app/types";
 import { SnapshotEvent } from '@/app/typings/eventTypes';
 import { isSnapshot } from '@/app/utils/snapshotUtils';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { SnapshotConfig } from '@/app/snapshots/SnapshpshotConfig';
-import SnapshotStore from '@/app/snapshots/SnapshpshotStore';
 import { convertToSnapshotUnion } from "./ConvertSnapshotUnion";
 import { SnapshotStoreReference } from "./SnapshotStoreReference";
 
@@ -32,10 +32,12 @@ export const LifecycleMethods = {
   set: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: any | Map<string, any>,
     type: string,
     event: Event
@@ -56,10 +58,12 @@ export const LifecycleMethods = {
   setStore: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: any | Map<string, SnapshotStore<any, any, any, any>>,
     type: string,
     event: Event
@@ -82,7 +86,7 @@ export const LifecycleMethods = {
     snapshotId: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
   ): void {
     
@@ -92,15 +96,17 @@ export const LifecycleMethods = {
   createSnapshots: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: string,
     snapshotId: string | number | null,
     snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-    snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>,
-    payload: CreateSnapshotsPayload<T, K, Meta, ExcludedFields>,
+    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    payload: CreateSnapshotsPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null,
     snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     category?: Category,
@@ -137,15 +143,17 @@ export const LifecycleMethods = {
   initializeStores: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
-    stores: Map<number, SnapshotStore<T, K, Meta, ExcludedFields>>
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    stores: Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ): void {
     // Type assertion to access protected method
     const protectedThis = this as unknown as {
-      setSnapshotStores: (stores: Map<number, SnapshotStore<T, K, Meta, ExcludedFields>>) => void;
+      setSnapshotStores: (stores: Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void;
     };
     
     protectedThis.setSnapshotStores(stores);
@@ -154,10 +162,12 @@ export const LifecycleMethods = {
   updateState: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     newState: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> & {
       isInitialized: true;
       initializedAt: Date;
@@ -173,46 +183,56 @@ export const LifecycleMethods = {
   getCurrentState: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(this: SnapshotStore<T, K, Meta, ExcludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
     return this.currentState;
   },
 
   getStates: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(this: SnapshotStore<T, K, Meta, ExcludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
     return this.states;
   },
 
   hasSnapshots: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(this: SnapshotStore<T, K, Meta, ExcludedFields>): Promise<boolean> {
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<boolean> {
     return Promise.resolve(this.snapshots.length > 0);
   },
 
   equals: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(this: SnapshotStore<T, K, Meta, ExcludedFields>, otherStore: SnapshotStore<T, K, Meta, ExcludedFields>): Promise<boolean> {
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, otherStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<boolean> {
     return Promise.resolve(JSON.stringify(this.snapshots) === JSON.stringify(otherStore.snapshots));
   },
 
   initializeWithData: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: SnapshotUnion<T, K, Meta>[]
   ): void {
     this.snapshots = data; // initialize snapshots
@@ -221,16 +241,18 @@ export const LifecycleMethods = {
   addToSnapshotList: async function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-    subscribers: Subscriber<T, K, Meta, ExcludedFields>[]
-  ): Promise<Subscription<T, K, Meta, ExcludedFields>[]> {
-    const results: Subscription<T, K, Meta, ExcludedFields>[] = [];
+    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
+  ): Promise<Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
+    const results: Subscription<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
     for (const snapshot of snapshots) {
-      const storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields> = {
+      const storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         storeId: 123,
         name: "MyStore",
         version: "1.0.0",
@@ -252,13 +274,15 @@ export const LifecycleMethods = {
     return results;
   },
 
-  getSnapshotsBySubscriber: async function <
+    getSnapshotsBySubscriber: async function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     subscriber: string
   ): Promise<any[]> {
     const snapshots = await this.getAllSnapshots?.(
@@ -273,16 +297,18 @@ export const LifecycleMethods = {
   emit: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     event: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
     subscribers: any,
     type: string,
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     dataItems: any[],
     criteria: any,
     category?: string | symbol | Category
@@ -293,10 +319,12 @@ export const LifecycleMethods = {
   removeChild: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     childId: string,
     parentId: string,
     parentSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -308,10 +336,12 @@ export const LifecycleMethods = {
   getChildren: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: string,
     childSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] {
@@ -321,19 +351,23 @@ export const LifecycleMethods = {
   hasChildren: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(this: SnapshotStore<T, K, Meta, ExcludedFields>, id: string): boolean {
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, id: string): boolean {
     return false;
   },
 
   isDescendantOf: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     childId: string,
     parentId: string,
     parentSnapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -345,9 +379,11 @@ export const LifecycleMethods = {
   getInitialState: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(this: SnapshotStore<T, K, Meta, ExcludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     return {} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   },
 
@@ -357,9 +393,11 @@ export const LifecycleMethods = {
   getConfigOption: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(this: SnapshotStore<T, K, Meta, ExcludedFields>, optionKey: string): Record<string, any> {
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, optionKey: string): Record<string, any> {
     return { key: optionKey, value: null }; // Placeholder logic
   },
 
@@ -370,9 +408,11 @@ export const LifecycleMethods = {
   getTimestamp: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
-  >(this: SnapshotStore<T, K, Meta, ExcludedFields>): Date {
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
+  >(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Date {
     return new Date();
   },
 
@@ -382,13 +422,15 @@ export const LifecycleMethods = {
   getData: async function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: string | number,
     snapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
-  ): Promise<SnapshotStore<T, K, Meta, ExcludedFields>[] | undefined> {
+  ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined> {
     const snapshotStores = this.snapshotStores;
     
     if (!snapshotStores) {
@@ -396,7 +438,7 @@ export const LifecycleMethods = {
     }
 
     if (snapshot) {
-      const result: SnapshotStore<T, K, Meta, ExcludedFields>[] = [];
+      const result: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
       for (const [, store] of snapshotStores) {
         if (store.snapshots.some((s: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => s.id === snapshot.id)) {
           result.push(store);
@@ -410,7 +452,7 @@ export const LifecycleMethods = {
       return store ? [store] : undefined;
     }
 
-    const matchedStores: SnapshotStore<T, K, Meta, ExcludedFields>[] = [];
+    const matchedStores: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] = [];
     for (const store of snapshotStores.values()) {
       if (store.snapshots.some((s: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => s.id === id)) {
         matchedStores.push(store);
@@ -423,10 +465,12 @@ export const LifecycleMethods = {
   getStore: function <    
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     storeId: number,
     snapshotStore: SnapshotStore<T, K, Meta> | null,
     snapshotId: string | null,
@@ -477,8 +521,10 @@ export const LifecycleMethods = {
   
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
     this: SnapshotStore<T, K, Meta>,
     storeId: number,
@@ -544,7 +590,7 @@ export const LifecycleMethods = {
     Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
     ExcludedFields extends keyof T = DefaultExcludedFields<T>
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     criteria?: {
       ids?: (string | number)[];
       categories?: string[];
@@ -669,17 +715,19 @@ export const LifecycleMethods = {
   addStore: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     storeId: number,
     snapshotId: string | null,
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>
-  ): SnapshotStore<T, K, Meta, ExcludedFields> | null {
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
     try {
       // Validate input parameters
       if (!storeId || !snapshotStore || !snapshot) {
@@ -756,12 +804,14 @@ export const LifecycleMethods = {
   removeStore: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     storeId: number,
-    store: SnapshotStore<T, K, Meta, ExcludedFields>,
+    store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
@@ -840,14 +890,16 @@ export const LifecycleMethods = {
   onSnapshot: function <
     T extends BaseDataEntity,
     K extends T = T,
-    Meta = DefaultMeta<T, K>,
-    ExcludedFields extends keyof T = DefaultExcludedFields<T>
+    Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+    IncludedFields extends keyof T = keyof T
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
   ): void {
     if (!(this as any).snapshotSubscribers) {
@@ -874,12 +926,12 @@ export const LifecycleMethods = {
 
 
   initializeStore: function < Tfunction extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>,
-    stores: Map<number, SnapshotStore<T, K, Meta, ExcludedFields>>
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    stores: Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ): void {
     // Type assertion to access protected method
     const protectedThis = this as unknown as {
-      setSnapshotStores: (stores: Map<number, SnapshotStore<T, K, Meta, ExcludedFields>>) => void;
+      setSnapshotStores: (stores: Map<number, SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>) => void;
     };
     
     protectedThis.setSnapshotStores(stores);
@@ -891,19 +943,19 @@ export const LifecycleMethods = {
     Meta = DefaultMeta<T, K>, 
     ExcludedFields extends keyof T = DefaultExcludedFields<T>
   >(
-    this: SnapshotStore<T, K, Meta, ExcludedFields>
+    this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<void> {
     const config = await this.config;
     if (config?.logging) console.log('Logging is enabled for this SnapshotStore.');
     if (config?.autoSync) this.autoSyncData();
   },
 
-  setConfigfunction: async function <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(this: SnapshotStore<T, K, Meta, ExcludedFields>, config: Promise<any>): Promise<void> {
+  setConfigfunction: async function <T extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, config: Promise<any>): Promise<void> {
     this.config = config;
     await this.initializeOptions();
   },
 
-  initializeDefaultConfig< Tfunction extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(this: SnapshotStore<T, K, Meta, ExcludedFields>): any[] {
+  initializeDefaultConfig< Tfunction extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): any[] {
     return [
       {
         id: "default",
@@ -931,7 +983,7 @@ export const LifecycleMethods = {
     ];
   },
 
-  ensureDelegate: function < Tfunction extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(this: SnapshotStore<T, K, Meta, ExcludedFields>): any {
+  ensureDelegate: function < Tfunction extends BaseDataEntity, K extends T = T, Meta = DefaultMeta<T, K>, ExcludedFields extends keyof T = DefaultExcludedFields<T>>(this: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): any {
     if (!this.delegate || this.delegate.length === 0) {
       throw new Error("Delegate is not defined or is empty.");
     }

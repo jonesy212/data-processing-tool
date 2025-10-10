@@ -1,6 +1,6 @@
 // projects/Project.ts (CLIENT-SIDE ONLY)
+import { Collaborator } from "@/app/collaborators/Collaborator";
 import { ScheduledData } from "@/app/components/calendar/ScheduledData";
-import { Collaborator } from '@/app/components/models/teams/TeamMembers';
 import { Progress } from "@/app/components/models/tracker/ProgressBar";
 import { Exchange } from "@/app/crypto/Exchange";
 import { Attachment } from "@/app/documents/attachment/Attachment";
@@ -11,9 +11,6 @@ import { BaseData, Data } from '@/app/models/data/Data';
 import { K, Meta, T } from '@/app/models/data/dataStoreMethods';
 import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { StatusType } from "@/app/models/data/StatusType";
-import { Task } from "@/app/models/tasks/Task";
-import { Team } from "@/app/models/teams/Team";
-import { Member } from "@/app/models/teams/TeamMembers";
 import {
   CustomPhaseHooks, Phase,
   PhaseData,
@@ -22,7 +19,10 @@ import {
   PhaseK,
   PhaseMeta,
   PhaseMetaType
-} from "@/app/phases/Phase";
+} from '@/app/models/phases/Phase';
+import { Task } from "@/app/models/tasks/Task";
+import { Team } from "@/app/models/teams/Team";
+import { Member } from "@/app/models/teams/TeamMembers";
 import { CustomComment } from "@/app/state/redux/slices/BlogSlice";
 import { AllStatus } from '@/app/state/stores/DetailsListStore';
 import { default as Comment, default as TodoImpl } from "@/app/todos/Todo";
@@ -32,7 +32,6 @@ import { User } from "@/app/users/User";
 import { VideoData } from "@/app/video/Video";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta, baseConfig } from '@/config/BaseConfig';
 import { sharedBaseData, sharedMetadata } from '@/config/metadata/MetadataHooks';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { SharedTimestamps } from '@/RelatedProps';
 import { ExcludedFields } from '@/routing/Fields';
 import React, { ReactNode, useEffect, useState } from "react";
@@ -172,7 +171,7 @@ interface Project<
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
-> extends Base<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
+> extends BaseData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string;
   name: string;
   description: string; // Updated this line
@@ -189,7 +188,7 @@ interface Project<
   type: ProjectType;
   status: AllStatus;
   currentPhase: Phase | null; // Provide a default value or mark as optional
-  
+  done: boolean
   
   currentTeam?: Team<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> ; // <-- Add this
   reassignedProjects?: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> []; // <-- Add this
@@ -593,7 +592,7 @@ const currentPhase: PhaseData<PhaseEntity, PhaseK, PhaseMetaType, Attachment, Ph
 export interface ProjectData<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -669,7 +668,7 @@ currentProject.phases = [
     currentMeta: (currentPhase.currentMeta), 
     currentMetadata: (currentPhase.currentMetadata),
     subPhases: [],
-    data: {} as Data<T, K, Meta>,
+    data: {} as Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     component: () => {
       return null;
     },

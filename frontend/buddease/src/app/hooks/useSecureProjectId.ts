@@ -1,9 +1,9 @@
 // useSecureProjectId.ts
-import { useEffect, useState } from 'react';
+import UserRoles from '@/app/models/UserRoles';
 import { useAuth } from '@/context/AuthContext';
 import { sanitizeData } from '@/security/SanitizationFunctions';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import UserRoles from '@/users/UserRoles';
 
 // Optional: You might pass projectId from route params or props
 export const useSecureProjectId = (projectId: string | null) => {

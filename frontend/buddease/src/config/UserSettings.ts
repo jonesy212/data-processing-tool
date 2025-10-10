@@ -18,7 +18,7 @@ import { Team } from "@/app/models/teams/Team";
 import { Member } from "@/app/models/teams/TeamMembers";
 import { TrackerProps } from "@/app/models/tracker/Tracker";
 import { CategoryProperties } from "@/app/pages/personas/ScenarioBuilder";
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import { DataAnalysisResult } from "@/app/projects/DataAnalysisPhase/DataAnalysisResult";
 import { InitializedState } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStore";
 import { PrivacySettings, selectedSettings } from "@/app/settings/PrivacySettings";
@@ -150,13 +150,13 @@ export interface UserSettings extends Settings {
     | CollaborationOptions[]
     | NestedEndpoints
     | (Comment | CustomComment)[]
-    | DetailsItem<Data<T, K, Meta>>
+    | DetailsItem<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
     | TrackerStore
     | IconStore
     | Phase<BaseData> 
     | HighlightEvent[]
     | Idea[]
-    | SnapshotStore<SnapshotStoreUnion<Data<T, K, Meta>>, Data<T, K, Meta>>[]
+    | SnapshotStore<SnapshotStoreUnion<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]
     | InitializedState<BaseData, BaseData>
     | Member[]
     | NotificationSettings
@@ -166,7 +166,7 @@ export interface UserSettings extends Settings {
     | TodoImpl<Todo<any, any, any>, any, any>[] // Use `any` or specify the types as needed
     | CalendarEvent<BaseData, BaseData>[]
     | CalendarManagerStore<BaseData, Meta<T, K>>
-    | SnapshotStoreConfig<Data<T, K, Meta>, Data<T, K, Meta>>[]
+    | SnapshotStoreConfig<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]
     | Record<string, string>
     | undefined
     | NodeJS.Timeout

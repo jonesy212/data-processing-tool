@@ -23,8 +23,8 @@ import { useDispatch } from 'react-redux';
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { getSubscribersAPI } from "@/app/api/subscriberApi";
 import {
-  NotificationTypeEnum,
-  useNotification
+    NotificationTypeEnum,
+    useNotification
 } from "@/app/context/NotificationContext";
 import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import NOTIFICATION_MESSAGES from '@/app/features/support/NotificationMessages';
@@ -32,8 +32,8 @@ import useSecureSnapshotId from '@/app/hooks/useSecureSnapshotId';
 import { getCategoryProperties } from '@/app/libraries/categories/CategoryManager';
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { DataStoreMethods, DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { Snapshot } from '@/app/snapshots/Snapshpshot';
-import SnapshotManagerOptions from '@/app/snapshots/SnapshpshotManagerOptions';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import SnapshotManagerOptions from '@/app/snapshots/SnapshotManagerOptions';
 import CalendarManagerStoreClass from "@/app/state/stores/CalendarManagerStore";
 import { Subscriber } from "@/app/subscribers/Subscriber";
 import { createSnapshotStoreOptions } from "@/app/typings/YourSpecificSnapshotType";
@@ -105,7 +105,7 @@ export const subscribeToSnapshots = <
   snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   snapshotId: string,
   snapshotData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  category: Category | undefined,  snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  category?: Category,  snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
   callback: (
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
     snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
@@ -243,7 +243,7 @@ const initializeSnapshotStore = async <
     events: {},
     restoreSnapshot: {},
    
-    meta: {} as StructuredMetadata<T, K> | undefined,
+    meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined,
     // mappedMeta: new Map<string, Snapshot< BaseData<any>, any>>(),
     snapshotStoreConfig: {} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined,
     getSnapshotItems: function(): (SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotItem< BaseData<any>, any>)[] {
@@ -285,7 +285,7 @@ async function createSnapshotStore<
 >(
   id: string,
   snapshotStoreData: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-  category: Category | undefined,  categoryProperties: CategoryProperties | undefined,
+  category?: Category,  categoryProperties: CategoryProperties | undefined,
   dataStoreMethods: DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
 ): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   
@@ -382,7 +382,7 @@ async function createSnapshotStore<
       snapshotId: string,
       snapshot: T | null,
       snapshotData: T,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       callback: (snapshot: T) => void,
       snapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -539,7 +539,7 @@ async function createSnapshotStore<
     getSnapshot: (
       snapshot: (id: string) =>
         | Promise<{
-          category: Category | undefined;
+          category?: Category;
           categoryProperties: CategoryProperties;
           timestamp: string | number | Date | undefined;
           id: string | number | undefined;
@@ -559,7 +559,7 @@ async function createSnapshotStore<
         payload: FetchSnapshotPayload<K>,
         snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
         payloadData: T | BaseData<any>,
-        category: Category | undefined,
+        category?: Category,
         categoryProperties: CategoryProperties | undefined,
         timestamp: Date,
         data: T,
@@ -567,7 +567,7 @@ async function createSnapshotStore<
       ) => void
     ): Promise<{
       id: any;
-      category: Category | undefined;
+      category?: Category;
       categoryProperties: CategoryProperties;
       timestamp: any;
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
@@ -671,7 +671,7 @@ async function createSnapshotStore<
     filterSnapshots: () => [],
     mapSnapshots: async () => [],
     findSnapshot: () => ({} as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>),
-    subscribe: () => ({ } as SnapshotsArray<T, K, StructuredMetadata<T, K>>),
+    subscribe: () => ({ } as SnapshotsArray<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>),
     unsubscribe: () => { },
     fetchSnapshotFailure: (
       snapshotId: string,

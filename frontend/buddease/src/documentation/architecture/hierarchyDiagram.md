@@ -1,7 +1,7 @@
 <!-- Normalized Base Hierarchy Diagram -->
 
 BaseDataRoot
- └─ SharedIdentifiers<T, K, Meta, ExcludedFields>
+ └─ SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
  └─ SharedTimestamps
  └─ SharedStatusFlags
  └─ SharedMetadata<T, K, ExcludedFields>
@@ -10,9 +10,9 @@ BaseDataRoot
        ├─ ConfigMetadata (Partial)
        └─ SharedRelationshipData<K>
 
-CommonData<T, K, Meta, ExcludedFields>
+CommonData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
  └─ Identifiable
- └─ UserOwned<T, K, Meta, ExcludedFields>
+ └─ UserOwned<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
  └─ Describable
  └─ Timestamped
  └─ Taggable<T, K>
@@ -20,20 +20,20 @@ CommonData<T, K, Meta, ExcludedFields>
  └─ AccessControlled
  └─ CounterTrackable
  └─ SharedMetadata<T, K, ExcludedFields>
- └─ SharedIdentifiers<T, K, Meta, ExcludedFields>
+ └─ SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
  └─ SharedTimestamps
  └─ SharedStatusFlags
 
-DataDetails<T, K, Meta, ExcludedFields>
+DataDetails<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
  └─ CommonData<T, K, Meta>
  └─ Comments (Comment<T,K,Meta>[] | CustomComment)
  └─ Todos (Todo<T,K>[])
  └─ AnalysisData (Snapshots & DataAnalysisResult)
  └─ PhaseData, FakeData, Tags, Other Properties
 
-SharedDetails<T, K, Meta, ExcludedFields>
+SharedDetails<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
  └─ SharedMetadata<T, K, ExcludedFields>
- └─ SharedIdentifiers<T, K, Meta, ExcludedFields>
+ └─ SharedIdentifiers<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
  └─ Participants
  └─ Comments (Comment<T,K,Meta>[] | CustomComment)
  └─ Phase, PhaseName

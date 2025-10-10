@@ -55,7 +55,7 @@ export interface NotificationData<
   topics?: string[];
   highlights?: string[];
   files?: string[];
-  meta?: StructuredMetadata<T, K>;
+  meta?: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 }
 
 

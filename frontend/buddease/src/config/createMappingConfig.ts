@@ -4,7 +4,7 @@ import { MappingConfig } from "@/config/MappingConfig";
 const createMappingConfig = <
   T extends SupportedData<any, any, StructuredMetadata<any, any>>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(): MappingConfig<T, K, Meta> => ({
   fieldMappings: {
     _id: { sourceField: "id", required: true },
@@ -96,7 +96,7 @@ const createMappingConfig = <
 const mapParsedDataToCommonData = <
   T extends SupportedData<any, any, StructuredMetadata<any, any>>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
   parsedData: ParsedData<T>,
   config?: Partial<MappingConfig<T, K, Meta>>

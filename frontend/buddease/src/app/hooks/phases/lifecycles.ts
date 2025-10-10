@@ -1,5 +1,45 @@
 // lifecycles.tsx
 
+// Lifecycle.ts
+import { Lesson } from "@/app/documents/CourseBuilder";
+import { enhancedPhaseHook } from "@/app/hooks/phaseHooks/EnhancePhase";
+import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";
+import { CustomPhaseHooks, Phase } from "./Phase";
+import { IdeaLifecyclePhase } from "./PhaseManager";
+
+export interface PhaseOptions extends Phase {
+  name: string;
+  startDate: Date;
+  endDate: Date;
+  subPhases: string[];
+}
+
+export interface LifecycleState {
+  currentPhase: PhaseOptions | null;
+  previousPhase: PhaseOptions | null;
+  phaseHistory: PhaseOptions[];
+  isTransitioning: boolean;
+  lastActivityTime: number;
+}
+
+export interface LifecycleConfig {
+  phases: PhaseOptions[];
+  initialPhase?: string;
+  autoAdvance?: boolean;
+  onPhaseChange?: (from: PhaseOptions | null, to: PhaseOptions) => void;
+  onTransitionError?: (error: Error) => void;
+}
+
+export interface LifecycleTransition {
+  from: PhaseOptions;
+  to: PhaseOptions;
+  timestamp: Date;
+  success: boolean;
+  error?: string;
+}
+
+
+
 import { Lesson } from "@/app/documents/CourseBuilder";
 import { enhancedPhaseHook } from "@/app/hooks/phaseHooks/EnhancePhase";
 import { PhaseHookConfig } from "@/app/hooks/phaseHooks/PhaseHooks";

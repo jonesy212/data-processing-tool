@@ -107,7 +107,6 @@ class DataApiService {
     }
   }
 
-  // ✅ UPDATE: Use internalApiService for data operations
   async fetchData(endpoint: string, id?: number): Promise<{ data: YourResponseType<any, any, StructuredMetadata<any, any>> } | null> {
     try {
       let url = endpoint;

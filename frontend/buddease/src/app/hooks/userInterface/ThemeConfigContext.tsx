@@ -62,7 +62,7 @@ export const ThemeConfigProvider = <
     // Fully generic-safe DappProps
     yourClassInstance.customizeTheme(
       config,
-      {} as DappProps<T, K, Meta, ExcludedFields>
+      {} as DappProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     );
   };
 

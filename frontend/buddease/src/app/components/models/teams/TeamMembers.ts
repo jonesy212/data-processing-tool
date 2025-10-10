@@ -3,9 +3,17 @@ import { Task } from '@/app/models/tasks/Task';
 import { Team } from '@/app/models/teams/Team';
 import { Persona } from "@/app/pages/personas/Persona";
 import { User } from "@/app/users/User";
-import { UserRole } from "@/app/users/UserRole";
+import { UserRole } from "@/app/models/UserRole";
 import { BaseDataEntity, DefaultMeta } from '@/config/BaseConfig';
-import UserRoles from '@/users/UserRoles';
+import UserRoles from '@/app/models/UserRoles';
+import { MemberEntity
+  MemberK, 
+  MemberMeta, 
+  MemberData 
+  MemberAttachment, 
+  MemberExcludedFields,
+  MemberIncludedFields, 
+} from '@/app/typings/entities/MemberEntity'
 
 export interface Member extends User {
   teamId: string;
@@ -132,6 +140,9 @@ const memberData: MemberData<
     memberName: "John Doe",
     persona: {
       id: "persona-001",
+      name: "May",
+      age: "32",
+      gender: "woman",
       type: "developer",
       traits: ["analytical", "creative", "collaborative"],
       preferences: ["code_reviews", "pair_programming"]
@@ -237,8 +248,6 @@ const memberData: MemberData<
     role: UserRoles.Member
   } as TeamMember
 
-export default MemberData; 
 export type { Contributor, TeamMember };
-
-  export { memberData, teamMember };
+export { memberData, teamMember };
 

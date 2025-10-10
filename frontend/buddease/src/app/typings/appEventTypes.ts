@@ -22,7 +22,7 @@ interface SharedSnapshotEvent<
   IncludedFields extends keyof T = keyof T
 > extends BaseEvent {
   snapshotId?: string | number | null;
-  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   error?: any
 }
 
@@ -31,7 +31,7 @@ interface UserEvent<T extends BaseDataEntity,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
-  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, ExcludedFields> {
+  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "user";
   userId: string;
   action: string; // "login", "logout", "create_task", etc.
@@ -43,7 +43,7 @@ interface TaskEvent<T extends BaseDataEntity,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
-  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, ExcludedFields> {
+  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "task";
   taskId: string;
   action: "create" | "update" | "complete" | "delete";
@@ -56,7 +56,7 @@ interface ProjectEvent<T extends BaseDataEntity,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
-  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, ExcludedFields> {
+  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "project";
   projectId: string;
   action: "create" | "update" | "archive" | "delete";
@@ -70,7 +70,7 @@ interface ErrorEvent<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
-  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, ExcludedFields> {
+  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "error";
   errorCode: string;
   errorMessage: string;
@@ -83,7 +83,7 @@ interface IntegrationEvent<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
-  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, ExcludedFields> {
+  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "integration";
   integrationId: string;
   action: "triggered" | "completed" | "failed";
@@ -96,7 +96,7 @@ interface FileEvent<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
-  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, ExcludedFields> {
+  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "file";
   fileId: string;
   action: "upload" | "download" | "edit" | "delete";
@@ -110,7 +110,7 @@ interface NotificationEvent<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
-  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, ExcludedFields> {
+  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "notification";
   notificationId: string;
   userId: string; // Recipient
@@ -123,7 +123,7 @@ interface MilestoneEvent<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
-  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, ExcludedFields> {
+  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "milestone";
   milestoneId: string;
   projectId: string;
@@ -138,7 +138,7 @@ interface CommentEvent<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
-  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, ExcludedFields> {
+  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "comment";
   commentId: string;
   relatedEntityId: string; // Could be taskId, projectId, or fileId
@@ -153,7 +153,7 @@ interface MeetingEvent<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >
-  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, ExcludedFields> {
+  extends BaseEvent, SharedSnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   eventType: "meeting";
   meetingId: string;
   action: "schedule" | "update" | "cancel";
@@ -171,7 +171,7 @@ export type SnapshotEvent<
   | {
     type: "snapshotAdded" | "snapshotUpdated" | "snapshotRemoved";
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>;
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     criteria: SnapshotWithCriteria<T, K>;
     category: Category;
     title?: string;
@@ -183,7 +183,7 @@ export type SnapshotEvent<
     type: "error";
     error: Error;
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>;
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     criteria: SnapshotWithCriteria<T, K>;
     category: Category;
     title?: string;
@@ -200,7 +200,7 @@ type ExtendedSnapshotEvents<
 > = SnapshotEvents<T, K> & {
   type?: string;
   snapshotId?: string | number | null;
-  snapshotStore?: SnapshotStore<T, K, Meta, ExcludedFields>;
+  snapshotStore?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   snapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 };
 

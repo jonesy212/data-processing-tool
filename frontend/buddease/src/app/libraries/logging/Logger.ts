@@ -586,7 +586,7 @@ class AnimationLogger extends Logger {
     }
   }
 
- static generateID<T extends BaseData<any>, K extends T, Meta extends StructuredMetadata<T, K>>(
+ static generateID<T extends BaseData<any>, K extends T, Meta extends StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(
     prefix: string,
     name: string,
     type: NotificationType,

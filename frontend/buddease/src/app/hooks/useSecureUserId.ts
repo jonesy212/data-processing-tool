@@ -1,9 +1,8 @@
 //useSecureUserId.ts
-import { useEffect, useState } from 'react';
+import UserRoles from '@/app/models/UserRoles';
 import { useAuth } from '@/context/AuthContext';
-import { sanitizeData } from '@/app/components/crypto/SanitizationFunctions';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import UserRoles, { UserRoleEnum } from '@/users/UserRoles';
 
 export const useSecureUserId = () => {
   const [userId, setUserId] = useState<string | null>(null);

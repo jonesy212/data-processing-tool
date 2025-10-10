@@ -16,7 +16,7 @@ const convertSubscriptionPayloadToSubscriber = <
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 >(
-  payload: SubscriptionPayload<T, K, Meta, ExcludedFields>
+  payload: SubscriptionPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): Subscriber<CustomSnapshotData<T, K, Meta>, CustomPayload<T, K, Meta>> => {
   const subscriber = new Subscriber<CustomSnapshotData<T, K, Meta>, CustomPayload<T, K, Meta>>(
     payload.id,

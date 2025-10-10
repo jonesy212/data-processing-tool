@@ -54,7 +54,7 @@ const useCryptoStore = (): CryptoStore => {
       "Crypto updated successfully",
       NOTIFICATION_MESSAGES.Crypto.UPDATE_CRYPTO_SUCCESS,
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     ); // Notify success
   };
 
@@ -69,7 +69,7 @@ const useCryptoStore = (): CryptoStore => {
       "Crypto deleted successfully",
       NOTIFICATION_MESSAGES.Crypto.DELETE_CRYPTO_FAILURE,
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     ); // Notify success
   };
 
@@ -81,7 +81,7 @@ const useCryptoStore = (): CryptoStore => {
       "Failed to perform action",
       "error", // Changed null to "error" to fix the error
       new Date(),
-      NotificationTypeEnum.OperationError
+      NotificationTypeEnum.OPERATION_ERROR
     );
   };
 

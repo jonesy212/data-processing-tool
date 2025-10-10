@@ -5,7 +5,7 @@ import Version from "./Version";
 import { HistoryEntry } from '@/components/state/stores/HistoryStore'
 
 interface BlogPostHistory extends BlogPost {
-  version: Version<T, K>;// Reference to the version of the post
+  version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;// Reference to the version of the post
   history: HistoryEntry[] | undefined; // History of changes made to the post
 }
 

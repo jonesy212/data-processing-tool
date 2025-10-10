@@ -27,7 +27,7 @@ export const createStateGovCity = async (newCity: DetailsItem<Data>) => {
       NOTIFICATION_MESSAGES.StateGovCities.SUCCESS_FETCHING_CITIES,
       'useNotify',
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     );
     return response.data;
   } catch (error) {
@@ -47,7 +47,7 @@ export const removeStateGovCity = async (cityId: number): Promise<void> => {
       NOTIFICATION_MESSAGES.StateGovCities.SUCCESS_REMOVING_CITY,
       'useNotifyCity',
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     );
   } catch (error) {
     console.error("Error removing state government city:", error);
@@ -68,7 +68,7 @@ export const updateStateGovCity = async (
       NOTIFICATION_MESSAGES.StateGovCities.SUCCESS_UPDATING_CITY,
       'State government city updated successfully',
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     );
     return response.data;
   } catch (error) {
@@ -94,7 +94,7 @@ export const addStateGovCity = async (newCity: Omit<DetailsItem<Data>, 'id'>) =>
         NOTIFICATION_MESSAGES.StateGovCities.SUCCESS_ADDING_NEW_CITY,
         'State government city added successfully',
         new Date(),
-        NotificationTypeEnum.OperationSuccess
+        NotificationTypeEnum.OPERATION_SUCCESS
       );
     } else {
       console.error('Failed to add state government city:', response.statusText);

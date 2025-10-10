@@ -1,45 +1,45 @@
 // UserJourneyManager.tsx
-import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
-import { UserSupportPhase } from "@/app/features/support/UserSupportPhaseComponent";
-import {
-    ContentCreation,
-    ContentEditing,
-    ContentItemSelection,
-    ContentOrganization,
-    ContentPublishing,
-} from "@/app/content/ContentMaintenance";
-import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
-import FeedbackProcess, {
-    FeedbackPhaseEnum,
-} from "@/app/components/phases/FeedbackPhase";
-import { IdeaLifecycleProcess } from '@/app/components/phases/IdeaLifecycleProcess';
 import { PhaseActions } from "@/app/actions/phases/PhaseActions";
-import { TaskPhase } from '@/app/components/phases/TaskPhaseEnum';
-import TaskProcess from "@/app/components/phases/TaskProcess";
-import TradingProcess from "@/app/components/phases/TradingProcess";
 import { TeamCreationPhase } from "@/app/actions/phases/TeamCreation";
 import TeamCreationProcess from "@/app/actions/phases/TeamCreationManager";
+import EmailConfirmationPage from "@/app/components/communications/email/EmaiConfirmation";
+import { ContentManagementPhaseEnum } from "@/app/components/phases/ContentManagementPhase";
 import { TradingPhase } from "@/app/components/phases/crypto/CryptoTradingPhase";
+import PlanningPhase, {
+  DevelopmentPhase
+} from "@/app/components/phases/DevelopmentPhase";
+import FeedbackProcess, {
+  FeedbackPhaseEnum,
+} from "@/app/components/phases/FeedbackPhase";
+import { IdeaLifecycleProcess } from '@/app/components/phases/IdeaLifecycleProcess';
 import { IdeaLifecyclePhase } from "@/app/components/phases/ideaPhase/IdeaLifecyclePhase";
 import ProfileSetupPhase from "@/app/components/phases/onboarding/ProfileSetupPhase";
 import PostLaunchActivitiesPhase from "@/app/components/phases/postLaunchPhase/PostLaunchActivitiesPhase";
-import { DataAnalysisSubPhase } from "@/app/projects/DataAnalysisPhase/DataAnalysisPhase";
-import { TaskManagementPhase } from "@/app/projects/TaskManagementPhase";
-import PlanningPhase, {
-    DevelopmentPhase
-} from "@/app/components/phases/DevelopmentPhase";
+import { TaskPhase } from '@/app/components/phases/TaskPhaseEnum';
+import TaskProcess from "@/app/components/phases/TaskProcess";
+import TradingProcess from "@/app/components/phases/TradingProcess";
 import {
-    DevelopmentPhaseEnum,
-    ProjectPhaseTypeEnum,
+  ContentCreation,
+  ContentEditing,
+  ContentItemSelection,
+  ContentOrganization,
+  ContentPublishing,
+} from "@/app/content/ContentMaintenance";
+import { UserSupportPhase } from "@/app/features/support/UserSupportPhaseComponent";
+import {
+  DevelopmentPhaseEnum,
+  ProjectPhaseTypeEnum,
 } from "@/app/models/data/StatusType";
+import UserRoles from '@/app/models/UserRoles';
 import OfferPage from "@/app/pages/onboarding/OfferPage";
 import onboardingQuestionnaireData from "@/app/pages/onboarding/OnboardingQuestionnaireData";
 import WelcomePage from "@/app/pages/onboarding/WelcomePage";
+import { DataAnalysisSubPhase } from "@/app/projects/DataAnalysisPhase/DataAnalysisPhase";
+import { TaskManagementPhase } from "@/app/projects/TaskManagementPhase";
 import { User, UserData } from "@/app/users/User";
 import IdeaCreationPhase from "@/app/users/userJourney/IdeaCreationPhase";
 import IdeationPhase from "@/app/users/userJourney/IdeationPhase";
 import { useAuth } from "@/context/AuthContext";
-import UserRoles from "@/users/UserRoles";
 import axios from "axios";
 import React, { useState } from "react";
 import UserQuestionnaire from "./UserQuestionnaire";

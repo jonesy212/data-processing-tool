@@ -17,7 +17,7 @@ import {
 import { Member } from "@/app/models/teams/TeamMembers";
 import { updateCallback } from "@/app/pages/blog/UpdateCallbackUtils";
 import useModalFunctions from "@/app/pages/dashboards/ModalFunctions";
-import { SnapshotData } from '@/app/snapshots';
+import { SnapshotData } from '@/app/snapshots/SnapshotData';
 import { createSnapshot } from '@/app/snapshots/createSnapshot';
 import { getSnapshotDelegate } from '@/app/snapshots/getSnapshotDelegate';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
@@ -136,7 +136,7 @@ interface CalendarEntities {
 interface CommonCalendarManagerMethods<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -182,7 +182,7 @@ interface ActionPayload {
 export interface CalendarManagerStore<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -260,7 +260,7 @@ export interface CalendarManagerStore<
 class CalendarManagerStoreClass<
   T extends BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -283,7 +283,7 @@ class CalendarManagerStoreClass<
   eventStatus: AllStatus = StatusType.Pending;
   NOTIFICATION_MESSAGE = "";
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
-  // assignedEventStore: AssignEventStore {};
+  assignedEventStore: AssignEventStore = useAssignEventStore();
   
   private documentManager: DocumentStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   private eventListeners: ((data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void)[]; // Listeners for data changes
@@ -302,7 +302,7 @@ class CalendarManagerStoreClass<
   public timestamp: Date;
 
   constructor(
-    category: Category | undefined,
+    category?: Category,
     documentManager: DocumentStore<T, K>,
     storeProps: SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) {
@@ -318,6 +318,7 @@ class CalendarManagerStoreClass<
     const store = useStore();
     this.getState = store.getState.bind(store);
     this.callback = store.callback.bind(store);
+ 
     this.getSnapshotDataKey = store.getSnapshotDataKey.bind(store)
     this.getData = this.getData.bind(this);
     this.documentManager = documentManager;
@@ -327,7 +328,10 @@ class CalendarManagerStoreClass<
       // Initialize the new properties
     this.action = store.action.bind(this); // Example initial value (adjust based on your needs)
     this.timestamp = new Date();
-
+   this.process = (newData) => {
+    console.log("Processing snapshot", newData);
+    // Add your processing logic here
+    };
     this.handleRealtimeUpdate = async (
       storeId: number,
       documentId: number,
@@ -899,7 +903,7 @@ function openScheduleEventModal(eventId: string): void {
     "Opening Schedule Event Modal",
     NOTIFICATION_MESSAGES.Data.PAGE_LOADING,
     new Date(),
-    NotificationTypeEnum.OperationSuccess
+    NotificationTypeEnum.OPERATION_SUCCESS
   );
 }
 
@@ -1257,7 +1261,7 @@ const snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, Inc
 };
 
 export const calendarEvent: CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  = {} as CalendarEvent;
-//
+
 
 export const convertedData = convertEventsToData(events);
 console.log(convertedData);

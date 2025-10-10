@@ -3,11 +3,11 @@ import { RealtimeDataItem } from '@/app/components/models/realtime/RealtimeData'
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotConfigParams } from '@/app/snapshots/SnapshotConfigBuilder';
 import { SnapshotData } from "@/app/snapshots/SnapshotData";
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotStoreConfig } from "@/app/snapshots/SnapshotStoreConfig";
 import { SnapshotWithCriteria } from "@/app/snapshots/SnapshotWithCriteria";
-import { SnapshotConfigParams } from '@/app/snapshots/SnapshpshotConfigBuilder';
 import { SubscriberCollection } from '@/app/subscribers/SubscriberCollection';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { StructuredMetadata } from "@/config/StructuredMetadata";
@@ -75,7 +75,8 @@ type ApplyFieldFilters<
 
 
 export type {
-  AppAttachment, AppBaseParams, AppEntity, AppExcludedFields,
-  AppIncludedFields, AppK, ApplyFieldFilters, AppMeta, AppParams, AppRealtimeDataItem, AppSnapshot,
-  AppSnapshotData, AppSnapshotsArray, AppSnapshotStore, AppSnapshotStoreConfig, AppSnapshotWithCriteria, AppStructuredMetadata, AppSubscriberCollection, AppUnifiedMetadata
+    AppAttachment, AppBaseParams, AppEntity, AppExcludedFields,
+    AppIncludedFields, AppK, ApplyFieldFilters, AppMeta, AppParams, AppRealtimeDataItem, AppSnapshot,
+    AppSnapshotData, AppSnapshotsArray, AppSnapshotStore, AppSnapshotStoreConfig, AppSnapshotWithCriteria, AppStructuredMetadata, AppSubscriberCollection, AppUnifiedMetadata
 };
+

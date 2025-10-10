@@ -2,20 +2,25 @@
 import { FilteredEventsState } from '@/app/state/stores/FilterStore';
 import { createAction, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { WritableDraft } from "immer";
+import { Attachment } from "@/app/documents/attachment/Attachment";
 
-interface Task {
-  id: string;
-  title: string;
-  // Add more fields as needed
-}
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 
-interface TaskManagerState {
-  tasks: Task[];
+
+interface TaskManagerState<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> {
+  tasks: Task<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
 }
 
 interface RootState {
   taskManager: TaskManagerState;
-  filterManager: FilteredEventsState
+  filterManager: FilteredEventsState;
 }
 
 const initialState: TaskManagerState = {

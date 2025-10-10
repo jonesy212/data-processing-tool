@@ -16,7 +16,7 @@ export const generateTransferToken = async () => {
             NOTIFICATION_MESSAGES.TokenUtils.SUCCESS_GENERATING_TRANSFER_TOKEN,
             {},
             new Date,
-            NotificationTypeEnum.OperationSuccess);
+            NotificationTypeEnum.OPERATION_SUCCESS);
         return transferToken;
     } catch (error) {
         notify(

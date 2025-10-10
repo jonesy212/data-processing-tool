@@ -21,14 +21,14 @@ import { DataStoreMethods, DataStoreWithSnapshotMethods } from '@/app/projects/D
 import { DataStore, InitializedState, useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Callback, createSnapshotConfig, CustomSnapshotData, SnapshotConfig, SnapshotContainer, SnapshotData, SnapshotStoreConfig, SnapshotStoreProps, SnapshotWithCriteria, subscribeToSnapshotImpl } from '@/app/snapshots';
 import {
-  SnapshotsArray,
-  SnapshotsObject,
-  SnapshotUnion
+    SnapshotsArray,
+    SnapshotsObject,
+    SnapshotUnion
 } from "@/app/snapshots/LocalStorageSnapshotStore";
 import { Snapshot } from "@/app/snapshots/Snapshot";
+import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
+import { InitializedData } from '@/app/snapshots/SnapshotStoreOptions';
 import { storeProps } from '@/app/snapshots/SnapshotStoreProps';
-import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
-import { InitializedData } from '@/app/snapshots/SnapshpshotStoreOptions';
 import handleSnapshotStoreOperation from '@/app/snapshots/handleSnapshotStoreOperation';
 import { subscribeToSnapshotsImpl } from '@/app/snapshots/subscribeToSnapshotsImplementation';
 import { Subscriber } from "@/app/subscribers/Subscriber";
@@ -49,8 +49,8 @@ import { useMeta } from '@/config/useMeta';
 import { useMetadata } from "@/config/useMetadata";
 import { UnifiedMetaDataOptions } from '@/configs/database/MetaDataOptions';
 import {
-  createBasicSnapshot,
-  createCompleteSnapshot
+    createBasicSnapshot,
+    createCompleteSnapshot
 } from '@/createSnapshot';
 import { handleSnapshotOperation } from '@/handleSnapshotOperation';
 import { displayToast } from '@/models/display/ShowToast';
@@ -149,7 +149,7 @@ const createSnapshotStoreOptions = <
 }: {
   initialState: InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   snapshotId?: string | number | null;
-  category: Category | undefined,
+  category?: Category,
   categoryProperties: CategoryProperties | undefined;
   dataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>;
 }): Promise<SnapshotStoreOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
@@ -296,7 +296,7 @@ const createSnapshotStoreOptions = <
       const defaultVersion: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = version
 
       // Initialize structured metadata, this could also come from some external source
-      const structuredMetadata: StructuredMetadata<T, K> = {
+      const structuredMetadata: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
         ...baseConfig,
         metadataEntries: {
           'file1': {
@@ -385,7 +385,7 @@ const createSnapshotStoreOptions = <
           id: string | number | undefined,
           snapshotId: number,
           snapshotData: T,
-          category: Category | undefined,
+          category?: Category,
           categoryProperties: CategoryProperties | undefined,
           dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
         ): Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined => {
@@ -445,7 +445,7 @@ const createSnapshotStoreOptions = <
           event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           id: number,
           snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-          category: Category | undefined, categoryProperties: CategoryProperties | undefined,
+          category?: Category, categoryProperties: CategoryProperties | undefined,
           dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
           data: T,
           filter?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean,
@@ -705,7 +705,7 @@ const createSnapshotStoreOptions = <
         snapshot: async (
           id: string | number | undefined,
           snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-          category: Category | undefined,
+          category?: Category,
           categoryProperties: CategoryProperties | undefined,
           callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
           dataStore: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -948,7 +948,7 @@ const createSnapshotStoreOptions = <
             payload: FetchSnapshotPayload<T> | undefined,
             snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
             payloadData: T | Data<T>,
-            category: Category | undefined,
+            category?: Category,
             categoryProperties: CategoryProperties | undefined,
             timestamp: Date,
             data: T,
@@ -1541,8 +1541,8 @@ function convertSnapshotsObjectToArray<
 
 
 export {
-  convertSnapshotsObjectToArray, convertToArray, createSnapshotStoreOptions, getCurrentSnapshotStoreOptions,
-  isCompatibleSnapshot, isSnapshotArrayState, isSnapshotsArray,
-  isSnapshotStoreOptions, isSnapshotUnion, toSnapshotsArray
+    convertSnapshotsObjectToArray, convertToArray, createSnapshotStoreOptions, getCurrentSnapshotStoreOptions,
+    isCompatibleSnapshot, isSnapshotArrayState, isSnapshotsArray,
+    isSnapshotStoreOptions, isSnapshotUnion, toSnapshotsArray
 };
 

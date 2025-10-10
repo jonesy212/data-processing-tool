@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
 import UserRoles from '@/UserRoles';
-import { UserRole } from '@/UserRole';
+import { UserRole } from "@/app/models/UserRole";
+import React, { useState } from 'react';
 
 interface PermissionsEditorProps {
   permissions: string[]; // Define props accepted by PermissionsEditor

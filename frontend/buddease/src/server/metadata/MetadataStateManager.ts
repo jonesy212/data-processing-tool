@@ -80,7 +80,7 @@ function createMetaState<
   permissions: Permission[],
   baseUrl: string,
   customFields?: Record<string, any>,
-  version?: string | number | Version<T, K> | null,
+  version?: string | number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
   childIds?: K[],
   relatedData?: K[],
 ): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, AttachmentType, ExcludedFields, IncludedFields> {
@@ -142,7 +142,7 @@ function createMetaState<
     permissions,
     customFields: unifiedMetadata.customFields || {},
     versionData: unifiedMetadata.versionData ?? null,
-    latestVersion: unifiedMetadata.latestVersion ?? createLatestVersion<T, K>(),
+    latestVersion: unifiedMetadata.latestVersion ?? createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
     author: unifiedMetadata.author ?? "Unknown",
     config: unifiedMetadata.config,
     baseUrl: unifiedMetadata.baseUrl,
@@ -162,7 +162,7 @@ export const createMeta = <
 >(
   meta: Partial<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
 ): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
-  const version = createLatestVersion<T, K>();
+  const version = createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>();
 
   const baseConfig = meta.baseConfig || {
     id: '',
@@ -193,7 +193,7 @@ export const createMeta = <
     version: version,
     lastUpdated: { 
       versionData: {},
-      latestVersion: createLatestVersion<T, K>(),
+      latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
       history: [], 
       timestamp: new Date(),
       versions: [], 

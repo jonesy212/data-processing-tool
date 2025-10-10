@@ -19,10 +19,10 @@ import { UnsubscribeDetails } from '@/app/event/DynamicEventHandlerExample';
 import { SnapshotStoreProps } from '@/app/snapshots//useSnapshotStore';
 import { Snapshots, SnapshotsArray } from '@/app/snapshots/LocalStorageSnapshotStore';
 import { Snapshot } from '@/app/snapshots/Snapshot';
+import { SnapshotContainerType } from '@/app/snapshots/SnapshotContainer';
+import { SnapshotLifecycleMethods } from '@/app/snapshots/SnapshotMethods';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { SnapshotWithCriteria } from '@/app/snapshots/SnapshotWithCriteria';
-import { SnapshotContainerType } from '@/app/snapshots/SnapshpshotContainer';
-import { SnapshotLifecycleMethods } from '@/app/snapshots/SnapshpshotMethods';
 import { Subscriber } from '@/app/subscribers/Subscriber';
 import { SubscriberCollection } from '@/app/users/SubscriberCollection';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
@@ -72,7 +72,7 @@ export interface OptionalSnapshotSubscriberHelpers<
     snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
     snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,
+    category?: Category,
     snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (
       snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
@@ -126,7 +126,7 @@ interface SnapshotSubscriberManagement<
     event: string | Event,
     callback: Callback<SnapshotContext<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     value: T
-  ) => [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields>;
+  ) => [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
    // Pattern 1: Detailed unsubscribe
   unsubscribeDetailed: (
@@ -170,7 +170,7 @@ interface SnapshotSubscriberManagement<
     event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
     value: T
-  ) => [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields>;
+  ) => [] | SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   /** Notify methods */
   notifySubscribers: (

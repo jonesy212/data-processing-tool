@@ -17,7 +17,7 @@ import {
 } from '@/config/BaseConfig';
 import { SharedMetadata } from '@/app/shared/SharedMetadata';
 import { TaskMetadata } from '@/server/database/MetaDataOptions';
-import UserRoles from '@/users/UserRoles';
+import UserRoles from '@/app/models/UserRoles';
 import React, { FormEvent, useState } from 'react';
 import ContentDetailsListItem from '@/app/components/models/content/ContentDetailsListItem';
 import ContentToolbar from '@/app/components/models/content/ContentToolbar';
@@ -33,12 +33,12 @@ interface Content<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > extends SharedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    BaseConfig<T, K, Meta, ExcludedFields> {
+    BaseConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string | number | undefined;
   title: string;
   description: string;
   subscriberId: string;
-  category: Category | undefined;
+  category?: Category;
   categoryProperties: string | CategoryProperties | undefined;
   timestamp: string | number | Date;
   length: number;

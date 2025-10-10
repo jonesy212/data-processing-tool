@@ -20,7 +20,7 @@ interface SharedMetadata<
     Partial<StatusMetadata>,
     Partial<ConfigMetadata>,
     SharedRelationshipData<K> {
-  version?: string | number | Version<T, K> | null;  
+  version?: string | number | Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;  
   lastUpdated?: Date | VersionHistory<T, K>; 
   latestVersion?: Pick<VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, "id" | "versionNumber" | "author" | "schema">;
   isActive?: boolean; 

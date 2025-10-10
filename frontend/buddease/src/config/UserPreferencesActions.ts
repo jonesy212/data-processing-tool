@@ -428,7 +428,91 @@ export const UserProfilePreferencesActions = {
 export type UserProfilePreferencesActionTypes =
   | ReturnType<typeof UserProfilePreferencesActions.setProfilePreferences>
   | ReturnType<typeof UserProfilePreferencesActions.setBioPreferences>
-  | ReturnType<typeof UserProfilePreferencesActions.setContactPreferences>
+  | import { createAction, PayloadAction } from "@reduxjs/toolkit";
+
+// Define the generic type for all actions
+type AppDevelopmentActionsType<
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
+> = {
+  addSubPhase: ReturnType<typeof createAction<string>>;
+  removeSubPhase: ReturnType<typeof createAction<string>>;
+  updateSubPhase: ReturnType<typeof createAction<{ subPhaseId: number; newDetails: any }>>;
+  
+  canTransitionTo: ReturnType<typeof createAction<{ nextPhase: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>>;
+  handleTransitionTo: ReturnType<typeof createAction<{ nextPhase: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>>;
+  
+  resetIdleTimeout: ReturnType<typeof createAction>;
+  activatePhase: ReturnType<typeof createAction>;
+  deactivatePhase: ReturnType<typeof createAction>;
+
+  fetchPhaseRequest: ReturnType<typeof createAction<number>>;
+  fetchPhaseSuccess: ReturnType<typeof createAction<{ phase: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>>;
+  fetchPhaseFailure: ReturnType<typeof createAction<{ error: string }>>;
+
+  updatePhaseRequest: ReturnType<typeof createAction<{ phaseId: number; phaseData: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>>;
+  updatePhaseSuccess: ReturnType<typeof createAction<{ phase: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> }>>;
+  updatePhaseFailure: ReturnType<typeof createAction<{ error: string }>>;
+
+  batchFetchPhasesRequest: ReturnType<typeof createAction>;
+  batchFetchPhasesSuccess: ReturnType<typeof createAction<{ phases: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] }>>;
+  batchFetchPhasesFailure: ReturnType<typeof createAction<{ error: string }>>;
+
+  batchUpdatePhasesRequest: ReturnType<typeof createAction<{ ids: number[]; newPhases: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] }>>;
+  batchUpdatePhasesSuccess: ReturnType<typeof createAction<{ phases: Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[] }>>;
+  batchUpdatePhasesFailure: ReturnType<typeof createAction<{ error: string }>>;
+
+  batchRemovePhasesRequest: ReturnType<typeof createAction<number[]>>;
+  batchRemovePhasesSuccess: ReturnType<typeof createAction<number[]>>;
+  batchRemovePhasesFailure: ReturnType<typeof createAction<{ error: string }>>;
+
+  updatePhaseDetails: ReturnType<typeof createAction<Phase<Data<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>>;
+  updatePhaseStatus: ReturnType<typeof createAction<"pending" | "inProgress" | "completed">>;
+  updatePhaseName: ReturnType<typeof createAction<string>>;
+};
+
+// Now define the constant
+export const AppDevelopmentActions: AppDevelopmentActionsType<any> = {
+  addSubPhase: createAction<string>("addSubPhase"),
+  removeSubPhase: createAction<string>("removeSubPhase"),
+  updateSubPhase: createAction<{ subPhaseId: number; newDetails: any }>("updateSubPhase"),
+
+  canTransitionTo: createAction<{ nextPhase: Phase<Data<any, any, any, any, any, any>> }>("canTransitionTo"),
+  handleTransitionTo: createAction<{ nextPhase: Phase<Data<any, any, any, any, any, any>> }>("handleTransitionTo"),
+
+  resetIdleTimeout: createAction("resetIdleTimeout"),
+  activatePhase: createAction("activatePhase"),
+  deactivatePhase: createAction("deactivatePhase"),
+
+  fetchPhaseRequest: createAction<number>("fetchPhaseRequest"),
+  fetchPhaseSuccess: createAction<{ phase: Phase<Data<any, any, any, any, any, any>> }>("fetchPhaseSuccess"),
+  fetchPhaseFailure: createAction<{ error: string }>("fetchPhaseFailure"),
+
+  updatePhaseRequest: createAction<{ phaseId: number; phaseData: Phase<Data<any, any, any, any, any, any>> }>("updatePhaseRequest"),
+  updatePhaseSuccess: createAction<{ phase: Phase<Data<any, any, any, any, any, any>> }>("updatePhaseSuccess"),
+  updatePhaseFailure: createAction<{ error: string }>("updatePhaseFailure"),
+
+  batchFetchPhasesRequest: createAction("batchFetchPhasesRequest"),
+  batchFetchPhasesSuccess: createAction<{ phases: Phase<Data<any, any, any, any, any, any>>[] }>("batchFetchPhasesSuccess"),
+  batchFetchPhasesFailure: createAction<{ error: string }>("batchFetchPhasesFailure"),
+
+  batchUpdatePhasesRequest: createAction<{ ids: number[]; newPhases: Phase<Data<any, any, any, any, any, any>>[] }>("batchUpdatePhasesRequest"),
+  batchUpdatePhasesSuccess: createAction<{ phases: Phase<Data<any, any, any, any, any, any>>[] }>("batchUpdatePhasesSuccess"),
+  batchUpdatePhasesFailure: createAction<{ error: string }>("batchUpdatePhasesFailure"),
+
+  batchRemovePhasesRequest: createAction<number[]>("batchRemovePhasesRequest"),
+  batchRemovePhasesSuccess: createAction<number[]>("batchRemovePhasesSuccess"),
+  batchRemovePhasesFailure: createAction<{ error: string }>("batchRemovePhasesFailure"),
+
+  updatePhaseDetails: createAction<Phase<Data<any, any, any, any, any, any>>>("updatePhaseDetails"),
+  updatePhaseStatus: createAction<"pending" | "inProgress" | "completed">("updatePhaseStatus"),
+  updatePhaseName: createAction<string>("updatePhaseName"),
+};
+ UserProfilePreferencesActions.setContactPreferences>
   | ReturnType<typeof UserProfilePreferencesActions.setAddressPreferences>
   | ReturnType<typeof UserProfilePreferencesActions.setSocialMediaPreferences>;
 

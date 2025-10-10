@@ -33,6 +33,8 @@ export const createHeaders = (): typeof HeadersConfig => {
 // Then use it in your clientNotificationMessages
 interface ClientNotificationMessages {
   // Existing messages
+  [key: string]: string;
+  
   FETCH_CLIENT_DETAILS_SUCCESS: string;
   FETCH_CLIENT_DETAILS_ERROR: string;
   UPDATE_CLIENT_DETAILS_SUCCESS: string;

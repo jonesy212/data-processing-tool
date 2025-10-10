@@ -143,11 +143,12 @@ interface SnapshotActionsTypes<
 
 // // Define action types with generics
 export type SnapshotStoreActionsTypes<
-  T extends BaseDataEntity, 
+  T extends BaseDataEntity = AppEntity,
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
-  ExcludedFields extends keyof T = DefaultExcludedFields<T> 
+  ExcludedFields extends keyof T = DefaultExcludedFields<T>,
+  IncludedFields extends keyof T = keyof T
 > = {
   addSnapshotToStore: ActionCreatorWithPayload<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>; 
   removeSnapshotFromStore: ActionCreatorWithPayload<string>;
@@ -381,7 +382,7 @@ const newTaskSnapshot: TaskSnapshot = {
     snapshotId: string,
     snapshot: TaskEntity | null,
     snapshotData: TaskEntity,
-    category: Category | undefined,
+    category?: Category,
     snapshots: TaskSnapshotsArray,
     type: string,
     event: SnapshotEvent<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
@@ -1018,7 +1019,7 @@ batchUpdateSnapshotsRequest: function (
   mapSnapshots: function (
     storeIds: number[],
     snapshotId: string,
-    category: Category | undefined,
+    category?: Category,
     timestamp: string | number | Date | undefined,
     type: string,
     event: SnapshotEvent<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
@@ -1028,7 +1029,7 @@ batchUpdateSnapshotsRequest: function (
     callback: (
       storeIds: number[],
       snapshotId: string,
-      category: Category | undefined,
+      category?: Category,
       timestamp: string | number | Date | undefined,
       type: string,
       event: SnapshotEvent<TaskEntity, TaskK, TaskMeta, TaskAttachment, TaskExcludedFields, TaskIncludedFields>,
@@ -1046,7 +1047,7 @@ batchUpdateSnapshotsRequest: function (
       payload: FetchSnapshotPayload<any>,
       snapshotStore: TaskSnapshotStore,
       payloadData: TaskEntity,
-      category: Category | undefined,
+      category?: Category,
       data: Data,
       delegate: TaskSnapshotWithCriteria[]
     ) => TaskSnapshot

@@ -47,7 +47,7 @@ interface VersionResult<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 > {
-  version: Version<T, K>;
+  version: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   versionInfo: ExtendedVersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 }
 
@@ -182,18 +182,18 @@ class VersionGenerator {
               retryAttempts: 3, // Example retry attempts
               name: "Project Name", // Example project name
               description: "Project Description", // Example project description
-              latestVersion: createLatestVersion<T, K>(), // Example latest version
+              latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), // Example latest version
               category: "Example Category", // Example category
               timestamp: new Date(), // Current timestamp
               createdBy: "user@example.com", // Example created by
               metadata: {} as UnifiedMetaDataOptions<
                 T,
                 BaseData<any, any, StructuredMetadata<any, any>, Attachment>,
-                StructuredMetadata<T, K>,
+                StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
                 never
               >, // Example metadata
               initialState: {} as InitializedState<T, K>, // Example initial state
-              meta: {} as StructuredMetadata<T, K>, // Example meta
+              meta: {} as StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, // Example meta
               mappedSnapshot: new Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>(), // Example mapped snapshot
               events: {} as EventManager<T, K>, // Example events
             },
@@ -232,7 +232,7 @@ class VersionGenerator {
         _structure: {},
         versionHistory: {
           versionData: {},
-          latestVersion: createLatestVersion<T, K>(),
+          latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
           history: [],
           timestamp: new Date()
         },

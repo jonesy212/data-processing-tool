@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { ComponentActions } from '@/ComponentActions';
+import { ComponentActions } from '@/app/actions/ComponentActions';
 
 const CreateComponentForm = ({ ComponentActions: any }: { ComponentActions: typeof ComponentActions }) => { // Specify the correct type for ComponentActions
     const dispatch = useDispatch();

@@ -103,7 +103,7 @@ if (typeof documentId === "string" || typeof documentId === "object") {
 
 // Combined function to load drawing from the database
 async function loadDrawingFromDatabase(
-  documentId: DocumentData<T, K, Meta, ExcludedFields> | DocumentId
+  documentId: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | DocumentId
 ): Promise<Drawing | string> {
   try {
     // Check if the documentId is of type DocumentData

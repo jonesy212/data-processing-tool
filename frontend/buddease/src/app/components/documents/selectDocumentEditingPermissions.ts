@@ -1,6 +1,6 @@
 // selectDocumentEditingPermissions.ts
+import { UserRoleEnum } from '@/app/models/UserRoles';
 import { DocumentEditingPermissions } from "@/app/users/Permission";
-import { UserRoleEnum } from "@/users/UserRoles";
 import { Permission } from "./Permission";
 
 // Define document editing permission levels

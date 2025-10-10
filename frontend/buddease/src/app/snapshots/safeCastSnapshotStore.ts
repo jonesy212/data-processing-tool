@@ -7,7 +7,7 @@ import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from
 import { StructuredMetadata } from "@/config/s/StructuredMetadata";
 import { SchemaField } from "@/server/database/SchemaField";
 import { SnapshotUnion, SnapshotsArray } from "./LocalStorageSnapshotStore";
-import { Snapshot } from "./Snapshot";
+import { Snapshot } from '@/app/snapshots/Snapshot';
 import { SnapshotData } from "./SnapshotData";
 import { SnapshotEvents } from "./SnapshotEvents";
 import SnapshotStore from "./SnapshotStore";
@@ -119,7 +119,7 @@ function safeCastSnapshotStore<
       snapshotId: string,
       snapshotData: SnapshotData<SnapshotUnion<BaseData, Meta>, K>,
       savedState: SnapshotStore<SnapshotUnion<BaseData, Meta>, K>,
-      category: Category | undefined,
+      category?: Category,
       callback: (snapshot: SnapshotUnion<BaseData, Meta>) => void,
       snapshots: SnapshotsArray<SnapshotUnion<BaseData, Meta>>,
       type: string,

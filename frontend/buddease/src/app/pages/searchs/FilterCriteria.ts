@@ -36,6 +36,7 @@ import {
   TeamStatus,
   TodoStatus,
 } from "@/app/models/data/StatusType";
+import UserRoles from '@/app/models/UserRoles';
 import { CategoryProperties } from "@/app/personas/ScenarioBuilder";
 import { Snapshot, SnapshotWithCriteria } from '@/app/snapshots';
 import { FilterState } from "@/app/state/redux/slices/FilterSlice";
@@ -49,7 +50,6 @@ import { useMetadata } from '@/config/useMetadata';
 import { FetchOptions, fetchUserAreaDimensions } from '@/layouts/fetchUserAreaDimensions';
 import { Filter } from "@/pages/searches/Filter";
 import { SecurityFeatureEnum } from "@/server/security/SecurityFeatureEnum";
-import UserRoles from "@/users/UserRoles";
 import { Pagination } from '@refinedev/core';
 
 
@@ -377,7 +377,7 @@ const criteria: FilterCriteria = {
   const currentMetadata = useMetadata<
     T, 
     K, 
-    StructuredMetadata<T, K>, 
+    StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
     never, 
     Attachment
   >({

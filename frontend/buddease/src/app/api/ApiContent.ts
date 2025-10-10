@@ -248,7 +248,7 @@ const getMetadataForContent = async <
   IncludedFields extends keyof T = keyof T>(
   contentId: string,
   contentState: ContentState // Include contentState in the function parameters
-): Promise<StructuredMetadata<T, K>> => {
+): Promise<StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   try {
     // Make API call to fetch metadata for the content
     const getMetadataEndpoint = `${API_BASE_URL}/metadata/${contentId}`;

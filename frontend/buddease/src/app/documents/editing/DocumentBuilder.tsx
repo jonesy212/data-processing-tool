@@ -35,7 +35,7 @@ import { DocumentSize, ProjectPhaseTypeEnum } from "@/app/models/data/StatusType
 import { K, Meta, T, } from "@/app/models/data/dataStoreMethods";
 import { Team } from "@/app/models/teams/Team";
 import { fetchUserAreaDimensions } from '@/app/pages/layouts/fetchUserAreaDimensions';
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import PromptViewer from "@/app/prompts/PromptViewer";
 import { WritableDraft } from "@/app/state/redux/ReducerGenerator";
 import {
@@ -58,7 +58,7 @@ import AppVersionImpl from "@/app/versions/AppVersion";
 import { Version } from "@/app/versions/Version";
 import { VersionData } from "@/app/versions/VersionData";
 import { getCurrentAppInfo } from "@/app/versions/VersionGenerator";
-import { BaseDataEntity, DefaultExcludedFields } from "@/config/BaseConfig";
+import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { DocumentBuilderConfig } from "@/config/DocumentBuilderConfig";
 import { StructuredMetadata } from "@/config/StructuredMetadata";
 import { AppStructureItem } from "@/config/appStructure/AppStructure";
@@ -104,7 +104,7 @@ const checksum = computeChecksum(versionData);
 type ContentStructuredMetadata<
   T extends BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -122,7 +122,7 @@ type WritableTodoSubtasks = WritableDraft<TodoSubtasks>;
 interface DocumentData<
   T extends BaseDataEntity = BaseDataEntity,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
@@ -161,11 +161,11 @@ interface DocumentData<
   currentContent?: ContentState;
   currentMeta: Meta;
   previousMeta?: Meta;
-  previousMetadata?: UnifiedMetadata<T, K, Meta, ExcludedFields>;
-  currentMetadata: UnifiedMetadata<T, K, Meta, ExcludedFields>;
+  previousMetadata?: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   accessHistory: AccessHistory[];
-  documentPhase?: DocumentPhase<T, K, Meta, ExcludedFields>;
-  version?: Version<T, K, Meta, ExcludedFields> | null;
+  documentPhase?: DocumentPhase<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
+  version?: Version<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
   versionData?: VersionData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   visibility: AllTypes;
   url?: string;
@@ -438,7 +438,7 @@ const resetEditorContent = () => {
 // Assuming you have some way to retrieve or maintain your metadata
 const getMetadataForContentState = (
   contentState: CustomContentState
-): StructuredMetadata<T, K> => {
+): StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
   // Replace this with your actual logic to extract or retrieve metadata based on contentState
   return {
     description: "",
@@ -538,7 +538,7 @@ export const saveDocument = createAsyncThunk(
 const extractMetadata = async (
   contentId: string,
   contentState: ContentState
-): Promise<UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, ExcludedFields<T, K>>> => {
+): Promise<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> => {
   const contentString = contentState.getPlainText();
   return await getMetadataFromPlainText(contentId, contentString);
 };
@@ -549,7 +549,7 @@ const extractMetadata = async (
 
 
 
- const updateMetadata = (newMetadata: UnifiedMetadata<T, K, Meta, ExcludedFields>) => {
+ const updateMetadata = (newMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => {
   // Save current metadata as previous before updating
   setPreviousMetadata(currentMetadata);
   // Update the current metadata
@@ -561,8 +561,8 @@ const extractMetadata = async (
 const handleMetadataExtraction = async (
   contentState: ContentState,
   previousContentState: ContentState,
-  setCurrentMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, ExcludedFields<T, K>>>>,
-  setPreviousMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions<T, K, StructuredMetadata<T, K>, ExcludedFields<T, K>>>>,
+  setCurrentMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>>,
+  setPreviousMetadata: React.Dispatch<React.SetStateAction<UnifiedMetaDataOptions<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>>,
   contentId?: string 
 ) => {
 
@@ -601,7 +601,7 @@ const convertedAccessHistory = options.accessHistory.map(
 
 
 // Now you can use these values in DocumentBuilderProps
-const documentBuilderProps: DocumentBuilderProps<T, K, StructuredMetadata<T, K>, ExcludedFields<T, K>> = {
+const documentBuilderProps: DocumentBuilderProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> = {
   isDynamic: true,
   documents: [],
   projectPath: projectPath,
@@ -1277,7 +1277,7 @@ const DocumentBuilder: React.FC<DocumentBuilderProps> = ({
         title: "",
         items: [],
         data: {},
-        latestVersion: createLatestVersion<T, K>(),
+        latestVersion: createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(),
         description: "",
         subscriberId: "",
        

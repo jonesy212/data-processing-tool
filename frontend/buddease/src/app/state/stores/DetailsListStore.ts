@@ -11,7 +11,7 @@ import NOTIFICATION_MESSAGES from "@/app/features/support/NotificationMessages";
 import { BaseData, Data } from '@/app/models/data/Data';
 import { Team } from "@/app/models/teams/Team";
 import { Participant } from "@/app/pages/management/ParticipantManagementPage";
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import SnapshotStore from "@/app/snapshots/SnapshotStore";
 import { makeAutoObservable } from "mobx";
 import { FC } from "react";
@@ -58,10 +58,10 @@ import { useMetadata } from "@/config/useMetadata";
 import { UnifiedMetadata } from "@/server/database/MetaDataOptions";
 
 const { notify } = useNotification();
-const { latestVersion = createLatestVersion<T, K>(), ...rest } = data;
+const { latestVersion = createLatestVersion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(), ...rest } = data;
 const area = fetchUserAreaDimensions().toString()
 const currentMetadata: UnifiedMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMetadata<T, K>(area)
-const currentMeta: StructuredMetadata<T, K> = useMeta<T, K>(area)
+const currentMeta: StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = useMeta<T, K>(area)
 
 // Union type of all status enums
 export type AllStatus =
@@ -117,7 +117,7 @@ interface DetailsItemExtended<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends DataDetails<T, K, Meta, ExcludedFields> {
+> extends DataDetails<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   id: string | number;
   _id?: string;
   title?: string;
@@ -128,12 +128,12 @@ interface DetailsItemExtended<
   participants?: Participant[];
   members?: Member[];
   description?: string | null | undefined;
-  assignedProjects?: Project<T, K, Meta, ExcludedFields>[];
+  assignedProjects?: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[];
   analysisType?: AnalysisTypeEnum | null;
   isVisible?: boolean;
   query?: string;
   reassignedProjects?: {
-    project: Project<T, K, Meta, ExcludedFields>;
+    project: Project<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     previousTeam: Team;
     reassignmentDate: Date;
   }[];
@@ -186,7 +186,7 @@ export interface DetailsListStore<
     | TaskStatus.Canceled
     | TaskStatus.Scheduled
     | undefined;
-  snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>;
+  snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   NOTIFICATION_MESSAGE: string;
   NOTIFICATION_MESSAGES: typeof NOTIFICATION_MESSAGES;
   updateDetailsTitle: (title: string, newTitle: string) => void;
@@ -245,7 +245,7 @@ class DetailsListStoreClass <
   NOTIFICATION_MESSAGES = NOTIFICATION_MESSAGES;
 
   constructor( 
-    storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+    storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) {
     makeAutoObservable(this);
@@ -280,7 +280,7 @@ class DetailsListStoreClass <
   }
 
   private async initSnapshotStore(
-    storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+    storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ) {
     const {
@@ -303,7 +303,7 @@ class DetailsListStoreClass <
       endpointCategory,
     } = storeProps;
   
-    const snapshotStoreProps: SnapshotStoreProps<T, K, Meta, ExcludedFields> = {
+    const snapshotStoreProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
       initialState,
       id: storeId.toString(),
       storeId,
@@ -326,7 +326,7 @@ class DetailsListStoreClass <
     };
     
     // Initialize the snapshot store using snapshotStoreProps
-    this.snapshotStore = new SnapshotStore<T, K, Meta, ExcludedFields>({
+    this.snapshotStore = new SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>({
       storeId: snapshotStoreProps.storeId,
       name: snapshotStoreProps.name,
       version: snapshotStoreProps.version,
@@ -370,7 +370,7 @@ class DetailsListStoreClass <
         setCategory: snapConfig?.setCategory || (() => {}),
         applyStoreConfig: snapConfig?.applyStoreConfig || (() => {}),
         generateId: snapConfig?.generateId || (() => 'default-generated-id'),
-        snapshotData: snapConfig?.snapshotData || (() => ({} as SnapshotDataType<T, K, Meta, ExcludedFields>)),
+        snapshotData: snapConfig?.snapshotData || (() => ({} as SnapshotDataType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)),
         getSnapshotItems: snapConfig?.getSnapshotItems || (() => []),
 
 
@@ -1205,7 +1205,7 @@ const useDetailsListStore = <
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
-    storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>,
+    storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): DetailsListStore<T, K> => {
   return new DetailsListStoreClass(storeProps, snapConfig);

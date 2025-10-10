@@ -43,7 +43,7 @@ class FeatureToggleStoreClass implements FeatureToggleStore {
       "Admin login successful",
       NOTIFICATION_MESSAGES.Login.LOGIN_SUCCESS,
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     );
 
     // Use FocusManager to manage focusable elements
@@ -91,7 +91,7 @@ class FeatureToggleStoreClass implements FeatureToggleStore {
       "Success importing features",
       NOTIFICATION_MESSAGES.FeatureToggle.FEATURE_IMPORT_SUCCESS,
       new Date(),
-      NotificationTypeEnum.OperationSuccess
+      NotificationTypeEnum.OPERATION_SUCCESS
     );
   }
 
@@ -102,7 +102,7 @@ class FeatureToggleStoreClass implements FeatureToggleStore {
       "Error import feature",
       NOTIFICATION_MESSAGES.FeatureToggle.FEATURE_IMPORT_FAILURE,
       new Date(),
-      NotificationTypeEnum.OperationError
+      NotificationTypeEnum.OPERATION_ERROR
     );
   }
 }

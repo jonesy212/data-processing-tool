@@ -1,5 +1,4 @@
 import { getDataVersions } from '@/app/api/ApiData';
-import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { SnapshotManager } from "@/app/hooks/useSnapshotManager";
 import { Category } from '@/app/libraries/categories/generateCategoryProperties';
 import { BaseData, Data } from '@/app/models/data/Data';
@@ -11,12 +10,13 @@ import { DataStoreMethods } from '@/app/projects/DataAnalysisPhase/DataProcessin
 import { DataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
 import { Callback, CoreSnapshot, Result, Snapshot, SnapshotContainer, SnapshotData, SnapshotItem, Snapshots, SnapshotStoreConfig, SnapshotStoreProps, SnapshotUnion, SnapshotWithCriteria } from '@/app/snapshots';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { InitializedDataStore } from '@/app/snapshots/SnapshotStoreOptions';
 import { subscriber, Subscriber } from "@/app/subscribers/Subscriber";
 import { Tag } from '@/appp/models/tracker/Tag';
+import { StructuredMetadata } from '@/config/StructuredMetadata';
 import { NotificationType } from '@/context/NotificationContext';
 import { RealtimeDataItem } from '@/models/realtime/RealtimeData';
 import { Payload } from '@/server/database/Payload';
-import { InitializedDataStore } from '@/app/snapshots/SnapshpshotStoreOptions';
 import { SubscriberCollection } from '@/users/SubscriberCollection';
 
 
@@ -25,14 +25,14 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   value: "42",
   category: "sample snapshot",
   snapshotStoreConfig: {} as SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-  getSnapshotItems: function (): (SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotItem<T, K, Meta, ExcludedFields>)[] {
+  getSnapshotItems: function (): (SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>)[] {
     throw new Error("Function not implemented.");
   },
-  defaultSubscribeToSnapshots: function (snapshotId: string, callback: (snapshots: Snapshots<BaseData>) => Subscriber<T, K, Meta, ExcludedFields> | null, snapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined): void {
+  defaultSubscribeToSnapshots: function (snapshotId: string, callback: (snapshots: Snapshots<BaseData>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null, snapshot?: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined): void {
     throw new Error("Function not implemented.");
   },
   versionInfo: null,
-  transformSubscriber: function (subscriberId: string, sub: Subscriber<T, K, Meta, ExcludedFields>): Subscriber<T, K, Meta, ExcludedFields> {
+  transformSubscriber: function (subscriberId: string, sub: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     throw new Error("Function not implemented.");
   },
   transformDelegate: function (): Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
@@ -78,7 +78,7 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   getFrontendVersion: function (): Promise<string | number | undefined> {
     throw new Error("Function not implemented.");
   },
-  fetchData: function (endpoint: string, id: number): Promise<SnapshotStore<T, K, Meta, ExcludedFields>[]> {
+  fetchData: function (endpoint: string, id: number): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     throw new Error("Function not implemented.");
   },
   defaultSubscribeToSnapshot: function (snapshotId: string, callback: Callback<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): string {
@@ -90,10 +90,10 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   removeItem: function (key: string | number): Promise<void> {
     throw new Error("Function not implemented.");
   },
-  getSnapshot: function (snapshot: (id: string) => Promise<{ category: any; timestamp: any; id: any; snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>; data: BaseData; }> | undefined): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
+  getSnapshot: function (snapshot: (id: string) => Promise<{ category: any; timestamp: any; id: any; snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; data: BaseData; }> | undefined): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     throw new Error("Function not implemented.");
   },
-  getSnapshotSuccess: function (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<SnapshotStore<T, K, Meta, ExcludedFields>> {
+  getSnapshotSuccess: function (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Promise<SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     throw new Error("Function not implemented.");
   },
   setItem: function (key: T, value: BaseData): Promise<void> {
@@ -102,7 +102,7 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   getDataStore: (): Promise<InitializedDataStore<BaseData<any>>> => {
     throw new Error("Function not implemented.");
   },
-  addSnapshotSuccess: function (snapshot: BaseData, subscribers: Subscriber<T, K, Meta, ExcludedFields>[]): void {
+  addSnapshotSuccess: function (snapshot: BaseData, subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): void {
     throw new Error("Function not implemented.");
   },
   deepCompare: function (objA: any, objB: any): boolean {
@@ -111,13 +111,13 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   shallowCompare: function (objA: any, objB: any): boolean {
     throw new Error("Function not implemented.");
   },
-  getDataStoreMethods: function (): DataStoreMethods<T, K, Meta, ExcludedFields> {
+  getDataStoreMethods: function (): DataStoreMethods<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
     throw new Error("Function not implemented.");
   },
   getDelegate: function (context: {
     useSimulatedDataSource: boolean;
     simulatedDataSource: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
-  }): Promise<DataStore<T, K, Meta, ExcludedFields>[]> {
+  }): Promise<DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     throw new Error("Function not implemented.");
   },
   determineCategory: function (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null | undefined): string {
@@ -126,13 +126,13 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   determinePrefix: function <T extends Data<T>>(snapshot: T | null | undefined, category: string): string {
     throw new Error("Function not implemented.");
   },
-  removeSnapshot: function (snapshotToRemove: SnapshotStore<T, K, Meta, ExcludedFields>): void {
+  removeSnapshot: function (snapshotToRemove: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     throw new Error("Function not implemented.");
   },
   addSnapshotItem: function (item: Snapshot<any, any> | SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     throw new Error("Function not implemented.");
   },
-  addNestedStore: function (store: SnapshotStore<T, K, Meta, ExcludedFields>): void {
+  addNestedStore: function (store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     throw new Error("Function not implemented.");
   },
   clearSnapshots: function (): void {
@@ -141,8 +141,8 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   addSnapshot: function (
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
-    subscribers: Subscriber<T, K, Meta, ExcludedFields>[] 
-      & Record<string, Subscriber<T, K, Meta, ExcludedFields>>
+    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] 
+      & Record<string, Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
   ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined> {
     throw new Error("Function not implemented.");
   },
@@ -152,7 +152,7 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
     additionalData: any,
     category?:  Category,
     callback?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
-    snapshotData?: SnapshotStore<T, K, Meta, ExcludedFields>,
+    snapshotData?: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null => { 
     throw new Error("Function not implemented.");
@@ -163,11 +163,11 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
     initialData: T,
     snapshotData: SnapshotData<any, K>,
     snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    category: Category | undefined,    additionalData: any
+    category?: Category,    additionalData: any
   ): Promise<Result<Snapshot<T, K, never>>> {
     throw new Error("Function not implemented.");
   },
-  setSnapshotSuccess: function (snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, subscribers: ((data: Subscriber<T, K, Meta, ExcludedFields>) => void)[]): void {
+  setSnapshotSuccess: function (snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, subscribers: ((data: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void)[]): void {
     throw new Error("Function not implemented.");
   },
   setSnapshotFailure: function (error: Error): void {
@@ -176,17 +176,17 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   updateSnapshots: function (): void {
     throw new Error("Function not implemented.");
   },
-  updateSnapshotsSuccess: function (snapshotData: (subscribers: Subscriber<T, K, Meta, ExcludedFields>[], snapshot: Snapshots<BaseData>) => void): void {
+  updateSnapshotsSuccess: function (snapshotData: (subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], snapshot: Snapshots<BaseData>) => void): void {
     throw new Error("Function not implemented.");
   },
   updateSnapshotsFailure: function (error: Payload): void {
     throw new Error("Function not implemented.");
   },
   initSnapshot: function (
-    snapshot: SnapshotStore<T, K, Meta, ExcludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
+    snapshot: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null,
       snapshotId: string | number | null,
       snapshotData: SnapshotData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       snapshotConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       callback: (snapshotStore: SnapshotStore<any, any>) => void,
@@ -197,7 +197,7 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   ): void {
     throw new Error("Function not implemented.");
   },
-  takeSnapshot: function (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, subscribers: Subscriber<T, K, Meta, ExcludedFields>[]): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; }> {
+  takeSnapshot: function (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]): Promise<{ snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; }> {
     throw new Error("Function not implemented.");
   },
   takeSnapshotSuccess: function (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
@@ -253,7 +253,7 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   ): Snapshot<BaseData<any, any, any>, any> | undefined {
     throw new Error("Function not implemented.");
   },
-  getSubscribers: function (subscribers: Subscriber<T, K, Meta, ExcludedFields>[], snapshots: Snapshots<BaseData>): Promise<{ subscribers: Subscriber<T, K, Meta, ExcludedFields>[]; snapshots: Snapshots<BaseData>; }> {
+  getSubscribers: function (subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], snapshots: Snapshots<BaseData>): Promise<{ subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; snapshots: Snapshots<BaseData>; }> {
     throw new Error("Function not implemented.");
   },
   notify: function (
@@ -270,10 +270,10 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
 
   notifySubscribers: function (
     message: string,
-    subscribers: Subscriber<T, K, Meta, ExcludedFields>[],
-    callback: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, ExcludedFields>[],
+    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    callback: (data: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
     data: Partial<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>
-  ): Promise<Subscriber<T, K, StructuredMetadata<T, K>>[]> {
+  ): Promise<Subscriber<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>[]> {
     throw new Error("Function not implemented.");
   },
   getSnapshots: function (category: string, data: Snapshots<BaseData>): void {
@@ -284,16 +284,16 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
     snapshotData: T,
     timestamp: string,
     type: string,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: number,
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
-    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
-    dataStoreMethods: DataStore<T, K, Meta, ExcludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    category?: Category,    categoryProperties: CategoryProperties | undefined,
+    dataStoreMethods: DataStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: T,
     filter?: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => boolean,
     dataCallback?: (
-      subscribers: Subscriber<T, K, Meta, ExcludedFields>[],
-      snapshots: Snapshots<T, K, Meta, ExcludedFields>
+      subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+      snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => Promise<SnapshotUnion<T, K, Meta>[]>
   ): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]> {
     throw new Error("Function not implemented.");
@@ -306,22 +306,22 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
     snapshotData: (
       snapshotIds: string[],
       subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-      snapshots: Snapshots<T, K, Meta, ExcludedFields>
+      snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => Promise<{
       subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-      snapshots: Snapshots<T, K, Meta, ExcludedFields>; // Include snapshots here for consistency
+      snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Include snapshots here for consistency
     }>
-  ): Promise<Snapshots<T, K, Meta, ExcludedFields>> {
+  ): Promise<Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
     throw new Error("Function not implemented.");
   },
   batchTakeSnapshotsRequest: function (
     criteria: CriteriaType,
     snapshotData: (
       snapshotIds: string[],
-      snapshots: Snapshots<T, K, Meta, ExcludedFields>,
-      subscribers: Subscriber<T, K, Meta, ExcludedFields>[]
+      snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+      subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
     ) => Promise<{
-      subscribers: Subscriber<T, K, Meta, ExcludedFields>[]
+      subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
     }>
   ): Promise<void> {
     throw new Error("Function not implemented.");
@@ -330,29 +330,29 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
     snapshotData: (subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     ) => Promise<{
       subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
-      snapshots: Snapshots<T, K, Meta, ExcludedFields>
+      snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
     }>,
-    snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>
+    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<void> {
     throw new Error("Function not implemented.");
   },
-  filterSnapshotsByStatus: (status: StatusType): Snapshots<T, K, Meta, ExcludedFields>  => {
+  filterSnapshotsByStatus: (status: StatusType): Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>  => {
     throw new Error("Function not implemented.");
   },
-  filterSnapshotsByCategory:(category: Category): Snapshots<T, K, Meta, ExcludedFields> => {
+  filterSnapshotsByCategory:(category: Category): Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
     throw new Error("Function not implemented.");
   },
-  filterSnapshotsByTag:  (tag: Tag<T, K, Meta, ExcludedFields>): Snapshots<T, K, Meta, ExcludedFields> => {
+  filterSnapshotsByTag:  (tag: Tag<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> => {
     throw new Error("Function not implemented.");
   },
   batchFetchSnapshotsSuccess:function (
       subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
-      snapshots: Snapshots<T, K, Meta, ExcludedFields>
+      snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): void {
     throw new Error("Function not implemented.");
   },
   batchFetchSnapshotsFailure: function ( date: Date,
-    snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>,
+    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     payload: { error: Error; }
   ): void {
@@ -360,12 +360,12 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   },
   batchUpdateSnapshotsSuccess: function (
     subscribers: SubscriberCollection<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, 
-    snapshots: Snapshots<T, K, Meta, ExcludedFields>): void {
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     throw new Error("Function not implemented.");
   },
   batchUpdateSnapshotsFailure: function (date: Date,
     snapshotId: string | number | null,
-    snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>,
+    snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     payload: { error: Error; }
   ): void {
@@ -375,9 +375,9 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
     id: number,
     snapshotId: string,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
-    snapshots: Snapshots<T, K, Meta, ExcludedFields>,
-  ): Promise<{ snapshots: Snapshots<T, K, Meta, ExcludedFields> }> {
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+  ): Promise<{ snapshots: Snapshots<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> }> {
     throw new Error("Function not implemented.");
   },
   handleSnapshotSuccess: function (
@@ -389,7 +389,7 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   },
   getSnapshotId: function (
     key: string  | T,
-    snapshot: SnapshotData<T, K, StructuredMetadata<T, K>, never>
+    snapshot: SnapshotData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>
   ): string {
     throw new Error("Function not implemented.");
   },
@@ -423,7 +423,7 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   },
   getChildren: function (
     id: string,
-    childSnapshot: Snapshot<T, K, StructuredMetadata<T, K>, never>
+    childSnapshot: Snapshot<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, never>
   ): CoreSnapshot<T, K, never>[] {
     throw new Error("Function not implemented.");
   },
@@ -439,7 +439,7 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   ): boolean {
     throw new Error("Function not implemented.");
   },
-  dataItems: (): RealtimeDataItem<T, K, Meta, ExcludedFields>[] | null => { 
+  dataItems: (): RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null => { 
     throw new Error("Function not implemented.");
   },
   newData: null,
@@ -466,34 +466,34 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
     throw new Error("Function not implemented.");
   },
   stores: (
-    storeProps: SnapshotStoreProps<T, K, Meta, ExcludedFields>
-  ): SnapshotStore<T, K, Meta, ExcludedFields>[]=> {
+    storeProps: SnapshotStoreProps<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+  ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]=> {
     throw new Error("Function not implemented.");
   },
   getStore: function (    storeId: number,
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string | null,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotStoreConfig: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
     event: Event
-  ): SnapshotStore<T, K, Meta, ExcludedFields> | null {
+  ): SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null {
     throw new Error("Function not implemented.");
   },
-  addStore: function (storeId: number, snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>, snapshotId: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, type: string, event: Event): void | null {
+  addStore: function (storeId: number, snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotId: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, type: string, event: Event): void | null {
     throw new Error("Function not implemented.");
   },
 
   mapSnapshot: function (
     id: number,
     storeId: string | number,
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
-    snapshotContainer: SnapshotContainer<T, K, Meta, ExcludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    snapshotContainer: SnapshotContainer<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
     criteria: CriteriaType,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     type: string,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void,
     mapFn: (item: T) => T,
     isAsync?: boolean // Flag to determine behavior
@@ -525,24 +525,24 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   mapSnapshots: async function <U, V>(
     storeIds: number[],
     snapshotId: string,
-    category: Category | undefined,    categoryProperties: CategoryProperties | undefined,
+    category?: Category,    categoryProperties: CategoryProperties | undefined,
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     timestamp: string | number | Date | undefined,
     type: string,
-    event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+    event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     id: number,
-    snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     data: K,
     callback: (
       storeIds: number[],
       snapshotId: string,
-      category: Category | undefined,      categoryProperties: CategoryProperties | undefined,
+      category?: Category,      categoryProperties: CategoryProperties | undefined,
       snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       timestamp: string | number | Date | undefined,
       type: string,
-      event: SnapshotEvent<T, K, Meta, ExcludedFields>,
+      event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       id: number,
-      snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       data: V,
       index: number,
       versionedData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined // Pass versioned data to callback
@@ -577,7 +577,7 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
   },
   
   
-  removeStore: function (storeId: number, store: SnapshotStore<T, K, Meta, ExcludedFields>, snapshotId: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, type: string, event: Event): void | null {
+  removeStore: function (storeId: number, store: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotId: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, type: string, event: Event): void | null {
     throw new Error("Function not implemented.");
   },
   unsubscribe: function (
@@ -598,13 +598,13 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
     callback: (
       snapshotId: string,
       payload: FetchSnapshotPayload<T> | undefined,
-      snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>,
+      snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
       payloadData: T |  BaseData<any>,
-      category: Category | undefined,
+      category?: Category,
       categoryProperties: CategoryProperties | undefined,
       timestamp: Date,
       data: T,
-      delegate: SnapshotWithCriteria<T, K, Meta, ExcludedFields>[]
+      delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]
     ) => Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   ): Promise<{
     id: string; 
@@ -613,37 +613,37 @@ const sampleSnapshot: Snapshot<T, K, Meta<T>> = {
     timestamp: Date; 
     snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
     data: BaseData;
-    delegate: SnapshotWithCriteria<T, K, Meta, ExcludedFields>[]; 
+    delegate: SnapshotWithCriteria<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; 
   }> {
     throw new Error("Function not implemented.");
   },
-  addSnapshotFailure: function (snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: { error: Error; }): void {
+  addSnapshotFailure: function (snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: { error: Error; }): void {
     throw new Error("Function not implemented.");
   },
-  configureSnapshotStore: function (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>, snapshotId: string, data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>, dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[], newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: ConfigureSnapshotStorePayload<BaseData>, store: SnapshotStore<any, any>, callback: (snapshotStore: SnapshotStore<T, K, Meta, ExcludedFields>) => void): void | null {
+  configureSnapshotStore: function (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotId: string, data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>, events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>, dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[], newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: ConfigureSnapshotStorePayload<BaseData>, store: SnapshotStore<any, any>, callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): void | null {
     throw new Error("Function not implemented.");
   },
-  updateSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: { error: Error; }): void | null {
+  updateSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: { error: Error; }): void | null {
     throw new Error("Function not implemented.");
   },
-  createSnapshotFailure: function (snapshotId: string, snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: { error: Error; }): Promise<void> {
+  createSnapshotFailure: function (snapshotId: string, snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: { error: Error; }): Promise<void> {
     throw new Error("Function not implemented.");
   },
-  createSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: { error: Error; }): void | null {
+  createSnapshotSuccess: function (snapshotId: string, snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: { error: Error; }): void | null {
     throw new Error("Function not implemented.");
   },
-  createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotManager: SnapshotManager<T, K, Meta, ExcludedFields>, payload: CreateSnapshotsPayload<T, K, Meta, ExcludedFields>, callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null, snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined, category?: string | symbol | Category): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null {
+  createSnapshots: function (id: string, snapshotId: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotManager: SnapshotManager<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, payload: CreateSnapshotsPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, callback: (snapshots: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]) => void | null, snapshotDataConfig?: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | undefined, category?: string | symbol | Category): Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null {
     throw new Error("Function not implemented.");
   },
-  onSnapshot: function (snapshotId: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, type: string, event: SnapshotEvent<T, K, Meta, ExcludedFields>, callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): void {
+  onSnapshot: function (snapshotId: string, snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, type: string, event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, callback: (snapshot: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void): void {
     throw new Error("Function not implemented.");
   },
-  onSnapshots: function (snapshotId: string, snapshots: Snapshots<BaseData>, type: string, event: SnapshotEvent<T, K, Meta, ExcludedFields>, callback: (snapshots: Snapshots<BaseData>) => void): void {
+  onSnapshots: function (snapshotId: string, snapshots: Snapshots<BaseData>, type: string, event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, callback: (snapshots: Snapshots<BaseData>) => void): void {
     throw new Error("Function not implemented.");
   },
   label: undefined,
   events: undefined,
-  handleSnapshot: function (id: string, snapshotId: string, snapshot: BaseData | null, snapshotData: BaseData, category: symbol | string | Category | undefined, callback: (snapshot: BaseData) => void, snapshots: Snapshots<Data>, type: string, event: SnapshotEvent<T, K, Meta, ExcludedFields>, snapshotContainer?: BaseData | undefined, snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
+  handleSnapshot: function (id: string, snapshotId: string, snapshot: BaseData | null, snapshotData: BaseData, category: symbol | string | Category | undefined, callback: (snapshot: BaseData) => void, snapshots: Snapshots<Data>, type: string, event: SnapshotEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, snapshotContainer?: BaseData | undefined, snapshotStoreConfig?: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | undefined): Promise<Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null> {
     throw new Error("Function not implemented.");
   },
   meta: undefined

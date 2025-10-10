@@ -19,7 +19,7 @@ class TrackerService {
 
   
   // Method to initiate tracking for all trackers
-  startTrackingAll(file: DocumentData<T, K, Meta, ExcludedFields>): void {
+  startTrackingAll(file: DocumentData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>): void {
     this.trackers.forEach((tracker: Tracker) => {
       tracker.trackFileChanges(file);
       tracker.trackFolderChanges();

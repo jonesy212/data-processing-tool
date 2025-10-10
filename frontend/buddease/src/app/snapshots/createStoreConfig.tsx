@@ -24,65 +24,77 @@ import { ConfigureSnapshotStorePayload } from "./SnapshotConfig";
 
 // Function to transform config options
 function createStoreConfig<
-  U extends BaseDataEntity,  // ← Add <any>
-  K extends U = U,
-  Meta extends StructuredMetadata<U, K> = StructuredMetadata<U, K>,  // ← Add Meta
-  ExcludedFields extends keyof U = never
+  T extends BaseDataEntity,
+  K extends T = T,
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
+  AttachmentType extends Attachment = Attachment,
+  ExcludedFields extends keyof T = never,
+  IncludedFields extends keyof T = keyof T
 >(
-  config: SnapshotStoreConfig<U, K, Meta, ExcludedFields>  // ← Use Meta instead of StructuredMetadata<U, K>
-): SnapshotStoreConfig<U, K, ConvertMeta<U, K>, ExcludedFields> {
-  // Transform the data property
-  const transformedData: U = transformData<U, K, Meta, ExcludedFields>(config.data as U);  // ← Add Meta and ExcludedFields
+  config: SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+): SnapshotStoreConfig<T, K, ConvertMeta<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ExcludedFields> {
+  
+  const transformedData: T = transformData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+    config.data as T
+  );
 
-  // Use the boolean check to see if tempData is compatible
-  const tempData = isCompatibleTempData<U, K, Meta, ExcludedFields>(config.tempData) ? config.tempData : undefined;  // ← Add Meta and ExcludedFields
+  const tempData = isCompatibleTempData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+    config.tempData
+  ) ? config.tempData : undefined;
 
-  // Transform tempData with type guard
-  const transformedTempData: U | undefined = config.tempData && isCompatibleTempData<U, K, Meta, ExcludedFields>(config.tempData)
-    ? transformData<U, K, Meta, ExcludedFields>(config.tempData as U)  // ← Add Meta and ExcludedFields
-    : undefined;
+  const transformedTempData: T | undefined =
+    config.tempData && isCompatibleTempData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+      config.tempData
+    )
+      ? transformData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+          config.tempData as T
+        )
+      : undefined;
 
   // Transform the options property
-  const transformedOptions = config.options
+ const transformedOptions = config.options
     ? {
         ...config.options,
-        initialState: transformInitialState<U, K, Meta, ExcludedFields>(config.options.initialState),  // ← Add ExcludedFields
+        initialState: transformInitialState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+          config.options.initialState
+        ),
       }
     : undefined;
 
-  // Update ConvertSnapshot type helper
   type ConvertSnapshot<
-    U extends BaseDataEntity,  // ← Change Data<U> to BaseDataEntity
-    K extends U = U, 
+    U extends BaseDataEntity,
+    K extends U = U,
     Meta extends StructuredMetadata<U, K> = StructuredMetadata<U, K>,
-    ExcludedFields extends keyof U = never
-  > = U extends K ? Snapshot<U, K, Meta, ExcludedFields> : Snapshot<U, K, Meta, ExcludedFields>;
+    AttachmentType extends Attachment = Attachment,
+    ExcludedFields extends keyof U = never,
+    IncludedFields extends keyof U = keyof U
+  > = U extends K ? Snapshot<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields> : Snapshot<U, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
-  // Transform the snapshotStore property
   const transformedSnapshotStore = (
-    snapshotStore: SnapshotStore<U, K, Meta, ExcludedFields>,  // ← Add Meta and ExcludedFields
+    snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
     snapshotId: string,
-    data: Map<string, Snapshot<U, K, Meta, ExcludedFields>>,  // ← Add Meta and ExcludedFields
-    events: Record<string, CalendarManagerStoreClass<U, K, Meta>[]>,  // ← Add Meta
-    dataItems: RealtimeDataItem<T, K, Meta, ExcludedFields>[],
-    newData: Snapshot<U, K, Meta, ExcludedFields>,  // ← Add Meta and ExcludedFields
-    payload: ConfigureSnapshotStorePayload<U, K, Meta, ExcludedFields>,  // ← Add Meta and ExcludedFields
-    store: SnapshotStore<any, any, any, any>,  // ← Use any for compatibility
-    callback: (snapshotStore: SnapshotStore<U, K, Meta, ExcludedFields>) => void  // ← Add Meta and ExcludedFields
+    data: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>,
+    events: Record<string, CalendarManagerStoreClass<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>,
+    dataItems: RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[],
+    newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    payload: ConfigureSnapshotStorePayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>,
+    store: SnapshotStore<any, any, any, any, any, any>,
+    callback: (snapshotStore: SnapshotStore<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>) => void
   ): void | null => {
     // Implementation
-  }
+  };
 
+  
   // Transform dataStoreMethods
-  const transformedDataStoreMethods: Partial<DataStoreWithSnapshotMethods<U, K, ConvertMeta<U, K>, ExcludedFields>> | undefined =  // ← Add ExcludedFields
+  const transformedDataStoreMethods: Partial<DataStoreWithSnapshotMethods<T, K, ConvertMeta<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ExcludedFields>> | undefined =
     config.dataStoreMethods ? transformDataStoreMethods(config.dataStoreMethods) : undefined;
 
   // Transform snapshots
-  const transformedSnapshots: SnapshotsArray<U, K, Meta, ExcludedFields> = config.snapshots.map(  // ← Add ExcludedFields
+  const transformedSnapshots: SnapshotsArray<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = config.snapshots.map(
     (snapshot) => ({
       ...snapshot,
-      metadata: convertMetadata<U, K, Meta>(snapshot.metadata),
-    }) as SnapshotUnion<U, K, Meta, ExcludedFields>  // ← Add ExcludedFields
+      metadata: convertMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(snapshot.metadata),
+    }) as SnapshotUnion<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
   );
 
   return {
@@ -122,8 +134,11 @@ function createStoreConfig<
     getSnapshotsBySubscriber: config.getSnapshotsBySubscriber,
     getSnapshotsBySubscriberSuccess: config.getSnapshotsBySubscriberSuccess,
 
-    initialState: transformInitialState<U, K, StructuredMetadata<U, K>>(config.options?.initialState as InitializedState<U, K, StructuredMetadata<T, K>>),
-    configOption: config.configOption as string | SnapshotStoreConfig<U, K, ConvertMeta<U, K>, ExcludedFields> | null,
+    initialState: transformInitialState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(
+      config.options?.initialState as InitializedState<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
+    ),
+    configOption: config.configOption as string | SnapshotStoreConfig<T, K, ConvertMeta<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ExcludedFields> | null,
+
     find: config.find,
     storeId: config.storeId,
     operation: config.operation,
@@ -304,5 +319,5 @@ function createStoreConfig<
         yield entry;
       }
     },
-  } as SnapshotStoreConfig<U, K, ConvertMeta<U, K>, ExcludedFields>;
+  } as SnapshotStoreConfig<T, K, ConvertMeta<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>, ExcludedFields>;
 }

@@ -16,7 +16,7 @@ export const setEventColor = createAction<{ eventId: string; color: Theme }>(
   "setEventColor"
 );
 
-type DefaultCalendarEvent = CalendarEvent<BaseData, CustomSnapshotData<T, K, StructuredMetadata<T, K>>>;
+type DefaultCalendarEvent = CalendarEvent<BaseData, CustomSnapshotData<T, K, StructuredMetadata<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>>;
 
 export const CalendarActions = {
 

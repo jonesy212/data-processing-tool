@@ -272,7 +272,7 @@ export const UtilMethods = {
   >(
     storeId: number,
     snapshotId: string,
-    category: Category | undefined,
+    category?: Category,
     categoryProperties: CategoryProperties | undefined,
     snapshot: Snapshot<SnapshotUnion<T, K, Meta>, T> | null,
     timestamp: string | number | Date | undefined,

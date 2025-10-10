@@ -83,7 +83,7 @@ export const handleDataAnalysisApiErrorAndNotify = (
       errorMessageText, // content: string
       null, // notificationMessage: NotificationMessages | null
       new Date(), // date: Date
-      NotificationTypeEnum.APIError, // type: NotificationTypeEnum
+      NotificationTypeEnum.API_ERROR, // type: NotificationTypeEnum
       "DATA_ANALYSIS_API_CLIENT_ERROR" as NotificationType,
       undefined, // options (optional)
       undefined // userName (optional)
@@ -103,7 +103,7 @@ export function fetchDataAnalysis<
 >(
   endpoint: string,
   text?: string
-): Promise<YourResponseType<T, K, Meta> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>> {
+): Promise<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>> {
   const fetchDataAnalysisEndpoint = `${DATA_ANALYSIS_BASE_URL}${endpoint}`;
   const config = {
     headers: headersConfig,
@@ -115,7 +115,7 @@ export function fetchDataAnalysis<
       fetchDataAnalysisEndpoint, 
       config
     )
-    .then((response: AxiosResponse<YourResponseType<T, K, Meta> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>>) => {
+    .then((response: AxiosResponse<YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>>) => {
       const result = convertResponseToSnapshot<T, K, Meta>(response.data);
       
       // Explicit type narrowing
@@ -123,8 +123,8 @@ export function fetchDataAnalysis<
         return result as Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       } else if (isSnapshotStore<T, K, Meta>(result)) {
         return result as SnapshotStore<T, K, Meta>;
-      } else if (isYourResponseType<T, K, Meta>(result)) {
-        return result as YourResponseType<T, K, Meta>;
+      } else if (isYourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(result)) {
+        return result as YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
       }
       
       throw new Error("Unexpected response type");
@@ -152,7 +152,7 @@ function isInitializedSnapshot<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  snapshot: YourResponseType<T, K, Meta> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>
+  snapshot: YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>
 ): snapshot is InitializedSnapshot<T, K, Meta> {
   return (snapshot as InitializedSnapshot<T, K, Meta>).isInitialized === true;
 }

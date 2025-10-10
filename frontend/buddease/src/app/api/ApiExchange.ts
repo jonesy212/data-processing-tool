@@ -1,7 +1,7 @@
-import { Exchange } from "@/app/components/crypto/Exchange";
 import { Attachment } from "@/app/documents/attachment/Attachment";
 import { AppEntity } from "@/app/entities";
 import useSecureExchangeId from "@/app/hooks/useSecureExchangeId";
+import { Exchange } from "@/app/models/cypto/Exchange";
 import { ExchangeData } from "@/app/models/data/ExchangeData";
 import { YourResponseType } from "@/app/typings/typeguards/isYourSettingsResponseType";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
@@ -70,7 +70,7 @@ const transformYourResponseToExchangeData = <
   AttachmentType extends Attachment = Attachment,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >(
-  yourResponse: YourResponseType<T, K, Meta, AttachmentType, ExcludedFields>
+  yourResponse: YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>
 ): ExchangeData[] => {
   // Example transformation logic
   const transformedData: ExchangeData[] = yourResponse.data!.exchangeData.map(

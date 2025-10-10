@@ -6,7 +6,7 @@ import SecureFieldManager from "./SecureFieldManager";
 class SecurityAudit<
   T extends BaseDataEntity = BaseDataRoot,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>
 > {
   private config: { userRoles: string[]; adminRole: string };
 

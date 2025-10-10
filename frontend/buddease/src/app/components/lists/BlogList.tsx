@@ -7,13 +7,13 @@ import { StructuredMetadata } from '@/config/StructuredMetadata';
 import ListGenerator from "@/app/generators/ListGenerator";
 import React from "react";
 import { Data, SharedRelationshipData } from '@/app/models/data/Data';
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
  
 // Define a type representing the data structure for blog posts
 interface BlogData<
   T extends  BaseData<any>,
   K extends T = T,
-  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K> 
+  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K> 
   > extends SharedRelationshipData<K> {
   _id: string;
   id: string;

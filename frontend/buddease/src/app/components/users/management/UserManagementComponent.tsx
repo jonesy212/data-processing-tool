@@ -1,7 +1,7 @@
 // UserManagementComponent.tsx
 import { User } from '@/app/components/users/User'; // Adjust import path as needed
+import { UserRole } from "@/app/models/UserRole";
 import UserManagement from '@/UserManagement';
-import { UserRole } from '@/UserRole';
 import { useEffect, useState } from "react";
 
 const UserManagementComponent = () => {

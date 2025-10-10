@@ -1,7 +1,7 @@
 import { Data } from '@/app/models/data/Data';
 import { BaseData } from '@/app/models/data/Data';
 import { DataStoreWithSnapshotMethods } from "@/app/projects/DataAnalysisPhase/DataProcessing/DataStoreMethods";
-import { SnapshotStoreMethod } from "@/app/snapshots";
+import { SnapshotStoreMethods } from "@/app/snapshots";
 import { StructuredMetadata } from '@/config/StructuredMetadata';
 // Example type guard for checking data store methods
 function isDataStoreMethod<
@@ -49,17 +49,17 @@ function isSnapshotStoreMethods<
 
 
 
-// Example type guard for `SnapshotStoreMethod`
+// Example type guard for `SnapshotStoreMethods`
 function isSnapshotStoreMethods<U extends BaseData,   K extends Data>(
   value: unknown, K extends
 ): value is SnapshotStoreMethods<U, K, Meta> {
-  // Assuming SnapshotStoreMethod is a function or object with specific properties
+  // Assuming SnapshotStoreMethods is a function or object with specific properties
   return typeof value === 'function' || (typeof value === 'object' && value !== null);
 }
 
 
 // Example type guard for checking DataStoreWithSnapshotMethods
-function isDataStoreWithSnapshotMethods <T extends  BaseData<any>,  K extends T = T,  Meta extends StructuredMetadata<T, K> = StructuredMetadata<T, K>>(
+function isDataStoreWithSnapshotMethods <T extends  BaseData<any>,  K extends T = T,  Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>>(
   value: unknown, K extends
 ): value is DataStoreWithSnapshotMethods<T, K> {
   // Ensure the value is an object and not null
@@ -67,7 +67,7 @@ function isDataStoreWithSnapshotMethods <T extends  BaseData<any>,  K extends T 
     return false;
   }
 
-  // Check if `snapshotMethods` is either undefined or an array of `SnapshotStoreMethod`
+  // Check if `snapshotMethods` is either undefined or an array of `SnapshotStoreMethods`
   if ('snapshotMethods' in value) {
     const snapshotMethods = (value as DataStoreWithSnapshotMethods<T, K>).snapshotMethods;
     

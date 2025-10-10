@@ -1,6 +1,6 @@
 // BookmarkData.ts
 
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import { AllStatus } from "@/app/state/stores/DetailsListStore";
 import { ProjectPhaseTypeEnum } from "./StatusType";
 

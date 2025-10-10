@@ -1,11 +1,11 @@
 import { CalendarEvent } from '@/app/calendar/CalendarEvent';
-import { DEX } from '@/app/components/crypto/DEX';
-import { Exchange } from '@/app/components/crypto/Exchange';
+import DEXData from '@/app/components/models/data/DEXData';
+import { ExchangeData } from '@/app/components/models/data/ExchangeData';
 import { RealtimeUpdateCallback } from '@/app/hooks/commHooks/useRealtimeData';
 import useRealtimeDextData from '@/app/hooks/commHooks/useRealtimeDextData';
 import useRealtimeExchangeData from '@/app/hooks/commHooks/useRealtimeExchangeData';
-import DEXData from '@/app/components/models/data/DEXData';
-import { ExchangeData } from '@/app/components/models/data/ExchangeData';
+import { DEX } from '@/app/models/cypto/DEX';
+import { Exchange } from '@/app/models/cypto/Exchange';
 import SnapshotStore from '@/app/snapshots/SnapshotStore';
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
@@ -13,10 +13,10 @@ import { useDispatch } from 'react-redux';
 import * as snapshotApi from '@/app/api/SnapshotApi';
 import { BaseData } from '@/app/models/data/Data';
 import { K, T } from '@/app/models/data/dataStoreMethods';
-import { processExchangeData } from '@/models/data/fetchExchangeData';
 import { StatusType } from "@/app/models/data/StatusType";
-import { RealtimeData, RealtimeDataItem } from '@/models/realtime/RealtimeData';
 import { updateSnapshot } from '@/app/snapshots';
+import { processExchangeData } from '@/models/data/fetchExchangeData';
+import { RealtimeData, RealtimeDataItem } from '@/models/realtime/RealtimeData';
 import { DEXEnum, ExchangeEnum } from "./../crypto/exchangeIntegration";
 import { createSnapshotOptions, UpdateSnapshotPayload } from "./@/app/snapshots/LocalStorageSnapshotStore";
 // Define the price comparison component or function

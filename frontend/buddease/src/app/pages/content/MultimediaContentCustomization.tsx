@@ -15,7 +15,7 @@ import { brandingSettings } from "@/app/libraries/theme/BrandingService";
 import ReusableButton from "@/app/libraries/ui/buttons/ReusableButton";
 import ContentRenderer from "@/app/libraries/ui/ContentRenderer";
 import ContentDetailsListItem from "@/app/models/content/ContentDetailsListItem";
-import { Project } from "@/app/projects/Project";
+import { Project } from '@/app/models/projects/Project';
 import { Button } from "antd";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";

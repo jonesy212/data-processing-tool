@@ -1,7 +1,7 @@
 // ExchangeComponent.tsx
 import { ExchangeDataTypeEnum, ExchangeEnum } from "@/app/components/crypto/exchangeIntegration";
 import { Data } from '@/app/models/data/Data';
-import { SnapshotStore } from "@/app/components/snapshots/SnapshotStore";
+import { SnapshotStore } from "@/app/snapshots/SnapshotStore";
 import { RealtimeDataItem } from "@/app/models/realtime/RealtimeData";
 import { CalendarEvent } from "@/app/state/stores/CalendarEvent";
 import { useEffect } from "react"; // Import useEffect here

@@ -1,10 +1,10 @@
 import { Team } from '@/app/components/models/teams/Team';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { UserRole } from "@/app/models/UserRole";
+import UserRoles from '@/app/models/UserRoles';
 import { Persona } from "@/app/pages/personas/Persona";
 import { User } from "@/app/users/User";
-import { UserRole } from "@/app/users/UserRole";
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import UserRoles from '@/users/UserRoles';
 
 export interface Member extends User {
   teamId: string;

@@ -6,7 +6,7 @@ import CryptoTransaction from "@/app/crypto/CryptoTransaction";
 import { ContentPost } from "@/app/models/content/ContentPost";
 import { NotificationPosition } from "@/app/models/data/StatusType";
 import { Task } from "@/app/models/tasks/Task";
-import { Project } from "@/app/projects/Project";
+import { Project } from '@/app/models/projects/Project';
 import { updateTask } from "@/app/state/redux/slices/CollaborationSlice";
 import { RootState } from "@/app/state/redux/slices/RootSlice";
 import {

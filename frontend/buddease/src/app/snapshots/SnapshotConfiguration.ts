@@ -1,9 +1,9 @@
 import { SnapshotConfig } from '.';
 // SnapshotConfiguration.ts
 import { DebugInfo, TempData } from "@/app/models/data/TempData";
+import { UnifiedConfigOption } from '@/app/snapshots/SnapshotStoreOptions';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from "@/config/BaseConfig";
 import { SnapshotStoreConfig } from "./SnapshotStoreConfig";
-import { UnifiedConfigOption } from '@/app/snapshots/SnapshpshotStoreOptions';
 
 interface SnapshotConfiguration<
   T extends BaseDataEntity,
@@ -11,7 +11,7 @@ interface SnapshotConfiguration<
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
 >{
-  configOption?: UnifiedConfigOption<T, K, Meta, ExcludedFields>;
+  configOption?: UnifiedConfigOption<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
 
   config: Promise<SnapshotStoreConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null>;
   
@@ -19,7 +19,7 @@ interface SnapshotConfiguration<
   debugInfo?: DebugInfo; // Optional property to hold debugging information
 
   // Property for storing temporary data
-  tempData?: TempData<T, K, Meta, ExcludedFields>; // Optional property to hold temporary data
+  tempData?: TempData<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>; // Optional property to hold temporary data
   
   initialBaseConfig: SnapshotConfig<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>;
   // Load configuration method

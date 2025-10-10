@@ -1,13 +1,11 @@
-import { Snapshot } from '@/app/snapshots/Snapshot';
-import { enrichSnapshotStore, isSnapshotStore, isYourResponseType, normalizeSnapshot, transformResponse } from "@/app/typings/YourSpecificSnapshotType";
-import { StructuredMetadata } from '@/config/StructuredMetadata';
-import { YourResponseType, YourSettingsResponseType } from "@/app/typings/responseTypes";
-import { isSnapshot } from '@/app/utils/snapshotUtils';
-import SnapshotStore from '@/app/snapshots/SnapshpshotStore';
-import { InitializedSnapshot } from '@/app/snapshots/SnapshpshotStoreOptions';
 import { Attachment } from '@/app/documents/attachment/Attachment';
+import { Snapshot } from '@/app/snapshots/Snapshot';
+import SnapshotStore from '@/app/snapshots/SnapshotStore';
+import { InitializedSnapshot } from '@/app/snapshots/SnapshotStoreOptions';
+import { YourResponseType } from "@/app/typings/responseTypes";
+import { enrichSnapshotStore, isSnapshotStore, isYourResponseType, normalizeSnapshot, transformResponse } from "@/app/typings/YourSpecificSnapshotType";
+import { isSnapshot } from '@/app/utils/snapshotUtils';
 import { BaseDataEntity, BaseDataRoot, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
-import { getLatestSnapshot } from '@/app/snapshots/snapshotOperatiions'
 /**
  * Converts API response data to an InitializedSnapshot with proper typing
  */
@@ -39,12 +37,12 @@ function convertToIntermediateType<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T>(
   data: unknown
-): YourResponseType<T, K, Meta> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta> {
+): YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta> {
   if (isSnapshotStore<T, K, Meta>(data)) {
     return enrichSnapshotStore(data);
   } else if (isSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(data)) {
     return normalizeSnapshot(data);
-  } else if (isYourResponseType<T, K, Meta>(data)) {
+  } else if (isYourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>(data)) {
     return transformResponse(data);
   }
   throw new Error(`Unsupported response type: ${typeof data}`);
@@ -61,7 +59,7 @@ function enrichAsInitializedSnapshot<
   ExcludedFields extends keyof T = DefaultExcludedFields<T>,
   IncludedFields extends keyof T = keyof T
 >(
-  data: YourResponseType<T, K, Meta> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>
+  data: YourResponseType<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | SnapshotStore<T, K, Meta>
 ): InitializedSnapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   const baseSnapshot = isSnapshotStore(data) 
     ? data.getLatestSnapshot() 

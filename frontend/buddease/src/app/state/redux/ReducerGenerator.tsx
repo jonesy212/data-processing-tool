@@ -1,7 +1,7 @@
 //ReducerGenerator.tsx
 import { PayloadAction } from "@reduxjs/toolkit";
 import { Draft, isDraft } from "immer";
-import { Collaborator }  from '@/app/components/models/teams/TeamMembers'
+import { Collaborator }  from '@/app/collaborators/Collaborator'
 
 export type WritableDraft<EntityData> = Draft<EntityData>;
 

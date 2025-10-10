@@ -24,7 +24,7 @@ interface FetchSnapshotPayload<
     category?:  Category; // Optional category properties related to the snapshot
     data: T | Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> | null | undefined;
     events: Record<string, CalendarEvent<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]>;
-    dataItems: () => RealtimeDataItem<T, K, Meta, ExcludedFields>[] | null;
+    dataItems: () => RealtimeDataItem<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[] | null;
     newData: Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> | null;
     metadata: any;
     id: string; // Adding id
@@ -36,7 +36,7 @@ interface FetchSnapshotPayload<
     createdBy: string | undefined; // Adding createdBy
     eventRecords: Record<string, any>; // Adding eventRecords
     type: string; // Adding type
-    subscribers: Subscriber<T, K, Meta, ExcludedFields>[]; // Adding subscribers
+    subscribers: Subscriber<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>[]; // Adding subscribers
     snapshots: Map<string, Snapshot<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>; // Adding snapshots
     requestTimestamp: Date; // Timestamp of when the fetch request was made
     requestContext: string; // Context or purpose of the fetch operation
@@ -75,7 +75,7 @@ async function fetchSnapshotPayload<
     source?: 'remote' | 'local';
     requestContext?: string;
   }
-): Promise<FetchSnapshotPayload<T, K, Meta, ExcludedFields>> {
+): Promise<FetchSnapshotPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   // Initialize defaults for options
   const {
     includeMetaData = true,
@@ -97,7 +97,7 @@ async function fetchSnapshotPayload<
   }
 
   // Map the fetched data to the FetchSnapshotPayload format
-  const payload: FetchSnapshotPayload<T, K, Meta, ExcludedFields> = {
+  const payload: FetchSnapshotPayload<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> = {
     id: snapshotId,
     key: `key-${snapshotId}`, // Simulate a key
     topic: fetchedData.topic || 'Default Topic',

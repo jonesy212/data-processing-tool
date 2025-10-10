@@ -1,5 +1,5 @@
 import { Attachment } from '@/app/documents/attachment/Attachment';
-import { SnapshotStoreMap } from '@/app/snapshots/SnapshpshotMethods';
+import { SnapshotStoreMap } from '@/app/snapshots/SnapshotMethods';
 import { BaseDataEntity, DefaultExcludedFields, DefaultMeta } from '@/config/BaseConfig';
 import { createSnapshotStore } from "./snapshotHandlers";
 

@@ -1,3 +1,4 @@
+
 // Base types for context
 import { SnapshotStoreConfig } from '@/app/snapshots';
 import { useDataStore } from '@/app/projects/DataAnalysisPhase/DataProcessing/DataStore';
@@ -56,7 +57,11 @@ export type ValidationRule<T extends BaseDataEntity = BaseDataEntity> = {
 
 export interface ValidationResult {
   isValid: boolean;
-  message?: string;
+  errors: Array<{
+    field: keyof AppDocument;
+    message: string;
+    rule: string;
+  }>;  message?: string;
   details?: Record<string, any>;
 }
 

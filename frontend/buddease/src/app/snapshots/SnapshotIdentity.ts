@@ -108,7 +108,7 @@ export interface SnapshotIdentityWithTimestamps<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> extends SnapshotIdentity<SnapshotIdentity<T, K, Meta, ExcludedFields>> {
+> extends SnapshotIdentity<SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
@@ -129,7 +129,7 @@ export function createSnapshotIdentity<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> (overrides: Partial<SnapshotIdentity<SnapshotIdentity<T, K, Meta, ExcludedFields>>> = {}): SnapshotIdentity<SnapshotIdentity<T, K, Meta, ExcludedFields>> {
+> (overrides: Partial<SnapshotIdentity<SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>>> = {}): SnapshotIdentity<SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields>> {
   const now = new Date();
   
   return {
@@ -153,7 +153,7 @@ export function isSnapshotIdentity<
   K extends T = T,
   Meta extends DefaultMeta<T, K> = DefaultMeta<T, K>,
   ExcludedFields extends keyof T = DefaultExcludedFields<T>
-> (obj: any): obj is SnapshotIdentity<T, K, Meta, ExcludedFields> {
+> (obj: any): obj is SnapshotIdentity<T, K, Meta, AttachmentType, ExcludedFields, IncludedFields> {
   return obj && (obj.id !== undefined || obj.snapshotId !== undefined);
 }
 

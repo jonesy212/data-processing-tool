@@ -1,6 +1,6 @@
 // detectMetadataChanges.ts
 import { BaseData } from '@/app/models/data/Data';
-import FileData from "@/app/components/models/data/FileData";
+import FileData from "@/app/models/data/FileData";
 
 function detectMetadataChanges<T extends BaseData<T>>(file: FileData<T>): string {
     // Handle metadata comparison logic here

@@ -1,5 +1,5 @@
+import { UserRole } from "@/app/models/UserRole";
 import { User } from "@/app/users/User";
-import { UserRole } from "@/app/users/UserRole";
 
 
 interface SharingPreferences {
@@ -201,4 +201,4 @@ const selectedSettings: PrivacySettings = {
 
 
 export { selectedSettings };
-export type {DataSharingPreferences}
+export type { DataSharingPreferences };

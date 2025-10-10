@@ -3,7 +3,7 @@ import { K, T } from '@/app/models/data/dataStoreMethods';
 import { createAction } from "@reduxjs/toolkit";
 import Milestone from "@/app/state/redux/slices/CalendarSlice";
 import { Task } from "@/app/models/tasks/Task";
-import { Phase } from "@/app/phases/Phase";
+import { Phase } from '@/app/models/phases/Phase';
 import { Product } from "@/app/products/Product";
 import { Project, ProjectDetails } from "@/app/models/projects/Project";
 import { User } from "@/app/users/User";
